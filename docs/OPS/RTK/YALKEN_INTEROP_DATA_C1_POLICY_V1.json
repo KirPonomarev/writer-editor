@@ -858,7 +858,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "04643af42165a0229d324c4e24f15f287922b89fbf16a427d62cc6587e88c913"
+        "sha256": "61edcf44a45cb285359cc09eb61c13f97044eb67aa950204fea308fcdfcb8ab4"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -870,7 +870,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "57b55b5130d5a383991b985d9de545cd6a8fbcc545ee6b1e2cf3c3cbaef37421"
+        "sha256": "762e9d11f0eaea5ec6057e2dfdaf2b311be38203076ee76c3f1268841cb5cb9d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1034,7 +1034,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "603308832e7f3762951fd8cd070e7d9af35f9e033d912d6736f9da2f97d970c3"
+        "sha256": "7d1ec4f20f22568a8fcd6eb533965d3c92ab4860237b22f90ae4547206330184"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1770,7 +1770,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "47afaf852413656eae45b8fa06983597e9f8593855c3d003a51a1ba852120a26"
+        "sha256": "55721177bc480654829e15999f3ac7c5558581370ebd80d22642fb44457f4c4d"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2550,15 +2550,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b1c5daeee212bf22512880e4c3eb37b26ea2f15fabbd43cbbd2e6549081ccdb6"
+        "sha256": "4163b4df300022a35035f4fcb4da5a18baf6bf7dbc68903fe4758229beb70dfe"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f8e61b74fc38a289ba9bbad0c1e99701cde69085b9b2c54c74f58266e462987a"
+        "sha256": "22217e37469d252365a78fee5b9426e168961b799952737e3b4ce2a45d7b21d0"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "10adf7802532d2490b84a312025fdcbb6b2a71f812540f269171c7b46f853c9c"
+        "sha256": "f41afa2467c23f7c7f87af6e9062736812534049c4a3c74f4f19d3ec1e9c90fc"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2750,7 +2750,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "1eb670826974933c4f519c66b28ab418a75a514647748c80986938d97665efb9"
+        "sha256": "abb594d21fdbc5b3194eb1846b32ea96e1a6e46586e5c20ddd94ae0071c0c7da"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCore.mjs",
@@ -2774,7 +2774,7 @@
       },
       {
         "path": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-        "sha256": "bfe3e82dedf1692e8fba5ea3e4684d4cab17e7d1cb26ed81d057e9a6f28a6e09"
+        "sha256": "315eccb03e70839cf73ac1d79307594efd838f4fb06e21d7101b2eaaede11654"
       }
     ],
     "followupRepair": {

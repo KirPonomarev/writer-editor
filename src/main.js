@@ -24055,12 +24055,24 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             },
           });
           if (recordingAdmission && receipt.success === true) {
+            const savedComments = await (await loadRtkNonTextReturnModule()).readCommentAuthoringState(recordingAdmission.session);
+            const savedNotes = await (await loadNotesStorageModule()).readNotesStorage(recordingAdmission.session);
+            if (await fs.readFile(filePath, 'utf8') !== content || await fs.readFile(prepared.manifestPath, 'utf8') !== manifestContent) throw Error('RECORDING_SAVE_READBACK_CHANGED');
+            if (savedComments.text !== (commentState ? commentState.afterText : recordingAdmission.expectedComments)
+              || !savedNotes.ok || (savedNotes.sourceExists ? savedNotes.sourceText : null) !== (noteState ? noteState.afterText : recordingAdmission.expectedNotes)) throw Error('RECORDING_SAVE_READBACK_CHANGED');
+            assertPendingRecordingSession(recordingAdmission.session);
             recordingAdmission.session.raw = content; recordingAdmission.session.savedGeneration = revision;
             if (recordingAdmission.session.noteRecording) recordingAdmission.session.expectedNotes = noteState?.afterText ?? recordingAdmission.expectedNotes;
             if (recordingAdmission.nextIntents) {
               recordingAdmission.session.provenance = recordingAdmission.nextIntents;
               recordingAdmission.session.provenanceWire = recordingAdmission.wire;
             }
+            recordingAdmission.session.checkpoint = { output: content, working: recordingAdmission.workingContent,
+              generation: revision, wire: recordingAdmission.workingWire, workingDigest: recordingAdmission.workingDigest,
+              provenance: JSON.stringify(recordingAdmission.session.provenance ?? null),
+              comments: commentState ? commentState.afterText : recordingAdmission.expectedComments,
+              notes: noteState ? noteState.afterText : recordingAdmission.expectedNotes,
+              manifestPath: prepared.manifestPath, manifest: manifestContent };
             pendingRecordingSaveAdmissions.clear();
           }
           if (receipt.success === true) {
@@ -25910,7 +25922,8 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const working = envelope.parseObservablePayload(snapshot.content);
   if (working.issue || !working.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
-  let nextIntents, expectedComments, expectedNotes, recordingProofJson;
+  const annotations = await assertPendingRecordingAnnotations(session);
+  let nextIntents, expectedComments = annotations.saved.text, expectedNotes = annotations.noteText, recordingProofJson;
   if (session.commentRecording || session.noteRecording) {
     const model = require('./core/word-comment-edit-intents-v1.cjs');
     if (snapshot.commentEditIntentsJson == null) throw Error('RECORDING_COMMENT_INTENTS_REQUIRED');
@@ -25922,17 +25935,18 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
       && JSON.stringify(incoming.edits.slice(0, prior.edits.length)) === JSON.stringify(prior.edits)) suffix = incoming.edits.slice(prior.edits.length);
     else if (incoming.baselineTextSha256 !== savedDigest) throw Error('RECORDING_COMMENT_PREFIX_STALE');
     nextIntents = model.validateEditIntents(JSON.stringify({ ...session.provenance, edits: [...session.provenance.edits, ...suffix] }));
-    const annotations = await assertPendingRecordingAnnotations(session);
-    expectedComments = annotations.saved.text; expectedNotes = annotations.noteText;
     recordingProofJson = JSON.stringify({ schemaVersion: 1, baselineContent: session.baselineContent,
       metadata: session.metadata, previousIntents: session.provenance, nextIntents, sessionId: session.id });
   }
   const result = pendingRecordingModel.derive(session.baseline, working.doc, session.metadata, nextIntents);
-  const content = envelope.composeObservablePayload({ ...working, doc: result.doc });
+  const content = envelope.composeObservablePayload({ ...working, metaEnabled: working.hasMetaBlock, doc: result.doc });
   assertPendingRecordingSession(session);
   const key = computeHash(content) + ':' + snapshot.generation;
   if (pendingRecordingSaveAdmissions.size >= 32) pendingRecordingSaveAdmissions.clear();
   pendingRecordingSaveAdmissions.set(key, { session, content, generation: snapshot.generation, expected: session.raw,
+    workingContent: snapshot.content, expectedComments, expectedNotes,
+    workingWire: pendingRecordingIntentWire(snapshot.commentEditIntentsJson),
+    workingDigest: require('./core/word-comment-edit-intents-v1.cjs').textDigest(commentSceneParagraphs(snapshot.content).map(p => p.text)),
     ...(session.commentRecording || session.noteRecording ? { nextIntents, expectedComments, expectedNotes, recordingProofJson, wire: JSON.parse(snapshot.commentEditIntentsJson) } : {}) });
   return { ...snapshot, content, doc: result.doc };
 }
@@ -25950,7 +25964,8 @@ async function revalidatePendingRecordingSave(admission) {
   assertPendingRecordingSession(session);
   if (admission.expected !== session.raw || admission.generation < session.savedGeneration) throw Error('RECORDING_SAVE_STALE');
   const annotations = await assertPendingRecordingAnnotations(session);
-  if (session.commentRecording && annotations.saved.text !== admission.expectedComments) throw Error('RECORDING_COMMENTS_CHANGED');
+  if (annotations.saved.text !== admission.expectedComments) throw Error('RECORDING_COMMENTS_CHANGED');
+  if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
   if (session.noteRecording) {
     if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
     require('./core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof({
@@ -25961,15 +25976,129 @@ async function revalidatePendingRecordingSave(admission) {
   if (await fs.readFile(session.filePath, 'utf8') !== admission.expected) throw Error('RECORDING_SCENE_CHANGED');
   assertPendingRecordingSession(session);
 }
-async function publishPendingRecordingDocument(session, content, generation, recording) {
+function pendingRecordingIntentWire(value) {
+  return value == null ? null : JSON.stringify(require('./core/word-comment-edit-intents-v1.cjs').validateEditIntents(value));
+}
+function observePendingRecordingEditor(session, publication = null) {
+  assertPendingRecordingSession(session);
+  if (!mainWindow || mainWindow.isDestroyed()) return Promise.reject(Error('RECORDING_EDITOR_UNAVAILABLE'));
+  return new Promise((resolve, reject) => {
+    const requestId = crypto.randomBytes(8).toString('hex');
+    const timeoutId = setTimeout(() => {
+      pendingSnapshotRequests.delete(requestId); reject(Error('RECORDING_PUBLICATION_UNCONFIRMED'));
+    }, 2500);
+    pendingSnapshotRequests.set(requestId, { timeoutId, reject, resolve: snapshot => {
+      try { assertPendingRecordingSession(session); resolve(snapshot); } catch (error) { reject(error); }
+    } });
+    mainWindow.webContents.send(publication ? 'editor:set-text' : 'editor:snapshot-request',
+      publication ? { ...publication, recordingPublicationRequestId: requestId } : { requestId });
+  });
+}
+function assertPendingRecordingObservation(session, snapshot, generation) {
+  assertPendingRecordingSession(session);
+  if (!snapshot || snapshot.projectId !== session.projectId || snapshot.documentId !== session.documentId
+    || snapshot.treeContentPublicationId !== session.treeContentPublicationId
+    || snapshot.generation !== generation || !Number.isSafeInteger(generation)
+    || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+    || lastSignaledEditGeneration > generation) throw Error('RECORDING_EDITOR_CHANGED');
+}
+async function revalidatePendingRecordingCheckpoint(session, checkpoint) {
+  assertPendingRecordingSession(session);
+  if (!checkpoint || checkpoint !== session.checkpoint || checkpoint.output !== session.raw
+    || checkpoint.provenance !== JSON.stringify(session.provenance ?? null)) throw Error('RECORDING_CHECKPOINT_STALE');
+  const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
+  if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot
+    || binding.manifestPath !== checkpoint.manifestPath) throw Error('RECORDING_PROJECT_CHANGED');
+  if (await fs.readFile(checkpoint.manifestPath, 'utf8') !== checkpoint.manifest) throw Error('RECORDING_PROJECT_CHANGED');
+  const stat = await fs.lstat(session.filePath);
+  if (stat.isSymbolicLink() || !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024) throw Error('RECORDING_SCENE_CHANGED');
+  if (await fs.readFile(session.filePath, 'utf8') !== checkpoint.output) throw Error('RECORDING_SCENE_CHANGED');
+  const comments = await (await loadRtkNonTextReturnModule()).readCommentAuthoringState(session);
+  if (comments.text !== checkpoint.comments) throw Error('RECORDING_COMMENTS_CHANGED');
+  const notes = await (await loadNotesStorageModule()).readNotesStorage(session);
+  if (!notes.ok || (notes.sourceExists ? notes.sourceText : null) !== checkpoint.notes) throw Error('RECORDING_NOTES_CHANGED');
+  assertPendingRecordingSession(session);
+}
+function pendingRecordingWireMatches(checkpoint, value) {
+  const wire = pendingRecordingIntentWire(value);
+  if (wire === checkpoint.wire) return true;
+  if (wire === null) return false;
+  const parsed = JSON.parse(wire);
+  return parsed.schemaVersion === 2 && parsed.baselineTextSha256 === checkpoint.workingDigest && parsed.edits.length === 0;
+}
+function pendingRecordingUnchangedInput(session, snapshot) {
+  const checkpoint = session.checkpoint;
+  return Boolean(checkpoint && snapshot.generation === checkpoint.generation && snapshot.content === checkpoint.working
+    && pendingRecordingWireMatches(checkpoint, snapshot.commentEditIntentsJson));
+}
+async function pendingRecordingInstalledContent(content, parsedValue = null) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const parsed = parsedValue || envelope.parseObservablePayload(content);
+  if (parsed.issue || !parsed.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
+  const ranks = ['link', 'textStyle', 'bold', 'code', 'italic', 'strike', 'highlight', 'underline'];
+  const defaults = (attrs, keys) => {
+    const next = { ...(attrs || {}) };
+    for (const key of keys) if (!Object.prototype.hasOwnProperty.call(next, key)) next[key] = null;
+    return next;
+  };
+  const body = node => {
+    const next = { ...node };
+    if (['paragraph', 'heading'].includes(node.type)) next.attrs = defaults(node.attrs, ['textAlign']);
+    if (node.type === 'codeBlock') next.attrs = defaults(node.attrs, ['language']);
+    if (Array.isArray(node.marks)) {
+      next.marks = node.marks.map(mark => mark.type === 'textStyle'
+        ? { ...mark, attrs: defaults(mark.attrs, ['color', 'fontFamily', 'fontSize']) }
+        : mark.type === 'link' ? { ...mark, attrs: defaults(mark.attrs, ['title', 'wordBookmarkId', 'wordBookmarkName']) } : { ...mark });
+      const types = next.marks.map(mark => mark.type);
+      if (new Set(types).size === types.length && types.every(type => ranks.includes(type))) {
+        next.marks.sort((a, b) => ranks.indexOf(a.type) - ranks.indexOf(b.type));
+      }
+    }
+    if (Array.isArray(node.content)) {
+      next.content = [];
+      for (const child of node.content) {
+        const current = body(child), previous = next.content[next.content.length - 1];
+        if (previous?.type === 'text' && current.type === 'text'
+          && JSON.stringify({ ...previous, text: undefined }) === JSON.stringify({ ...current, text: undefined })) previous.text += current.text;
+        else next.content.push(current);
+      }
+      if (!next.content.length && ['paragraph', 'heading', 'codeBlock'].includes(node.type)) delete next.content;
+    }
+    return next;
+  };
+  // Only LIVE body representation changes. Ledger/source/history remain opaque.
+  const doc = { ...parsed.doc, content: parsed.doc.content.map(body) };
+  doc.attrs = { ...(doc.attrs || {}) };
+  for (const key of ['wordPendingRevisions', 'wordUserBookmarks']) {
+    if (!Object.prototype.hasOwnProperty.call(doc.attrs, key)) doc.attrs[key] = null;
+  }
+  return envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock, doc });
+}
+async function publishPendingRecordingDocument(session, content, generation, expected) {
   const identity = await getProjectDocumentIdentityPayload(session.filePath);
   const context = getDocumentContextFromPath(session.filePath);
-  const payload = await attachProjectIdToEditorPayload({ content, ...identity, projectId: session.projectId,
-    title: context.title, kind: context.kind, metaEnabled: context.metaEnabled }, session.filePath);
-  assertPendingRecordingSession(session);
-  if (isDirty || lastSignaledEditGeneration > generation) throw Error('RECORDING_EDITOR_CHANGED');
-  if (!recording) { activePendingRecording = null; pendingRecordingSaveAdmissions.clear(); }
-  sendEditorText(payload);
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const parsed = envelope.parseObservablePayload(content);
+  if (parsed.issue || !parsed.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
+  const installedContent = await pendingRecordingInstalledContent(content, parsed);
+  const payload = await attachProjectIdToEditorPayload({ content: installedContent, ...identity, projectId: session.projectId,
+    title: context.title, kind: context.kind, metaEnabled: parsed.hasMetaBlock }, session.filePath);
+  assertPendingRecordingObservation(session, expected, generation);
+  if (isDirty) throw Error('RECORDING_EDITOR_CHANGED');
+  await revalidatePendingRecordingCheckpoint(session, session.checkpoint);
+  session.unconfirmedPublication = session.checkpoint;
+  const observed = await observePendingRecordingEditor(session, { ...payload, expectedGeneration: generation,
+    expectedContent: expected.content, expectedCommentEditIntentsJson: pendingRecordingIntentWire(expected.commentEditIntentsJson),
+    expectedTreeContentPublicationId: session.treeContentPublicationId });
+  assertPendingRecordingObservation(session, observed, generation);
+  if (observed.content !== installedContent) throw Error('RECORDING_PUBLICATION_UNCONFIRMED');
+  await revalidatePendingRecordingCheckpoint(session, session.checkpoint);
+  const confirmed = await observePendingRecordingEditor(session);
+  assertPendingRecordingObservation(session, confirmed, generation);
+  if (confirmed.content !== installedContent || pendingRecordingIntentWire(confirmed.commentEditIntentsJson)
+    !== pendingRecordingIntentWire(observed.commentEditIntentsJson)) throw Error('RECORDING_PUBLICATION_UNCONFIRMED');
+  if (lastSignaledEditGeneration > generation || isDirty) throw Error('RECORDING_EDITOR_CHANGED');
+  return confirmed;
 }
 async function handlePendingRecordingCommand(payload = {}) {
   try {
@@ -25985,13 +26114,37 @@ async function handlePendingRecordingCommand(payload = {}) {
         || payload.subjectId !== session.subjectId) throw Error('RECORDING_IDENTITY_STALE');
       if (activeAutoSavePromise) await activeAutoSavePromise;
       assertPendingRecordingSession(session);
-      const saved = await handleSave();
-      if (saved !== true) throw Error('RECORDING_SAVE_FAILED_BUFFER_RETAINED');
+      let snapshot = await observePendingRecordingEditor(session);
+      assertPendingRecordingObservation(session, snapshot, snapshot.generation);
+      let checkpoint = session.checkpoint;
+      if (session.startPublicationPending) {
+        assertPendingRecordingObservation(session, snapshot, checkpoint.generation);
+        if (snapshot.content !== await pendingRecordingInstalledContent(checkpoint.working)
+          || !pendingRecordingWireMatches(checkpoint, snapshot.commentEditIntentsJson)) throw Error('RECORDING_PUBLICATION_UNCONFIRMED');
+        await revalidatePendingRecordingCheckpoint(session, checkpoint);
+        checkpoint.working = snapshot.content;
+        checkpoint.wire = pendingRecordingIntentWire(snapshot.commentEditIntentsJson);
+        session.startPublicationPending = false;
+      }
+      const retry = checkpoint && session.unconfirmedPublication === checkpoint
+        && snapshot.generation === checkpoint.generation && snapshot.content === await pendingRecordingInstalledContent(checkpoint.output);
+      if (!retry && (!pendingRecordingUnchangedInput(session, snapshot) || isDirty)) {
+        const saved = await handleSave();
+        if (saved !== true) throw Error('RECORDING_SAVE_FAILED_BUFFER_RETAINED');
+        snapshot = await observePendingRecordingEditor(session);
+        assertPendingRecordingObservation(session, snapshot, session.savedGeneration);
+        if (!pendingRecordingUnchangedInput(session, snapshot)) throw Error('RECORDING_EDITOR_CHANGED');
+        checkpoint = session.checkpoint;
+      }
       return await queueDiskOperation(async () => {
+        await revalidatePendingRecordingCheckpoint(session, checkpoint);
+        if (retry) {
+          if (isDirty || !pendingRecordingWireMatches(checkpoint, snapshot.commentEditIntentsJson)) throw Error('RECORDING_EDITOR_CHANGED');
+        }
+        await publishPendingRecordingDocument(session, checkpoint.output, checkpoint.generation, snapshot);
         assertPendingRecordingSession(session);
-        const raw = await fs.readFile(session.filePath, 'utf8');
-        if (raw !== session.raw) throw Error('RECORDING_SCENE_CHANGED');
-        await publishPendingRecordingDocument(session, raw, session.savedGeneration, false);
+        if (lastSignaledEditGeneration > checkpoint.generation || isDirty) throw Error('RECORDING_EDITOR_CHANGED');
+        activePendingRecording = null; pendingRecordingSaveAdmissions.clear();
         updateStatus('Запись исправлений завершена. Изменения сохранены.');
         return { ok: true, recording: false };
       }, 'stop pending text recording');
@@ -26020,7 +26173,7 @@ async function handlePendingRecordingCommand(payload = {}) {
       session.expectedNotes = annotations.noteText;
       if (session.commentRecording || session.noteRecording) {
         const model = require('./core/word-comment-edit-intents-v1.cjs');
-        session.baselineContent = envelope.composeObservablePayload({ ...context.parsed, doc: original });
+        session.baselineContent = envelope.composeObservablePayload({ ...context.parsed, metaEnabled: context.parsed.hasMetaBlock, doc: original });
         session.provenance = { schemaVersion: 2, baselineTextSha256: model.textDigest(commentSceneParagraphs(session.baselineContent).map(p => p.text)), edits: [] };
       }
       const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
@@ -26030,10 +26183,29 @@ async function handlePendingRecordingCommand(payload = {}) {
       if ((freshAnnotations.saved.text ?? null) !== (annotations.saved.text ?? null)) throw Error('RECORDING_COMMENTS_CHANGED');
       if (freshAnnotations.noteText !== annotations.noteText) throw Error('RECORDING_NOTES_CHANGED');
       pendingRecordingCapability();
+      const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
+      if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot) throw Error('RECORDING_PROJECT_CHANGED');
+      const workingContent = envelope.composeObservablePayload({ ...context.parsed, metaEnabled: context.parsed.hasMetaBlock, doc: prepared.working });
+      const identity = await getProjectDocumentIdentityPayload(session.filePath);
+      session.documentId = identity.documentId; session.treeContentPublicationId = snapshot.treeContentPublicationId;
+      session.checkpoint = { output: session.raw, working: workingContent, generation: snapshot.generation,
+        wire: pendingRecordingIntentWire(snapshot.commentEditIntentsJson),
+        workingDigest: require('./core/word-comment-edit-intents-v1.cjs').textDigest(commentSceneParagraphs(workingContent).map(p => p.text)),
+        provenance: JSON.stringify(session.provenance ?? null),
+        comments: annotations.saved.text, notes: annotations.noteText, manifestPath: binding.manifestPath,
+        manifest: await fs.readFile(binding.manifestPath, 'utf8') };
+      session.startPublicationPending = true;
       activePendingRecording = session;
       try {
-        await publishPendingRecordingDocument(session, envelope.composeObservablePayload({ ...context.parsed, doc: prepared.working }), snapshot.generation, true);
-      } catch (error) { activePendingRecording = null; throw error; }
+        const observed = await publishPendingRecordingDocument(session, workingContent, snapshot.generation, snapshot);
+        session.checkpoint.working = observed.content;
+        session.checkpoint.wire = pendingRecordingIntentWire(observed.commentEditIntentsJson);
+        session.startPublicationPending = false;
+        session.unconfirmedPublication = null;
+      } catch (error) {
+        if (activePendingRecording === session && !session.unconfirmedPublication) activePendingRecording = null;
+        throw error;
+      }
       updateStatus('Запись исправлений включена');
       return { ok: true, recording: true, sessionId: session.id };
     }, 'start pending text recording');

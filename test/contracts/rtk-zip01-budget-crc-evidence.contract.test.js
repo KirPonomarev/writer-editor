@@ -231,6 +231,7 @@ const ALLOWLIST = [
   'docs/HANDOFF.md',
   'docs/WORKLOG.md',
   'src/renderer/editor.bundle.js',
+  'src/renderer/editor.js',
   'src/preload.bundle.cjs',
   'src/utils/docxImportLocalFilePreview.js',
   'test/contracts/rtk-word-full-manuscript-volume.contract.test.js',

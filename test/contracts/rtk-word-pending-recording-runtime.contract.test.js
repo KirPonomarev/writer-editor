@@ -15,6 +15,20 @@ const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
 const extract = name => main.match(new RegExp('(?:async )?function ' + name + '\\([^]*?\\n}'))[0];
 const id = 'cmd.project.review.recordTextRevisions';
 const hash = v => crypto.createHash('sha256').update(v).digest('hex');
+// Use the actual production extensions and serializer, not a target-copy ACK.
+const production=(()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
+ const imports=source.slice(0,source.indexOf('let currentEditorInstance'));
+ const extensions=source.slice(source.indexOf('    extensions: [')+'    extensions: '.length,source.indexOf("    content: '<p></p>'")).trim().replace(/,$/,'');
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'recording-schema-')),output=path.join(directory,'schema.cjs');
+ const readers=source.slice(source.indexOf('function readEditorText('),source.indexOf('function normalizeFormattingColor('));
+ require('esbuild').buildSync({stdin:{contents:imports+'\nimport {getSchema} from "@tiptap/core";\n'+readers+'\nconst extensions='+extensions+';const schema=getSchema(extensions);export {Editor,extensions,schema,readEditorDocument};',
+  resolveDir:path.join(__dirname,'../../src/renderer/tiptap')},bundle:true,platform:'node',format:'cjs',outfile:output,logLevel:'silent'});
+ try{return require(output);}finally{fs.rmSync(directory,{recursive:true,force:true});}
+})();
+const installed=text=>{const parsed=envelope.parseObservablePayload(text),node=production.schema.nodeFromJSON(parsed.doc);
+ node.check();const doc=production.readEditorDocument({getJSON:()=>node.toJSON()});
+ return envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc});};
 const doc = text => ({ type: 'doc', content: [{ type: 'paragraph', content: text ? [{ type: 'text', text }] : [] }] });
 async function harness(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'recording-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -30,7 +44,7 @@ async function harness(t) {
   const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(root, 'leases'), useLeaseHeartbeatWorker: false });
   const requests = new Map();
   const c = { JSON, require: require('node:module').createRequire(path.join(__dirname, '../../src/main.js')),
-    commentSceneParagraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs, Buffer, crypto, setTimeout, clearTimeout, pendingSnapshotRequests: requests,
+    normalizeSelectionRangeForSettings:()=>null, commentSceneParagraphs: require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs, Buffer, crypto, setTimeout:(fn,ms)=>setTimeout(fn,h.timeoutMs??ms), clearTimeout, pendingSnapshotRequests: requests,
     pendingTextRevisions: model, pendingRecordingModel: recording, cloneJsonSafe: v => JSON.parse(JSON.stringify(v)),
     isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
     queueDiskOperation: fn => fn(), readCommentAuthoringContext: async () => { if (c.isDirty || c.autoSaveInProgress) throw Error('DIRTY'); return context(); },
@@ -50,7 +64,7 @@ async function harness(t) {
     getProductCommandRecord: () => null, decideCommandEntitlement: (command, tier) => h.entitled === false ? { available: false, reason: 'DENIED' } : decideCommandEntitlement(command, tier),
     getProductEntitlementTier: () => 'free', E_COMMAND_DISABLED_FOR_ENTITLEMENT: 'ENTITLEMENT_DENIED', isMenuLocalCustomizationCommandId: () => false,
     activeStage10ApplicationBootstrap: {},
-    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot: root, projectId: h.foreignProject ? 'foreign' : 'recording-project' }),
+    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectRoot: root, projectId: h.foreignProject ? 'foreign' : 'recording-project', manifestPath: manifest }),
     ...gateway, SAVE_AUTHORITY_OBSERVER_IDS: gateway.OBSERVER_IDS, durableSaveTransaction, planCommentAnchorSave,
     manuscriptNoteModel: require('../../src/core/word-manuscript-notes-v1.cjs'),
     prepareBookProfileManifestForFile: async target => ({ manifestPath: manifest, projectId: 'recording-project', expectedText: fs.readFileSync(manifest, 'utf8'), nextText: fs.readFileSync(manifest, 'utf8') }),
@@ -59,14 +73,43 @@ async function harness(t) {
     loadProRoundtripPreservationModule: async () => ({ applyFreeEditProDataInvalidation: value => ({ ok: true, manifest: value }) }),
     commitProjectTransaction: async args => { if (h.writeFailure) throw Error('INJECTED_WRITE_FAILURE'); const r = await tx.commitProjectTransaction(args); h.writes++; return r; },
   };
-  c.mainWindow = { isDestroyed: () => false, webContents: { send: (_channel, { requestId }) => {
-    const p = requests.get(requestId); clearTimeout(p.timeoutId); requests.delete(requestId);
-    p.resolve({ content: h.editor, generation: h.generation, commentAuthoringPending: h.draft === true,
-      manuscriptNoteAuthoringPending: h.noteDraft === true, commentEditIntentsJson: h.intents == null ? null : JSON.stringify(h.intents) });
-  } } };
+  const renderer=fs.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const r=vm.createContext({ ...envelope,parseDocumentContent:envelope.parseObservablePayload,
+    currentProjectId:'recording-project',currentDocumentId:'d',currentTreeContentPublicationId:'',
+    isTiptapMode:true,centralSheetStripLargePayloadFastPathActive:false,localEditGeneration:0,
+    wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),storyDrafts:new Map(),flowModeState:{active:false},
+    notesMutationPending:false,storyMutationPending:false,pendingStoryRequestId:null,
+    getPlainText:()=>envelope.parseObservablePayload(h.editor).text,getActiveBookProfile:()=>null,
+    getSelectionOffsets:()=>null,getTiptapImageInsertionPosition:()=>null,getTiptapRootSplitBoundary:()=>null,
+    getTiptapCommentEditIntentsJson:()=>h.intents==null?null:JSON.stringify(h.intents),
+    getTiptapDocumentSnapshot:()=>({doc:r.document,text:envelope.parseObservablePayload(h.editor).text}),
+    setTiptapDocumentSnapshot:({doc})=>{r.document=doc;return true;},
+    updateMetaInputs(){},updateMetaVisibility(){},updateCardsList(){},updateWordCount(){},
+    window:{electronAPI:{onEditorSetText(fn){r.publish=fn;},sendEditorSnapshotResponse(requestId,snapshot){
+      h.lastReply={requestId,snapshot};
+      if(h.dropAck)return;const p=requests.get(requestId);if(!p)return;
+      if(h.ackTransform)snapshot=h.ackTransform(snapshot);
+      clearTimeout(p.timeoutId);requests.delete(requestId);p.resolve(c.normalizeEditorSnapshotPayload(snapshot));
+    }}},
+  });
+  const rendererExtract=name=>renderer.match(new RegExp('function '+name+'\\([^]*?\\n}'))[0];
+  vm.runInContext([rendererExtract('composeDocumentContent'),rendererExtract('composeEditorSnapshot')].join('\n'),r);
+  const callback=renderer.indexOf('window.electronAPI.onEditorSetText((payload) => {');
+  vm.runInContext(renderer.slice(callback,renderer.indexOf('    if (payload?.storyPublication',callback))+'});',r);
+  c.mainWindow={isDestroyed:()=>false,webContents:{send(channel,payload){
+    if(h.deliveryRace && channel==='editor:set-text')h.deliveryRace();
+    const parsed=envelope.parseObservablePayload(h.editor);r.document=parsed.doc;r.metaEnabled=parsed.hasMetaBlock;
+    r.currentMeta=parsed.meta;r.currentCards=parsed.cards;r.localEditGeneration=h.generation;
+    r.wordCommentDraft=h.draft?{}:null;r.notesMutationPending=h.noteDraft===true;
+    if(channel==='editor:set-text'){
+      h.lastPublication=payload;if(h.installRace){h.installRace();const fresh=envelope.parseObservablePayload(h.editor);r.document=fresh.doc;}
+      h.publications++;r.publish(payload);h.editor=r.composeDocumentContent();
+    }else r.window.electronAPI.sendEditorSnapshotResponse(payload.requestId,r.composeEditorSnapshot());
+  }}};
+  h.renderer=r;
   vm.createContext(c);
   const recordingSource = main.slice(main.indexOf('let activePendingRecording ='), main.indexOf('const authenticatedPendingReturnAdmissions ='));
-  vm.runInContext([extract('commitWriterProjectSnapshot'), extract('requestEditorSnapshot'), recordingSource,
+  vm.runInContext([extract('normalizeEditorSnapshotPayload'),extract('commitWriterProjectSnapshot'), extract('requestEditorSnapshot'), recordingSource,
     extract('readPendingRevisionProjection'),
     main.slice(main.indexOf('function dispatchMenuCommand('), main.indexOf('function buildCommandClickHandler('))].join('\n'), c);
   const kernel = createCommandSurfaceKernel({ [id]: payload => c.handlePendingRecordingCommand(payload) });
@@ -412,4 +455,207 @@ test('atomic no-proof note MODE reconstructs complete Core decisions and source-
  const hidden=structuredClone(model.readLedger(current())),owner=hidden.source.content[0].content.find(node=>node.text.includes('xx'));assert.ok(owner);owner.text=owner.text.replace('xx','zz');
  const changedSource=model.bindLedger(hidden);assert.equal(model.projection(changedSource).current,model.projection(current()).current);
  await assert.rejects(commit(changedSource),/NOTE_STATE/);assert.deepEqual(business(h),before);
+});
+
+test('unchanged stop uses committed complete working checkpoint without derive or write',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');assert.equal((await h.save()).success,true);
+ const before=business(h),writes=h.writes;let derives=0;
+ h.c.pendingRecordingModel={...recording,derive(...args){derives++;return recording.derive(...args);}};
+ const result=await h.command('stop');assert.equal(result.ok,true,JSON.stringify(result));
+ assert.equal(derives,0);assert.equal(h.writes,writes);assert.deepEqual(business(h),before);
+});
+
+test('actual PM conditional recording callback preserves private envelope and complete history at start and fast stop',async t=>{
+ const [ui,pending,lists,{history}]=await Promise.all([
+  import('../../src/renderer/tiptap/documentCommentEditIntents.mjs'),import('../../src/renderer/tiptap/wordPendingRevisions.mjs'),
+  import('../../src/renderer/tiptap/documentListNumbering.mjs'),import('@tiptap/pm/history')]);
+ const h=await harness(t);const privateDoc=doc('Alpha beta'),meta={synopsis:'Private 😀',status:'draft',tags:{pov:'A',line:'B',place:'C'}};
+ h.editor=envelope.composeObservablePayload({doc:privateDoc,metaEnabled:true,meta,cards:[{id:'card',title:'Private',body:'Keep'}]});fs.writeFileSync(h.file,h.editor);
+ const editor=new production.Editor({element:null,extensions:production.extensions,content:privateDoc});
+ editor.view.updateState(editor.state.reconfigure({plugins:editor.extensionManager.plugins}));Object.defineProperty(editor,'isDestroyed',{get:()=>false});
+ editor.getJSON=()=>editor.state.doc.toJSON();editor.getText=()=>editor.state.doc.textBetween(0,editor.state.doc.content.size,'\n');
+ const tiptap=fs.readFileSync(path.join(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
+ const part=name=>tiptap.match(new RegExp('(?:export )?function '+name+'\\([^]*?\\n}'))[0].replace(/^export /,'');
+ Object.assign(h.renderer,{currentEditorInstance:editor,wordSections:require('../../src/core/word-sections-v1.cjs'),
+  wordStories:require('../../src/core/word-stories-projection-v1.cjs'),wordListNumbering:require('../../src/core/word-list-numbering-v1.cjs'),
+  numberingDocumentJSON:lists.numberingDocumentJSON,setCheckedReviewDocument:pending.setCheckedDocument,history,notifyFormattingStateChange(){}});
+ vm.runInContext(['readEditorText','readEditorDocument','getTiptapDocumentSnapshot','setCheckedDocument','setTiptapDocumentSnapshot'].map(part).join('\n'),h.renderer);
+ h.renderer.getTiptapCommentEditIntentsJson=()=>ui.getCommentEditIntentsJson(editor);
+ try{
+  const before=business(h);await h.start();assert.deepEqual(business(h),before);assert.equal(h.editor,installed(before[0]));
+  assert.equal((await h.command('stop')).ok,true);assert.deepEqual(business(h),before);assert.equal(h.writes,0);
+  await h.start();editor.commands.setTextSelection(11);editor.commands.insertContent({type:'text',text:'!'});
+  h.editor=h.renderer.composeDocumentContent();h.generation++;h.c.lastSignaledEditGeneration=h.generation;h.c.isDirty=true;
+  const savedResult=await h.save();assert.equal(savedResult.success,true,JSON.stringify(savedResult));const saved=business(h),ledger=model.readLedger(h.context().parsed.doc),writes=h.writes;
+  let derives=0;h.c.pendingRecordingModel={...recording,derive(...args){derives++;return recording.derive(...args);}};
+  const stopped=await h.command('stop');assert.equal(stopped.ok,true,JSON.stringify(stopped));assert.equal(derives,0);assert.equal(h.writes,writes);assert.deepEqual(business(h),saved);
+  const actual=envelope.parseObservablePayload(h.renderer.composeDocumentContent()),expected=envelope.parseObservablePayload(saved[0]);
+  assert.equal(actual.hasMetaBlock,true);assert.deepEqual(actual.meta,expected.meta);assert.deepEqual(actual.cards,expected.cards);
+  assert.deepEqual(model.readLedger(actual.doc),ledger);assert.equal(model.projection(actual.doc).original,'Alpha beta');
+ }finally{editor.destroy();}
+});
+test('source-owned installed LIVE projection matches full production schema without changing pending source or private fields',async t=>{
+ const h=await harness(t),text=(value,marks)=>({type:'text',text:value,...(marks?{marks}:{} )}),paragraph=content=>({type:'paragraph',content});
+ const rich=[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'}}},
+  {type:'link',attrs:{href:'https://example.invalid/read',target:'_blank',rel:'noopener noreferrer nofollow',class:null}}];
+ const source={type:'doc',content:[paragraph([text('A'),text('B')]),paragraph([]),
+  paragraph([text('A',rich),text('B',[rich[2],rich[0],rich[1]]),{type:'hardBreak'},text('C',[{type:'italic'}])]),
+  {type:'heading',attrs:{level:7,textAlign:'right'},content:[text('Head')]},
+  {type:'bulletList',content:[{type:'listItem',content:[paragraph([text('List')])]}]},
+  {type:'blockquote',content:[paragraph([text('Quote')])]},
+  {type:'codeBlock',attrs:{language:'javascript'},content:[text('const a=1;')]}]};
+ const meta={synopsis:'Private 😀',status:'draft',tags:{pov:'A',line:'B',place:'C'}},cards=[{id:'card',title:'Private',body:'Keep'}];
+ const raw=envelope.composeObservablePayload({doc:source,metaEnabled:true,meta,cards}),before=JSON.stringify(source);
+ const observed=await h.c.pendingRecordingInstalledContent(raw);assert.equal(observed,installed(raw));assert.equal(JSON.stringify(source),before);
+ const parsed=envelope.parseObservablePayload(observed);assert.deepEqual(parsed.meta,envelope.parseObservablePayload(raw).meta);
+ assert.deepEqual(parsed.cards,envelope.parseObservablePayload(raw).cards);assert.equal(parsed.doc.content[0].content[0].text,'AB');
+ assert.equal(Object.hasOwn(parsed.doc.content[1],'content'),false);assert.equal(parsed.doc.content[2].content[1].type,'hardBreak');
+ assert.deepEqual(parsed.doc.content[2].content[0].marks.map(m=>m.type),['link','textStyle','bold']);
+ for(const language of [undefined,null,'']){const value=JSON.parse(JSON.stringify(source));
+  value.content[6].attrs=language===undefined?{}:{language};const bytes=envelope.composeObservablePayload({doc:value});
+  assert.equal(await h.c.pendingRecordingInstalledContent(bytes),installed(bytes));}
+ const pending=recording.derive(doc('AxxB'),doc('AB'),{author:'Owned',date:'2026-10-07T12:00:00.000Z'}).doc;
+ const pendingRaw=envelope.composeObservablePayload({doc:pending,metaEnabled:true,meta,cards}),saved=JSON.stringify(pending);
+ const full=envelope.parseObservablePayload(await h.c.pendingRecordingInstalledContent(pendingRaw)).doc;
+ assert.deepEqual(model.readLedger(full),model.readLedger(pending));assert.deepEqual(model.projection(full),model.projection(pending));
+ assert.equal(model.projection(full).original,'AxxB');assert.equal(model.projection(full).current,'AB');assert.equal(JSON.stringify(pending),saved);
+ for(const field of ['textAttr','paragraphAttr','markAttr','unknownMark','duplicateMark']){
+  const bad=doc('Unknown');if(field==='textAttr')bad.content[0].content[0].attrs={unknown:null};
+  if(field==='paragraphAttr')bad.content[0].attrs={unknown:'protected'};
+  if(field==='markAttr')bad.content[0].content[0].marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',unknown:'protected'}}];
+  if(field==='unknownMark')bad.content[0].content[0].marks=[{type:'unknown',attrs:{owner:'protected'}}];
+  if(field==='duplicateMark')bad.content[0].content[0].marks=[{type:'bold'},{type:'bold'}];
+  const bytes=envelope.composeObservablePayload({doc:bad}),snapshot=JSON.stringify(bad),target=await h.c.pendingRecordingInstalledContent(bytes);
+  if(field==='unknownMark'||field==='duplicateMark')assert.throws(()=>installed(bytes));else assert.notEqual(target,installed(bytes));
+  assert.equal(JSON.stringify(bad),snapshot);
+ }
+});
+for(const race of ['attach','delivery','install'])test('conditional recording publication retains unsignalled '+race+' edit and active session',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const before=business(h),writes=h.writes;
+ const mutate=()=>{h.editor=envelope.composeObservablePayload({doc:doc('Unsignalled owner text')});};
+ if(race==='attach')h.publicationRace=mutate;else if(race==='delivery')h.deliveryRace=mutate;else h.installRace=mutate;
+ const result=await h.command('stop');assert.equal(result.ok,false,JSON.stringify(result));
+ assert.equal(envelope.parseObservablePayload(h.editor).text,'Unsignalled owner text');assert.deepEqual(business(h),before);
+ assert.equal(h.writes,writes);assert.equal((await h.c.readPendingRevisionProjection()).recording,true);
+});
+for(const mode of ['timeout','wrongIdentity','wrongGeneration','wrongContent'])test('unconfirmed recording '+mode+' ACK retains session and fresh explicit retry confirms installed saved target',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const before=business(h),writes=h.writes;h.timeoutMs=20;
+ // Only publication ACKs are disrupted: raw observation remains actual.
+ const send=h.renderer.window.electronAPI.sendEditorSnapshotResponse;
+ h.renderer.window.electronAPI.sendEditorSnapshotResponse=(requestId,snapshot)=>{
+  if(snapshot?.content===installed(before[0])){
+   if(mode==='timeout'){h.lateReply={requestId,snapshot};return;}
+   snapshot={...snapshot,...(mode==='wrongIdentity'?{projectId:'foreign'}:mode==='wrongGeneration'?{generation:999}:{content:'foreign'})};
+  }send(requestId,snapshot);
+ };
+ const failed=await h.command('stop');assert.equal(failed.ok,false,JSON.stringify(failed));assert.equal(h.editor,installed(before[0]));
+ assert.equal((await h.c.readPendingRevisionProjection()).recording,true);assert.deepEqual(business(h),before);assert.equal(h.writes,writes);
+ h.renderer.window.electronAPI.sendEditorSnapshotResponse=send;
+ if(h.lateReply){send(h.lateReply.requestId,h.lateReply.snapshot);send(h.lateReply.requestId,h.lateReply.snapshot);}
+ const retry=await h.command('stop');assert.equal(retry.ok,true,JSON.stringify(retry));assert.equal(h.writes,writes);assert.deepEqual(business(h),before);
+ assert.equal((await h.c.readPendingRevisionProjection()).recording,undefined);
+});
+for(const mutation of ['scene','manifest','comments','notes','lifecycle','capability','draft','generation','provenance'])test('unchanged stop '+mutation+' fresh guard refuses before publication without business writes',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const writes=h.writes,publications=h.publications;
+ if(mutation==='scene')fs.writeFileSync(h.file,h.editor);
+ if(mutation==='manifest')fs.appendFileSync(h.manifest,' ');
+ if(mutation==='comments')addComment(h);
+ if(mutation==='notes')fs.writeFileSync(h.notePath,JSON.stringify({schemaVersion:1,projectId:'recording-project',notes:[]}));
+ if(mutation==='lifecycle')h.lifecycle='new';if(mutation==='capability')h.allowed=false;if(mutation==='draft')h.draft=true;
+ if(mutation==='generation')h.c.lastSignaledEditGeneration++;
+ if(mutation==='provenance')vm.runInContext('activePendingRecording.provenance={schemaVersion:2,baselineTextSha256:"'+hash('foreign')+'",edits:[]}',h.c);
+ const before=business(h),buffer=h.editor,result=await h.command('stop');assert.equal(result.ok,false,JSON.stringify(result));
+ assert.deepEqual(business(h),before);assert.equal(h.editor,buffer);assert.equal(h.writes,writes);assert.equal(h.publications,publications);
+});
+test('same visible text with a new closed Undo intent uses full independently replayed save',async t=>{
+ const h=await harness(t);addComment(h);await h.start();h.type('Alpha beta!');h.intents=intents('Alpha beta',typed('first',10,'','!'));
+ await h.save();const writes=h.writes;h.intents=intents('Alpha beta!',typed('forward',10,'','?'),typed('undo',10,'?','','undo','forward'));h.generation++;h.c.lastSignaledEditGeneration=h.generation;h.c.isDirty=true;
+ let derives=0;h.c.pendingRecordingModel={...recording,derive(...args){derives++;return recording.derive(...args);}};
+ const result=await h.command('stop');assert.equal(result.ok,true,JSON.stringify(result));assert.equal(derives,1);assert.equal(h.writes,writes+1);
+});
+
+test('checked recording install refusal and typing after installation preserve buffer and active session',async t=>{
+ for(const mode of ['refused','typed']){
+  const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const before=business(h),writes=h.writes,working=h.editor;
+  if(mode==='refused')h.renderer.setTiptapDocumentSnapshot=()=>false;
+  else{
+   const send=h.renderer.window.electronAPI.sendEditorSnapshotResponse;
+   h.renderer.window.electronAPI.sendEditorSnapshotResponse=(id,snapshot)=>{
+    if(snapshot?.content===installed(before[0])){h.renderer.document=doc('Later owner input');h.generation++;h.c.lastSignaledEditGeneration=h.generation;h.c.isDirty=true;}
+    send(id,snapshot);
+   };
+  }
+  const result=await h.command('stop');assert.equal(result.ok,false,JSON.stringify(result));assert.deepEqual(business(h),before);
+  assert.equal(h.writes,writes);assert.equal(h.editor,mode==='refused'?working:envelope.composeObservablePayload({doc:doc('Later owner input')}));
+  assert.equal((await h.c.readPendingRevisionProjection()).recording,true);
+ }
+});
+test('initial publication timeout retains session and one fresh observation recovers start without writing',async t=>{
+ const h=await harness(t),before=business(h);h.timeoutMs=20;
+ const send=h.renderer.window.electronAPI.sendEditorSnapshotResponse;
+ h.renderer.window.electronAPI.sendEditorSnapshotResponse=(id,snapshot)=>{if(h.publications)return;send(id,snapshot);};
+ const start=await h.command('start');assert.equal(start.ok,false);assert.match(JSON.stringify(start),/RECORDING_PUBLICATION_UNCONFIRMED/);
+ const projection=await h.c.readPendingRevisionProjection();assert.equal(projection.recording,true);h.sessionId=projection.sessionId;
+ h.renderer.window.electronAPI.sendEditorSnapshotResponse=send;
+ h.intents=intents('Alpha beta',typed('initial-new',10,'','!'),typed('initial-undo',10,'!','','undo','initial-new'));
+ const refused=await h.command('stop');assert.equal(refused.ok,false);assert.deepEqual(business(h),before);assert.equal(h.writes,0);
+ h.intents=null;
+ assert.equal((await h.command('stop')).ok,true);assert.equal(h.writes,0);assert.deepEqual(business(h),before);
+});
+for(const mode of ['identity','generation','draft'])test('initial installed recording '+mode+' ACK failure retains session and complete buffer',async t=>{
+ const h=await harness(t),before=business(h);h.ackTransform=snapshot=>h.publications?{...snapshot,
+  ...(mode==='identity'?{projectId:'foreign'}:mode==='generation'?{generation:999}:{commentAuthoringPending:true})}:snapshot;
+ const result=await h.command('start');assert.equal(result.ok,false);assert.equal(h.editor,installed(before[0]));
+ assert.deepEqual(business(h),before);assert.equal(h.writes,0);const projection=await h.c.readPendingRevisionProjection();
+ assert.equal(projection.recording,true);h.sessionId=projection.sessionId;h.ackTransform=null;
+ assert.equal((await h.command('stop')).ok,true);assert.deepEqual(business(h),before);assert.equal(h.writes,0);
+});
+test('unconfirmed-stop retry fences unsignalled input during fresh source revalidation',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const before=business(h),writes=h.writes;h.timeoutMs=20;
+ const send=h.renderer.window.electronAPI.sendEditorSnapshotResponse;
+ h.renderer.window.electronAPI.sendEditorSnapshotResponse=(id,snapshot)=>{if(snapshot?.content!==installed(before[0]))send(id,snapshot);};
+ assert.equal((await h.command('stop')).ok,false);h.renderer.window.electronAPI.sendEditorSnapshotResponse=send;
+ const read=h.c.fs.readFile;let changed=false;h.c.fs={...h.c.fs,readFile:async(...args)=>{
+  const value=await read(...args);if(!changed&&args[0]===h.manifest){changed=true;h.editor=envelope.composeObservablePayload({doc:doc('Unsignalled retry input')});}return value;}};
+ const refused=await h.command('stop');assert.equal(refused.ok,false);assert.equal(envelope.parseObservablePayload(h.editor).text,'Unsignalled retry input');
+ assert.equal((await h.c.readPendingRevisionProjection()).recording,true);assert.equal(h.writes,writes);assert.deepEqual(business(h),before);
+});
+test('final post-ACK source readback cannot clear recording after same-generation unsignalled input',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const before=business(h),writes=h.writes,publications=h.publications;
+ const read=h.c.fs.readFile;let changed=false;h.c.fs={...h.c.fs,readFile:async(...args)=>{
+  const value=await read(...args);if(!changed&&args[0]===h.manifest&&h.publications>publications){changed=true;
+   h.editor=envelope.composeObservablePayload({doc:doc('Post-ACK owner input')});}return value;}};
+ const result=await h.command('stop');assert.equal(changed,true);assert.equal(result.ok,false);
+ assert.equal(envelope.parseObservablePayload(h.editor).text,'Post-ACK owner input');assert.equal((await h.c.readPendingRevisionProjection()).recording,true);
+ assert.deepEqual(business(h),before);assert.equal(h.writes,writes);
+});
+
+for(const field of ['unknownNull','unknownValue','knownValue','body','meta','cards','history'])test('complete installed recording ACK rejects '+field+' without changing canonical checkpoint',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const before=business(h),writes=h.writes;
+ h.ackTransform=snapshot=>{
+  if(snapshot.content!==installed(before[0]))return snapshot;
+  const parsed=envelope.parseObservablePayload(snapshot.content),changed=JSON.parse(JSON.stringify(parsed.doc));
+  if(field==='unknownNull')changed.attrs.foreign=null;if(field==='unknownValue')changed.attrs.foreign='owner';
+  if(field==='knownValue')changed.attrs.wordUserBookmarks={schemaVersion:'foreign'};
+  if(field==='body')changed.content[0].content[0].text='Different';
+  if(field==='history')changed.attrs.wordPendingRevisions.returnReceipts.push({foreign:true});
+  return {...snapshot,content:envelope.composeObservablePayload({...parsed,doc:changed,
+   metaEnabled:field==='meta'||parsed.hasMetaBlock,meta:field==='meta'?{synopsis:'Foreign'}:parsed.meta,
+   cards:field==='cards'?[{title:'Foreign',text:'No loss',tags:''}]:parsed.cards})};
+ };
+ const result=await h.command('stop');assert.equal(result.ok,false,JSON.stringify(result));assert.deepEqual(business(h),before);
+ assert.equal(h.writes,writes);assert.equal((await h.c.readPendingRevisionProjection()).recording,true);
+});
+for(const mode of ['flow','story'])test('conditional recording publication refuses active '+mode+' even if ordinary snapshot hides that lane',async t=>{
+ const h=await harness(t);await h.start();h.type('Alpha beta!');await h.save();const before=business(h),buffer=h.editor,writes=h.writes;
+ if(mode==='flow')h.renderer.flowModeState.active=true;else{h.renderer.storyMutationPending=true;h.renderer.pendingStoryRequestId='pending';}
+ const result=await h.command('stop');assert.equal(result.ok,false);assert.deepEqual(business(h),before);assert.equal(h.editor,buffer);
+ assert.equal(h.writes,writes);assert.equal((await h.c.readPendingRevisionProjection()).recording,true);
+});
+test('idempotent receipt with changed annotation plan cannot advance full recording checkpoint or source provenance',async t=>{
+ const h=await harness(t);addComment(h);await h.start();h.type('Alpha beta!');h.intents=intents('Alpha beta',typed('first',10,'','!'));await h.save();
+ const before=business(h),old=vm.runInContext('JSON.stringify({raw:activePendingRecording.raw,provenance:activePendingRecording.provenance,checkpoint:activePendingRecording.checkpoint})',h.c);
+ h.intents=intents('Alpha beta!',typed('forward',10,'','?'),typed('undo',10,'?','','undo','forward'));
+ const result=await h.save();assert.equal(result.success,false);assert.match(JSON.stringify(result),/RECORDING_SAVE_READBACK_CHANGED/);
+ assert.deepEqual(business(h),before);assert.equal(vm.runInContext('JSON.stringify({raw:activePendingRecording.raw,provenance:activePendingRecording.provenance,checkpoint:activePendingRecording.checkpoint})',h.c),old);
 });

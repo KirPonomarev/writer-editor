@@ -2357,3 +2357,76 @@ hypothesis: exact unchanged saved recording should not reexecute a complete
 writer transition on stop; fresh source/annotations/identity/capability and no-
 loss snapshot guards remain required. No new no-op route is implemented/admitted.
 NEXT: commit/push26 after exact mandatory gates, then fresh stop-path admission.
+
+
+### Amendment27 — fresh unchanged recording stop and conditional publication admission
+
+O: a freshly observed fully saved novel stops recording without repeating full
+derive/replay/atomic save, while late edits remain in the actual editor.
+T: existing Kernel recordTextRevisions -> Main private full transaction input/
+output checkpoint -> fresh whole editor/source/manifest/notes/discussion equality
+-> existing conditional set-text transport -> actual Renderer snapshot -> fresh
+Main identity/capability/source checks. Changed input retains the existing full
+derive, independent replay and leased atomic writer. No new writer or channel.
+H: retained140.495s save and240s stalled stop show an unconditional second save.
+Successful actual receipt alone may retain immutable complete working input,
+actual committed output, generation, validated input/cumulative intents, full
+committed annotations and manifest. Fresh closed intents must equal the whole
+saved wire or the actual empty SAVED-checkpoint form; any suffix uses full save.
+No hash-only/current-text/count-only match, trust bit or fabricated SAVED ACK.
+B: complete raw ledger/history/root/private notes/messages/anchors and authoring
+buffer. Fresh project/document/lifecycle/owner/capability/generation/drafts plus
+whole source/manifest/annotation CAS remain mandatory across awaits. Renderer
+checks complete live buffer immediately at consumption before checked synchronous
+installation, then emits an actual composed snapshot on the existing reply path.
+Clear recording only on fresh correlated complete observation; null/refused/late/
+wrong/duplicate replies cannot clear a session. Missing ACK keeps recording and
+buffer; explicit retry uses one fresh exact saved-target observation with all
+source guards. No polling or timeout-as-success. Untouched start may checkpoint
+only after actual conditional publication and complete source validation.
+P: full existing affected suites; actual PM retained/cleared intent forms, whole
+private/history bytes, zero repeated writer/derive, genuine dirty/failure/retry,
+source/annotations/manifest/identity/capability/draft drift, signalled/unsignalled
+attach/delivery races, checked-install failure, timeout/late ACK/retry and typing
+after installation. Unchanged compiler twice; root independently reviews full
+sources/logs/artifacts. Only after HOLD27 run one changed-hypothesis500k diagnostic
+with240s/2.5GiB bounds; five720s sessions only after complete first success.
+I: clean pushed1f478fe3ce8717703c9086a211a61436e6cfc5d1, fresh origin main42b7d2e,
+registered encrypted/unlocked/writable T7, same original42b PR2093 rollback.
+Declaration27 SHA2569db525a36f5beb3405502395481c1ba35ff2af2e1db85ba0c7c41ee6fa2c7bcf;
+CHECK_01 actual clean bootstrap/preflight/taskE0 all0, admission receipt51472e4b79aacdbf0cc3369eff3395c7040ae6e60ced63f292eaca5a2cf7770c.
+86 exact paths/74 prewrite source-test pins; original1800runtime2600behavior.
+Only existing Main recording seams, editor.js conditional callback and existing
+recording runtime/Core tests admitted; all other source frozen. No visual/flow/
+layout/tokens/UI design change: DESIGN_TOOL_ROUTER NOT_APPLICABLE. Writer owns
+code/tests; root docs/OPS/independent proof/Git. CHECK_02+ follows edits.
+ARCH_DIFF_LOG unchanged: no canon exception. Genuine Word SOURCE/ordinaryPACKAGED,
+both origins/scopes/three roles/five exchanges,30s512MiB,single composed return
+and release remain OPEN. NEXT: implement and prove this admitted stop correction.
+
+
+### Amendment27 — finite installed root representation; fresh clean re-admission
+
+Actual PM artifact05 shows only absent wordPendingRevisions/wordUserBookmarks
+roots materializing their existing typed null defaults; target182B/observed264B,
+all body/meta/cards otherwise exact. In Main recording publication ONLY derive
+a complete source-owned installed projection adding null for exactly these two
+ABSENT root properties. Preserve explicit values and every other field. Send
+that complete projection and require full actual snapshot equality; canonical
+saved raw/frame/hash/proof bytes remain exact. Never strip actual fields or
+normalize canonical truth. Untouched start pins installed working representation
+only after actual observation; retry checks this same source-derived target.
+Dirty prospective preflight02 STOP was preserved, then all7 owned WIP files and
+full binary patch were retained before exact owned rollback to clean1f478.
+No foreign state, evidence, reset/stash/clean or new contour. Fresh clean
+bootstrap/preflight/taskE0 all0 BEFORE restoring any implementation; declaration
+27_03 SHA8c8b92be28b8849d7de9d1eca6058079819a230db53ae00ad8be6f203dd45b8e,
+admission02 SHA4e511c7a675bc5d35dc467e9d1dfb32343ae8be2193a701f92a1b28c851e3a43.
+Scope86/74 source pins and original1800runtime2600behavior unchanged. Actual
+checkpoint/races07 18of18 and ACK/start-timeout08 2of2 were observed before
+rollback; not final restored-code evidence. Actual PM projection/whole suites/
+compiler/root large diagnostic/required gates/delivery remain OPEN.
+
+Amendment27 finite installed LIVE body projection admitted by clean declaration05 at unchanged1f478/origin42b: bootstrap/preflight/taskE0 actual0, scope86/source74 and1800/2600 budgets preserved. Actual24-case production-schema probe mapped known null defaults, unique recognized mark order, typed empty-content omission and complete-markup text coalescing; unknown attr loss must refuse. Canonical source/ledger/frame/proof/meta/cards and Current/Original remain exact. Two safe owned-WIP captures retain all prior work and failed artifacts. Implementation/whole-chain/large/native/release proofs remain open.
+
+Amendment27 candidate frozen:436/436 actual serial tests,2 byte-idempotent builds,74 held source operands, runtime1273/1800 and behavior2473/2600. Root500k copy saved once in148.887s; owned RSS guard stopped before stop completed at182.909s/2687107072B. Independent complete durable Current/Original/root/compactframe/notes/discussions/anchors readback exit0 (SHA50bcd6bfdf55a922da656214a5cddd569e924be0cd961b8448c5b3f6d81052f4). No native/stop/UndoRedo/five/resource/releasePASS; failed bounded artifact retained, no unchanged rerun/bound raise. Full delivery and original goal remain open. Root performs exact bindings/gates/commit/push; proposed next performance contour removes only two duplicate Main static proof replays while retaining fresh guards and all public/authoritative replay paths.

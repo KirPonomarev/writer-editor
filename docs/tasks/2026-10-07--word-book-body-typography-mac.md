@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT26_PURE_ALLOCATION_CHECKPOINT_SAVE140_STOP_OPEN
+STATUS: AMENDMENT27_UNCHANGED_STOP_CONDITIONAL_PUBLICATION_ADMITTED
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -34,7 +34,7 @@ raw-source equality and canonicalMarksSha256 and is forbidden.
 ## ARTIFACT
 
 One coherent export/return correction. Root owns task/docs/OPS/proof/delivery;
-separate code agent owns declared runtime/behavior tests.85 explicit paths;
+separate code agent owns declared runtime/behavior tests.86 explicit paths;
 runtime maximum1800 changed lines, behavior maximum2600. Unused paths need not
 change. A small pure Core helper is permitted only for immediate finite
 validation/projection consumers, with no registry, cache, writer or future engine.
@@ -53,6 +53,7 @@ validation/projection consumers, with no registry, cache, writer or future engin
 - `test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js`
 
 - `src/main.js`
+- `src/renderer/editor.js`
 - `src/core/word-review-typography-v1.cjs`
 - `src/core/word-pending-text-revisions-v1.cjs`
 - `src/core/word-pending-comment-return-v1.cjs`
@@ -134,7 +135,9 @@ validation/projection consumers, with no registry, cache, writer or future engin
 
 ## DENYLIST
 
-No renderer/preload source, UI, atomic-writer, package, dependency or runtime-network edit.
+No renderer/preload source, UI, atomic-writer, package, dependency or runtime-network edit
+except amendment27 narrowly admits editor.js existing conditional recording
+publication callback; no visual/flow/layout/tokens or public preload API change.
 Amendment12 permits only the two existing generated outputs named above, using
 the unchanged pinned compiler. Preload output must remain byte exact; no manual
 bundle patch, build/config change or source modification is permitted.
@@ -2087,3 +2090,94 @@ hypothesis: exact unchanged saved recording should not reexecute a complete
 writer transition on stop; fresh source/annotations/identity/capability and no-
 loss snapshot guards remain required. No new no-op route is implemented/admitted.
 NEXT: commit/push26 after exact mandatory gates, then fresh stop-path admission.
+
+
+### Amendment27 — fresh unchanged recording stop and conditional publication admission
+
+O: a freshly observed fully saved novel stops recording without repeating full
+derive/replay/atomic save, while late edits remain in the actual editor.
+T: existing Kernel recordTextRevisions -> Main private full transaction input/
+output checkpoint -> fresh whole editor/source/manifest/notes/discussion equality
+-> existing conditional set-text transport -> actual Renderer snapshot -> fresh
+Main identity/capability/source checks. Changed input retains the existing full
+derive, independent replay and leased atomic writer. No new writer or channel.
+H: retained140.495s save and240s stalled stop show an unconditional second save.
+Successful actual receipt alone may retain immutable complete working input,
+actual committed output, generation, validated input/cumulative intents, full
+committed annotations and manifest. Fresh closed intents must equal the whole
+saved wire or the actual empty SAVED-checkpoint form; any suffix uses full save.
+No hash-only/current-text/count-only match, trust bit or fabricated SAVED ACK.
+B: complete raw ledger/history/root/private notes/messages/anchors and authoring
+buffer. Fresh project/document/lifecycle/owner/capability/generation/drafts plus
+whole source/manifest/annotation CAS remain mandatory across awaits. Renderer
+checks complete live buffer immediately at consumption before checked synchronous
+installation, then emits an actual composed snapshot on the existing reply path.
+Clear recording only on fresh correlated complete observation; null/refused/late/
+wrong/duplicate replies cannot clear a session. Missing ACK keeps recording and
+buffer; explicit retry uses one fresh exact saved-target observation with all
+source guards. No polling or timeout-as-success. Untouched start may checkpoint
+only after actual conditional publication and complete source validation.
+P: full existing affected suites; actual PM retained/cleared intent forms, whole
+private/history bytes, zero repeated writer/derive, genuine dirty/failure/retry,
+source/annotations/manifest/identity/capability/draft drift, signalled/unsignalled
+attach/delivery races, checked-install failure, timeout/late ACK/retry and typing
+after installation. Unchanged compiler twice; root independently reviews full
+sources/logs/artifacts. Only after HOLD27 run one changed-hypothesis500k diagnostic
+with240s/2.5GiB bounds; five720s sessions only after complete first success.
+I: clean pushed1f478fe3ce8717703c9086a211a61436e6cfc5d1, fresh origin main42b7d2e,
+registered encrypted/unlocked/writable T7, same original42b PR2093 rollback.
+Declaration27 SHA2569db525a36f5beb3405502395481c1ba35ff2af2e1db85ba0c7c41ee6fa2c7bcf;
+CHECK_01 actual clean bootstrap/preflight/taskE0 all0, admission receipt51472e4b79aacdbf0cc3369eff3395c7040ae6e60ced63f292eaca5a2cf7770c.
+86 exact paths/74 prewrite source-test pins; original1800runtime2600behavior.
+Only existing Main recording seams, editor.js conditional callback and existing
+recording runtime/Core tests admitted; all other source frozen. No visual/flow/
+layout/tokens/UI design change; the design router is outside this mechanical transport scope. Writer owns
+code/tests; root docs/OPS/independent proof/Git. CHECK_02+ follows edits.
+ARCH_DIFF_LOG unchanged: no canon exception. Genuine Word SOURCE/ordinaryPACKAGED,
+both origins/scopes/three roles/five exchanges,30s512MiB,single composed return
+and release remain OPEN. NEXT: implement and prove this admitted stop correction.
+
+
+### Amendment27 — finite installed root representation; fresh clean re-admission
+
+Actual PM artifact05 shows only absent wordPendingRevisions/wordUserBookmarks
+roots materializing their existing typed null defaults; target182B/observed264B,
+all body/meta/cards otherwise exact. In Main recording publication ONLY derive
+a complete source-owned installed projection adding null for exactly these two
+ABSENT root properties. Preserve explicit values and every other field. Send
+that complete projection and require full actual snapshot equality; canonical
+saved raw/frame/hash/proof bytes remain exact. Never strip actual fields or
+normalize canonical truth. Untouched start pins installed working representation
+only after actual observation; retry checks this same source-derived target.
+Dirty prospective preflight02 STOP was preserved, then all7 owned WIP files and
+full binary patch were retained before exact owned rollback to clean1f478.
+No foreign state, evidence, reset/stash/clean or new contour. Fresh clean
+bootstrap/preflight/taskE0 all0 BEFORE restoring any implementation; declaration
+27_03 SHA8c8b92be28b8849d7de9d1eca6058079819a230db53ae00ad8be6f203dd45b8e,
+admission02 SHA4e511c7a675bc5d35dc467e9d1dfb32343ae8be2193a701f92a1b28c851e3a43.
+Scope86/74 source pins and original1800runtime2600behavior unchanged. Actual
+checkpoint/races07 18of18 and ACK/start-timeout08 2of2 were observed before
+rollback; not final restored-code evidence. Actual PM projection/whole suites/
+compiler/root large diagnostic/required gates/delivery remain OPEN.
+
+### Amendment27 precise installed LIVE body projection admission
+
+ACTIVE_DECLARATION: ARCHITECTURE_DECLARATION_AMENDMENT_27_05.json
+DECLARATION_SHA256: b2597da6bdb82b8e0ec4668875a3d9d1bfe8211439c82b5680a9bcc8220be8f2
+CLEAN_ADMISSION_SHA256: 2307d9a3e0e5ef94c04009645b00c3dfde31f3517de0a1109078f43c6b876bb6
+
+AMENDMENT27 FINITE SOURCE-OWNED INSTALLED LIVE BODY REPRESENTATION: derive only an ephemeral complete expected installed clone from validated source output in existing Main publication. Retain absent-to-null wordPendingRevisions/wordUserBookmarks roots. Traverse only doc.content child arrays, never attrs, ledger source, frames or history. Add only absent paragraph/heading textAlign:null, codeBlock language:null, textStyle color/fontFamily/fontSize:null and link title/wordBookmarkId/wordBookmarkName:null, as executed in the exact production schema probe. Preserve ALL explicit values and unknown properties. Sort only a complete unique set of recognized marks by exact pinned rank link,textStyle,bold,code,italic,strike,highlight,underline. Unknown/duplicate marks retain conservative mismatch. Omit only empty content arrays on known paragraph/heading/codeBlock body containers; keep node, position and all attributes. Concatenate only adjacent text siblings whose full non-text fields are exactly equal after this finite source-side projection; never cross a block, break, mark, media, note, attr or unknown-field boundary. No normalization/stripping of actual observed content. Send the complete derived target and require literal actual composed snapshot equality; canonical output, SOURCE, Union/Current/Original, notes/discussions, meta/cards, raw ledger/proof and Undo/Redo frame bytes remain separately exact and unchanged. In particular do not replace canonical union body with working Current body. Existing actual checked setter/canonicalizer must validate projected document; no Core/parser/schema/public API/renderer normalizer edits. Unknown attrs discarded by PM remain mismatch/refusal, never emulated loss. Actual full 24-case schema map and six original imported paragraph representatives are diagnostics, not runtime authority. Test full actual production schema round-trip and complete negative/race/readback controls within existing budgets before acceptance.
+
+Complete current seven owned WIP files plus exact base bytes and binary patch preserved in recovery02 before the second safe clean re-admission. Exact base1f478 and origin/main42b retained; scope86/source74 and original runtime1800/behavior2600 budgets unchanged. Fresh bootstrap, typed declaration05 preflight and taskE0 actually exit0. Prospective declaration04 malformed list was rejected before writes; its complete failure log and corrected typed declaration retained. No history/evidence was removed and no required check bypassed. Finite body projection remains proposed, not accepted. Writer alone restores/edits its three owned source/test paths; root owns four docs and seven final OPS companions. Canonical saved Union body must never be replaced by live Current body. Full actual production-schema controls, unknown-field refusal, complete root/body/ledger/meta/cards and pending-delete Current/Original protection required. No native or release claim.
+
+Amendment27 literal ZIP01 task-scope alignment: final whole13 attempt16 actually435/436, zero exclusions; sole failure was the static dirty-path allowlist lacking already admitted src/renderer/editor.js. The attempt also omitted --test-concurrency=1 and is not final serial acceptance. Authorize writer to add exactly that one path beside existing editor.bundle.js in existing ZIP01 ALLOWLIST, retaining every outside-path refusal and every other literal. Both affected paths already belong to clean declaration05 scope86/source74 and current policy622/480; inventory1597 unchanged. Writer ownership expands from three to four existing declared paths only; runtime1800/behavior2600 budgets and original acceptance denominator remain exact. No blanket admission, test bypass, required-gate removal or UI design change. Retain failed process/log and rerun whole13 serially after correction.
+
+### Amendment27 finite code proof and bounded 500k outcome
+
+Candidate remains unfinished PR2093 at predecessor1f478, not release DONE. Writer HOLD27 SHA7c8598dafa51ea28eb4a071714964f83619ca8e5968c89db2f8f48cf9187bc0f binds74 actual source/test/generated operands and69 unchanged predecessor paths. Final13 serial suites actually436/436 with zero fail/cancel/skip/todo; both unchanged compiler runs exit0 and produce byte-idempotent136-input closure,72 source/test pins and5 root docs. Editor bundle SHA762e9d11f0eaea5ec6057e2dfdaf2b311be38203076ee76c3f1268841cb5cb9d; preload SHA361a55245fbdee46691953b5a8fabf495c7db45e0aa6edd36597342136596561 remains exact. Runtime1273/1800 and behavior2473/2600 changed lines versus original42b; generated462 separately. Complete24-case actual production-schema probe gives22 full known-shape equalities and2 protected unknown-attribute loss refusals. Actual production Editor+checked setter+serializer+conditional callback exercises initial/no-typing stop and edited autosave/fast stop with complete meta/cards/ledger/history preserved. Start wrong ACK, retry race and final post-ACK unsignalled mutation causal reds retained and final7/7 actually green.
+
+Root new bounded500k27-01 uses complete original rich import copy (500108words/8391paragraphs), private note, rich footnote/endnote and complete discussion; existing Main/Kernel/Core/leased writer and Renderer callback with explicit platform/large-editor stubs, no native Word or resource acceptance. Start27.068997s, actual save148.886694s and1 leased atomic commit with22474828-byte closed proof. Stop begins at181.755754s; at182.908742s owned RSS exceeds2.5GiB (sampled2687107072B), so existing watchdog normally SIGTERMs only owned Node group (actual -15). Outcome SHA990764d0bc9ab328ffe1432c8ef3fc625de7c2b9a5e192ba92c6dc20e2d4ceed; complete log SHAb70005d194cf25810afed6e5e5b76f0b1d55c32399d3bd7e907c9a93cf802987. All74 held source bindings remain exact. No unchanged rerun or bound increase. New RSS signature differs from previous240s wall failure; full stop/ACK/atomic UndoRedo/five cycles remain unexecuted/OPEN. Timing is not like-for-like versus predecessor26 because current fixture includes actual callback/serializer guards; no speed or regression claim.
+
+Independent Python full durable saved-phase readback actually exit0 after bounded process closed: complete Current/Original rich text/root formatting, reconstructed compact history frame and independently computed full source digests, complete private/rich note bodies/metadata/current+historical points, discussion messages and exact anchor plus separate intent/round history identities. Readback SHA50bcd6bfdf55a922da656214a5cddd569e924be0cd961b8448c5b3f6d81052f4; saved scene20904711B SHAbce85659c1f9b98faefe676140e4d29e5bbee937489e46ba7868730e77d0cff7. Original imported business files and all read operands remain unchanged. This certifies saved-phase semantics only, not completion or native transfer.
+
+Original acceptance denominator stays complete: genuine Word SOURCE+ordinary PACKAGED, both origins/scopes, three roles, five genuine exchanges, composed cardinality and hard30s/512MiB remain OPEN. Existing start-failure UI does not automatically refresh the active-session query; late hidden flow/story lane beyond ordinary raw snapshot flags remains unproved. No new public API/channel, dependency, runtime network, schema/default policy, general cache, authority bit, cap, native driver limit or visual contract changed. Root owns mandatory gates and delivery. Next bounded performance hypothesis is remove only two redundant Main static proof replays, preserving both fresh source/session/annotations revalidations, every public planner and authoritative writer full reconstruction/CAS; no implementation admitted by this note.
