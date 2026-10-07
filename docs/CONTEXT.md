@@ -1867,3 +1867,21 @@ with valid rehashed property corruption; SHA/earlier structural guards retained.
 Root publication review00bf648ebb096071c1498b97449ca8c14b0cb2e5c6c6ecadf166efcde3551658.
 Current100k/native full novel/performance/mandatory graph/Git chain remain OPEN;
 mechanical byte binding and checkpoint never certify the original whole feature.
+
+### 2026-10-07 — body amendment17 original bookmark fixture admission
+
+Clean ca4ecbdd, same unfinished original42b PR2093/46paths/budgets/rollback.
+Fresh full startup, bootstrap17/preflight17/task E0 actual0 before edits.
+Declaration SHA25650e1cb842529038f3f1d9ddd2d33cb58e988e4426373bfde1e83d3dce6234364.
+Only code-agent shared composedBookFixture in existing pending-notes contract:
+retain original source-authenticated YRTK names by checked owned occurrence in
+actual returned ZIP; exact original capsule/map/round/hash/source stays protected.
+Strict runtime/parser and other34bindings frozen; no assertion relaxation.
+CHECK_01 precedes edits; CHECK_02+ after. Whole three consumers and identity
+negative controls required; downstream failures remain OPEN. Root docs/OPS only.
+Actual clean ca4ecbdd Main100k five exchanges/5Undo/5Redo passed1of1, zeroexclusions,
+408.678sec; full log SHA256ee023e6b6207e41f86c24e38bc5dd2bbaa86291bbdaa5aeee6ea167d408b6a69,
+full outcome SHA25637733139dda27f19b32c87e8b3c4c54e7a380c0539d60a0b499cc009ba363f20.
+Five exchanges38.608–57.551sec, peakobservedRSS1,681,293,312bytes; synthetic actual
+Main/disk route only, NOT genuine Word/packaged/performance acceptance. Original
+full native novel, roles, speed/capacity, mandatory graph/CI/Git merge remain OPEN.

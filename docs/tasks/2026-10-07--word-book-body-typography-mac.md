@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT16_KNOWN_INCOMPLETE_FROZEN_CARRIER_CORRECTION
+STATUS: AMENDMENT17_ADMITTED_ORIGINAL_BOOKMARK_FIXTURE_CONTINUITY
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -1357,3 +1357,21 @@ Fresh root fetch keeps origin/main42b and remote draft2093 cd114fe MERGEABLE wit
 100k/native full novel/performance/whole maintained graph/Git delivery OPEN.
 No original acceptance denominator or budget reset; next source edits need
 fresh clean bound admission in this same unfinished finite body contour.
+
+### 2026-10-07 — body amendment17 original bookmark fixture admission
+
+Clean ca4ecbdd, same unfinished original42b PR2093/46paths/budgets/rollback.
+Fresh full startup, bootstrap17/preflight17/task E0 actual0 before edits.
+Declaration SHA25650e1cb842529038f3f1d9ddd2d33cb58e988e4426373bfde1e83d3dce6234364.
+Only code-agent shared composedBookFixture in existing pending-notes contract:
+retain original source-authenticated YRTK names by checked owned occurrence in
+actual returned ZIP; exact original capsule/map/round/hash/source stays protected.
+Strict runtime/parser and other34bindings frozen; no assertion relaxation.
+CHECK_01 precedes edits; CHECK_02+ after. Whole three consumers and identity
+negative controls required; downstream failures remain OPEN. Root docs/OPS only.
+Actual clean ca4ecbdd Main100k five exchanges/5Undo/5Redo passed1of1, zeroexclusions,
+408.678sec; full log SHA256ee023e6b6207e41f86c24e38bc5dd2bbaa86291bbdaa5aeee6ea167d408b6a69,
+full outcome SHA25637733139dda27f19b32c87e8b3c4c54e7a380c0539d60a0b499cc009ba363f20.
+Five exchanges38.608–57.551sec, peakobservedRSS1,681,293,312bytes; synthetic actual
+Main/disk route only, NOT genuine Word/packaged/performance acceptance. Original
+full native novel, roles, speed/capacity, mandatory graph/CI/Git merge remain OPEN.

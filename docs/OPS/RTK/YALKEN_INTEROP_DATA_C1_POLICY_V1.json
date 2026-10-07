@@ -2012,7 +2012,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-        "sha256": "731430684a874b7b6bd5b75385c859e7ce4bcd882cdeae89f6ded3f0792bc0b7"
+        "sha256": "7410ac27d87e4502c005ca88400ccf357d568c8347017484b8091a1870330f75"
       },
       {
         "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "2b3f90ef6192a5cedff09f9b30cbd10ced209dd3e65d94750944e648e196962a"
+        "sha256": "601f61ec937b22782ab6820c7c67ddfeeeb7c60ad471255f83a082291384d223"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "4854232907aa1dfa9f3b8e585d8be485a2cb54c6516cde2a5b6a69002f09e9ad"
+        "sha256": "b405e1967796a862672b5eca64e62643b983c13987d13e109a3907af1c35e42a"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "d3ab867a1c954038c3573429f31de629e5281c60e076abbe8f93b3dd8eee2fb1"
+        "sha256": "02f7fa84c9552dfc10ef466fca90ec4f90e0f25dcb82077eb1eed1d852e67c39"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "23d204ede3ad1a895c68109b7ca8e2e868b67df2fa9d7aa843005f7f7e129fe8"
+        "sha256": "145e3c8da78249aade491879c588371556b18a1d2ae044e0a137a2f964af67e0"
       }
     ],
     "followupRepair": {
