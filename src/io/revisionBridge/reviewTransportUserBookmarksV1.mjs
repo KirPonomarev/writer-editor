@@ -463,13 +463,13 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           const ordinal=returnedBreaks.findIndex(item=>item.offset===offset);
           if(ordinal<0)return false;
           const oldOffset=expectedBreaks[ordinal]?.offset;
-          const oldRun=before.find(item=>item.from<=oldOffset && item.to>oldOffset);
+          const oldRun=baseFormats[i].formatIr.runs.find(item=>item.from<=oldOffset && item.to>oldOffset);
           let cursor=0,oldBreak;
           for(const node of basePs[i].content||[]){
             if(cursor===oldOffset && node.type==='hardBreak'){oldBreak=node;break;}
             cursor+=node.type==='hardBreak'?1:node.type==='text'?node.text.length:0;
           }
-          return oldRun && !oldRun.style.fontFamily && oldBreak
+          return oldRun && !oldRun.inline.fontFamily && oldBreak
             && !(oldBreak.marks||[]).some(mark=>mark.type==='textStyle' && mark.attrs?.fontFamily);
         });
       const fontlessBreaks=new Set(after.filter(isFontlessBreak));
@@ -501,9 +501,17 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       };
       let languageChanged=!same(baseP.wordParagraphMarkLanguage||null,languageChange.paragraphMark)
         || !same(languages(before.map(run=>({from:run.from,to:run.to,language:run.inline?.wordLanguage||null}))),languages(languageChange.runs));
+      // A source-bare break has no proofing-language-bearing text. This only
+      // suppresses a no-change interpretation; observed rows stay literal.
+      const sourceLanguageAbsentBreak=run=>fontlessBreak(run) && Array.from(run.text,(_,index)=>run.from+index).every(offset=>{
+        const ordinal=returnedBreaks.findIndex(item=>item.offset===offset),oldOffset=expectedBreaks[ordinal]?.offset;
+        const raw=baseFormats[i].formatIr.runs.find(item=>item.from<=oldOffset && item.to>oldOffset);
+        return raw && raw.inline.wordLanguage==null;
+      });
       if(exportTypography?.schemaVersion===bodyTypography.V2 && same(baseP.wordParagraphMarkLanguage??null,languageChange.paragraphMark)
         && before.every(run=>same(run.inline?.wordLanguage??null,before[0]?.inline?.wordLanguage??null))
-        && after.every(run=>same(run.wordLanguage??null,before[0]?.inline?.wordLanguage??null)))languageChanged=false;
+        && after.every(run=>same(run.wordLanguage??null,before[0]?.inline?.wordLanguage??null)
+          || run.wordLanguage==null && sourceLanguageAbsentBreak(run)))languageChanged=false;
       const hasLanguage=languageChange.paragraphMark!==null || languageChange.runs.some(run=>run.language!==null)
         || baseP.wordParagraphMarkLanguage!=null || before.some(run=>run.inline?.wordLanguage!=null);
       // Bookmark-only returns preserve language through exact style signatures

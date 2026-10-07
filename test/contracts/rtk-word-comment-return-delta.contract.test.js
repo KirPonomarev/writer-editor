@@ -870,6 +870,9 @@ test('unchanged pending partition admits one reply with independently checked un
   const {binding}=model.buildCommentExportBinding({document,anchors,exportTypography:f.input.exportMap.exportTypography});
   const returned=structuredClone(ledger),r=returned.revisions[1];
   returned.revisions.splice(1,1,{...r,to:20},{...r,id:'revision-3',nativeId:'90',from:20});
+  // This synthetic Word partition carries the actual source-selected full
+  // transport basis, while document/ledger and their authenticated IDs stay raw.
+  returned.source=require('../../src/core/word-review-typography-v1.cjs').document(returned.source,f.input.exportMap.exportTypography);
   const returnedDocument=model.bindLedger(returned);
   const input=structuredClone(f.input);
   input.exportMap.scenes[0].pendingCommentBinding=binding;

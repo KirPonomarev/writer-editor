@@ -6,6 +6,15 @@ const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { buildStoredZip, buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
 const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+// Fresh full exports materialize this closed SOURCE-owned transport basis;
+// generic imports observe it literally, while the saved authored source stays raw.
+function expectedEmission(doc,profile='full') {
+  if(profile==='minimum')return model.normalizeNode(doc);
+  const typography=require('../../src/core/word-review-typography-v1.cjs');
+  const expected=typography.document(model.normalizeNode(doc),typography.freshBodyTypography());
+  expected.attrs={...expected.attrs,wordDefaultTabStop:doc.attrs?.wordDefaultTabStop??720};
+  return model.normalizeNode(expected);
+}
 const modules = Promise.all([import('../../src/io/revisionBridge/index.mjs'), import('../../src/docxPageSetupBind.mjs'),
   import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
@@ -58,7 +67,7 @@ test('Row decisions, reopen and minimum/full export retain both projections', as
       for (const mode of ['original', 'current']) {
         const expected = model.materialize(model.readLedger(doc), mode === 'original' && !action ? 'original' : 'current');
         const actual = model.readLedger(returned) ? model.materialize(model.readLedger(returned), mode) : returned;
-        if (mode === 'current' || !action || action.endsWith('All')) assert.deepEqual(clean(actual), clean(expected), `${action} ${profile} ${mode}`);
+        if (mode === 'current' || !action || action.endsWith('All')) assert.deepEqual(clean(actual), expectedEmission(expected,profile), `${action} ${profile} ${mode}`);
         else assert.deepEqual(model.paragraphs(actual).map(p => (p.content || []).map(n => n.text || '\n').join('')),
           action === 'accept' ? ['Rows', 'Keep A', 'Keep B', 'Last A', 'Last B'] : ['Rows', 'Keep A', 'Keep B', 'Delete A', 'Delete B', 'Last A', 'Last B']);
       }
@@ -83,7 +92,7 @@ test('Recorded row addition/deletion preserves Original, rich cells, neighboring
   assert.deepEqual(clean(second), clean(desired));
   assert.deepEqual(ledger.revisions.map(r => r.operation), ['delete', 'insert']);
   assert.deepEqual(clean(model.decide(second, { action: 'undo' }).doc), clean(result));
-  for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(second, profile)), clean(desired));
+  for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(second, profile)), expectedEmission(desired,profile));
   const thirdWorking = recording.prepare(second).working;
   thirdWorking.content[1].content.at(-1).content[0].content[0].content[0].text += ' changed';
   const third = recording.derive(second, thirdWorking, metadata).doc;

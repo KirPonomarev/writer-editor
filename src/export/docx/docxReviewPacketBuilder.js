@@ -699,14 +699,30 @@ function buildNumberingXml(definitions) {
 <w:numbering xmlns:w="${WORD_MAIN_NS}">${abstract}${instances}</w:numbering>`;
 }
 
-function buildStylesXml(blocks, noteStyles = '') {
+function buildStylesXml(blocks, noteStyles = '', exportTypography) {
+  const bodyTypography = require('../../core/word-review-typography-v1.cjs');
+  const profile = bodyTypography.validate(exportTypography, { allowUndefined: true });
+  const resetStyles = new Set();
+  if (profile?.schemaVersion === bodyTypography.V2) for (const block of blocks) {
+    const revision = block.pendingParagraphRevision;
+    if (revision?.state !== 'pending' || revision.operation !== 'format' || revision.format?.kind !== 'paragraph') continue;
+    const before = bodyTypography.snapshot(revision.format.before, profile), after = bodyTypography.snapshot(revision.format.after, profile);
+    const marker = value => buildDocxParagraphMarkTypographyXml(value.attrs?.wordParagraphMarkTypography)
+      + buildDocxWordLanguageXml(value.attrs?.wordParagraphMarkLanguage);
+    // Only paragraph-only prior snapshots emit these reset-style references.
+    if (marker(before) === marker(after)) resetStyles.add(before.type === 'heading' ? `Heading${before.attrs.level}` : 'Normal');
+  }
+  const resetXml = [...resetStyles].sort().map(id => {
+    if (!/^(?:Normal|Heading[1-9])$/u.test(id)) throw Error('PENDING_FORMAT_EXPORT_INVALID');
+    return `<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${id}"/></w:style>`;
+  }).join('');
   const ids = ['YalkenCodeBlock', ...blocks.map(block => docxBlockStyleId(
     block.formatIr?.paragraph?.nodeType === 'codeBlock', Number(block.formatIr?.paragraph?.blockquoteDepth || 0),
   )).filter(Boolean)];
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="${WORD_MAIN_NS}">
   <w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>
-  ${buildDocxBlockStyleDefinitions(ids)}
+  ${buildDocxBlockStyleDefinitions(ids)}${resetXml}
   ${[...new Set(blocks.filter(b=>b.formatIr?.paragraph?.list?.continuation===true).map(b=>b.formatIr.paragraph.list.level))].map(level=>`<w:style w:type="paragraph" w:styleId="YalkenListContinuation${level}"><w:name w:val="Yalken List Continuation ${level}"/></w:style>`).join('')}
   <w:style w:type="character" w:styleId="YalkenInlineCode"><w:name w:val="Yalken Inline Code"/><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:rPr></w:style>
 ${noteStyles ? '  ' + noteStyles + '\n' : ''}</w:styles>`;
@@ -863,7 +879,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'word/document.xml', data: documentXml },
     { name: 'word/settings.xml', data: buildSettingsXml().replace('<w:compat>', defaultTabsXml+(stories.evenAndOddHeaders ? '<w:evenAndOddHeaders/>' : '') + '<w:compat>') },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
-    { name: 'word/styles.xml', data: buildStylesXml(blocks, notes.stylesXml) },
+    { name: 'word/styles.xml', data: buildStylesXml(blocks, notes.stylesXml, input.exportTypography) },
     ...(documentMetadata ? [{ name: 'docProps/core.xml', data: buildCorePropertiesXml(documentMetadata) }] : []),
     { name: 'docProps/custom.xml', data: buildCustomPropertiesXml(customProperties) },
     { name: 'customXml/_rels/item1.xml.rels', data: buildCustomXmlRelsXml() },

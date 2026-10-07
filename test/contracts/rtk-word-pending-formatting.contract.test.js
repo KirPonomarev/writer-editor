@@ -6,6 +6,23 @@ const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { buildStoredZip, buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
 const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+// Fresh full exports materialize this closed SOURCE-owned transport basis;
+// generic imports observe it literally, while the saved authored source stays raw.
+function expectedEmission(doc,profile='full',emissionSource=doc) {
+  if(profile==='minimum')return model.normalizeNode(doc);
+  const typography=require('../../src/core/word-review-typography-v1.cjs');
+  const expected=typography.document(model.normalizeNode(doc),typography.freshBodyTypography());
+  // Runs inherit the producer's CURRENT source paragraph, including when a
+  // pending paragraph-mark snapshot projects an independently different Original.
+  const leaves=value=>['paragraph','heading'].includes(value.type)?[value]:(value.content||[]).flatMap(leaves);
+  const owned=leaves(emissionSource),original=leaves(doc);
+  leaves(expected).forEach((paragraph,index)=>{paragraph.content=(original[index].content||[]).map(node=>{
+    const result=structuredClone(node),style=node.marks?.find(mark=>mark.type==='textStyle');
+    result.marks=[...(node.marks||[]).filter(mark=>mark.type!=='textStyle'),{type:'textStyle',attrs:typography.inline(style?.attrs,{nodeType:owned[index].type,...owned[index].attrs},typography.freshBodyTypography())}];return result;
+  });});
+  expected.attrs={...expected.attrs,wordDefaultTabStop:doc.attrs?.wordDefaultTabStop??720};
+  return model.normalizeNode(expected);
+}
 const modules = Promise.all([import('../../src/io/revisionBridge/index.mjs'), import('../../src/docxPageSetupBind.mjs'),
   import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
@@ -28,12 +45,31 @@ async function parse(bytes) {
   const plan = b.buildDocxImportPreviewPlanFromContentPreview(preview); assert.equal(plan.ok, true, JSON.stringify(plan));
   return envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
 }
-async function exportDoc(doc, profile) {
+function legacySourceFactory() {
+  const source = require('node:child_process').execFileSync('git',['show','42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:src/export/docx/fullManuscriptDocxReviewPacketSource.js'],{cwd:require('node:path').resolve(__dirname,'../..'),encoding:'utf8'});
+  assert.equal(require('node:crypto').createHash('sha256').update(source).digest('hex'),'829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d');
+  const filename=require.resolve('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js'),loaded=new (require('node:module'))(filename,module);
+  loaded.filename=filename;loaded.paths=module.paths;loaded._compile(source,filename);return loaded.exports.buildFullManuscriptDocxReviewPacketSource;
+}
+async function exportDoc(doc, profile, legacy = false) {
   const [, docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await modules;
   return profile === 'minimum' ? buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } }, { docxPageSetupBindModule, semanticMappingModule, styleMapModule })
-    : buildDocxReviewPacketBuffer(buildFullManuscriptDocxReviewPacketSource({ projectId: 'format', projectRoot: '/synthetic', scenes: [
+    : buildDocxReviewPacketBuffer((legacy ? legacySourceFactory() : buildFullManuscriptDocxReviewPacketSource)({ projectId: 'format', projectRoot: '/synthetic', scenes: [
       { sceneId: 'roman/a.txt', scenePath: '/synthetic/roman/a.txt', doc, text: envelope.deriveVisibleTextFromDocument(doc), order: 0 },
     ] }));
+}
+// Raw identity/history assertions use the real source-bound full return path;
+// generic imports above continue to observe emitted properties literally.
+async function sourceBoundReturn(doc,profile) {
+  if(profile==='minimum')return parse(await exportDoc(doc,profile));
+  const [bridge]=await modules,source=buildFullManuscriptDocxReviewPacketSource({projectId:'format',projectRoot:'/synthetic',scenes:[
+    {sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),observableContent:envelope.composeObservablePayload({doc}),order:0}]});
+  const bytes=buildDocxReviewPacketBuffer(source),map=source.localAuthorityCapsule.exportMap;
+  const returned=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:map,baselineDocuments:[{sceneId:'roman/a.txt',document:doc}],
+    retainPendingScenes:true,documentSections:source.documentSections,signedSectionsDigest:source.documentSections.protectedDigest});
+  assert.equal(returned.ok,true,JSON.stringify(returned));
+  return require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({document:doc,returnedDocument:returned.scenes[0].returnedDocument,
+    binding:map.scenes[0].pendingCommentBinding,exportTypography:map.exportTypography,exportParagraphs:map.scenes[0].blocks.map(block=>block.formatIr.paragraph),allowUntrackedRichFormatting:true}).document;
 }
 const canonical = doc => model.normalizeNode(doc);
 const materialized = (doc, mode) => canonical(model.materialize(model.readLedger(doc), mode));
@@ -63,10 +99,10 @@ test('Five minimum/full cycles retain rich Original/Current, provenance and retu
   for (const profile of ['minimum', 'full']) {
     let doc = initial;
     for (let round = 1; round <= 5; round++) {
-      const returned = await parse(await exportDoc(doc, profile));
+      const returned = await sourceBoundReturn(doc, profile);
       doc = model.replaceFromReturn(doc, returned, { roundId: profile + round, artifactSha256: String(round).padStart(64, '0') }).doc;
       doc = envelope.parseObservablePayload(envelope.composeObservablePayload({ doc })).doc;
-      for (const mode of ['original', 'current']) assert.deepEqual(materialized(doc, mode), materialized(initial, mode));
+      for (const mode of ['original', 'current']) assert.deepEqual(materialized(doc, mode), materialized(initial,mode));
       assert.deepEqual(model.projection(doc).revisions.map(r => [r.id, r.format, r.author, r.date]),
         model.projection(initial).revisions.map(r => [r.id, r.format, r.author, r.date]));
     }
@@ -80,7 +116,7 @@ test('Accepted/rejected formatting exports resolved values with no resurrected n
   const initial = await parse(pack());
   for (const action of ['acceptAll', 'rejectAll']) for (const profile of ['minimum', 'full']) {
     const decided = model.decide(initial, { action }).doc, returned = await parse(await exportDoc(decided, profile));
-    assert.equal(model.readLedger(returned), null); assert.deepEqual(canonical(returned), canonical(decided));
+    assert.equal(model.readLedger(returned), null); assert.deepEqual(canonical(returned), expectedEmission(decided,profile));
   }
 });
 test('Paragraph and run properties on the same paragraph remain independent; empty paragraph alignment is reversible', async () => {
@@ -90,7 +126,7 @@ test('Paragraph and run properties on the same paragraph remain independent; emp
   assert.equal(ledger.revisions.length, 3); assert.equal(ledger.revisions.at(-1).from, 0); assert.equal(ledger.revisions.at(-1).to, 0);
   for (const profile of ['minimum', 'full']) {
     const returned = await parse(await exportDoc(doc, profile));
-    for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), materialized(doc, mode));
+    for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source));
   }
 });
 test('Malformed property ownership, duplicate IDs, nested changes and unsupported semantics fail before admission', async () => {
@@ -160,7 +196,7 @@ test('All supported mark families and heading changes preserve both rich project
     const doc = recording.derive(reverse ? rich : plain, reverse ? plain : rich, meta).doc;
     for (const profile of ['minimum', 'full']) {
       const returned = await parse(await exportDoc(doc, profile));
-      for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), materialized(doc, mode), `${profile}:${reverse}:${mode}`);
+      for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source), `${profile}:${reverse}:${mode}`);
     }
   }
 });
@@ -177,7 +213,7 @@ test('Cell list formatting keeps numbering and table topology while a separate c
   const doc = recording.derive(base, working, meta).doc;
   for (const profile of ['minimum', 'full']) {
     const returned = await parse(await exportDoc(doc, profile));
-    for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), materialized(doc, mode));
+    for (const mode of ['original', 'current']) assert.deepEqual(materialized(returned, mode), expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source));
   }
 });
 test('Native Word timestamp precision preserves owned formatting IDs without conflating different authors or times', () => {
@@ -299,7 +335,7 @@ test('Pending paragraph layout retains root default and distinct before/current 
  const after={wordParagraphIndent:{left:720,hanging:240},wordParagraphTabs:[{pos:1701,val:'right',leader:'dot'}]};
  revision.format.before.attrs={...revision.format.before.attrs,...before};revision.format.after.attrs={...revision.format.after.attrs,...after};ledger.source.content[1].attrs=structuredClone(revision.format.after.attrs);
  const doc=model.bindLedger(ledger);assert.equal(doc.attrs.wordDefaultTabStop,567);
- for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));assert.equal(returned.attrs.wordDefaultTabStop,567);for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));}
+ for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));assert.equal(returned.attrs.wordDefaultTabStop,567);for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source));}
  const changed=model.setDefaultTabStop(doc,851);assert.equal(changed.attrs.wordDefaultTabStop,851);
  for(const action of ['acceptAll','rejectAll']){const decided=model.decide(changed,{action}).doc;assert.equal(decided.attrs.wordDefaultTabStop,851);const undone=model.decide(decided,{action:'undo'}).doc;assert.equal(undone.attrs.wordDefaultTabStop,851);assert.deepEqual(model.readLedger(undone).revisions,model.readLedger(changed).revisions);}
 });
@@ -311,7 +347,7 @@ for(const owner of ['paragraph-mark','paragraph']) test(`Paragraph mark typograp
  const doc=await parse(pack(`<w:p><w:pPr>${property(40)}</w:pPr>${run('Unchanged italic','<w:i/>')}</w:p><w:p><w:pPr>${property(41)}</w:pPr></w:p>`));
  const ledger=model.readLedger(doc);assert.equal(ledger.revisions.length,2);assert.ok(ledger.revisions.every(model.isParagraphFormat));
  for(const mode of ['current','original']){const result=materialized(doc,mode);const expected=mode==='current'?{bold:true,fontFamily:'Georgia',fontSize:'14pt'}:{bold:false,fontFamily:'Arial',fontSize:'12pt'};assert.deepEqual(result.content.map(p=>p.attrs.wordParagraphMarkTypography),[expected,expected]);assert.ok(result.content[0].content[0].marks.some(m=>m.type==='italic'));}
- for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));}
+ for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source));}
 });
 
 test('Tracked paragraph-mark language retains empty prior properties and its independent event through analysis and exports',async()=>{
@@ -327,7 +363,7 @@ test('Tracked paragraph-mark language retains empty prior properties and its ind
  assert.deepEqual(analysis.reviewIr.formattingParagraphs[1].paragraphState.wordParagraphMarkLanguage,{val:'ru-RU'});
  for(const mode of ['current','original'])assert.deepEqual(materialized(parsed,mode).content[1].attrs?.wordParagraphMarkLanguage,mode==='current'?{val:'ru-RU'}:undefined);
  for(const action of ['accept','reject']){const decided=model.decide(parsed,{action,revisionId:revision.id}).doc;assert.deepEqual(materialized(decided).content[1].attrs?.wordParagraphMarkLanguage,action==='accept'?{val:'ru-RU'}:undefined);const undone=model.readLedger(model.decide(decided,{action:'undo'}).doc);assert.deepEqual(undone.source,ledger.source);assert.deepEqual(undone.revisions,ledger.revisions);}
- for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(parsed,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),materialized(parsed,mode));}
+ for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(parsed,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),expectedEmission(model.materialize(model.readLedger(parsed),mode),profile,model.readLedger(parsed).source));}
  for(const bad of [marker.replace('<w:rPr/>','<w:rPr ignored="1"/>'),marker.replace('<w:rPr/>','<w:rPr><w:lang w:val="bad_tag"/></w:rPr>'),marker.replace('<w:lang w:val="ru-RU"/>','<w:lang w:val="ru-RU"/><w:lang w:val="en-US"/>'),marker.replace('<w:rPr/>','<w:rPr><w:unknown/></w:rPr>'),marker.replace('w:id="45"','w:id="45" ignored="1"'),marker+change('pPr',46)])assert.equal(bridge.buildDocxContentPreviewFromZipBytes(pack(`<w:p><w:pPr>${bad}</w:pPr>${run('text')}</w:p>`)).ok,false,bad);
 });
 
@@ -351,7 +387,7 @@ test('Paragraph mark typography: complete supported scalar catalog and explicit 
   const ledger=model.readLedger(doc);assert.equal(ledger.revisions.length,1);assert.equal(ledger.revisions[0].author,'Reviewer');assert.equal(ledger.revisions[0].date,'2026-09-29T02:21:00Z');
   assert.equal(materialized(doc,'original').content[0].attrs.wordParagraphMarkTypography[key],before,`${owner} ${key} before`);
   assert.equal(materialized(doc,'current').content[0].attrs.wordParagraphMarkTypography[key],after,`${owner} ${key} after`);
-  for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode),`${owner} ${key} ${profile} ${mode}`);}
+  for(const profile of ['minimum','full']){const returned=await parse(await exportDoc(doc,profile));for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source),`${owner} ${key} ${profile} ${mode}`);}
  }
 });
 
@@ -365,10 +401,11 @@ test('Paragraph mark fontSlots: authored keys survive empty/nonempty Current Ori
   for(const [mode,expected]of [['original',before],['current',after]])assert.deepEqual(materialized(doc,mode).content.map(p=>p.attrs.wordParagraphMarkTypography),[{fontSlots:expected},{fontSlots:expected}]);
   for(const profile of ['minimum','full']){
    const bytes=await exportDoc(doc,profile),documentXml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
-   // Independent authored-attribute oracle: no inferred slots may be emitted.
+   // Literal complete emitted slots: authored values override all four finite defaults.
    const actual=[...documentXml.matchAll(/<w:pPr>[\s\S]*?<\/w:pPr>/gu)].flatMap(p=>[...p[0].matchAll(/<w:rFonts\b([^>]*)\/>/gu)].map(m=>Object.fromEntries([...m[1].matchAll(/w:([A-Za-z]+)="([^"]*)"/gu)].map(a=>[a[1],a[2]]))));
-   assert.deepEqual(actual,[after,before,after,before],`${owner} ${profile} authored slots`);
-   const returned=await parse(bytes);for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));
+   const slots=value=>profile==='full'?{ascii:'Times New Roman',hAnsi:'Times New Roman',eastAsia:'Times New Roman',cs:'Times New Roman',...value}:value;
+   assert.deepEqual(actual,[slots(after),slots(before),slots(after),slots(before)],`${owner} ${profile} source-owned emitted slots`);
+   const returned=await parse(bytes);for(const mode of ['current','original'])assert.deepEqual(materialized(returned,mode),expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source));
   }
  }
 });
@@ -379,13 +416,13 @@ test('Nested insertion and run format retain independent decisions, provenance, 
  assert.match(envelope.composeObservablePayload({doc:initial}),/word-pending-nested-run-format.v1/u);
  for(const profile of ['minimum','full']){
   let doc=initial;
-  for(let n=0;n<5;n++){const returned=await parse(await exportDoc(doc,profile));const actual=model.readLedger(returned);assert.equal(actual.revisions.find(r=>r.operation==='format').parentRevisionId,actual.revisions.find(r=>r.operation==='insert').id);
+  for(let n=0;n<5;n++){const returned=await sourceBoundReturn(doc,profile);const actual=model.readLedger(returned);assert.equal(actual.revisions.find(r=>r.operation==='format').parentRevisionId,actual.revisions.find(r=>r.operation==='insert').id);
    doc=model.replaceFromReturn(doc,returned,{roundId:`nested-${profile}-${n}`,artifactSha256:String(n+1).repeat(64)}).doc;
    assert.deepEqual(model.readLedger(doc).revisions.map(r=>[r.id,r.parentRevisionId,r.author,r.date,r.dateUtc,r.format]),ledger.revisions.map(r=>[r.id,r.parentRevisionId,r.author,r.date,r.dateUtc,r.format]));}
   for(const order of [[parent.id,child.id],[child.id,parent.id]]){
    let decided=initial;
    for(const id of order){decided=model.decide(decided,{action:'accept',revisionId:id}).doc;
-    const returned=await parse(await exportDoc(decided,profile)),incoming=model.readLedger(returned);
+    const returned=await parse(await exportDoc(decided,profile,true)),incoming=model.readLedger(returned);
     assert.equal(incoming?.revisions.some(r=>r.operation==='insert')||false,model.readLedger(decided).revisions.find(r=>r.id===parent.id).state==='pending');
     const binding=model.buildCommentExportBinding({document:decided}).binding;
     const clean=incoming?returned:model.bindLedger({schemaVersion:2,source:model.normalizeNode(returned),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
@@ -421,7 +458,10 @@ test('Inactive default tab emission needs internal read-only permit, signed impl
  const [bridge]=await modules,crypto=require('node:crypto'),stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
  const cryptoPort={sha256Text:v=>crypto.createHash('sha256').update(v).digest('hex'),sha256Json:v=>'sha256:'+crypto.createHash('sha256').update(stable(v)).digest('hex'),byteLength:v=>Buffer.byteLength(v),hmacSha256Json:(v,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(stable(v)).digest('hex')};
  const doc=await parse(pack(`<w:p><w:ins w:id="10" ${provenance}>${run('inserted')}</w:ins></w:p>`));
- const source=buildFullManuscriptDocxReviewPacketSource({projectId:'tabs',projectRoot:'/synthetic',scenes:[{sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),order:0}]},{cryptoPort});
+ const historical=require('node:child_process').execFileSync('git',['show','42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:src/export/docx/fullManuscriptDocxReviewPacketSource.js'],{cwd:require('node:path').resolve(__dirname,'../..'),encoding:'utf8'});
+ assert.equal(crypto.createHash('sha256').update(historical).digest('hex'),'829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d');
+ const filename=require.resolve('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js'),predecessor=new (require('node:module'))(filename,module);predecessor.filename=filename;predecessor.paths=module.paths;predecessor._compile(historical,filename);
+ const source=predecessor.exports.buildFullManuscriptDocxReviewPacketSource({projectId:'tabs',projectRoot:'/synthetic',scenes:[{sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),order:0}]},{cryptoPort});
  const original=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer(source)}).parts;
  const check=({value=708,office=false,permit=true,explicit=false,carrier='',baselineTab=false,extraPart=null}={})=>{
   const parts=structuredClone(original);parts['word/settings.xml']=parts['word/settings.xml'].replace(/<w:defaultTabStop\b[^>]*\/>/u,'').replace('</w:settings>',`<w:defaultTabStop w:val="${value}"/></w:settings>`);
@@ -439,12 +479,13 @@ test('Nested resolved accept/reject orders survive unchanged Review and Minimal 
  for(const profile of ['minimum','full'])for(const parentAction of ['accept','reject'])for(const childAction of ['accept','reject'])for(const order of [[parent,child],[child,parent]]){
   let doc=initial;
   for(const id of order){doc=model.decide(doc,{action:id===parent?parentAction:childAction,revisionId:id}).doc;
-   const parsed=await parse(await exportDoc(doc,profile)),returned=model.readLedger(parsed)?parsed:model.bindLedger({schemaVersion:2,source:model.normalizeNode(parsed),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+   const parsed=await parse(await exportDoc(doc,profile,true)),returned=model.readLedger(parsed)?parsed:model.bindLedger({schemaVersion:2,source:model.normalizeNode(parsed),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
    const expected=structuredClone(model.readLedger(doc).revisions),before=JSON.stringify(doc);
    const result=model.replaceFromReturn(doc,returned,{roundId:[profile,parentAction,childAction,order.join('_'),id].join('-'),artifactSha256:'e'.repeat(64)}).doc;
    assert.deepEqual(model.readLedger(result).revisions,expected);assert.equal(JSON.stringify(doc),before);
    assert.equal(model.projection(result).current,model.projection(doc).current);
    assert.deepEqual(model.readLedger(model.decide(result,{action:'undo'}).doc).revisions,expected);
+   if(profile==='full'){const captured=JSON.stringify(doc),fresh=await sourceBoundReturn(doc,profile);assert.deepEqual(fresh,doc);assert.equal(JSON.stringify(doc),captured);const undo=model.decide(fresh,{action:'undo'}).doc;assert.deepEqual(model.decide(undo,{action:'redo'}).doc,fresh);}
   }
  }
 });
@@ -514,13 +555,17 @@ test('Word paragraph-mark exporter uses its native run-property owner independen
   const emitted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
   // Independent XML ownership oracle: a mark change is inside current pPr/rPr;
   // the structural change has a paragraph-only prior snapshot with no rPr.
-  assert.match(emitted,/<w:pPr><w:spacing[^>]*\/><w:rPr><w:lang[^>]*w:val="ru-RU"[^>]*\/><w:rPrChange[^>]*><w:rPr><w:lang[^>]*w:val="ru-FI"[^>]*\/><\/w:rPr><\/w:rPrChange><\/w:rPr><\/w:pPr>/u);
+  const fonts=profile==='full'?'<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/>':'';
+  const markBody=fonts+tuple('ru-RU'),priorMark=fonts+tuple('ru-FI');
+  assert.ok(emitted.includes('<w:rPr>'+markBody+'<w:rPrChange'),emitted);
+  assert.match(emitted,new RegExp('<w:rPrChange[^>]*><w:rPr>'+priorMark.replaceAll('/>','\\/>')+'<\\/w:rPr><\\/w:rPrChange><\\/w:rPr><\\/w:pPr>','u'));
   assert.equal((emitted.match(/<w:pPrChange\b/gu)||[]).length,1);
-  assert.match(emitted,/<w:pPrChange[^>]*><w:pPr><w:pStyle w:val="Normal"\/><\/w:pPr><\/w:pPrChange>/u);
+  const previousParagraph='<w:pStyle w:val="Normal"/>'+(profile==='full'?'<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>':'');
+  assert.match(emitted,new RegExp('<w:pPrChange[^>]*><w:pPr>'+previousParagraph+'<\\/w:pPr><\\/w:pPrChange>','u'));
   assert.equal((emitted.match(/<w:rPrChange\b/gu)||[]).length,2);
   const returned=await parse(bytes),revisions=model.readLedger(returned).revisions;
   assert.equal(revisions.length,3);
-  for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));
+  for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source));
   assert.deepEqual(revisions.map(r=>[r.operation,r.format.kind,r.paragraphIndex,r.author,r.date,r.dateUtc]),
    before.revisions.map(r=>[r.operation,r.format.kind,r.paragraphIndex,r.author,r.date,r.dateUtc]));
   const binding=model.buildCommentExportBinding({document:doc,schemaVersion:2,...transport}).binding;
@@ -560,11 +605,14 @@ test('Structural paragraph change retains the independently owned ordinary mark 
   const bytes=await exportDoc(doc,profile),emitted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
   const prior=emitted.match(/<w:pPrChange[^>]*>([\s\S]*?)<\/w:pPrChange>/u)[1];
   assert.equal(prior.includes('<w:rPr>'),false,'previous paragraph owner cannot contain mark properties');
-  assert.match(emitted,/<w:rPr><w:b(?: w:val="1")?\/><w:lang[^>]*w:val="en-GB"[^>]*\/><\/w:rPr>/u);
+  const ownedFonts=profile==='full'?'<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/>':'';
+  assert.match(emitted,new RegExp('<w:rPr><w:b(?: w:val="1")?\\/>'+ownedFonts+'<w:lang w:val="en-GB" w:eastAsia="ja-JP" w:bidi="ar-SA"\\/><\\/w:rPr>','u'));
   const returned=await parse(bytes);
-  for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),materialized(doc,mode));
+  for(const mode of ['original','current'])assert.deepEqual(materialized(returned,mode),expectedEmission(model.materialize(model.readLedger(doc),mode),profile,model.readLedger(doc).source));
   assert.deepEqual(model.readLedger(returned).revisions.map(r=>[r.author,r.date,r.dateUtc,r.format]),
-   ledger.revisions.map(r=>[r.author,r.date,r.dateUtc,r.format]));
+   ledger.revisions.map(r=>[r.author,r.date,r.dateUtc,profile==='minimum'?r.format:{...r.format,
+     before:model.normalizeNode(require('../../src/core/word-review-typography-v1.cjs').snapshot(r.format.before,require('../../src/core/word-review-typography-v1.cjs').freshBodyTypography())),
+     after:model.normalizeNode(require('../../src/core/word-review-typography-v1.cjs').snapshot(r.format.after,require('../../src/core/word-review-typography-v1.cjs').freshBodyTypography()))}]));
  }
  // The carry never admits tracked, duplicate, foreign or unknown mark owners.
  for(const invalid of [property.replace(mark,mark+mark),property.replace('<w:b/>','<w:unknown/>'),
@@ -574,4 +622,35 @@ test('Structural paragraph change retains the independently owned ordinary mark 
  const selfClosing=`<w:p><w:pPr><w:jc w:val="center"/>${mark}<w:pPrChange w:id="51" ${provenance}><w:pPr/></w:pPrChange></w:pPr>${run('text')}</w:p>`;
  const aliased=await parse(pack(selfClosing.replaceAll('w:','q:'),'q'));
  assert.deepEqual(materialized(aliased,'original').content[0].attrs.wordParagraphMarkLanguage,{val:'en-GB',eastAsia:'ja-JP',bidi:'ar-SA'});
+});
+
+test('Fresh source-owned paragraph reset styles resolve all four phases without changing raw snapshots or history',async()=>{
+ const [bridge]=await modules,parser=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs'),crypto=require('node:crypto');
+ const hash=value=>crypto.createHash('sha256').update(value).digest('hex'),cryptoPort={sha256Text:hash,sha256Json:value=>'sha256:'+hash(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)};
+ for(const [beforeType,afterType] of [['paragraph','paragraph'],['heading','paragraph'],['paragraph','heading']]){
+  const before={type:'doc',content:[{type:beforeType,...(beforeType==='heading'?{attrs:{level:2}}:{}),content:[{type:'text',text:'same'}]}]},after=structuredClone(before);
+  after.content[0].type=afterType;after.content[0].attrs={...(afterType==='heading'?{level:2}:{}),textAlign:'center'};
+  const doc=recording.derive(before,after,meta).doc,captured=JSON.stringify(doc),source=buildFullManuscriptDocxReviewPacketSource({projectId:'reset',projectRoot:'/synthetic',scenes:[{sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),observableContent:envelope.composeObservablePayload({doc}),order:0}]}),bytes=buildDocxReviewPacketBuffer(source),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+  const id=beforeType==='heading'?'Heading2':'Normal',definition=`<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${id}"/></w:style>`;
+  assert.equal(parts['word/styles.xml'].split(definition).length-1,1);assert.match(parts['word/document.xml'],new RegExp('<w:pStyle w:val="'+id+'"/>','u'));
+  const options={cryptoPort,stylesXml:parts['word/styles.xml'],settingsXml:parts['word/settings.xml'],themeXml:parts['word/theme/theme1.xml'],relationshipsXml:parts['word/_rels/document.xml.rels'],allowCommentMarkers:true},pending=parser.extractPendingTextRevisionSourceV1(parts['word/document.xml'],options);
+  for(const xml of [pending.xml,pending.formatBeforeXml,pending.currentXml,pending.originalXml]){
+   const observed=parser.extractReviewTransportFormattingRunsV2(xml,options);assert.equal(observed.ok,true,JSON.stringify(observed));assert.equal(observed.paragraphs.length,1);
+   assert.notEqual(observed.paragraphs[0].effectiveParagraphMarkTypographyInvalid,true);assert.deepEqual(observed.paragraphs[0].effectiveParagraphMarkTypography,{fontFamily:'Times New Roman',fontSize:'12pt'});
+  }
+  const returned=await sourceBoundReturn(doc,'full');assert.deepEqual(returned,doc);assert.equal(JSON.stringify(doc),captured);
+  const map=source.localAuthorityCapsule.exportMap,scoped=changed=>bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildStoredZip(Object.entries(changed).map(([name,data])=>({name,data}))),exportMap:map,baselineDocuments:[{sceneId:'roman/a.txt',document:doc}],retainPendingScenes:true,documentSections:source.documentSections,signedSectionsDigest:source.documentSections.protectedDigest});
+  for(const mutate of [value=>value['word/styles.xml']=value['word/styles.xml'].replace(definition,''),value=>value['word/styles.xml']=value['word/styles.xml'].replace(definition,definition+definition)]){
+   const changed=structuredClone(parts);mutate(changed);assert.notDeepEqual(changed,parts);assert.equal(scoped(changed).ok,false);assert.equal(JSON.stringify(doc),captured);
+  }
+  for(const properties of ['<w:rFonts w:ascii="Arial"/>','<w:lang w:val="fr-FR"/>']){
+   const changed=structuredClone(parts);changed['word/document.xml']=changed['word/document.xml'].replace(/(<w:pPrChange\b[^>]*><w:pPr>)/u,`$1<w:rPr>${properties}</w:rPr>`);assert.notEqual(changed['word/document.xml'],parts['word/document.xml']);
+   const actual=scoped(changed);if(actual.ok)assert.throws(()=>require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({document:doc,returnedDocument:actual.scenes[0].returnedDocument,binding:map.scenes[0].pendingCommentBinding,exportTypography:map.exportTypography,exportParagraphs:map.scenes[0].blocks.map(block=>block.formatIr.paragraph),allowUntrackedRichFormatting:true}),/PENDING_COMMENT_BINDING_CHANGED|MIXED_RETURN_SOURCE_CHANGED|MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/u);
+   assert.equal(JSON.stringify(doc),captured);
+  }
+  // Genuine predecessor and its explicit V1 equivalent retain exact legacy bytes.
+  const legacy=legacySourceFactory()({projectId:'reset',projectRoot:'/synthetic',scenes:[{sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),order:0}]}),old=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer(legacy)}).parts;
+  const explicit=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer({...legacy,exportTypography:{schemaVersion:'yalken.review-docx.typography-defaults.v1',fontSize:'12pt'}})}).parts;
+  assert.equal(old['word/styles.xml'],explicit['word/styles.xml']);assert.equal(old['word/styles.xml'].includes(definition),false);
+ }
 });

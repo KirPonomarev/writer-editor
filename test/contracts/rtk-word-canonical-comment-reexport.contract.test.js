@@ -21,6 +21,7 @@ function inputs() {
       { type: 'text', text: 'Before 🧭 an', marks: [{ type: 'bold' }] },
       { type: 'text', text: 'chor and after.', marks: [{ type: 'italic' }] },
     ] }] } }] };
+  for(const scene of input.scenes)scene.observableContent=require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({doc:scene.doc});
   const bare = makeSource(input);
   const root = { threadId: 'thread-1', sceneId: input.scenes[0].sceneId, rootCommentId: 'root-1', status: 'open',
     anchor: { sceneId: input.scenes[0].sceneId, blockId: bare.blocks[0].blockId, paragraphIndex: 0,
@@ -186,6 +187,7 @@ test('same quote at a different offset, missing reference and namespace-spoofed 
   const input=inputs();
   const body='word word';
   input.scenes[0].text=body; input.scenes[0].doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:body}]}]};
+  input.scenes[0].observableContent=require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({doc:input.scenes[0].doc});
   const bare=makeSource({...input,nonTextReturnState:undefined});
   Object.assign(input.nonTextReturnState.threads[0].anchor,{blockId:bare.blocks[0].blockId,selectedText:'word',
     selectedTextSha256:sha('word')});
@@ -267,7 +269,7 @@ function mainHarness(names, globals={}) {
     const match=main.match(new RegExp('(?:async )?function '+name+'\\([^]*?\\n}(?=\\n|$)'));
     assert.ok(match,name);return match[0];
   });
-  const ctx=vm.createContext({crypto,Buffer,path,
+  const ctx=vm.createContext({crypto,Buffer,path,require:require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')),
     isPlainObjectValue:v=>v!==null&&typeof v==='object'&&!Array.isArray(v),
     docxReviewPreviewSessionDetailString:v=>typeof v==='string'?v:'',
     sha256DocxReviewPreviewSessionBytes:sha,cloneJsonSafe:v=>JSON.parse(JSON.stringify(v)),
@@ -361,8 +363,8 @@ test('production publication revalidation rejects changed scenes, canonical comm
   const owner={generation:1};source.publicationOwner=owner;
   const expected=source.localAuthorityCapsule.exportMap.scenes[0];
   const expectedMetadata=source.localAuthorityCapsule.documentMetadata.protectedProperties;
-  let state=input.nonTextReturnState,raw=input.scenes[0].text;
-  // The input fixture used plain text as its saved observable bytes.
+  let state=input.nonTextReturnState,raw=input.scenes[0].observableContent;
+  // The rich fixture and its actual saved envelope are independently bound.
   assert.equal(expected.rawSha256,'sha256:'+sha(raw));
   const ctx=mainHarness(['revalidateFullManuscriptDocxReviewPacketExportSource'],{
     isDirty:false,autoSaveInProgress:false,activeStage10ApplicationBootstrap:owner,getProjectRootPath:()=>input.projectRoot,
@@ -382,8 +384,10 @@ test('production publication revalidation rejects changed scenes, canonical comm
   });
   source.fullManuscriptProjectBinding=ctx.captureFullManuscriptProjectBinding();
   await ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source);
-  raw+=' changed';await assert.rejects(()=>ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source),/SCENE_STALE/);
-  raw=input.scenes[0].text;state={...state,revision:state.revision+1};
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs'),changed=structuredClone(input.scenes[0].doc);changed.content[0].content[0].text+=' changed';
+  raw=envelope.composeObservablePayload({doc:changed});await assert.rejects(()=>ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source),/SCENE_STALE/);
+  raw=input.scenes[0].observableContent+' malformed';await assert.rejects(()=>ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source),/DOCX_MEDIA_DOCUMENT_INVALID/);
+  raw=input.scenes[0].observableContent;state={...state,revision:state.revision+1};
   await assert.rejects(()=>ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source),/COMMENT_STATE_STALE/);
   ctx.activeStage10ApplicationBootstrap={generation:2};
   await assert.rejects(()=>ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source),/SOURCE_STALE/);
@@ -459,6 +463,7 @@ test('nested comment marker ordering preserves exact ranges through XML, parser 
     const input = inputs();
     input.scenes[0].text = text;
     input.scenes[0].doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] };
+    input.scenes[0].observableContent=require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({doc:input.scenes[0].doc});
     const block = makeSource({ ...input, nonTextReturnState: undefined }).blocks[0];
     input.nonTextReturnState.threads = ranges.map(([start, end], index) => ({
       threadId: `nested-thread-${index}`, sceneId: input.scenes[0].sceneId,
@@ -580,7 +585,8 @@ for (const end of [9, 6]) test(`pending replacement discussion remains outside d
   // Signed baseline mapping must recover the original partitions even if a
   // deletion wrapper was split to keep a comment reference live in Word.
   const derived = require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({ document: doc,
-    returnedDocument: returned, binding: review.buildCommentExportBinding({ document: doc, schemaVersion: 2 }).binding, anchors: [] });
+    returnedDocument: returned, binding: capsule.exportMap.scenes[0].pendingCommentBinding, anchors: state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor})),
+    exportTypography:capsule.exportMap.exportTypography,exportParagraphs:capsule.exportMap.scenes[0].blocks.map(block=>block.formatIr.paragraph),allowUntrackedRichFormatting:true });
   assert.deepEqual(review.readLedger(derived.document).revisions, revisions);
   assert.equal(JSON.stringify(doc), before);
 });

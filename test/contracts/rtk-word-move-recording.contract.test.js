@@ -6,6 +6,15 @@ const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
 const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+// Fresh full exports materialize this closed SOURCE-owned transport basis;
+// generic imports observe it literally, while the saved authored source stays raw.
+function expectedEmission(doc,profile='full') {
+  if(profile==='minimum')return model.normalizeNode(doc);
+  const typography=require('../../src/core/word-review-typography-v1.cjs');
+  const expected=typography.document(model.normalizeNode(doc),typography.freshBodyTypography());
+  expected.attrs={...expected.attrs,wordDefaultTabStop:doc.attrs?.wordDefaultTabStop??720};
+  return model.normalizeNode(expected);
+}
 const modules = Promise.all([import('../../src/io/revisionBridge/index.mjs'), import('../../src/docxPageSetupBind.mjs'),
   import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
 const meta = { author: 'Mac author', date: '2026-09-29T03:30:01.456Z' };
@@ -60,7 +69,7 @@ test('Five ordinary/full serialization and returned-history cycles retain author
       const imported = await cycle(value, profile);
       value = model.replaceFromReturn(value, imported, { roundId: profile + round, artifactSha256: String(round).repeat(64) }).doc;
       value = envelope.parseObservablePayload(envelope.composeObservablePayload({ doc: value })).doc;
-      for (const mode of ['original', 'current']) assert.deepEqual(view(value, mode), view(initial, mode));
+      for (const mode of ['original', 'current']) assert.deepEqual(view(value, mode), expectedEmission(model.materialize(model.readLedger(initial),mode),profile));
       assert.deepEqual(model.readLedger(value).revisions.map(r => [r.id, r.groupId, !!r.moveName]), [['revision-1', 'group-1', true], ['revision-2', 'group-1', true]]);
     }
     for (let i = 0; i < 5; i++) value = model.decide(value, { action: 'undo' }).doc;
@@ -106,6 +115,6 @@ test('Relocation between a numbered table-cell list and an outside paragraph pre
   assert.ok(model.readLedger(result).revisions.every(r => r.moveName));
   for (const profile of ['minimum', 'full']) {
     const imported = await cycle(result, profile);
-    for (const mode of ['original', 'current']) assert.deepEqual(view(imported, mode), view(result, mode));
+    for (const mode of ['original', 'current']) assert.deepEqual(view(imported, mode), expectedEmission(model.materialize(model.readLedger(result),mode),profile));
   }
 });

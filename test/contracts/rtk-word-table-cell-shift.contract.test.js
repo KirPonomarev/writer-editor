@@ -6,6 +6,15 @@ const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { buildStoredZip, buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
 const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+// Fresh full exports materialize this closed SOURCE-owned transport basis;
+// generic imports observe it literally, while the saved authored source stays raw.
+function expectedEmission(doc,profile='full') {
+  if(profile==='minimum')return model.normalizeNode(doc);
+  const typography=require('../../src/core/word-review-typography-v1.cjs');
+  const expected=typography.document(model.normalizeNode(doc),typography.freshBodyTypography());
+  expected.attrs={...expected.attrs,wordDefaultTabStop:doc.attrs?.wordDefaultTabStop??720};
+  return model.normalizeNode(expected);
+}
 const modules = Promise.all([import('../../src/io/revisionBridge/index.mjs'), import('../../src/docxPageSetupBind.mjs'),
   import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
 const pack = parts => buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
@@ -47,7 +56,7 @@ for (const fixture of fixtures.cases) {
     for (const profile of ['minimum', 'full']) {
       const returned = await parse(await exportDoc(doc, profile));
       for (const mode of ['original', 'current']) assert.deepEqual(model.normalizeNode(model.materialize(model.readLedger(returned), mode)),
-        model.normalizeNode(model.materialize(ledger, mode)), `${profile} ${mode}`);
+        expectedEmission(model.materialize(ledger, mode),profile), `${profile} ${mode}`);
     }
   });
   test(`Native Mac cell ${fixture.operation} decisions retain durable history and resolved exports`, async () => {
@@ -60,7 +69,7 @@ for (const fixture of fixtures.cases) {
       const undone = model.decide(reopened, { action: 'undo' }).doc;
       assert.deepEqual(model.normalizeNode(undone), model.normalizeNode(doc));
       assert.deepEqual(model.decide(undone, { action: 'redo' }).doc, reopened);
-      for (const profile of ['minimum', 'full']) assert.deepEqual(model.normalizeNode(await parse(await exportDoc(reopened, profile))), model.normalizeNode(reopened));
+      for (const profile of ['minimum', 'full']) assert.deepEqual(model.normalizeNode(await parse(await exportDoc(reopened, profile))), expectedEmission(reopened,profile));
     }
   });
 }
@@ -173,7 +182,7 @@ for (const kind of ['insertDownXml', 'deleteUpXml']) {
     for (const profile of ['minimum', 'full']) {
       const returned = await parse(await exportDoc(doc, profile));
       for (const mode of ['original', 'current']) assert.deepEqual(model.normalizeNode(model.materialize(model.readLedger(returned), mode)),
-        model.normalizeNode(model.materialize(model.readLedger(doc), mode)), `${profile} ${mode}`);
+        expectedEmission(model.materialize(model.readLedger(doc), mode),profile), `${profile} ${mode}`);
     }
   });
 }

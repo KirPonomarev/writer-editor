@@ -22,9 +22,12 @@ const run = (text, deleted = false) => `<w:r><w:${deleted ? 'delText' : 't'} xml
 const tracked = (text, kind, id) => `<w:${kind} w:id="${id}" w:author="W4" w:date="${date}">${run(text, kind === 'del')}</w:${kind}>`;
 function replaceRun(xml, text, replacement) {
   const escaped = esc(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp('<w:r>(?:<w:rPr>.*?</w:rPr>)?<w:t[^>]*>' + escaped + '</w:t></w:r>', 'u');
+  const regex = new RegExp('<w:r>(?:<w:rPr>(?:(?!</w:r>)[\\s\\S])*?</w:rPr>)?<w:t[^>]*>' + escaped + '</w:t></w:r>', 'u');
   assert(regex.test(xml), text);
-  return xml.replace(regex, () => replacement);
+  return xml.replace(regex, owned => {
+    const properties=owned.match(/^<w:r>(<w:rPr>.*?<\/w:rPr>)/u)?.[1]||'';
+    return replacement.replace(/<w:r>/gu,'<w:r>'+properties);
+  });
 }
 async function fixture({ before = 'before ', after = ' after', duplicate = false, duplicateParagraph = false, linkSuffix = '', wrap = p => p } = {}) {
   const bridge = await import('../../src/io/revisionBridge/index.mjs');

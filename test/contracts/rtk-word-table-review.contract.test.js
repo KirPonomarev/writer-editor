@@ -142,7 +142,7 @@ test('Tracked table property, grid, cell and row changes never inherit unchanged
 });
 test('Tracked text inside a table can form a preview only after local topology comparison, without granting a write', async () => {
   const { bridge, xml, parse, exportMap } = await fixture();
-  const changed = xml.replace(/<w:r>(<w:rPr>[^]*?<\/w:rPr>)?<w:t(?: [^>]*)?>cell sentinel alpha<\/w:t><\/w:r>/u,
+  const changed = xml.replace(/<w:r>(<w:rPr>(?:(?!<\/w:r>)[\s\S])*?<\/w:rPr>)?<w:t(?: [^>]*)?>cell sentinel alpha<\/w:t><\/w:r>/u,
     '<w:del w:id="901" w:author="reviewer"><w:r><w:delText>cell sentinel alpha</w:delText></w:r></w:del><w:ins w:id="902" w:author="reviewer"><w:r><w:t>cell sentinel round1</w:t></w:r></w:ins>');
   assert.notEqual(changed, xml);
   const parsed = parse(changed); assert.equal(parsed.ok, true, JSON.stringify(parsed));

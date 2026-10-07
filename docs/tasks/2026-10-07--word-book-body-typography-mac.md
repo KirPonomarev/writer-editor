@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT21_SCOPED_PROOF_READY_FOR_CHECKPOINT_FULL_DELIVERY_OPEN
+STATUS: AMENDMENT22_FROZEN_MEASURED_FUNCTIONAL_CORRECTION_FULL_DELIVERY_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -34,7 +34,7 @@ raw-source equality and canonicalMarksSha256 and is forbidden.
 ## ARTIFACT
 
 One coherent export/return correction. Root owns task/docs/OPS/proof/delivery;
-separate code agent owns declared runtime/behavior tests.56 explicit paths;
+separate code agent owns declared runtime/behavior tests.72 explicit paths;
 runtime maximum1800 changed lines, behavior maximum2600. Unused paths need not
 change. A small pure Core helper is permitted only for immediate finite
 validation/projection consumers, with no registry, cache, writer or future engine.
@@ -98,6 +98,23 @@ validation/projection consumers, with no registry, cache, writer or future engin
 - `docs/CONTEXT.md`
 - `docs/HANDOFF.md`
 - `docs/WORKLOG.md`
+
+- `test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js`
+- `test/contracts/rtk-word-canonical-comment-reexport.contract.test.js`
+- `test/contracts/rtk-word-comment-points.contract.test.js`
+- `test/contracts/rtk-word-comment-return-delta.contract.test.js`
+- `test/contracts/rtk-word-http-links.contract.test.js`
+- `test/contracts/rtk-word-list-pattern-parser.contract.test.js`
+- `test/contracts/rtk-word-media-text-correspondence.contract.test.js`
+- `test/contracts/rtk-word-move-recording.contract.test.js`
+- `test/contracts/rtk-word-pending-formatting.contract.test.js`
+- `test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js`
+- `test/contracts/rtk-word-pending-return-runtime.contract.test.js`
+- `test/contracts/rtk-word-pending-rich-blocks.contract.test.js`
+- `test/contracts/rtk-word-table-cell-shift.contract.test.js`
+- `test/contracts/rtk-word-table-review.contract.test.js`
+- `test/contracts/rtk-word-table-row-revisions.contract.test.js`
+- `test/contracts/rtk-word-tables.contract.test.js`
 
 ## DENYLIST
 
@@ -1611,3 +1628,105 @@ Full SOURCE/PACKAGED genuine novel/roles/five rounds/resources/CI/merge OPEN.
 - Root one separately selected existing500k test:1of1 actual0, complete Main double publication and complete21scene final readback;79.159s, peak single owned process1914454016bytes. Log68069a767a99f716e614c8dbff391866f6f16490f20bb617b934773418a3ba07; all44 frozen bytes unchanged. Together with the writer19 selected cases, all20 current volume cases actually execute across two serial commands; no single whole-file run or native/performance acceptance claim.
 - Official committed20 CI is terminal3783of3844,61FAIL,zero exclusions;15 checks green and4 red. Raw full log d9f3ba7a972a6b56a711221dc62708600a05649c76b24663ca62d2b2f231fcda. The four prior policy-dependent failures are gone. Current21 complete CI, remaining interaction defects, full genuine Word novel roles/five exchanges/SOURCE/PACKAGED, resource acceptance and merge remain OPEN.
 - Root finalizes these four documents before the seven OPS binding writes; actual production loadDataPolicy must consume all480 current source bytes. Gates, commit/push and required CI follow this freeze. These mechanical records never prove product acceptance. Next product work remains the measured full return-path defects and repeated parse cost inside the authorized novel goal.
+
+
+### Same-contour amendment22 complete source-owned return interaction closure
+
+Clean ee1f continues original42b, unfinished PR2093 and one rollback.72 exact
+scope paths are existing56 plus16 already622-admitted/480-source-bound mandatory
+tests; original1800runtime2600behavior budgets remain. No product table expansion.
+O: valid text/comment/pending return keeps complete source and exact typed breaks;
+actual authored formatting loss, wrong anchors and malformed input still refuse.
+T: raw canonical doc/source/map -> SOURCE-owned finiteV2 emission expectation ->
+literal actual ZIP/parser -> existing command preview/independent Core/leased writer.
+H: effective emitted default made a source-bare hardBreak falsely require a font;
+remaining mandatory fixtures use raw snapshots or incomplete profile against new
+explicit body emission. Repair each diagnosed seam without rewriting actual values.
+MOVE: separate existing code writer only current UserBookmarks bare-break SOURCE
+comparison and declared existing16 tests plus closed ZIP16-literal scope guard.
+Every source/actual full semantic assertion and hostile counterexample remains;
+no skip/todo, stripping actual fields, synthetic product helper or frozen tuple repin.
+Any further runtime seam requires precise actual diagnosis/root admission first.
+B: all raw/source/map/IR/text/marks/private/history/owner/CAS/lease/capability and
+actual readback remain;60 prewrite pins, other runtime/generated/compiler frozen.
+P: actual red; bare-break/text-font/authored-break/geometry controls; whole16 files
+serially plus whole typography/identity, root independent complete ZIP/source review;
+final4docs before7OPS/all480 actual pins/loadDataPolicy and required delivery gates.
+I: clean ee1f, freshly fetched main42b, exact registered encrypted writable T7.
+CHECK_01 before first edits; CHECK_02+ after. Bootstrap/full ordered22 reads,
+architecture preflight and task E0 required before code dispatch. One heavy lane;
+writer no native/large/fullgraph/OPS/Git.500k export79.159sec/1914454016bytes remains
+qualified functional proof only. Full native novel/five exchanges/roles/resources/
+SOURCE/PACKAGED/CI/merge OPEN. No capacity, security, UI or dependency expansion.
+
+### Amendment22 executed interaction correction and measured full-text code route
+
+Same original42b PR2093 and one rollback; clean ee1f predecessor and72 admitted
+paths. Clean22 preflight/task E0 preceded edits. Exact further runtime admission
+AMENDMENT22_SOURCE_RESET_STYLE_ADMISSION_01.json SHA256
+3623a4d20638f5999442a211a999a3dc8a620d4f9708fd21ff40ecc2d335d460
+allows only existing SOURCE builder style seam after retained actual undefined
+Normal reset-style failure. Fresh validatedV2 emits bounded empty Normal/Heading
+reset definitions solely for actual SOURCE pending-before references; explicit
+snapshot/run/paragraph properties remain independent. Legacy undefined/V1 bytes
+remain exact. Existing bare hardBreak SOURCE baseline and absent-language no-change
+comparison preserve actual observed rows and refuse real authored font/language
+loss. Parser, Index, Core, Main, generated/compiler inputs remain unchanged at22.
+
+Writer HOLD22 e43f5c8a4d0fc691ebe185ed4dbf2807ffbc96ebd63824a0bca67333ef413f77:
+60 actual bindings,19 admitted changed,41 exact predecessor;29logs/29artifacts.
+Executed15 whole files297of297; all56 explicit finite names of16th56of56;
+whole typography99of99 and existing finite source-identity5of5. Every reported
+cancelled/skip/todo count is0. Root separately executes the one named100k case;
+15whole +56finite +1large exhaust current16-file57-name inventory but are not
+one whole16 invocation or whole326 identity execution. Runtime885of1800,
+behavior1878of2600, generated456 separately. Actual5 compiler inputs and4
+bundled/dist output hashes remain exact; changed runtime is outside133-file
+literal renderer/preload closure, so no build is claimed.
+
+Root frozen diff/source/log/artifact review88d57342788576b0481697dd5b2b2ca4afd95491f9d56b854d5dbe122e0fbc67
+checks every actual60 source byte binding and preserves all pre-existing work.
+Independent small Cyrillic/emoji full paragraph, bare-break and point-comment
+proof95a62012c3817a048365a88011352df861f5798c57c42355d4ee0543328d16b8
+preserves full raw SOURCE/map/actual IR; authored paragraph language positive,
+authored break-font/language loss and typed-break substitution strict refusals.
+Independent actual reset-style proof517c067f829b25080aaed5b536d708cab11c4d20be10f11767807981ac95cc15
+checks union/before/current/original complete actual marks and complete SOURCE
+raw ledger/history equality; missing/duplicate/undefined references refuse.
+Same-input legacy bytes equal exact ee1f predecessor builder. Observer mistakes
+(trimmed convenience text; omitted required crypto; inconsistent JSON digest)
+remain retained, diagnosed and corrected only outside repo; strict guards stay.
+
+Root selected actual Main synthetic disk-route100k five exchanges1of1 actual0,
+zero exclusions, five complete round outcomes plus five Undo and five Redo with
+reopen and retained200 discussions/410 messages. Wall406.787744sec; peak owned
+aggregateRSS1810776064bytes;720sec/2.5GiB watchdog not triggered. LogSHA256
+08bda73ebbaf5ff0d179c517b13ada414b0667ce31bfd33f7540e8961e97a6c7;
+receipt0440a64cdcd09ac5b01da26a4dca75838bdc2eda8c00d2c6f7dc703963641012.
+This is product-code functional proof with VM/platform stubs and actual leased
+disk writer, NOT genuine Word, ordinary PACKAGED or speed/memory acceptance.
+Preparation28-33.5sec/application8.7-16.6sec remains slow. No optimization claim.
+
+Original complex rich/merged technical genericV1 oracle stays via genuine42b
+SOURCE factory; it does not certify full current native or historical runtime.
+New freshV2 table-free five-leaf accept/Undo with nonempty redo keeps exact raw
+SOURCE/history. Full freshV2 merged continuation remains precisely unsupported
+PENDING_RETURN_BOOKMARK_UNOWNED; artifact/counterexample retained, no bypass.
+Complex tables are excluded from the owner's novel MVP, not reported supported.
+
+Actual nested decoder capacity defect remains OPEN:5000 generic paragraphs
+exceed16MiB result,5001 exceed5000-block default; exact same5001 owned package
+with already declared50k/64MiB profile parses complete literal paragraphs.
+Diagnosis98b6c77fca4db8e569a02acb7b9b5c450cbf44437807f59477b45bdb2279916d
+records that Main's declared budget is omitted by nested calls. No new caps,
+cache/trust bits, dependency, UI, writer or runtime network. Next correction
+propagates the existing bounded profile after exact clean admission, then
+measures full500k import/export/return and genuine Word SOURCE/PACKAGED scenarios.
+
+Official committed21 CI terminal3786of3846,60FAIL,zero exclusions; exactly16
+admitted interaction files. Current22 commit/CI/merge remains unobserved until
+delivery. Full native novel/both origins/scopes/three roles/five exchanges,
+resource/performance acceptance and original release goal remain OPEN.
+These final4 docs precede7 mechanical OPS writes/all480 actual current pins,
+unchanged622 paths/1597 inventory/217 historical frozen tuples and required gates.
+Mechanical bindings never establish product acceptance or completion authority.

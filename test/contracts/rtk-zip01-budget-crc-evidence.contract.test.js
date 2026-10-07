@@ -71,6 +71,23 @@ const R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST = [
   'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
 ];
 const ALLOWLIST = [
+  'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js',
+  'test/contracts/rtk-word-canonical-comment-reexport.contract.test.js',
+  'test/contracts/rtk-word-comment-points.contract.test.js',
+  'test/contracts/rtk-word-comment-return-delta.contract.test.js',
+  'test/contracts/rtk-word-http-links.contract.test.js',
+  'test/contracts/rtk-word-list-pattern-parser.contract.test.js',
+  'test/contracts/rtk-word-media-text-correspondence.contract.test.js',
+  'test/contracts/rtk-word-move-recording.contract.test.js',
+  'test/contracts/rtk-word-pending-formatting.contract.test.js',
+  'test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js',
+  'test/contracts/rtk-word-pending-return-runtime.contract.test.js',
+  'test/contracts/rtk-word-pending-rich-blocks.contract.test.js',
+  'test/contracts/rtk-word-table-cell-shift.contract.test.js',
+  'test/contracts/rtk-word-table-review.contract.test.js',
+  'test/contracts/rtk-word-table-row-revisions.contract.test.js',
+  'test/contracts/rtk-word-tables.contract.test.js',
+
   // ZIP-01 Pass 2c fixture repair (real CRC32 in builder headers).
   '.github/workflows/rtk-required.yml',
   'test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js',

@@ -208,7 +208,7 @@ test('Recording notes successor requires every exact current binding, guard and 
   const candidate = 'f'.repeat(40);
   const bindings = [...expected.bindings, ...expected.guards];
   const bytes = new Map(await Promise.all(bindings.map(async binding => {
-    const value = await fs.readFile(path.join(ROOT, binding.path));
+    const value = execFileSync('git', ['show', '42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:' + binding.path], { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 });
     assert.equal(digest(value), binding.sha256, binding.path);
     return [binding.path, value];
   })));

@@ -43,7 +43,7 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
   if(early){const state=JSON.parse(h.commentText);for(const t of state.threads){t.anchor.sceneParagraphIndex=1;t.anchor.paragraphIndex=1;}h.commentText=JSON.stringify(state);}
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
     subjectId: 'life:session', saved: h.commentText ? {text:h.commentText,state:JSON.parse(h.commentText)} : { state: { threads: h.threads || [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
-  const c = { require: value => require(path.resolve(__dirname,'../../src',value)), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
+  const c = { require: require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
     queueDiskOperation: fn => fn(), readCommentAuthoringContext: async () => context(), requestEditorSnapshot: async () => {
       const value = h.snapshot || { generation: 0, content: fs.readFileSync(file, 'utf8') }; if (h.afterSnapshot) h.afterSnapshot(); return value;
     }, loadDocumentContentEnvelopeModule: async () => envelope, fs: fs.promises,
@@ -569,10 +569,14 @@ test('Paragraph mark typography: actual Main compound route uses atomic writer, 
  assert.deepEqual(model.normalizeNode(live.context().parsed.doc),model.normalizeNode(current));assert.equal(JSON.parse(live.commentText).threads.reduce((n,t)=>n+t.messages.length,0),5);
  const mark=model.readLedger(live.context().parsed.doc).revisions.find(model.isParagraphFormat);assert.equal((await live.command('reject',{revisionId:mark.id})).ok,true);
  assert.deepEqual(model.normalizeNode(live.context().parsed.doc).content[mark.paragraphIndex].attrs.wordParagraphMarkTypography,{bold:false,fontFamily:'Arial',fontSize:'12pt'});assert.equal((await live.command('undo')).ok,true);
+ const beforeExport=live.context().raw;
  const exported=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:live.context().projectRoot,nonTextReturnState:JSON.parse(live.commentText),scenes:[{sceneId:'roman/a.txt',scenePath:live.file,doc:live.context().parsed.doc,text:envelope.deriveVisibleTextFromDocument(live.context().parsed.doc),order:0}]});
  const b=await import('../../src/io/revisionBridge/index.mjs'),bytes=buildDocxReviewPacketBuffer(exported),preview=b.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));const plan=b.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true);const returned=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
- const emitted=doc=>{const copy=model.normalizeNode(doc);for(const p of copy.content)for(const n of p.content||[]){const marks=n.marks||(n.marks=[]);let style=marks.find(m=>m.type==='textStyle');if(!style)marks.push(style={type:'textStyle',attrs:{}});style.attrs={fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'},...style.attrs};}return model.normalizeNode(copy).content.map(p=>({type:p.type,attrs:p.attrs,characters:(p.content||[]).flatMap(n=>[...(n.text||'\n')].map(text=>({text,marks:n.marks||[]})))}));};
- for(const mode of ['original','current'])assert.deepEqual(emitted(model.materialize(model.readLedger(returned),mode)),emitted(model.materialize(model.readLedger(live.context().parsed.doc),mode)));
+ const emitted=doc=>model.normalizeNode(doc).content.map(p=>({type:p.type,attrs:p.attrs,characters:(p.content||[]).flatMap(n=>[...(n.text||'\n')].map(text=>({text,marks:n.marks||[]})))}));
+ const typography=require('../../src/core/word-review-typography-v1.cjs');
+ for(const mode of ['original','current'])assert.deepEqual(emitted(model.materialize(model.readLedger(returned),mode)),
+   emitted(typography.document(model.materialize(model.readLedger(live.context().parsed.doc),mode),exported.localAuthorityCapsule.exportMap.exportTypography)));
+ assert.equal(live.context().raw,beforeExport,'source and full local history stay unchanged during generic readback');
 });
 
 function novelConfirmationFixture() {
@@ -614,7 +618,7 @@ function installConfirmationPort(context,onConfirmation) {
     }});
 }
 function confirmationContext(onConfirmation) {
-  const context=vm.createContext({pendingTextRevisions:model});
+  const context=vm.createContext({pendingTextRevisions:model,require:require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js'))});
   installConfirmationPort(context,onConfirmation);
   vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),context);
   return context;

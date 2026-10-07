@@ -137,7 +137,7 @@ test('Word tables: full-manuscript publication reparses exact table ownership an
   const producer = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
   const [bridge, envelope] = await modules;
   const main = fs.readFileSync(require('node:path').join(__dirname, '../../src/main.js'), 'utf8');
-  const context = vm.createContext({ crypto, Buffer,
+  const context = vm.createContext({ crypto, Buffer, require:require('node:module').createRequire(require('node:path').resolve(__dirname,'../../src/main.js')),
     isPlainObjectValue: x => !!x && typeof x === 'object' && !Array.isArray(x),
     docxReviewPreviewSessionDetailString: x => typeof x === 'string' ? x : '',
     sha256DocxReviewPreviewSessionBytes: b => crypto.createHash('sha256').update(b).digest('hex'),

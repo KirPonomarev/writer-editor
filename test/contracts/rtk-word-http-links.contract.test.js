@@ -218,7 +218,7 @@ test('P1a native Word body bookmark and inherited default size retain exact link
  const href='https://example.invalid/native-default';
  const bm=parts['word/document.xml'].match(/<w:bookmarkStart\b[^>]*\/>/)[0];
  const doc=parts['word/document.xml'].replace(bm,'').replace('<w:body>','<w:body>'+bm)
-   .replace(/ w14:(?:paraId|textId)="[^"]*"/g,'').replace(/<w:sz(?:Cs)?\b[^>]*\/>/g,'');
+   .replace(/ w14:(?:paraId|textId)="[^"]*"/g,'').replace(/<w:r><w:rPr>(?:(?!<\/w:r>)[\s\S])*?<\/w:rPr>/gu,owned=>owned.replace(/<w:sz(?:Cs)?\b[^>]*\/>/gu,''));
  const styles=size=>`<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`;
  const bytes=(size,document=doc)=>buildStoredZip(Object.entries({...parts,'word/document.xml':document,'word/styles.xml':styles(size),'word/_rels/document.xml.rels':parts['word/_rels/document.xml.rels'].replace(xml(HREF),href)}).map(([name,data])=>({name,data})));
  const options={fullManuscriptExportMap:source.localAuthorityCapsule.exportMap,cryptoPort};
