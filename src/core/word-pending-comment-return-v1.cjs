@@ -130,10 +130,29 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
   need([1,2].includes(cleanTransportSchemaVersion),'MIXED_RETURN_PROOF_INVALID');
   const existing=review.readLedger(document);
   need(!existing||binding,'MIXED_RETURN_SIGNED_BINDING_REQUIRED');
+  const authoredRows=review.paragraphs(existing?.source||document);
   document=canonicalPendingBasis(document);
   if(!binding)binding=review.buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs,schemaVersion:cleanTransportSchemaVersion}).binding;
-  let oldLedger=review.readLedger(document);const incoming=review.readLedger(returnedDocument);
+  let oldLedger=review.readLedger(document);let incoming=review.readLedger(returnedDocument);
   need(oldLedger&&incoming&&incoming.revisions.every(r=>r.state==='pending'),'MIXED_RETURN_PENDING_STATE_REQUIRED');
+  const bodyTypography=require('./word-review-typography-v1.cjs');
+  const bodyProfile=bodyTypography.validate(exportTypography,{allowUndefined:true});
+  if(allowUntrackedRichFormatting&&bodyProfile?.schemaVersion===bodyTypography.V2) {
+    const sourceRows=review.paragraphs(oldLedger.source),copy=clone(incoming),rows=review.paragraphs(copy.source);
+    need(sourceRows.length===rows.length,'MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED');
+    sourceRows.forEach((source,index)=>{
+      if(source.type!=='codeBlock')return;
+      const actual=rows[index],language=source.attrs?.language;
+      need(exportParagraphs?.[index]?.nodeType==='codeBlock'&&exportParagraphs[index].codeLanguage===(language||''),'MIXED_RETURN_CODE_STYLE_EMISSION_UNPROVEN');
+      need(actual.type==='codeBlock'&&(actual.attrs?.language===''||equal(actual.attrs?.language,authoredRows[index].attrs?.language)),'MIXED_RETURN_CODE_LANGUAGE_CHANGED');
+      // Independently replay the source-owned syntax field. Every other
+      // attribute remains in the strict structural/format comparison below.
+      actual.attrs={...actual.attrs};delete actual.attrs.language;
+      if(Object.hasOwn(source.attrs||{},'language'))actual.attrs.language=clone(language);
+      if(!Object.keys(actual.attrs).length)delete actual.attrs;
+    });
+    returnedDocument=review.bindLedger(copy);incoming=review.readLedger(returnedDocument);
+  }
   if(oldLedger.revisions.some(r=>r.state!=='pending')){
     // A resolved parent remains local provenance. Only an unchanged authenticated
     // transport may retain it; changed resolved compositions need their own mapper.
@@ -154,8 +173,6 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     if(paragraph.type==='codeBlock')need(exportParagraphs?.[index]?.nodeType==='codeBlock'
       &&exportParagraphs[index].codeLanguage===(paragraph.attrs?.language||''),'MIXED_RETURN_CODE_STYLE_EMISSION_UNPROVEN');
   });
-  const bodyTypography=require('./word-review-typography-v1.cjs');
-  const bodyProfile=bodyTypography.validate(exportTypography,{allowUndefined:true});
   const bodyEmission=noteBinding?.bodyParagraphEmission;
   if(bodyEmission!==undefined)need(equal(bodyEmission,{
     wordParagraphSpacing:{before:0,after:0,line:240,lineRule:'auto'},
@@ -317,7 +334,7 @@ function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afte
   const derived=deriveMixedPendingDocument({document:parsed.doc,returnedDocument,binding:scene.pendingCommentBinding,anchors,
     exportTypography:proof.exportMap.exportTypography,exportParagraphs:scene.blocks.map(b=>b.formatIr?.paragraph)});
   const replacement=review.replaceFromReturn(canonicalPendingBasis(parsed.doc),derived.document,{roundId:proof.roundId,artifactSha256:proof.artifactSha256.replace(/^sha256:/u,'')});
-  const content=envelope.composeObservablePayload({...parsed,doc:replacement.doc});
+  const content=envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc:replacement.doc});
   if(afterContent!==undefined)need(content===afterContent,'MIXED_RETURN_TARGET_MISMATCH');
   const delta=require('./word-comment-return-delta-v1.cjs').planCommentReturnDelta({...proof,beforeText,
     mixedPendingScene:{sceneId,document:parsed.doc,returnedDocument}});
@@ -364,7 +381,7 @@ function planMixedBookReturn({beforeText,projectId,scenes,returnProofJson,notesT
       noteBinding:noteScenes?.[i]||null});
     const replacement=derived.changed?review.replaceFromReturn(derived.beforeDocument||canonicalPendingBasis(parsed.doc),derived.document,
       {roundId:proof.roundId,artifactSha256:proof.artifactSha256.replace(/^sha256:/u,'')}):{doc:parsed.doc,changed:false};
-    const content=derived.changed?envelope.composeObservablePayload({...parsed,doc:replacement.doc}):scene.beforeContent;
+    const content=derived.changed?envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc:replacement.doc}):scene.beforeContent;
     mixed.push({sceneId:scene.sceneId,document:parsed.doc,returnedDocument});
     results.push({sceneId:scene.sceneId,beforeContent:scene.beforeContent,content,changed:content!==scene.beforeContent});
   }

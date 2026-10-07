@@ -6533,7 +6533,9 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       if(result?.ok!==true)throw Error(result?.code||result?.error?.code||'WORD_BOOK_RETURN_DISPATCH_FAILED');
       return {ok:true,status:'applied',writerCalled:true,pendingProductApplyLane:false};
     };
-    const changes={scenes:semantic.scenes.filter(scene=>scene.changed).map(scene=>({sceneId:scene.sceneId,formatOnly:envelope.parseObservablePayload(scene.beforeContent).text===envelope.parseObservablePayload(scene.content).text,before:envelope.parseObservablePayload(scene.beforeContent).doc,after:envelope.parseObservablePayload(scene.content).doc})),
+    const changes={scenes:semantic.scenes.filter(scene=>scene.changed).map(scene=>{
+      const before=scenes.find(source=>source.sceneId===scene.sceneId).parsed,after=envelope.parseObservablePayload(scene.content);
+      return {sceneId:scene.sceneId,formatOnly:before.text===after.text,before:before.doc,after:after.doc||envelope.buildParagraphDocumentFromText(after.text)};}),
       commentsBefore:require('./core/word-comment-authoring-v1.cjs').readState(comments.text,context.projectId).threads,
       comments:require('./core/word-comment-authoring-v1.cjs').readState(semantic.afterText,context.projectId).threads,commentChanges:semantic.changes};
     if(typeof onPrepared==='function')onPrepared({apply,changes});

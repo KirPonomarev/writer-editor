@@ -10,7 +10,7 @@ const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 const stable=v=>JSON.stringify(v,(_k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);
 const encode=doc=>envelope.composeObservablePayload({doc});
 const projectId='mixed-test',sceneId='roman/a.txt';
-async function fixture(clean=false,missing=false,dense=false,format=false) {
+async function fixture(clean=false,missing=false,dense=false,format=false,privatePayload=false) {
   const source={type:'doc',content:['oldnew','tail AAA BBB'].map(text=>({type:'paragraph',content:[{type:'text',text}]}))};
   const revisions=['delete','insert'].map((operation,i)=>({id:'revision-'+(i+1),nativeId:''+i,operation,author:'Writer',date:'',dateUtc:'',paragraphIndex:0,from:i*3,to:i*3+3,state:'pending',groupId:'group-1'}));
   let beforeDoc=review.bindLedger({schemaVersion:1,source,revisions,undo:[],redo:[]});
@@ -24,7 +24,7 @@ async function fixture(clean=false,missing=false,dense=false,format=false) {
     state.schemaVersion='yalken.rtk.word.non-text-return-state.v6';
   }
   if(missing)state.threads=[];
-  const beforeContent=encode(beforeDoc),beforeText=missing?null:JSON.stringify(state);
+  const beforeContent=privatePayload?envelope.composeObservablePayload({doc:beforeDoc,metaEnabled:true,meta:{status:'черновик',synopsis:'Protected synopsis',tags:{pov:'Writer',line:'Novel',place:'Home'}},cards:[{title:'Protected card',text:'Private card body',tags:'Private'}]}):encode(beforeDoc),beforeText=missing?null:JSON.stringify(state);
   const exported=makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail AAA BBB',doc:beforeDoc,observableContent:beforeContent}]});
   const ledger=structuredClone(review.readLedger(beforeDoc)||{schemaVersion:2,source:beforeDoc,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});ledger.source.content[1].content[0].text='tail AAAZZZ BBB';
   ledger.revisions.push(...['delete','insert'].map((operation,i)=>({id:'revision-'+(3+i),nativeId:''+(2+i),operation,author:'Editor',date:'',dateUtc:'',paragraphIndex:1,from:5+i*3,to:8+i*3,state:'pending',groupId:'group-2'})));
@@ -50,6 +50,24 @@ async function fixture(clean=false,missing=false,dense=false,format=false) {
 }
 const plan=f=>planMixedPendingReturn({...f,returnProofJson:JSON.stringify(f.proof)});
 
+test('single-scene mixed return preserves complete private envelope through round Undo/Redo',async()=>{
+  const f=await fixture(true,false,false,true,true),result=plan(f);
+  const before=envelope.parseObservablePayload(f.beforeContent),after=envelope.parseObservablePayload(result.content);
+  const privateFields=p=>({meta:p.meta,cards:p.cards,hasMetaBlock:p.hasMetaBlock});
+  assert.equal(before.hasMetaBlock,true);
+  assert.deepEqual(before.cards,[{title:'Protected card',text:'Private card body',tags:'Private'}]);
+  assert.deepEqual(privateFields(after),privateFields(before));
+  const projection=review.projection(after.doc);assert.equal(projection.current,'new\ntail ZZZ BBB');assert.equal(projection.original,'new\ntail AAA BBB');
+  const undone=review.decide(after.doc,{action:'undo'}).doc;
+  assert.deepEqual(review.normalizeNode(undone),f.beforeDoc);
+  const undoneLedger=review.readLedger(undone),appliedLedger=review.readLedger(after.doc);
+  assert.deepEqual(undoneLedger.source,f.beforeDoc);assert.deepEqual(undoneLedger.revisions,[]);
+  assert.deepEqual(undoneLedger.returnReceipts,appliedLedger.returnReceipts);
+  assert.deepEqual(undoneLedger.roundRedo,[{schemaVersion:appliedLedger.schemaVersion,source:appliedLedger.source,revisions:appliedLedger.revisions,undo:appliedLedger.undo,redo:appliedLedger.redo}]);
+  const redone=review.decide(undone,{action:'redo'}).doc;
+  assert.deepEqual(redone,after.doc);
+  for(const doc of [undone,redone])assert.deepEqual(privateFields(envelope.parseObservablePayload(envelope.composeObservablePayload({...after,metaEnabled:after.hasMetaBlock,doc}))),privateFields(before));
+});
 test('changed text, comment bodies and pending language survive exact mixed return and round Undo/Redo', async () => {
   const f=await fixture(true,false,false,true),result=plan(f);
   const doc=envelope.parseObservablePayload(result.content).doc,ledger=review.readLedger(doc);
@@ -71,9 +89,10 @@ test('changed text, comment bodies and pending language survive exact mixed retu
   const bridge=await import('../../src/io/revisionBridge/index.mjs');
   const bytes=build(source),preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);
   assert.equal(preview.ok,true,JSON.stringify(preview));
+  // Fresh full-manuscript v2 uses the checked rich-format policy of planMixedBookReturn.
   const unchanged=require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({
     document:doc,returnedDocument:preview.contentPreview.pendingRevisionDocument,
-    binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,
+    binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,allowUntrackedRichFormatting:true,
     anchors:state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor})),
     exportTypography:source.localAuthorityCapsule.exportMap.exportTypography,
     exportParagraphs:source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph)});
@@ -84,7 +103,7 @@ test('changed text, comment bodies and pending language survive exact mixed retu
   property.format.before=[{type:'bold'}];
   const forgedDoc=review.bindLedger(bad);
   assert.throws(()=>require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({
-    document:doc,returnedDocument:forgedDoc,binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,
+    document:doc,returnedDocument:forgedDoc,binding:source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,allowUntrackedRichFormatting:true,
     anchors:state.threads.map(t=>({threadId:t.threadId,anchor:t.anchor})),exportTypography:source.localAuthorityCapsule.exportMap.exportTypography,
     exportParagraphs:source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph)}),/MIXED_RETURN_SOURCE_CHANGED/);
 });

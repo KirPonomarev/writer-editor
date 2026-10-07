@@ -1,3 +1,22 @@
+## 2026-10-07 — protected code/private correction; broad return counterexamples open
+
+Same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains undelivered from42b.
+HOLD03 freezes33 source/test hashes. Actual Main25of25 and complete private
+single-scene Undo/Redo1of1 pass with zero exclusions. Checked index and separate
+Core replay restore only authenticated code syntax representation; live/source
+and forged-after guards remain. Mixed composers preserve full metadata/cards;
+a retained changed-code red exposed synopsis loss before this correction.
+Complete mixed transaction45of46 and root frozen Other14 535of582 retain one
+and47 failures respectively. Root Main302of326 began before final freeze;
+its positives are not final-candidate certification. All failures block release.
+Four bounded read-only observations identify internal-link join expectation,
+implicit720 generic-preview root attribute, cross-realm closed legacy profile,
+and dropped pending paragraph discriminator. Bookmark effective marker and
+unchanged empty representation remain hypotheses. Mechanical frozen OPS is
+not acceptance. Next: admit same-task bounded repair on a clean checkpoint,
+then full source/ordinary packaged native checks and mandatory delivery.
+Original100k/five genuine both-origin three-role and performance remain OPEN.
+
 ## 2026-10-07 — actual unchanged full-book control; code schema return still blocked
 
 Same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 contour remains undelivered.

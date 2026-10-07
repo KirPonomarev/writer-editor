@@ -11380,6 +11380,18 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         return {...JSON.parse(JSON.stringify(node)),content:present};
       };
       const source=slice(ledger.source);
+      if(sectionsVerified&&bodyProfile?.schemaVersion===bodyTypography.V2) {
+        // These exact source blocks passed raw IR and actual effective code
+        // style/readback above. DOCX carries no programming-language field.
+        const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId).document;
+        const before=pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(baseline)?.source||baseline),actual=pendingTextRevisions.paragraphs(source);
+        for(const [i,block] of scene.blocks.entries())if(block.formatIr?.paragraph?.nodeType==='codeBlock') {
+          if(before[i]?.type!=='codeBlock'||actual[i]?.type!=='codeBlock'||actual[i].attrs?.language!=='')throw Error('WORD_BODY_CODE_SOURCE_BINDING');
+          actual[i].attrs={...actual[i].attrs};delete actual[i].attrs.language;
+          if(Object.hasOwn(before[i].attrs||{},'language'))actual[i].attrs.language=before[i].attrs.language;
+          if(!Object.keys(actual[i].attrs).length)delete actual[i].attrs;
+        }
+      }
       if(sectionsVerified){
         const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId)?.document;
         if(!baseline)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');

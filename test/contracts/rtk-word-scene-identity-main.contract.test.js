@@ -3439,16 +3439,18 @@ test('actual Main reads genuine predecessor-published persisted v1 round after e
  assert.equal(admitted.ok,true,JSON.stringify(admitted));assert.deepEqual(reopened.capture(),before);assert.equal(read(reopened.probe.authorityPath(reopened.root)),persisted);
 });
 
-for(const variant of ['no-save','unchanged','javascript','python','empty-language','text','format','role','extra-attr','stale-source','late-live','late-source','dirty','generation'])test('actual Main book renderer code default '+variant,async t=>{
+for(const variant of ['no-save','saved-null','saved-empty','saved-javascript','saved-python','code-text','code-text-null','forge-language','forge-role','forge-attrs','unchanged','javascript','python','empty-language','text','format','role','extra-attr','stale-source','late-live','late-source','dirty','generation'])test('actual Main book renderer code default '+variant,async t=>{
  const f=await fixture(t),p=text=>({type:'paragraph',content:[{type:'text',text}]}),doc={type:'doc',content:[p('Anchor'),{type:'codeBlock',content:[{type:'text',text:'code();'}]},p('Tail')]};
+ if(variant==='saved-null'||variant==='code-text-null')doc.content[1].attrs={language:null};
+ if(variant.startsWith('saved-')&&variant!=='saved-null')doc.content[1].attrs={language:variant.slice(6)==='empty'?'':variant.slice(6)};
  const raw=envelope.composeObservablePayload({doc,metaEnabled:true,meta:{status:'черновик',synopsis:'private untouched',tags:{}},cards:[]});
  fs.writeFileSync(f.alpha,raw);f.source=raw;
  const [{Editor},{default:StarterKit}]=await Promise.all([import('@tiptap/core'),import('@tiptap/starter-kit')]);
  const editor=new Editor({element:null,extensions:[StarterKit.configure({trailingNode:false})],content:doc});
  const working=envelope.canonicalizeDocumentJson(editor.getJSON());editor.destroy();
- assert.deepEqual(working.content[1].attrs,{language:null},'actual renderer schema materializes the missing code language');
+ assert.deepEqual(working.content[1].attrs,{language:doc.content[1].attrs?.language??null},'actual renderer schema materializes only missing code language');
  const comparator=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
- assert.equal(comparator.commentSceneSnapshotsEqual(working,doc),false,'shared comparator remains strict and unchanged');
+ assert.equal(comparator.commentSceneSnapshotsEqual(working,doc),!['no-save','code-text','forge-language','forge-role','forge-attrs','unchanged','javascript','python','empty-language','text','format','role','extra-attr','stale-source','late-live','late-source','dirty','generation'].includes(variant),'shared comparator remains strict and unchanged');
  let observed=envelope.composeObservablePayload({...envelope.parseObservablePayload(raw),metaEnabled:true,doc:working});
  mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
@@ -3458,6 +3460,10 @@ for(const variant of ['no-save','unchanged','javascript','python','empty-languag
  if(variant!=='unchanged'){
   const run=parts['word/document.xml'].match(/<w:r>[\s\S]*?<w:t[^>]*>Beta<\/w:t><\/w:r>/u);assert.ok(run);const literal=run[0].slice(run[0].lastIndexOf('<w:r>'));
   parts['word/document.xml']=parts['word/document.xml'].replace(literal,literal+'<w:ins w:id="971" w:author="Word writer" w:date="2026-10-07T01:02:03Z">'+literal.replace('Beta',' NEW')+'</w:ins>');
+ }
+ if(variant.startsWith('code-text')){
+  const run=parts['word/document.xml'].match(/<w:r>[\s\S]*?<w:t[^>]*>code\(\);<\/w:t><\/w:r>/u);assert.ok(run);const literal=run[0].slice(run[0].lastIndexOf('<w:r>'));
+  parts['word/document.xml']=parts['word/document.xml'].replace(literal,literal+'<w:ins w:id="972" w:author="Word writer" w:date="2026-10-07T01:02:04Z">'+literal.replace('code();',' MORE')+'</w:ins>');
  }
  if(['javascript','python','empty-language','text','format','role','extra-attr'].includes(variant)){
   const changed=structuredClone(working);
@@ -3473,12 +3479,23 @@ for(const variant of ['no-save','unchanged','javascript','python','empty-languag
  const activated=await f.probe.reviewActivate({requestId:'code-schema-'+variant,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onPendingReturnPrepared:value=>{prepared=value;}});
  assert.deepEqual(f.capture(),before);
  if(['javascript','python','empty-language','text','format','role','extra-attr','stale-source'].includes(variant)){
-  assert.equal(activated.pendingProductPath?.code,variant==='stale-source'?'WORD_BOOK_RETURN_SOURCE_STALE':'WORD_BOOK_RETURN_SAVE_FIRST',JSON.stringify(activated));assert.equal(prepared,undefined);return;
+  if(variant==='stale-source')assert.equal(activated.error?.reason,'RTK_RETURN_INTAKE_STALE_FULL_MANUSCRIPT_SCENE',JSON.stringify(activated));
+  else assert.equal(activated.pendingProductPath?.code,'WORD_BOOK_RETURN_SAVE_FIRST',JSON.stringify(activated));assert.equal(prepared,undefined);return;
  }
  if(variant==='unchanged'){
   assert.equal(prepared,undefined);assert.equal(activated.error?.reason,'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS',JSON.stringify(activated));assert.equal(activated.error.details.candidateSummary.diagnosticItemCount,0);return;
  }
  assert.equal(activated.pendingProductPath?.status,'preview-ready',JSON.stringify({activated,savedSource:doc,actualParsedSource:require('../../src/core/word-pending-text-revisions-v1.cjs').readLedger(bridge.buildDocxContentPreviewFromZipBytes(bytes).contentPreview.pendingRevisionDocument)?.source}));assert.ok(prepared);
+ if(variant.startsWith('forge-')){
+  f.probe.beforeNextBookTransaction(request=>{
+   const plan=structuredClone(request.treeCohort),proof=JSON.parse(plan.input.returnProofJson),code=proof.returnedScenes[0].ledger.source.content[1];request.treeCohort=plan;
+   if(variant==='forge-language')code.attrs={language:'python'};
+   if(variant==='forge-role'){code.type='paragraph';delete code.attrs;}
+   if(variant==='forge-attrs')code.attrs={wordCustom:'ignored'};
+   plan.input.returnProofJson=JSON.stringify(proof);
+  });
+  await assert.rejects(prepared.apply(),variant==='forge-attrs'?/PENDING_REVISIONS_INVALID/u:/MIXED_RETURN_CODE_LANGUAGE_CHANGED/u);assert.deepEqual(f.capture(),before);return;
+ }
  if(['late-live','late-source','dirty','generation'].includes(variant)){
   if(variant==='late-live'){const changed=structuredClone(working);changed.content[1].attrs.language='javascript';observed=envelope.composeObservablePayload({doc:changed});}
   if(variant==='late-source')fs.appendFileSync(f.beta,' OWNER');
@@ -3491,12 +3508,23 @@ for(const variant of ['no-save','unchanged','javascript','python','empty-languag
  const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(f.temp,'code-default-return.docx'),size:bytes.length}),readLocalFileBytes:async()=>bytes};
  const cancelled=await f.probe.reviewLocalFile({requestId:'code-default-cancel'},options);assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify(cancelled));assert.deepEqual(f.capture(),before);
  f.chooseMessageResponse(1);const applied=await f.probe.reviewLocalFile({requestId:'code-default-apply'},options);assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));assert.equal(applied.pendingProductPath.writerCalled,true);
- assert.equal(read(f.alpha),raw,'comparison default must never save the source or its private metadata');
+ if(!variant.startsWith('code-text'))assert.equal(read(f.alpha),raw,'comparison default must never save the source or its private metadata');
+ else {
+  const alpha=envelope.parseObservablePayload(read(f.alpha)),old=envelope.parseObservablePayload(raw),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  assert.equal(alpha.hasMetaBlock,old.hasMetaBlock);assert.deepEqual(alpha.meta,old.meta);assert.deepEqual(alpha.cards,old.cards);
+  const expected=structuredClone(doc);expected.content[1].content[0].text+=' MORE';if(expected.content[1].attrs?.language===null)delete expected.content[1].attrs;
+  assert.deepEqual(pending.readLedger(alpha.doc).source,expected,'changed ledger retains existing canonical null omission while preserving all other source fields');
+  assert.equal(pending.projection(alpha.doc).original,envelope.deriveVisibleTextFromDocument(doc));assert.equal(pending.projection(alpha.doc).current,envelope.deriveVisibleTextFromDocument(expected));
+ }
  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs'),after=envelope.parseObservablePayload(read(f.beta)).doc,ledger=pending.readLedger(after);
  assert.equal(pending.projection(after).current,'Beta NEW');assert.equal(pending.projection(after).original,'Beta');
- assert.deepEqual(ledger.source,{type:'doc',content:[p('Beta NEW')]});assert.equal(ledger.revisions.length,1);
- assert.deepEqual({...ledger.revisions[0],id:null},{id:null,nativeId:'971',operation:'insert',author:'Word writer',date:'2026-10-07T01:02:03Z',dateUtc:'2026-10-07T01:02:03Z',groupId:null,paragraphIndex:0,from:4,to:8,state:'pending'});
- for(const [name,value] of Object.entries(before.files))if(name!=='roman/Imported/02_Beta.txt')assert.equal(f.capture().files[name],value);
+ assert.deepEqual(ledger.source,{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Beta'},{type:'text',text:' NEW',marks:[{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'}}}]}]}]});assert.equal(ledger.revisions.length,1);
+ // This native wrapper carries w:date only; no UTC extension is authored.
+ assert.deepEqual(ledger.revisions[0],{id:'revision-1',nativeId:'971',operation:'insert',author:'Word writer',date:'2026-10-07T01:02:03Z',dateUtc:'',groupId:null,paragraphIndex:0,from:4,to:8,state:'pending'});
+ assert.deepEqual(ledger.returnReceipts,[{roundId:source.localAuthorityCapsule.roundId,artifactSha256:sha(bytes)}]);
+ const undone=pending.decide(after,{action:'undo'}).doc;assert.deepEqual(pending.readLedger(undone).source,{type:'doc',content:[p('Beta')]});
+ assert.deepEqual(pending.decide(undone,{action:'redo'}).doc,after,'complete source/revision/provenance/round history survives real Core Undo/Redo');
+ for(const [name,value] of Object.entries(before.files))if(name!=='roman/Imported/02_Beta.txt'&&!(variant.startsWith('code-text')&&name==='roman/Imported/01_Alpha.txt'))assert.equal(f.capture().files[name],value);
 });
 
 for(const variant of ['unchanged','code-fill','marker-font'])test('actual Main effective Word relocation role preview '+variant,async t=>{

@@ -288,6 +288,72 @@ all raw/private bytes. Root repeats a fresh normal no-save native path before
 Word and explicit Cancel/Apply/restart/reexport in SOURCE and ordinary PACKAGED;
 full stable gates and complete current PR delivery remain required.
 
+### AMENDMENT03_SOURCE_OWNED_CODE_REPRESENTATION
+
+Clean e36c07088e41ba61cf8d8645d56ffed743f98e6e checkpoint is still the same
+undelivered original42b contour. Fresh clean preflight binds44 unchanged
+paths and ARCHITECTURE_DECLARATION_AMENDMENT_03.json SHA256
+813f03ad0fa07fcdfa0757b1182c285f9f6aa916352842de3e2ca02f2e217117.
+Root reverified T7 UUID, encryption, unlocked writability and remote42b.
+E0 for this amendment precedes separate code writer dispatch. Total budgets,
+single PR, protected state and rollback are unchanged.
+
+Actual DOCX pending converter uses codeBlock.language empty string although
+Word cannot encode the source syntax language. Reconstruct only that protected
+source property from authenticated per-block source at existing checked intake
+and independent Core replay seams, after full role/style/format and coordinate
+proof. Source absence and null must remain exact in untouched saved files;
+legitimate changed code text may alter only checked text and its ledger.
+Explicit source empty/nonempty language laws remain guarded. Returned unknown
+attrs, role/style/shading/font/language or forged source cannot be discarded.
+No global normalization, weak shape equality, raw-source fixture conversion,
+new durable field/schema/authority bit or shared-comparator change is admitted.
+
+The same existing confirmation projection must accept valid plain version1
+sources using the already validated scene parsed.doc fallback, preserving raw
+beforeContent and all source/CAS guards. This repairs a null before-doc display
+refusal observed after code reconstruction; no surface, flow or style changes.
+The retained selected12of14 failure identifies that refusal and an earlier
+stale-source typed rejection. Only its obsolete test expectation may change;
+the actual stale rejection and full protected-byte assertions stay enforced.
+
+Retain the actual8pass6fail counterexample. Require actual Main preparation,
+Cancel full no-write, leased Apply complete protected/private equality, late
+live/source/dirty/generation no-write, source absent/null and explicit syntax
+controls plus independent forged-after Core negatives. Root repeats fresh
+no-save SOURCE and ordinary PACKAGED physical controls before full gates and
+complete delivery. A short component success cannot close original100k/five
+exchanges/three roles/both origins or product performance acceptance.
+
+### AMENDMENT03_FROZEN_COUNTEREXAMPLES_AND_CHECKPOINT
+
+HOLD03 freezes33 declared source/test hashes; aggregate runtime467of1800 and
+behavior405of2600 remain measured against original42b. Actual selected Main
+25of25 and the single-scene complete private-envelope Undo/Redo case1of1 pass
+without exclusions. Checked intake and independent Core reconstruct only
+source-owned code syntax; genuine property, forged-after and stale guards stay.
+Main confirmation projects an already validated plain source. Both mixed
+composers now explicitly preserve hasMetaBlock, complete meta and cards.
+Actual changed-code control first exposed a synopsis loss; its retained red and
+complete private-field regression establish this correction, not whole success.
+
+The complete mixed transaction file passes45of46; its original rich reexport
+still fails strict structure comparison. Root frozen Other14 passes535of582,
+47 failures with no exclusions. The root whole Main run passes302of326,
+24 failures; it began before final source freeze and cannot certify final
+candidate positives. All failed inputs/logs remain retained and block release.
+No physical changed Word Apply, fresh packaged proof or full delivery follows.
+
+Read-only diagnosis pins AMENDMENT03_READONLY_DIAGNOSIS_RECEIPT_01.json SHA256
+225a9aab57302f483a598770257c69b776255d06e4740bacb98fdf1256959b2a.
+Four executed observations identify missing expected internal-link join name,
+implicit720 root tabstop on generic preview, a legitimate legacy profile from
+another ordinary object realm, and loss of format.kind paragraph in pending
+emission. Effective bookmark marker, absent empty content and duplicate-tabstop
+fixture remain qualified hypotheses. Frozen byte governance is mechanical,
+not acceptance. This known-incomplete checkpoint remains in the original single
+undelivered PR/rollback; it authorizes no new contour or reduced novel scope.
+
 ### AMENDMENT02_KNOWN_INCOMPLETE_CHECKPOINT
 
 Separate writer WRITER_AMENDMENT02_HOLD_01.json binds Main14added/1removed
