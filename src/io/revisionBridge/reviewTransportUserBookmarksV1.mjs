@@ -607,7 +607,8 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
     const scenes = exportMap?.scenes;
     if (!Array.isArray(scenes)) return fail('private-map');
     const rows = scenes.flatMap(scene => (scene.blocks || []).map(block => ({scene,block})));
-    const hasPatterns = rows.some(({block}) => block.formatIr?.paragraph?.list?.wordNumbering);
+    const hasPatterns = rows.some(({block}) => block.formatIr?.paragraph?.list?.wordNumbering)
+      || bodyTypography.validate(exportMap.exportTypography,{allowUndefined:true})?.schemaVersion===bodyTypography.V2&&rows.some(({block})=>block.formatIr?.paragraph?.list);
     if (!hasPatterns) return {ok:true,hasPatterns:false,operations:[]};
     const proof = reviewIr.listNumbering, observed = reviewIr.formattingParagraphs;
     if (proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1' || !Array.isArray(proof.paragraphs)

@@ -3102,6 +3102,28 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       && childTokensWithin(paragraphScan, markProperties[0]).every(t => t.depth === markProperties[0].depth + 1 && isWordToken(t, 'lang')
         && !documentXml.slice(markProperties[0].openEnd, t.openStart).trim()
         && !documentXml.slice(t.closeEnd, markProperties[0].closeStart).trim());
+    // Actual effective marker facts are separate from the legacy direct
+    // representation. No export profile or source expectation enters here.
+    let effectiveParagraphMarkTypography, effectiveParagraphMarkTypographyInvalid=false;
+    let effectiveCodeStyle;
+    try {
+      if(!paragraphStyle)throw Error('effective-marker-style');
+      const direct=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
+      const tokens=effectiveStyles.run(paragraphStyle,direct,true),fonts=tokens.find(t=>isWordToken(t,'rFonts'));
+      const slots=Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].map(key=>[key,fonts?attr(fonts,key,W_NS):'']));
+      const actions=formattingInlineActions(tokens),value={};
+      for(const [name,key]of [['b','bold'],['i','italic'],['u','underline'],['strike','strike'],['color','color'],['highlight','highlight'],['shd','highlight'],['sz','fontSize'],['szCs','fontSize']])
+        if(tokens.some(t=>isWordToken(t,name))&&!actions[key])throw Error('effective-marker-property-invalid');
+      for(const [key,action]of Object.entries(actions))value[key]=action.action==='set'?action.value:['bold','italic','underline','strike'].includes(key)?false:null;
+      if(tokens.some(t=>!['b','i','u','strike','color','highlight','shd','rFonts','sz','szCs','lang'].includes(t.localName))
+        ||Object.values(slots).some(v=>!v)||!value.fontSize)throw Error('effective-marker-incomplete');
+      delete value.fontFamily;
+      if(new Set(Object.values(slots)).size===1)value.fontFamily=slots.ascii;else value.fontSlots=slots;
+      effectiveParagraphMarkTypography=normalizeParagraphMarkTypography(value);
+      const style=directParagraphChildren.find(t=>isWordToken(t,'pStyle')),shade=paragraphPropertyChildren.find(t=>isWordToken(t,'shd'));
+      if(style&&attr(style,'val',W_NS)==='YalkenCodeBlock'&&shade)effectiveCodeStyle={styleId:'YalkenCodeBlock',
+        shading:{val:attr(shade,'val',W_NS),color:attr(shade,'color',W_NS).toLowerCase(),fill:attr(shade,'fill',W_NS).toLowerCase()}};
+    }catch{effectiveParagraphMarkTypographyInvalid=true;}
     let markTypographyInvalid=false;
     try {
       if(markProperties.length>1)throw Error('WORD_PARAGRAPH_MARK_DUPLICATE');
@@ -3225,6 +3247,9 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       ...(markLanguage.value ? { wordParagraphMarkLanguage: markLanguage.value } : {}),
       ...(markLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
       ...(markLanguage.invalid ? { wordLanguageInvalid: true } : {}),
+      ...(effectiveParagraphMarkTypography?{effectiveParagraphMarkTypography}:{}),
+      ...(effectiveParagraphMarkTypographyInvalid?{effectiveParagraphMarkTypographyInvalid:true}:{}),
+      ...(effectiveCodeStyle?{effectiveCodeStyle}:{}),
       paragraphActions,
       paragraphStructure: paragraphStructure || {},
       unsupportedParagraphNames,
@@ -3253,6 +3278,9 @@ function formattingParagraphsSemanticProjection(paragraphs) {
     ...(paragraph.wordParagraphMarkLanguage ? { wordParagraphMarkLanguage: paragraph.wordParagraphMarkLanguage } : {}),
     ...(paragraph.wordParagraphMarkLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
     ...(paragraph.wordLanguageInvalid ? { wordLanguageInvalid: true } : {}),
+    ...(paragraph.effectiveParagraphMarkTypography?{effectiveParagraphMarkTypography:paragraph.effectiveParagraphMarkTypography}:{}),
+    ...(paragraph.effectiveParagraphMarkTypographyInvalid?{effectiveParagraphMarkTypographyInvalid:true}:{}),
+    ...(paragraph.effectiveCodeStyle?{effectiveCodeStyle:paragraph.effectiveCodeStyle}:{}),
     paragraphActions: paragraph.paragraphActions,
     paragraphStructure: paragraph.paragraphStructure,
     unsupportedParagraphNames: paragraph.unsupportedParagraphNames,

@@ -1,3 +1,28 @@
+## 2026-10-07 — unchanged Word counterexample repaired; fresh native pending
+
+WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains one undelivered contour from42b.
+Actual SOURCE02 exported all three scenes and13 paragraph leaves. Independent
+full Current/Original XML meaning and direct Word spacing readback agree after
+unchanged Save As; the actual public return invented10 formatting operations
+and3 diagnostics. No Apply ran; all six complete business files stayed exact.
+The failed artifacts remain immutable. This was a product failure, not success.
+
+Amendment01 atb7ffe99 passed44-path preflight before edits. Existing parser now
+publishes separate actual effective marker/code-role facts under its existing
+semantic and packet digests; source-derived expectations remain separate.
+Source-bound numbering, zero spacing and quote/code roles compare full meaning;
+unknown/changed styles refuse. Legacy v1 and raw/private source remain intact.
+Separate writer HOLD02 freezes all16 runtime and two test hashes. Root whole
+body suite passes84of84; a selected Main run passed14of15, with one retained
+stale typed-error expectation. The corrected existing case passes1of1; actual
+body guard and exact foot/endnote refusal assertions now match the v2 order.
+Writer separate focused Main15of15 and expectation/note2of2 have no exclusions.
+These are component executions, not completed native or whole-novel evidence.
+
+Fresh SOURCE/ordinary PACKAGED unchanged and genuinely changed controls,
+complete Cancel/Apply/restart/reexport, whole affected/mandatory gates, delivery
+and original100k/five genuine exchanges/both origins/three roles remain OPEN.
+
 ## 2026-10-07 — body candidate frozen; genuine full-book Word proof open
 
 WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains one undelivered contour at42b.

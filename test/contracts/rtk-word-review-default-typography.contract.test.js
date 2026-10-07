@@ -340,3 +340,89 @@ test('legacy v1 no-comment pending producer does not retrofit body bindings',()=
  const before=structuredClone(doc),result=require('../../src/export/docx/docxReviewPacketComments.js').bindPendingCommentExport({commentExport:null,scenes:[{sceneId,doc}],blocks:[],exportTypography:typography});
  assert.deepEqual(result,{commentExport:null,pendingCommentBindings:[]});assert.deepEqual(doc,before);
 });
+
+function wordRelocatedBodyParts(parts) {
+ parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:docDefaults>[\s\S]*?<\/w:docDefaults>/u,
+  '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+ parts['word/document.xml']=parts['word/document.xml'].replace(/<w:pPr>[\s\S]*?<\/w:pPr>/gu,p=>{
+  p=p.replace(/<w:rFonts[^>]*\/>/u,f=>f.includes('Georgia')?'<w:rFonts w:ascii="Georgia"/>':'').replace(/<w:sz(?:Cs)? w:val="(?:24|20)"\/>/gu,'').replace(' w:before="0"','');
+  if(p.includes('YalkenCodeBlock'))p=p.replace(' w:before="80"','').replace(' w:after="80"','');
+  if(p.includes('YalkenBlockquote1'))p=p.replace('<w:ind w:left="720"/>','');
+  if(p.includes('Georgia'))p=p.replace(' w:bidi="ar-SA"','');
+  return p;
+ }).replace(/<w:rFonts w:ascii="(?:Times New Roman|Menlo)"[^>]*\/>/gu,'').replace(/<w:sz(?:Cs)? w:val="24"\/>/gu,'');
+ return parts;
+}
+function completeBodyRoleDocument() {
+ const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
+ return {type:'doc',content:[p('Anchor alpha: Строка для правки.'),{type:'heading',attrs:{level:2},content:[{type:'text',text:'Глава первая'}]},
+ {type:'paragraph',content:[{type:'text',text:'bold',marks:[{type:'bold'}]},{type:'text',text:' / italic',marks:[{type:'italic'}]},{type:'text',text:' / Привет 😀'}]},p(''),
+ {type:'paragraph',content:[{type:'text',text:'break before'},{type:'hardBreak'},{type:'text',text:'break after'}]},
+ {type:'blockquote',content:[p('Quote retained.')]},{type:'bulletList',content:[{type:'listItem',content:[p('Bullet retained.')]}]},
+ {type:'orderedList',attrs:{start:1},content:[{type:'listItem',content:[p('Number retained.')]}]},
+ {type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code = 1;'}]},
+ {type:'paragraph',attrs:{wordParagraphMarkTypography:{fontSlots:{ascii:'Georgia'},fontSize:'14pt'},wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'},wordParagraphSpacing:{before:40,after:80,line:260,lineRule:'auto'}},content:[{type:'text',text:'Authored Georgia text.',marks:[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt'}}]}]},
+ p('Second scene plain text.'),p('Final sibling unchanged: Ελληνικά 中文 שלום.'),p('End sentinel gamma.')]};
+}
+for(const mutation of ['none','inherited-ascii','inherited-hAnsi','inherited-eastAsia','inherited-cs','direct-slot','inherited-size','inherited-sizeCs','direct-sizeCs','inherited-color-invalid','direct-color-invalid','inherited-color','direct-highlight','inherited-highlight-invalid','direct-bold','inherited-bold-invalid','main-language','aux-language','before','quote-indent','list-start','code-fill','code-style','theme'])test('actual producer complete13 Word style relocation '+mutation,async()=>{
+ const [,bridge]=await modules,doc=completeBodyRoleDocument(),before=structuredClone(doc),source=freshBodySource(doc),map=structuredClone(source.localAuthorityCapsule.exportMap);
+ const own=buildDocxReviewPacketBuffer(source),parts=wordRelocatedBodyParts(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:own}).parts);
+ const styles=s=>{parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:rPr></w:rPrDefault>',s+'</w:rPr></w:rPrDefault>');};
+ if(mutation.startsWith('inherited-')&&['ascii','hAnsi','eastAsia','cs'].includes(mutation.slice(10)))parts['word/styles.xml']=parts['word/styles.xml'].replace('w:'+mutation.slice(10)+'="Times New Roman"','w:'+mutation.slice(10)+'="Arial"');
+ if(mutation==='direct-slot')parts['word/document.xml']=parts['word/document.xml'].replace('<w:pPr>','<w:pPr><w:rPr><w:rFonts w:cs="Arial"/><w:sz w:val="24"/></w:rPr>');
+ if(mutation==='inherited-size')parts['word/styles.xml']=parts['word/styles.xml'].replaceAll('w:val="24"','w:val="28"');
+ if(mutation==='inherited-sizeCs')parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:szCs w:val="24"/>','<w:szCs w:val="28"/>');
+ if(mutation==='direct-sizeCs')parts['word/document.xml']=parts['word/document.xml'].replace('<w:rPr>','<w:rPr><w:szCs w:val="28"/>');
+ if(mutation==='inherited-color-invalid')styles('<w:color w:val="ZZZZZZ"/>');
+ if(mutation==='inherited-color')styles('<w:color w:val="FF0000"/>');
+ if(mutation==='inherited-highlight-invalid')styles('<w:highlight w:val="not-a-color"/>');
+ if(mutation==='inherited-bold-invalid')styles('<w:b w:val="invalid"/>');
+ if(mutation==='direct-color-invalid')parts['word/document.xml']=parts['word/document.xml'].replace('<w:rPr>','<w:rPr><w:color w:val="ZZZZZZ"/>');
+ if(mutation==='direct-highlight')parts['word/document.xml']=parts['word/document.xml'].replace('<w:rPr>','<w:rPr><w:highlight w:val="yellow"/>');
+ if(mutation==='direct-bold')parts['word/document.xml']=parts['word/document.xml'].replace('<w:rPr>','<w:rPr><w:b/>');
+ if(mutation==='main-language')parts['word/document.xml']=parts['word/document.xml'].replace('w:val="en-US"','w:val="en-GB"');
+ if(mutation==='aux-language')parts['word/document.xml']=parts['word/document.xml'].replace('w:bidi="en-US"','w:bidi="he-IL"');
+ if(mutation==='before')parts['word/document.xml']=parts['word/document.xml'].replace('<w:spacing w:after="0"','<w:spacing w:before="40" w:after="0"');
+ if(mutation==='quote-indent')parts['word/styles.xml']=parts['word/styles.xml'].replace('w:left="720"','w:left="960"');
+ if(mutation==='list-start')parts['word/numbering.xml']=parts['word/numbering.xml'].replaceAll('w:start w:val="1"','w:start w:val="3"');
+ if(mutation==='code-fill')parts['word/styles.xml']=parts['word/styles.xml'].replace('w:fill="F3F4F6"','w:fill="FF0000"');
+ if(mutation==='code-style'){parts['word/styles.xml']=parts['word/styles.xml'].replaceAll('YalkenCodeBlock','ForeignCode');parts['word/document.xml']=parts['word/document.xml'].replaceAll('YalkenCodeBlock','ForeignCode');}
+ if(mutation==='theme')parts['word/styles.xml']=parts['word/styles.xml'].replace('w:ascii="Times New Roman"','w:asciiTheme="minorHAnsi"');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const literal=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+ const observed=literal.extractReviewTransportFormattingRunsV2(parts['word/document.xml'],{stylesXml:parts['word/styles.xml'],settingsXml:parts['word/settings.xml'],cryptoPort});
+ if(['inherited-sizeCs','direct-sizeCs','inherited-color-invalid','direct-color-invalid','inherited-highlight-invalid','inherited-bold-invalid'].includes(mutation))assert.ok(observed.paragraphs[0].effectiveParagraphMarkTypographyInvalid,JSON.stringify(observed.paragraphs[0]));
+ let analysis;
+ try{analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});}
+ catch(error){
+  const expected={'direct-sizeCs':'WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED','inherited-color-invalid':'DOCX_INLINE_COLOR_INVALID','direct-color-invalid':'DOCX_INLINE_COLOR_INVALID','inherited-highlight-invalid':'DOCX_INLINE_HIGHLIGHT_INVALID','inherited-bold-invalid':'DOCX_INLINE_ON_OFF_INVALID'};
+  assert.equal(error.code||error.message,expected[mutation]);assert.deepEqual(source.localAuthorityCapsule.exportMap,map);assert.deepEqual(doc,before);return;
+ }
+ const result=bridge.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:analysis.reviewIr},{fullManuscriptExportMap:map,cryptoPort});
+ if(mutation==='none'){
+  assert.equal(analysis.ok,true,JSON.stringify(analysis));assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(result.candidates,[]);assert.deepEqual(result.diagnostics,[]);
+  assert.equal(analysis.reviewIr.formattingParagraphs.length,13);const rows=analysis.reviewIr.formattingParagraphs;
+  assert.equal(rows[3].paragraphState.wordParagraphMarkTypography,undefined);assert.deepEqual(rows[3].effectiveParagraphMarkTypography,{fontFamily:'Times New Roman',fontSize:'12pt'});
+  assert.deepEqual(rows[9].paragraphState.wordParagraphMarkTypography,{fontSlots:{ascii:'Georgia'},fontSize:'14pt'});
+  assert.deepEqual(rows[9].effectiveParagraphMarkTypography,{fontSlots:{ascii:'Georgia',hAnsi:'Times New Roman',eastAsia:'Times New Roman',cs:'Times New Roman'},fontSize:'14pt'});
+  assert.equal(rows[8].unsupportedParagraphNames.includes('shd'),true);assert.equal(rows[6].unsupportedParagraphNames.includes('numPr'),true);
+ }else assert.ok(!analysis.ok||!result.ok||result.candidates?.length||result.diagnostics?.length,JSON.stringify({mutation,result}));
+ assert.deepEqual(source.localAuthorityCapsule.exportMap,map);assert.deepEqual(doc,before);
+});
+
+test('actual effective marker and code facts remain bound by existing worker packet integrity',async()=>{
+ const [,bridge]=await modules,source=freshBodySource(completeBodyRoleDocument()),bytes=buildDocxReviewPacketBuffer(source),analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true);
+ const artifactSha256='sha256:'+hash(bytes),packet=bridge.buildReturnEvidencePacketV1({requestId:'owned-effective-projection',artifactSha256,returnedProjection:analysis.reviewIr,projectionDigest:analysis.supportedSemanticDigest,effectiveBudgets:analysis.effectiveBudgets,effectiveBudgetDigest:analysis.effectiveBudgetDigest,workerBuildDigest:analysis.parserProfileDigest});
+ assert.equal(bridge.verifyReturnEvidencePacketV1(packet,{expectedArtifactSha256:artifactSha256}).ok,true);
+ for(const mutate of [p=>p.returnedProjection.formattingParagraphs[0].effectiveParagraphMarkTypography.fontFamily='Arial',p=>p.returnedProjection.formattingParagraphs[8].effectiveCodeStyle.shading.fill='ff0000',p=>delete p.returnedProjection.formattingParagraphs[0].effectiveParagraphMarkTypography]){
+  const forged=structuredClone(packet);mutate(forged);const rejected=bridge.verifyReturnEvidencePacketV1(forged,{expectedArtifactSha256:artifactSha256});assert.equal(rejected.ok,false);assert.equal(rejected.detail,'packet-digest-mismatch');
+ }
+});
+
+test('actual effective marker equality preserves authored off and reset spelling in raw source',async()=>{
+ const [,bridge]=await modules,doc={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,color:null,highlight:null}},content:[{type:'text',text:'Authored off'}]}]},before=structuredClone(doc),source=freshBodySource(doc),map=structuredClone(source.localAuthorityCapsule.exportMap);
+ const parts=wordRelocatedBodyParts(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer(source)}).parts);
+ parts['word/document.xml']=parts['word/document.xml'].replace(/<w:b w:val="0"\/>|<w:color w:val="auto"\/>|<w:highlight w:val="none"\/>|<w:shd w:val="nil"\/>/gu,'');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true,JSON.stringify(analysis));
+ const result=bridge.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:analysis.reviewIr},{fullManuscriptExportMap:map});assert.deepEqual(result.candidates,[]);assert.deepEqual(result.diagnostics,[]);assert.deepEqual(doc,before);assert.deepEqual(source.localAuthorityCapsule.exportMap,map);
+});

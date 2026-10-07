@@ -46,6 +46,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   const compiled = new Module(mainPath, module);
   compiled.filename = mainPath; compiled.paths = Module._nodeModulePaths(path.dirname(mainPath));
   const hooks = `\nmodule.exports.__probe = {
+    useOwnedBridge(value) { loadRevisionBridgeModule=async()=>value; },
     state(values = {}) {
       if ('filePath' in values) currentFilePath = values.filePath;
       if ('projectName' in values) currentProjectName = values.projectName;
@@ -2987,7 +2988,8 @@ test('book notes actual Main retains real ZIP break evidence and refuses altered
 });
 
 test('book notes publication uses exact local emitted defaults and authored overrides, refusing every run language field and font corruption',async t=>{
- const {x}=await composedNotesMainFixture(t,{authored:true}),built=await x.f.probe.reviewBuild(x.source);
+ const {x}=await composedNotesMainFixture(t,{authored:true}),built=await x.f.probe.reviewBuild(x.source),before=x.f.capture(),rawSource=structuredClone(x.source.localAuthorityCapsule);
+ assert.equal(x.source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
  const original=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
  const index=x.source.localAuthorityCapsule.exportMap.scenes[2].blocks[0].documentParagraphIndex;
@@ -2998,10 +3000,12 @@ test('book notes publication uses exact local emitted defaults and authored over
   parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>at++===index?mutate(p):p);
   assert.notEqual(parts['word/document.xml'],original['word/document.xml'],field+' actual corruption');
   const gate=await x.f.probe.fullGate(x.source,pack(parts));assert.equal(gate.publishAllowed,false,JSON.stringify({field,gate}));
-  assert.equal(gate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(gate.reason,'WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+  assert.equal(gate.code,'RTK_V4_PUBLICATION_BODY_TYPOGRAPHY_MISMATCH');assert.equal(gate.reason,'WORD_BODY_READBACK_FINAL');
+  assert.deepEqual(x.f.capture(),before);assert.deepEqual(x.source.localAuthorityCapsule,rawSource);
  }
  const parts={...original};parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace('w:after="120"','w:after="121"');
- const gate=await x.f.probe.fullGate(x.source,pack(parts));assert.equal(gate.publishAllowed,false);assert.equal(gate.reason,'PENDING_NOTE_BODY_CHANGED');
+ const gate=await x.f.probe.fullGate(x.source,pack(parts));assert.equal(gate.publishAllowed,false);assert.equal(gate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(gate.reason,'PENDING_NOTE_BODY_CHANGED');
+ assert.deepEqual(x.f.capture(),before);assert.deepEqual(x.source.localAuthorityCapsule,rawSource);
  const provisional={...x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:x.source.provisionalSelfParseArtifact.bytes}).parts};
  provisional['word/endnotes.xml']=provisional['word/endnotes.xml'].replace('w:val="ru-RU"','w:val="en-GB"');
  const source={...x.source,provisionalSelfParseArtifact:{...x.source.provisionalSelfParseArtifact,bytes:pack(provisional)},
@@ -3009,6 +3013,7 @@ test('book notes publication uses exact local emitted defaults and authored over
  source.advisoryManifest.coreManifest.artifactIdentities.provisionalDocxSha256='sha256:'+sha(source.provisionalSelfParseArtifact.bytes);
  const provisionalGate=await x.f.probe.fullGate(source,built.documentBuffer);
  assert.equal(provisionalGate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(provisionalGate.reason,'PENDING_NOTE_BODY_CHANGED');
+ assert.deepEqual(x.f.capture(),before);assert.deepEqual(x.source.localAuthorityCapsule,rawSource);
 });
 
 // Three durable scene entities: two edited owners and one untouched control.
@@ -3354,7 +3359,7 @@ test('fresh manuscript body defaults do not enter canonical source through actua
 });
 
 
-for(const variant of ['unchanged','tracked-text','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
+for(const variant of ['unchanged','word-relocated','tracked-text','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
  const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
  const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]}),ledger={schemaVersion:1,source:{type:'doc',content:[p('AxxB'),{type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code();'}]},p('')]},
   revisions:[{id:'revision-1',nativeId:'1',operation:'delete',author:'Writer',date:'2026-10-07T00:00:00Z',dateUtc:'2026-10-07T00:00:00Z',groupId:null,paragraphIndex:0,from:1,to:3,state:'pending'}],undo:[],redo:[]};
@@ -3380,6 +3385,10 @@ for(const variant of ['unchanged','tracked-text','stale-source','forged-binding'
   const changed=variant==='code-font'?code.replaceAll('Menlo','Arial'):variant==='code-language'?code.replaceAll('w:bidi="en-US"','w:bidi="ar-SA"'):code.replace('w:after="80"','w:after="120"');
   assert.notEqual(changed,code);parts['word/document.xml']=parts['word/document.xml'].replace(code,changed);
  }
+ if(variant==='word-relocated'){
+  parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/>');
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:pPr>[\s\S]*?<\/w:pPr>/gu,p=>{const code=p.includes('YalkenCodeBlock');p=p.replace(/<w:rFonts[^>]*\/>/gu,'').replace(/<w:sz(?:Cs)? w:val="(?:24|20)"\/>/gu,'').replace(' w:before="0"','');return code?p.replace(' w:before="80"','').replace(' w:after="80"',''):p;});
+ }
  if(variant==='tab-stop')parts['word/settings.xml']=parts['word/settings.xml'].replace('w:val="720"','w:val="708"');
  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
  await f.probe.activate(source.pendingAuthorityStore);
@@ -3399,4 +3408,69 @@ for(const variant of ['unchanged','tracked-text','stale-source','forged-binding'
   const reexport=await f.probe.fullSource(),again=await f.probe.reviewBuild(reexport);assert.equal(again.publicationGate.publishAllowed,true,JSON.stringify(again.publicationGate));
  }else assert.deepEqual(pending.readLedger(envelope.parseObservablePayload(read(f.alpha)).doc),ledger);
 
+});
+
+test('actual Main reads genuine predecessor-published persisted v1 round after effective marker upgrade',async t=>{
+ const cp=require('node:child_process'),{pathToFileURL}=require('node:url');
+ const prior='b7ffe99afd13658b56f7c1587a6645e9259864b2',parserPath=path.join(ROOT,'src/io/revisionBridge/reviewTransportPackageParserV2.mjs'),indexPath=path.join(ROOT,'src/io/revisionBridge/index.mjs');
+ const historical=relative=>cp.execFileSync('git',['show',prior+':'+relative],{cwd:ROOT,encoding:'utf8',maxBuffer:4*1024*1024});
+ const imports=(s,file)=>s.replace(/(from\s+|import\s*)(['"])(\.{1,2}\/[^'"]+)\2/gu,(_m,prefix,q,spec)=>prefix+q+new URL(spec,pathToFileURL(file)).href+q);
+ const oldParser='data:text/javascript;base64,'+Buffer.from(imports(historical('src/io/revisionBridge/reviewTransportPackageParserV2.mjs'),parserPath)).toString('base64');
+ const oldIndex=imports(historical('src/io/revisionBridge/index.mjs'),indexPath).replace(pathToFileURL(parserPath).href,oldParser);
+ const oldBridge=await import('data:text/javascript;base64,'+Buffer.from(oldIndex).toString('base64'));
+ const f=await fixture(t);f.probe.useOwnedBridge(oldBridge);
+ const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]};fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc}));f.source=read(f.alpha);
+ mountRenderer(f,()=>read(f.alpha),0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.sceneSource(),built=await f.probe.reviewBuild(source);
+ assert.equal(source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v1');assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ await f.probe.activate(source.pendingAuthorityStore);const persisted=read(f.probe.authorityPath(f.root));
+ const reopened=await fixture(t,false,'01_Alpha.txt',false,f.temp),before=reopened.capture();
+ mountRenderer(reopened,()=>read(reopened.alpha),0,null,()=>({projectId:reopened.query.projectId,documentId:reopened.a.nodeId}));reopened.probe.state({filePath:reopened.alpha,projectName:'Роман'});
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),cryptoPort={sha256Text:x=>'sha256:'+sha(x),sha256Json:x=>'sha256:'+sha(JSON.stringify(x,(_k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v)),byteLength:x=>Buffer.byteLength(x)};
+ const oldParse=oldBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:built.documentBuffer},{cryptoPort}),newParse=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:built.documentBuffer},{cryptoPort});
+ assert.equal(oldParse.ok,true,JSON.stringify(oldParse));assert.equal(newParse.ok,true,JSON.stringify(newParse));
+ assert.equal(oldParse.reviewIr.formattingParagraphs[0].effectiveParagraphMarkTypography,undefined);
+ assert.notEqual(oldParse.supportedSemanticDigest,newParse.supportedSemanticDigest);
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ const run=parts['word/document.xml'].match(/<w:r>[\s\S]*?<w:t[^>]*>Alpha<\/w:t><\/w:r>/u);assert.ok(run);const literal=run[0].slice(run[0].lastIndexOf('<w:r>'));
+ parts['word/document.xml']=parts['word/document.xml'].replace(literal,literal+'<w:ins w:id="851" w:author="Word writer" w:date="2026-10-07T02:03:04Z">'+literal.replace('Alpha',' NEW')+'</w:ins>');
+ const returned=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const admitted=await reopened.probe.reviewActivate({requestId:'predecessor-v1-after-upgrade',bufferSource:returned.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.equal(admitted.ok,true,JSON.stringify(admitted));assert.deepEqual(reopened.capture(),before);assert.equal(read(reopened.probe.authorityPath(reopened.root)),persisted);
+});
+
+for(const variant of ['unchanged','code-fill','marker-font'])test('actual Main effective Word relocation role preview '+variant,async t=>{
+ const f=await fixture(t),p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]}),doc={type:'doc',content:[p('Anchor'),p(''),{type:'blockquote',content:[p('Quote')]},
+  {type:'bulletList',content:[{type:'listItem',content:[p('Bullet')]}]},{type:'orderedList',attrs:{start:1},content:[{type:'listItem',content:[p('Number')]}]},
+  {type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code();'}]}]};
+ fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc,metaEnabled:true,meta:{status:'черновик',synopsis:'private keep',tags:{}},cards:[]}));f.source=read(f.alpha);
+ mountRenderer(f,()=>read(f.alpha),0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:docDefaults>[\s\S]*?<\/w:docDefaults>/u,
+  '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+ parts['word/document.xml']=parts['word/document.xml'].replace(/<w:pPr>[\s\S]*?<\/w:pPr>/gu,p=>{
+  p=p.replace(/<w:rFonts[^>]*\/>/gu,'').replace(/<w:sz(?:Cs)? w:val="(?:24|20)"\/>/gu,'').replace(' w:before="0"','');
+  if(p.includes('YalkenCodeBlock'))p=p.replace(' w:before="80"','').replace(' w:after="80"','');
+  if(p.includes('YalkenBlockquote1'))p=p.replace('<w:ind w:left="720"/>','');return p;
+ }).replace(/<w:rFonts w:ascii="(?:Times New Roman|Menlo)"[^>]*\/>/gu,'').replace(/<w:sz(?:Cs)? w:val="24"\/>/gu,'');
+ if(variant==='code-fill')parts['word/styles.xml']=parts['word/styles.xml'].replace('w:fill="F3F4F6"','w:fill="FF0000"');
+ if(variant==='marker-font')parts['word/document.xml']=parts['word/document.xml'].replace('<w:rPr><w:lang','<w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/><w:sz w:val="28"/><w:szCs w:val="28"/><w:lang');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),before=f.capture();
+ const activated=await f.probe.reviewActivate({requestId:'actual-effective-roles-'+variant,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});assert.deepEqual(f.capture(),before);
+ if(variant==='unchanged'){
+  assert.equal(activated.ok,false,JSON.stringify(activated));assert.equal(activated.error.reason,'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS');assert.equal(activated.error.details.candidateSummary.diagnosticItemCount,0);
+  const cryptoPort={sha256Text:x=>'sha256:'+sha(x),sha256Json:x=>'sha256:'+sha(JSON.stringify(x,(_k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v)),byteLength:x=>Buffer.byteLength(x)};
+  const actual=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort}),plan=bridge.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:actual.reviewIr},{fullManuscriptExportMap:source.localAuthorityCapsule.exportMap});
+  assert.deepEqual(plan.candidates,[]);assert.deepEqual(plan.diagnostics,[]);assert.deepEqual(f.capture(),before);return;
+ }
+ assert.equal(activated.ok,true,JSON.stringify(activated));
+ const preview=f.probe.reviewState().reviewSurface.formattingReturnPreview;assert.ok(preview,JSON.stringify(activated));
+ if(variant==='unchanged'){assert.equal(preview.operationCount,0);assert.deepEqual(preview.operations,[]);assert.deepEqual(preview.diagnostics,[]);}
+ if(variant==='code-fill'){assert.ok(preview.diagnostics.some(d=>d.code==='WORD_BODY_CODE_FORMAT_UNSUPPORTED'),JSON.stringify(preview));assert.equal(preview.operationCount,0);const refused=await f.probe.formatApply({requestId:'unsupported-code-no-write'});assert.notEqual(refused.applied,true);assert.deepEqual(f.capture(),before);}
+ if(variant==='marker-font'){
+  assert.equal(preview.operationCount,1,JSON.stringify(preview));assert.deepEqual(preview.diagnostics,[]);const settle=f.probe.observeDeferredEditorSync(),applied=await f.probe.formatApply({requestId:'effective-marker-format-apply'});await settle();assert.equal(applied.ok,true,JSON.stringify(applied));
+  const expected=structuredClone(envelope.parseObservablePayload(f.source));expected.doc.content[0].attrs={wordParagraphMarkTypography:{fontFamily:'Georgia',fontSize:'14pt'}};
+  const actual=envelope.parseObservablePayload(read(f.alpha));assert.deepEqual(actual.doc,expected.doc);assert.deepEqual(actual.meta,expected.meta);assert.deepEqual(actual.cards,expected.cards);assert.equal(f.capture().files['roman/Imported/02_Beta.txt'],before.files['roman/Imported/02_Beta.txt']);
+ }
 });

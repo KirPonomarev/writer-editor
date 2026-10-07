@@ -5111,12 +5111,30 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     const returnedStructure = isPlainObject(paragraph.paragraphStructure)
       ? paragraph.paragraphStructure
       : {};
+    const bodyV2=options.fullManuscriptExportMap?.exportTypography?.schemaVersion===bodyTypography.V2;
+    let comparedParagraph=paragraph;
+    if(bodyV2&&baselineParagraphRecord.nodeType==='codeBlock') {
+      const expectedCode={styleId:'YalkenCodeBlock',shading:{val:'clear',color:'auto',fill:'f3f4f6'}};
+      if(hashCanonicalValue(paragraph.effectiveCodeStyle)!==hashCanonicalValue(expectedCode)
+        ||!bodyTypography.readback(rawFormatIr,paragraph,options.fullManuscriptExportMap.exportTypography)) {
+        diagnostics.push({code:'WORD_BODY_CODE_FORMAT_UNSUPPORTED',sceneId:authority.sceneId,blockId:authority.blockId,paragraphIndex});continue;
+      }
+      comparedParagraph={...paragraph,unsupportedParagraphNames:(paragraph.unsupportedParagraphNames||[]).filter(name=>name!=='shd')};
+    }
     const returnedParagraphState = isPlainObject(paragraph.paragraphState) ? {...paragraph.paragraphState} : {};
+    if(bodyV2) {
+      if(paragraph.effectiveParagraphMarkTypographyInvalid||!paragraph.effectiveParagraphMarkTypography) {
+        diagnostics.push({code:'WORD_BODY_MARK_EFFECTIVE_REQUIRED',sceneId:authority.sceneId,blockId:authority.blockId,paragraphIndex});continue;
+      }
+      baselineParagraph.wordParagraphMarkTypography=bodyTypography.markerMeaning(baselineParagraph.wordParagraphMarkTypography);
+      returnedParagraphState.wordParagraphMarkTypography=bodyTypography.markerMeaning(paragraph.effectiveParagraphMarkTypography);
+      if(returnedParagraphState.wordParagraphSpacing)returnedParagraphState.wordParagraphSpacing={before:0,after:0,...returnedParagraphState.wordParagraphSpacing};
+    }
     for(const [key,effective] of [['wordParagraphIndent',paragraphLayout.effectiveWordParagraphIndent],['wordParagraphTabs',paragraphLayout.effectiveWordParagraphTabs]])if(Object.hasOwn(baselineParagraph,key)&&hashCanonicalValue(effective(baselineParagraph[key]))===hashCanonicalValue(effective(returnedParagraphState[key])))returnedParagraphState[key]=baselineParagraph[key];
     if(Object.hasOwn(baselineParagraph,'textAlign')&&!Object.hasOwn(returnedParagraphState,'textAlign')
       && paragraph.resolvedTextAlign==='left')returnedParagraphState.textAlign='left';
     const returnedParagraphActions = isPlainObject(paragraph.paragraphActions) ? {...paragraph.paragraphActions} : {};
-    if(!paragraph.unsupportedParagraphNames?.length&&!paragraph.paragraphFormattingInvalid)for(const key of ['wordParagraphIndent','wordParagraphTabs','wordParagraphMarkTypography'])if(!Object.hasOwn(returnedParagraphState,key))returnedParagraphActions[key]={action:'remove'};
+    if(!comparedParagraph.unsupportedParagraphNames?.length&&!paragraph.paragraphFormattingInvalid)for(const key of ['wordParagraphIndent','wordParagraphTabs','wordParagraphMarkTypography'])if(!Object.hasOwn(returnedParagraphState,key))returnedParagraphActions[key]={action:'remove'};
     const paragraphAmbiguousRemovals = docxReviewFormattingAmbiguousRemovalKeys(
       baselineParagraph,
       returnedParagraphState,
@@ -5129,7 +5147,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       run.unsupportedNames.length > 0 || run.invalidSupportedValue === true
     ));
     const hasUnsupportedParagraphFormatting = (
-      (Array.isArray(paragraph.unsupportedParagraphNames) && paragraph.unsupportedParagraphNames.length > 0)
+      (Array.isArray(comparedParagraph.unsupportedParagraphNames) && comparedParagraph.unsupportedParagraphNames.length > 0)
       || paragraph.paragraphFormattingInvalid === true
     );
     const hasUnsupportedFormatting = hasUnsupportedRunFormatting || hasUnsupportedParagraphFormatting;

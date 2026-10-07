@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: CODE_CANDIDATE_NATIVE_AND_DELIVERY_OPEN
+STATUS: NATIVE_UNCHANGED_COUNTEREXAMPLE_REPAIR_AND_DELIVERY_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -26,7 +26,7 @@ whole-file tests, release OPS and guardrails process0. Short native SOURCE and
 ordinary PACKAGED evidence remains candidate62db-bound with identical merged
 runtime tree; no native merged rerun or whole-novel readiness follows.
 
-Current complete body emission is noteV3-gated; no-note and other books have only
+Before this contour, complete body emission was noteV3-gated; no-note and other books have only
 legacy12pt defaults. Actual Word materialization was observed. Returned Word
 properties cannot supply baseline authority. Replacing source formatIR breaks
 raw-source equality and canonicalMarksSha256 and is forbidden.
@@ -34,7 +34,7 @@ raw-source equality and canonicalMarksSha256 and is forbidden.
 ## ARTIFACT
 
 One coherent export/return correction. Root owns task/docs/OPS/proof/delivery;
-separate code agent owns declared runtime/behavior tests.43 explicit paths;
+separate code agent owns declared runtime/behavior tests.44 explicit paths;
 runtime maximum1800 changed lines, behavior maximum2600. Unused paths need not
 change. A small pure Core helper is permitted only for immediate finite
 validation/projection consumers, with no registry, cache, writer or future engine.
@@ -54,6 +54,7 @@ validation/projection consumers, with no registry, cache, writer or future engin
 - `src/export/docx/docxPendingRevisions.js`
 - `src/export/docx/docxReviewPacketNotes.js`
 - `src/io/revisionBridge/index.mjs`
+- `src/io/revisionBridge/reviewTransportPackageParserV2.mjs`
 - `src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs`
 - `src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs`
 - `src/io/revisionBridge/reviewTransportMediaReturnV1.mjs`
@@ -87,7 +88,9 @@ validation/projection consumers, with no registry, cache, writer or future engin
 
 ## DENYLIST
 
-No renderer/preload/parser/atomic-writer/package/dependency/runtime-network edit.
+No renderer/preload/atomic-writer/package/dependency/runtime-network edit.
+Parser edits are limited to the actual-effective projection described in
+amendment01 below; hostile package validation and authority remain unchanged.
 No raw formatIR/hash replacement, unchanged-source rewrite, strip-all-defaults
 comparison, observed Word default as authority, skipped/weakened oracle or
 self-PASS. No new durable family, side registry, cache, writer, command, auth
@@ -196,12 +199,74 @@ integrationMode: EXISTING_SEAM
 
 ## IMPLEMENTATION_STEPS
 
+### Same-task amendment01 — genuine Word unchanged return
+
+Clean candidate b7ffe99afd13658b56f7c1587a6645e9259864b2 failed its first
+actual SOURCE02 full-book unchanged Word return:10 invented formatting
+operations and3 diagnostics on13 paragraphs in3 scenes. Complete independent
+Current/Original text, roles, fonts4, languages3, marks, numbering, spacing and
+revision comparison proves the Word save semantically unchanged. Direct Word
+readback confirms all13 before/after spacing tuples, including omitted zero.
+Apply was never executed; six complete business files remained byte-exact and
+the owned app exited normally. Failed artifacts are retained outside the repo.
+
+Amendment01 adds only the existing reviewTransportPackageParserV2.mjs seam.
+Fresh clean preflight binds b7ffe99,44 exact paths and declaration SHA256
+76a7158cc3699ed1a4ae0da469365e25bbb1bc7877c32c5e50075115530386e1.
+E0 for this amended task precedes code dispatch. Original42b base, single PR,
+rollback and total runtime1800/behavior2600 budgets remain unchanged.
+
+The existing bounded actual effective-style catalog may expose a separate
+immutable paragraph-mark typography and exact emitted code-role projection.
+Observed values come only from the returned package; expected values come only
+from authenticated source. Preserve legacy direct representation and v1 law.
+No durable source/proof field, new schema family, command, authority bit,
+dependency, style registry or parser-boundary relaxation is admitted.
+
+Owned quote indentation follows the actual producer. Missing zero spacing is
+compared by effective meaning, preserving every nonzero/line/rule change.
+Existing source-bound legacy numbering proof must validate complete actual
+list meaning before numPr can be accepted. Only the exact locally emitted code
+style/shading may be classified after complete actual proof; unknown or changed
+shading remains an explicit effect or typed no-loss refusal. Never ignore all
+numPr/shd, fill returned fields from the export descriptor, infer marker fonts
+from text runs, or flatten inherited font slots.
+
+Keep the frozen actual artifact red control; exercise portable real producer
+ZIP style relocation, empty marks and partial authored slots. Direct/inherited
+font-slot, size, language, spacing, quote, list and code changes must remain
+observable operations or no-write refusals. Root then repeats genuine SOURCE
+and ordinary PACKAGED controls on clean candidate bytes before delivery.
+
 1. Separate writer maps all immediate readers and retains actual old red control;
    freezes finite shape before edit without inventing a new authority layer.
 2. Implement complete local emission and independent source-derived comparison.
 3. Actual ZIP/Main/atomic controls, then root independent review and early fresh
    short genuine SOURCE/PACKAGED Word route before broad stable gates.
 4. Freeze bytes, full required proofs and complete Git delivery.
+
+### AMENDMENT01_COMPONENT_FREEZE
+
+WRITER_AMENDMENT01_HOLD_02.json freezes16 runtime and two behavior files;
+runtime413of1800 and behavior290of2600 against original42b. Actual whole body
+suite84of84, focused Main15of15 and protected note/typed expectation2of2 have
+zero fail/cancel/skip/todo. Root independently ran body84of84 and Main14of15;
+the retained failure is an old notes-first expectation on a fresh v2 body
+corruption, which correctly refuses earlier at WORD_BODY_READBACK_FINAL.
+Test-only correction retains note-specific refusals and full source/business
+no-write assertions; root rerun of that exact case passes1of1.
+
+The frozen SOURCE02 Word bytes now give zero formatting operations and zero
+diagnostics through a read-only current parser comparison. This diagnostic
+holds no key, local round authority or Apply permit and is not actual native
+Main acceptance. Predecessor b7ffe99 parser/index publication stored by actual
+Main can be reopened by upgraded actual Main for a real tracked insertion;
+legacy authority bytes remain identical. Semantic digest changes are bound in
+fresh packet validation; no production cached analysis branch is used by Main.
+
+All fresh native controls and full mandatory delivery proofs remain open. Root
+freezes only exact-byte OPS companions after source hold, then commits a clean
+candidate for SOURCE and ordinary packaged execution. No whole-plan PASS.
 
 ## CHECKS
 

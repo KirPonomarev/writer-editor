@@ -61,6 +61,7 @@ function paragraph(value,typography) {
     if(!authored.fontSize)typographyMark.fontSize='10pt';
   }
   return {...clone(value),
+    ...(value.wordParagraphIndent==null&&Number.isSafeInteger(value.blockquoteDepth)&&value.blockquoteDepth>0&&value.blockquoteDepth<=8?{wordParagraphIndent:{left:value.blockquoteDepth*720}}:{}),
     wordParagraphSpacing:{...defaults.wordParagraphSpacing,...(code?{before:80,after:80}:{}),...value.wordParagraphSpacing},
     wordParagraphMarkLanguage:{...defaults.wordParagraphMarkLanguage,...value.wordParagraphMarkLanguage},
     wordParagraphMarkTypography:normalizeParagraphMarkTypography(typographyMark)};
@@ -116,6 +117,11 @@ function segments(value,sourceParagraph,typography,{canonicalCode=false}={}) {
       before:node({type:'text',text:'x',marks:segment.revision.format.before},sourceParagraph,checked).marks,
       after:node({type:'text',text:'x',marks:segment.revision.format.after},sourceParagraph,checked).marks}}}:{})}));
 }
+function markerMeaning(value) {
+  const result=require('../io/inlineTypography.cjs').comparableParagraphMarkTypography(value);
+  if(result)for(const key of ['color','highlight'])if(result[key]===null)delete result[key];
+  return result;
+}
 // Compare the parser's effective presentation against the independently
 // emitted source. This does not fill missing returned fonts/language/line data.
 function readback(raw,actual,typography,{allowTextChanges=false}={}) {
@@ -123,13 +129,13 @@ function readback(raw,actual,typography,{allowTextChanges=false}={}) {
   if(validate(typography).schemaVersion!==V2)fail('WORD_REVIEW_BODY_PROFILE_REQUIRED');
   if(!actual||actual.paragraphFormattingInvalid||actual.wordLanguageInvalid
     ||actual.formattedRuns?.some(run=>run.invalidSupportedValue||run.unsupportedNames?.length))return false;
+  if(expected.paragraph.nodeType==='codeBlock'&&!same(actual.effectiveCodeStyle,{styleId:'YalkenCodeBlock',shading:{val:'clear',color:'auto',fill:'f3f4f6'}}))return false;
   const actualP=actual.paragraphState||{};
   for(const key of ['wordParagraphMarkLanguage','wordParagraphMarkTypography','wordParagraphSpacing']) {
-    let a=actualP[key],b=expected.paragraph[key];
+    let a=key==='wordParagraphMarkTypography'?actual.effectiveParagraphMarkTypography:actualP[key],b=expected.paragraph[key];
     if(key==='wordParagraphSpacing'&&a)a={before:0,after:0,...a};
     if(key==='wordParagraphMarkTypography') {
-      const comparable=require('../io/inlineTypography.cjs').comparableParagraphMarkTypography;
-      a=a==null?null:comparable(a);b=b==null?null:comparable(b);
+      a=a==null?null:markerMeaning(a);b=b==null?null:markerMeaning(b);
     }
     if(!same(a,b))return false;
   }
@@ -162,4 +168,4 @@ function readback(raw,actual,typography,{allowTextChanges=false}={}) {
   }
   return true;
 }
-module.exports={V1,V2,validate,freshBodyTypography,paragraph,inline,formatIr,document,segments,snapshot,readback};
+module.exports={markerMeaning,V1,V2,validate,freshBodyTypography,paragraph,inline,formatIr,document,segments,snapshot,readback};
