@@ -1496,7 +1496,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "e47955cb9c1b3c6824ab4f5dee7a903f66d313a0d9ea611e2e41ac733758341a"
+        "sha256": "df3c40a7c3aa9bbd1e4d28e8d167aa798192b9ad00371d1535e62631f3cbd300"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "a6627d63cc7d1365eb632b611a46476e94c8a9b3dbf79ee5929ea0244e9e518a"
+        "sha256": "85ae2f8ca634e0d5bfb3558f32e3cf8f1256466d57e13bb4c8c08c334b3a2143"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "b4f2202bce6242c01a2e734db9f8e0d97d2483e7f88b0f3b563ae9b6b9d1554f"
+        "sha256": "a0febc8bf53f9b856896b22578750554a7c6578fdbfa424a48f69ee40e9b12fd"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "b9fd90ad1f422e433a9face795aa917dbf9320637311ab91f6fa000e0a6c5044"
+        "sha256": "0e0a1d61095b95192e543340423687e18756591f7a528d3dcb9602502ced1035"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2660,7 +2660,7 @@
       },
       {
         "path": "src/core/word-pending-comment-return-v1.cjs",
-        "sha256": "30fc60fdfa33166431cddd68cf6525b18ac2789bb938df66f763678332c635df"
+        "sha256": "6c936e26a2a1c02702779a4e0f6a3d3d307dce01585c4af1cbbd4f22f715fafb"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "e8667bcdb915de7b80530d4496f98f60ee7e81c1b96e01d584c68fba6b5dc62d"
+        "sha256": "24b4db9cf76f8fb1bfe37daadb063b3a519ac9d491ca038087f34884708c04eb"
       }
     ],
     "followupRepair": {

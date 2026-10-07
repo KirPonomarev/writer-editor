@@ -1,3 +1,46 @@
+## 2026-10-07 — amendment08 complete-history counterexample checkpoint
+
+HOLD08 SHA256f0ddecf40cb2e5c36f7e5ec77b7070041978e2ca24f75a0d8f5a8f1cb004ffc2
+freezes33 bindings; root verifies33 and6 evidence files, runtime680/1800,
+behavior841/2600. Retained pending source and accepted/rejected states preserve
+whole raw source including actual nonempty undo. Genuine acceptAll-to-undo
+source has nonempty redo. Selected02 actual0of1 exit1, zero exclusions,
+reveals final adapter336 reconstructs redo as empty on unchanged derived
+return. Selected01 prior capability expectation mistake remains retained.
+Exact field observer SHA256efc9952d7ca3130a6be5fe599e33ceffb5ed377f5bb039de23c7a02a2d19e2f5
+and root full-document comparison show ONLY redo differs. Index06/Core07
+stay frozen. Book planner406-408 preserves original raw scene for unchanged
+return; no persisted Main scene loss was observed. The pure derived document
+history contract is wrong. Freeze same-contour incomplete checkpoint, then
+admit source-only history retention after every existing guard and complete
+reconstructed source/revision/other nonhistory equality. Returned history
+has no authority. Real changed-return round semantics stay unchanged.
+Native, mandatory delivery and full original novel remain OPEN.
+
+## 2026-10-07 — amendment08 retained replay expectation and raw preservation
+
+Clean6272fddcf53a2692f38b03ab93628d3ebcb98d3e is a known-incomplete
+same original42b checkpoint; one PR/rollback,44paths,1800/2600 total budgets.
+Declaration08 SHA256042218e4780b5d576a9f9c56b4a1e4a2839431f4bfd4cddabe225069eddb7143,
+fresh clean bootstrap/preflight0, retained adapter311 red captured before edit.
+O: unchanged retained paragraph-format returns changedfalse with complete raw
+source/history exact; genuine Word text Apply/restart/reexport remains required.
+T: authenticated source+finiteV2 emission -> adapter expected old transition ->
+independent actual before/after -> existing Kernel/leased atomic writer.
+H5: adapter311 repeats raw-versus-full comparison;317-324 promotes unchanged
+emitted default underlays into raw old history. Source-owned existing snapshot
+matches actual both sides. Compare emitted SOURCE operand only; preserve raw
+spacing/language when ACTUAL both sides equal respective emitted source values.
+Genuine changed common underlays retain their existing law. LegacyV1 literal.
+B: index06, Core07, helper, actual operand, global formatTransitionMeaning,
+raw ledger/history/source/formatIR/hashes and provenance/coords/parent unchanged.
+P: source expected versus actual before/after exact field proof; retained full
+raw equality and accept/reject/UndoRedo, nonvacuous actual corruptions and legacy;
+final focused hold then early SOURCE/ordinary PACKAGED, full mandatory delivery.
+I: exact6272/remote42b/T7, all33 HOLD07 frozen; no native lane. Root docs/OPS,
+separate code writer only existing adapter311-324 and declared behavior tests.
+No new helper/schema/port/writer/authority flag. Full original novel remains OPEN.
+
 ## 2026-10-07 — amendment07 retained adapter barrier, known incomplete
 
 Writer HOLD07 SHA2567e09257abb8aa955bd4a35c8e9ef08b37839e8957625eab7b0fdebaec8d5fd91

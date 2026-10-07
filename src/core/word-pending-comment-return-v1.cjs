@@ -308,13 +308,16 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     if(oldFormat){
       const retained={...clone(oldFormat),to:offset};
       if(allowUntrackedRichFormatting){
-        need(returnedFormat && equal(review.formatTransitionMeaning(oldFormat.format),review.formatTransitionMeaning(returnedFormat.format)),
+        const expected=bodyProfile?.schemaVersion===bodyTypography.V2?{...oldFormat.format,
+          before:bodyTypography.snapshot(oldFormat.format.before,bodyProfile),after:bodyTypography.snapshot(oldFormat.format.after,bodyProfile)}:oldFormat.format;
+        need(returnedFormat && equal(review.formatTransitionMeaning(expected),review.formatTransitionMeaning(returnedFormat.format)),
           'MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED');
         // Only equal, non-authored style underlays may rebase an existing event.
         // Alignment and every actual tracked property transition remain owned
         // by the original revision, together with its ID and provenance.
         for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage']){
           const before=returnedFormat.format.before.attrs?.[key],after=returnedFormat.format.after.attrs?.[key];
+          if(bodyProfile?.schemaVersion===bodyTypography.V2&&equal(before,expected.before.attrs?.[key])&&equal(after,expected.after.attrs?.[key]))continue;
           if(!equal(before,after))continue;
           for(const side of ['before','after']){
             const properties=retained.format[side];
