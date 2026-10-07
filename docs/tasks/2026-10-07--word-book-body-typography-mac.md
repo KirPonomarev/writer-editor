@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT08_COMPLETE_HISTORY_COUNTEREXAMPLE_CHECKPOINT
+STATUS: AMENDMENT09_FOCUSED_COHERENT_NATIVE_PROOF_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -198,6 +198,36 @@ integrationMode: EXISTING_SEAM
 ```
 
 ## IMPLEMENTATION_STEPS
+
+### AMENDMENT09_COMPLETE_SOURCE_OWNED_NO_CHANGE_HISTORY
+
+Cleanb0c72f1741399e9d26635769e7de0d064b5f2e54 continues same original42b
+contour;44paths,1800/2600 total budgets, one PR/rollback. Declaration09
+SHA256465bc7f3208a1bc6611b4f2934bbca5ecd71f4c61e0f437ebc75cab70278e5c9,
+clean bootstrap/preflight0 before edit. Exact actual full-history red retained.
+O: fully unchanged return keeps complete raw source history, undo and redo
+operable; changed Word return retains its existing full round semantics.
+T: local authenticated SOURCE ledger -> existing independently reconstructed
+candidate after all binding/shape/snapshot/provenance/token/note guards ->
+complete source equality -> immutable source reuse -> existing leased writer.
+H6: final bind336 empties history despite no domain change. At final return
+only, for validated finiteV2 and !changes, restore SOURCE-owned history and
+schema identity into a temporary candidate, revalidate and compare COMPLETE
+candidate document to SOURCE before returning original. !changes alone is
+insufficient. Foreign returned history has no authority. Any nonhistory
+source/revision/geometry/note/private difference refuses; no blanket fallback.
+B: actual observation, index06/Core07/helper/Main/global comparator/schema/
+writers unchanged; source/formatIR/hash/provenance/coords and real changed
+return replaceFromReturn/round semantics preserved, V1 literal.
+P: actual accept/reject nonemptyundo, acceptAll-to-undo nonemptyredo plus redo,
+source-owned existing round frames; actual changed/malformed/provenance/hash
+negatives; final sufficient focused HOLD then earliest real SOURCE/ordinary
+PACKAGED, full mandatory gates/delivery. No whole-count or text-only success.
+I: exactb0c72/remote42b/T7 and HOLD08 all33, no native process. Root docs/OPS;
+separate writer only adapter final derive return and declared behavior tests.
+Book unchanged storage was not lost; pure derived history was wrong. Original
+complete100k/five genuine/both-origin/three-role/performance remains OPEN.
+
 
 ### AMENDMENT08_RETAINED_REPLAY_EXPECTATION_AND_RAW_PRESERVATION
 
@@ -897,3 +927,36 @@ and one next action.
 
 Retain exact failed input/output, seed/head/build/profile/hashes. Repair only
 declared cause; no skip/todo/weakened oracle or synthetic success.
+
+### 2026-10-07 — same amendment09 H6 activation clarification
+
+Root verified all33 source/test pins,9 logs,6 artifacts in HOLD09_02.
+Actual final focused7of8 failed; no Main Apply or physical acceptance claim.
+Complete candidate differs only in empty SOURCE paragraph content [] versus
+absent; all five SOURCE history arrays empty. HOLD02 corrects receipt01
+startup exit metadata only; actual behavioral failures remain retained.
+H6 history reuse activates only when the independently validated SOURCE
+ledger has NONEMPTY undo, redo, roundUndo, roundRedo or returnReceipts.
+For that branch retain SOURCE history/schema restore, existing bindLedger
+revalidation and COMPLETE document equality. With no history retain the
+existing derived return path; existing Main unchanged-scene raw reuse remains.
+This narrows activation in the already admitted09 final return seam; no new
+contour/preflight or Core/index/helper/Main/global-normalization change.
+Prediction: actual source-history Undo/Redo invariants and all8 focused
+cases pass, including unchanged no-history scene plus changed sibling.
+Then fresh SOURCE and ordinary PACKAGED Cancel/Apply/restart, required
+gates and delivery. Original full novel denominator remains OPEN.
+
+2026-10-07 same amendment09 final candidate: root independently verified
+HOLD03 all33 source/test pins,13 logs,8 artifacts and complete final04 TAP
+8of8, zero fail/cancel/skip/todo. Runtime697of1800, behavior881of2600.
+SOURCE06 actual native-byte pure02 passes3scenes and13paragraphs both-phase
+product-helper effective readback, complete normalized Original and intended
+Current text; no fresh native or authenticated Apply claim follows.
+Final adapter only reuses source history when genuinely nonempty and complete
+revalidated candidate equals source. Original failures retained; broad affected
+and mandatory gates, real fresh SOURCE/PACKAGED and full delivery remain OPEN.
+Root-reviewed OPS09 script02 changes only factual checkpoint rationale from
+2e1 to b0c72 versus script01; exact33 freeze and prior tuples/denominators stay.
+Next clean candidate is an incomplete checkpoint for fresh physical proof,
+not ACCEPTED delivery or full novel readiness.

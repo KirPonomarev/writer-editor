@@ -334,9 +334,22 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
   const ordered=[...oldLedger.revisions.map(old=>{const r=revisions.find(r=>r.id===old.id);need(r,'MIXED_RETURN_OLD_REVISION_LOST');return r;}),...revisions.filter(r=>!oldLedger.revisions.some(old=>old.id===r.id))].sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.from-b.from);
   const nested=ordered.some(r=>r.parentRevisionId!==undefined),points=noteBinding?incomingPoints?mappedPoints:null:oldLedger.noteSourcePoints;
   need(!incomingPoints||mappedPoints.length===incomingPoints.length,'PENDING_NOTE_UNION_BINDING');
-  const doc=review.bindLedger({schemaVersion:nested?5:points?3:ordered.length?1:2,source:review.normalizeNode(source),revisions:ordered,undo:[],redo:[],
+  let doc=review.bindLedger({schemaVersion:nested?5:points?3:ordered.length?1:2,source:review.normalizeNode(source),revisions:ordered,undo:[],redo:[],
     ...(points?{noteSourcePoints:clone(points)}:{}),...(!ordered.length||nested||points?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{})});
-  return {document:doc,projection:basis.returned,changed:changes>0,beforeDocument:canonicalPendingBasis(noteBinding?.beforeDoc||document)};
+  const beforeDocument=canonicalPendingBasis(noteBinding?.beforeDoc||document);
+  if(bodyProfile?.schemaVersion===bodyTypography.V2&&!changes) {
+    const original=review.readLedger(beforeDocument),historyKeys=['undo','redo','roundUndo','roundRedo','returnReceipts'];
+    if(historyKeys.some(key=>original[key]?.length>0)) {
+      const candidate=review.readLedger(doc);
+      candidate.schemaVersion=original.schemaVersion;
+      for(const key of historyKeys) {
+        if(Object.hasOwn(original,key))candidate[key]=clone(original[key]);else delete candidate[key];
+      }
+      need(equal(review.bindLedger(candidate),beforeDocument),'MIXED_RETURN_UNCHANGED_STATE_CHANGED');
+      doc=clone(beforeDocument);
+    }
+  }
+  return {document:doc,projection:basis.returned,changed:changes>0,beforeDocument};
 }
 function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson}) {
   need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=8*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
