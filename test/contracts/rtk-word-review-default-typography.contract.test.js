@@ -287,6 +287,67 @@ function freshBodySource(doc) {
  return buildFullManuscriptDocxReviewPacketSource({projectId:'project-body-profile',scenes:[{sceneId,doc,text:require('../../src/core/document-content-envelope-v1.cjs').deriveVisibleTextFromDocument(doc),order:0}]},
   {createdAtUtc:'2026-10-07T00:00:00.000Z',roundIdHex:'ab'.repeat(16),keyIdHex:'cd'.repeat(16),hmacSecret:'owned-local-body-profile-test',cryptoPort:{sha256Text:x=>'sha256:'+hash(x),sha256Json:x=>'sha256:'+hash(JSON.stringify(x,(_key,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])):value)),hmacSha256Json:(x,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(x)).digest('hex'),byteLength:x=>Buffer.byteLength(x)}});
 }
+test('finite body timed pending emission preserves raw provenance through five checked rounds',async()=>{
+ const [,bridge]=await modules,review=require('../../src/core/word-pending-text-revisions-v1.cjs'),adapter=require('../../src/core/word-pending-comment-return-v1.cjs');
+ const date='2026-10-05T12:00:03Z',original={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'}]}]};
+ let doc=review.bindLedger({schemaVersion:1,source:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'AB'}]}]},revisions:[{id:'revision-3',nativeId:'3',operation:'insert',author:'Editor',date,dateUtc:date,paragraphIndex:0,from:1,to:2,state:'pending',groupId:null}],undo:[],redo:[]});
+ const cp={sha256Text:hash,sha256Json:x=>'sha256:'+hash(JSON.stringify(x,(_key,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v)),byteLength:Buffer.byteLength};
+ const parse=(source,bytes,before)=>{const cap=source.localAuthorityCapsule;return bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:cap.exportMap,baselineDocuments:[{sceneId,document:before}],documentSections:cap.documentSections,signedSectionsDigest:cap.documentSections.protectedDigest,retainPendingScenes:true,cryptoPort:cp});};
+ const derive=(source,before,returned)=>{const map=source.localAuthorityCapsule.exportMap;return adapter.deriveMixedPendingDocument({document:before,returnedDocument:returned,binding:map.scenes[0].pendingCommentBinding,anchors:[],exportTypography:map.exportTypography,exportParagraphs:map.scenes[0].blocks.map(b=>b.formatIr.paragraph),allowUntrackedRichFormatting:true});};
+ const first=structuredClone(doc),source=freshBodySource(doc),bytes=buildDocxReviewPacketBuffer(source),map=structuredClone(source.localAuthorityCapsule.exportMap);
+ const own=parse(source,bytes,doc);assert.equal(own.ok,true,JSON.stringify(own));
+ const xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+ assert.match(xml,/<w:ins[^>]*w:date="2026-10-05T12:00:00Z"[^>]*w16du:dateUtc="2026-10-05T12:00:03Z"/u);
+ assert.deepEqual(review.readLedger(own.scenes[0].returnedDocument).revisions.map(r=>[r.date,r.dateUtc]),[['2026-10-05T12:00:00Z',date]]);
+ const unchanged=derive(source,doc,own.scenes[0].returnedDocument);assert.equal(unchanged.changed,false);
+ assert.deepEqual(review.readLedger(unchanged.document).source,review.readLedger(doc).source);assert.deepEqual(review.readLedger(unchanged.document).revisions,review.readLedger(doc).revisions);
+ assert.deepEqual(doc,first);assert.deepEqual(source.localAuthorityCapsule.exportMap,map);
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+ for(const fault of ['author','date','dateUtc','kind','range','binding']){
+  const bad=structuredClone(parts),before=structuredClone(doc),badSource=structuredClone(source);
+  if(fault==='author')bad['word/document.xml']=xml.replace('w:author="Editor"','w:author="Foreign"');
+  if(fault==='date')bad['word/document.xml']=xml.replace('w:date="2026-10-05T12:00:00Z"','w:date="2026-10-05T12:01:00Z"');
+  if(fault==='dateUtc')bad['word/document.xml']=xml.replace('w16du:dateUtc="'+date+'"','w16du:dateUtc="2026-10-05T12:00:04Z"');
+  if(fault==='kind')bad['word/document.xml']=xml.replace('<w:ins ','<w:del ').replace('</w:ins>','</w:del>').replace('>B</w:t>','>B</w:delText>').replace(/<w:t([^>]*)>B<\/w:delText>/u,'<w:delText$1>B</w:delText>');
+  if(fault==='range')bad['word/document.xml']=xml.replace('>A</w:t>','>B</w:t>').replace('>B</w:t></w:r></w:ins>','>A</w:t></w:r></w:ins>');
+  if(fault==='binding')badSource.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding.ledgerSha256='0'.repeat(64);
+  else assert.notEqual(bad['word/document.xml'],xml,fault);
+  const denied=parse(badSource,require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(bad).map(([name,data])=>({name,data}))),doc);
+  assert.equal(denied.ok,true,JSON.stringify({fault,denied}));
+  assert.throws(()=>derive(badSource,doc,denied.scenes[0].returnedDocument),error=>error.code===(fault==='binding'?'PENDING_COMMENT_BINDING_CHANGED':'MIXED_RETURN_SOURCE_CHANGED'),fault);
+  assert.deepEqual(doc,before);assert.deepEqual(source.localAuthorityCapsule.exportMap,map);
+ }
+ const states=[structuredClone(doc)];
+ for(let round=0;round<5;round++){
+  const before=structuredClone(doc),packet=freshBodySource(doc),ledger=review.readLedger(doc),prior=structuredClone(ledger.revisions),length=review.projection(doc).current.length;
+  const next=structuredClone(ledger),from=next.source.content[0].content.reduce((n,node)=>n+node.text.length,0),text=' B';
+  next.source.content[0].content.push({type:'text',text});
+  next.revisions.push({id:'revision-'+(4+round),nativeId:String(4+round),operation:'insert',author:'Editor',date:'2026-10-05T12:00:0'+(4+round)+'Z',dateUtc:'2026-10-05T12:00:0'+(4+round)+'Z',paragraphIndex:0,from,to:from+text.length,state:'pending',groupId:null});
+  const returnedBytes=buildDocxReviewPacketBuffer(freshBodySource(review.bindLedger(next))),returned=parse(packet,returnedBytes,doc);assert.equal(returned.ok,true,JSON.stringify(returned));
+  const result=derive(packet,doc,returned.scenes[0].returnedDocument);assert.equal(result.changed,true);
+  for(const revision of prior)assert.deepEqual(review.readLedger(result.document).revisions.find(r=>r.id===revision.id),revision);
+  assert.deepEqual(review.materialize(review.readLedger(result.document),'original'),original);assert.equal(review.projection(result.document).current,'AB'+' B'.repeat(round+1));
+  assert.equal(review.projection(result.document).current.length,length+text.length);assert.deepEqual(doc,before);
+  doc=review.replaceFromReturn(doc,result.document,{roundId:'finite-timed-'+round,artifactSha256:hash(returnedBytes)}).doc;states.push(structuredClone(doc));
+  const undone=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.readLedger(undone).source,review.readLedger(before).source);assert.deepEqual(review.readLedger(undone).revisions,prior);
+  assert.deepEqual(review.decide(undone,{action:'redo'}).doc,doc);
+ }
+ for(let round=4;round>=0;round--){doc=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.readLedger(doc).source,review.readLedger(states[round]).source);assert.deepEqual(review.readLedger(doc).revisions,review.readLedger(states[round]).revisions);}
+ for(let round=1;round<=5;round++){doc=review.decide(doc,{action:'redo'}).doc;assert.deepEqual(review.readLedger(doc).source,review.readLedger(states[round]).source);assert.deepEqual(review.readLedger(doc).revisions,review.readLedger(states[round]).revisions);}
+});
+test('finite body no-comment structural Enter keeps its original timestamp and export route',async()=>{
+ const [,bridge]=await modules,recording=require('../../src/core/word-pending-recording-v1.cjs'),review=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const before={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'AB'}]}]},working={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'}]},{type:'paragraph',content:[{type:'text',text:'B'}]}]};
+ const doc=recording.derive(before,working,{author:'Synthetic Writer',date:'2026-10-05T12:00:03.000Z'}).doc,raw=structuredClone(doc),source=freshBodySource(doc);
+ assert.equal(source.commentExport,null);assert.equal(source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding,undefined);
+ const bytes=buildDocxReviewPacketBuffer(source),xml=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts['word/document.xml'];
+ assert.match(xml,/w:date="2026-10-05T12:00:03.000Z"/u);assert.match(xml,/w16du:dateUtc="2026-10-05T12:00:03.000Z"/u);
+ const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+ const returned=preview.contentPreview.pendingRevisionDocument;assert.deepEqual(review.projection(returned).current,'A\nB');assert.deepEqual(review.projection(returned).original,'AB');
+ assert.deepEqual(review.readLedger(returned).revisions.map(r=>[r.operation,r.boundary,r.date,r.dateUtc]),[['insert','paragraph','2026-10-05T12:00:03.000Z','2026-10-05T12:00:03.000Z']]);
+ assert.throws(()=>review.buildCommentExportBinding({document:doc,exportTypography:source.exportTypography,schemaVersion:2}),/PENDING_COMMENT_REVISION_UNSUPPORTED/u);
+ assert.deepEqual(doc,raw);
+});
 test('fresh body actual ZIP pins source-owned defaults, partial slots and code without changing authored IR',async()=>{
  const [,bridge]=await modules;
  const doc={type:'doc',content:[

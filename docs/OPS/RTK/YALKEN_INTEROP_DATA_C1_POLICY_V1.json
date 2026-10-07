@@ -964,7 +964,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "a608f1a2bd8b397578f943ff06a8e9dcf9420c78784482eec173dd80e0cbd3ca"
+        "sha256": "666324f2c0245d71a0caaac49a5761146955f45b8bc1a093cd0665cc5eadc29e"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -1164,7 +1164,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "fd92622c0d63dac4272fb8907a872452bee64e0029d8939b8772331976504d42"
+        "sha256": "201942bc1298fcc2bd8aa57ddcd8518404c0048199e9cf7fae40c6e8ff43af27"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1496,7 +1496,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "b25482f05e0905f82066ea508edd7b3f0ced0faf241c77272dc47d6c2cb476ca"
+        "sha256": "2a51aedd231d9420d9fcefce062f6138d8c82c756b7f99e2d34d38bc2c5e1cea"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "e80485f9650412f79317056bc12ac97a059146e628e3394bf670fb87a3fb3070"
+        "sha256": "4674afced450c31b90eb638898e782549c18de2c279c9b95bd664077a1415c87"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0ea15ad50a76f01ade90bcad5b77537cf73e6c02c7d0b86f63fcab9e5a5bd4c1"
+        "sha256": "c249272975b954ca5184bf381185eb57eb66e07aab45c85ad8ed019d640fc0f6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "072059c4ec9f1fac9733ed8de2c2dd6a8a2b10b6c078156496f63cb2946078d3"
+        "sha256": "b7ee5acd88b0ef9edd8b20b71e9e27f4452e06f8a486bfd8398f519e0d1512f3"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "bff67378327ba2b9cbf2a7527d35f333a49055517a8f84c498737252e355cca8"
+        "sha256": "c900d9599cdcfc9e9614426079cb1b63aba4940bd5f59265986499159e6ca9d6"
       }
     ],
     "followupRepair": {

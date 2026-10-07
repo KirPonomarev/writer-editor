@@ -251,9 +251,16 @@ function bindPendingCommentExport({commentExport, scenes, blocks, exportTypograp
   if(!projection?.threads?.length&&bodyProfile?.schemaVersion!=='yalken.review-docx.typography-defaults.v2')return {commentExport:projection,pendingCommentBindings};
   for (const scene of scenes) {
     const sceneBlocks = blocks.filter(block => block.sceneId === scene.sceneId);
-    if (!pending.readLedger(scene.doc)) continue;
+    const ledger=pending.readLedger(scene.doc);
+    if (!ledger) continue;
     const rows = sceneBlocks.map(block => ({text:block.text,...(block.formatIr?.table?{table:block.formatIr.table}:{})}));
     const threads = (projection?.threads || []).filter(thread => thread.sceneId === scene.sceneId);
+    // An empty text-comment binding cannot describe structural or move
+    // revisions. Preserve their existing no-comment export; real threads still
+    // pass through the unchanged strict Core topology guard below.
+    if(!threads.length&&bodyProfile?.schemaVersion==='yalken.review-docx.typography-defaults.v2'
+      &&ledger.revisions.some(r=>pending.isStructural(r)||r.moveName||!['insert','delete','format'].includes(r.operation)
+        ||r.operation==='format'&&!['run','paragraph'].includes(r.format?.kind)))continue;
     const anchors = threads.map(thread => {
       const a = thread.anchor, first = sceneBlocks.findIndex(b => b.blockId === a.blockId);
       const input = {paragraphIndex:first,startUtf16:a.startUtf16,selectedText:a.selectedText,

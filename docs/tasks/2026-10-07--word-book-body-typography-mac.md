@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT12_BUILD_COMPANION_NATIVE_AND_DELIVERY_OPEN
+STATUS: AMENDMENT14_FROZEN_ENTER_DOWNSTREAM_FAILURE
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -1121,3 +1121,90 @@ Root-reviewed OPS09 script02 changes only factual checkpoint rationale from
 2e1 to b0c72 versus script01; exact33 freeze and prior tuples/denominators stay.
 Next clean candidate is an incomplete checkpoint for fresh physical proof,
 not ACCEPTED delivery or full novel readiness.
+
+### 2026-10-07 — amendment14 exact provenance composition admission
+
+Same original42b finite body-emission contour and single PR2093/rollback.
+Clean base cd114fe26040c39a05528ff7a9bf1e4f68e3b9a8.46 paths and original
+1800 runtime/2600 behavior line budgets unchanged; no new write contour.
+CHECK_01 completed before repository edits: fresh bootstrap/preflight and E0;
+T7 UUID/encryption/unlocked/writability and protected canonical/foreign state
+verified. Continuous actual full ordered authority reads have byte continuity;
+AGENTS/CANON_STATUS/startup reread; no VALIDATED_CONTEXT_CACHE claim.
+Declaration ARCHITECTURE_DECLARATION_AMENDMENT_14.json is externally pinned
+SHA256 bf5f3d98ff2557d0fd0b813c4ea20f8d3882390913c493d270e793d13b86c569.
+
+Actual current official236-file graph FAILED3677of3833 with156fail, zero
+cancel/skip/todo; process1 and clean process-group/lease. The full failed graph
+and all156 error records remain evidence, never acceptance. Native PACKAGED10
+and11 are actual short13p controls only; original full100k both-origin/five
+genuineWord exchanges/three-role and production performance remain OPEN.
+Proposed amendment13 historical contract repair was not dispatched or edited.
+
+Root independently executed smallest real producer/authenticated parser/Core
+counterexample: pending B in AB, raw date/dateUtc12:00:03Z. Actual signed
+source transport expects date12:00:00Z with UTC03; builderV2 emits date03,
+observed parser retains03, unchanged strict derive MIXED_RETURN_SOURCE_CHANGED.
+Complete source, actual before/returned segments and actual ZIP hash retained
+in ROOT_TIMED_PENDING_BODY_OPERANDS_02.json. Initial observer wiring errors
+are diagnostic setup failures, not product evidence. Raw date/history/source
+must stay exact, and alignment/provenance guards remain unchanged.
+
+A second actual tiny Enter-recording producer with no comments fails at
+commentBasis PENDING_COMMENT_REVISION_UNSUPPORTED solely because freshV2
+requests an empty comment binding for structural topology. Complete synthetic
+input/ledger/stack retained in ROOT_STRUCTURAL_NO_COMMENT_BODY_COUNTEREXAMPLE_02.json.
+The pre-existing no-thread structural export path must remain usable.
+
+MOVE is limited to docxReviewPacketBuilder.js pending emission and its
+scene-owned topology eligibility, docxReviewPacketComments.js empty-binding
+decision, and meaningful tests in the existing admitted typography contract.
+For exact existing commentBasis-supported topology compose established
+commentTransportSegments on clones FIRST, finiteV2 body projection SECOND.
+A scene with boundary/row/move or unsupported format preserves its complete
+raw timestamp path. Row parent/child and boundary/move provenance must agree.
+Skip an incompatible empty binding only for a no-thread scene; genuine
+unsupported threaded composition still refuses. Core/Main/parser/adapter and
+all common equality/authority laws are frozen. No new helper/schema/flag/cache,
+writer/port/API, dependency, runtime network or UI contract/source changes.
+This exact amendment overrides prior compiler-only freeze solely at these
+three immediate paths. Generated companions remain unchanged compiler only.
+
+Separate code agent owns code/behavior tests. Root owns docs/OPS/read-only
+proof/Git delivery; OPS only after exact writerHOLD and independent review.
+PROVE includes immutable raw-source/IR/history, actual XML/parsed timestamps,
+five short producer/parser/Core rounds, genuine author/date/UTC/kind/geometry
+forgeries, structural no-thread parent-child controls and literal V1 parity.
+Root then executes unchanged actualMain100k five-round case, all affected and
+mandatory gates plus fresh native both profiles and complete current delivery.
+Five short or five Main-produced exchanges never count as five genuine Word
+rounds. No current green/merge/full-novel claim follows from admission.
+
+2026-10-07 amendment14 frozen failure boundary: actual new focused02 is1of2,
+zero exclusions. Timed five short checked exchanges and six nonvacuous ZIP
+forgeries pass; actual Enter producer proceeds but parser correctly refuses
+PENDING_PARAGRAPH_BOUNDARY_OWNER. Root complete actual XML observer
+ROOT_STRUCTURAL_DUPLICATE_PMARK_OPERANDS_01.json SHA256
+56ad44481f232f711e3620b1d1161f2996ef945e5113dcd46f88967be3eb941a
+independently confirms two direct pPr/rPr owners. Existing row helper uses the
+same duplicate emission. Parser/Core remain frozen and must not be widened.
+H2 preflight returns E_SCOPE_OR_DIRTY_STATE_UNSAFE on the still-dirty14 patch;
+STOP obeyed and no helper edit dispatched. Freeze a known-incomplete samePR
+checkpoint under ORIGINAL14 admission, then clean fresh H2 declaration/E0.
+This is not semantic acceptance, full delivery or a new independent contour.
+Resolved structural history vs emitted active-block eligibility also remains
+explicitly unproven; it must be mapped before claiming all-ledger compatibility.
+Original236file/full native novel/performance/CI and Git closure remain OPEN.
+
+Root14 independently reviewed WRITER_AMENDMENT14_BOUNDED_FAILURE_HOLD_01.json
+SHA256477e71b14af42f547c64255197d9cff8b77eb0aeaf51ed6b146a5acc19b5a9ae:
+all35source/test/generated pins,32 exact predecessor,3 actual TAP logs and14
+artifacts verified; runtime736/1800, behavior987/2600 against original42b.
+Final timed-only1of1 zero exclusions with all6 successfully parsed ZIP mutants
+and exact intended Core refusals. Full new focused02 remains1of2 FAILED;
+Enter and resolved-history gaps prevent semantic closure. Root remote required
+CI log atcd114fe independently has exactly the SAME156 failed tests as local
+3833 graph, zero exclusions, clean process-group/lease. No merger/readiness.
+Mechanical14 OPS freeze is byte binding only. Checkpoint commit preserves
+this same undelivered PR for clean H2 admission; all required final delivery,
+full native novel and current whole gates remain OPEN, not bypassed.
