@@ -3441,7 +3441,7 @@ test('fresh manuscript body defaults do not enter canonical source through actua
 });
 
 
-for(const variant of ['unchanged','word-relocated','history-unchanged','late-notes','late-comments','late-manifest','late-sidecar','late-source','late-generation','late-lifecycle','tracked-text','format-reexport','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
+for(const variant of ['unchanged','word-relocated','history-unchanged','history-nonempty','history-unknown','history-attrs','history-provenance','history-geometry','late-notes','late-comments','late-manifest','late-sidecar','late-source','late-generation','late-lifecycle','tracked-text','format-reexport','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
  const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
  const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]}),ledger={schemaVersion:1,source:{type:'doc',content:[p('AxxB'),{type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code();'}]},p('')]},
   revisions:[{id:'revision-1',nativeId:'1',operation:'delete',author:'Writer',date:'2026-10-07T00:00:00Z',dateUtc:'2026-10-07T00:00:00Z',groupId:null,paragraphIndex:0,from:1,to:3,state:'pending'}],undo:[],redo:[]};
@@ -3463,7 +3463,7 @@ for(const variant of ['unchanged','word-relocated','history-unchanged','late-not
    foreignCapture=f.capture();
   }
  },()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
- if(variant==='history-unchanged'){
+ if(variant.startsWith('history-')){
   for(const action of ['acceptAll','undo']){const context=await f.probe.pendingContext(),decided=await f.probe.pendingDecision({projectId:context.projectId,sceneId:context.sceneId,subjectId:context.subjectId,expectedSceneSha256:context.sceneSha256,action});assert.equal(decided.ok,true,JSON.stringify(decided));}
   f.source=read(f.alpha);assert.ok(pending.readLedger(envelope.parseObservablePayload(f.source).doc).redo.length);
  }
@@ -3492,6 +3492,15 @@ for(const variant of ['unchanged','word-relocated','history-unchanged','late-not
   assert.ok(run);const originalRun=run[0].slice(run[0].lastIndexOf('<w:r>'));
   parts['word/document.xml']=parts['word/document.xml'].replace(originalRun,originalRun+'<w:ins w:id="901" w:author="Word writer" w:date="2026-10-07T01:02:03Z">'+originalRun.replace('Beta',' NEW')+'</w:ins>');
  }
+ if(variant.startsWith('history-')&&variant!=='history-unchanged'){
+  const original=parts['word/document.xml'];let index=0;
+  if(['history-nonempty','history-unknown','history-attrs'].includes(variant))parts['word/document.xml']=original.replace(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu,p=>index++===2
+   ?variant==='history-nonempty'?p.replace('</w:p>','<w:r><w:t>FOREIGN EMPTY REPLACEMENT</w:t></w:r></w:p>')
+    :p.replace('</w:pPr>',(variant==='history-unknown'?'<w:pStyle w:val="ForeignUnresolvedStyle"/>':'<w:spacing w:before="20"/>')+'</w:pPr>'):p);
+  if(variant==='history-provenance')parts['word/document.xml']=original.replace(/(<w:del\b[^>]*w:author=")[^"]*/u,'$1Foreign author');
+  if(variant==='history-geometry')parts['word/document.xml']=original.replace('>xx</w:delText>','>x</w:delText>');
+  assert.notEqual(parts['word/document.xml'],original,variant+' actual XML mutation');
+ }
  if(variant.startsWith('code-')){
   const paragraph=parts['word/document.xml'].match(/<w:p\b[^>]*>[\s\S]*?<w:t[^>]*>code\(\);<\/w:t>[\s\S]*?<\/w:p>/u);
   assert.ok(paragraph);const code=paragraph[0].slice(paragraph[0].lastIndexOf('<w:p '));
@@ -3514,6 +3523,9 @@ for(const variant of ['unchanged','word-relocated','history-unchanged','late-not
   assert.equal(prepared,undefined);assert.deepEqual(f.capture(),foreignCapture);return;
  }
  assert.deepEqual(f.capture(),before);
+ if(variant.startsWith('history-')&&variant!=='history-unchanged'){
+  assert.ok(activated.ok===false||activated.pendingProductPath?.ok===false,JSON.stringify(activated));assert.equal(prepared,undefined);return;
+ }
  if(variant.startsWith('code-')||variant==='stale-source'||variant==='tab-stop'){
   if(variant==='stale-source')assert.equal(activated.ok,false,JSON.stringify(activated));else {assert.equal(activated.activated,false,JSON.stringify(activated));assert.equal(activated.pendingProductPath?.ok,false,JSON.stringify(activated));}
  assert.equal(prepared,undefined);assert.deepEqual(f.capture(),before);return;
@@ -3525,8 +3537,9 @@ for(const variant of ['unchanged','word-relocated','history-unchanged','late-not
   assert.equal(envelope.deriveVisibleTextFromDocument(changed),'Beta NEW');assert.ok(pending.readLedger(changed));
   const reexport=await f.probe.fullSource(),again=await f.probe.reviewBuild(reexport);assert.equal(again.publicationGate.publishAllowed,true,JSON.stringify(again.publicationGate));
  }else {
+  assert.equal(activated.pendingProductPath?.ok,true,JSON.stringify(activated));
   assert.equal(activated.pendingProductPath?.status,'unchanged',JSON.stringify(activated));
-  assert.equal(activated.pendingProductPath.writerCalled,false);assert.equal(prepared,undefined);
+  assert.equal(activated.pendingProductPath.writerCalled,false);assert.equal(activated.pendingProductPath.pendingProductApplyLane,false);assert.equal(prepared,undefined);
   assert.deepEqual(f.capture(),before);assert.deepEqual(pending.readLedger(envelope.parseObservablePayload(read(f.alpha)).doc),expectedLedger);
  }
 

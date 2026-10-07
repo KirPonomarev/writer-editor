@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT10_BOUNDED_HISTORY_COUNTEREXAMPLE_HOLD
+STATUS: AMENDMENT11_FOCUSED_COHERENT_NATIVE_AND_DELIVERY_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -198,6 +198,59 @@ integrationMode: EXISTING_SEAM
 ```
 
 ## IMPLEMENTATION_STEPS
+
+### AMENDMENT11_SOURCE_OWNED_EMPTY_LEAF_REPRESENTATION
+
+Cleanb3a6ffdcb2d6d78840f1f14660efed88cabd520b is the same original42b
+known-incomplete contour,44paths1800runtime2600behavior and one PR/rollback.
+Fresh clean bootstrap11/preflight11 executed0 before this edit. Declaration11
+SHA25621d8adf0185106e97e38d8711a487b3ea3377ba06511791808a60367e22f1a97.
+O: actual public acceptAll/Undo with nonempty redo and an explicit empty
+source paragraph returns unchanged, complete raw source/history/private files exact.
+T: authenticated validated SOURCE -> existing actual parse/token/retained proof ->
+final source-history candidate -> source-owned empty leaf representation recovery ->
+existing bindLedger revalidation and COMPLETE raw document equality -> Main10.
+H8: existing normalizeNode27 removes empty content; frozen final candidate
+therefore omits SOURCE empty paragraph content[] and strict equality refuses.
+Only inside the existing final finiteV2 !changes and nonempty SOURCE-history
+branch restore a SOURCE zero-length content array into the corresponding typed
+candidate leaf whose content property is absent. Validate same leaf count/type;
+never replace nonempty content or any other field. Then keep the existing
+bindLedger and COMPLETE original equality unchanged. No global normalization,
+whole-source replacement, caller/Word history, fixture normalization or equality
+weakening. Unknown properties, changed attrs/marks/text/structure/ranges refuse.
+B: Main10, index06, Core07, helper, common normalization/comparator and all
+other runtime frozen. Source geometry/provenance/note points and changed return
+semantics preserved; literalV1 unaffected. Prior10B STOP obeyed; no H8 edit before
+this fresh clean admission. Runtime709 and behavior907 budget before H8.
+P: retained actual red9of10 and complete one-field diagnosis; focused no-op/
+history/lateCAS, genuine changed multi-scene Apply and09 source-history matrix,
+plus nonempty/unknown/attribute/provenance/geometry mutations no-write. Final
+HOLD freezes all33 bytes/logs/artifacts before root review/OPS/native/gates.
+Strong no-op assertion includes inner ok/status/writer/lane and no onPrepared.
+I: exactb3a6/remote42b/T7, root10 counterexample review33/3/3, owned native
+children normally exited. Separate code agent owns only existing adapter final
+seam and existing behavior files; root owns docs/OPS/proof/Git. Original full
+novel and current full delivery remain OPEN; no independent contour begins.
+
+### AMENDMENT11_FOCUSED_FREEZE
+
+Root verified coherent HOLD11 SHA256
+0df01b373edad65943a459d6b4e85731f550b83bfa587513c1416ed1705e8191,
+all33 bindings,5 actual logs and6 artifacts. Final focused23of23 executed0,
+zero failure/cancel/skip/todo; actual complete history,7lateCAS,5real XML
+mutants,6canonical unknown-operand controls, prior history/ZIP matrices,
+both genuine changed Main full-book cases and persistedV1 passed. Runtime713of1800,
+behavior926of2600. H8 runtime delta is exactly4 source-only lines; Main10 and
+all other runtime frozen. Retain initial14of15 invented foreignProperty stimulus
+failure: arbitrary non-OOXML tag has no modeled semantic property; precise
+unresolved actual pStyle and canonical unknown attrs now tested, parser unchanged.
+Original dynamic failing ZIP was not saved; no reconstruction called original.
+Official maintained graph lists236files and includes all15 affected files; run
+it once instead of repeating those whole suites separately. Fresh real SOURCE
+and ordinary PACKAGED Cancel/Apply complete public ACK/restart/acceptUndo/
+unchanged Word return precede final acceptance. Current whole gates/19CI/merge
+and original100k/five genuine/both-origin/three-role/performance remain OPEN.
 
 ### AMENDMENT10_COMPLETE_BOOK_UNCHANGED_HANDLING
 

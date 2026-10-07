@@ -1496,7 +1496,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "51d9de6425f8c9c2c52a20913650af298f7935a2c78abdde3b6874d3c072c73e"
+        "sha256": "b25482f05e0905f82066ea508edd7b3f0ced0faf241c77272dc47d6c2cb476ca"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2040,7 +2040,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "29b3f6bb01d5926e9341648231665c42b8263ccad7f1bd338a3438b0240c10f1"
+        "sha256": "6dcb94d04e2038abbf9463a945fdd4c568385cbb6c48e45245e7ba726c55b14d"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "2595986bd6aee68e416398ec9fc46c1768e969d43b0f9bbcdcfafc1299113845"
+        "sha256": "b26e3ba8a760cd73e3d6ad3fe546766bdc4489204dafaa8b94fe829ca5c89ca0"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "04ba3fbd1b04bcbedefed363f1f801d8bed9c44279407f456dca766ead722309"
+        "sha256": "c9dd1cefec4aadf77de2e9647bfd7c354f5a3435faa4a56535656388ef9d398a"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "b51787a2f97ce9a7312fc21ebac1ab7fa7df5d5a6ccc4374c8fea350ed9af942"
+        "sha256": "b236a5971f02b98cd7e43ab6f4b48d05adc765ccfc0aad0117a459e68f14e835"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2660,7 +2660,7 @@
       },
       {
         "path": "src/core/word-pending-comment-return-v1.cjs",
-        "sha256": "160707a05831823e3fd3e8168f5dae84e4f5c7053102207e38a11bcd35b59b96"
+        "sha256": "7fb21e464e90e95186b1201ab5967c13b21a79b38a82bc77d816eeb3738844a6"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "ac6ea94531037f83564e664edb40fe83acec3796714a48494a77520e9cd1e75d"
+        "sha256": "eacdacc6c611c25f37b8d957d8acac5ec0b7a9511e6464b8a6175d26e8443d1a"
       }
     ],
     "followupRepair": {

@@ -341,6 +341,10 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     const original=review.readLedger(beforeDocument),historyKeys=['undo','redo','roundUndo','roundRedo','returnReceipts'];
     if(historyKeys.some(key=>original[key]?.length>0)) {
       const candidate=review.readLedger(doc);
+      const sourceLeaves=review.paragraphs(original.source),candidateLeaves=review.paragraphs(candidate.source);
+      need(sourceLeaves.length===candidateLeaves.length&&sourceLeaves.every((leaf,i)=>leaf.type===candidateLeaves[i].type),'MIXED_RETURN_UNCHANGED_STATE_CHANGED');
+      for(let i=0;i<sourceLeaves.length;i++)if(Array.isArray(sourceLeaves[i].content)&&!sourceLeaves[i].content.length
+        &&!Object.hasOwn(candidateLeaves[i],'content'))candidateLeaves[i].content=[];
       candidate.schemaVersion=original.schemaVersion;
       for(const key of historyKeys) {
         if(Object.hasOwn(original,key))candidate[key]=clone(original[key]);else delete candidate[key];

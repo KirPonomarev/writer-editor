@@ -414,6 +414,12 @@ test('scoped finite body actual retained paragraph-format keeps raw snapshots an
   const returned=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildDocxReviewPacketBuffer(exported),exportMap:cap.exportMap,baselineDocuments:[{sceneId,document:state}],documentSections:cap.documentSections,signedSectionsDigest:cap.documentSections.protectedDigest,retainPendingScenes:true,cryptoPort:cp});assert.equal(returned.ok,true,JSON.stringify(returned));
   const replay=adapter.deriveMixedPendingDocument({document:state,returnedDocument:returned.scenes[0].returnedDocument,binding:cap.exportMap.scenes[0].pendingCommentBinding,anchors:[],exportTypography:cap.exportMap.exportTypography,exportParagraphs:cap.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph),allowUntrackedRichFormatting:true});
   assert.equal(replay.changed,false);assert.deepEqual(replay.document,state,'complete raw ledger including actual decision history');
+  for(const operand of ['source','returned']){
+   const sourceState=structuredClone(state),actualState=structuredClone(returned.scenes[0].returnedDocument),forged=operand==='source'?sourceState:actualState;
+   forged.attrs.wordPendingRevisions.source.content[0].attrs.foreignAuthority=true;
+   assert.throws(()=>adapter.deriveMixedPendingDocument({document:sourceState,returnedDocument:actualState,binding:cap.exportMap.scenes[0].pendingCommentBinding,anchors:[],exportTypography:cap.exportMap.exportTypography,exportParagraphs:cap.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph),allowUntrackedRichFormatting:true}));
+   assert.deepEqual(replay.document,state);assert.equal(Object.hasOwn(review.readLedger(state).source.content[0].attrs,'foreignAuthority'),false);
+  }
  }
  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts,mapBefore=structuredClone(capsule.exportMap);
  const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));

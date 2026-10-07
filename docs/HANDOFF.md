@@ -1502,3 +1502,23 @@ Runtime709/1800 behavior907/2600. Preflight10B STOP requires clean worktree;
 no adapter H8 edit occurred. Known-incomplete10 checkpoint only after mechanical
 OPS and current E0/guardrails/diff; fresh clean next admission then source-only
 empty leaf restoration. Full native/mandatory gates/Git delivery and novel OPEN.
+
+2026-10-07 same-contour amendment11 at cleanb3a6: fresh bootstrap/preflight0.
+H8 permits only existing final finiteV2 unchanged nonempty-source-history
+candidate to recover matched SOURCE-owned zero-length leaf content array where
+candidate field absent. Existing bindLedger and COMPLETE equality remain; no
+whole-source replacement/global normalization/fixture change. Main10 and other
+runtime frozen. Decl11 SHA21d8adf0185106e97e38d8711a487b3ea3377ba06511791808a60367e22f1a97.
+Retained10 red9of10 and complete sole difference; original44paths1800/2600 one
+PR rollback, full Mac novel/native/gates/delivery still OPEN.
+
+2026-10-07 amendment11 coherent focused freeze: root independently verified
+HOLD11 SHA0df01b373edad65943a459d6b4e85731f550b83bfa587513c1416ed1705e8191,
+all33 bindings5logs6artifacts, actual final23of23 exit0 zero exclusions.4-line
+SOURCE-owned empty leaf recovery preserves complete history equality; Main10
+and all other runtime frozen. Runtime713/1800 behavior926/2600. Retained
+arbitrary fakeXML stimulus failure qualified; actual unresolved pStyle plus
+canonical unknownattrs tested, parser unchanged. Official236file maintained
+graph includes all15 affected suites; run once. Fresh actual SOURCE/ordinary
+PACKAGED complete public Apply ACK/restart/unchanged history, mandatory gates,
+19CI and exact merge delivery required. Original full novel remains OPEN.
