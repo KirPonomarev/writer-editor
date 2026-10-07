@@ -82,6 +82,23 @@ async function harness(t) {
   h.c = c; h.file = file; h.root = root; h.manifest = manifest; h.notePath = path.join(root,'notes.craftsman.json');
   h.context = context; h.commentPath = commentPath; h.readComments = readComments; return h;
 }
+test('actual Main authoring and tree readers admit scene stat 32 MiB and refuse overflow or unsafe paths before reading',async t=>{
+ const h=await harness(t),before=business(h),limit=32*1024*1024,originalFs=h.c.fs;
+ h.c.isAllowedFilePath=target=>target===h.file;h.c.userBookmarkModel=require('../../src/core/word-user-bookmarks-v1.cjs');
+ h.c.treeCohortError=code=>Object.assign(Error(code),{code});
+ vm.runInContext([extract('readCommentAuthoringContext'),extract('readTreeCohortPath')].join('\n'),h.c);
+ let size=limit,unsafe=null,reads=0;
+ h.c.fs={...originalFs,lstat:async target=>{const stat=await originalFs.lstat(target);if(target!==h.file)return stat;
+  return {isSymbolicLink:()=>unsafe==='symlink',isFile:()=>true,isDirectory:()=>false,nlink:unsafe==='hardlink'?2:1,size};},
+  readFile:async(...args)=>{if(args[0]===h.file)reads++;return originalFs.readFile(...args);}};
+ assert.equal((await h.c.readCommentAuthoringContext()).raw,before[0]);
+ assert.equal((await h.c.readTreeCohortPath(h.root,'roman/a.txt')).bytes.toString(),before[0]);assert.equal(reads,2);
+ for(const mode of ['overflow','symlink','hardlink']){size=mode==='overflow'?limit+1:limit;unsafe=mode;reads=0;
+  await assert.rejects(h.c.readCommentAuthoringContext(),/COMMENT_SCENE_PATH_UNSAFE/u);
+  await assert.rejects(h.c.readTreeCohortPath(h.root,'roman/a.txt'),/E_TREE_COHORT_PATH_UNSAFE/u);assert.equal(reads,0);
+  assert.deepEqual(business(h),before);assert.equal(h.writes,0);
+ }
+});
 test('actual Kernel, main snapshot and atomic save preserve authored revisions across autosaves, stop and reopen', async t => {
   const h = await harness(t); await h.start();
   assert.equal(h.writes, 0); h.type('Alpha beta!'); assert.equal((await h.save()).success, true);

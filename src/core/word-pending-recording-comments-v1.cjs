@@ -127,7 +127,7 @@ function roundEdits(recorded, baseline, beforeTexts, afterTexts, direction = 'fo
 }
 
 function validateRecordingSaveProof({ beforeContent, afterContent, recordingProofJson }) {
-  if (typeof recordingProofJson !== 'string' || Buffer.byteLength(recordingProofJson) > 8 * 1024 * 1024)
+  if (typeof recordingProofJson !== 'string' || Buffer.byteLength(recordingProofJson) > 32 * 1024 * 1024)
     fail('RECORDING_COMMENT_PROOF_BUDGET');
   let proof; try { proof = JSON.parse(recordingProofJson); } catch { fail('RECORDING_COMMENT_PROOF_INVALID'); }
   if (Object.keys(proof).sort().join(',') !== 'baselineContent,metadata,nextIntents,previousIntents,schemaVersion,sessionId'

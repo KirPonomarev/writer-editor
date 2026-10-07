@@ -32,6 +32,23 @@ function decide(doc,state,action) {
  const after=review.decide(doc,{action}).doc;
  return {doc:after,state:planPendingCommentDecision({beforeText:state,projectId,sceneId,beforeContent:encode(doc),afterContent:encode(after),decision:{action}}).afterText};
 }
+test('annotated recording proof accepts exactly 32 MiB with full replay and rejects overflow and forged history',()=>{
+ const base=doc('aaa'),state=add(base),next=plan('aaa',edit('middle',1,'a',''));
+ const recorded=recording.derive(base,doc('aa'),meta,next).doc;
+ const proof=JSON.stringify({schemaVersion:1,baselineContent:encode(base),metadata:meta,previousIntents:plan('aaa'),nextIntents:next,sessionId:'editor-session'});
+ const limit=32*1024*1024,padded=proof+' '.repeat(limit-Buffer.byteLength(proof));assert.equal(Buffer.byteLength(padded),limit);
+ const input={beforeText:state,projectId,sceneId,beforeContent:encode(base),afterContent:encode(recorded),recordingProofJson:padded};
+ const original=JSON.stringify({base,recorded,state}),saved=planRecordingCommentSave(input);
+ assert.deepEqual(saved,{...save(base,base,recorded,state,plan('aaa'),next),recordingProofJson:padded});
+ const undo=decide(JSON.parse(JSON.stringify(recorded)),saved.afterText,'undo');
+ assert.deepEqual(JSON.parse(undo.state).threads[0].anchor,JSON.parse(state).threads[0].anchor);
+ assert.deepEqual(decide(undo.doc,undo.state,'redo').doc,recorded);
+ assert.throws(()=>planRecordingCommentSave({...input,recordingProofJson:padded+' '}),/RECORDING_COMMENT_PROOF_BUDGET/u);
+ const forged=JSON.parse(JSON.stringify(review.readLedger(recorded)));forged.revisions[0].author='Forged';
+ assert.throws(()=>planRecordingCommentSave({...input,afterContent:encode(review.bindLedger(forged))}),/RECORDING_COMMENT_LEDGER_MISMATCH/u);
+ assert.throws(()=>planRecordingCommentSave({...input,recordingProofJson:JSON.stringify({...JSON.parse(proof),sessionId:'foreign session'})}),/RECORDING_COMMENT_PROOF_INVALID/u);
+ assert.equal(JSON.stringify({base,recorded,state}),original);
+});
 test('recorded middle deletion preserves comment body and exact round Undo/Redo after restart',()=>{
  const base=doc('aaa'), state=add(base), next=plan('aaa',edit('middle',1,'a',''));
  const recorded=recording.derive(base,doc('aa'),meta,next).doc;

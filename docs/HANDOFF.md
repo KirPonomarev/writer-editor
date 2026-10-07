@@ -2139,3 +2139,91 @@ capacity after current checkpoint gates/Git; no silent bypass or speculative
 registry. Native SOURCE/ordinary PACKAGED, both origins/scopes, three roles,
 five real exchanges, hard30s/512MiB targets, merge and release remain OPEN.
 Same72 paths, one rollback, draft PR2093; no new independent write contour.
+
+### Same-contour amendment24 measured imported novel authoring capacity
+
+O: the complete atomically imported rich500k scene can enter governed recording
+and annotations, save/reopen full history and return without losing source,
+Current/Original, marks, notes or discussions. T: canonical saved scene and
+Core ledger -> existing Kernel recording/decision commands -> source/revision/
+generation/annotation CAS -> same leased atomic32MiB scene writer -> readback.
+H: actual imported9680486B exceeds Main8MiB authoring; exact Core one-edit input
+6784185B exceeds4MiB; annotated recording proof contains the entire baseline.
+Retained actual read-only failures and unchanged business hashes are evidence.
+
+Clean1bf5 continues original42b PR2093 and one rollback. Full fresh24 ordered
+authority reads, bootstrap/preflight/taskE0 actual0 precede first write. Exact
+declaration24_01 SHA256b1cb08f736ca31f4dc431c2561b0e3ef7815924729c15c42fe62467c7256ae2a.
+76 task paths: previous72 plus four already622-admitted/480-source-bound existing
+recording Core/tests; original1800runtime2600behavior budgets unchanged.
+CHECK_01 before edits; CHECK_02+ afterward. Root owns five docs/OPS/proof/Git;
+separate existing writer owns the immediate code/test correction. No new contour.
+
+MOVE only five existing Main scene-stat8MiB guards (book, note, comment return,
+shared authoring, tree cohort) to32MiB; Core pending ledger MAX_BYTES4to16MiB;
+existing annotated recording proof consumer8to32MiB. These are finite sizing
+hypotheses until actual complete pending envelope, recording proof and five
+small successive rounds are measured. Keep existing single-scene import; no
+silent paragraph chunking. Keep totalbook/tree32MiB, atomic scene32MiB, media
+companions20MiB, authorityencoded16MiB/decoded64MiB, intent64KiB, manualmap8MiB,
+paragraph10000/revision1024/history128/node1M and all parser/resource caps.
+No schema/helper/registry/cache/flag/API/port/writer/dependency/UI source changes.
+Compiler closure includes Core: only unchanged audited compiler may regenerate
+existing declared outputs; no manual bundle patch or altered build inputs.
+
+P: actual retained red, finite boundary+1/forged/stale/no-write and whole recording
+consumers; complete literal rich source/history/metadata/annotations and both
+projections, autosave prefixes/ACK/stop/UndoRedo/reopen. Root serial owned500k
+small-edit/return disk measurements follow exact HOLD; no simultaneous large
+lanes. Runtime32MiB pending scenes must fit the existing atomic writer; failure
+is retained and stops widening. Root five final docs before seven OPS bindings;
+all219 historical tuples/622paths/480pins/1597inventory remain unchanged.
+Native SOURCE and ordinary PACKAGED, both origins/scopes/three roles/five genuine
+Word cycles, hard30s/512MiB resource acceptance and merge remain OPEN. Existing
+synthetic code proof never becomes native or release acceptance by this change.
+
+### Amendment24 frozen finite correction and actual imported500k refusal
+
+Exact HOLD24_01 SHA256
+47aed9a58b3f6f059644a6dbcae312cd96a30508d3d84a6f6c6efe9ececbd5e8
+binds64 source/test/generated files at clean predecessor1bf5. Root independently
+verifies all current/predecessor pins,9 actual logs,7 artifacts,136 compiler
+inputs and source/dist outputs. Runtime1002of1800, behavior2099of2600;
+generated456 separate. Only seven runtime bound literals, three finite boundary
+controls, four literal ZIP-list paths and the generated editor literal changed.
+Actual pre-runtime red0of3 is retained. Final whole recording75of75,
+notes/mixed/transaction/typography231of231 and ZIP14of14 give320 distinct whole
+cases, zero exclusions. The three boundary cases are already included in320.
+Two unchanged audited compiler executions0 produce byte-idempotent outputs;
+preload remains exact. Controlled stat and padded legal JSON cases establish
+bounds, not whole-novel readiness or resource acceptance.
+
+Actual complete imported500k copy enters the real Main/Kernel recording route
+with existing platform stubs and Core/leased disk writer; START refuses
+COMMENT_SAVE_SCENE_BUDGET at word-comment-anchor-save-v1.cjs line20.
+Owned seed scene9680486B SHA256
+d9860ae52481988026ac595726f8d1593c7d8c91343c434ef6680cf1059ba2e5
+and seed manifest remain exact; original imported scene remains exact.
+Zero recording sessions completed. Actual bounded03 took5.294s and sampled
+owned aggregate RSS548077568B; no watchdog. No native or production target
+acceptance follows. Retained external observer01 extraction ReferenceError and
+02 import-loader target error were corrected only in external03; product
+validation remains unchanged. Actual failure and all logs remain evidence.
+Next precise clean admission must cover this existing shared8MiB anchor reader
+and affected test boundaries; no bypass, silent chunking or unbounded widening.
+
+Official exact1bf5 CI23 RTK3853of3854 and actual-renderer RTK3853of3854 each
+fail the same cache test line61: stale8MiB rejection operand after admitted
+16MiB snapshot/32MiB aggregate. Merge gate fails required dependency result.
+Actual logs independently retrieved; CI is not green. Outside76 pending-return
+line93 also contains a4MiB budget operand, read-only finding not yet executed.
+These precise existing assertions remain untouched for clean next admission.
+
+This is an interim checkpoint in the same original42b contour and PR2093,
+with76 declared paths and one rollback. Historical219 tuples,622 admitted paths,
+480 source pins and1597 inventory must remain intact before appending the new
+nonrecursive exact-byte successor. Required gates and Git bind only this finite
+candidate; they never convert retained product refusal into success. Genuine
+macOS Word SOURCE/ordinary PACKAGED, both origins/scopes, all three roles,
+five real exchanges, complete large recording/reopen, hard30s/512MiB targets,
+required CI, merge and exact merged verification remain OPEN.

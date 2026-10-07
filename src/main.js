@@ -6492,7 +6492,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       if(!relative||path.isAbsolute(relative)||relative.split(path.sep).some(p=>p==='..'||p==='.'||!p))throw Error('WORD_BOOK_RETURN_SCENE_PATH');
       let at=projectRoot;
       for(const component of relative.split(path.sep)) {at=path.join(at,component);const stat=await fs.lstat(at);
-        if(stat.isSymbolicLink()||(at===path.join(projectRoot,relative)?!stat.isFile()||stat.nlink!==1||stat.size>8*1024*1024:!stat.isDirectory()))throw Error('WORD_BOOK_RETURN_SCENE_PATH');}
+        if(stat.isSymbolicLink()||(at===path.join(projectRoot,relative)?!stat.isFile()||stat.nlink!==1||stat.size>32*1024*1024:!stat.isDirectory()))throw Error('WORD_BOOK_RETURN_SCENE_PATH');}
       const parsed=envelope.parseObservablePayload(raw);if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_RETURN_SOURCE_INVALID');
       parsed.doc ||= envelope.buildParagraphDocumentFromText(parsed.text);
       scenes.push({sceneId:scene.sceneId,target,raw,parsed});
@@ -6642,7 +6642,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
         for (const component of relative.split(path.sep)) {
           entry = path.join(entry, component);
           const stat = await fs.lstat(entry);
-          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw rejected('NOTE_RETURN_SCENE_PATH_UNSAFE');
+          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024 : !stat.isDirectory())) throw rejected('NOTE_RETURN_SCENE_PATH_UNSAFE');
         }
         const raw = await fs.readFile(target, 'utf8');
         if (raw !== baseline) throw rejected('NOTE_RETURN_SCENE_CONFLICT');
@@ -6890,7 +6890,7 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
         for (const component of relative.split(path.sep)) {
           entry = path.join(entry, component);
           const stat = await fs.lstat(entry);
-          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw rejected('COMMENT_RETURN_SCENE_PATH_UNSAFE');
+          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024 : !stat.isDirectory())) throw rejected('COMMENT_RETURN_SCENE_PATH_UNSAFE');
         }
         const raw = await fs.readFile(target, 'utf8');
         if (raw !== baseline) throw rejected('COMMENT_RETURN_SCENE_CONFLICT');
@@ -25486,7 +25486,7 @@ async function readCommentAuthoringContext({ pendingRichBlocks = false, userBook
   for (const component of relative.split(path.sep)) {
     entry = path.join(entry, component);
     const stat = await fs.lstat(entry);
-    if (stat.isSymbolicLink() || (entry === filePath ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw new Error('COMMENT_SCENE_PATH_UNSAFE');
+    if (stat.isSymbolicLink() || (entry === filePath ? !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024 : !stat.isDirectory())) throw new Error('COMMENT_SCENE_PATH_UNSAFE');
   }
   const raw = await fs.readFile(filePath, 'utf8');
   const envelope = await loadDocumentContentEnvelopeModule();
@@ -34089,7 +34089,7 @@ async function readTreeCohortPath(root, relativePath, allowDirectory = false, op
     try { stat = await fs.lstat(target); }
     catch (error) { if (optional && error.code === 'ENOENT') return null; throw error; }
     if (stat.isSymbolicLink() || (i < parts.length - 1 ? !stat.isDirectory()
-      : allowDirectory && stat.isDirectory() ? false : !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024)) throw treeCohortError('E_TREE_COHORT_PATH_UNSAFE');
+      : allowDirectory && stat.isDirectory() ? false : !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024)) throw treeCohortError('E_TREE_COHORT_PATH_UNSAFE');
     if (i === parts.length - 1 && stat.isDirectory()) return { directory: true };
   }
   const bytes = await fs.readFile(target);

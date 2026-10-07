@@ -6,7 +6,7 @@ const KEY = 'wordPendingRevisions';
 const { inspectTable } = require('../io/documentTables.js');
 const spacing = require('./word-paragraph-spacing-v1.cjs');
 const language = require('./word-language-v1.cjs');
-const MAX_BYTES = 4 * 1024 * 1024;
+const MAX_BYTES = 16 * 1024 * 1024;
 const stable = value => Array.isArray(value) ? '[' + value.map(stable).join(',') + ']' : object(value) ? '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + stable(value[k])).join(',') + '}' : JSON.stringify(value);
 const clone = value => JSON.parse(JSON.stringify(value));
 const fail = code => { throw Object.assign(new Error(code), { code }); };

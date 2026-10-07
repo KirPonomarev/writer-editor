@@ -858,7 +858,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "782fd04fc39f15a7cd6250d84da1696fac16bd66127fe74cce6d408e72ba5d42"
+        "sha256": "03e4ba6f3f7065cb1e3122d29ae74059cdc8db72764f07c2dca648715533b817"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -870,7 +870,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "9d414f5dd3e71e63411b3c4079cf287c3c0d29beadf67cdd27f33be2ab190021"
+        "sha256": "1c9a141f1f6eae872aa5655e34eb3d8145a16fbce409edcb8d7bdbfbc6ee67aa"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1726,7 +1726,7 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "fceca24cd9c6c0cb86d4555e361425ae756876bc55e0f011b495f05e48eee514"
+        "sha256": "1b248fea41c2f7be9c853b5732971aba114426d82f9f1be054740ac375e0ed83"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
@@ -1766,11 +1766,11 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
-        "sha256": "8a30babe5c3eabfdca2043f7c7a00132b55a0d84226aad988f141543c33e5054"
+        "sha256": "35756f8c77044967d4d10607cabccf82c950e99973e5585e528cb8e9b60136ab"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "2ad1bef7be1dfce6a4fa3b40c7a5a210752cb6149cda735dc89a5e1bcce8d8a2"
+        "sha256": "47afaf852413656eae45b8fa06983597e9f8593855c3d003a51a1ba852120a26"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2102,7 +2102,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "ee36794cb1c16efe6611586457e95630e67ab4fbcb2796179c9d4b9ab6937fa4"
+        "sha256": "28013b5893a49180a1e06464e0a2bc9fc062b95335ae944f7d55c3d075e108aa"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2550,15 +2550,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "416fe1e58b6f6f5703fd9d588ce364cf85ffafbf2173a9f836e14fd426bca7bb"
+        "sha256": "2c7c420c8fac347bd7a0d9c1b3c776d3149769984a266520d561ee3188d5db9f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8c5184f0f258c6d2a1daaffac26a7b54ea35fc3e10be6680bcc300f740c3b105"
+        "sha256": "9c621dda14aaa609cece01a2d4007e1172666f7a30d230c05d1e7e9c6ea05dea"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "75b67d92a9d8cc96d97d13c90c3a364d237d055742365d4832bd49a61ef37c65"
+        "sha256": "ecc099a220339ca8358696d02f0f23ed2cef34fad2e8e1a9b0481d1ed6afc0cc"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2646,7 +2646,7 @@
       },
       {
         "path": "src/core/word-pending-recording-comments-v1.cjs",
-        "sha256": "f70f7dd441dcfc44d2bcbfb507755562a7ccd84c7bc74585e6bb1326030d2f6b"
+        "sha256": "0510a84f335dffe578782a710f62b2ded0b7f51849cb445c0f3ccfecc2e46c92"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
@@ -2654,7 +2654,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
-        "sha256": "15a71fa9237694ef674415ca22df74adc69c7b81c56d4ead999d501692c64cfb"
+        "sha256": "995387f793dc0491da344b545e35c6b4ebc929b53d65a4578502de685b044c33"
       },
       {
         "path": "docs/tasks/2026-10-05--word-recording-comments-mac.md",
@@ -2750,7 +2750,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "c2fb348bcce1741f394414dff72ab422996b8a87b6c9edc75da0b74402f8622f"
+        "sha256": "835919f0d5d817ecef3a9f19679dffb78f17aaf570f3ed7bf2a55862c59f0013"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCore.mjs",
@@ -2774,7 +2774,7 @@
       },
       {
         "path": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-        "sha256": "3917b8d7a8fb171073839da9e7f7cfbeade921f7fd20d80c123748dfeb818ebb"
+        "sha256": "dfe2a876a8672b50cc1c13985a036f94b79c4d77dba8f769dd3b4b4fb26526aa"
       }
     ],
     "followupRepair": {
