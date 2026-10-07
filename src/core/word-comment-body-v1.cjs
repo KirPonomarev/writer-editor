@@ -119,9 +119,7 @@ function commentBodyDocument(message) {
 // A derived transport view. Callers supply defaults authenticated by the
 // actual export profile; this function never changes a canonical message.
 function commentBodyWithTypography(message, typography) {
-  if (!plain(typography) || Object.keys(typography).sort().join(',') !== 'fontSize,schemaVersion'
-    || typography.schemaVersion !== 'yalken.review-docx.typography-defaults.v1'
-    || normalizeFontSize(typography.fontSize) !== typography.fontSize) fail('COMMENT_EXPORT_TYPOGRAPHY_INVALID');
+  typography = require('./word-review-typography-v1.cjs').validate(typography,{legacyAnySize:true},'COMMENT_EXPORT_TYPOGRAPHY_INVALID');
   const document = commentBodyDocument(message);
   for (const paragraph of document.content) for (const node of paragraph.content || []) {
     if (!['text','hardBreak'].includes(node.type)) continue;

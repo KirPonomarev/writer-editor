@@ -1,3 +1,4 @@
+import bodyTypography from '../../core/word-review-typography-v1.cjs';
 import { normalizeParagraphMarkTypography } from '../inlineTypography.mjs';
 import fullManuscriptSource from '../../export/docx/fullManuscriptDocxReviewPacketSource.js';
 import { analyzeListNumberingReturn, createLegacyNumberingProofComparator, documentPropertyReturnOperation, cleanFormattingConsumptionDigest } from './reviewTransportUserBookmarksV1.mjs';
@@ -5036,6 +5037,8 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
   scannerReasons = [],
 ) {
   const resolveBlock = docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap);
+  try{bodyTypography.validate(options.fullManuscriptExportMap?.exportTypography,{allowUndefined:true});}
+  catch{return {status:'diagnostics',code:'RTK_FORMATTING_RETURN_TYPOGRAPHY_INVALID',candidates:[],diagnostics:[{code:'RTK_FORMATTING_RETURN_TYPOGRAPHY_INVALID'}]};}
   const candidates = [];
   const diagnostics = Array.isArray(scannerReasons) ? [...scannerReasons] : [];
   const seenOperationIds = new Set();
@@ -5077,9 +5080,10 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       continue;
     }
     if (!authority) continue;
-    const formatIr = isPlainObject(authority.formatIr)
+    const rawFormatIr = isPlainObject(authority.formatIr)
       ? authority.formatIr
       : docxReviewFormattingLegacyFormatIr(paragraph.paragraphText);
+    const formatIr=bodyTypography.formatIr(rawFormatIr,options.fullManuscriptExportMap?.exportTypography);
     const baselineRuns = Array.isArray(formatIr.runs) ? formatIr.runs : [];
     // Equal LF text does not prove equal line/page/column meaning. Bind the
     // entire vector before admitting any paragraph or inline formatting action.
@@ -5165,7 +5169,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     const returnedText = returnedRuns.map((run) => run.text).join('');
     const baselineText = baselineRuns.map((run) => (typeof run?.text === 'string' ? run.text : '')).join('');
     const expectedMarksDigest = isPlainObject(authority.formatIr)
-      ? `sha256:${hashCanonicalValue(formatIr)}`
+      ? `sha256:${hashCanonicalValue(rawFormatIr)}`
       : `sha256:${hashCanonicalValue({ marks: [] })}`;
     if (
       formatIr.schemaVersion !== 'yalken.rtk.format-ir.v1'
@@ -11297,6 +11301,7 @@ function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,a
 export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,baselineDocumentNotes,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
   try {
     if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
+    const bodyProfile=bodyTypography.validate(exportMap.exportTypography,{allowUndefined:true});
     if(typeof allowInactiveDefaultTabEmission!=='boolean')throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_PERMISSION');
     if(retainPendingScenes!==false&&retainPendingScenes!==true)throw Error('PENDING_COMMENT_SCENE_BINDING');
     if(retainPendingScenes&&(!baselineDocuments||retainPendingSceneId!==undefined))throw Error('PENDING_COMMENT_SCENE_BINDING');
@@ -11313,6 +11318,15 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
       if(!proof?.ok||proof.applicable!==true||proof.proof?.inactiveGridAdditions?.length)throw Error('PENDING_COMMENT_SECTION_CHANGED');
       sectionsVerified=true;
       returnedDocumentNotes=analysis.reviewIr.documentNotes;
+      if(bodyProfile?.schemaVersion===bodyTypography.V2)for(const scene of exportMap.scenes) {
+        const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId);
+        if(!baseline)throw Error('WORD_BODY_CODE_SOURCE_BINDING');
+        const raw=fullManuscriptSource.buildFormatIrParagraphs({sceneId:scene.sceneId,doc:baseline.document,text:parseObservablePayload(composeObservablePayload({doc:baseline.document})).text});
+        for(const [index,block] of scene.blocks.entries())if(block.formatIr?.paragraph?.nodeType==='codeBlock') {
+          if(hashCanonicalValue(raw[index]?.formatIr)!==hashCanonicalValue(block.formatIr)
+            ||!bodyTypography.readback(block.formatIr,analysis.reviewIr.formattingParagraphs[block.documentParagraphIndex],bodyProfile,{allowTextChanges:true}))throw Error('WORD_BODY_CODE_FORMAT_UNSUPPORTED');
+        }
+      }
     }
     const document=preview.contentPreview?.pendingRevisionDocument;
     let ledger=pendingTextRevisions.readLedger(document);
@@ -11356,7 +11370,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         if(registry)source.attrs.wordSections=JSON.parse(JSON.stringify(registry));
         const format=scene.documentFormatIr;
         if(format && source.attrs.wordDefaultTabStop!=null && source.attrs.wordDefaultTabStop!==format.wordDefaultTabStop){
-          if(inactiveTabEquivalent===undefined)inactiveTabEquivalent=source.attrs.wordDefaultTabStop===708
+          if(inactiveTabEquivalent===undefined)inactiveTabEquivalent=bodyProfile?.schemaVersion!==bodyTypography.V2&&source.attrs.wordDefaultTabStop===708
             &&inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission,baselineDocumentNotes,returnedDocumentNotes});
           if(!inactiveTabEquivalent)throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
         }

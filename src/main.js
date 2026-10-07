@@ -1175,6 +1175,36 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
         : [],
     };
   }
+  const bodyTypography=require('./core/word-review-typography-v1.cjs');
+  let bodyProfile;
+  try {
+    bodyProfile=bodyTypography.validate(localAuthority.exportMap.exportTypography,{allowUndefined:true});
+    if(bodyProfile?.schemaVersion===bodyTypography.V2) {
+      if(stableRtkReviewTransportJson(bodyProfile)!==stableRtkReviewTransportJson(bodyTypography.validate(source.exportTypography)))throw Error('WORD_BODY_PROFILE_SOURCE');
+      const sourceModel=require('./export/docx/fullManuscriptDocxReviewPacketSource.js'),canonicalScenes=[];
+      for(const scene of localAuthority.exportMap.scenes) {
+        const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
+        if(typeof raw!=='string'||scene.rawSha256!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BODY_BASELINE');
+        const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
+        if(parsed.issue)throw Error('WORD_BODY_BASELINE');
+        canonicalScenes.push({...scene,doc:parsed.doc,text:parsed.text});
+      }
+      const authored=sourceModel.buildFullManuscriptBlocks(canonicalScenes,cryptoPort);
+      const mapped=localAuthority.exportMap.scenes.flatMap(scene=>scene.blocks);
+      if(authored.length!==mapped.length||authored.length!==source.blocks.length
+        ||authored.some((block,index)=>['formatIr','canonicalMarksSha256','canonicalTextSha256'].some(key=>stableRtkReviewTransportJson(block[key])!==stableRtkReviewTransportJson(mapped[index][key])
+          ||stableRtkReviewTransportJson(block[key])!==stableRtkReviewTransportJson(source.blocks[index][key]))))throw Error('WORD_BODY_RAW_FORMAT_BINDING');
+      const reconstructed=require('./export/docx/docxReviewPacketComments.js').bindPendingCommentExport({commentExport:source.commentExport,scenes:canonicalScenes,blocks:source.blocks,exportTypography:bodyProfile});
+      for(const scene of localAuthority.exportMap.scenes)if(stableRtkReviewTransportJson(scene.pendingCommentBinding??null)!==stableRtkReviewTransportJson(reconstructed.pendingCommentBindings.find(item=>item.sceneId===scene.sceneId)?.binding??null))throw Error('WORD_BODY_PENDING_BINDING');
+      for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
+        const read=analysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
+        const rows=read.reviewIr?.formattingParagraphs;
+        if(!read.ok||rows?.length!==source.blocks.length||source.blocks.some((block,index)=>!bodyTypography.readback(block.formatIr,rows[index],bodyProfile)))throw Error(`WORD_BODY_READBACK_${phase.toUpperCase()}`);
+        const tabStops=localAuthority.exportMap.scenes.map(scene=>scene.documentFormatIr?.wordDefaultTabStop);
+        if(new Set(tabStops).size!==1||read.reviewIr.documentProperties?.effective!==tabStops[0])throw Error('WORD_BODY_TAB_STOP_READBACK');
+      }
+    }
+  }catch(error){return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_BODY_TYPOGRAPHY_MISMATCH',reason:error.code||error.message};}
   let documentNotesBinding = null;
   if (source.documentNotes?.sourceBindings?.length && localAuthority.exportMap?.scenes?.length>1
     && localAuthority.exportMap.scenes.some(scene=>scene.pendingCommentBinding?.schemaVersion===2)) {
@@ -1209,7 +1239,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
             // clean and schema1 paths retain their strict comparison below.
             const mapScene=localAuthority.exportMap.scenes.find(item=>item.sceneId===scene.sceneId);
             const emitted=cloneJsonSafe(before),localBlocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
-            if(source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
+            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
               &&localBlocks.every(block=>Array.isArray(block.pendingRevisionSegments))) {
               const leaves=pendingTextRevisions.paragraphs(emitted.source);
               leaves.forEach((paragraph,index)=>{paragraph.content=pendingTextRevisions.commentTransportSegments(
@@ -1219,7 +1249,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
             }
             // Core has independently validated the complete local v3 profile.
             // Rebuild its emitted pPr only in this read-only expectation clone.
-            if(scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
+            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
               if(paragraph.type==='codeBlock')return;
               if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
                 (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
@@ -1227,7 +1257,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
               for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
                 ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
             });
-            const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography);
+            const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
             if(scene.bodyParagraphEmission) {
               // Ordinary Word replacement groups are inferred on readback, not
               // serialized. Predict them from our own emitted union intervals;
@@ -5234,8 +5264,12 @@ async function revalidateSceneNoteReviewExportSource(source) {
   check();
 }
 
-function scenePendingExportSemantics(ledger, exportTypography) {
+function scenePendingExportSemantics(ledger, exportTypography, sourceEmission=false) {
   const exported = pendingTextRevisions.exportDocument(ledger);
+  const bodyTypography=require('./core/word-review-typography-v1.cjs');
+  const bodyProfile=sourceEmission&&bodyTypography.validate(exportTypography,{allowUndefined:true})?.schemaVersion===bodyTypography.V2;
+  const rawLeaves=pendingTextRevisions.paragraphs(exported.doc);
+  if(bodyProfile)exported.doc=bodyTypography.document(exported.doc,exportTypography);
   const groups = new Map(), revisions = new Map();
   const effectiveMarks = marks => {
     const result = cloneJsonSafe(marks || []);
@@ -5255,7 +5289,7 @@ function scenePendingExportSemantics(ledger, exportTypography) {
       date: revision.date, dateUtc: revision.dateUtc, group: revision.groupId ? groups.get(revision.groupId) : null,
       move: Boolean(revision.moveName), format: revision.format?.kind === 'run'
         ? { kind: 'run', before: effectiveMarks(revision.format.before), after: effectiveMarks(revision.format.after) }
-        : revision.format || null, boundary: revision.boundary || null,
+        : bodyProfile&&revision.format?.kind==='paragraph'?{...revision.format,before:bodyTypography.snapshot(revision.format.before,exportTypography),after:bodyTypography.snapshot(revision.format.after,exportTypography)}:revision.format || null, boundary: revision.boundary || null,
       structure: revision.structure || null };
   };
   const shape = pendingTextRevisions.normalizeNode(exported.doc);
@@ -5267,9 +5301,10 @@ function scenePendingExportSemantics(ledger, exportTypography) {
     else for (const child of node.content || []) clearLeaves(child);
   };
   clearLeaves(shape);
-  return { shape, paragraphs: exported.paragraphs.map(paragraph => {
+  return { shape, paragraphs: exported.paragraphs.map((paragraph,index) => {
     const segments = [];
-    for (const segment of paragraph.segments) {
+    const emitted=bodyProfile?bodyTypography.segments(paragraph.segments,{nodeType:rawLeaves[index].type,...rawLeaves[index].attrs},exportTypography,{canonicalCode:true}):paragraph.segments;
+    for (const segment of emitted) {
       const node = pendingTextRevisions.normalizeNode(segment.node), revision = revisionMeaning(segment.revision);
       if (node.type === 'text') node.marks = effectiveMarks(node.marks);
       const last = segments.at(-1);
@@ -6487,7 +6522,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     };
     const changes={scenes:semantic.scenes.filter(scene=>scene.changed).map(scene=>({sceneId:scene.sceneId,formatOnly:envelope.parseObservablePayload(scene.beforeContent).text===envelope.parseObservablePayload(scene.content).text,before:envelope.parseObservablePayload(scene.beforeContent).doc,after:envelope.parseObservablePayload(scene.content).doc})),
       commentsBefore:require('./core/word-comment-authoring-v1.cjs').readState(comments.text,context.projectId).threads,
-      comments:JSON.parse(semantic.afterText).threads,commentChanges:semantic.changes};
+      comments:require('./core/word-comment-authoring-v1.cjs').readState(semantic.afterText,context.projectId).threads,commentChanges:semantic.changes};
     if(typeof onPrepared==='function')onPrepared({apply,changes});
     return {ok:true,status:'preview-ready',code:'WORD_BOOK_RETURN_EXPLICIT_APPLY_REQUIRED',writerCalled:false,pendingProductApplyLane:true};
   } catch(error){return {ok:false,status:'blocked',code:error.code||error.message,writerOutcome:'NOT_CONFIRMED'};}
@@ -6671,6 +6706,7 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
       if (derived.changed) throw Error('PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED');
       // Core proved the complete actual v3 transport unchanged. Reconstruct
       // only the prior signed comment transport on a canonical read-only clone.
+      if(capsule.exportMap.exportTypography?.schemaVersion!=='yalken.review-docx.typography-defaults.v2') {
       const emitted = cloneJsonSafe(pending.readLedger(derived.document));
       const checkedLeaves = pending.paragraphs(derived.projection.union);
       pending.paragraphs(emitted.source).forEach((paragraph,index)=>{
@@ -6686,6 +6722,7 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
           [{node:{type:'text',text:'x'},revision}],leaves[revision.paragraphIndex])[0].revision);
       }
       returnedDocument = scene.pendingCommentBinding ? pending.bindLedger(emitted) : emitted.source;
+      }else if(!scene.pendingCommentBinding)returnedDocument=pending.readLedger(returnedDocument).source;
     }
     if (scene.pendingCommentBinding) result.push({ sceneId: scene.sceneId, document, returnedDocument });
     else {

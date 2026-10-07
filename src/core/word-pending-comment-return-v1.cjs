@@ -154,6 +154,8 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     if(paragraph.type==='codeBlock')need(exportParagraphs?.[index]?.nodeType==='codeBlock'
       &&exportParagraphs[index].codeLanguage===(paragraph.attrs?.language||''),'MIXED_RETURN_CODE_STYLE_EMISSION_UNPROVEN');
   });
+  const bodyTypography=require('./word-review-typography-v1.cjs');
+  const bodyProfile=bodyTypography.validate(exportTypography,{allowUndefined:true});
   const bodyEmission=noteBinding?.bodyParagraphEmission;
   if(bodyEmission!==undefined)need(equal(bodyEmission,{
     wordParagraphSpacing:{before:0,after:0,line:240,lineRule:'auto'},
@@ -167,7 +169,12 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage']){
         const value=!oldFormat&&returnedFormat&&!equal(returnedFormat.format.before.attrs?.[key],returnedFormat.format.after.attrs?.[key])
           ?returnedFormat.format.before.attrs?.[key]:actual.attrs?.[key];
-        if(bodyEmission&&sourceParagraphs[p].type!=='codeBlock'){
+        if(bodyProfile?.schemaVersion===bodyTypography.V2&&sourceParagraphs[p].type!=='codeBlock'){
+          const expected=bodyTypography.paragraph({nodeType:sourceParagraphs[p].type,...sourceParagraphs[p].attrs},bodyProfile)[key];
+          const effective=key==='wordParagraphSpacing'&&value?{before:0,after:0,...value}:value;
+          if(equal(expected,effective))continue;
+          need(!noteBinding,'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
+        }else if(bodyEmission&&sourceParagraphs[p].type!=='codeBlock'){
           const expected={...bodyEmission[key],...sourceParagraphs[p].attrs?.[key]};
           const effective=key==='wordParagraphSpacing'?{before:0,after:0,...value}:value;
           need(equal(expected,effective),'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');

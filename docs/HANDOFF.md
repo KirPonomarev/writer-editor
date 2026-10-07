@@ -1,3 +1,51 @@
+## 2026-10-07 — body candidate frozen; genuine full-book Word proof open
+
+WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 remains one undelivered contour at42b.
+Separate writer is HOLD. Root independently executed whole default typography
+58of58 and short Main10of10, actual process0, zero fail/cancel/skip/todo.
+Actual full producer ZIP and both publication checks retain raw authored IR and
+source hashes. No-note/no-comment pending exchange performs actual atomic text
+Apply and reexport; forged binding, stale source, real code font/language/spacing
+and tab-stop changes refuse without business writes. Legacy v1 is unchanged.
+These checks are code evidence, not native Word or whole-novel acceptance.
+
+Fresh native input has three ordered scenes and13 literal paragraph leaves:
+heading, lists, quote, code, empty paragraph, typed break, Unicode and authored
+Georgia14/language/spacing. Full-book export must prove fullManuscript=true,
+three identities and complete independent literal XML meaning before Word.
+Earlier PR2092 SOURCE05 physical exchange was one scene/one paragraph; it cannot
+serve as this full-book oracle. Native SOURCE and ordinary PACKAGED controls,
+mandatory gates, delivery and original100k/five genuine exchanges remain OPEN.
+
+## 2026-10-07 — PR2092 delivered; manuscript body typography declared
+
+WORD_RECORDING_NOTES_MAC_20261006 delivery is closed at exact merged
+42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8; candidate62db tree is identical.
+Actual official RTK3729/3729, baseline2199 executed passes with59 configured
+skips excluded, required CI19 success, merged twelve whole files580/580 with
+zero exclusions, release current-wave OPS and guardrails process0. External
+DELIVERY_RECEIPT_PR2092_EXACT_MERGED_08_01.json freshly binds actual logs,
+21 source hashes,30 short native proof hashes and3 package hashes. Native
+SOURCE05/06 and ordinary PACKAGED01/03 remain candidate-bound; no different-SHA
+native execution or production performance is implied. Canonical checkout and
+foreign three-file WIP remain preserved. Earlier OPEN checkpoints are historical.
+
+Active WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 starts at exact42b in a clean
+registered branch after full same-tree startup reads,43-path preflight and E0.
+Target: complete explicit producer-owned main-body emission in a versioned
+exportTypography family; unchanged Word Save As does not invent formatting,
+real edits remain operations or typed no-loss refusals. Raw authored IR/hashes,
+private bytes, full note/discussion graphs, Core replay and leased writer stay.
+Separate code writer; root docs/OPS/proof/delivery. No UI/parser/writer/dependency
+or network change. Runtime1800/behavior2600 finite budgets. Early short native
+both builds precedes stable broad gates. This target is not delivered or proven.
+
+Full original100000-word/five genuinely changed Word exchanges, both origins,
+selected book/chapter/fragment, three roles, named-style catalog/inheritance,
+remaining note/structural/format compositions and production phase resources
+remain OPEN. Existing baseline menu artifact/release-candidate drift warnings
+remain whole-release qualification debt. No whole-plan percentage is asserted.
+
 ## 2026-10-07 — single-scene note compatibility candidate; native qualification open
 
 WORD_RECORDING_NOTES_MAC_20261006 remains an incomplete delivery contour;

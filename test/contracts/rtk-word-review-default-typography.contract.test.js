@@ -280,3 +280,63 @@ test('Paragraph mark fontSlots: closed literal tuple rejects malformed hidden ac
  assert.equal(calls,0);assert.throws(()=>v.normalizeParagraphMarkTypography({fontFamily:'Arial',fontSlots:{ascii:'Arial'}}));
  assert.deepEqual(v.normalizeParagraphMarkTypography({fontSlots:{hAnsi:'Georgia',ascii:'Arial'}}),{fontSlots:{ascii:'Arial',hAnsi:'Georgia'}});
 });
+
+
+function freshBodySource(doc) {
+ const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ return buildFullManuscriptDocxReviewPacketSource({projectId:'project-body-profile',scenes:[{sceneId,doc,text:require('../../src/core/document-content-envelope-v1.cjs').deriveVisibleTextFromDocument(doc),order:0}]},
+  {createdAtUtc:'2026-10-07T00:00:00.000Z',roundIdHex:'ab'.repeat(16),keyIdHex:'cd'.repeat(16),hmacSecret:'owned-local-body-profile-test',cryptoPort:{sha256Text:x=>'sha256:'+hash(x),sha256Json:x=>'sha256:'+hash(JSON.stringify(x,(_key,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])):value)),hmacSha256Json:(x,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(x)).digest('hex'),byteLength:x=>Buffer.byteLength(x)}});
+}
+test('fresh body actual ZIP pins source-owned defaults, partial slots and code without changing authored IR',async()=>{
+ const [,bridge]=await modules;
+ const doc={type:'doc',content:[
+  {type:'heading',attrs:{level:2,wordParagraphMarkTypography:{fontSlots:{ascii:'Times New Roman'}}},content:[{type:'text',text:'Heading 😀'}]},
+  {type:'paragraph',attrs:{wordParagraphMarkTypography:{fontSlots:{ascii:'Georgia'}},wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'},wordParagraphSpacing:{after:160}},content:[{type:'text',text:'Partial source',marks:[{type:'textStyle',attrs:{wordLanguage:{bidi:'he-IL'}}}]}]},
+  {type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code();'}]},
+  {type:'paragraph'}]};
+ const before=structuredClone(doc),source=freshBodySource(doc),signed=source.localAuthorityCapsule.exportMap;
+ assert.deepEqual(doc,before);assert.equal(signed.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ const authored=buildFormatIrParagraphs({sceneId,doc,text:require('../../src/core/document-content-envelope-v1.cjs').deriveVisibleTextFromDocument(doc)});
+ assert.deepEqual(signed.scenes[0].blocks.map(block=>block.formatIr),authored.map(row=>row.formatIr));
+ for(const block of signed.scenes[0].blocks)assert.equal(block.canonicalMarksSha256,'sha256:'+hash(JSON.stringify(block.formatIr,(_key,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])):value)));
+ const bytes=buildDocxReviewPacketBuffer(source),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+ assert.match(parts['word/settings.xml'],/<w:defaultTabStop w:val="720"\/>/u);
+ assert.deepEqual(signed.scenes[0].documentFormatIr,{wordDefaultTabStop:720,explicit:false});
+ assert.match(parts['word/document.xml'],/<w:rFonts w:ascii="Georgia" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"\/>/u);
+ assert.match(parts['word/document.xml'],/<w:rFonts w:ascii="Menlo" w:hAnsi="Menlo" w:eastAsia="Menlo" w:cs="Menlo"\/>/u);
+ assert.match(parts['word/document.xml'],/<w:spacing w:before="80" w:after="80" w:line="240" w:lineRule="auto"\/>/u);
+ const own=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(own.ok,true,JSON.stringify(own));
+});
+for(const mutation of ['none','font','size','aux-language','mark-slot','spacing','tab-stop'])test('fresh body source-bound actual ZIP formatting comparison '+mutation,async()=>{
+ const [,bridge]=await modules,doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Anchor 😀'}]}]},source=freshBodySource(doc);
+ const before=structuredClone(source.localAuthorityCapsule.exportMap),bytes=buildDocxReviewPacketBuffer(source);
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+ if(mutation==='font')parts['word/document.xml']=parts['word/document.xml'].replaceAll('Times New Roman','Georgia');
+ if(mutation==='size')parts['word/document.xml']=parts['word/document.xml'].replaceAll('w:val="24"','w:val="28"');
+ if(mutation==='aux-language')parts['word/document.xml']=parts['word/document.xml'].replaceAll('w:eastAsia="en-US"','w:eastAsia="ja-JP"');
+ if(mutation==='mark-slot')parts['word/document.xml']=parts['word/document.xml'].replace('w:ascii="Times New Roman"','w:ascii="Georgia"');
+ if(mutation==='spacing')parts['word/document.xml']=parts['word/document.xml'].replace('w:line="240"','w:line="278"');
+ if(mutation==='tab-stop')parts['word/settings.xml']=parts['word/settings.xml'].replace('w:val="720"','w:val="708"');
+ const returned=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const plan=bridge.buildDocxReviewFormattingReturnCandidatesFromZipBytes(returned,{fullManuscriptExportMap:source.localAuthorityCapsule.exportMap,cryptoPort});
+ assert.equal(plan.ok,true,JSON.stringify(plan));assert.equal(plan.diagnostics.length,0,JSON.stringify(plan));
+ assert.equal(plan.candidates.length===0,mutation==='none',JSON.stringify(plan));
+ assert.deepEqual(source.localAuthorityCapsule.exportMap,before);assert.deepEqual(doc,{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Anchor 😀'}]}]});
+});
+for(const fault of ['missing-run','partial-language','foreign-font','extra-key','accessor'])test('complete body descriptor refuses '+fault+' before emission',()=>{
+ const profile=require('../../src/core/word-review-typography-v1.cjs').freshBodyTypography();let accessed=false;
+ if(fault==='missing-run')delete profile.bodyRunDefaults;
+ if(fault==='partial-language')delete profile.bodyRunDefaults.wordLanguage.bidi;
+ if(fault==='foreign-font')profile.bodyRunDefaults.fontFamily='Aptos';
+ if(fault==='extra-key')profile.bodyParagraphDefaults.ignoreUnknown=true;
+ if(fault==='accessor')Object.defineProperty(profile.bodyRunDefaults,'fontFamily',{enumerable:true,get(){accessed=true;return 'Times New Roman';}});
+ assert.throws(()=>buildDocxReviewPacketBuffer({exportTypography:profile,blocks:[{blockId:'b',paragraphId:'p',text:'Anchor',formatIr:{schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{nodeType:'paragraph'},runs:[{from:0,to:6,text:'Anchor',inline:{},preservedMarks:[]}]}}],customProperties:[{name:'YRTK_C01_AUTH',value:'owned'},{name:'YRTK2_TOKEN',value:'owned'}]}),/WORD_REVIEW_TYPOGRAPHY_INVALID/u);
+ assert.equal(accessed,false);
+});
+
+
+test('legacy v1 no-comment pending producer does not retrofit body bindings',()=>{
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs'),doc=pending.bindLedger({schemaVersion:1,source:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'AxxB'}]}]},revisions:[{id:'revision-1',nativeId:'1',operation:'delete',author:'Writer',date:'2026-10-07T00:00:00Z',dateUtc:'2026-10-07T00:00:00Z',groupId:null,paragraphIndex:0,from:1,to:3,state:'pending'}],undo:[],redo:[]});
+ const before=structuredClone(doc),result=require('../../src/export/docx/docxReviewPacketComments.js').bindPendingCommentExport({commentExport:null,scenes:[{sceneId,doc}],blocks:[],exportTypography:typography});
+ assert.deepEqual(result,{commentExport:null,pendingCommentBindings:[]});assert.deepEqual(doc,before);
+});

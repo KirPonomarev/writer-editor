@@ -48,6 +48,7 @@ function equivalentBody(expectedBody, returnedBody, defaults) {
 // state and a fully validated package. Provider identities never select paths.
 function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, baseline,
   exportMap, returnedNotes, returnedParagraphs, now }) {
+  require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
   need(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && /^(?:sha256:)?[a-f0-9]{64}$/u.test(artifactSha256), 'NOTE_RETURN_IDENTITY_INVALID');
   need(baseline?.projectId === projectId && baseline.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
@@ -163,6 +164,7 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
 // only validated source occurrences and bodies, never note IDs or write paths.
 function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exportMap,
   beforeDoc, returnedDoc, returnedNotes, unionReferences, closedBookEmission }) {
+  require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
   const pending = require('./word-pending-text-revisions-v1.cjs');
   model.validateManuscriptDocument(document, projectId);
   need(baseline?.projectId === projectId && baseline.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
@@ -367,6 +369,7 @@ function localBookNoteBreakProjection(body, emission) {
 // Full signed-map occurrence bijection precedes any scene-local binding. The
 // two arrays retain parser occurrence order, including colocated references.
 function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMap, scenes, returnedNotes, returnedReferences, unionReferences }) {
+  require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
   const pending = require('./word-pending-text-revisions-v1.cjs');
   model.validateManuscriptDocument(document, projectId);
   need(Array.isArray(scenes) && scenes.length === exportMap?.scenes?.length

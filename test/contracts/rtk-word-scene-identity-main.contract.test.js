@@ -3336,3 +3336,67 @@ for(const boundary of ['notes bytes','unsaved note'])test(`v3 original comment-o
  const before=x.f.capture();await assert.rejects(x.prepared.apply(),boundary==='notes bytes'?/NOTE_RETURN_BASELINE_CONFLICT/u:/COMMENT_RETURN_EDITOR_STALE/u);
  assert.deepEqual(x.f.capture(),before);
 });
+
+
+test('fresh manuscript body defaults do not enter canonical source through actual clean Main Apply',async t=>{
+  const {f,activated}=await cleanTextReturnFixture(t,{bookmarked:false,mutateReturn:parts=>{
+    parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:docDefaults>[\s\S]*?<\/w:docDefaults>/u,
+      '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
+  }});
+  assert.equal(activated.ok,true,JSON.stringify(activated));
+  const original=envelope.parseObservablePayload(read(f.alpha)),sibling=read(f.beta);
+  await f.probe.refreshReview();
+  const result=await f.probe.fullApply({requestId:'body-defaults-clean-apply'});
+  assert.equal(result.applied,true,JSON.stringify(result));
+  const expected=structuredClone(original.doc);expected.content[0].content[0].text+=' CLEAN_EDIT';
+  assert.deepEqual(envelope.parseObservablePayload(read(f.alpha)).doc,expected);
+  assert.equal(read(f.beta),sibling);
+});
+
+
+for(const variant of ['unchanged','tracked-text','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
+ const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]}),ledger={schemaVersion:1,source:{type:'doc',content:[p('AxxB'),{type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code();'}]},p('')]},
+  revisions:[{id:'revision-1',nativeId:'1',operation:'delete',author:'Writer',date:'2026-10-07T00:00:00Z',dateUtc:'2026-10-07T00:00:00Z',groupId:null,paragraphIndex:0,from:1,to:3,state:'pending'}],undo:[],redo:[]};
+ fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc:pending.bindLedger(ledger)}));f.source=read(f.alpha);
+ mountRenderer(f,()=>read(f.alpha),0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+ assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+ assert.equal(source.documentNotes?.sourceBindings?.length||0,0);assert.equal(source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding.schemaVersion,2);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ const initial=f.capture();
+ if(variant==='forged-binding'){
+  source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding.basisSha256='f'.repeat(64);
+  const denied=await f.probe.fullGate(source,built.documentBuffer);assert.equal(denied.publishAllowed,false);assert.equal(denied.reason,'WORD_BODY_PENDING_BINDING');assert.deepEqual(f.capture(),initial);return;
+ }
+ if(variant==='tracked-text'){
+  const run=parts['word/document.xml'].match(/<w:r>[\s\S]*?<w:t[^>]*>Beta<\/w:t><\/w:r>/u);
+  assert.ok(run);const originalRun=run[0].slice(run[0].lastIndexOf('<w:r>'));
+  parts['word/document.xml']=parts['word/document.xml'].replace(originalRun,originalRun+'<w:ins w:id="901" w:author="Word writer" w:date="2026-10-07T01:02:03Z">'+originalRun.replace('Beta',' NEW')+'</w:ins>');
+ }
+ if(variant.startsWith('code-')){
+  const paragraph=parts['word/document.xml'].match(/<w:p\b[^>]*>[\s\S]*?<w:t[^>]*>code\(\);<\/w:t>[\s\S]*?<\/w:p>/u);
+  assert.ok(paragraph);const code=paragraph[0].slice(paragraph[0].lastIndexOf('<w:p '));
+  const changed=variant==='code-font'?code.replaceAll('Menlo','Arial'):variant==='code-language'?code.replaceAll('w:bidi="en-US"','w:bidi="ar-SA"'):code.replace('w:after="80"','w:after="120"');
+  assert.notEqual(changed,code);parts['word/document.xml']=parts['word/document.xml'].replace(code,changed);
+ }
+ if(variant==='tab-stop')parts['word/settings.xml']=parts['word/settings.xml'].replace('w:val="720"','w:val="708"');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ await f.probe.activate(source.pendingAuthorityStore);
+ if(variant==='stale-source')fs.writeFileSync(f.beta,'Owner changed Beta');
+ const before=f.capture();let prepared;
+ const activated=await f.probe.reviewActivate({requestId:'body-pending-'+variant,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onPendingReturnPrepared:value=>{prepared=value;}});
+ assert.deepEqual(f.capture(),before);
+ if(variant.startsWith('code-')||variant==='stale-source'||variant==='tab-stop'){
+  if(variant==='stale-source')assert.equal(activated.ok,false,JSON.stringify(activated));else {assert.equal(activated.activated,false,JSON.stringify(activated));assert.equal(activated.pendingProductPath?.ok,false,JSON.stringify(activated));}
+ assert.equal(prepared,undefined);assert.deepEqual(f.capture(),before);return;
+ }
+ assert.equal(activated.ok,true,JSON.stringify(activated));
+ if(variant==='tracked-text'){
+  assert.ok(prepared,JSON.stringify(activated));const applied=await prepared.apply();assert.equal(applied.writerCalled,true,JSON.stringify(applied));
+  assert.equal(read(f.alpha),f.source);const changed=envelope.parseObservablePayload(read(f.beta)).doc;
+  assert.equal(envelope.deriveVisibleTextFromDocument(changed),'Beta NEW');assert.ok(pending.readLedger(changed));
+  const reexport=await f.probe.fullSource(),again=await f.probe.reviewBuild(reexport);assert.equal(again.publicationGate.publishAllowed,true,JSON.stringify(again.publicationGate));
+ }else assert.deepEqual(pending.readLedger(envelope.parseObservablePayload(read(f.alpha)).doc),ledger);
+
+});

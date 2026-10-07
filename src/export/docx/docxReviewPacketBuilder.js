@@ -339,7 +339,13 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }, userBookmarkIds = new Map()) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }, userBookmarkIds = new Map(), exportTypography) {
+  const bodyTypography=require('../../core/word-review-typography-v1.cjs');
+  const profile=bodyTypography.validate(exportTypography,{allowUndefined:true});
+  if(profile?.schemaVersion===bodyTypography.V2)block={...block,formatIr:bodyTypography.formatIr(block.formatIr,profile),
+    ...(block.pendingParagraphRevision?{pendingParagraphRevision:{...block.pendingParagraphRevision,format:{
+      before:bodyTypography.snapshot(block.pendingParagraphRevision.format.before,profile),
+      after:bodyTypography.snapshot(block.pendingParagraphRevision.format.after,profile)}}}:{})};
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
@@ -366,7 +372,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     if (userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
     const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(documentNotes, block);
     const rawSegments = block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments;
-    const emittedSegments = commentExport?.threads?.length ? require('../../core/word-pending-text-revisions-v1.cjs').commentTransportSegments(rawSegments, {type:block.formatIr?.paragraph?.nodeType,attrs:block.formatIr?.paragraph}) : rawSegments;
+    const emittedSegments = profile?.schemaVersion===bodyTypography.V2 ? bodyTypography.segments(rawSegments,block.formatIr.paragraph,profile) : commentExport?.threads?.length ? require('../../core/word-pending-text-revisions-v1.cjs').commentTransportSegments(rawSegments, {type:block.formatIr?.paragraph?.nodeType,attrs:block.formatIr?.paragraph}) : rawSegments;
     textRun = buildPendingRunsXml(emittedSegments, node => {
       const inline = {}, preservedMarks = [];
       for (const mark of node.marks || []) {
@@ -449,7 +455,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   ].join('');
 }
 
-function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false, mediaPackage = null) {
+function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false, mediaPackage = null, exportTypography) {
   const userBookmarkIds=new Map(), opened=new Set(), closed=new Set(), names=new Set(), identities=new Map();
   for (const block of blocks) for (const marker of block.formatIr?.userBookmarks || []) {
     if (!/^ubm-[a-f0-9]{32}$/u.test(marker.id) || typeof marker.name!=='string' || marker.name.length>40 || !/^\p{L}[\p{L}\p{N}_]*$/u.test(marker.name) || /^YRTK_/iu.test(marker.name) || !['start','end'].includes(marker.kind)) throw Error('DOCX_USER_BOOKMARK_MARKER_INVALID');
@@ -481,6 +487,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     mediaPackage,
     revisionCounter,
     userBookmarkIds,
+    exportTypography,
   ), row => buildPendingRowPropertiesXml(row.map(p => p.item.pendingRowRevision), revisionCounter));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
@@ -843,7 +850,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
   }
 
   let storySectionIndex = 0;
-  const documentXml = buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage).replace(/<w:sectPr(?:\s*\/)>|<w:sectPr>/g, tag => tag === '<w:sectPr>' ? tag + stories.sectionXml(storySectionIndex++) : '<w:sectPr>' + stories.sectionXml(storySectionIndex++) + '</w:sectPr>');
+  const documentXml = buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage, input.exportTypography).replace(/<w:sectPr(?:\s*\/)>|<w:sectPr>/g, tag => tag === '<w:sectPr>' ? tag + stories.sectionXml(storySectionIndex++) : '<w:sectPr>' + stories.sectionXml(storySectionIndex++) + '</w:sectPr>');
   const buffer = buildStoredZip([
     { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes + stories.contentTypes + mergeMediaTypes(mediaPackage.contentTypes, notes.mediaTypes, stories.mediaTypes), Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },

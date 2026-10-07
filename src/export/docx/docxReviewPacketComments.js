@@ -109,11 +109,7 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
     && (!Object.hasOwn(options, 'sceneId') || (typeof options.sceneId === 'string' && options.sceneId.length > 0)),
   'DOCX_COMMENT_SCOPE_INVALID');
   const exportTypography = options.exportTypography;
-  demand(exportTypography === undefined || (plain(exportTypography)
-    && Object.keys(exportTypography).sort().join(',') === 'fontSize,schemaVersion'
-    && exportTypography.schemaVersion === 'yalken.review-docx.typography-defaults.v1'
-    && require('../../io/inlineTypography.cjs').normalizeFontSize(exportTypography.fontSize) === exportTypography.fontSize),
-  'DOCX_COMMENT_EXPORT_TYPOGRAPHY_INVALID');
+  require('../../core/word-review-typography-v1.cjs').validate(exportTypography,{allowUndefined:true,legacyAnySize:true},'DOCX_COMMENT_EXPORT_TYPOGRAPHY_INVALID');
   if (state === undefined) return null;
   demand(plain(state) && [COMMENT_STATE_SCHEMA, commentBody.STATE_V2, commentBody.STATE_V3, commentBody.STATE_V4, commentBody.STATE_V5, commentBody.STATE_V6].includes(state.schemaVersion) && state.projectId === projectId
     && Number.isSafeInteger(state.revision) && state.revision >= 0
@@ -251,7 +247,8 @@ function bindPendingCommentExport({commentExport, scenes, blocks, exportTypograp
   const pending = require('../../core/word-pending-text-revisions-v1.cjs');
   const projection = commentExport ? JSON.parse(JSON.stringify(commentExport)) : commentExport;
   const pendingCommentBindings = [];
-  if(!projection?.threads?.length)return {commentExport:projection,pendingCommentBindings};
+  const bodyProfile=require('../../core/word-review-typography-v1.cjs').validate(exportTypography,{allowUndefined:true});
+  if(!projection?.threads?.length&&bodyProfile?.schemaVersion!=='yalken.review-docx.typography-defaults.v2')return {commentExport:projection,pendingCommentBindings};
   for (const scene of scenes) {
     const sceneBlocks = blocks.filter(block => block.sceneId === scene.sceneId);
     if (!pending.readLedger(scene.doc)) continue;

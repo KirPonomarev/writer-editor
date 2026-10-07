@@ -58,6 +58,7 @@ function retainedProvenance(message, old) {
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
   baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [], mixedPendingScene = null, mixedPendingScenes = null, notesText = null, noteContext = null }) {
+  require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'

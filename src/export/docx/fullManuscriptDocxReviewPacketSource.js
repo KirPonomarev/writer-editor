@@ -1303,13 +1303,14 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const documentFormats=scenes.map(scene=>({wordDefaultTabStop:scene.doc?.attrs?.wordDefaultTabStop??720,explicit:scene.doc?.attrs?.wordDefaultTabStop!=null}));
   for(const format of documentFormats)paragraphLayout.normalizeWordDefaultTabStop(format.wordDefaultTabStop);
   if(new Set(documentFormats.map(format=>format.wordDefaultTabStop)).size>1)throw Error('WORD_DEFAULT_TAB_STOP_MIXED_SCENES');
-  const wordDefaultTabStop=documentFormats.some(format=>format.explicit)?documentFormats[0].wordDefaultTabStop:undefined;
+  const wordDefaultTabStop=documentFormats[0].wordDefaultTabStop;
+  const exportTypography=require('../../core/word-review-typography-v1.cjs').freshBodyTypography();
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
   const documentStories = require('./docxReviewPacketStories.js').buildDocumentStoriesExport(scenes, documentSections, {includeEmpty:true,blocks});
-  const initialCommentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId, { exportTypography: REVIEW_DOCX_TYPOGRAPHY_DEFAULTS });
-  const {commentExport,pendingCommentBindings} = bindPendingCommentExport({commentExport:initialCommentExport,scenes,blocks,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
+  const initialCommentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId, { exportTypography });
+  const {commentExport,pendingCommentBindings} = bindPendingCommentExport({commentExport:initialCommentExport,scenes,blocks,exportTypography});
   const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId, { editableReturn: true,
-    pinnedSingleSceneNoteProfile: scenes.length === 1, closedBookBreakEmission: scenes.length > 1, pinnedBookNoteProfile: scenes.length > 1 && pendingCommentBindings.length > 0 });
+    pinnedSingleSceneNoteProfile: scenes.length === 1, closedBookBreakEmission: scenes.length > 1, pinnedBookNoteProfile: scenes.length > 1 && pendingCommentBindings.length > 0 && Boolean(commentExport?.threads?.length) });
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
   const sceneText = scenes.map((scene) => {
@@ -1343,7 +1344,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const exportMap = {
     exportMapId: `export-map-${roundIdHex}`,
     profileId: FULL_MANUSCRIPT_REVIEW_DOCX_PROFILE_ID,
-    exportTypography: { ...REVIEW_DOCX_TYPOGRAPHY_DEFAULTS },
+    exportTypography: cloneJson(exportTypography),
     scope: 'full-manuscript',
     roundId,
     ...(commentExport ? { commentExport } : {}),
@@ -1391,6 +1392,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     documentNotes,
     documentStories,
     wordDefaultTabStop,
+    exportTypography,
     documentMetadata,
     documentSections,
     customProperties: [
@@ -1618,6 +1620,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     notesDocument: input.notesDocument ? cloneJson(input.notesDocument) : null,
     documentStories,
     wordDefaultTabStop,
+    exportTypography,
     documentMetadata,
     documentSections,
     forbiddenSecret: hmacSecret,
