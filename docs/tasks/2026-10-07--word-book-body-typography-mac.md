@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT24_FINITE_CAPACITY_CHECKPOINT_IMPORTED_AUTHORING_REFUSAL_OPEN
+STATUS: AMENDMENT25_FINITE_BYTE_CHECKPOINT_WHOLE_NOVEL_SPEED_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -34,7 +34,7 @@ raw-source equality and canonicalMarksSha256 and is forbidden.
 ## ARTIFACT
 
 One coherent export/return correction. Root owns task/docs/OPS/proof/delivery;
-separate code agent owns declared runtime/behavior tests.76 explicit paths;
+separate code agent owns declared runtime/behavior tests.82 explicit paths;
 runtime maximum1800 changed lines, behavior maximum2600. Unused paths need not
 change. A small pure Core helper is permitted only for immediate finite
 validation/projection consumers, with no registry, cache, writer or future engine.
@@ -120,6 +120,13 @@ validation/projection consumers, with no registry, cache, writer or future engin
 - `test/contracts/rtk-word-pending-recording.contract.test.js`
 - `test/contracts/rtk-word-pending-recording-runtime.contract.test.js`
 - `test/contracts/rtk-word-pending-recording-comments.contract.test.js`
+
+- `src/core/word-comment-anchor-save-v1.cjs`
+- `src/core/word-manuscript-notes-v1.cjs`
+- `test/contracts/rtk-word-comment-anchor-save.contract.test.js`
+- `test/contracts/rtk-word-manuscript-notes.contract.test.js`
+- `test/contracts/rtk-word-pending-return.contract.test.js`
+- `test/contracts/rtk-interop-word-volume.contract.test.js`
 
 ## DENYLIST
 
@@ -1946,3 +1953,62 @@ candidate; they never convert retained product refusal into success. Genuine
 macOS Word SOURCE/ordinary PACKAGED, both origins/scopes, all three roles,
 five real exchanges, complete large recording/reopen, hard30s/512MiB targets,
 required CI, merge and exact merged verification remain OPEN.
+
+### Amendment25 — complete imported novel and closed replay capacity
+
+Same unfinished original42b contour, PR2093 and rollback; clean0ddb predecessor.
+Fresh full ordered startup/bootstrap25, architecture preflight25 and taskE0
+executed0 before this first repository write. Declaration25_01 SHA256
+12fc7c7c1abc5114aaccee4f2ed54ea5ac48a5003ed53f07b89ff5bfff4b1a2f.
+82 exact paths,1800runtime2600behavior budgets. Existing writer owns code/tests;
+root owns5docs/7OPS/independent proof/Git; CHECK_01 before, CHECK_02+ after.
+Actual readonly25 sizing: raw9680486B, pending envelope20904089B, ledger6785331B,
+producer map11751705B and full paragraph observations4049323B; mixed operand
+floor22586359B. Actual notes reader refuses NOTE_SCENE_BUDGET. Source untouched;
+18.930s, sampled1323384832B. This is sizing, not valid return/native acceptance.
+MOVE only9 byte literals in existing anchor/notes/pending-comment/Main consumers
+to32MiB; align exact existing stale16MiB cache/ledger and32MiB eviction fixtures.
+Preserve all schema/source/private/history/CurrentOriginal/geometry/CAS/lease/
+capability laws, atomic scene32MiB, ledger16MiB, commentstate2MiB, notebody1MiB,
+all count/intent/authority/parser/resource caps. No new helper/schema/port/cache/
+flag/writer/dependency/UI, silent splitting or weaker oracle. Six exact ZIP
+allowlist additions only; unchanged audited compiler may refresh existing outputs.
+PROVE finite boundary/+1/forged/stale/no-write and whole affected consumers, then
+actual complete imported500k recording with comments/notes/atomic UndoRedo/reopen.
+32MiB closed proof remains a hypothesis until actual full return acceptance.
+Preserve220 historical tuples,622admitted/480pins/1597inventory. Five recording
+sessions are not five genuine Word exchanges. Full SOURCE/ordinaryPACKAGED,
+both origins/scopes/three roles/five genuine exchanges,30s/512MiB,CI/merge OPEN.
+
+
+### Amendment25 — exact byte checkpoint; whole novel speed remains open
+
+Root independently verified HOLD25_01 SHA256
+66168e0347633bdaa780cc5b2e9036c8787cef1c01504d9bf774e84580b1b61d:
+70 source/predecessor pins,7 actual logs,11 artifacts,136 compiler inputs and4
+output/copy bytes. Exactly9 byte literals changed; runtime1020of1800,
+behavior2173of2600, generated456 separate. Whole11 finite files294of294,
+zero exclusions,73.279s; closed32MiB whitespace controls are finite byte laws,
+not full500k return acceptance. Both builds0 and predecessor-exact outputs.
+Actual full8391-paragraph500108-word imported copy with1 comment,rich foot/end
+notes and private note reached a real leased save: proof22474828B,1 atomic write,
+start14.522s and profiled save163.019s. Two bounded whole-cycle attempts stopped
+at240s; aggregate RSS samples2546581504B and2097610752B. Full completion,
+stop/ACK/UndoRedo and five sessions remain UNKNOWN; no repeat without a new
+hypothesis. Independent complete durable Current/Original/source formatting,
+messages, private/rich note bodies/metadata and both exact points were verified
+on the first stopped owned copy; original import bytes stayed exact.
+Retained V8 save profile07989cc948a6d3d5873e1af4b77db1de4ce0f0b8747f0ec0fb7d95611ed8c801
+shows paragraph-mark descriptor inspection26.486s self and byte hashing43.042s
+inclusive; these are measured hotspots, not authority to weaken validation.
+Tiny real producer/parser one-scene composed pending+comments+rich notes proof
+12496B is Core-refused MIXED_RETURN_SCENE_REQUIRED; Main book early eligibility
+returns null under controlled upstream flag, without Main key-authentication or
+writer proof. Full single-scene composition remains an observed eligibility gap.
+Current0ddb official CI3855of3857 in each RTK lane has exactly the two old ceiling
+assertions corrected in25; current25 official CI is not yet run. Preserve220 old
+tuples before one nonrecursive successor;622 paths480 pins1597 inventory exact.
+Same original42b contour,PR2093,82 paths and rollback. Genuine Word SOURCE and
+ordinary PACKAGED,both origins/scopes,three roles,five genuine exchanges,
+hard30s512MiB,full current CI/merge/exact merged verification remain OPEN.
+NEXT: checkpoint25 with mandatory exact gates, then fresh measured hotspot admission.

@@ -385,6 +385,15 @@ test('source points distinguish both deletion boundaries across round undo, deci
     assert.deepEqual(state.notes.map(n => n.manuscript.body), beforeNotes.notes.map(n => n.manuscript.body));
     doc = envelope.parseObservablePayload(afterContent).doc; pending.readLedger(doc); previous = doc;
   };
+  const proofJson=JSON.stringify(proof),cap=32*1024*1024,exact=proofJson+' '.repeat(cap-Buffer.byteLength(proofJson));
+  const args={beforeText:JSON.stringify(beforeNotes),projectId,sceneId,beforeContent:envelope.composeObservablePayload({doc:original}),afterContent:envelope.composeObservablePayload({doc})};
+  const normal=notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:proofJson});
+  const full=notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:exact});
+  assert.deepEqual({...full,pendingNoteReturnProofJson:proofJson},normal);notes.validateNoteCohort(full,args);
+  assert.throws(()=>notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:exact+' '}),e=>e.code==='NOTE_RETURN_PROOF_BUDGET');
+  const forged=structuredClone(proof);forged.baseline.stateDigest='0'.repeat(64);
+  assert.throws(()=>notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:JSON.stringify(forged)+' '.repeat(9*1024*1024)}),/PENDING_NOTE_/);
+  assert.equal(JSON.stringify(proof),proofJson);
   observe([1,1]);
   for (const [action, expected] of [['rejectAll',[1,3]],['undo',[1,1]],['acceptAll',[1,1]],['undo',[1,1]],['undo',[1,3]],['redo',[1,1]]]) {
     doc = pending.decide(doc, { action }).doc; observe(expected);

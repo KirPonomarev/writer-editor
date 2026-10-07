@@ -72,6 +72,13 @@ const R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST = [
   'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
 ];
 const ALLOWLIST = [
+  'src/core/word-comment-anchor-save-v1.cjs',
+  'src/core/word-manuscript-notes-v1.cjs',
+  'test/contracts/rtk-word-comment-anchor-save.contract.test.js',
+  'test/contracts/rtk-word-manuscript-notes.contract.test.js',
+  'test/contracts/rtk-word-pending-return.contract.test.js',
+  'test/contracts/rtk-interop-word-volume.contract.test.js',
+
   'src/core/word-pending-recording-comments-v1.cjs',
   'test/contracts/rtk-word-pending-recording.contract.test.js',
   'test/contracts/rtk-word-pending-recording-runtime.contract.test.js',

@@ -356,3 +356,18 @@ test('Paragraph mark fontSlots: compound text discussions retain source slots th
  }
 
 });
+
+test('32 MiB closed single and complete book replay preserve ledger history and reject forged sources',async()=>{
+ const cap=32*1024*1024,single=await fixture(),book=await notesBookFixture();
+ const bookModel=require('../../src/core/word-pending-comment-return-v1.cjs');
+ for(const [proof,run] of [[single.proof,json=>planMixedPendingReturn({...single,returnProofJson:json})],
+  [book.proof,json=>bookModel.planMixedBookReturn({beforeText:book.beforeText,projectId:book.document.projectId,scenes:book.scenes,notesText:book.notesText,returnProofJson:json})]]){
+  const captured=JSON.stringify(proof),normal=run(captured),exact=captured+' '.repeat(cap-Buffer.byteLength(captured));
+  const full=run(exact);assert.deepEqual(full,Object.hasOwn(normal,'returnProofJson')?{...normal,returnProofJson:exact}:normal);
+  assert.throws(()=>run(exact+' '),e=>e.code==='MIXED_RETURN_PROOF_BUDGET');
+  const forged=structuredClone(proof);forged.exportMap.scenes[0].rawSha256='sha256:'+'0'.repeat(64);
+  assert.throws(()=>run(JSON.stringify(forged)+' '.repeat(9*1024*1024)),e=>e.code==='MIXED_RETURN_BASELINE_STALE');
+  assert.throws(()=>run('{'+ ' '.repeat(9*1024*1024)),e=>e.code==='MIXED_RETURN_PROOF_INVALID');
+  assert.equal(JSON.stringify(proof),captured);
+ }
+});

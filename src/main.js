@@ -6409,7 +6409,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
         returnedNotes: noteReplay.returnedNotes, unionReferences: noteReplay.unionReferences, receipt,
         paragraphBindings: mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
           ? mapped.paragraphBindings : undefined) });
-      if (Buffer.byteLength(pendingNoteReturnProofJson) > 8 * manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_RETURN_PROOF_BUDGET');
+      if (Buffer.byteLength(pendingNoteReturnProofJson) > 32 * manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_RETURN_PROOF_BUDGET');
       beforeDoc = bound.beforeDoc; returnedDoc = bound.returnedDoc;
     }
     notesDigest = notesStateDigest(notesState.document);

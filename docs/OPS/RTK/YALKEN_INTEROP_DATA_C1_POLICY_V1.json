@@ -858,7 +858,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "03e4ba6f3f7065cb1e3122d29ae74059cdc8db72764f07c2dca648715533b817"
+        "sha256": "04643af42165a0229d324c4e24f15f287922b89fbf16a427d62cc6587e88c913"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1082,7 +1082,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
-        "sha256": "28674f7ae620f2a8b95b86a8d1466472724ba3b0688fce21a99c5aa9eb4306c1"
+        "sha256": "a05bff690a1e879b2a8b68b5c218846b0e7cbffdbe873b3ce559e78fddb21b18"
       },
       {
         "path": "test/unit/rtk-interop-word-volume.test.py",
@@ -1554,11 +1554,11 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "11272d7dc75758bae295f6234c58d1e018bdf78c36d5a2385fc99facb1647148"
+        "sha256": "724ee0bd0e721d8efd946e15d9ebfcc6b12c1347d9319d0d646e4f3bc61e54a9"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "70d2d67930d4cc9cc7513d3b8431e2b2fe81be4d2be45efa73dc007d01c84111"
+        "sha256": "a55647b0b5c1cc49b5baf930d8045f301c69a403c65da15506204a19085b8309"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1674,7 +1674,7 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "1198403cba29ba22fca2364c39e9825daefbbffdb695d59829af726265ff6768"
+        "sha256": "d37a2e666aa21d2fd489afdbab1f998581327c391a048371b3969eaf00ad20d6"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
@@ -1682,7 +1682,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
-        "sha256": "a50375dfbd37d1a25b0687f596abd78ce314528af4ddbfc4f79bfaaa65209e38"
+        "sha256": "9572451546df4bd3f61b82e9dac3ec37545b1f125fcbf0802558bed57484a790"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
@@ -1754,7 +1754,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-return.contract.test.js",
-        "sha256": "7cda6a1bf48767093a2f69b49548784ca5c8cb9a0bfca8c144d502eb090f921d"
+        "sha256": "7dfefa6cd11c6d4d3fa2fb85161af4bf1ec74f5ef67ec894a0f4377644f2f06d"
       },
       {
         "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
@@ -2018,7 +2018,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-        "sha256": "7410ac27d87e4502c005ca88400ccf357d568c8347017484b8091a1870330f75"
+        "sha256": "f4083df44496ac8fb60686388996a319e719699ff40cf2cdae8d9952beb60394"
       },
       {
         "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
@@ -2102,7 +2102,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "28013b5893a49180a1e06464e0a2bc9fc062b95335ae944f7d55c3d075e108aa"
+        "sha256": "9aaefd102d8b5a4377fce3314a947019613fda4e3bd9b77c3946192b1c053ce2"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2550,15 +2550,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "2c7c420c8fac347bd7a0d9c1b3c776d3149769984a266520d561ee3188d5db9f"
+        "sha256": "3f29ce4232e50b9b00e533f0bf588b0c78dd610947ecc6018d82bece1470f867"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9c621dda14aaa609cece01a2d4007e1172666f7a30d230c05d1e7e9c6ea05dea"
+        "sha256": "188e65b1686dbffaf91ae072f4301024ef974f6761617aafb7266cc0d58bd21e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "ecc099a220339ca8358696d02f0f23ed2cef34fad2e8e1a9b0481d1ed6afc0cc"
+        "sha256": "eb6bc8d93ab0f703a597252b3d6c8b3df339ddbcbcefb9a3e124d18bcb439f9c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2666,11 +2666,11 @@
       },
       {
         "path": "src/core/word-pending-comment-return-v1.cjs",
-        "sha256": "7fb21e464e90e95186b1201ab5967c13b21a79b38a82bc77d816eeb3738844a6"
+        "sha256": "e8204968eade5a8e9a42f82a2e5177457c67b2f53cb30cf322a136d4d11a5e34"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
-        "sha256": "4764661705aa999a8d61df7b0863e5f1a631f1db1865351bd269a0bf556269bf"
+        "sha256": "d913724e699fef3076f839dc093359f1ccc9c53f368f2937c3aa24889a192951"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
@@ -2750,7 +2750,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "835919f0d5d817ecef3a9f19679dffb78f17aaf570f3ed7bf2a55862c59f0013"
+        "sha256": "8d2f3998671d551fb1734c647d91ec58df356df2b237315e8ca669f29c0ce8fc"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCore.mjs",
@@ -2774,7 +2774,7 @@
       },
       {
         "path": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-        "sha256": "dfe2a876a8672b50cc1c13985a036f94b79c4d77dba8f769dd3b4b4fb26526aa"
+        "sha256": "bc4fc29e6043e9f9160c54b0df7a28a69cebc201fcffc91f1d766c730895bed1"
       }
     ],
     "followupRepair": {

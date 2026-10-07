@@ -90,7 +90,7 @@ test('pending return: recursive frames, mismatched projection, forged receipts a
   const mismatch = structuredClone(doc); mismatch.content[0].content[0].text += '!';
   assert.throws(() => model.readLedger(mismatch), /PROJECTION_MISMATCH/u);
   assert.throws(() => model.replaceFromReturn(doc, pending(), { ...receipt(4), authority: true }), /RECEIPT_INVALID/u);
-  const huge = textDoc('x'.repeat(4 * 1024 * 1024));
+  const huge = textDoc('x'.repeat(16 * 1024 * 1024));
   assert.throws(() => model.replaceFromReturn(doc, huge, receipt(5)), /BUDGET/u);
 });
 

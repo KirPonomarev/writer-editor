@@ -356,7 +356,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
   return {document:doc,projection:basis.returned,changed:changes>0,beforeDocument};
 }
 function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson}) {
-  need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=8*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
+  need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=32*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
   let proof;try{proof=JSON.parse(returnProofJson);}catch{fail('MIXED_RETURN_PROOF_INVALID');}
   need(proof&&[1,2].includes(proof.schemaVersion)&&Object.keys(proof).sort().join(',')===
     (proof.schemaVersion===2?'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedLedger,returnedParagraphs,returnedThreads,roundId,schemaVersion':'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedDocument,returnedParagraphs,returnedThreads,roundId,schemaVersion')
@@ -385,7 +385,7 @@ function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afte
 // Complete book proof; callers cannot make unrelated scene replies disappear by
 // applying separate partial graph deltas. Existing one-scene proof stays closed.
 function planMixedBookReturn({beforeText,projectId,scenes,returnProofJson,notesText=null}) {
-  need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=8*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
+  need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=32*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
   let proof;try{proof=JSON.parse(returnProofJson);}catch{fail('MIXED_RETURN_PROOF_INVALID');}
   need([3,4].includes(proof?.schemaVersion)&&Object.keys(proof).sort().join(',')===
     (proof.schemaVersion===4?'artifactSha256,baseline,commentReturnInventory,exportMap,noteContext,projectId,returnedParagraphs,returnedScenes,returnedThreads,roundId,schemaVersion'
