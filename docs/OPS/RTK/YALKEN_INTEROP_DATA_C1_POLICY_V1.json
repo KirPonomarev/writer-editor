@@ -1498,7 +1498,7 @@
       },
       {
         "path": "test/unit/project-tree-pathless-contract.test.js",
-        "sha256": "186d3eb79859a19fe1ecf48bdbc7e65782d0e6904c06f5cbb36e1423c7665b6c"
+        "sha256": "de8816e0c81efd16ab55b972baefa11f909565a4564a1ad0e1e8ea2710bf46ae"
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
@@ -2550,15 +2550,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "ab0dc7cc64f279b334005f5ff92d68dfeb4da608ab2974eddd591e3fe8b8799e"
+        "sha256": "eaa35ff3cdaee9deaf65ec93de3f8a7c9055b19ec837c7a60d5f8df58bad4259"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "89c2fe26ed4a79d6ced53e10c7cacdf332af81efe939bcb45c06db3c0239dcf4"
+        "sha256": "0817bc21f21da7c20017ce7dcc82b510090d8a93938b2726c6cd2967c59190df"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "d9fe38fcc4fcb69583c6c521fa8d577992be78fa408633037ae5d281f98760f8"
+        "sha256": "6e80b3363e55a8bec4e79de0121223fc1769ed3e8b3d8bc5db908c6bff708b49"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2646,7 +2646,7 @@
       },
       {
         "path": "src/core/word-pending-recording-comments-v1.cjs",
-        "sha256": "0510a84f335dffe578782a710f62b2ded0b7f51849cb445c0f3ccfecc2e46c92"
+        "sha256": "6a5a956e725b6f1aed190ddc9d593959398b2ef4f0dfc7f53cc525c6b8485994"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
@@ -2654,7 +2654,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
-        "sha256": "995387f793dc0491da344b545e35c6b4ebc929b53d65a4578502de685b044c33"
+        "sha256": "5ab8effd4b910994a48e1cb685a9b9280556c549d17adcc8270254ad3b419d4b"
       },
       {
         "path": "docs/tasks/2026-10-05--word-recording-comments-mac.md",
@@ -2750,7 +2750,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "caabae14dc78e4455c1d71f335dcff55734b50f5236ae8cad5792c02210b96bd"
+        "sha256": "86f1bdd8e42e3ca77f7f7c7cbb834f7434489d274616db80d109c8b1577dcf30"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCore.mjs",
@@ -2774,7 +2774,7 @@
       },
       {
         "path": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-        "sha256": "315eccb03e70839cf73ac1d79307594efd838f4fb06e21d7101b2eaaede11654"
+        "sha256": "3d085d3a96e63d5d9b281cd06d1e2e9103db4bc40d281da1853bcd3041a5b167"
       }
     ],
     "followupRepair": {

@@ -2710,3 +2710,78 @@ full original release/required CI/merge remain OPEN, no semantic closure.
 NEXT: deliver this finite checkpoint under all mandatory local gates, then admit
 precise required-CI test correction and investigate actual allocation pressure;
 no unchanged third RSS rerun and no giant native alert/crash reproduction.
+
+
+### Amendment29 — reuse only freshly parsed canonical proof RHS
+
+O: preserve complete novel save/replay/refusal semantics while removing redundant
+full canonicalization of this invocation's freshly validated canonical RHS.
+T: raw proof -> existing envelope decode/domain/ledger validation -> private Core
+comparison against independently derived canonical document -> unchanged public
+comment/note planners -> existing single leased atomic transaction and full CAS.
+H: parseObservablePayload returns canonical doc from decodeSceneDocument; the
+synchronous private validator re-canonicalizes that same local RHS. Change ONLY
+RHS envelope.canonicalizeDocumentJson(parsed.doc) to parsed.doc. Keep LHS full
+canonicalization, all three raw parses, both derivations, complete prefix/intents/
+metadata/provenance/ledger checks and every public/atomic entry point exact.
+Predict two fewer RHS passes per proof, eight across four independent note-save
+proof calls; no measured speed/resource improvement or native claim yet.
+B: no Main/Renderer/transaction/parser/readLedger/canonicalizer/schema/cap/API/
+cache/trust-flag/dependency/network edits. Protect all raw source/history/private
+notes/discussions and no-loss failure/retry. Other71 of75 prewrite pins frozen.
+MOVE: existing writer owns only Core one expression, existing recording-comments
+contract proof, related unit ordinary-tree ordering assertion, and one exact unit
+path addition in existing ZIP01 ALLOWLIST. Unit is already622-admitted/480-bound/
+1597-inventoried; retain every outside-path refusal and actual replacement matrix.
+P: causal red before runtime edit; actual RHS/derived call evidence plus complete
+returned-doc parity and input nonmutation on rich partial typography/list/history/
+notes. Whole13 affected files plus full unit SERIAL, zero exclusions; unchanged
+compiler twice with full136 input and73 source/test bindings, root independent
+75-byte/diff/artifact review and all required gates. One changed-hypothesis500k
+observer keeps SAME240s/2.5GiB/2048MiB limits; five only after complete first cycle.
+I: clean pushed a890df5f; fetched main42b; same original42b PR2093 one rollback,
+87 paths and original1800runtime2600behavior budgets unchanged. Declaration29_02
+SHA8c1ab8d4ab7c29752e09d761aad803a27e71ce491c9b0f3583ebb2ea9d546149;
+clean admission02 SHA274dd4fa3056a1df98d0c55d324b317f6285d239c07b99a334cf35629abc87a8.
+Actual bootstrap/preflight/taskE0 precede repository edits. CHECK_01 before edits;
+CHECK_02+ afterward. Root4docs/7OPS retain224 historical tuples and denominators,
+then one nonrecursive81-binding successor. No canon exception/ARCH_DIFF_LOG edit.
+Current28 CI not yet green; full native Word both profiles/origins/scopes/roles,
+five exchanges, hard30s512MiB and single composed return remain OPEN.
+NEXT: implement only admitted RHS reuse and related test correction, then prove.
+
+
+AMENDMENT29_FINITE_CANONICAL_RHS_CORRECTION_AND_SAVED_PHASE_BOUND_OUTCOME
+Only one Core comparison RHS now reuses this synchronous invocation's freshly
+raw-decoded, validated and canonical document. All three raw parses, both full
+replay derives, independent LHS canonicalization, public planners/atomic replay,
+prefix/ledger/source/provenance and fresh Main/leased CAS guards remain exact.
+Related ordinary-tree unit locators retain full actual replacement matrix; ZIP01
+adds only the exact already-admitted unit path, all outside-path refusals intact.
+HOLD29_02 SHAecf89b4d562ddb50a7f282d2ed9f3ffbf12517369cf70315885b38df7f41ec25;
+root full75 current/Git-predecessor bindings, other71 unchanged, four-file diff,
+all8 actual process logs/artifacts and136compilerinputs/73source-test/5docs verified.
+Review03 SHA257d76cf318341d6850faa5c857bcff2adf465017efb7438aa7570de639d4b2c.
+Actual causal red2 redundant RHS passes/proof; green0 with2 complete derives and
+2 independently derived canonicalizations in each4 rich/null/list/note-history
+corpora. Complete before/after result objects equal; raw inputs unmutated. Whole14
+SERIAL470/470, fail/cancel/skip/todo0; compiler2 actual0, all outputs unchanged.
+Runtime1277/1800, behavior2576/2600 and generated462 separately; no budget increase.
+One SAME500108word/8391paragraph observer29 actually saved at149.501s, save
+116.631995s, one atomic commit/proof22474828B. Stop began149.616s; owned RSS crossed
+unchanged2.5GiB at151.337s, sampled2734112768B; normal owned SIGTERM exit-15.
+Outcome SHA160b0ec79a4aee99e1d761d5196c643555037b41e95b979136d82e88a2886b29.
+Independent complete Python saved-phase Current/Original/root formatting, compact
+frame/source fingerprints, private/rich note bodies/current+historical points,
+messages/anchor/round+intent history actually equal all expected full semantics.
+Readback SHA657d3d756271f464f64236eb5b77fbfdd42d1a6278246b2ea97873fd0aa0d3b9.
+Stop ACK/atomic UndoRedo/five/native/resource acceptance NOT reached. No speed
+magnitude guarantee; one fixture adapter observation, not production Word proof.
+Third27/28/29 owned RSS signature closes unchanged large loop; STOP artifact
+SHA1358e9e0106695c8c16e885e3a4ffc391d62ed73a075629522601ff20b82a04e.
+Current28 official CI16SUCCESS/3FAIL of19: both fullRTK jobs succeeded, sole primary
+failure the now-corrected ordinary-tree static assertion; mergegate/finalOSS are
+dependent failures. Current29 requiredCI/delivery/full original release OPEN.
+NEXT: deliver this finite checkpoint through required gates, then clean-admit only
+local canonical JSON equality allocation hypothesis; global equal/validation stay
+unchanged. No next implementation authority from read-only map and no native run.

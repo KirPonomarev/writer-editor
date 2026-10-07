@@ -578,7 +578,10 @@ test('removed-copy replacement requires live old identity and bytes before ordin
   assert.equal(c.isTreeReplacementCurrent(payload), false);
   const source = read('src/renderer/editor.js');
   const listener = source.slice(source.indexOf('window.electronAPI.onEditorSetText((payload) => {'));
-  assert.ok(listener.indexOf('!isTreeReplacementCurrent(payload)') < listener.indexOf('setTiptapDocumentSnapshot({'));
+  const guard = listener.indexOf('!isTreeReplacementCurrent(payload)');
+  const ordinary = listener.indexOf('    treeDetachedOrigin = null;');
+  const setter = listener.indexOf('setTiptapDocumentSnapshot({', ordinary);
+  assert.ok(guard >= 0 && ordinary > guard && setter > ordinary);
 });
 
 test('actual replacement listener preserves late drafts or stale generation and accepts an exact idle replacement', () => {

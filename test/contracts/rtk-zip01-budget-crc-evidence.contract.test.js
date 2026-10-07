@@ -72,6 +72,7 @@ const R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST = [
   'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
 ];
 const ALLOWLIST = [
+  'test/unit/project-tree-pathless-contract.test.js',
   'src/core/browser-safe-hash.cjs',
   'src/io/inlineTypography.cjs',
   'test/contracts/rtk-word-core-hash-parity.contract.test.js',

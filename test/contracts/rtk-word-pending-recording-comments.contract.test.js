@@ -32,6 +32,37 @@ function decide(doc,state,action) {
  const after=review.decide(doc,{action}).doc;
  return {doc:after,state:planPendingCommentDecision({beforeText:state,projectId,sceneId,beforeContent:encode(doc),afterContent:encode(after),decision:{action}}).afterText};
 }
+test('fresh canonical proof RHS is reused without changing complete rich replay or inputs',t=>{
+ const rich=doc('aaa');rich.content[0].attrs={wordParagraphMarkTypography:{fontSlots:{ascii:'Georgia'},fontSize:'14pt'},wordParagraphSpacing:null,wordParagraphMarkLanguage:null};
+ rich.content[0].content[0].marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'12pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP'}}}];
+ const defaults=doc('aaa');defaults.content[0].attrs={wordParagraphMarkTypography:null,wordParagraphSpacing:null,wordParagraphMarkLanguage:null};
+ const list={type:'doc',content:[{type:'orderedList',attrs:{start:3},content:[{type:'listItem',content:doc('aaa').content}]}]};
+ const notes=review.bindLedger({schemaVersion:5,source:doc('aaa'),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[],noteSourcePoints:[{noteId:'note-one',paragraphIndex:0,offsetUtf16:1}]});
+ const history=review.decide(recording.derive(notes,doc('a!aa'),meta,plan('aaa',edit('old',1,'','!'))).doc,{action:'undo'}).doc;
+ assert.equal(review.readLedger(history).roundRedo.length,1);
+ const parse=envelope.parseObservablePayload,canon=envelope.canonicalizeDocumentJson,derive=recording.derive,rows=[];
+ for(const [name,base] of Object.entries({rich,defaults,list,history})) {
+  const working=review.normalizeNode(base),leaf=review.paragraphs(working)[0];leaf.content.push({type:'text',text:'!'});
+  const previous=plan('aaa'),next=plan('aaa',edit('new',3,'','!')),after=derive(base,working,meta,next).doc;
+  const input={beforeContent:encode(base),afterContent:encode(after),recordingProofJson:JSON.stringify({schemaVersion:1,baselineContent:encode(base),metadata:meta,previousIntents:previous,nextIntents:next,sessionId:'rhs-parity'})};
+  if(name==='defaults'){const raw=JSON.stringify(base);input.beforeContent='[doc-v2 length='+raw.length+']\n'+raw;}
+  const original=JSON.stringify({base,working,after,input}),parsed=new Set(),derived=new Set();let rhsCopies=0,derivedCopies=0,replays=0;
+  envelope.parseObservablePayload=raw=>{const value=parse(raw);parsed.add(value.doc);return value;};
+  envelope.canonicalizeDocumentJson=value=>{if(parsed.has(value))rhsCopies++;if(derived.has(value))derivedCopies++;return canon(value);};
+  recording.derive=(...args)=>{const before=JSON.stringify(args),value=derive(...args);assert.equal(JSON.stringify(args),before);derived.add(value.doc);replays++;return value;};
+  let result;try{result=require('../../src/core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof(input);}
+  finally{envelope.parseObservablePayload=parse;envelope.canonicalizeDocumentJson=canon;recording.derive=derive;}
+  const expected={proof:JSON.parse(input.recordingProofJson),baseline:parse(encode(base)),before:parse(input.beforeContent),after:parse(input.afterContent),previous,next};
+  assert.deepEqual(result,expected);assert.equal(JSON.stringify({base,working,after,input}),original);
+  const returned=JSON.stringify(result);for(const [p,intents] of [[result.before,previous],[result.after,next]]) {
+   const frozen=JSON.stringify(p.doc),oldRhs=canon(p.doc),oldLhs=canon(derive(result.baseline.doc,review.normalizeNode(p.doc),meta,intents).doc);
+   assert.deepEqual(oldRhs,p.doc);assert.deepEqual(oldLhs,oldRhs);assert.equal(JSON.stringify(p.doc),frozen);
+  }
+  assert.equal(JSON.stringify(result),returned);assert.equal(parsed.size,3);assert.equal(replays,2);assert.equal(derivedCopies,2);rows.push({name,rhsCopies,replays,derivedCopies,input,result,derivedDocs:[...derived]});
+ }
+ t.diagnostic(JSON.stringify({completeCanonicalProofParity:rows}));
+ for(const row of rows)assert.equal(row.rhsCopies,0,row.name);
+});
 test('annotated recording proof accepts exactly 32 MiB with full replay and rejects overflow and forged history',()=>{
  const base=doc('aaa'),state=add(base),next=plan('aaa',edit('middle',1,'a',''));
  const recorded=recording.derive(base,doc('aa'),meta,next).doc;
