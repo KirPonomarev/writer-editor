@@ -74,6 +74,21 @@ test('Former Node.update public byteview API hashes exact raw slice and rejects 
   }
 });
 
+test('SHA padding boundaries preserve binary offset slices, backing storage and fallback Unicode bytes', () => {
+  const fallback = { module: { exports: {} }, TextEncoder: undefined };
+  vm.runInNewContext(fs.readFileSync(path.join(core, 'browser-safe-hash.cjs'), 'utf8'), fallback);
+  for (const length of [0,1,54,55,56,57,63,64,65,118,119,120,127,128,129,1023,1024,1025]) {
+    const backing = Uint8Array.from({ length: length + 19 }, (_, i) => (i * 173 + 251) & 255);
+    const before = backing.slice(), view = new DataView(backing.buffer, 7, length);
+    assert.equal(hashing.sha256UpdateCompatible(view), native(view), `binary length ${length}`);
+    assert.equal(fallback.module.exports.sha256UpdateCompatible(view), native(view));
+    assert.deepEqual(backing, before, 'padding never changes either the slice or adjacent bytes');
+    const text = 'x'.repeat(length) + 'Я\0世界👩🏽‍💻e\u0301\ud800z\udc00';
+    assert.equal(hashing.sha256Hex(text), native(text));
+    assert.equal(fallback.module.exports.sha256Hex(text), native(text));
+  }
+});
+
 test('Four Core domain modules preserve complete comment, anchor, return and note outputs against Node crypto', async () => {
   const oracle = nativeOracleModules(), authorName = names[0], saveName = names[1], returnName = names[2], notesName = names[3];
   const models = Object.fromEntries(names.map(name => [name, require(path.join(core, name))]));

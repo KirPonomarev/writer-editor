@@ -2286,3 +2286,74 @@ Same original42b contour,PR2093,82 paths and rollback. Genuine Word SOURCE and
 ordinary PACKAGED,both origins/scopes,three roles,five genuine exchanges,
 hard30s512MiB,full current CI/merge/exact merged verification remain OPEN.
 NEXT: checkpoint25 with mandatory exact gates, then fresh measured hotspot admission.
+
+
+### Amendment26 — measured pure allocation correction admission
+
+O: preserve every byte hash and descriptor validation result, then observe the
+complete imported500k save/stop/reopen/UndoRedo cycle with original safety bounds.
+T: existing pure helpers feed unchanged source/capsule/Core/Kernel/leased writer;
+no new authority, schema, cache, writer, port, input limit or UI contract.
+H: retained actual163.019s save profile measures byte-array and descriptor-pair
+allocations. External same-realm component02 on complete6784139B hash input
+observed current316.7-335.6ms versus proposed155.2-161.9ms, independent Node crypto
+hash25145b6f2a7056f510f68f2e021c5e38508db2130e2e9a7c2e34d2b34dda0dca.
+Complete saved document mark inspection103.7-113.6ms versus97.6-99.5ms. These are
+component measurements only; no whole-save improvement claim. First observer
+realm-wiring failure remains retained and is not a product guard defect.
+B: native encoder/raw views keep exact bytes; one padded typed buffer and64-word
+scratch replace ordinary arrays. Fallback/String coercion/SHA law stay exact.
+Mark inspection retains the whole Object.getOwnPropertyDescriptors snapshot,
+string-key order, ignored symbols, accessor/cycle/shared-branch/depth/owner laws;
+only entries-pair creation changes to keys+descriptor lookup. No memoization.
+P: whole independent hash parity and typography/recording/anchor/notes/ZIP cases;
+unchanged audited compiler and byte-idempotence, root independent source review,
+then one complete240s/2.5GiB diagnostic; five720s sessions only after full first
+success. Root final docs precede7 OPS;221 historical tuples/622 paths/480 source
+pins/1597 inventory preserved. All required local/CI/native/delivery gates apply.
+I: clean d57d5213680dcee9a838d47213a9816e482e8878, fresh origin main42b7d2e;
+registered encrypted/unlocked/writable T7, same unfinished PR2093 and rollback.
+Declaration26 SHA256 a76c9e18a291d29e63d00b569253d6868384943ce4c1745e5eae0eaf9da52419;
+CHECK_01 bootstrap/preflight/taskE0 actual0 before this first write.85 exact paths,
+73 prewrite source pins, original runtime1800/behavior2600 budgets. Writer owns
+code/tests; root owns docs/OPS/independent proof/Git. ARCH_DIFF_LOG unchanged:
+allocation-only correction creates no canon exception. Single composed return,
+genuine Word SOURCE/ordinary PACKAGED,both origins/scopes,three roles,five real
+exchanges,30s/512MiB and release remain OPEN. CHECK_02+ follows all edits.
+
+
+### Amendment26 — observed allocation checkpoint; repeated stop remains open
+
+Root independent SOURCE_REVIEW26_01 cef3459d0d9476966d69be2eef08d46349be7cc17c7a4753869196a83eb7d091
+verified HOLD26_01 0ba023538d7e5efa99bd106c0f65f4b95649005507ef1ff72ca8ce4003e8af9f:
+73 current/exact d57d predecessor pins,67 unchanged,6 actual logs/12 artifacts,
+136 compiler inputs/71 frozen source-test pins, both actual builds0/idempotent.
+Editor57b55b5130d5a383991b985d9de545cd6a8fbcc545ee6b1e2cf3c3cbaef37421,
+preload361a5524 unchanged. Whole13 files399of399,zero exclusions; original
+runtime1043of1800,behavior2210of2600,generated456 separate. Two pure allocation
+changes retain exact SHA/descriptor laws; no authority/input/schema/UI change.
+Same full8391-paragraph500108-word recording diagnostic observed start13.883s,
+save140.495s,1 actual leased atomic write/proof22474828B. Prior save163.019s:
+22.525s (13.8%) observed single-run improvement, not native production latency
+or statistical acceptance. Stop began160.205s; owned watchdog stopped240.436s,
+actualSIGTERM-15, sampled aggregateRSS2283896832B. No full-cycle success,stop
+ACK,atomic UndoRedo or five sessions. Do not repeat the same stalled route.
+Independent Python READBACK26_04 98848e1c7b2b2719943b1b8f7dda00858ae0b0e601e647012658caa2800eff92
+compared complete Current/Original/root formatting, reconstructed compact prior
+frame and both independently hashed full source fingerprints, exact private/
+rich note bodies/metadata/current/historical points, messages, expected anchor
+and both intent/round history records. Original import bytes unchanged. Actual
+Main random UUID syntax is qualified; no independent external session registry
+or full-cycle ACK claim. Observer01 system-temp alias,02 framing and03 assumed
+one-history expectation failures are retained;04 follows exact envelope framing
+and existing two-record intent/round law without changing product assertions.
+Official terminal d57d CI:19of19 SUCCESS, actual RTK3860of3860,zero exclusions;
+this is predecessor25 evidence, not dirty26/current-native acceptance. Preserve
+221 old frozen tuples/622admitted480pins1597inventory before one nonrecursive
+successor. Same original42b PR2093,85 paths/rollback; whole Word SOURCE/ordinary
+PACKAGED,both origins/scopes,three roles,five genuine exchanges,30s512MiB and
+single composed return remain OPEN. Root STOP_PATH_MAP26_01 is a read-only next
+hypothesis: exact unchanged saved recording should not reexecute a complete
+writer transition on stop; fresh source/annotations/identity/capability and no-
+loss snapshot guards remain required. No new no-op route is implemented/admitted.
+NEXT: commit/push26 after exact mandatory gates, then fresh stop-path admission.

@@ -249,6 +249,25 @@ test('Paragraph mark typography: closed values reject malformed state before inv
  assert.deepEqual(e.parseObservablePayload(raw).doc,doc);assert.doesNotMatch(raw,/word-paragraph-mark-typography/);
  for(const bad of [{...doc,attrs:{wordParagraphMarkTypography:{bold:true}}},{type:'doc',content:[{type:'text',text:'wrong',attrs:{wordParagraphMarkTypography:{bold:true}}}]}])assert.throws(()=>e.composeObservablePayload({doc:bad}));
 });
+test('Paragraph mark inspection preserves full descriptor snapshot, shared branches and ancestry bounds',()=>{
+ const {inspectParagraphMarkTypography:inspect}=require('../../src/io/inlineTypography.cjs');let calls=0;
+ const attrs={wordParagraphMarkTypography:{bold:false,fontFamily:'Georgia',fontSize:'14pt'}},leaf={type:'paragraph',attrs,content:[]};
+ assert.equal(inspect({type:'doc',content:[leaf,leaf],history:{source:leaf}}),true);
+ const hidden={};Object.defineProperty(hidden,'private',{value:{wordParagraphMarkTypography:{bold:true}}});
+ assert.throws(()=>inspect(hidden),/WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID/u);
+ const symbol={};Object.defineProperty(symbol,Symbol('ignored'),{get(){calls++;throw Error('symbol getter');}});
+ assert.equal(inspect(symbol),false);assert.equal(calls,0);
+ const target={a:{},b:{}},seen=[];
+ const snapshot=new Proxy(target,{getOwnPropertyDescriptor(object,key){seen.push(key);const d=Reflect.getOwnPropertyDescriptor(object,key);
+  if(key==='b')Object.defineProperty(object,'a',{enumerable:true,configurable:true,get(){calls++;throw Error('late getter');}});return d;}});
+ assert.equal(inspect(snapshot),false);assert.deepEqual(seen,['a','b']);assert.equal(calls,0);
+ assert.throws(()=>inspect(target),/WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID/u);assert.equal(calls,0);
+ const cycle={};cycle.child=cycle;assert.throws(()=>inspect(cycle),/WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID/u);
+ let chain={};for(let i=0;i<128;i++)chain={child:chain};assert.equal(inspect(chain),false);
+ assert.throws(()=>inspect({child:chain}),/WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID/u);
+ assert.throws(()=>inspect({type:'codeBlock',attrs}),/WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID/u);
+ assert.deepEqual(attrs,{wordParagraphMarkTypography:{bold:false,fontFamily:'Georgia',fontSize:'14pt'}});
+});
 test('Paragraph mark typography: predecessor refuses required feature retained only by Original and round history',()=>{
  const e=require('../../src/core/document-content-envelope-v1.cjs'),review=require('../../src/core/word-pending-text-revisions-v1.cjs'),recording=require('../../src/core/word-pending-recording-v1.cjs');
  const before={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkTypography:{bold:false,fontFamily:'Georgia',fontSize:'14pt'}},content:[]}]},after={type:'doc',content:[{type:'paragraph',content:[]}]};

@@ -21,7 +21,7 @@ function rightRotate(value, bits) {
 function encodeUtf8(input) {
   const source = String(input);
   if (typeof TextEncoder === 'function') {
-    return Array.from(new TextEncoder().encode(source));
+    return new TextEncoder().encode(source);
   }
 
   const bytes = [];
@@ -67,16 +67,15 @@ function toHex32(value) {
   return (value >>> 0).toString(16).padStart(8, '0');
 }
 
-function sha256DigestBytes(bytes) {
-  const bitLength = bytes.length * 8;
-  bytes.push(0x80);
-  while (bytes.length % 64 !== 56) {
-    bytes.push(0);
-  }
+function sha256DigestBytes(inputBytes) {
+  const bitLength = inputBytes.length * 8;
+  const bytes = new Uint8Array(Math.ceil((inputBytes.length + 9) / 64) * 64);
+  bytes.set(inputBytes);
+  bytes[inputBytes.length] = 0x80;
 
   const highBits = Math.floor(bitLength / 0x100000000);
   const lowBits = bitLength >>> 0;
-  bytes.push(
+  bytes.set([
     (highBits >>> 24) & 0xff,
     (highBits >>> 16) & 0xff,
     (highBits >>> 8) & 0xff,
@@ -85,10 +84,10 @@ function sha256DigestBytes(bytes) {
     (lowBits >>> 16) & 0xff,
     (lowBits >>> 8) & 0xff,
     lowBits & 0xff,
-  );
+  ], bytes.length - 8);
 
   const hash = SHA256_INITIAL.slice();
-  const words = new Array(64);
+  const words = new Uint32Array(64);
 
   for (let offset = 0; offset < bytes.length; offset += 64) {
     for (let index = 0; index < 16; index += 1) {
@@ -155,7 +154,7 @@ function sha256Hex(input) {
 function sha256UpdateCompatible(input) {
   if (typeof input === 'string') return sha256Hex(input);
   if (ArrayBuffer.isView(input)) {
-    return sha256DigestBytes(Array.from(new Uint8Array(input.buffer, input.byteOffset, input.byteLength)));
+    return sha256DigestBytes(new Uint8Array(input.buffer, input.byteOffset, input.byteLength));
   }
   const error = new TypeError('Hash input must be a string or byte view');
   error.code = 'ERR_INVALID_ARG_TYPE';
