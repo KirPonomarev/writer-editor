@@ -285,8 +285,33 @@ async function bookDiskFixture(t) {
  const initial=makeSource({projectId,projectRoot:root,nonTextReturnState:before,scenes:ids.map((id,i)=>({sceneId:id,scenePath:path.join(root,id),order:i,text:envelope.deriveVisibleTextFromDocument(docs[i]),doc:docs[i],observableContent:raws[i]}))});
  const changedB=review.bindLedger({schemaVersion:1,source:clean('Beta NEW'),revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'Editor',date:'',dateUtc:'',paragraphIndex:0,from:4,to:8,state:'pending',groupId:null}],undo:[],redo:[]});
  const returned=[envelope.parseObservablePayload(single.content).doc,changedB,docs[2]],afterState=JSON.parse(single.afterText);
- const bytes=build(makeSource({projectId,projectRoot:root,nonTextReturnState:afterState,scenes:ids.map((id,i)=>({sceneId:id,scenePath:path.join(root,id),order:i,text:envelope.deriveVisibleTextFromDocument(returned[i]),doc:returned[i]}))}));
- const bridge=await import('../../src/io/revisionBridge/index.mjs'),parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)}});assert.equal(parsed.ok,true);
+ const afterSource=makeSource({projectId,projectRoot:root,nonTextReturnState:afterState,scenes:ids.map((id,i)=>({sceneId:id,scenePath:path.join(root,id),order:i,text:envelope.deriveVisibleTextFromDocument(returned[i]),doc:returned[i]}))});
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),cryptoPort={sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)};
+ const protectedSources=JSON.stringify({initial,afterSource,docs,returned,raws,before,afterState});
+  const originalParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(build(initial)).parts;
+  const returnedParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(build(afterSource)).parts;
+  const originalXml=originalParts['word/document.xml'],returnedXml=returnedParts['word/document.xml'];
+  const names=xml=>[...xml.matchAll(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu)].map(match=>match[1]);
+  const originalNames=names(originalXml),returnedNames=names(returnedXml);
+  const occurrence=map=>map.scenes.flatMap(scene=>scene.blocks.map((block,index)=>[scene.sceneId,index,block.documentParagraphIndex]));
+  assert.deepEqual(occurrence(afterSource.localAuthorityCapsule.exportMap),occurrence(initial.localAuthorityCapsule.exportMap));
+  const declared=initial.localAuthorityCapsule.exportMap.scenes.flatMap(scene=>scene.blocks.map(block=>block.wordSignals.filter(signal=>signal.kind==='bookmarkName')[0].value.name));
+  assert.deepEqual(originalNames,declared);assert.equal(returnedNames.length,originalNames.length);
+  const {extractTransportParagraphOwnershipV1}=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const paragraphOwners=originalNames.map((_,index)=>[index]);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(originalXml,originalNames,{cryptoPort}),paragraphOwners);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedXml,returnedNames,{cryptoPort}),paragraphOwners);
+  // Word edits retain the original round's owned body bookmark occurrences.
+  // The second producer supplies changed XML only, never replacement authority.
+  let ordinal=0;
+  returnedParts['word/document.xml']=returnedXml.replace(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu,(tag,name)=>{
+    assert.equal(name,returnedNames[ordinal]);return tag.replace(`w:name="${name}"`,`w:name="${originalNames[ordinal++]}"`);
+  });
+  assert.equal(ordinal,originalNames.length);assert.deepEqual(names(returnedParts['word/document.xml']),originalNames);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedParts['word/document.xml'],originalNames,{cryptoPort}),paragraphOwners);
+  let bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(returnedParts).map(([name,data])=>({name,data})));
+  assert.equal(JSON.stringify({initial,afterSource,docs,returned,raws,before,afterState}),protectedSources);
+ const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true);
  const capsule=initial.localAuthorityCapsule,documents=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:capsule.exportMap,baselineDocuments:ids.map((id,i)=>({sceneId:id,document:docs[i]})),retainPendingScenes:true,documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest});assert.equal(documents.ok,true,JSON.stringify(documents));
  const exportMap=structuredClone(capsule.exportMap);delete exportMap.commentExport;
  const proof={schemaVersion:3,projectId,roundId:'book-round',artifactSha256:'sha256:'+sha(bytes),baseline:capsule.commentExport,exportMap,returnedScenes:documents.scenes.map(item=>({sceneId:item.sceneId,ledger:review.readLedger(item.returnedDocument)})),returnedThreads:parsed.reviewIr.commentThreads,returnedParagraphs:parsed.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),commentReturnInventory:parsed.reviewIr.commentReturnInventory};
