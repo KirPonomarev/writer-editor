@@ -1,3 +1,44 @@
+## 2026-10-07 — amendment06 retained-format barrier, known incomplete
+
+Writer bounded-failure HOLD SHA256
+47838d6c4c2e8a7b465f139d395de8e226c0eee16adaddae8b6939f344873cd1
+freezes33 source/test files at2e1; root verifies33 bindings and9 evidence files.
+Runtime663of1800 and behavior830of2600. Selected01 and02 each execute0of2,
+exit1, zero exclusions. Earlier fixture errors and direct-slot no-op mutation
+are retained separately, never runtime acceptance. Genuine SOURCE06 pure
+three-scene proof uses interim index before final invalidity strengthening:
+complete normalized rich Original equals source; Current assertion covers full
+paragraph text only, not full Current rich equality or Main/native Apply.
+Actual retained paragraph-format return then fails unchanged Core
+MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED. Exact field observer SHA256
+91a5dff61f5076fc2453125b8762bf8eeedabeaea51afe901ee70d9346042e0d
+shows raw before asciiGeorgia14 and after asciiArial14, versus independently
+observed complete snapshots. Existing source-owned emission snapshot exactly
+matches both actual snapshots; all provenance/coordinates remain unchanged.
+Core and shared comparators remain untouched. Freeze known-incomplete same
+contour checkpoint with mechanical byte companions, then admit only two
+existing Core source-expectation seams. Raw ledger/history/source hashes and
+legacy law stay literal; actual Word never supplies expected authority.
+Genuine SOURCE/ordinary PACKAGED Apply/restart, mandatory gates, full delivery
+and original complete-novel denominator remain OPEN.
+
+## 2026-10-07 — actual unchanged native green; changed marker comparison red
+
+Clean2e1 actual SOURCE05 genuine Word16.112 Save As preserves complete13p/
+3scene Current/Original and every effective property. Public no-candidate has
+zero diagnostics; all6 business bytes exact, normal exit0. SOURCE06 same-profile
+restart/no-reseed exports a fresh own round; two genuine tracked replacements
+produce4 native events. Independent whole Original matches input and Current
+only these literal edits, all other properties exact. Public intake blocks
+MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED before confirmation/Apply; all6 exact,
+normal exit0. All native children stopped. Pure unchanged-predicate diagnosis
+maps solely expected complete TNR12 marker versus raw omission and authored
+asciiGeorgia14 inherited font slots. Actual Word effective values are intact.
+Declaration06/preflight0 admits same44path/originalbudget scoped finiteV2
+reader repair; no Core comparator/schema/source/hash/writer weakening.
+Short native Cancel/Apply/restart/reexport, ordinary PACKAGED, whole gates,
+delivery and original full-novel denominator remain OPEN.
+
 ## 2026-10-07 — amendment05 held; actual native body proof next
 
 The original42b body contour remains undelivered. Clean747 admitted05; writer

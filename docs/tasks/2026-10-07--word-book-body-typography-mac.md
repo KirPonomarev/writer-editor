@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT05_HELD_NATIVE_PROOF_AND_DELIVERY_OPEN
+STATUS: AMENDMENT06_RETAINED_FORMAT_COUNTEREXAMPLE_CHECKPOINT
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -198,6 +198,67 @@ integrationMode: EXISTING_SEAM
 ```
 
 ## IMPLEMENTATION_STEPS
+
+### AMENDMENT06_ACTUAL_INHERITED_PARAGRAPH_MARK_TRANSPORT
+
+Clean2e1a4afb781325a21679ef9957e93cf220081c84 is the same original42b
+known-incomplete contour. Fresh clean bootstrap and declaration06 preflight
+process0 precede this amendment. Declaration SHA256
+e12bbecaae2f624b40ac5a3ab3dd0f0d517647875ea974b07c234a73c09b1624.
+Same44 paths and original1800runtime/2600behavior budgets; no new contour or
+authority. Root E0 is required before separate writer edits.
+
+SOURCE05 genuine Word16.112 unchanged full13p/3scene Save As independently
+retains complete Current/Original/roles/fonts/languages/spacing/numbering.
+Public intake has no candidate, zero diagnostics, all6 business bytes exact,
+normal child exit0. SOURCE06 restarts the same profile without reseed, exports
+a fresh own round and executes real Word alpha-to-writer and unchanged-to-
+revised tracked edits. Independent whole Original equals input; Current
+differs only in these two edits and4 native events. Public intake refuses
+MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED before confirmation/Apply, all6
+bytes exact, normal exit0. These are actual native results, not fixture claims.
+
+O: this genuine changed return reaches explicit Cancel and leased atomic Apply
+without treating inherited marker fonts as lost, preserving raw authored
+omissions/partial slots, full Current/Original and history on restart/reexport.
+T: authenticated local source/map/profile -> bounded actual ZIP/style cascade
+-> existing scoped pending-return document -> unchanged independent Core
+comparison/replay -> Kernel/leased atomic writer. Native Word is observation,
+never expected baseline. I:2e1 actual source/profile/package identities,
+owned synthetic6files, immutable returned3f33c38b artifact, verified encrypted
+T7 and current origin/main42b. No native/worker lane remains active.
+H: actual style-resolved marker agrees with source, but generic rich converter
+preserves raw/direct omissions. Core compares complete source-emitted TNR12
+against absent marker; authored asciiGeorgia14 loses three inherited TNR slots
+only in this comparison. Preserve complete actual effective marker meaning at
+the existing finiteV2 scoped consumer instead of weakening Core or reconstructing
+actual values from expected source. Predict raw source remains exact while
+genuine style/slot/font/size/color/property changes remain visible/refused.
+B: every source hash/formatIR/capsule, private field, raw typography omission,
+all pending provenance/geometry/parent/history and foreign state. LegacyV1,
+shared comparators/writers, schema, ports, renderer, dependencies and scope stay.
+P: exact causal native/pure unchanged-predicate field proof before edits;
+short actual producer/Main positive and forged inherited/slot/style/snapshot
+negatives; full pending Current/Original/format transitions and raw no-write;
+then earliest real SOURCE and ordinary PACKAGED Cancel/Apply/restart/reexport,
+full affected and mandatory gates, one full Git delivery and exact merged proof.
+
+SOURCE06_READONLY_CORE_SHAPE_FIELDS_02.json and EXACT_DIFF_01 reproduce the
+same predicate in all3 scenes; only marker omissions/inherited slots differ.
+Diagnostic01 used insertion-order hashing and failed earlier section proof;
+02 uses exact Main sorted JSON crypto law. No secret key, activation or writer
+is used. SOURCE06_NATIVE_COUNTEREXAMPLE_CAUSAL_RECEIPT_01.json binds this
+diagnosis, independent full Word oracle, public refusal and normal exit.
+
+Allow only immediate finiteV2 scoped pending-reader correction with bounded
+actual formatting rows and closed style-resolved marker values. Actual fields
+must come from the returned bytes; absent/invalid/ambiguous/unsupported effective
+values cannot be filled from profile/source. Preserve actual pending property
+before/after and Current/Original snapshots; map and prove their exact seams
+before editing. No global/default-stripping comparator change, new authority
+flag/proof/schema, raw formatIR replacement or blanket unsupported-name ignore.
+Retain previous failures. Focused/native short proof never shrinks the original
+100k/five genuine both-origin/three-role/performance release denominator.
 
 ### AMENDMENT05_SOURCE_OWNED_LANGUAGE_AND_PENDING_READBACK
 
@@ -673,6 +734,30 @@ the existing parsed-v1 baseline fallback; the final actual positive confirms
 both publication phases and raw no-write guards, without bypassing its stale
 round lease. Whole15, genuine SOURCE/ordinary PACKAGED, mandatory gates and
 full Git delivery are still OPEN. This freeze is not full-novel acceptance.
+
+### AMENDMENT06_BOUNDED_FAILURE_FREEZE
+
+Writer bounded-failure HOLD SHA256
+47838d6c4c2e8a7b465f139d395de8e226c0eee16adaddae8b6939f344873cd1
+freezes33 source/test files at2e1; root verifies33 bindings and9 evidence files.
+Runtime663of1800 and behavior830of2600. Selected01 and02 each execute0of2,
+exit1, zero exclusions. Earlier fixture errors and direct-slot no-op mutation
+are retained separately, never runtime acceptance. Genuine SOURCE06 pure
+three-scene proof uses interim index before final invalidity strengthening:
+complete normalized rich Original equals source; Current assertion covers full
+paragraph text only, not full Current rich equality or Main/native Apply.
+Actual retained paragraph-format return then fails unchanged Core
+MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED. Exact field observer SHA256
+91a5dff61f5076fc2453125b8762bf8eeedabeaea51afe901ee70d9346042e0d
+shows raw before asciiGeorgia14 and after asciiArial14, versus independently
+observed complete snapshots. Existing source-owned emission snapshot exactly
+matches both actual snapshots; all provenance/coordinates remain unchanged.
+Core and shared comparators remain untouched. Freeze known-incomplete same
+contour checkpoint with mechanical byte companions, then admit only two
+existing Core source-expectation seams. Raw ledger/history/source hashes and
+legacy law stay literal; actual Word never supplies expected authority.
+Genuine SOURCE/ordinary PACKAGED Apply/restart, mandatory gates, full delivery
+and original complete-novel denominator remain OPEN.
 
 ## CHECKS
 

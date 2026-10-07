@@ -364,6 +364,47 @@ function completeBodyRoleDocument() {
  {type:'paragraph',attrs:{wordParagraphMarkTypography:{fontSlots:{ascii:'Georgia'},fontSize:'14pt'},wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'},wordParagraphSpacing:{before:40,after:80,line:260,lineRule:'auto'}},content:[{type:'text',text:'Authored Georgia text.',marks:[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt'}}]}]},
  p('Second scene plain text.'),p('Final sibling unchanged: Ελληνικά 中文 שלום.'),p('End sentinel gamma.')]};
 }
+test('scoped finite body actual inherited markers preserve complete text return and refuse malformed or changed slots',async()=>{
+ const [,bridge]=await modules,review=require('../../src/core/word-pending-text-revisions-v1.cjs'),adapter=require('../../src/core/word-pending-comment-return-v1.cjs');
+ const doc=completeBodyRoleDocument(),before=structuredClone(doc),source=freshBodySource(doc),capsule=source.localAuthorityCapsule,map=structuredClone(capsule.exportMap);
+ const parts=wordRelocatedBodyParts(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer(source)}).parts);
+ parts['word/document.xml']=parts['word/document.xml'].replace(/<w:r>(<w:rPr>[\s\S]*?<\/w:rPr>)<w:t[^>]*>Anchor alpha: Строка для правки\.<\/w:t><\/w:r>/u,(_all,rPr)=>{
+  const run=(text,deleted=false)=>'<w:r>'+rPr+'<w:'+(deleted?'delText':'t')+' xml:space="preserve">'+text+'</w:'+(deleted?'delText':'t')+'></w:r>';
+  return run('Anchor ')+'<w:del w:id="901" w:author="Writer" w:date="2026-10-07T00:00:00Z">'+run('alpha',true)+'</w:del><w:ins w:id="902" w:author="Writer" w:date="2026-10-07T00:00:00Z">'+run('writer')+'</w:ins>'+run(': Строка для правки.');});
+ assert.match(parts['word/document.xml'],/<w:ins w:id="902"/u);
+ const cp={sha256Text:hash,sha256Json:x=>'sha256:'+hash(JSON.stringify(x,(_key,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v)),byteLength:Buffer.byteLength};
+ const parse=parts=>bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),exportMap:capsule.exportMap,baselineDocuments:[{sceneId,document:doc}],documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest,retainPendingScenes:true,cryptoPort:cp});
+ const derive=returnedDocument=>adapter.deriveMixedPendingDocument({document:doc,returnedDocument,anchors:[],exportTypography:map.exportTypography,exportParagraphs:map.scenes[0].blocks.map(b=>b.formatIr.paragraph),cleanTransportSchemaVersion:1,allowUntrackedRichFormatting:true});
+ const parsed=parse(parts);assert.equal(parsed.ok,true,JSON.stringify(parsed));const result=derive(parsed.scenes[0].returnedDocument),ledger=review.readLedger(result.document);
+ assert.equal(result.changed,true);assert.deepEqual(review.normalizeNode(review.materialize(ledger,'original')),review.normalizeNode(doc));
+ assert.equal(review.projection(result.document).current,require('../../src/core/document-content-envelope-v1.cjs').deriveVisibleTextFromDocument(doc).replace('alpha','writer'));
+ assert.equal(review.paragraphs(ledger.source)[9].attrs.wordParagraphMarkTypography.fontSlots.hAnsi,undefined);
+ for(const fault of ['ascii','hAnsi','eastAsia','cs','direct-slot','size','sizeCs','missing-font','missing-size','unknown-style','ambiguous-style','invalid-color']) {
+  const bad=structuredClone(parts);
+  if(['ascii','hAnsi','eastAsia','cs'].includes(fault))bad['word/styles.xml']=bad['word/styles.xml'].replace('w:'+fault+'="Times New Roman"','w:'+fault+'="Arial"');
+  if(fault==='direct-slot')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr><w:rPr>','<w:pPr><w:rPr><w:rFonts w:cs="Arial"/>');
+  if(fault==='size')bad['word/styles.xml']=bad['word/styles.xml'].replace('<w:sz w:val="24"/>','<w:sz w:val="28"/>').replace('<w:szCs w:val="24"/>','<w:szCs w:val="28"/>');
+  if(fault==='sizeCs')bad['word/styles.xml']=bad['word/styles.xml'].replace('<w:szCs w:val="24"/>','<w:szCs w:val="28"/>');
+  if(fault==='missing-font')bad['word/styles.xml']=bad['word/styles.xml'].replace(/<w:rFonts w:ascii="Times New Roman"[^>]*\/>/u,'');
+  if(fault==='missing-size')bad['word/styles.xml']=bad['word/styles.xml'].replace('<w:sz w:val="24"/>','').replace('<w:szCs w:val="24"/>','');
+  if(fault==='unknown-style')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr>','<w:pPr><w:pStyle w:val="ForeignMissing"/>');
+  if(fault==='ambiguous-style')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr>','<w:pPr><w:pStyle w:val="YalkenBlockquote1"/><w:pStyle w:val="YalkenBlockquote1"/>');
+  if(fault==='invalid-color')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr><w:rPr>','<w:pPr><w:rPr><w:color w:val="ZZZZZZ"/>');
+  const denied=parse(bad);if(denied.ok)assert.throws(()=>derive(denied.scenes[0].returnedDocument),undefined,fault);
+  assert.deepEqual(doc,before,fault);assert.deepEqual(capsule.exportMap,map,fault);
+ }
+});
+test('scoped finite body actual retained paragraph-format keeps raw snapshots and independent history on reexport',async()=>{
+ const [,bridge]=await modules,review=require('../../src/core/word-pending-text-revisions-v1.cjs'),adapter=require('../../src/core/word-pending-comment-return-v1.cjs');
+ const old={type:'paragraph',attrs:{wordParagraphMarkTypography:{fontSlots:{ascii:'Georgia'},fontSize:'14pt'}},content:[{type:'text',text:'Retained marker'}]},after=structuredClone(old);after.attrs.wordParagraphMarkTypography.fontSlots.ascii='Arial';
+ const sourceDoc=review.bindLedger({schemaVersion:1,source:{type:'doc',content:[after]},revisions:[{id:'revision-1',nativeId:'1',operation:'format',author:'Writer',date:'',dateUtc:'',groupId:null,paragraphIndex:0,from:0,to:15,state:'pending',format:{kind:'paragraph',before:review.paragraphProperties(old),after:review.paragraphProperties(after)}}],undo:[],redo:[]});
+ const before=structuredClone(sourceDoc),source=freshBodySource(sourceDoc),capsule=source.localAuthorityCapsule,bytes=buildDocxReviewPacketBuffer(source);
+ const cp={sha256Text:hash,sha256Json:x=>'sha256:'+hash(JSON.stringify(x,(_key,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v)),byteLength:Buffer.byteLength};
+ const parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:capsule.exportMap,baselineDocuments:[{sceneId,document:sourceDoc}],documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections.protectedDigest,retainPendingScenes:true,cryptoPort:cp});assert.equal(parsed.ok,true,JSON.stringify(parsed));
+ const result=adapter.deriveMixedPendingDocument({document:sourceDoc,returnedDocument:parsed.scenes[0].returnedDocument,binding:capsule.exportMap.scenes[0].pendingCommentBinding,anchors:[],exportTypography:capsule.exportMap.exportTypography,exportParagraphs:capsule.exportMap.scenes[0].blocks.map(b=>b.formatIr.paragraph),allowUntrackedRichFormatting:true});
+ assert.equal(result.changed,false);assert.deepEqual(result.document,before);assert.deepEqual(sourceDoc,before);
+ const accepted=review.decide(result.document,{action:'acceptAll'}).doc,undone=review.decide(accepted,{action:'undo'}).doc;assert.deepEqual(review.projection(undone),review.projection(sourceDoc));assert.deepEqual(review.readLedger(undone).revisions,review.readLedger(sourceDoc).revisions);
+});
 for(const mutation of ['none','inherited-ascii','inherited-hAnsi','inherited-eastAsia','inherited-cs','direct-slot','inherited-size','inherited-sizeCs','direct-sizeCs','inherited-color-invalid','direct-color-invalid','inherited-color','direct-highlight','inherited-highlight-invalid','direct-bold','inherited-bold-invalid','main-language','aux-language','before','quote-indent','list-start','code-fill','code-style','theme'])test('actual producer complete13 Word style relocation '+mutation,async()=>{
  const [,bridge]=await modules,doc=completeBodyRoleDocument(),before=structuredClone(doc),source=freshBodySource(doc),map=structuredClone(source.localAuthorityCapsule.exportMap);
  const own=buildDocxReviewPacketBuffer(source),parts=wordRelocatedBodyParts(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:own}).parts);

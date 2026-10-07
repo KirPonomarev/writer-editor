@@ -1,3 +1,18 @@
+## 2026-10-07 — early actual Word tests expose marker projection gap
+
+05 clean checkpoint2e1; real SOURCE05 full13p/3scene unchanged save/public
+intake zero invented operations/diagnostics, all6 bytes exact, normal exit0.
+SOURCE06 same-profile no-reseed fresh export/two genuine tracked replacements:
+independent whole Original equals input, Current only the literal edits and4
+native events, every other effective property exact. Public Core refuses
+MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED before confirmation/Apply, all6 exact,
+normal exit0. Readonly actual predicate capture02 maps only complete expected
+marker vs raw/direct omission, including inherited three font slots in authored
+asciiGeorgia14. Diagnostic01 earlier section failure from unsorted JSON hash
+retained;02 reproduces Main canonical hash law. Declaration06/preflight0 binds
+same44 paths and originalbudget; root task E0 before bounded scoped reader.
+No native Apply/packaged/whole-novel/gate/delivery acceptance is inferred.
+
 ## 2026-10-07 — amendment05 final focused freeze
 
 Clean747/bootstrap/preflight/E0 preceded bounded05 language and pending-readback
@@ -1122,3 +1137,27 @@ all18 runtime bytes are unchanged. Genuine paragraph-marker Current/reexport,
 historical compatibility and candidate certificate negative controls passed.
 Release/native/performance/full-novel and delivery remain open. Next: final
 test freeze and clean same-contour checkpoint, then mapped source-owned repair.
+
+## 2026-10-07 — amendment06 retained-format barrier, known incomplete
+
+Writer bounded-failure HOLD SHA256
+47838d6c4c2e8a7b465f139d395de8e226c0eee16adaddae8b6939f344873cd1
+freezes33 source/test files at2e1; root verifies33 bindings and9 evidence files.
+Runtime663of1800 and behavior830of2600. Selected01 and02 each execute0of2,
+exit1, zero exclusions. Earlier fixture errors and direct-slot no-op mutation
+are retained separately, never runtime acceptance. Genuine SOURCE06 pure
+three-scene proof uses interim index before final invalidity strengthening:
+complete normalized rich Original equals source; Current assertion covers full
+paragraph text only, not full Current rich equality or Main/native Apply.
+Actual retained paragraph-format return then fails unchanged Core
+MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED. Exact field observer SHA256
+91a5dff61f5076fc2453125b8762bf8eeedabeaea51afe901ee70d9346042e0d
+shows raw before asciiGeorgia14 and after asciiArial14, versus independently
+observed complete snapshots. Existing source-owned emission snapshot exactly
+matches both actual snapshots; all provenance/coordinates remain unchanged.
+Core and shared comparators remain untouched. Freeze known-incomplete same
+contour checkpoint with mechanical byte companions, then admit only two
+existing Core source-expectation seams. Raw ledger/history/source hashes and
+legacy law stay literal; actual Word never supplies expected authority.
+Genuine SOURCE/ordinary PACKAGED Apply/restart, mandatory gates, full delivery
+and original complete-novel denominator remain OPEN.

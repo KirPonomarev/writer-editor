@@ -11326,7 +11326,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
     if(retainPendingSceneId!==undefined&&(!baselineDocuments||exportMap.scenes.length!==1||exportMap.scenes[0].sceneId!==retainPendingSceneId))throw Error('PENDING_COMMENT_SCENE_BINDING');
     const preview=buildDocxContentPreviewFromZipBytes(bytes);
     if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
-    let sectionsVerified=false,returnedDocumentNotes;
+    let sectionsVerified=false,returnedDocumentNotes,actualMarkerTransport;
     if(baselineDocuments!==undefined){
       if(!Array.isArray(baselineDocuments)||baselineDocuments.length!==exportMap.scenes.length
         ||new Set(baselineDocuments.map(s=>s.sceneId)).size!==baselineDocuments.length||!documentSections)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
@@ -11336,6 +11336,26 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
       if(!proof?.ok||proof.applicable!==true||proof.proof?.inactiveGridAdditions?.length)throw Error('PENDING_COMMENT_SECTION_CHANGED');
       sectionsVerified=true;
       returnedDocumentNotes=analysis.reviewIr.documentNotes;
+      if(bodyProfile?.schemaVersion===bodyTypography.V2) {
+        const targets=docxReviewPreviewSessionExtractTargets(bytes);
+        if(!targets.ok)throw Error('WORD_BODY_MARK_PACKAGE_REQUIRED');
+        const actualXml=targets.extractedTargets.get('word/document.xml');
+        const part=name=>docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,name,1024*1024)||new Uint8Array());
+        const options={cryptoPort:cryptoPort||{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length},
+          stylesXml:part('word/styles.xml'),themeXml:part('word/theme/theme1.xml'),settingsXml:part('word/settings.xml'),relationshipsXml:part('word/_rels/document.xml.rels')};
+        const pending=extractPendingTextRevisionSourceV1(actualXml,{...options,allowCommentMarkers:true});
+        const scan=xml=>{const result=extractReviewTransportFormattingRunsV2(xml,options);
+          if(!result.ok)throw Error(result.code||'WORD_BODY_MARK_FORMAT_UNSUPPORTED');return result.paragraphs;};
+        const union=scan(pending.xml),before=pending.formatBeforeXml?scan(pending.formatBeforeXml):union;
+        const blocks=exportMap.scenes.flatMap(scene=>scene.blocks),names=blocks.map(block=>{
+          const signals=(block.wordSignals||[]).filter(signal=>signal.kind==='bookmarkName');
+          if(signals.length!==1||!signals[0].value?.name)throw Error('WORD_BODY_MARK_SOURCE_BINDING');return signals[0].value.name;});
+        const owners=extractTransportParagraphOwnershipV1(pending.xml,names,options);
+        if(union.length!==blocks.length||before.length!==union.length||owners.length!==union.length
+          ||owners.some((ids,i)=>ids.length!==1||ids[0]!==i))throw Error('WORD_BODY_MARK_SOURCE_BINDING');
+        if(pending.revisions.length&&!pending.originalXml)throw Error('WORD_BODY_MARK_PROJECTION_CHANGED');
+        actualMarkerTransport={union,before,current:scan(pending.currentXml),original:scan(pending.originalXml||pending.xml)};
+      }
       if(bodyProfile?.schemaVersion===bodyTypography.V2)for(const scene of exportMap.scenes) {
         const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId);
         if(!baseline)throw Error('WORD_BODY_CODE_SOURCE_BINDING');
@@ -11363,6 +11383,32 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
       const source=rich?parseObservablePayload(rich).doc:buildParagraphDocumentFromText(parsed.text);
       if(parsed.doc?.attrs)source.attrs=JSON.parse(JSON.stringify(parsed.doc.attrs));
       ledger=pendingTextRevisions.validateLedger({schemaVersion:2,source,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+    }
+    if(actualMarkerTransport) {
+      // Generic preview retains direct authored spelling. This scoped V2
+      // comparison transport instead retains complete facts from the actual
+      // bounded style cascade; neither source nor profile fills missing facts.
+      ledger=JSON.parse(JSON.stringify(ledger));
+      const rows=pendingTextRevisions.paragraphs(ledger.source);
+      const marker=(node,row)=>{
+        if(!['paragraph','heading'].includes(node.type))return;
+        if(!row||row.effectiveParagraphMarkTypographyInvalid||row.paragraphFormattingInvalid||row.wordLanguageInvalid
+          ||!row.effectiveParagraphMarkTypography)throw Error('WORD_BODY_MARK_EFFECTIVE_REQUIRED');
+        node.attrs={...node.attrs,wordParagraphMarkTypography:normalizeParagraphMarkTypography(row.effectiveParagraphMarkTypography)};
+      };
+      if(rows.length!==actualMarkerTransport.union.length)throw Error('WORD_BODY_MARK_SOURCE_BINDING');
+      rows.forEach((node,i)=>marker(node,actualMarkerTransport.union[i]));
+      for(const revision of ledger.revisions)if(pendingTextRevisions.isParagraphFormat(revision)) {
+        marker(revision.format.before,actualMarkerTransport.before[revision.paragraphIndex]);
+        marker(revision.format.after,actualMarkerTransport.union[revision.paragraphIndex]);
+      }
+      ledger=pendingTextRevisions.validateLedger(ledger);
+      for(const phase of ['current','original']) {
+        const projected=pendingTextRevisions.paragraphs(pendingTextRevisions.materialize(ledger,phase)),actual=actualMarkerTransport[phase];
+        if(projected.length!==actual.length)throw Error('WORD_BODY_MARK_PROJECTION_CHANGED');
+        projected.forEach((node,i)=>{const observed=JSON.parse(JSON.stringify(node));marker(observed,actual[i]);
+          if(hashCanonicalValue(node.attrs?.wordParagraphMarkTypography)!==hashCanonicalValue(observed.attrs?.wordParagraphMarkTypography))throw Error('WORD_BODY_MARK_PROJECTION_CHANGED');});
+      }
     }
     const leaves=pendingTextRevisions.paragraphs(ledger.source), index=new Map(leaves.map((p,i)=>[p,i]));
     let inactiveTabEquivalent;

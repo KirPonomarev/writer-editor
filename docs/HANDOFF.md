@@ -1,3 +1,47 @@
+## 2026-10-07 — amendment06 retained-format barrier, known incomplete
+
+Writer bounded-failure HOLD SHA256
+47838d6c4c2e8a7b465f139d395de8e226c0eee16adaddae8b6939f344873cd1
+freezes33 source/test files at2e1; root verifies33 bindings and9 evidence files.
+Runtime663of1800 and behavior830of2600. Selected01 and02 each execute0of2,
+exit1, zero exclusions. Earlier fixture errors and direct-slot no-op mutation
+are retained separately, never runtime acceptance. Genuine SOURCE06 pure
+three-scene proof uses interim index before final invalidity strengthening:
+complete normalized rich Original equals source; Current assertion covers full
+paragraph text only, not full Current rich equality or Main/native Apply.
+Actual retained paragraph-format return then fails unchanged Core
+MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED. Exact field observer SHA256
+91a5dff61f5076fc2453125b8762bf8eeedabeaea51afe901ee70d9346042e0d
+shows raw before asciiGeorgia14 and after asciiArial14, versus independently
+observed complete snapshots. Existing source-owned emission snapshot exactly
+matches both actual snapshots; all provenance/coordinates remain unchanged.
+Core and shared comparators remain untouched. Freeze known-incomplete same
+contour checkpoint with mechanical byte companions, then admit only two
+existing Core source-expectation seams. Raw ledger/history/source hashes and
+legacy law stay literal; actual Word never supplies expected authority.
+Genuine SOURCE/ordinary PACKAGED Apply/restart, mandatory gates, full delivery
+and original complete-novel denominator remain OPEN.
+
+## 2026-10-07 — amendment06 native inherited-marker counterexample
+
+Continue original42b contour at clean2e1; no independent contour or delivery.
+Actual SOURCE05 complete13p/3scene genuine unchanged save/public intake passes
+zero operations/diagnostics and all6 exact, normal exit0. SOURCE06 same-profile
+restart/fresh round real two-scene replacements yield4 native events; independent
+full Current/Original and all effective properties are exact. Public intake
+blocks MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED before any confirmation/Apply.
+All6 files exact, normal exit0, no native child active. Readonly Core predicate
+capture02 and exact diff01 isolate generic raw marker omissions versus source
+complete inherited TNR12; Beta authored asciiGeorgia14 omits three inherited
+slots only in comparison. Actual formatting rows preserve complete effective
+marker observation. Declaration06 SHA256e12bbecaae2f624b40ac5a3ab3dd0f0d517647875ea974b07c234a73c09b1624
+preflight0 binds same44 paths, original1800/2600; E0 before writer edits.
+Repair only existing finite scoped reader, with actual effective values and
+strict before/after/Original/Current, malformed/forged/legacy negatives. No
+global normalization or source/hashes/comparator/writer change. Earliest real
+SOURCE/PACKAGED changed controls before broad mandatory gates and full delivery.
+Original complete macOS novel denominator unchanged and OPEN.
+
 ## 2026-10-07 — HOLD05; continue early genuine Word verification
 
 Continue the original42b WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007 contour.
