@@ -29,15 +29,15 @@ function harness(){
   vm.runInContext(main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n}\);/)[0]+'\n'+['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256','buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText','extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding','buildFullManuscriptPublicationGate'].map(declaration).join('\n'),context);
   return context;
 }
-async function fixture(paragraphs,{rich=false}={}){
+async function fixture(paragraphs,{rich=false,observableContents}={}){
   const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
   const envelope=await import(pathToFileURL(path.join(ROOT,'src/renderer/documentContentEnvelope.mjs')));
   const context=harness();
   const scenes=paragraphs.map((ps,i)=>{
     const doc={type:'doc',content:ps.map(text=>({type:'paragraph',...(text?{content:[{type:'text',text}]}:{})}))};
-    const raw=rich?envelope.composeObservablePayload({doc}):ps.join('\n');
+    const raw=observableContents?.[i]??(rich?envelope.composeObservablePayload({doc}):ps.join('\n'));
     const parsed=envelope.parseObservablePayload(raw);
-    return {sceneId:'roman/scene-'+i+'.txt',scenePath:'/synthetic/roman/scene-'+i+'.txt',text:rich?parsed.text:raw,doc:parsed.doc,observableContent:raw,order:i};
+    return {sceneId:'roman/scene-'+i+'.txt',scenePath:'/synthetic/roman/scene-'+i+'.txt',text:rich||parsed.doc||parsed.hasMetaBlock||parsed.hasCardsBlock?parsed.text:raw,doc:parsed.doc,observableContent:raw,order:i};
   });
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'volume-project',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes,expectedOrderedSceneIds:scenes.map(s=>s.sceneId)},{revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),createdAtUtc:'2026-09-17T00:00:00Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'test-local-key-never-published'});
   const gate=s=>context.buildFullManuscriptProvisionalSelfParse({source:s,revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),coreManifest:s.advisoryManifest.coreManifest});
@@ -69,6 +69,63 @@ for(const rich of [false,true])test('Full manuscript provisional gate preserves 
   assert.deepEqual(source.blocks.map(b=>b.text),ps.flat());
   assert.equal(source.sceneText,ps.map(s=>s.join('\n')).join('\n\n'));
   assert.equal(gate(source).ok,true,JSON.stringify(gate(source)));
+});
+test('Actual Main plain publication preserves normalized raw empty lines in both complete package phases',async()=>{
+  const raws=['\nfirst','last\n','a\n\n\nb','\n\n\n','','\r\nA\r\n\r\nB\r\n','\rA\r\rB\r','  🧑‍💻 Café  \n \n'];
+  const {source,bridge,context}=await fixture(raws.map(raw=>raw.split('\n')));
+  const before=JSON.stringify(source),expected=raws.map(raw=>raw.replace(/\r\n?/gu,'\n'));
+  assert.deepEqual(source.blocks.map(block=>block.text),expected.flatMap(raw=>raw.split('\n')));
+  for(const [i,scene] of source.localAuthorityCapsule.exportMap.scenes.entries()) {
+    assert.equal(scene.rawSha256,hash(raws[i]));
+    assert.equal(source.localAuthorityCapsule.baselineObservableContentBySceneId?.[scene.sceneId]??source.localAuthorityCapsule.baselineFinalTextBySceneId[scene.sceneId],raws[i]);
+  }
+  const bytes=buildDocxReviewPacketBuffer(source),publication=await context.buildFullManuscriptPublicationGate(source,bytes,bridge);
+  assert.equal(publication.ok,true,JSON.stringify(publication));assert.equal(publication.publishAllowed,true);
+  assert.equal(publication.provisionalSelfParse.verified,true);assert.equal(publication.finalSelfParse.semanticEquivalent,true);assert.equal(publication.yrtk2Verification.ok,true);
+  for(const actual of [source.provisionalSelfParseArtifact.bytes,bytes]) {
+    const read=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:actual},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+    assert.equal(read.ok,true,JSON.stringify(read));assert.equal(read.reviewIr.formattingParagraphs.length,expected.flatMap(raw=>raw.split('\n')).length);
+    const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:actual},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+    const visible=bridge.visibleSceneTextsFromWordDocumentXml(parts.parts['word/document.xml'],source.localAuthorityCapsule.exportMap,{cryptoPort:context.createRtkReviewTransportCryptoPort(),stylesXml:parts.parts['word/styles.xml'],relationshipsXml:parts.parts['word/_rels/document.xml.rels']});
+    assert.equal(visible.ok,true,JSON.stringify(visible));assert.deepEqual(visible.sceneTexts,expected);
+  }
+  assert.equal(JSON.stringify(source),before);
+});
+test('Actual Main publication retains rich and private envelope interpretation and strict plain source bindings',async()=>{
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const privateRaw=envelope.composeObservablePayload({text:'\nprivate-visible\n\n\nend\n',metaEnabled:true,meta:{synopsis:'private-title',tags:{pov:'protected'}},cards:[{id:'card-a',title:'private-card',text:'private-body'}]});
+  const richDoc={type:'doc',content:[{type:'paragraph'},{type:'paragraph',content:[{type:'text',text:'Rich',marks:[{type:'bold'}]}]},{type:'paragraph'}]};
+  const richRaw=envelope.composeObservablePayload({doc:richDoc,metaEnabled:true,meta:{synopsis:'rich-private'}});
+  const richV3Doc=clone(richDoc);richV3Doc.content[1].attrs={wordParagraphSpacing:{after:30}};
+  const richV3Raw=envelope.composeObservablePayload({doc:richV3Doc});
+  assert.equal(envelope.parseObservablePayload(richRaw).payloadVersion,2);assert.equal(envelope.parseObservablePayload(richV3Raw).payloadVersion,3);
+  const {source,bridge,context}=await fixture([[''],[''],['']],{observableContents:[privateRaw,richRaw,richV3Raw]});
+  const before=JSON.stringify(source),bytes=buildDocxReviewPacketBuffer(source);
+  assert.equal(envelope.parseObservablePayload(privateRaw).hasMetaBlock,true);assert.equal(envelope.parseObservablePayload(privateRaw).hasCardsBlock,true);
+  assert.deepEqual(source.blocks.map(block=>block.text),['private-visible','','end','','Rich','','','Rich','']);
+  const publication=await context.buildFullManuscriptPublicationGate(source,bytes,bridge);
+  assert.equal(publication.ok,true,JSON.stringify(publication));assert.equal(publication.provisionalSelfParse.verified,true);assert.equal(publication.finalSelfParse.semanticEquivalent,true);
+  assert.ok(!source.sceneText.includes('private-title'));assert.ok(!source.sceneText.includes('private-card'));assert.equal(JSON.stringify(source),before);
+  const plain=await fixture([['','a','','','b','']]),plainBytes=buildDocxReviewPacketBuffer(plain.source),plainBefore=JSON.stringify(plain.source);
+  for(const [name,mutate,reason] of [
+    ['raw hash',s=>{s.localAuthorityCapsule.exportMap.scenes[0].rawSha256=hash('foreign');},'WORD_BODY_BASELINE'],
+    ['missing baseline',s=>{s.localAuthorityCapsule.baselineFinalTextBySceneId={};s.localAuthorityCapsule.baselineObservableContentBySceneId={};},'WORD_BODY_BASELINE'],
+    ['coherent raw differs',s=>{const id=s.localAuthorityCapsule.exportMap.scenes[0].sceneId,raw='\na\n\nb\n';s.localAuthorityCapsule.baselineFinalTextBySceneId[id]=raw;s.localAuthorityCapsule.exportMap.scenes[0].rawSha256=hash(raw);},'WORD_BODY_RAW_FORMAT_BINDING'],
+    ['malformed envelope',s=>{const id=s.localAuthorityCapsule.exportMap.scenes[0].sceneId,raw='[doc-v2 length=1]\n{';s.localAuthorityCapsule.baselineFinalTextBySceneId[id]=raw;s.localAuthorityCapsule.exportMap.scenes[0].rawSha256=hash(raw);},'WORD_BODY_BASELINE'],
+    ['unknown rich declaration',s=>{const id=s.localAuthorityCapsule.exportMap.scenes[0].sceneId,raw=richV3Raw.replace('"version":3','"version":4');assert.notEqual(raw,richV3Raw);s.localAuthorityCapsule.baselineFinalTextBySceneId[id]=raw;s.localAuthorityCapsule.exportMap.scenes[0].rawSha256=hash(raw);},'WORD_BODY_BASELINE'],
+    ['map IR',s=>{s.localAuthorityCapsule.exportMap.scenes[0].blocks[0].formatIr.paragraph.nodeType='heading';},'WORD_BODY_RAW_FORMAT_BINDING'],
+    ['source IR',s=>{s.blocks[0].formatIr.paragraph.wordParagraphSpacing={after:1};},'WORD_BODY_RAW_FORMAT_BINDING'],
+    ['source marks hash',s=>{s.blocks[0].canonicalMarksSha256=hash('foreign');},'WORD_BODY_RAW_FORMAT_BINDING'],
+  ]) {
+    const forged=clone(plain.source);forged.provisionalSelfParseArtifact.bytes=plain.source.provisionalSelfParseArtifact.bytes;mutate(forged);const captured=JSON.stringify(forged),denied=await plain.context.buildFullManuscriptPublicationGate(forged,plainBytes,plain.bridge);
+    assert.equal(denied.ok,false,name);assert.equal(denied.publishAllowed,false,name);assert.equal(denied.reason,reason,name+':'+JSON.stringify(denied));assert.equal(JSON.stringify(forged),captured);
+  }
+  const parts=plain.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:plainBytes},{cryptoPort:plain.context.createRtkReviewTransportCryptoPort()}).parts;
+  const xml=parts['word/document.xml'],paragraphs=xml.match(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu),empty=paragraphs.find(p=>!p.includes('<w:t'));
+  assert.ok(empty,'actual owned empty paragraph');const changedXml=xml.replace(empty,'');assert.notEqual(changedXml,xml);
+  const removed=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data:name==='word/document.xml'?changedXml:data})));
+  const denied=await plain.context.buildFullManuscriptPublicationGate(plain.source,removed,plain.bridge);
+  assert.equal(denied.ok,false,JSON.stringify(denied));assert.equal(denied.publishAllowed,false);assert.equal(denied.code,'RTK_V4_PUBLICATION_DOCUMENT_SECTIONS_MISMATCH');assert.deepEqual(Array.from(denied.documentSectionsMismatches),['protectedSections']);assert.equal(JSON.stringify(plain.source),plainBefore);
 });
 test('Full manuscript Word sections bind canonical scene groups to exact OOXML boundaries and protected page semantics',async()=>{
   const {source,parse,validate}=await sectionFixture();

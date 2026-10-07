@@ -1650,3 +1650,63 @@ or product assertion was relaxed. Original budgets834of1800 runtime and
 at this text checkpoint; commit/push will bind exact bytes. Whole-feature CI,
 merged delivery, actual Office empty-paragraph RAW reconstruction,500k cost and
 fresh SOURCE plus ordinary PACKAGED genuine novel cycles remain OPEN.
+
+
+### 2026-10-07 — same-contour amendment20 plain source paragraph preservation
+
+Clean ec33, original42b binding/rollback, unfinished PR2093 and56scope unchanged.
+Fresh full ordered20 reads/bootstrap/preflight/task E0 actual0 before writes;
+declaration20_01 SHA2565e17c10119741450457055ff6ce36f3261ed77196b2e3fd60379c4ac32739864.
+O: complete plain source authored empty paragraphs survive strict actual Main
+provisional/final publication with raw/source/map hashes and no source writes.
+T: validated local raw/hash -> existing plain operand -> authored block builder
+-> independent actual package/YRTK2/strict body readback; Kernel/writer unchanged.
+H: six source blocks become five solely through legacy edge-newline trimming;
+actual small Office publication refuses WORD_BODY_RAW_FORMAT_BINDING. Preserve
+line-normalized raw only for validated v1 plain with no doc/meta/cards; all rich,
+private and malformed envelope interpretation and strict refusal laws stay exact.
+MOVE: separate code writer only Main publication canonicalScenes reconstruction
+and existing volume contract meaningful real Main controls. No shared parser,
+envelope, producer, Core, schema/API/helper/cache/budget/UI/dependency change.
+B: rawSHA, full authored formatIR/TextSha/MarksSha, source/maps/round/history,
+all other42of44pins and ARCH_DIFF_LOG18;1800runtime2600behavior original budgets.
+P: retained red, finite LF/CRLF/CR leading/trailing/repeated/all-empty matrix,
+rich/private/malformed controls and actual source/map/returned-empty forgeries;
+whole affected chain, frozen proof, mechanical OPS then required delivery gates.
+I: exact ec33, freshly fetched42b main, encrypted/unlocked/writable registered T7.
+Current19 composed132 and byte51 pass; full predecessor7c237 graph3769of3842
+has73fail, never current acceptance. Prior500k publication86.947s/RSS1842774016B
+and100k synthetic exchanges remain qualified only. Full genuine SOURCE/PACKAGED
+novel/roles/five exchanges, speed/memory, wholeCI and merge remain OPEN.
+
+
+### Same-contour amendment20 frozen partial correction and retained carrier failure
+
+Only Main plain-source selection and volume controls changed: validated raw
+line endings retain leading/trailing/repeated/all-empty paragraphs; richv2/v3,
+meta/cards and malformed envelopes retain their existing interpretation. Raw,
+map, authored IR/text/marks hashes, pending and double actual readback stay strict.
+Root verifies HOLD20_02 SHA25617129c7d9c593de2705066376e7fb943a306ff6b96f0fb58f40ec13e660e63b9,
+44bindings/11logs/12artifacts; other42/build inputs/generated/dist remain exact.
+Runtime835of1800, behavior1431of2600, generated456 separately. Final finite2of2
+covers8 raw inputs, rich/private and8 precise source corruptions plus actual
+removed-empty ZIP refusal. Identity5of5 passes. Valid selected non500k cases
+cover17 with16pass1OfficeFAIL; current entire18-case volume is NOT proven.
+Accidental negative-lookahead selected500k; verified owned Node test processes
+were terminated with SIGTERM at approximately26s, with brief identity-test
+execution overlap. Both execution limitations and incomplete log are retained;
+no machine/native crash route or capacity/performance PASS follows.
+Separate root complete four-phase plain/rich codepoint/body/scene readback
+SHA256243274cd6142fe6a1d96b49825c6957fea34a190448b382c062b2bb87ec0ae2f
+preserves all source bytes and independently retains WORD_BODY_READBACK_FINAL.
+Root actual-model hypothesis shows final empty-section U+2060 carrier lacks
+emitted font/language; exact source-owned styled transport expectation passes
+strict component readback, raw canonical empty stays distinct. This is not a
+fixed product or native proof. Parser/producer/Core remain unchanged at20.
+Official committed ec33 requiredRTK3777of3842 has65FAIL, zero exclusions;
+current dirty20 is not certified. Exactly one committed policy task-byte pin
+is stale after19 syntax repair; mechanical20 bindings must use finalized docs
+and verify all480 before commit.622paths/1597inventory/old tuples stay exact.
+Same unfinished original42b PR2093/56scope/rollback; known-incomplete checkpoint
+only. Next clean admission: exact source-owned Office carrier emission/readback.
+Full genuine novel/roles/SOURCE/PACKAGED/five exchanges/resources/CI/merge OPEN.

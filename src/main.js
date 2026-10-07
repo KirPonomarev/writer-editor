@@ -1187,7 +1187,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
         if(typeof raw!=='string'||scene.rawSha256!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BODY_BASELINE');
         const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
         if(parsed.issue)throw Error('WORD_BODY_BASELINE');
-        canonicalScenes.push({...scene,doc:parsed.doc,text:parsed.text});
+        const plain=parsed.version===1&&parsed.payloadVersion===1&&!parsed.doc&&!parsed.hasMetaBlock&&!parsed.hasCardsBlock;
+        canonicalScenes.push({...scene,doc:parsed.doc,text:plain?envelope.normalizeDocumentLineEndings(raw):parsed.text});
       }
       const authored=sourceModel.buildFullManuscriptBlocks(canonicalScenes,cryptoPort);
       const mapped=localAuthority.exportMap.scenes.flatMap(scene=>scene.blocks);
