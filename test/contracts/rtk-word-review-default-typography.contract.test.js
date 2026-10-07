@@ -306,12 +306,12 @@ function freshBodySource(doc,nonTextReturnState) {
  return buildFullManuscriptDocxReviewPacketSource({projectId:'project-body-profile',...(nonTextReturnState?{nonTextReturnState}:{}),scenes:[{sceneId,doc,text:require('../../src/core/document-content-envelope-v1.cjs').deriveVisibleTextFromDocument(doc),order:0}]},
   {createdAtUtc:'2026-10-07T00:00:00.000Z',roundIdHex:'ab'.repeat(16),keyIdHex:'cd'.repeat(16),hmacSecret:'owned-local-body-profile-test',cryptoPort:{sha256Text:x=>'sha256:'+hash(x),sha256Json:x=>'sha256:'+hash(JSON.stringify(x,(_key,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])):value)),hmacSha256Json:(x,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(x)).digest('hex'),byteLength:x=>Buffer.byteLength(x)}});
 }
-function actualBodyPublication(doc,bridge) {
+function actualBodyPublication(doc,bridge,{notesDocument,nonTextReturnState,projectId='synthetic-publication-observation',ownedSceneId=sceneId}={}) {
  const vm=require('node:vm'),mainPath=require.resolve('../../src/main.js'),main=fs.readFileSync(mainPath,'utf8'),rq=require('node:module').createRequire(mainPath),producer=rq('./export/docx/fullManuscriptDocxReviewPacketSource.js'),envelope=rq('./core/document-content-envelope-v1.cjs');
- const names=['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256','buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText','extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding','buildFullManuscriptPublicationGate'];
- const context=vm.createContext({crypto,Buffer,require:rq,isPlainObjectValue:x=>!!x&&typeof x==='object'&&!Array.isArray(x),docxReviewPreviewSessionDetailString:x=>typeof x==='string'?x:'',sha256DocxReviewPreviewSessionBytes:hash,cloneJsonSafe:x=>JSON.parse(JSON.stringify(x)),docxReviewReturnIntakeBlocked:code=>({ok:false,code}),validateFullManuscriptDocumentSectionsReturn:producer.validateFullManuscriptDocumentSectionsReturn});
+ const names=['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256','buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText','extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding','scenePendingExportSemantics','buildFullManuscriptPublicationGate'];
+ const context=vm.createContext({crypto,Buffer,require:rq,pendingTextRevisions:rq('./core/word-pending-text-revisions-v1.cjs'),compareCommentExportReadback:rq('./export/docx/docxReviewPacketComments.js').compareCommentExportReadback,validateDocumentNotesReturn:rq('./export/docx/docxReviewPacketNotes.js').validateDocumentNotesReturn,isPlainObjectValue:x=>!!x&&typeof x==='object'&&!Array.isArray(x),docxReviewPreviewSessionDetailString:x=>typeof x==='string'?x:'',sha256DocxReviewPreviewSessionBytes:hash,cloneJsonSafe:x=>JSON.parse(JSON.stringify(x)),docxReviewReturnIntakeBlocked:code=>({ok:false,code}),validateFullManuscriptDocumentSectionsReturn:producer.validateFullManuscriptDocumentSectionsReturn});
  vm.runInContext(main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n}\);/)[0]+'\n'+names.map(name=>{const declaration=main.match(new RegExp('function '+name+'\\([^]*?\\n}(?=\\n|$)'));assert.ok(declaration,name);return declaration[0];}).join('\n'),context);
- const raw=envelope.composeObservablePayload({doc}),source=producer.buildFullManuscriptDocxReviewPacketSource({projectId:'synthetic-publication-observation',projectRoot:'/synthetic',scenes:[{sceneId,scenePath:'/synthetic/'+sceneId,text:envelope.deriveVisibleTextFromDocument(doc),doc,observableContent:raw,order:0}]},{revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort()});
+ const raw=envelope.composeObservablePayload({doc}),source=producer.buildFullManuscriptDocxReviewPacketSource({projectId,projectRoot:'/synthetic',...(notesDocument?{notesDocument}:{}),...(nonTextReturnState?{nonTextReturnState}:{}),scenes:[{sceneId:ownedSceneId,scenePath:'/synthetic/'+ownedSceneId,text:envelope.deriveVisibleTextFromDocument(doc),doc,observableContent:raw,order:0}]},{revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort()});
  return {source,raw,bytes:buildDocxReviewPacketBuffer(source),publish:(bytes,candidate=source)=>context.buildFullManuscriptPublicationGate(candidate,bytes,bridge)};
 }
 for(const kind of ['boundary','paragraph-mark'])test('checked carrier actual Main publication '+kind,async()=>{
@@ -850,5 +850,52 @@ test('actual finite body producer ZIP language edits retain partial authored sou
   const reexport=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildDocxReviewPacketBuffer(freshBodySource({type:'doc',content:[next]}))},{cryptoPort});assert.equal(reexport.ok,true);
   assert.deepEqual(reexport.reviewIr.formattingParagraphs[0].formattedRuns.map(run=>run.wordLanguage),row.formattedRuns.map(run=>run.wordLanguage));
   assert.deepEqual(reexport.reviewIr.formattingParagraphs[0].wordParagraphMarkLanguage,row.wordParagraphMarkLanguage);assert.deepEqual(reexport.reviewIr.formattingParagraphs[0].typedBreaks,row.typedBreaks);
+ }
+});
+
+async function singlePendingNotePublicationFixture() {
+ const prefix=fs.readFileSync(path.join(__dirname,'rtk-word-pending-notes.contract.test.js'),'utf8').split("\ntest('complete book note law")[0];
+ const make=new Function('require','__dirname',prefix+'\nreturn singleFullManuscriptFixture;')(require,__dirname),fixture=await make({tracked:true});
+ return {...actualBodyPublication(fixture.beforeDocs[0],fixture.bridge,{notesDocument:fixture.document,nonTextReturnState:fixture.state,projectId:'project-test',ownedSceneId:fixture.ids[0]}),fixture};
+}
+test('single full manuscript actual Main publication proves complete pending V2 notes in both phases',async()=>{
+ const f=await singlePendingNotePublicationFixture(),result=await f.publish(f.bytes);
+ assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.publishAllowed,true);
+ assert.deepEqual(JSON.parse(JSON.stringify(result.documentNotesBinding.noteProofs)),[
+  {phase:'provisional',rosterCount:3,completeBodies:true,sourceOccurrences:true},{phase:'final',rosterCount:3,completeBodies:true,sourceOccurrences:true}]);
+ assert.equal(f.source.documentNotes.breakEmission.schemaVersion,2);assert.equal(f.source.localAuthorityCapsule.exportMap.scenes.length,1);
+ if(process.env.YALKEN_SINGLE_SCENE31_EVIDENCE_DIR) {
+  const directory=path.join(process.env.YALKEN_SINGLE_SCENE31_EVIDENCE_DIR,'SINGLE_SCENE31_PUBLICATION_'+f.source.localAuthorityCapsule.roundId);fs.mkdirSync(directory,{recursive:true});
+  for(const [name,value] of Object.entries({'publication.json':result,'source.json':f.source,'final.docx':f.bytes,'provisional.docx':f.source.provisionalSelfParseArtifact.bytes}))
+   fs.writeFileSync(path.join(directory,name),Buffer.isBuffer(value)?value:JSON.stringify(value,null,2)+'\n',{flag:'wx'});
+ }
+});
+for(const phase of ['provisional','final'])for(const kind of ['body','break'])test('single full manuscript actual Main publication rejects changed rich note '+kind+' '+phase,async()=>{
+ const f=await singlePendingNotePublicationFixture(),original=phase==='provisional'?f.source.provisionalSelfParseArtifact.bytes:f.bytes;
+ const parts=f.fixture.bridge.extractDocxReviewTransportPackagePartsFromZipBytes(original).parts;
+ const old=parts['word/footnotes.xml'];assert.ok(old.includes('Rich body'));
+ parts['word/footnotes.xml']=kind==='body'?old.replace('Rich body','Rich edit'):old.replace('<w:br/>','');assert.notEqual(parts['word/footnotes.xml'],old);
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const candidate=phase==='provisional'?{...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes},
+  advisoryManifest:{...f.source.advisoryManifest,coreManifest:{...f.source.advisoryManifest.coreManifest,artifactIdentities:{...f.source.advisoryManifest.coreManifest.artifactIdentities,provisionalDocxSha256:'sha256:'+hash(bytes)}}}}:f.source;
+ const result=await f.publish(phase==='final'?bytes:f.bytes,candidate);assert.equal(result.ok,false,JSON.stringify(result));
+ // The complete break projection includes literal text and refuses either
+ // edit before the subsequent complete rich-body comparison can run.
+ assert.equal(result.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(result.reason,'PENDING_NOTE_BREAK_CHANGED');
+});
+test('single full manuscript actual Main publication rejects incomplete local V2 and native roster',async()=>{
+ const f=await singlePendingNotePublicationFixture();
+ for(const kind of ['missing','v1','v3','partial','unknown','duplicate-native','missing-roster']) {
+  const baseline=structuredClone(f.source.documentNotes);
+  if(kind==='missing')delete baseline.breakEmission;
+  if(kind==='v1')baseline.breakEmission={schemaVersion:1,fontSize:'12pt'};
+  if(kind==='v3')baseline.breakEmission.schemaVersion=3;
+  if(kind==='partial')delete baseline.breakEmission.wordLanguage;
+  if(kind==='unknown')baseline.breakEmission.unknown=true;
+  if(kind==='duplicate-native')baseline.sourceBindings[2].nativeId=baseline.sourceBindings[0].nativeId;
+  if(kind==='missing-roster')baseline.sourceBindings.pop();
+  const candidate={...f.source,documentNotes:baseline,localAuthorityCapsule:{...f.source.localAuthorityCapsule,documentNotes:baseline}};
+  const result=await f.publish(f.bytes,candidate);assert.equal(result.ok,false,JSON.stringify({kind,result}));
+  assert.equal(result.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.match(result.reason,/PENDING_NOTE_(?:BREAK_BASELINE_REQUIRED|BASELINE_MISMATCH)/);
  }
 });

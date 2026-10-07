@@ -203,6 +203,7 @@ const ALLOWLIST = [
   'src/core/word-comment-body-v1.cjs',
   'src/core/word-comment-return-delta-v1.cjs',
   'src/core/word-note-return-delta-v1.cjs',
+  'src/core/project-tree-cohort-v1.mjs',
   'src/export/docx/docxReviewPacketBuilder.js',
   'src/export/docx/docxReviewPacketComments.js',
   'src/export/docx/docxPendingRevisions.js',

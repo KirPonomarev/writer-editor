@@ -97,6 +97,73 @@ async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = fa
   const scenes=ids.map((id,i)=>({sceneId:id,beforeContent:envelope.composeObservablePayload({doc:beforeDocs[i]})}));
   return {ids,beforeDocs,document,state,source,afterSource,afterDocs,afterNotes,bytes,bridge,analysis,preview,proof,scenes,notesText:JSON.stringify(document),beforeText:JSON.stringify(state),current,afterOffsets};
 }
+// A new producer is invoked with exactly one real source scene. Preserve that
+// producer's signed carriers; the second producer supplies Word edits only.
+async function singleFullManuscriptFixture({tracked=false,withNotes=true,ownedSceneId=sceneId,projectRoot='/project'}={}) {
+  const makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
+  const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
+  const ids=[ownedSceneId],event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:id===1?'Prior writer':'Word editor'});
+  const sourceDoc=d(p('AxxB tail'),p(''),p('After empty paragraph'));
+  let beforeDoc=tracked?pending.bindLedger(ledger(sourceDoc,[event(1,'delete',1,3)])):sourceDoc;
+  const identities=['note-left','note-right','note-colocated'],rawOffsets=[1,3,1];
+  if(tracked&&withNotes)beforeDoc=pending.bindNoteSourcePoints(beforeDoc,identities.map((noteId,i)=>({noteId,paragraphIndex:0,offsetUtf16:rawOffsets[i]})));
+  const richBody=d({type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},content:[
+    {type:'text',text:'Rich body',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},
+    {type:'hardBreak'},{type:'text',text:'kept'},{type:'hardBreak'}]},p(''),p('Final note paragraph'));
+  const beforeTextValue=tracked?'AB tail':'AxxB tail';
+  const document={schemaVersion:1,projectId,notes:(withNotes?identities:[]).map((id,i)=>({id,title:'',scope:'manuscript',body:notes.validateNoteBody(richBody).text,
+    privateMetadata:{keep:'exact-'+id},manuscript:notes.bindManuscriptPayload({kind:i===1?'endnote':'footnote',body:richBody,sceneId:ownedSceneId,
+      offsetUtf16:tracked?1:rawOffsets[i],sceneContent:envelope.composeObservablePayload({doc:beforeDoc})})}))};
+  document.notes.push({id:'private-project-note',scope:'project',title:'Private',body:'Private text',privateMetadata:{keep:'private'}},
+    {id:'foreign-manuscript-note',scope:'manuscript',title:'Foreign',body:'Foreign body',manuscript:notes.bindManuscriptPayload({kind:'footnote',body:d(p('Foreign body')),
+      sceneId:'roman/foreign.txt',offsetUtf16:2,sceneContent:envelope.composeObservablePayload({doc:d(p('Foreign scene'))})})});
+  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[
+    {threadId:'single-tail',rootCommentId:'single-root',sceneId:ownedSceneId,status:'open',anchor:exactAnchor({paragraphIndex:0,startUtf16:tracked?3:5,selectedText:'tail'},ownedSceneId,[beforeTextValue,'','After empty paragraph']),
+      messages:[{commentId:'single-root',kind:'root',body:'Writer question',provenance:{author:'Writer'}}]},
+    {threadId:'foreign-thread',rootCommentId:'foreign-root',sceneId:'roman/foreign.txt',status:'deleted',deleted:true,anchor:exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Foreign'},'roman/foreign.txt',['Foreign scene']),
+      messages:[{commentId:'foreign-root',kind:'root',body:'Foreign discussion',provenance:{author:'Another writer'}}]}]};
+  const packet=(doc,notesDocument,nonTextReturnState)=>makeSource({projectId,projectRoot,notesDocument,nonTextReturnState,
+    scenes:[{sceneId:ownedSceneId,scenePath:path.join(projectRoot,ownedSceneId),doc,text:envelope.deriveVisibleTextFromDocument(doc),observableContent:envelope.composeObservablePayload({doc}),order:0}]});
+  const source=packet(beforeDoc,document,state),union=d(p('!AxxB tail'),p(''),p('After empty paragraph'));
+  const revisions=tracked?[event(3,'insert',0,1),event(1,'delete',2,4),event(4,'delete',4,5)]:[event(3,'insert',0,1),event(4,'delete',2,4)];
+  let afterDoc=pending.bindLedger(ledger(union,revisions));
+  if(withNotes)afterDoc=pending.bindNoteSourcePoints(afterDoc,identities.map((noteId,i)=>({noteId,paragraphIndex:0,offsetUtf16:rawOffsets[i]+1})));
+  const current=[(tracked?'!A tail':'!AB tail')+'\n\nAfter empty paragraph'],afterNotes=plain(document);
+  for(const note of afterNotes.notes.filter(note=>identities.includes(note.id))) {note.manuscript.reference.offsetUtf16=2;note.manuscript.reference.sourceTextSha256=hash(current[0]);}
+  const afterState=plain(state),thread=afterState.threads[0];
+  thread.anchor=exactAnchor({paragraphIndex:0,startUtf16:tracked?3:4,selectedText:'tail'},ownedSceneId,current[0].split('\n'));
+  thread.status='resolved';thread.messages.push({commentId:'single-reply',kind:'reply',body:'Editor reply',provenance:{author:'Editor'}});
+  afterState.threads.push({threadId:'single-insert',rootCommentId:'single-insert-root',sceneId:ownedSceneId,status:'open',
+    anchor:exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'!'},ownedSceneId,current[0].split('\n')),
+    messages:[{commentId:'single-insert-root',kind:'root',body:'Inserted text discussion',provenance:{author:'Proofreader'}}]});
+  const afterSource=packet(afterDoc,afterNotes,afterState),bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const cryptoPort={sha256Text:hash,sha256Json:value=>'sha256:'+hash(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)};
+  const originalBytes=builder.buildDocxReviewPacketBuffer(source),originalParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(originalBytes).parts;
+  const editedParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(builder.buildDocxReviewPacketBuffer(afterSource)).parts;
+  const parts={...originalParts};for(const [name,data] of Object.entries(editedParts))if(name.startsWith('word/'))parts[name]=data;
+  const names=xml=>[...xml.matchAll(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu)].map(m=>m[1]);
+  const ownedNames=names(originalParts['word/document.xml']),editedNames=names(parts['word/document.xml']);
+  assert.equal(ownedNames.length,3);assert.equal(editedNames.length,3);
+  let index=0;parts['word/document.xml']=parts['word/document.xml'].replace(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu,(tag,name)=>tag.replace(`w:name="${name}"`,`w:name="${ownedNames[index++]}"`));
+  const bytes=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},
+    {cryptoPort:{...cryptoPort,hmacSha256Json:(value,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(value)).digest('hex')}});
+  assert.equal(analysis.ok,true,JSON.stringify(analysis));assert.equal(analysis.authorityCarrier.status,'verified-baseline-bound');
+  const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+  const parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:source.localAuthorityCapsule.exportMap,
+    baselineDocuments:[{sceneId:ownedSceneId,document:beforeDoc}],retainPendingScenes:true,...(withNotes?{baselineDocumentNotes:source.documentNotes}:{}),
+    documentSections:source.documentSections,signedSectionsDigest:source.documentSections.protectedDigest,cryptoPort});
+  assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  const exportMap=plain(source.localAuthorityCapsule.exportMap);delete exportMap.commentExport;
+  const proof={schemaVersion:withNotes?4:3,projectId,roundId:source.localAuthorityCapsule.roundId,artifactSha256:'sha256:'+hash(bytes),baseline:source.commentExport,exportMap,
+    returnedScenes:parsed.scenes.map(s=>({sceneId:s.sceneId,ledger:pending.readLedger(s.returnedDocument)})),returnedThreads:analysis.reviewIr.commentThreads,
+    returnedParagraphs:analysis.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),commentReturnInventory:analysis.reviewIr.commentReturnInventory,
+    ...(withNotes?{noteContext:{baseline:source.documentNotes,returnedNotes:bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true}),
+      returnedReferences:analysis.reviewIr.documentNotes.references,unionReferences:preview.contentPreview.pendingNoteReferences}}:{})};
+  const scenes=[{sceneId:ownedSceneId,beforeContent:envelope.composeObservablePayload({doc:beforeDoc})}];
+  return {ids,beforeDocs:[beforeDoc],afterDocs:[afterDoc],document,state,source,afterSource,afterNotes,afterState,richBody,bytes,originalBytes,bridge,analysis,preview,proof,scenes,
+    notesText:JSON.stringify(document),beforeText:JSON.stringify(state),current,afterOffsets:withNotes?[2,2,2]:[]};
+}
 test('complete book note law retains typed spacing/language/breaks and rejects every changed or unknown body field',async()=>{
   const f=await composedBookFixture(),input={document:f.document,projectId,baseline:f.proof.noteContext.baseline,exportMap:f.proof.exportMap,
     scenes:f.scenes.map((s,i)=>({sceneId:s.sceneId,document:f.beforeDocs[i],returnedDocument:pending.bindLedger(f.proof.returnedScenes[i].ledger)})),
@@ -839,4 +906,44 @@ test('equal visible text with changed source occurrence commits the note cohort 
     assert.equal(notes.sceneText(fs.readFileSync(h.file,'utf8')),'AxxB');
     assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')).notes.map(n=>n.manuscript.body),h.document.notes.map(n=>n.manuscript.body));
   }
+});
+
+for(const tracked of [false,true])test('single full manuscript complete note and discussion cohort '+(tracked?'pending':'clean'),async()=>{
+  const f=await singleFullManuscriptFixture({tracked}),before=JSON.stringify(f.proof),mixed=require('../../src/core/word-pending-comment-return-v1.cjs');
+  assert.equal(f.source.localAuthorityCapsule.scope,'full-manuscript');assert.equal(f.source.documentNotes.breakEmission.schemaVersion,2);
+  const plan=mixed.planMixedBookReturn({projectId,beforeText:f.beforeText,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(f.proof)});
+  const actual=pending.projection(envelope.parseObservablePayload(plan.scenes[0].content).doc);
+  assert.equal(actual.current,f.current[0]);assert.equal(actual.original,'AxxB tail\n\nAfter empty paragraph');
+  const state=JSON.parse(plan.afterText);assert.equal(state.threads.find(t=>t.threadId==='single-tail').status,'resolved');
+  assert.deepEqual(state.threads.find(t=>t.threadId==='foreign-thread'),f.state.threads[1]);assert.equal(JSON.stringify(f.proof),before);
+  const model=await import('../../src/core/project-tree-cohort-v1.mjs');
+  const cohort=model.planProjectMixedWordReturnCohort({operation:'word-mixed-return',operationId:'one-complete',projectId,manifestPath:'/project/project.craftsman.json',
+    beforeManifestText:JSON.stringify({projectId}),expectedTreeRevision:0,scenes:f.scenes.map(s=>({...s,commitText:null})),notesText:f.notesText,commentsText:f.beforeText,returnProofJson:JSON.stringify(f.proof)});
+  model.validateProjectTreeCohort(cohort);assert.equal(cohort.affectedScenes.length,1);
+});
+
+for(const kind of ['missing-profile','profile-v1','profile-v3','partial-profile','unknown-profile','missing-note','duplicate-native','wrong-native','wrong-identity','wrong-offset','body-change','break-change']) {
+  test('single full manuscript strict complete note refusal '+kind,async()=>{
+    const f=await singleFullManuscriptFixture({tracked:true}),proof=plain(f.proof),ctx=proof.noteContext,baseline=ctx.baseline;
+    if(kind==='missing-profile')delete baseline.breakEmission;
+    if(kind==='profile-v1')baseline.breakEmission={schemaVersion:1,fontSize:'12pt'};
+    if(kind==='profile-v3')baseline.breakEmission.schemaVersion=3;
+    if(kind==='partial-profile')delete baseline.breakEmission.wordLanguage;
+    if(kind==='unknown-profile')baseline.breakEmission.unrecognized=true;
+    if(kind==='missing-note')ctx.returnedNotes.pop();
+    if(kind==='duplicate-native') {ctx.returnedReferences[1].nativeId=ctx.returnedReferences[0].nativeId;ctx.returnedReferences[1].kind=ctx.returnedReferences[0].kind;}
+    if(kind==='wrong-native')ctx.returnedReferences[0].nativeId='999';
+    if(kind==='wrong-identity')ctx.returnedNotes[0].transportIdentity='_YALKEN_NOTE_'+'0'.repeat(24);
+    if(kind==='wrong-offset')ctx.unionReferences[0].offsetUtf16++;
+    if(kind==='body-change')ctx.returnedNotes[0].body.content[0].content[0].text+=' changed';
+    if(kind==='break-change')ctx.returnedNotes[0].breakProjection=[];
+    const protectedInput=JSON.stringify({scenes:f.scenes,document:f.document,state:f.state,proof});
+    assert.throws(()=>require('../../src/core/word-pending-comment-return-v1.cjs').planMixedBookReturn({projectId,beforeText:f.beforeText,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(proof)}),/PENDING_NOTE_/);
+    assert.equal(JSON.stringify({scenes:f.scenes,document:f.document,state:f.state,proof}),protectedInput);
+  });
+}
+test('single full manuscript producer refuses an active discussion in an absent scene',async()=>{
+  const f=await singleFullManuscriptFixture(),state=plain(f.state);state.threads[1].status='open';delete state.threads[1].deleted;
+  assert.throws(()=>require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource({projectId,nonTextReturnState:state,
+    scenes:[{sceneId:f.ids[0],doc:f.beforeDocs[0],text:envelope.deriveVisibleTextFromDocument(f.beforeDocs[0]),order:0}]}),/DOCX_COMMENT_ANCHOR_STALE/);
 });

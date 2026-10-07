@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT30_FINITE_CANONICAL_EQUALITY_CHECKPOINT_FULL_NOVEL_OPEN
+STATUS: AMENDMENT31_FINITE_SOURCE_PROVED_ORIGINAL_NATIVE_AND_DELIVERY_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -34,8 +34,8 @@ raw-source equality and canonicalMarksSha256 and is forbidden.
 ## ARTIFACT
 
 One coherent export/return correction. Root owns task/docs/OPS/proof/delivery;
-separate code agent owns declared runtime/behavior tests.87 explicit paths;
-runtime maximum1800 changed lines, behavior maximum2600. Unused paths need not
+separate code agent owns declared runtime/behavior tests.88 explicit paths;
+runtime maximum1800 changed lines, behavior maximum3600. Unused paths need not
 change. A small pure Core helper is permitted only for immediate finite
 validation/projection consumers, with no registry, cache, writer or future engine.
 
@@ -57,6 +57,7 @@ validation/projection consumers, with no registry, cache, writer or future engin
 - `src/core/word-review-typography-v1.cjs`
 - `src/core/word-pending-text-revisions-v1.cjs`
 - `src/core/word-pending-comment-return-v1.cjs`
+- `src/core/project-tree-cohort-v1.mjs`
 - `src/core/word-comment-body-v1.cjs`
 - `src/core/word-comment-return-delta-v1.cjs`
 - `src/core/word-note-return-delta-v1.cjs`
@@ -2444,3 +2445,72 @@ or writer change and no canon exception; ARCH_DIFF_LOG remains exact.
 NEXT: deliver only this finite checkpoint through mandatory gates and commit;
 then fresh-admit the measured current validation/profile or composed-return gap
 through a separate code writer. Full original novel remains unfinished.
+
+
+### 2026-10-08 Helsinki — amendment31 clean admission: one-scene full manuscript
+
+Same unfinished original42b PR2093, clean pushed predecessord9458811b65ff0d26b399a5185aa983433afba69.
+Actual current30 official19 checks and whole job logs bind receipt SHA4fe0393579ada8ada2235fe81fd6f5c89f7044899464c4598515f09de46c3257.
+Clean bootstrap/preflight/taskE0 all0 before first edit; declaration31_02
+SHAda1bda0349f42c7785f533e193309d8207dd0d0cc3e79b5a9425955bdabf361a. Separate writer completed full ordered startup reads, no cache.
+This is implementation admission, not current one-scene or release evidence.
+Scope87 adds only existing admitted tree-cohort ->88. Runtime1800 unchanged;
+task-only behavior2600 explicitly becomes3600 for forecast500–700 readable
+integration lines (before1277runtime2582behavior/generated462 separately).
+No canon, security/input cap, release criterion or acceptance denominator changes.
+
+Separate writer owns only Main/pending-comment planner/note binder/tree cohort
+and existing pending-notes/pending-return-runtime/default-typography tests.
+Fresh authenticated owned full-manuscript scope gates positive one; legacy scene
+schema1/2 and multi V1/V2/V3 remain. Single V2 emission and complete roster are
+independently validated before binding; no single-to-multi profile substitution.
+Actual book check gains unchanged public pending-review capability predicate:
+normal production Free/WRITER_LOCAL admission; denial is documented
+POLICY_DECISION_FAULT_INJECTION at dependency, with actual predicate/Kernel.
+Old valid-multi causal red must expose missing enforcement before correction.
+
+Retain original signed producer carriers/bookmark owners. Require actual parser
+authentication, real Main/private Kernel/normal lease/atomic regeneration/CAS/
+readback, full business bytes, reopen/re-export and both publication note proofs.
+Root owns five docs/seven mechanical OPS companions after source/test HOLD.
+No oracle weakening, exclusions, new command/port/writer/cache/schema/codec/
+producer/dependency/renderer/UI/runtime-network/native changes. No heavy500k
+run admitted here; owner40GB development ceiling remains. Simultaneous note-body
+edits with pending text, genuine Word both origins/scopes/three roles/five exchanges,
+SOURCE/ordinary PACKAGED performance and original merge/merged proof remain OPEN.
+
+
+### 2026-10-08 Helsinki — amendment31 finite source proof; native novel remains open
+
+At predecessord945, fresh producer-authenticated one-scene full-manuscript now
+uses complete mixed schema3/4 proof, independently checked single V2 note
+emission/roster, existing public capability revalidation and normal atomic cohort.
+Legacy scene and multi-scene laws remain. Four runtime paths changed; the ZIP
+scope guard gains only the already-admitted cohort literal, no weaker predicate.
+Actual final serial chain:656of656 across16files, zero fail/cancel/skip/todo,
+478.929382s; sampled aggregate RSS1995243520B/5s, development ceiling40GB.
+Five existing100k scene-adapter exchanges plus Undo/Redo passed; these are
+synthetic regression evidence, not genuine Word or full-manuscript100k proof.
+Focused exact-scope ZIP14of14. Actual compiler twice exit0, retained136-input
+closure rehashed,76source/test pins and5root admission docs exact; four renderer/
+preload outputs byte-idempotent. Compiler evidence predates this doc finalization.
+Original-base delta: runtime1304of1800; behavior2938of3600; generated462 separate.
+Root rehashed all224 retained fixture directories/2423files and15actual process
+receipts/16raw logs, including failures. Independent standard-library physical
+readback covers3positive signed whole-package/full-text/rich-notes/discussion/
+atomic/reopen/re-export cases;15precommit refusals preserve all business bytes,
+and2post-await publication refusals preserve new unsaved text. Policy negatives
+are explicit dependency fault injection; foreign discussion is a deleted tombstone.
+Whole01 timed out with child terminal outcome UNKNOWN. Whole02 actually failed
+655of656 on the exact allowlist literal; corrected whole03 alone is656of656.
+HOLD02 SHAfa1fe1222be375b5c7244256782d6a42e80fca245bb3ef2bada6744c07eef968.
+Root source review SHA7515d93da2bc16f424f41dcb03d35669d7222d9a06597d540e1ea0510eeeb896.
+No canon exception, new dependency/schema/command/port/writer/cache/UI/runtime
+network/native or heavy500k authority. Same original42b task/rollback and PR2093.
+Final mechanical OPS bindings, seven mandatory gates, commit/push and current CI
+remain required and are recorded separately when actually executed. Original
+SOURCE/ordinary PACKAGED genuine Word, both origins/scopes/three roles/five
+exchanges, release speed/memory, simultaneous note body/format edits with pending
+text, semantic closure, merge and exact merged verification remain OPEN.
+NEXT: freeze mechanical OPS and pass required gates, commit/push this finite
+checkpoint; then admit a fresh short genuine Word source/packaged proof.

@@ -1250,7 +1250,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     }
   }catch(error){return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_BODY_TYPOGRAPHY_MISMATCH',reason:error.code||error.message};}
   let documentNotesBinding = null;
-  if (source.documentNotes?.sourceBindings?.length && localAuthority.exportMap?.scenes?.length>1
+  if (source.documentNotes?.sourceBindings?.length && (localAuthority.exportMap?.scenes?.length>1
+    || localAuthority.exportMap?.scenes?.length===1&&localAuthority.scope==='full-manuscript')
     && localAuthority.exportMap.scenes.some(scene=>scene.pendingCommentBinding?.schemaVersion===2)) {
     try {
       const noteProofs=[];
@@ -6467,12 +6468,14 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
 // The complete signed map remains intact for both scene and discussion checks.
 async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurrent,docxBytes,revisionBridge,onPrepared}) {
   const capsule=context?.reviewTransportAuthorityCapsule,intake=context?.reviewTransportReturnIntake;
-  if(intake?.authenticated!==true || capsule?.exportMap?.scenes?.length<=1) return null;
+  const mappedScenes=capsule?.exportMap?.scenes;
+  if(intake?.authenticated!==true || !Array.isArray(mappedScenes) || mappedScenes.length<1
+    || mappedScenes.length===1&&capsule.scope!=='full-manuscript') return null;
   const preview=revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
   if(!preview?.contentPreview?.pendingRevisionDocument) return null;
   try {
     const owner=activeStage10ApplicationBootstrap,lifecycle=currentLifecycleSubjectId(),file=currentFilePath,generation=lastSignaledEditGeneration;
-    const check=()=>{assertFreshDocxReviewRoundAuthority(capsule);
+    const check=()=>{assertFreshDocxReviewRoundAuthority(capsule);userBookmarkCapability('cmd.project.review.decidePendingRevision');
       if(typeof isCurrent!=='function'||!isCurrent()||owner!==activeStage10ApplicationBootstrap||lifecycle!==currentLifecycleSubjectId()
         ||file!==currentFilePath||generation!==lastSignaledEditGeneration||isDirty||autoSaveInProgress||context.projectRoot!==getProjectRootPath())throw Error('WORD_BOOK_RETURN_CONTEXT_STALE');};
     check();
@@ -11477,16 +11480,18 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     const commentProductPath = await applyAuthenticatedCommentDelta({ context: activeContext, requestId,
       explicitCanonicalApplyConfirmed: false, isCurrent, docxBytes: decoded.bytes, revisionBridge,
       onPrepared: options.onCommentDeltaPrepared });
+    const completeManuscriptPendingReturn=returnIntake.localAuthorityCapsule.exportMap.scenes.length>1
+      ||returnIntake.localAuthorityCapsule.exportMap.scenes.length===1&&returnIntake.localAuthorityCapsule.scope==='full-manuscript';
     if(commentProductPath.ok!==true
       &&(['PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED','PENDING_COMMENT_PROJECTION_CHANGED','PENDING_COMMENT_PARTITION_CHANGED','COMMENT_RETURN_PENDING_REPLY_ONLY','COMMENT_RETURN_PENDING_ANCHOR_INVALID','COMMENT_RETURN_PENDING_ANCHOR_ENDPOINT','COMMENT_RETURN_PENDING_ANCHOR_QUOTE'].includes(commentProductPath.code)
-        ||returnIntake.localAuthorityCapsule.exportMap.scenes.length>1
+        ||completeManuscriptPendingReturn
           &&(commentProductPath.code==='PENDING_COMMENT_RETURN_NOTES_CHANGED'
             ||commentProductPath.code==='PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED'
               &&returnIntake.localAuthorityCapsule.documentNotes?.policy==='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
               &&returnIntake.localAuthorityCapsule.documentNotes.sourceBindings?.length))) {
       // These typed outcomes require the separate complete mixed proof. All
       // identity, capability, stale and package failures remain terminal.
-      const mixedPath=await (returnIntake.localAuthorityCapsule.exportMap.scenes.length>1?prepareAuthenticatedBookPendingReturn:prepareAuthenticatedPendingReturn)({context:activeContext,requestId,isCurrent,docxBytes:decoded.bytes,revisionBridge,onPrepared:options.onPendingReturnPrepared});
+      const mixedPath=await (completeManuscriptPendingReturn?prepareAuthenticatedBookPendingReturn:prepareAuthenticatedPendingReturn)({context:activeContext,requestId,isCurrent,docxBytes:decoded.bytes,revisionBridge,onPrepared:options.onPendingReturnPrepared});
       if(mixedPath)return {ok:true,commandId:DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,requestId,activated:false,pendingProductPath:mixedPath};
     }
     if (commentProductPath.ok !== true) return makeDocxReviewPreviewSessionTypedError(

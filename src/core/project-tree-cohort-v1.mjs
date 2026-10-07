@@ -633,7 +633,7 @@ export function planProjectMixedWordReturnCohort(input) {
   need(typeof input.manifestPath === 'string' && path.isAbsolute(input.manifestPath)
     && typeof input.beforeManifestText === 'string' && JSON.parse(input.beforeManifestText).projectId === input.projectId, 'E_TREE_COHORT_PROJECT');
   need(Number.isSafeInteger(input.expectedTreeRevision) && input.expectedTreeRevision >= 0, 'E_TREE_REVISION_CAS');
-  need(Array.isArray(input.scenes) && input.scenes.length > 1 && input.scenes.length <= TREE_COHORT_LIMITS.scenes, 'E_WORD_BOOK_COHORT_BUDGET');
+  need(Array.isArray(input.scenes) && input.scenes.length > 0 && input.scenes.length <= TREE_COHORT_LIMITS.scenes, 'E_WORD_BOOK_COHORT_BUDGET');
   let inputBytes=0;
   const count=value=>{need(value===null||typeof value==='string','E_WORD_BOOK_COHORT_SOURCE');if(value!==null)inputBytes+=Buffer.byteLength(value);need(inputBytes<=TREE_COHORT_LIMITS.bytes,'E_TREE_COHORT_BUDGET');};
   [input.beforeManifestText,input.notesText,input.commentsText,input.returnProofJson].forEach(count);

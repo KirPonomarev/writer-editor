@@ -393,7 +393,7 @@ function planMixedBookReturn({beforeText,projectId,scenes,returnProofJson,notesT
     &&proof.projectId===projectId&&!Object.hasOwn(proof.exportMap||{},'commentExport'),'MIXED_RETURN_PROOF_INVALID');
   need(typeof proof.roundId==='string'&&proof.roundId.length>0&&typeof proof.artifactSha256==='string'&&/^sha256:[a-f0-9]{64}$/u.test(proof.artifactSha256),'MIXED_RETURN_PROOF_INVALID');
   const mapped=proof.exportMap?.scenes;
-  need(Array.isArray(mapped)&&mapped.length>1&&mapped.length<=512&&Array.isArray(scenes)&&scenes.length===mapped.length
+  need(Array.isArray(mapped)&&mapped.length>0&&mapped.length<=512&&Array.isArray(scenes)&&scenes.length===mapped.length
     &&Array.isArray(proof.returnedScenes)&&proof.returnedScenes.length===mapped.length
     &&new Set(mapped.map(s=>s.sceneId)).size===mapped.length,'MIXED_RETURN_SCENE_REQUIRED');
   const state=readState(beforeText,projectId),sha=require('./browser-safe-hash.cjs').sha256UpdateCompatible;
