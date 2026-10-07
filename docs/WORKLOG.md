@@ -1358,3 +1358,31 @@ canonical unknownattrs tested, parser unchanged. Official236file maintained
 graph includes all15 affected suites; run once. Fresh actual SOURCE/ordinary
 PACKAGED complete public Apply ACK/restart/unchanged history, mandatory gates,
 19CI and exact merge delivery required. Original full novel remains OPEN.
+
+
+2026-10-07 same-contour amendment12 delivery companion at cleanb400:
+fresh bootstrap/preflight0, declaration436c4d8c024a6ed8153687d27c3391c7d834a84b662785713b97fb20664ba9be.
+PR2093 draft pushedb400; actual CI post-build check identifies stale tracked
+editor.bundle.js only. Unchanged pinned build:renderer may regenerate existing
+editor/preload outputs; all33 source/test bindings, UI sources, builder, package
+and lock frozen. Two build/copy/idempotency checks required.46paths only adds
+these already admitted outputs;616/474/1597 denominators and one PR rollback stay.
+Actualb400 SOURCE12 real Word two-scene edits passed Cancel/full6 unchanged,
+complete public Apply ACK and full6 semantic/provenance readback. SOURCE13 same
+profile normal restart, acceptAll/Undo, real Word unchanged Save As passed
+complete6raw equality, redo and handled-unchanged/no writer. Both normal exit0.
+Correct generated editor9d414f5dd3e71e63411b3c4079cf287c3c0d29beadf67cdd27f33be2ab190021
+was already used by those controls; exact successor/native equivalence still
+needs independent binding. Ordinary PACKAGED fresh proof, maintained236graph,
+mandatory gates,19CI and merge OPEN. Original full100k/five genuine/both-origin/
+three-role Mac novel and performance remain OPEN; no feature-ready claim.
+
+Amendment12 final compiler freeze: root independently checked HOLD12 SHA
+f83f18d7133919ae63e63d829449d36c543da1f64f2fc78cca15eceb29c4cc6b,
+all35 bindings, both actual build logs and4 artifacts. Original33 source/test
+and5 compiler input files equalb400; only generated editor is dirty in src/test.
+Dist/runtime copies equal; renderer Git blob978801f064a53ce66485424c5c8a692882714df3.
+Preload unchanged. Two writer builds executed0 and idempotency verified; generated
+length delta9693 bytes separately from source runtime713/behavior926 budgets.
+Root mechanical OPS companions then clean checkpoint/push PR2093; actual fresh
+PACKAGED/native, maintained graph and all required delivery remain OPEN.

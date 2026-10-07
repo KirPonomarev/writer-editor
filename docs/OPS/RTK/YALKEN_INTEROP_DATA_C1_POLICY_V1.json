@@ -864,7 +864,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "dde05511ecd41f3e1e2264cce3ad05ba2d9b463467f90dfcf05c8aa3b6661381"
+        "sha256": "9d414f5dd3e71e63411b3c4079cf287c3c0d29beadf67cdd27f33be2ab190021"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -2544,15 +2544,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b26e3ba8a760cd73e3d6ad3fe546766bdc4489204dafaa8b94fe829ca5c89ca0"
+        "sha256": "e80485f9650412f79317056bc12ac97a059146e628e3394bf670fb87a3fb3070"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c9dd1cefec4aadf77de2e9647bfd7c354f5a3435faa4a56535656388ef9d398a"
+        "sha256": "0ea15ad50a76f01ade90bcad5b77537cf73e6c02c7d0b86f63fcab9e5a5bd4c1"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "b236a5971f02b98cd7e43ab6f4b48d05adc765ccfc0aad0117a459e68f14e835"
+        "sha256": "072059c4ec9f1fac9733ed8de2c2dd6a8a2b10b6c078156496f63cb2946078d3"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2744,7 +2744,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "eacdacc6c611c25f37b8d957d8acac5ec0b7a9511e6464b8a6175d26e8443d1a"
+        "sha256": "bff67378327ba2b9cbf2a7527d35f333a49055517a8f84c498737252e355cca8"
       }
     ],
     "followupRepair": {
