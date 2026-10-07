@@ -382,14 +382,17 @@ test('scoped finite body actual inherited markers preserve complete text return 
  for(const fault of ['ascii','hAnsi','eastAsia','cs','direct-slot','size','sizeCs','missing-font','missing-size','unknown-style','ambiguous-style','invalid-color']) {
   const bad=structuredClone(parts);
   if(['ascii','hAnsi','eastAsia','cs'].includes(fault))bad['word/styles.xml']=bad['word/styles.xml'].replace('w:'+fault+'="Times New Roman"','w:'+fault+'="Arial"');
-  if(fault==='direct-slot')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr><w:rPr>','<w:pPr><w:rPr><w:rFonts w:cs="Arial"/>');
+  if(fault==='direct-slot')bad['word/document.xml']=bad['word/document.xml'].replace(/(<w:pPr>[\s\S]*?<w:rPr>)/u,'$1<w:rFonts w:cs="Arial"/>');
   if(fault==='size')bad['word/styles.xml']=bad['word/styles.xml'].replace('<w:sz w:val="24"/>','<w:sz w:val="28"/>').replace('<w:szCs w:val="24"/>','<w:szCs w:val="28"/>');
   if(fault==='sizeCs')bad['word/styles.xml']=bad['word/styles.xml'].replace('<w:szCs w:val="24"/>','<w:szCs w:val="28"/>');
   if(fault==='missing-font')bad['word/styles.xml']=bad['word/styles.xml'].replace(/<w:rFonts w:ascii="Times New Roman"[^>]*\/>/u,'');
   if(fault==='missing-size')bad['word/styles.xml']=bad['word/styles.xml'].replace('<w:sz w:val="24"/>','').replace('<w:szCs w:val="24"/>','');
   if(fault==='unknown-style')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr>','<w:pPr><w:pStyle w:val="ForeignMissing"/>');
   if(fault==='ambiguous-style')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr>','<w:pPr><w:pStyle w:val="YalkenBlockquote1"/><w:pStyle w:val="YalkenBlockquote1"/>');
-  if(fault==='invalid-color')bad['word/document.xml']=bad['word/document.xml'].replace('<w:pPr><w:rPr>','<w:pPr><w:rPr><w:color w:val="ZZZZZZ"/>');
+  if(fault==='invalid-color')bad['word/document.xml']=bad['word/document.xml'].replace(/(<w:pPr>[\s\S]*?<w:rPr>)/u,'$1<w:color w:val="ZZZZZZ"/>');
+  assert.notDeepEqual(bad,parts,fault);
+  if(fault==='direct-slot')assert.match(bad['word/document.xml'],/<w:pPr>[\s\S]*?<w:rPr><w:rFonts w:cs="Arial"\/>/u);
+  if(fault==='invalid-color')assert.match(bad['word/document.xml'],/<w:pPr>[\s\S]*?<w:rPr><w:color w:val="ZZZZZZ"\/>/u);
   const denied=parse(bad);if(denied.ok)assert.throws(()=>derive(denied.scenes[0].returnedDocument),undefined,fault);
   assert.deepEqual(doc,before,fault);assert.deepEqual(capsule.exportMap,map,fault);
  }

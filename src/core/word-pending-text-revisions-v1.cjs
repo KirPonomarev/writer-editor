@@ -896,7 +896,8 @@ function commentBasis(document,exportTypography,schemaVersion=1,sourceEmission=f
   exported.paragraphs.forEach((p,paragraphIndex)=>{
     const format=ledger.revisions.find(r=>r.paragraphIndex===paragraphIndex&&isParagraphFormat(r)&&r.state==='pending');
     if(format)spans.push({revisionId:format.id,paragraphIndex,fromUtf16:0,toUtf16:(exportedParagraphs[paragraphIndex].content||[]).map(textOf).join('').length,operation:'format',paragraphFormat:true,
-      provenanceSha256:commentHash({author:format.author,date:format.date,dateUtc:format.dateUtc}),formatSha256:commentHash({before:commentRich({type:'doc',content:[{...format.format.before,content:[]}]},size),after:commentRich({type:'doc',content:[{...format.format.after,content:[]}]},size)})});
+      provenanceSha256:commentHash({author:format.author,date:format.date,dateUtc:format.dateUtc}),formatSha256:commentHash(Object.fromEntries(['before','after'].map(side=>[side,
+        commentRich({type:'doc',content:[{...(bodyProfile?bodyTypography.snapshot(format.format[side],exportTypography):format.format[side]),content:[]}]},size)])))});
     let offset=0; const parts=[];
     const transport=schemaVersion===2?commentTransportSegments(p.segments,rawExportedParagraphs[paragraphIndex]):p.segments;
     const emitted=bodyProfile?bodyTypography.segments(transport,{nodeType:rawExportedParagraphs[paragraphIndex].type,...rawExportedParagraphs[paragraphIndex].attrs},exportTypography,{canonicalCode:true}):transport;
@@ -1108,8 +1109,13 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
   // Match a fresh property change against its checked previous rich snapshot.
   // The published Current and Original projections remain separate and exact.
   const comparison=clone(incoming.union), oldLedger=readLedger(document);
-  const sameRevision=(a,b)=>a.operation===b.operation && a.author===b.author && a.date===b.date && a.dateUtc===b.dateUtc
-    && stable(allowUntrackedRichFormatting?formatTransitionMeaning(a.format):a.format)===stable(allowUntrackedRichFormatting?formatTransitionMeaning(b.format):b.format);
+  const bodyTypography=require('./word-review-typography-v1.cjs'),bodyProfile=bodyTypography.validate(exportTypography,{allowUndefined:true});
+  const sameRevision=(a,b)=>{
+    const expected=bodyProfile?.schemaVersion===bodyTypography.V2&&isParagraphFormat(a)?{...a.format,
+      before:bodyTypography.snapshot(a.format.before,bodyProfile),after:bodyTypography.snapshot(a.format.after,bodyProfile)}:a.format;
+    return a.operation===b.operation && a.author===b.author && a.date===b.date && a.dateUtc===b.dateUtc
+      && stable(allowUntrackedRichFormatting?formatTransitionMeaning(expected):expected)===stable(allowUntrackedRichFormatting?formatTransitionMeaning(b.format):b.format);
+  };
   paragraphs(comparison).forEach((p,index)=>{
     const currentFormat=incoming.ledger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));
     const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));

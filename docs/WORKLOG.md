@@ -1161,3 +1161,51 @@ existing Core source-expectation seams. Raw ledger/history/source hashes and
 legacy law stay literal; actual Word never supplies expected authority.
 Genuine SOURCE/ordinary PACKAGED Apply/restart, mandatory gates, full delivery
 and original complete-novel denominator remain OPEN.
+
+## 2026-10-07 — amendment07 source-owned retained-format expectation
+
+Clean3973a890223f8fbfd0c4b604654a7a956e3bb86c is a known-incomplete
+checkpoint in the same original42b contour; original44 paths and total1800/
+2600 budgets, one PR/rollback. Fresh bootstrap and declaration07 preflight0
+SHA256d946930c7e00c46f392ad6caad0bc75764bc94d806cae4ca67432cf6fed20032.
+Actual retained Core refusal and full fields are preserved; source emission
+snapshot matches both independently observed actual snapshots exactly.
+O: genuine return plus retained paragraph-format roundtrip preserves complete
+raw source/history and actual Current/Original, with exact Cancel/Apply/restart.
+T: local authenticated raw source plus closed finiteV2 emission -> existing
+Core expected transition and format binding hash -> independent actual parser
+snapshot/provenance equality -> unchanged Kernel/leased atomic writer.
+H4: raw retained before/after cannot equal their own full emitted snapshots.
+Derive expected snapshots only from source at existing commentBasis paragraph
+formatSha sourceEmission branch and mixedCommentBases source-side sameRevision.
+Use existing bodyTypography.snapshot, preserve kind/provenance/coordinates;
+actual before/after stays independently observed. Predict unchanged retained
+return changedfalse with whole raw source exact, changed real properties fail.
+B: raw ledger/history/source/formatIR/capsule and all private data, v1 literal
+law, global formatTransitionMeaning/comparator, writer, ports and schema.
+P: retained raw-v-effective red before code; actual ZIP font4/size/sizeCs/
+style/language/spacing/before-after/provenance/geometry/hash negatives; complete
+retained decided states and UndoRedo; final genuine-byte pure check qualified;
+earliest real SOURCE/ordinary PACKAGED, then mandatory full gates/delivery.
+I: clean3973, remote42b fresh, verified encrypted T7, all33 HOLD06 bytes,
+actual retained observer91a5dff6 and native return3f33c38b. No native lane active.
+Separate writer owns only admitted immediate Core seams and required tests;
+retain strict actual parser06. No independent contour or baseline from Word.
+Original100k/five genuine both-origin/three-role/performance remains OPEN.
+
+## 2026-10-07 — amendment07 retained adapter barrier, known incomplete
+
+Writer HOLD07 SHA2567e09257abb8aa955bd4a35c8e9ef08b37839e8957625eab7b0fdebaec8d5fd91
+freezes33 bindings; root verifies33 and5 evidence files. Runtime675of1800,
+behavior833of2600. Actual selected1of2 passes, exit1, zero exclusions;
+all12 actual marker/font/style mutants execute. Retained pformat clears
+Core source-side expected transition but adapter311 repeats raw-versus-full
+comparison and refuses MIXED_RETURN_OLD_PARAGRAPH_FORMAT_CHANGED. Exact
+adapter observer SHA256702ca457180fa9b2b14d8367b3d73ef06efd7b7914cb350cb896cdef83ca4d59
+preserves actual guard and both operands; source-owned emitted snapshots
+exactly equal actual both sides. Core is changed in07; the observer generic
+ORIGINAL_CORE label does not mean all Core bytes unchanged. No adapter edit.
+Freeze incomplete same-contour checkpoint, then map adapter311 expected
+source snapshot and317-324 raw-underlay preservation at clean exact base.
+Legacy/global comparison/writers and raw history remain protected. No native
+Apply, whole gates, delivery or complete-novel acceptance follows.
