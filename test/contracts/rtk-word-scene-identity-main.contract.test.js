@@ -3441,7 +3441,7 @@ test('fresh manuscript body defaults do not enter canonical source through actua
 });
 
 
-for(const variant of ['unchanged','word-relocated','tracked-text','format-reexport','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
+for(const variant of ['unchanged','word-relocated','history-unchanged','late-notes','late-comments','late-manifest','late-sidecar','late-source','late-generation','late-lifecycle','tracked-text','format-reexport','stale-source','forged-binding','code-font','code-language','code-spacing','tab-stop'])test('fresh full manuscript no-note pending actual Main '+variant,async t=>{
  const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
  const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]}),ledger={schemaVersion:1,source:{type:'doc',content:[p('AxxB'),{type:'codeBlock',attrs:{language:''},content:[{type:'text',text:'code();'}]},p('')]},
   revisions:[{id:'revision-1',nativeId:'1',operation:'delete',author:'Writer',date:'2026-10-07T00:00:00Z',dateUtc:'2026-10-07T00:00:00Z',groupId:null,paragraphIndex:0,from:1,to:3,state:'pending'}],undo:[],redo:[]};
@@ -3450,7 +3450,24 @@ for(const variant of ['unchanged','word-relocated','tracked-text','format-reexpo
   ledger.revisions.push({id:'revision-2',nativeId:'2',operation:'format',author:'Formatter',date:'2026-10-07T01:00:00Z',dateUtc:'',groupId:null,paragraphIndex:0,from:3,to:4,state:'pending',format:{kind:'run',before:[],after:[{type:'bold'}]}});
  }
  fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc:pending.bindLedger(ledger)}));f.source=read(f.alpha);
- mountRenderer(f,()=>read(f.alpha),0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ let armed=false,snapshots=0,foreignCapture;
+ mountRenderer(f,()=>read(f.alpha),0,()=>{
+  if(armed&&variant.startsWith('late-')&&++snapshots===2){
+   if(variant==='late-notes')fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),JSON.stringify({schemaVersion:1,projectId:f.query.projectId,notes:[]}));
+   if(variant==='late-comments'){const target=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(require('../../src/core/word-comment-authoring-v1.cjs').readState(null,f.query.projectId)));}
+   if(variant==='late-manifest')fs.appendFileSync(f.manifestPath,' ');
+   if(variant==='late-sidecar')fs.writeFileSync(f.alpha+'.wp201-commit.json','{"foreign":true}');
+   if(variant==='late-source')fs.appendFileSync(f.beta,' FOREIGN');
+   if(variant==='late-generation')f.probe.state({generation:1});
+   if(variant==='late-lifecycle')f.probe.state({filePath:f.beta});
+   foreignCapture=f.capture();
+  }
+ },()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ if(variant==='history-unchanged'){
+  for(const action of ['acceptAll','undo']){const context=await f.probe.pendingContext(),decided=await f.probe.pendingDecision({projectId:context.projectId,sceneId:context.sceneId,subjectId:context.subjectId,expectedSceneSha256:context.sceneSha256,action});assert.equal(decided.ok,true,JSON.stringify(decided));}
+  f.source=read(f.alpha);assert.ok(pending.readLedger(envelope.parseObservablePayload(f.source).doc).redo.length);
+ }
+ const expectedLedger=pending.readLedger(envelope.parseObservablePayload(f.source).doc);
  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
  assert.equal(source.documentNotes?.sourceBindings?.length||0,0);assert.equal(source.localAuthorityCapsule.exportMap.scenes[0].pendingCommentBinding.schemaVersion,2);
@@ -3489,8 +3506,13 @@ for(const variant of ['unchanged','word-relocated','tracked-text','format-reexpo
  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
  await f.probe.activate(source.pendingAuthorityStore);
  if(variant==='stale-source')fs.writeFileSync(f.beta,'Owner changed Beta');
- const before=f.capture();let prepared;
+ const before=f.capture();let prepared;armed=true;
  const activated=await f.probe.reviewActivate({requestId:'body-pending-'+variant,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onPendingReturnPrepared:value=>{prepared=value;}});
+ if(variant.startsWith('late-')){
+  assert.ok(foreignCapture,'the final snapshot boundary actually ran');assert.equal(activated.pendingProductPath?.status,'blocked',JSON.stringify(activated));
+  assert.equal(activated.pendingProductPath.code,['late-generation','late-lifecycle'].includes(variant)?'WORD_BOOK_RETURN_CONTEXT_STALE':'WORD_BOOK_RETURN_BASELINE_CONFLICT');
+  assert.equal(prepared,undefined);assert.deepEqual(f.capture(),foreignCapture);return;
+ }
  assert.deepEqual(f.capture(),before);
  if(variant.startsWith('code-')||variant==='stale-source'||variant==='tab-stop'){
   if(variant==='stale-source')assert.equal(activated.ok,false,JSON.stringify(activated));else {assert.equal(activated.activated,false,JSON.stringify(activated));assert.equal(activated.pendingProductPath?.ok,false,JSON.stringify(activated));}
@@ -3502,7 +3524,11 @@ for(const variant of ['unchanged','word-relocated','tracked-text','format-reexpo
   assert.equal(read(f.alpha),f.source);const changed=envelope.parseObservablePayload(read(f.beta)).doc;
   assert.equal(envelope.deriveVisibleTextFromDocument(changed),'Beta NEW');assert.ok(pending.readLedger(changed));
   const reexport=await f.probe.fullSource(),again=await f.probe.reviewBuild(reexport);assert.equal(again.publicationGate.publishAllowed,true,JSON.stringify(again.publicationGate));
- }else assert.deepEqual(pending.readLedger(envelope.parseObservablePayload(read(f.alpha)).doc),ledger);
+ }else {
+  assert.equal(activated.pendingProductPath?.status,'unchanged',JSON.stringify(activated));
+  assert.equal(activated.pendingProductPath.writerCalled,false);assert.equal(prepared,undefined);
+  assert.deepEqual(f.capture(),before);assert.deepEqual(pending.readLedger(envelope.parseObservablePayload(read(f.alpha)).doc),expectedLedger);
+ }
 
 });
 

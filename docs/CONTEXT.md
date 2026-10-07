@@ -1674,3 +1674,27 @@ Root-reviewed OPS09 script02 changes only factual checkpoint rationale from
 2e1 to b0c72 versus script01; exact33 freeze and prior tuples/denominators stay.
 Next clean candidate is an incomplete checkpoint for fresh physical proof,
 not ACCEPTED delivery or full novel readiness.
+
+2026-10-07 amendment10, same original42b contour: actual SOURCE07-09 short
+13-paragraph3-scene Word changed cycle Cancel/Apply/restart/reexport and Alpha
+accept/Undo/Redo/Undo observed with complete source and provenance readback.
+Ordinary PACKAGED07 durable Apply/restart/reexport observed; final public Apply
+ACK remained UNKNOWN. Genuine PACKAGED09 unchanged pending Word Save As has
+complete Current/Original meaning exact but public inner status falsely blocked
+PENDING_RETURN_SINGLE_SCENE_REQUIRED. All6 business bytes exact, no Apply,
+owned normal exit0. Main6539 null falls through to one-scene handler; existing
+outer-ok assertions missed it. Fresh clean010 bootstrap/preflight10 executed0,
+remote42b and T7 identity verified. Surgical existing Main final no-change seam
+and strong Main assertions only; complete graph equality and fresh input CAS
+required, comment-only changes never dropped.44paths1800/2600 one PR rollback.
+Full100k/five native exchanges/both-origin/three-role/performance and delivery
+remain OPEN; original release goal unchanged.
+
+2026-10-07 frozen amendment10: root verified HOLD33/3logs/3artifacts, strong
+initial no-op tests0of2 red and final selected9of10 zero exclusions. Main no-op
+and7late CAS cases pass. Public acceptAll/Undo redo1 exposes sole full-candidate
+source empty paragraph content[] versus absent. All other complete fields exact.
+Runtime709/1800 behavior907/2600. Preflight10B STOP requires clean worktree;
+no adapter H8 edit occurred. Known-incomplete10 checkpoint only after mechanical
+OPS and current E0/guardrails/diff; fresh clean next admission then source-only
+empty leaf restoration. Full native/mandatory gates/Git delivery and novel OPEN.

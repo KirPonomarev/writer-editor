@@ -6536,7 +6536,17 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       notesText:await optional('notes.craftsman.json'),commentsText:comments.text,returnProofJson};
     const semantic=require('./core/word-pending-comment-return-v1.cjs').planMixedBookReturn({beforeText:comments.text,projectId:context.projectId,
       scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson,notesText:input.notesText});
-    if(!semantic.scenes.some(scene=>scene.changed))return null;
+    if(!semantic.scenes.some(scene=>scene.changed)) {
+      if(semantic.afterText!==comments.text||semantic.changes.length)throw Error('WORD_BOOK_RETURN_ANNOTATIONS_CHANGED');
+      await verifySources();
+      if(await fs.readFile(manifestPath,'utf8')!==input.beforeManifestText
+        ||await optional('notes.craftsman.json')!==input.notesText
+        ||(await module.readCommentAuthoringState({projectRoot:context.projectRoot,projectId:context.projectId})).text!==comments.text)
+        throw Error('WORD_BOOK_RETURN_BASELINE_CONFLICT');
+      for(const scene of input.scenes)if(await fs.readFile(capsule.scenePathBySceneId[scene.sceneId],'utf8')!==scene.beforeContent
+        ||await optional(scene.sceneId+'.wp201-commit.json')!==scene.commitText)throw Error('WORD_BOOK_RETURN_BASELINE_CONFLICT');
+      check();return {ok:true,status:'unchanged',writerCalled:false,pendingProductApplyLane:false};
+    }
     const plan=model.planProjectMixedWordReturnCohort(input);
     check();let consumed=false;
     const apply=async()=>{

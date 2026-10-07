@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT09_FOCUSED_COHERENT_NATIVE_PROOF_OPEN
+STATUS: AMENDMENT10_BOUNDED_HISTORY_COUNTEREXAMPLE_HOLD
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -198,6 +198,65 @@ integrationMode: EXISTING_SEAM
 ```
 
 ## IMPLEMENTATION_STEPS
+
+### AMENDMENT10_COMPLETE_BOOK_UNCHANGED_HANDLING
+
+Clean010a3fe6bc4a03dc34c2c0c1c2da649457e8d108 continues the same original42b
+contour,44paths,1800runtime/2600behavior total and one PR/rollback. Clean
+bootstrap and preflight10 executed0 before any repo edit; declaration10 SHA256
+153b2e3e44009d99e471be4891cc17cc3ed76540b537153056e1091f52cceb76.
+O: genuine unchanged pending complete-book return is handled without any
+writer, preparation callback, confirmation, history receipt or single-scene
+fallback; complete scene, notes, discussion and private business bytes stay exact.
+T: authenticated local full source -> existing scoped actual package parser ->
+complete independent Core plan -> fresh source/editor/lifecycle and full input
+CAS readback -> existing public handled unchanged result, without publication write.
+H7: Main6539 returns null for a fully unchanged authenticated book; dispatcher
+11476 then calls the one-scene handler, which falsely refuses. Existing tests
+assert only outer ok=true and accept this inner blocked result. Repair only this
+existing final decision seam and existing Main behavior assertions. No scene
+changes alone is insufficient: semantic.afterText must equal source comments
+text and semantic.changes must be empty. Existing complete note proof stays.
+Before returning unchanged repeat verifySources and exact manifest, scene commit
+sidecar, notes and comment bytes, then check lifecycle/capability freshness.
+Comment-only changes must never be dropped or called unchanged; if the current
+complete-scene cohort cannot handle them, keep a typed no-write refusal.
+B: all other runtime, index06, Core07, adapter09, helper, common comparator,
+source-owned history, signatures, private suffix, true changed Apply path,
+schema, ports, writers, renderer and UI contract remain frozen. One heavy lane.
+P: first strengthen unchanged and Word-relocated public Main assertions and
+observe actual failure, then fix. Source accept/undo nonempty redo -> actual
+full producer -> authenticated unchanged intake must preserve complete raw files
+and history. Retain real changed multi-scene Apply and stale source/notes/comments,
+manifest/sidecar/lifecycle/generation no-write controls; no test exclusions.
+I: root independently pinned PACKAGED09 genuine Word16.112 Save As full13p
+Current/Original exact, false PENDING_RETURN_SINGLE_SCENE_REQUIRED, all6 business
+bytes exact, no Apply and owned normal exit0. SOURCE07-09 actual short changed
+cycle, restart/reexport and Alpha accept/Undo/Redo/Undo pass. PACKAGED07 durable
+Apply/restart/reexport pass but final public Apply ACK is UNKNOWN; capture a fresh
+complete ACK before stopping. Original100k/five genuine/both-origin/three-role
+Mac novel/performance, affected gates and complete Git delivery remain OPEN.
+Separate code agent owns only this Main seam and existing Main contract tests.
+Root owns docs/OPS/review/native and delivery. No independent next contour.
+
+### AMENDMENT10_FROZEN_COUNTEREXAMPLE
+
+Root independently verified HOLD10 SHA256
+846a01af93e2ed8fd15a155fd1bfb2b0a22f564e679b201c76ca18859f1bf57b,
+all33 source/test bindings,3 executed logs and3 artifacts. First strengthened
+unchanged controls RED0of2; corrected10 selected9of10, zero exclusions.
+Main handled unchanged and7late CAS no-write cases pass. Actual public Main
+acceptAll then Undo has redo length1; complete frozen adapter09 candidate differs
+only at ledger source.content[2].content: source[] versus candidate absent.
+Restoring that single source-owned empty paragraph field makes COMPLETE
+candidate equal source; no stored history loss was established. Runtime709of1800,
+behavior907of2600. Other runtime bytes unchanged. No native10 acceptance.
+H8 proposes only matched SOURCE-owned empty leaf content restoration before the
+existing adapter complete equality. Preflight10B scope amendment executed STOP
+because clean worktree is required; no H8 code write occurred. Preserve that
+failure. Freeze admitted10 bytes and mechanical OPS, E0/guardrails/diff, commit
+a known-incomplete checkpoint; only then fresh clean same-contour admission
+may authorize the precise adapter repair. Not a new PR/rollback or denominator.
 
 ### AMENDMENT09_COMPLETE_SOURCE_OWNED_NO_CHANGE_HISTORY
 
