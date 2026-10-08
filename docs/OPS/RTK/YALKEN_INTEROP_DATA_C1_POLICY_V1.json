@@ -2552,15 +2552,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "166bcdbd921e068c453771bca445e0a68bc61b9df65fbb67d51e78f9be0ce4d0"
+        "sha256": "6869b1e127f0da823cd16c219ec30e0db09e4eab1bd08af5a3fa3786a28e0f62"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5a090f72b13654edbddf88667e854438a40e0cd40a2af2eb2d332adc1d1bbf1d"
+        "sha256": "5c861f1c91e0a1442e18afdb0fa9345ce3ef2aa0ad7d113ffd08901c4a37b504"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "56c8517814fbc9170a95499c4763caee4dfd49faee1b6249d1ae2bc3945ab4b8"
+        "sha256": "3ffd7d26ebc6dfd4036cc6b3aedbb901a7c355fcee91d23298dc9ad522a57ab9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2784,7 +2784,7 @@
       },
       {
         "path": "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
-        "sha256": "338648e2202e6240513c78cb71976de5fbcce50b06e53a62723d3e42c3b4f3bb"
+        "sha256": "5035537f4183982194710643bcc5506706bd8b831cd69f6b4a5ca6cac534b254"
       }
     ],
     "followupRepair": {

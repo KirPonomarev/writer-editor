@@ -13160,7 +13160,7 @@ export const R24_INTEROP_WORD_SCENE_SAVE_OBSERVATION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
-      "sha256": "338648e2202e6240513c78cb71976de5fbcce50b06e53a62723d3e42c3b4f3bb"
+      "sha256": "5035537f4183982194710643bcc5506706bd8b831cd69f6b4a5ca6cac534b254"
     },
     {
       "path": "test/contracts/rtk-word-structural-comment-history.contract.test.js",
@@ -13170,7 +13170,7 @@ export const R24_INTEROP_WORD_SCENE_SAVE_OBSERVATION_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "1ba4273b220db900c246425c0aa4c2c837592e09d28541db72809c5e3533d30a"
+      "sha256": "36760431c72c3377b80b2c730dab12ba261a5e6d11487376b74ca6c509b9ab70"
     }
   ]
 });

@@ -28,6 +28,14 @@ Three surgical Core changes, append-only regressions in three existing contracts
 one mechanically rebuilt editor bundle and the full normal delivery chain.
 Root owns task/docs/OPS/review/proof/Git; the separate existing code agent owns
 runtime and behavior tests.
+CI2095 observed DATA_DELIVERY_SCOPE at candidate93dea: root appended the new
+HARD task to policy624 but omitted it from the second exact loader literal623.
+Same-contour repair appends only that admitted task to DATA_ADMITTED_PATHS,
+retaining all623 prior ordered identities and the strict equality predicate.
+Runtime/tests/generated artifacts remain exact; fresh post-commit Git-based
+post-evaluation and complete post-audit suite must execute before repush.
+First failed CI and all old proof remain retained; no merge or native claim.
+
 Current frozen worktree observation:139 complete old/new inputs/plans/typed
 errors equal; direct caller seams6/4/4->2/2/2, not total validation or timing.
 Nine append-only cases; whole8 actual232of232 with zero fail/cancel/skip/todo;
@@ -70,7 +78,9 @@ total120. Appended behavior budgets140/100/160, total400, nine top-level tests
 All original test-prefix bytes and assertion statements remain exact.
 Only pending Core is one of136 audited compiler inputs; all other135 handwritten
 inputs and preload bundle stay exact. Editor bundle is generated, never hand-edited.
-Seven mechanical companions retain all623 admitted paths,481 source identities,
+Seven mechanical companions retain all623 prior ordered identities in both
+policy and loader literal; only the named new task extends both to624.
+The original companions retain481 source identities,
 1597 inventory paths and233 historical certification tuples. Only this new task
 extends admission624/source482; three existing test hashes refresh. Append one
 nonrecursive successor certificate with85 bindings: existing83 plus task and

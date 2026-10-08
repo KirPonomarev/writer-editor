@@ -3069,3 +3069,14 @@ Original macOS novel500k, both origins/scopes/three roles/five genuine Word
 exchanges, simultaneous text/note/format, restart/UndoRedo and measured Save
 performance remain OPEN. NEXT: normal full delivery, then fresh bounded
 large/native observation; never replay historical failed heavy routes.
+
+
+## 2026-10-08 — exact dual admission list repair in the same PR
+
+CI2095 observed DATA_DELIVERY_SCOPE at candidate93dea: root appended the new
+HARD task to policy624 but omitted it from the second exact loader literal623.
+Same-contour repair appends only that admitted task to DATA_ADMITTED_PATHS,
+retaining all623 prior ordered identities and the strict equality predicate.
+Runtime/tests/generated artifacts remain exact; fresh post-commit Git-based
+post-evaluation and complete post-audit suite must execute before repush.
+First failed CI and all old proof remain retained; no merge or native claim.
