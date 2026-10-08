@@ -1,23 +1,49 @@
-## 2026-10-08 — native Word waiter; delivery pending, novel OPEN
+## 2026-10-08 — fresh-book rich-note correction; source proof complete, delivery pending
 
-PR2098 is closed atb21c; official19of19, both RTK4029of4029, post359of359,
-exact merged38of38. Closurec9bfb670d3ea0ff1cdb09eb650618827cafac481b72367f6ade376c0f46d0974.
-SOURCE64 passed the former worker size block and reached actual note confirmation.
-Three false note updates remain OPEN. Preload120s expired during the decision;
-Cancel preserved all32 previous files, owned harness normal quit0 at600s.
-Retained evidence017d5551dd889d5942103caf82b8f78e98500fd602c669b2f10375d16a6f4f2c
-is a failed native waiter observation, not acceptance or permission to replay it.
-WORD_PREVIEW_NATIVE_WAIT_MAC_20261008 changes only exact Word preview wait to
-finite600s in both preload dispatch paths. No retries, new IPC, Main cancellation
-or authority change. Other commands120s/queries30s/worker30s/35s unchanged.
-Actual source/bundle causal RED9of11, GREEN11of11, whole affected13=144of144;
-zero fail/skip/todo in GREEN. Runtime10a+d/test164 appended/four cases, old prefix
-exact. Two compilers actual0/reproducible; editor/protected source exact.
-Root review5d1b2f24f33899b3edf2903b04fb21b90f72edfe8ce29222d789bcb95729f34e.
-Root owns final docs/seven mechanical OPS, required gates and normal Git closure.
-NEXT: complete delivery and exact-merged proof before fresh native admission or
-note-default code. Original500k both origins/scopes/roles/five exchanges remains
-OPEN; never replay historical crashes or monolithic500k Save/Undo failures.
+PR2099 is fully closed at1fc42de1f3aede0f7eaaeadfddce0e307fb58a53:
+all19 official checks, both RTK4029of4029, post359of359 and clean exact-merged
+144of144. Closure47533221ffa8c20748f88e0acca3013b771b3c514de020522e4dd10432a23cf0.
+WORD_BOOK_NOTE_DEFAULTS_MAC_20261008 follows the retained SOURCE64 failure:
+unchanged genuine Word-return notes falsely offered three updates; no Apply,
+all32 previous business files exact. That failed native run remains retained.
+Fresh multi-scene exports now use existing complete finite V2 note defaults;
+pending-comment V3 stays unchanged. Core validates the complete owned local
+map/active roster/body/break/anchor baseline. Main proves both provisional and
+final note publication and enables the four ordinary V2 return projections.
+Only same-invocation existing analysis is reused; ordinary direct bridge calls
+remain2 analysis/0 pending/0 preview, not a total internal-parser count claim.
+Root reviewed the complete six-file diff,56 full current V8 operands and32
+independent XML observations. Actual no-op keeps original notes/no receipt/no
+writer. Actual one-note Apply changes only notes.craftsman.json; Cancel and
+three stale guards keep every business file exact.32 typed Core corruptions,
+both publication phases and none/retained/resolved ledger variants are covered.
+Literal V1/absent controls match full old output in the current require closure;
+no retroactive V2 authority or isolated historical runtime is claimed. Seven
+hardBreak direct-property faults use exact raw XML because the old meaning
+reader does not resolve those properties. Its failed observer remains retained.
+Reference typography remains UNKNOWN/unrepresentable; raw atoms are preserved.
+Actual complete19-file union is two serial pinned executions: Main346of346
+and remaining18=674of674, aggregate1020of1020; zero fail/cancel/skip/todo.
+Main528.019s/childRUmax4166615040B; remaining18 570.789s/
+childRUmax2542321664B. Both use the same900s/40GB
+development bounds and32GiB test heap. The old combined900s run is retained
+INCOMPLETE/FAIL with790 status records and no terminal summary; no790of790 claim.
+Whole19 review6ba50743db6dfa82d7a060e03aef2d9a3b074c2645bd60966665d99a0a7d6ddc.
+Source review8d0d69e87a225756ec0ff5cacf48b25881b1e98153f485ff52f2a9ccc1cae7f2.
+Runtime89of180/test157of460/six new cases; original assertions are exact apart
+from the one admitted fresh-factory positive. All136 compiler inputs and both
+generated artifacts remain exact; no rebuild/UI/dependency/network change.
+Required gates and normal Git/CI/merge/exact-merged delivery remain pending.
+Original macOS500k novel stays OPEN: fresh V2 SOURCE/ordinary PACKAGED native
+return, both origins/scopes/three roles/five genuine exchanges, round capacity,
+Word-origin partition, simultaneous pending-text/note-body, chapter Save/restart/
+UndoRedo/no-loss and shipping performance. No historical crash or failed native
+monolithic500k Save/Undo was reproduced.40GB is development only.
+Owner storage instruction: current evidence stays in place; subsequent heavy
+synthetic test materials go to Yandex Disk folder Yalken — тестовые материалы,
+with hashes and upload verification before keeping completed runs cloud-only.
+NEXT: close this delivery, then one fresh shared SOURCE/PACKAGED build and the
+actual full-novel Word return. No new implementation contour before closure.
 
 ## 2026-10-08 — single complete worker projection; delivery pending
 

@@ -135,7 +135,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
     ...(options.pinnedSingleSceneNoteProfile === true && options.editableReturn === true && sourceBindings.length
       ? { breakEmission: clone(BOOK_NOTE_EMISSION_V2) }
       : options.closedBookBreakEmission === true && sourceBindings.length ? { breakEmission: options.pinnedBookNoteProfile === true
-        ? clone(BOOK_NOTE_EMISSION_V3) : { schemaVersion: 1, fontSize: '12pt' } } : {}),
+        ? clone(BOOK_NOTE_EMISSION_V3) : clone(BOOK_NOTE_EMISSION_V2) } : {}),
     sourceBindings, notes, protectedDigest: `sha256:${sha(stable({ schemaVersion: DOCUMENT_NOTES_SCHEMA, notes }))}`,
     policy: options.editableReturn === true ? 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1' : 'EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1' };
 }

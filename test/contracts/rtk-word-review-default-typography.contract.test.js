@@ -1406,3 +1406,36 @@ for(const phase of ['provisional','final'])for(const fault of ['author','date','
   if(fault==='note-body')assert.equal(result.reason,'PENDING_NOTE_BREAK_CHANGED');
   assert.equal(JSON.stringify({doc:f.doc,document:f.document,state:f.state,source:f.source}),f.before);
  });
+
+
+async function freshBookNotePublication(history='none') {
+ const text=fs.readFileSync(path.join(__dirname,'rtk-word-pending-notes.contract.test.js'),'utf8'),prefix=text.split("\ntest('complete book note law")[0],start=text.indexOf('\nfunction bookNoteDefaultsData'),end=text.indexOf("\ntest('fresh book V2",start);
+ const h=new Function('require','__dirname',prefix+text.slice(start,end)+'\nreturn {bookNoteDefaultsFixture,retainBookNoteDefaults};')(require,__dirname),f=await h.bookNoteDefaultsFixture(history);
+ const calls={analysis:0,pending:0,preview:0},bridge={...f.bridge};for(const [name,key] of [['buildDocxReviewTransportAnalysisFromZipBytes','analysis'],['buildDocxPendingCommentReturnDocumentsFromZipBytes','pending'],['buildDocxContentPreviewFromZipBytes','preview']])bridge[name]=(...args)=>{calls[key]++;return f.bridge[name](...args);};
+ const gateway=actualBodyPublication(f.docs[0],bridge,{projectId:f.input.projectId,ownedSceneId:f.ids[0]});Object.keys(calls).forEach(key=>calls[key]=0);
+ return {...f,...h,calls,publish:(bytes,candidate=f.source)=>gateway.publish(bytes,candidate)};
+}
+test('fresh book V2 actual Main proves both note phases for ordinary retained and resolved ledgers',async()=>{
+ for(const history of ['none','retained','resolved']) {
+  const f=await freshBookNotePublication(history),before=require('node:v8').serialize(f.source),actual=await f.publish(f.originalBytes);
+  f.retainBookNoteDefaults('publication-'+history,{source:f.source,docs:f.docs,document:f.document,bytes:f.originalBytes,actual,calls:f.calls});
+  assert.equal(actual.ok,true,JSON.stringify({history,code:actual.code,reason:actual.reason}));assert.equal(actual.publishAllowed,true);assert.equal(f.source.documentNotes.breakEmission.schemaVersion,2);
+  assert.equal(require('node:v8').serialize(f.source).equals(before),true,'publication mutated source');
+  assert.equal(require('node:util').isDeepStrictEqual(JSON.parse(JSON.stringify(actual.documentNotesBinding.noteProofs)),[{phase:'provisional',rosterCount:3,completeBodies:true,sourceOccurrences:true},{phase:'final',rosterCount:3,completeBodies:true,sourceOccurrences:true}]),true,'incomplete phases');
+  if(history==='none'){assert.equal(f.calls.analysis,2);assert.equal(f.calls.pending,0);assert.equal(f.calls.preview,0);}
+ }
+});
+test('fresh book V2 publication refuses body break empty paragraph profile and source corruption in each phase',async()=>{
+ const f=await freshBookNotePublication();
+ for(const phase of ['provisional','final'])for(const fault of ['body','break','empty']) {
+  const original=phase==='provisional'?f.source.provisionalSelfParseArtifact.bytes:f.originalBytes,parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes(original).parts,before=parts['word/footnotes.xml'];
+  parts['word/footnotes.xml']=fault==='body'?before.replace('kept tail','kept EDIT'):fault==='break'?before.replace('<w:br/>',''):before.replace(/<w:p><w:pPr><w:pStyle w:val="FootnoteText"\/><\/w:pPr><\/w:p>/u,'');assert.notEqual(parts['word/footnotes.xml'],before,'missing actual corruption');
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),candidate=phase==='provisional'?{...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes},advisoryManifest:{...f.source.advisoryManifest,coreManifest:{...f.source.advisoryManifest.coreManifest,artifactIdentities:{...f.source.advisoryManifest.coreManifest.artifactIdentities,provisionalDocxSha256:'sha256:'+hash(bytes)}}}}:f.source;
+  const actual=await f.publish(phase==='final'?bytes:f.originalBytes,candidate);f.retainBookNoteDefaults('publication-'+phase+'-'+fault,{source:f.source,candidate,parts,bytes,actual});
+  assert.equal(actual.ok,false,fault);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',fault);
+ }
+ for(const [fault,mutate] of [['partial',b=>delete b.breakEmission.wordLanguage],['unknown',b=>b.breakEmission.schemaVersion=99],['profile',b=>b.breakEmission.fontFamily='Arial'],['roster',b=>b.sourceBindings.pop()],['hash',b=>b.sourceBindings[0].blockTextSha256='0'.repeat(64)]]) {
+  const baseline=structuredClone(f.source.documentNotes);mutate(baseline);const candidate={...f.source,documentNotes:baseline,localAuthorityCapsule:{...f.source.localAuthorityCapsule,documentNotes:baseline}},actual=await f.publish(f.originalBytes,candidate);
+  f.retainBookNoteDefaults('publication-refuse-'+fault,{candidate,bytes:f.originalBytes,actual});assert.equal(actual.ok,false,fault);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',fault);
+ }
+});
