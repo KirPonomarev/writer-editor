@@ -1,3 +1,28 @@
+## 2026-10-08 — single complete worker projection; delivery pending
+
+WORD_RETURN_WORKER_SINGLE_PROJECTION_MAC_20261008 starts at fully closed
+PR2097 mergedcedf59f9d89ebe80ae9baab246ffb8cb28d0368e:19of19 official checks,
+RTK4024of4024 twice, post359of359 and exact merged338of338. Real500108-word
+SOURCE export and genuine Word SaveAs succeeded; public native return safely
+refused before Apply: duplicate complete IR produced69780735B above67108864B.
+Main-owned exact-boolean opt-in now omits only the duplicate legacy IR; packet,
+strict bound and authority checks remain. Legacy view restoration follows packet
+verification and excludes transport-only yrtk2Evidence. Runtime10a+d; tests180
+appended/five cases; old38831B exact. EVID01 actual18of18. Whole maintained7
+actual413of414 remains FAIL solely at the unchanged git-status allowlist for
+the new uncommitted HARD task. Clean candidate official complete CI must pass
+before merge. Supplementary whole preview31of38 at both exact base and final
+candidate, same seven pre-existing failures, is also retained FAIL.
+Independent complete raw-operand/source review SHA58eb4674e8e0abc93b28b5c7c8aa4dbe3324a82e9b6ab459ebc408c082951e24;
+writer HOLD SHAed8dadf9092f471003ebf762f517ebf816cfadb70bee4e69bf4d76f14f05aaad. All136 compiler inputs/two generated
+artifacts exact. Apply short-test-first ordering, cheap scope checks before
+expensive runs, retained same-input comparison and one bounded heavy lane.
+Root docs/OPS, required gates and normal delivery follow. Original full novel
+release stays OPEN: current SOURCE/PACKAGED public return, note defaults,
+Word-origin partition, pending text/note edits, three roles/five Word exchanges,
+Save/restart/UndoRedo and shipping performance still require actual proof.
+NEXT: close delivery and exact merged verification, then fresh native return.
+
 ## 2026-10-08 — measured parser query correction; delivery pending
 
 WORD_PARSER_QUERY_PERFORMANCE_MAC_20261008 at exact9d4c8247026c8c98f8255d38f4101ee1f627789b

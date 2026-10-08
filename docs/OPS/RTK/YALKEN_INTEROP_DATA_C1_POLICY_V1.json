@@ -633,7 +633,9 @@
     "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md",
     "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
     "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md",
-    "docs/tasks/2026-10-08--word-parser-query-performance-mac.md"
+    "docs/tasks/2026-10-08--word-parser-query-performance-mac.md",
+    "test/contracts/rtk-evid01-return-evidence-packet.contract.test.js",
+    "docs/tasks/2026-10-08--word-return-worker-single-projection-mac.md"
   ],
   "protectedFiles": [
     {
@@ -862,7 +864,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "7314377cb87c83ae2e49fc81b7574e97f666d354671052c030d640bc1d014b6b"
+        "sha256": "5cdbed206f42433f768c36a1f0782100d094c28074e848a108de369bb7d7739f"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1234,7 +1236,7 @@
       },
       {
         "path": "src/main/rtkDocxReturnIntakeWorker.cjs",
-        "sha256": "35d7868c9d01f0e7501a57dc3184f6ac6a9f5f099c42b3a3575c7fb26afdfcc9"
+        "sha256": "d767b9c7bae4e304b09988e78514983674ebce763f0df358cb2f041ab2d7d278"
       },
       {
         "path": "docs/tasks/2026-09-18--word-metadata-roundtrip.md",
@@ -2554,15 +2556,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "a486fb4b89c16bb4f0d1a820a072e2fb1ca1b2462eff33151fff534b795b118d"
+        "sha256": "8356aa2de63e621f50561f1994155338d1ac53ac01f27a69c56bb0b435dbc654"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ccabce66ab5511f04907a311069e7d9b448ea66220bb9420718e3ddcc67af3f6"
+        "sha256": "5d7798c5748597b5ae13304c056fe3b10a2d09332ae0315892892cf29ad2de5e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "d1ff0e0e9ed56e965399a58d63129aa6da1001e811c3c8bdb454127acba42634"
+        "sha256": "59d3a3131a02185da6fb63aab1019da43d714a078266b0a50fed19f0a2a3a2c9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2795,6 +2797,14 @@
       {
         "path": "docs/tasks/2026-10-08--word-parser-query-performance-mac.md",
         "sha256": "9e5985999a7b2f027d03d0d7939eed499b90e221a2183949ab2f4dec39168e66"
+      },
+      {
+        "path": "test/contracts/rtk-evid01-return-evidence-packet.contract.test.js",
+        "sha256": "f4c665f0d454e829122a4e8239e9596aa930c3a17e2032efd8721cd54296f3b4"
+      },
+      {
+        "path": "docs/tasks/2026-10-08--word-return-worker-single-projection-mac.md",
+        "sha256": "c54600d11d8d1ff1b24e1f79a4d982ddc2f9ca0164b31bdeff51f2191932989c"
       }
     ],
     "followupRepair": {

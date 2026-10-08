@@ -257,6 +257,7 @@ async function run(message = {}) {
   }
   const packet = buildPacketFromParserResult(message, parserResult, port);
   const { privateMediaAssets, ...publicParserResult } = parserResult;
+  if (message.omitLegacyReviewIr === true) delete publicParserResult.reviewIr;
   return enforceWorkerOutputBudget({
     ok: true,
     packet,

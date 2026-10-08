@@ -884,3 +884,183 @@ test('EVID01-V9-CONTROL-worker-byte-size-budget-enforced', async () => {
   assert.equal(result.status, 'blocked');
   assert.equal(result.code, 'RTK_BUDGET_EXCEEDED');
 });
+
+// Single-projection transport: real parser/packet, with only the process port adapted.
+function singleProjectionRecord(name, value) {
+  const dir = process.env.YALKEN_SINGLE_PROJECTION_EVIDENCE_DIR;
+  if (!dir) return;
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, `${name}.v8`), require('node:v8').serialize(value));
+  fs.writeFileSync(path.join(dir, `${name}.json`), `${JSON.stringify(value, null, 2)}\n`);
+}
+
+function singleProjectionInput() {
+  const bytes = docxWithAnchoredComment(trackedReplacementBody());
+  return { bytes, requestId: 'single-projection',
+    returnedArtifactSha256: `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`,
+    effectiveBudgets: { maxWorkerOutputBytes: 64 * 1024 * 1024 } };
+}
+
+function singleProjectionMain(port) {
+  const source = fs.readFileSync(MAIN_PATH, 'utf8');
+  const take = (name) => {
+    const match = source.match(new RegExp(`(?:^|\\n)((?:async )?function ${name}\\([\\s\\S]*?\\n\\}(?=\\r?\\n|$))`, 'u'));
+    assert.ok(match, `actual Main declaration ${name}`);
+    return match[1];
+  };
+  const names = ['isPlainObjectValue', 'cloneJsonSafe', 'computeHash', 'stableRtkReviewTransportJson',
+    'stableJsonString', 'docxReviewPreviewSessionDetailString', 'sha256DocxReviewPreviewSessionBytes',
+    'docxReviewReturnIntakeBlocked', 'docxReviewReturnIntakeMaxWorkerOutputBytes',
+    'resolveDocxReturnIntakeEffectiveBudgets', 'docxReviewReturnIntakeProductBudgets',
+    'docxReviewReturnIntakeEffectiveBudgets', 'docxReviewReturnIntakeWorkerResultWithinBudget',
+    'runDocxReviewReturnIntakeParserV2InUtilityProcess', 'shouldUseLegacyDocxReviewPreviewFallbackForProbe',
+    'resolveReturnEvidencePacketFromProbe', 'inspectDocxReviewReturnIntakeV2'];
+  const constants = ['DOCX_REVIEW_RETURN_INTAKE_PROFILE_DEFAULTS', 'DOCX_REVIEW_RETURN_INTAKE_CEILING',
+    'DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS'].map((name) => {
+    const match = source.match(new RegExp(`const ${name} = Object.freeze\\(\\{[\\s\\S]*?\\n\\}\\);`, 'u'));
+    assert.ok(match, `actual Main constant ${name}`); return match[0];
+  });
+  constants.push(source.match(/const RTK_RETURN_EVIDENCE_V1_SCHEMA = '[^']+';/u)[0]);
+  return new Function('crypto', 'Buffer', 'path', '__dirname', 'utilityProcess', 'setTimeout', 'clearTimeout',
+    `${constants.join('\n')}
+    let revisionBridgeGlobal; ${names.map(take).join('\n')}
+    return { run: runDocxReviewReturnIntakeParserV2InUtilityProcess, inspect: inspectDocxReviewReturnIntakeV2 };`)(
+    crypto, Buffer, path, path.join(REPO_ROOT, 'src'), port, setTimeout, clearTimeout);
+}
+
+function singleProjectionProcess(observations, transform = (value) => value) {
+  return { fork(workerPath, args, options) {
+    assert.equal(workerPath, WORKER_PATH); assert.deepEqual(args, []); assert.deepEqual(options, { stdio: 'pipe' });
+    const handlers = {};
+    return { on(name, fn) { handlers[name] = fn; }, once(name, fn) { handlers[name] = fn; },
+      kill() { observations.closes += 1; },
+      postMessage(message, transfer) {
+        require('../../src/core/ipc-caller-identity-v1.cjs').validateWorkerIntakeEnvelope(message);
+        observations.messages.push(message); assert.deepEqual(transfer, [message.bytes]);
+        require(WORKER_PATH).run(message).then((result) => {
+          observations.results.push(result); handlers.message({ result: transform(result) });
+        }).catch((error) => { observations.error = error; handlers.exit(); });
+      } };
+  } };
+}
+
+test('EVID01-single-projection-causal-wire-boundary', async () => {
+  const worker = require(WORKER_PATH); const input = singleProjectionInput();
+  const before = Buffer.from(input.bytes); const full = await worker.run(input);
+  assert.equal(full.ok, true); assert.ok(full.parserResult.reviewIr);
+  const expectedCompact = cloneJsonSafe(full); delete expectedCompact.parserResult.reviewIr;
+  const limit = Math.floor((Buffer.byteLength(stableJson(full)) + Buffer.byteLength(stableJson(expectedCompact))) / 2);
+  const limitedInput = { ...input, effectiveBudgets: { maxWorkerOutputBytes: limit } };
+  const duplicate = await worker.run(limitedInput);
+  const compact = await worker.run({ ...limitedInput, omitLegacyReviewIr: true });
+  singleProjectionRecord('causal-boundary', { input, full, expectedCompact, limitedInput, duplicate, compact, limit });
+  assert.equal(duplicate.ok, false); assert.equal(duplicate.code, 'RTK_BUDGET_EXCEEDED');
+  assert.equal(duplicate.details.field, 'worker.result'); assert.ok(duplicate.details.actual > limit);
+  assert.equal(compact.ok, true, 'one complete packet must fit where the duplicated ReviewIR does not');
+  const highCompact = await worker.run({ ...input, omitLegacyReviewIr: true });
+  assert.deepEqual(highCompact, expectedCompact); assert.deepEqual(input.bytes, before);
+  assert.equal(Object.hasOwn(compact.parserResult, 'reviewIr'), false);
+  const compactBytes = Buffer.byteLength(stableJson(compact));
+  assert.equal(String(compactBytes - 1).length, String(limit).length, 'same-width exact boundary operand');
+  const belowInput = { ...limitedInput, omitLegacyReviewIr: true,
+    effectiveBudgets: { maxWorkerOutputBytes: compactBytes - 1 } };
+  const below = await worker.run(belowInput);
+  singleProjectionRecord('exact-one-byte-boundary', { compact, compactBytes, belowInput, below });
+  assert.equal(below.code, 'RTK_BUDGET_EXCEEDED'); assert.equal(below.details.field, 'worker.result');
+  assert.equal(below.details.limit, compactBytes - 1); assert.equal(below.details.actual, compactBytes);
+});
+
+test('EVID01-single-projection-default-and-exact-boolean-compatibility', async () => {
+  const worker = require(WORKER_PATH); const input = singleProjectionInput();
+  const inputBefore = require('node:v8').serialize(input); const baseline = await worker.run(input);
+  const observations = [];
+  for (const flag of [undefined, false, null, 0, 1, 'true', {}]) {
+    const result = await worker.run({ ...input, omitLegacyReviewIr: flag });
+    assert.deepEqual(result, baseline); observations.push({ flag, result });
+  }
+  const compact = await worker.run({ ...input, omitLegacyReviewIr: true });
+  const { reviewIr, ...metadata } = baseline.parserResult;
+  assert.deepEqual(compact.parserResult, metadata); assert.deepEqual(compact.packet, baseline.packet);
+  const { yrtk2Evidence, ...projection } = compact.packet.returnedProjection;
+  assert.deepEqual(projection, reviewIr); assert.ok(yrtk2Evidence);
+  assert.deepEqual(require('node:v8').serialize(input), inputBefore);
+  singleProjectionRecord('boolean-compatibility', { input, baseline, observations, compact });
+});
+
+test('EVID01-single-projection-real-Main-process-port-and-parent-bound', async () => {
+  const input = singleProjectionInput(); const observations = { messages: [], results: [], closes: 0 };
+  const main = singleProjectionMain(singleProjectionProcess(observations));
+  const result = await main.run({ ...input, omitLegacyReviewIr: false }, null);
+  assert.equal(result.ok, true); assert.equal(observations.messages.length, 1);
+  assert.equal(observations.messages[0].omitLegacyReviewIr, true); assert.equal(observations.closes, 1);
+  assert.equal(observations.error, undefined); assert.equal(Object.hasOwn(result.parserResult, 'reviewIr'), false);
+  assert.deepEqual(Buffer.from(observations.messages[0].bytes), input.bytes);
+  assert.equal(observations.messages[0].effectiveBudgets.maxWorkerOutputBytes, 64 * 1024 * 1024);
+  assert.match(observations.messages[0].effectiveBudgetDigest, /^sha256:[a-f0-9]{64}$/u);
+  const padded = { messages: [], results: [], closes: 0 };
+  const parent = singleProjectionMain(singleProjectionProcess(padded, (value) => ({ ...value, padding: 'x'.repeat(200000) })));
+  const blocked = await parent.run({ ...input, budgets: { maxWorkerOutputBytes: 100000 } }, null);
+  assert.equal(padded.results[0].ok, true); assert.equal(blocked.code, 'RTK_BUDGET_EXCEEDED');
+  assert.equal(blocked.details.field, 'worker.result'); assert.equal(blocked.details.limit, 100000);
+  assert.ok(blocked.details.actual > blocked.details.limit); assert.equal(padded.closes, 1);
+  singleProjectionRecord('main-process-bound', { input, observations, result, padded, blocked });
+});
+
+test('EVID01-single-projection-post-verify-legacy-view-and-own-field-parity', async () => {
+  const input = singleProjectionInput(); const worker = require(WORKER_PATH);
+  const bridge = await import(pathToFileURL(BRIDGE_MODULE_PATH).href); const main = singleProjectionMain(null);
+  const full = await worker.run(input); const compact = await worker.run({ ...input, omitLegacyReviewIr: true });
+  const read = (probe) => main.inspect({ context: { requestId: input.requestId }, docxBytes: input.bytes,
+    revisionBridge: bridge, options: { runDocxReviewReturnIntakeInUtilityProcess: async () => probe } });
+  const fullBefore = require('node:v8').serialize(full); const compactBefore = require('node:v8').serialize(compact);
+  const expected = await read(full); const actual = await read(compact);
+  assert.equal(expected.status, 'legacy-unbound-review-preview'); assert.deepEqual(actual, expected);
+  assert.equal(Object.hasOwn(actual.parserResult.reviewIr, 'yrtk2Evidence'), false);
+  assert.equal(actual.authenticated, false); assert.equal(actual.canAutoApply, false); assert.equal(actual.canWriteStorage, false);
+  assert.deepEqual(require('node:v8').serialize(full), fullBefore); assert.deepEqual(require('node:v8').serialize(compact), compactBefore);
+  const controls = [];
+  for (const value of [undefined, null, { own: 'retained' }]) {
+    const parserResult = Object.freeze({ ...compact.parserResult, reviewIr: value });
+    const result = await read({ ...compact, parserResult });
+    assert.equal(result.ok, true); assert.equal(result.parserResult, parserResult);
+    assert.equal(Object.hasOwn(result.parserResult, 'reviewIr'), true); assert.equal(result.parserResult.reviewIr, value);
+    controls.push({ parserResult, result });
+  }
+  const absent = { ...compact }; delete absent.parserResult;
+  const absentResult = await read(absent); assert.deepEqual(absentResult.parserResult, {});
+  const frozen = { ...compact, parserResult: Object.freeze({ ...compact.parserResult }) };
+  assert.deepEqual(await read(frozen), expected);
+  const malformedProjections = [];
+  for (const projection of [undefined, null, 'text', [], 42]) {
+    const packet = cloneJsonSafe(compact.packet);
+    if (projection === undefined) delete packet.returnedProjection; else packet.returnedProjection = projection;
+    packet.packetDigest = bridge.packetDigestFor(packet);
+    assert.equal(bridge.verifyReturnEvidencePacketV1(packet, { expectedArtifactSha256: input.returnedArtifactSha256 }).ok, true);
+    const parserResult = Object.freeze({ ...compact.parserResult }); const probe = { ...compact, packet, parserResult };
+    const before = require('node:v8').serialize(probe); const result = await read(probe);
+    assert.equal(result.ok, true); assert.equal(result.parserResult, parserResult);
+    assert.equal(Object.hasOwn(result.parserResult, 'reviewIr'), false);
+    assert.deepEqual(require('node:v8').serialize(probe), before); malformedProjections.push({ projection, probe, result });
+  }
+  singleProjectionRecord('legacy-complete-parity', { input, full, compact, expected, actual, controls, absent, absentResult, frozen, malformedProjections });
+});
+
+test('EVID01-single-projection-forged-packet-refused-before-legacy-restoration', async () => {
+  const input = singleProjectionInput(); const bridge = await import(pathToFileURL(BRIDGE_MODULE_PATH).href);
+  const compact = await require(WORKER_PATH).run({ ...input, omitLegacyReviewIr: true });
+  const main = singleProjectionMain(null); const observations = [];
+  for (const mutate of [(packet) => { packet.returnedProjection.forgedText = 'changed'; },
+    (packet) => { packet.projectionDigest = `sha256:${'0'.repeat(64)}`; },
+    (packet) => { packet.artifactSha256 = `sha256:${'0'.repeat(64)}`; }]) {
+    const probe = cloneJsonSafe(compact); mutate(probe.packet); Object.freeze(probe.parserResult);
+    const before = require('node:v8').serialize(probe); let verifies = 0;
+    const result = await main.inspect({ context: { requestId: input.requestId }, docxBytes: input.bytes,
+      revisionBridge: { ...bridge, verifyReturnEvidencePacketV1(...args) { verifies += 1; return bridge.verifyReturnEvidencePacketV1(...args); } },
+      options: { runDocxReviewReturnIntakeInUtilityProcess: async () => probe } });
+    assert.equal(verifies, 1); assert.equal(result.code, 'RTK_RETURN_EVIDENCE_PACKET_INVALID');
+    assert.equal(result.canOpenReviewSession, false); assert.equal(result.canImportMutate, false);
+    assert.equal(Object.hasOwn(result, 'parserResult'), false); assert.equal(Object.hasOwn(probe.parserResult, 'reviewIr'), false);
+    assert.deepEqual(require('node:v8').serialize(probe), before); observations.push({ probe, result, verifies });
+  }
+  singleProjectionRecord('forgery-before-restoration', { input, compact, observations });
+});
