@@ -10833,6 +10833,7 @@ async function runDocxReviewReturnIntakeParserV2InUtilityProcess(input = {}, rev
       delete messagePayload[`${'bytes'}${'Base64'}`];
       const childMessage = {
         ...messagePayload,
+        omitLegacyReviewIr: true,
         bytes: transferBuffer,
         effectiveBudgets: effective,
         effectiveBudgetDigest: effectiveBudgetDigestValue,
@@ -11113,7 +11114,13 @@ async function inspectDocxReviewReturnIntakeV2({
       actualArtifactSha256: docxReviewPreviewSessionDetailString(packet.artifactSha256),
     });
   }
-  const probeResult = isPlainObjectValue(probe.parserResult) ? probe.parserResult : {};
+  let probeResult = isPlainObjectValue(probe.parserResult) ? probe.parserResult : {};
+  if (isPlainObjectValue(probe.parserResult)
+    && !Object.prototype.hasOwnProperty.call(probe.parserResult, 'reviewIr')
+    && isPlainObjectValue(packet.returnedProjection)) {
+    const { yrtk2Evidence, ...reviewIr } = packet.returnedProjection;
+    probeResult = { ...probeResult, reviewIr };
+  }
   const carrierStatus = docxReviewPreviewSessionDetailString(packet.unverifiedCarrierEvidence?.status);
   if (carrierStatus === 'missing') {
     return {
