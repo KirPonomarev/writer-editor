@@ -1093,12 +1093,14 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       provisionalSelfParse,
     };
   }
+  let provisionalCompleteAnalysis = null;
   const commentProofs = [];
   if (source.commentExport?.threads?.length > 0) {
     const provisionalComments = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
       bytes: source.provisionalSelfParseArtifact.bytes,
       budgets: docxReviewReturnIntakeProductBudgets(),
     }, { cryptoPort });
+    provisionalCompleteAnalysis = provisionalComments;
     const readback = compareCommentExportReadback(source.commentExport, provisionalComments?.reviewIr?.commentThreads);
     if (provisionalComments?.ok !== true || !readback.ok
       || provisionalComments.reviewIr.commentThreads.length !== source.commentExport.threads.length) {
@@ -1199,7 +1201,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       const reconstructed=require('./export/docx/docxReviewPacketComments.js').bindPendingCommentExport({commentExport:source.commentExport,scenes:canonicalScenes,blocks:source.blocks,exportTypography:bodyProfile});
       for(const scene of localAuthority.exportMap.scenes)if(stableRtkReviewTransportJson(scene.pendingCommentBinding??null)!==stableRtkReviewTransportJson(reconstructed.pendingCommentBindings.find(item=>item.sceneId===scene.sceneId)?.binding??null))throw Error('WORD_BODY_PENDING_BINDING');
       for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
-        const read=analysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
+        const read=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
+        if(phase==='provisional')provisionalCompleteAnalysis=read;
         let rows=read.reviewIr?.formattingParagraphs;
         if(rows?.some(row=>row.formattedRuns?.some(run=>run.unsupportedNames?.includes('rPrChange')))) {
           const returned=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
@@ -1350,6 +1353,24 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       if(finalPayload.documentNotesDigest!==source.documentNotes.protectedDigest)throw Error('WORD_BOOK_NOTES_PUBLICATION_DIGEST');
       documentNotesBinding={ok:true,proof:{policy:source.documentNotes.policy,protectedDigest:source.documentNotes.protectedDigest,noteProofs}};
     } catch(error) {return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',reason:error.code||error.message};}
+  } else if(source.documentNotes&&localAuthority.exportMap?.scenes?.length>1
+    &&Object.hasOwn(source.documentNotes,'breakEmission')&&source.documentNotes.breakEmission?.schemaVersion!==1) {
+    try {
+      if(stableRtkReviewTransportJson(source.documentNotes)!==stableRtkReviewTransportJson(localAuthority.documentNotes))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
+      const noteProofs=[];
+      for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,provisionalCompleteAnalysis],['final',documentBuffer,finalParse]]) {
+        if(!analysis?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+        const plan=require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({document:source.notesDocument,
+          projectId:source.documentNotes.projectId,roundId:localAuthority.roundId,artifactSha256:phase==='final'?finalArtifactSha256:provisionalSelfParse.provisionalDocxSha256,
+          baseline:source.documentNotes,exportMap:localAuthority.exportMap,
+          returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true}),
+          returnedParagraphs:analysis.reviewIr.formattingParagraphs,now:new Date().toISOString()});
+        if(!plan.unchanged||plan.document!==source.notesDocument||plan.changes.length)throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+        noteProofs.push({phase,rosterCount:source.documentNotes.sourceBindings.length,completeBodies:true,sourceOccurrences:true});
+      }
+      if(finalPayload.documentNotesDigest!==source.documentNotes.protectedDigest)throw Error('WORD_BOOK_NOTES_PUBLICATION_DIGEST');
+      documentNotesBinding={ok:true,proof:{policy:source.documentNotes.policy,protectedDigest:source.documentNotes.protectedDigest,noteProofs}};
+    }catch(error){return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',reason:error.code||error.message};}
   } else if (source.documentNotes) {
     documentNotesBinding = validateDocumentNotesReturn({
       expected: localAuthority.documentNotes,
@@ -6622,7 +6643,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
     const { planNoteReturnDelta } = require('./core/word-note-return-delta-v1.cjs');
     const input = { projectId: context.projectId, roundId: capsule.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.documentNotes,
-      exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes, { includeBreakProjection: capsule.exportMap?.scenes?.length === 1 && capsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
+      exportMap: capsule.exportMap, returnedNotes: revisionBridge.parseDocumentNotesRichReturn(docxBytes, intake.parserResult.reviewIr.documentNotes, { includeBreakProjection: capsule.documentNotes?.breakEmission?.schemaVersion === 2 }),
       returnedParagraphs: intake.parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString() };
     const checkIdentity = () => {
       assertFreshDocxReviewRoundAuthority(capsule);
@@ -10403,7 +10424,7 @@ async function prepareCleanDocumentStoriesCapsule(authority, parserResult, conte
     const comments = parserResult.reviewIr?.commentThreads || [];
     if (authority.commentExport ? !compareCommentExportReadback(authority.commentExport, comments).ok : comments.length > 0)
       throw Error('WORD_STORIES_RETURN_COMMENTS_CHANGED');
-    const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 });
+    const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.documentNotes?.breakEmission?.schemaVersion === 2 });
     let noteSourceGuard = null;
     if (authority.documentNotes?.sourceBindings?.length || returnedNotes.length) {
       if (authority.documentNotes?.policy !== 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') throw Error('WORD_STORIES_RETURN_NOTES_REQUIRED');
@@ -10559,7 +10580,7 @@ async function prepareCleanUserBookmarksCapsule(authority, parserResult, context
       if (!Buffer.isBuffer(context.docxBytes)
         || `sha256:${computeHash(context.docxBytes)}` !== context.returnedArtifactSha256) throw Error('RTK_CLEAN_TEXT_ARTIFACT_MISMATCH');
       const bridge = await loadRevisionBridgeModule();
-      const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 });
+      const returnedNotes = bridge.parseDocumentNotesRichReturn(context.docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.documentNotes?.breakEmission?.schemaVersion === 2 });
       if (authority.documentNotes?.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1') {
         if (authority.documentNotes.sourceBindings.some(note => changedOrdinals.has(note.documentParagraphIndex))
           || returnedNotes.some(note => changedOrdinals.has(note.paragraphIndex))) throw Error('RTK_CLEAN_TEXT_ANNOTATION_COMPOSITE_UNSUPPORTED');
@@ -10643,7 +10664,7 @@ async function prepareCleanMediaReturnCapsule(authority, parserResult, context, 
       const delta = require('./core/word-note-return-delta-v1.cjs').planNoteReturnDelta({
         document: saved.current.document, projectId: context.projectId, roundId: authority.roundId,
         artifactSha256: computeHash(docxBytes), baseline: authority.documentNotes, exportMap: authority.exportMap,
-        returnedNotes: bridge.parseDocumentNotesRichReturn(docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.exportMap?.scenes?.length === 1 && authority.documentNotes?.breakEmission?.schemaVersion === 2 }),
+        returnedNotes: bridge.parseDocumentNotesRichReturn(docxBytes, parserResult.reviewIr.documentNotes, { includeBreakProjection: authority.documentNotes?.breakEmission?.schemaVersion === 2 }),
         returnedParagraphs: parserResult.reviewIr.formattingParagraphs, now: new Date().toISOString(),
       });
       if (delta.unchanged !== true || delta.changes?.length) throw Error('RTK_MEDIA_NOTES_CHANGED');

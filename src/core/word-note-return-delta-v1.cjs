@@ -57,8 +57,8 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
   model.validateManuscriptDocument(document, projectId);
   need(Array.isArray(returnedNotes) && returnedNotes.length <= 256 && Array.isArray(returnedParagraphs)
     && Array.isArray(exportMap?.scenes), 'NOTE_RETURN_GRAPH_INCOMPLETE');
-  const emission = singleSceneNoteEmission(baseline, exportMap);
-  if (emission && notesStateDigest(document) === baseline.stateDigest) validateSingleSceneNoteRoster(document, baseline, exportMap);
+  const emission = singleSceneNoteEmission(baseline, exportMap) || cleanBookNoteEmission(document, baseline, exportMap);
+  if (emission && exportMap.scenes.length === 1 && notesStateDigest(document) === baseline.stateDigest) validateSingleSceneNoteRoster(document, baseline, exportMap);
   const blocks = exportMap.scenes.flatMap(scene => (scene.blocks || []).map(block => ({
     ...block, sceneId: scene.sceneId, text: block.formatIr?.runs?.map(run => run.text).join(''),
   })));
@@ -257,6 +257,58 @@ function requireBookNoteEmission(emission) {
 }
 // A profile is source evidence, not a caller capability. Unknown/partial
 // single-scene profiles cannot select the legacy comparison by falling back.
+// Fresh clean books use only the closed LOCAL V2 law. Legacy V1/absence
+// remain literal; pending V3 retains its separate complete occurrence proof.
+function cleanBookNoteEmission(document, baseline, exportMap) {
+  if(exportMap.scenes.length<=1||!Object.hasOwn(baseline,'breakEmission'))return undefined;
+  requireBookNoteEmission(baseline.breakEmission);
+  if(baseline.breakEmission.schemaVersion!==2)return undefined;
+  const scenes=exportMap.scenes,sceneIds=new Set(),blocks=new Map(),nativeIds=new Set(),ids=new Set();
+  need(scenes.length<=512,'NOTE_RETURN_EXPORT_MAP_INVALID');
+  let ordinal=0;
+  for(const scene of scenes) {
+    need(scene&&typeof scene==='object'&&!Array.isArray(scene)
+      &&typeof scene.sceneId==='string'&&scene.sceneId&&!sceneIds.has(scene.sceneId)
+      &&/^(?:sha256:)?[a-f0-9]{64}$/u.test(scene.rawSha256)&&Array.isArray(scene.blocks)&&scene.blocks.length,'NOTE_RETURN_EXPORT_MAP_INVALID');
+    sceneIds.add(scene.sceneId);
+    for(const block of scene.blocks) {
+      need(block&&typeof block==='object'&&!Array.isArray(block)&&Array.isArray(block.formatIr?.runs)
+        &&block.formatIr.runs.every(run=>run&&typeof run.text==='string'),'NOTE_RETURN_EXPORT_MAP_INVALID');
+      const text=block.formatIr.runs.map(run=>run.text).join('');
+      need(typeof block.blockId==='string'&&block.blockId&&!blocks.has(block.blockId)&&typeof text==='string'
+        &&block.documentParagraphIndex===ordinal++&&block.canonicalTextSha256===`sha256:${model.sha(text)}`,'NOTE_RETURN_EXPORT_MAP_INVALID');
+      blocks.set(block.blockId,{...block,sceneId:scene.sceneId,text});
+    }
+  }
+  const fresh=notesStateDigest(document)===baseline.stateDigest;
+  const active=document.notes.filter(note=>!note.deleted&&sceneIds.has(note.manuscript?.reference.sceneId));
+  need(baseline.sourceBindings.every(binding=>binding&&typeof binding==='object'&&!Array.isArray(binding)
+    &&typeof binding.noteId==='string'&&binding.noteId),'PENDING_NOTE_BASELINE_MISMATCH');
+  const rich=baseline.sourceBindings.filter(binding=>binding.richBody);
+  if(fresh)need(active.length===rich.length&&active.every(note=>rich.some(binding=>binding.noteId===note.id)),'PENDING_NOTE_BASELINE_MISMATCH');
+  for(const binding of baseline.sourceBindings) {
+    const block=blocks.get(binding.blockId),native=binding.kind+':'+binding.nativeId;
+    need(block&&binding.sceneId===block.sceneId&&binding.documentParagraphIndex===block.documentParagraphIndex
+      &&binding.blockTextSha256===model.sha(block.text)&&model.boundary(block.text,binding.offsetUtf16)
+      &&!ids.has(binding.noteId)&&['footnote','endnote'].includes(binding.kind)&&/^[1-9][0-9]*$/u.test(binding.nativeId)&&!nativeIds.has(native),
+    'PENDING_NOTE_BASELINE_MISMATCH');ids.add(binding.noteId);nativeIds.add(native);
+    if(!binding.richBody)continue;
+    need(binding.transportIdentity===`_YALKEN_NOTE_${model.sha(baseline.projectId+'\n'+binding.noteId).slice(0,24)}`
+      &&stable(binding.paragraphs)===stable(model.validateNoteBody(binding.richBody).paragraphs.map(({paragraph})=>(paragraph.content||[]).map(n=>n.type==='hardBreak'?'\n':n.type==='image'?'':n.text).join(''))),
+    'PENDING_NOTE_BASELINE_MISMATCH');
+    if(fresh) {
+      const note=active.find(note=>note.id===binding.noteId),owned=[...blocks.values()].filter(row=>row.sceneId===binding.sceneId);
+      const index=owned.findIndex(row=>row.blockId===binding.blockId),text=owned.map(row=>row.text).join('\n');
+      need(note&&note.manuscript.kind===binding.kind&&stable(binding.richBody)===stable(model.validateNoteBody(note.manuscript.body).body)
+        &&note.manuscript.reference.sourceTextSha256===model.sha(text)
+        &&note.manuscript.reference.offsetUtf16===owned.slice(0,index).reduce((size,row)=>size+row.text.length+1,0)+binding.offsetUtf16,
+      'PENDING_NOTE_BASELINE_MISMATCH');
+    }
+  }
+  need(stable(baseline.notes)===stable(baseline.sourceBindings.map(b=>({kind:b.kind,paragraphIndex:b.documentParagraphIndex,offsetUtf16:b.offsetUtf16,paragraphs:b.paragraphs})))
+    &&baseline.protectedDigest===`sha256:${model.sha(stable({schemaVersion:baseline.schemaVersion,notes:baseline.notes}))}`,'PENDING_NOTE_BASELINE_MISMATCH');
+  return baseline.breakEmission;
+}
 function singleSceneNoteEmission(baseline, exportMap, sceneId) {
   if (!Object.hasOwn(baseline, 'breakEmission')) return undefined;
   if (exportMap?.scenes?.length !== 1) return undefined;

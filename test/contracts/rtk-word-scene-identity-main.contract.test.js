@@ -3768,3 +3768,47 @@ for(const variant of ['unchanged','code-fill','marker-font'])test('actual Main e
   const actual=envelope.parseObservablePayload(read(f.alpha));assert.deepEqual(actual.doc,expected.doc);assert.deepEqual(actual.meta,expected.meta);assert.deepEqual(actual.cards,expected.cards);assert.equal(f.capture().files['roman/Imported/02_Beta.txt'],before.files['roman/Imported/02_Beta.txt']);
  }
 });
+
+
+function freshBookNoteDefaultsHelpers() {
+ const text=read(path.join(__dirname,'rtk-word-pending-notes.contract.test.js')),start=text.indexOf('\nfunction bookNoteDefaultsData'),end=text.indexOf("\ntest('fresh book V2",start);
+ const prefix=read(path.join(__dirname,'rtk-word-pending-notes.contract.test.js')).split("\ntest('complete book note law")[0];
+ return new Function('require','__dirname',prefix+text.slice(start,end)+'\nreturn {bookNoteDefaultsData,bookNoteDefaultsWordParts,retainBookNoteDefaults};')(require,__dirname);
+}
+async function freshBookNoteDefaultsMain(t,label='main-ordinary') {
+ const f=await fixture(t),h=freshBookNoteDefaultsHelpers(),paths=[f.alpha,f.beta,path.join(f.imported,'03_Gamma.txt')],ids=paths.map(file=>path.relative(f.root,file).split(path.sep).join('/'));
+ const data=h.bookNoteDefaultsData(f.query.projectId,ids);paths.forEach((file,i)=>fs.writeFileSync(file,envelope.composeObservablePayload({doc:data.docs[i]})));
+ const storage=await import('../../src/core/notesStorage.mjs'),document=storage.normalizeNotesDocument(data.document,{projectId:f.query.projectId,now:()=> '2026-10-08T19:00:00Z'}).value;
+ const notePath=path.join(f.root,'notes.craftsman.json');fs.writeFileSync(notePath,JSON.stringify(document));await f.main.buildProjectTreeRootsWithIdentities('Роман');
+ const node=find((await f.main.handleWorkspaceProjectTreeQuery({tab:'roman'})).root,'Alpha');mountRenderer(f,()=>read(f.alpha),0,null,()=>({projectId:f.query.projectId,documentId:node.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify({code:built.publicationGate.code,reason:built.publicationGate.reason}));await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=h.bookNoteDefaultsWordParts(bridge.extractDocxReviewTransportPackagePartsFromZipBytes(built.documentBuffer).parts),pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const bytes=pack(parts),before=f.capture();let prepared;
+ const activate=async(bytes,requestId)=>f.probe.reviewActivate({requestId,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onNoteDeltaPrepared:value=>{prepared=value;}});
+ const actual=await activate(bytes,'fresh-book-defaults');h.retainBookNoteDefaults(label,{source,document,paths:paths.map(file=>({path:file,raw:read(file)})),before,originalBytes:built.documentBuffer,parts,bytes,actual,preparedChanges:prepared?.changes});
+ return {f,h,paths,source,document,notePath,bridge,parts,pack,bytes,before,actual,activate,getPrepared:()=>prepared};
+}
+test('fresh book V2 actual Main unchanged Word defaults call no writer',async t=>{
+ const x=await freshBookNoteDefaultsMain(t);assert.equal(x.actual.noteProductPath?.status,'unchanged',JSON.stringify({code:x.actual.code,error:x.actual.error,note:x.actual.noteProductPath?.code}));
+ assert.equal(x.actual.noteProductPath.writerCalled,false);assert.equal(require('node:util').isDeepStrictEqual(x.f.capture(),x.before),true,'unchanged return wrote business data');assert.equal(x.getPrepared(),undefined);
+});
+
+test('fresh book V2 actual Main Cancel stale guards and one explicit real note Apply retain other source state',async t=>{
+ const x=await freshBookNoteDefaultsMain(t,'main-guards'),parts={...x.parts,'word/footnotes.xml':x.parts['word/footnotes.xml'].replace('kept tail','kept EDIT')},bytes=x.pack(parts),before=x.f.capture();
+ const target=path.join(x.f.temp,'owned-fresh-book-edit.docx');fs.writeFileSync(target,bytes);x.f.chooseMessageResponse(0);
+ const cancelled=await x.f.probe.reviewLocalFile({requestId:'fresh-book-cancel'},{allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:target,size:bytes.length}),readLocalFileBytes:async()=>bytes});
+ x.h.retainBookNoteDefaults('main-cancel',{source:x.source,before,parts,bytes,actual:cancelled,after:x.f.capture()});assert.equal(cancelled.noteProductPath?.status,'cancelled');assert.equal(require('node:util').isDeepStrictEqual(x.f.capture(),before),true,'Cancel wrote data');
+ for(const fault of ['generation','notes','source']) {
+  const preview=await x.activate(bytes,'fresh-book-stale-'+fault),prepared=x.getPrepared();assert.equal(preview.noteProductPath?.status,'preview-ready');assert.equal(prepared.changes.length,1);
+  const oldNote=read(x.notePath),oldSource=read(x.paths[2]);if(fault==='generation')x.f.probe.state({generation:1});if(fault==='notes')fs.appendFileSync(x.notePath,' ');if(fault==='source')fs.appendFileSync(x.paths[2],' ');
+  const current=x.f.capture();let failure;try{await prepared.apply();}catch(error){failure={code:error.code||error.message};}
+  x.h.retainBookNoteDefaults('main-stale-'+fault,{source:x.source,parts,bytes,preview,changes:prepared.changes,before:current,after:x.f.capture(),failure});assert.match(failure?.code||'',/NOTE_RETURN_(CONTEXT_STALE|BASELINE_CONFLICT|SCENE_CONFLICT)/u,fault);assert.equal(require('node:util').isDeepStrictEqual(x.f.capture(),current),true,'stale Apply wrote');
+  x.f.probe.state({generation:0});fs.writeFileSync(x.notePath,oldNote);fs.writeFileSync(x.paths[2],oldSource);
+ }
+ const preview=await x.activate(bytes,'fresh-book-apply'),prepared=x.getPrepared();assert.equal(preview.noteProductPath?.status,'preview-ready');assert.equal(prepared.changes.length,1);
+ const applied=await prepared.apply(),after=JSON.parse(read(x.notePath));x.h.retainBookNoteDefaults('main-applied',{source:x.source,document:x.document,parts,bytes,preview,changes:prepared.changes,actual:applied,before,after:x.f.capture(),notesAfter:after});
+ assert.equal(applied.status,'applied');assert.equal(applied.writerCalled,true);assert.equal(after.wordNoteReturnReceipts.length,1);assert.match(after.notes[0].body,/kept EDIT/u);
+ for(const old of x.document.notes.filter(n=>n.id!=='fresh-book-note-0'))assert.equal(require('node:util').isDeepStrictEqual(after.notes.find(n=>n.id===old.id),old),true,'unrelated note modified');
+ for(const file of x.paths)assert.equal(read(file),Buffer.from(before.files[path.relative(x.f.root,file).split(path.sep).join('/')],'base64').toString());
+ let failure;try{await prepared.apply();}catch(error){failure=error.code||error.message;}assert.equal(failure,'NOTE_RETURN_PREPARED_CONSUMED');
+});
