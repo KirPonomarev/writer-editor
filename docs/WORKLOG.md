@@ -1,3 +1,18 @@
+## 2026-10-08 — exact native Word wait allowance; local code proof
+
+PR2098 closed atb21c: all19 official checks and exact merged38of38. SOURCE64
+reached actual notes decision, exposed false three-note updates and expired120s
+preload waiter; Cancel/no-loss32of32 and owned normal exit retained. No Apply.
+WORD_PREVIEW_NATIVE_WAIT_MAC_20261008: exact native preview command only gets
+finite600s; Main authority, worker/default budgets and single invoke unchanged.
+Actual causal RED9of11, focused GREEN11of11, unfiltered affected13=144of144,
+zero skips/todo. Runtime10a+d; test164 appended/four cases; old prefix exact.
+Two actual compiler runs0, identical preload/editor unchanged. Root rehashed54
+physical artifacts/full source inventories and reviewed complete raw operands;
+review5d1b2f24f33899b3edf2903b04fb21b90f72edfe8ce29222d789bcb95729f34e.
+Cheap causal proof before full required gates is now applied. Delivery/native
+proof pending; finite expiry still does not cancel Main. Original novel OPEN.
+
 ## 2026-10-08 — single complete worker projection; delivery pending
 
 WORD_RETURN_WORKER_SINGLE_PROJECTION_MAC_20261008 starts at fully closed

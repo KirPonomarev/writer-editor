@@ -1,3 +1,24 @@
+## 2026-10-08 — native Word waiter; delivery pending, novel OPEN
+
+PR2098 is closed atb21c; official19of19, both RTK4029of4029, post359of359,
+exact merged38of38. Closurec9bfb670d3ea0ff1cdb09eb650618827cafac481b72367f6ade376c0f46d0974.
+SOURCE64 passed the former worker size block and reached actual note confirmation.
+Three false note updates remain OPEN. Preload120s expired during the decision;
+Cancel preserved all32 previous files, owned harness normal quit0 at600s.
+Retained evidence017d5551dd889d5942103caf82b8f78e98500fd602c669b2f10375d16a6f4f2c
+is a failed native waiter observation, not acceptance or permission to replay it.
+WORD_PREVIEW_NATIVE_WAIT_MAC_20261008 changes only exact Word preview wait to
+finite600s in both preload dispatch paths. No retries, new IPC, Main cancellation
+or authority change. Other commands120s/queries30s/worker30s/35s unchanged.
+Actual source/bundle causal RED9of11, GREEN11of11, whole affected13=144of144;
+zero fail/skip/todo in GREEN. Runtime10a+d/test164 appended/four cases, old prefix
+exact. Two compilers actual0/reproducible; editor/protected source exact.
+Root review5d1b2f24f33899b3edf2903b04fb21b90f72edfe8ce29222d789bcb95729f34e.
+Root owns final docs/seven mechanical OPS, required gates and normal Git closure.
+NEXT: complete delivery and exact-merged proof before fresh native admission or
+note-default code. Original500k both origins/scopes/roles/five exchanges remains
+OPEN; never replay historical crashes or monolithic500k Save/Undo failures.
+
 ## 2026-10-08 — single complete worker projection; delivery pending
 
 WORD_RETURN_WORKER_SINGLE_PROJECTION_MAC_20261008 starts at fully closed

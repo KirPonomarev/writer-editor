@@ -1,3 +1,29 @@
+## 2026-10-08 — native Word waiter correction; original novel OPEN
+
+PR2098 is fully closed atb21c1d35d625c59663c5947081dcd982d01d90d5:
+19of19 official checks, RTK4029of4029 in both lanes, post359of359 and clean
+exact merged38of38. Closurec9bfb670d3ea0ff1cdb09eb650618827cafac481b72367f6ade376c0f46d0974.
+Current SOURCE64 genuine500108-word return passed the former duplicate-IR bound
+and reached note confirmation; three unchanged notes were falsely presented as
+updates. Shared120s preload waiter expired while Main awaited the decision.
+Actual Cancel did not reach the already expired waiter; all32 pre-existing
+business files remained byte-exact. Owned harness later quit normally at its
+600s safety bound; this failed run is retained, not native acceptance.
+No-loss/root-cause017d5551dd889d5942103caf82b8f78e98500fd602c669b2f10375d16a6f4f2c.
+WORD_PREVIEW_NATIVE_WAIT_MAC_20261008 now gives only the exact Word preview
+command finite600000ms through both existing preload paths. Commands120000ms,
+queries30000ms, worker30s/35s, Main/Kernel and confirmation remain unchanged.
+Actual causal RED9of11, focused11of11, complete affected13 files144of144;
+zero skips/todo. Runtime10a+d, four appended cases/164 lines, old6609B exact.
+Two actual compilers reproduce preload; editor/135 other inputs unchanged.
+Root source/full operand review5d1b2f24f33899b3edf2903b04fb21b90f72edfe8ce29222d789bcb95729f34e.
+Normal delivery and fresh native proof pending; timeout does not cancel Main.
+Process improvements applied: tiny causal proof first, one bounded heavy lane,
+full affected suite locally then mandatory full CI, complete-byte preservation,
+CUA native input and exact-byte governance before expensive checks. No deps/UI.
+NEXT: close delivery, then correct false note defaults and resume original
+SOURCE/PACKAGED, both origins/scopes, three-role/five-exchange novel proof.
+
 ## 2026-10-08 — single complete worker projection; delivery pending
 
 WORD_RETURN_WORKER_SINGLE_PROJECTION_MAC_20261008 starts at fully closed

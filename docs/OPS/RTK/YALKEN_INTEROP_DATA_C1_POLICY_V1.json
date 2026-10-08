@@ -635,7 +635,9 @@
     "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md",
     "docs/tasks/2026-10-08--word-parser-query-performance-mac.md",
     "test/contracts/rtk-evid01-return-evidence-packet.contract.test.js",
-    "docs/tasks/2026-10-08--word-return-worker-single-projection-mac.md"
+    "docs/tasks/2026-10-08--word-return-worker-single-projection-mac.md",
+    "test/unit/r24-s1-envelope-integration.test.js",
+    "docs/tasks/2026-10-08--word-preview-native-wait-mac.md"
   ],
   "protectedFiles": [
     {
@@ -2500,7 +2502,7 @@
       },
       {
         "path": "src/preload.js",
-        "sha256": "f721aa83bb2e7eb28f441e7433c0bb4f4ee09e2c70257b508cf16baa189934f0"
+        "sha256": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2"
       },
       {
         "path": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
@@ -2556,15 +2558,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8356aa2de63e621f50561f1994155338d1ac53ac01f27a69c56bb0b435dbc654"
+        "sha256": "7cada61dd83b1794f085bdf77a41900d1a317db8ebe1077805dddd376cda40e9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5d7798c5748597b5ae13304c056fe3b10a2d09332ae0315892892cf29ad2de5e"
+        "sha256": "fcd62589f333adeff2f5223c9b671b8781c329fbe61d45a7e47a5d1f1ec2bc26"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "59d3a3131a02185da6fb63aab1019da43d714a078266b0a50fed19f0a2a3a2c9"
+        "sha256": "5b1f05d03a96e6f1c5e190210ad63b73f1351708c9e9ed20edff0657bd942ed5"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2805,6 +2807,14 @@
       {
         "path": "docs/tasks/2026-10-08--word-return-worker-single-projection-mac.md",
         "sha256": "c54600d11d8d1ff1b24e1f79a4d982ddc2f9ca0164b31bdeff51f2191932989c"
+      },
+      {
+        "path": "test/unit/r24-s1-envelope-integration.test.js",
+        "sha256": "454b4ab3318552b6e5ae5fe0be345c7255b80461a612d3295cc0c9345e3afaee"
+      },
+      {
+        "path": "docs/tasks/2026-10-08--word-preview-native-wait-mac.md",
+        "sha256": "7e736604805aad4bf09fac3c824256ea170752ae9008249ce612b5878ea1a59f"
       }
     ],
     "followupRepair": {
