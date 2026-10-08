@@ -432,8 +432,16 @@ function bindNoteSourcePoints(doc, points) {
 }
 function noteProjection(doc, mode = 'current') {
   const ledger = readLedger(doc);
+  return noteProjectionFromCheckedLedger(ledger, mode);
+}
+function noteProjectionFromCheckedLedger(ledger, mode = 'current') {
   if(!ledger || !Object.hasOwn(ledger,'noteSourcePoints'))return null;
   return ledger.noteSourcePoints.map(point => ({ noteId: point.noteId, ...projectSourcePoint(ledger, point, mode) }));
+}
+function readNoteProjectionPair(beforeDoc, afterDoc) {
+  const beforeLedger = readLedger(beforeDoc), afterLedger = readLedger(afterDoc);
+  return { beforeLedger, afterLedger, beforePoints: noteProjectionFromCheckedLedger(beforeLedger),
+    afterPoints: noteProjectionFromCheckedLedger(afterLedger) };
 }
 function validateLedger(input) { return validateState(input); }
 function roundFrame(ledger) {
@@ -1142,4 +1150,4 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
 function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
   return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
 }
-module.exports = { formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, readNoteProjectionPair, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

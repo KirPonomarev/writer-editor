@@ -66,12 +66,15 @@ function sceneParagraphs(doc) {
   return paragraphs;
 }
 function sceneText(content) {
+  return observeNoteScene(content).text;
+}
+function observeNoteScene(content) {
   need(typeof content === 'string' && Buffer.byteLength(content) <= 32 * LIMITS.bytes, 'NOTE_SCENE_BUDGET');
   const parsed = parseObservablePayload(content);
   need(!parsed.issue, 'NOTE_SCENE_INVALID');
-  if (!parsed.doc) return parsed.text;
+  if (!parsed.doc) return { doc: parsed.doc, text: parsed.text };
   need(parsed.doc.type === 'doc' && Array.isArray(parsed.doc.content), 'NOTE_SCENE_INVALID');
-  return sceneParagraphs(parsed.doc).join('\n');
+  return { doc: parsed.doc, text: sceneParagraphs(parsed.doc).join('\n') };
 }
 
 function validateManuscriptPayload(value) {
@@ -176,11 +179,10 @@ function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeCo
   const document = validateManuscriptDocument(JSON.parse(beforeText), projectId);
   const active = document.notes.filter(n => n.manuscript?.reference.sceneId === sceneId && !n.deleted);
   if (!active.length) return null;
-  const before = sceneText(beforeContent), after = sceneText(afterContent);
+  const beforeObservation = observeNoteScene(beforeContent), afterObservation = observeNoteScene(afterContent);
+  const before = beforeObservation.text, after = afterObservation.text;
   const pending = require('./word-pending-text-revisions-v1.cjs');
-  const beforeDoc = parseObservablePayload(beforeContent).doc, afterDoc = parseObservablePayload(afterContent).doc;
-  const beforeLedger = pending.readLedger(beforeDoc), afterLedger = pending.readLedger(afterDoc);
-  let beforePoints = pending.noteProjection(beforeDoc), afterPoints = pending.noteProjection(afterDoc);
+  let { beforeLedger, afterLedger, beforePoints, afterPoints } = pending.readNoteProjectionPair(beforeObservation.doc, afterObservation.doc);
   if (beforePoints || afterPoints) {
     // First admission includes the exact previous baseline frame. It is checked
     // against the saved canonical reference below, not trusted as an offset hint.
