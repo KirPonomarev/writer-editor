@@ -1,3 +1,41 @@
+## 2026-10-08 — measured parser query correction; delivery pending
+
+WORD_PARSER_QUERY_PERFORMANCE_MAC_20261008 at exact9d4c8247026c8c98f8255d38f4101ee1f627789b
+follows fully closed PR2096: official19of19, both RTK4020of4020, post359of359,
+exact merged affected195of195. Original full macOS novel release remains OPEN.
+The retained complete500108-word/8391-paragraph/21-scene DOCX independently
+matched all body/formatting, three rich notes and400 discussion messages; actual
+Main wrapper285694.6915ms and93.19percent parser inclusive sampled attribution
+are a contended-host component diagnosis, not shipping performance acceptance.
+Private per-scan close-range and paragraph lookup removes repeated whole-token
+queries; descendant containment/postorder, inclusive boundaries, logical table
+order, namespace checks, typed refusals, budgets and all authority gates remain.
+An unused inherited-space computation previously selected the identical decoded
+raw text on both branches; only that dead calculation was removed.
+Actual complete unfiltered14 union338of338, zero fail/cancel/skip/todo,66.4855s;
+childRUmax2478981120B/sample aggregate2152710144B under900s/40GB development
+bounds and explicit32GiB Node heap. Root parsed the entire log with unchanged
+mandatory TAP; review SHA03276f0a3b5e9c513eb49ce108dcd08e306f44c9391c6d6c2bfbfec4f08f7389.
+Complete exact old parser outputs14pairs, factory/DOCX/analysis6pairs and actual
+publication gates12pairs retain full operands, including malformed-final refusal.
+Root independent operand review SHA20c317373429bc373e5e6c9d2b040a26d011d045d70d434e24752e9477a2a3bf.
+32/64/128 paragraph field reads12567/26071/54039 versus old138382/540942/2138638;
+these measured query operations do not claim complete novel wall-time speedup.
+Runtime73of180 lines; tests177of240 appended/four cases, original27128B exact.
+All136 compiler inputs/two generated bundles and578 other package source entries
+are exact; no build, dependency, runtime network, UI or persistence change.
+HOLD SHAed826edaa1782c047755a54d07e7dd0647c54483c983bfa4452f931c4c697a91;
+root source/physical review SHA5b6061cfd6870c4ca6022a1b80277708cab0b0261039fefad2bdafdd849e40d9.
+All97 physical artifacts and3434 shared tracked entries rehashed. Original
+failed observers and genuine scaling RED remain retained and qualified.
+Root exact mechanical companions, mandatory gates and normal full delivery
+follow. Separate fresh same-input500k profile may overlap official CI only after
+clean candidate admission. Native SOURCE/ordinary PACKAGED, both origins/scopes,
+three roles/five genuine Word exchanges, simultaneous pending-text/note edits,
+Save/restart/UndoRedo and shipping performance remain OPEN. No historical failed
+native-heavy route or machine crash was reproduced;40GB remains development only.
+NEXT: close normal delivery and exact merged proof, then fresh native full export.
+
 ## 2026-10-08 — amendment33 finite source proof; fresh native and original novel OPEN
 
 Same original42b PR2093 at clean1d83115 predecessor, unchanged88-path scope.

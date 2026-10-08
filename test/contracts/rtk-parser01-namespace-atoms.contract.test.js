@@ -524,3 +524,180 @@ test('PARSER01-P10-namespace-invariance-control', async () => {
   assert.equal(second.ok, true);
   assert.equal(first.supportedSemanticDigest, second.supportedSemanticDigest);
 });
+
+// Private-query observer: exact legacy bodies; production exports are unchanged.
+const queryFs = require('node:fs');
+const queryLegacy = {
+  childTokensWithin: String.raw`function childTokensWithin(documentScan, parent) {
+  return documentScan.tokens.filter((token) => (
+    token.openStart >= parent.openEnd && token.closeEnd <= parent.closeStart
+  ));
+}`,
+  paragraphIndexForOffset: String.raw`function paragraphIndexForOffset(documentScan, offset) {
+  if (typeof offset !== 'number') return null;
+  let index = 0;
+  const tokens = documentScan.logicalTableParagraphs?.map(record => record.token) || documentScan.tokens;
+  for (const token of tokens) {
+    if (!isWordToken(token, 'p') || (!documentScan.logicalTableParagraphs && (token.path.length !== 3 || token.path[1] !== 'body'))) continue;
+    if (offset >= token.openStart && offset <= token.closeEnd) return index;
+    index += 1;
+  }
+  // Fall back to the count of top-level body paragraphs before the offset so a revision that
+  // starts before/after a paragraph boundary still maps to a stable positional index.
+  let position = 0;
+  for (const token of tokens) {
+    if (!isWordToken(token, 'p') || (!documentScan.logicalTableParagraphs && (token.path.length !== 3 || token.path[1] !== 'body'))) continue;
+    if (token.openStart > offset) break;
+    position += 1;
+  }
+  return position;
+}`,
+  extractSemanticAtoms: String.raw`function extractSemanticAtoms(xml, documentScan, container) {
+  const atoms = [];
+  const start = container.openEnd;
+  const end = container.closeStart;
+  const inner = documentScan.tokens.filter((token) => (
+    token.openStart >= start && token.closeEnd <= end
+  )).sort((left, right) => left.openStart - right.openStart || right.closeEnd - left.closeEnd);
+  for (const token of inner) {
+    if (token.namespaceUri !== W_NS) continue;
+    if (token.localName === 't' || token.localName === 'delText') {
+      const preserve = isXmlSpacePreserve(token, documentScan);
+      const raw = decodeEntities(elementBody(xml, token));
+      const text = preserve ? raw : raw;
+      atoms.push({ kind: token.localName === 'delText' ? 'DeletedText' : 'Text', payload: text, order: token.openStart });
+    } else if (token.localName === 'tab') {
+      if(token.path?.at(-2)==='tabs'&&token.path?.at(-3)==='pPr')continue;
+      atoms.push({ kind: 'Tab', payload: '\t', order: token.openStart });
+    } else if (token.localName === 'br') {
+      const type = attr(token, 'type');
+      if (type === 'page') atoms.push({ kind: 'PageBreak', payload: '\f', order: token.openStart });
+      else if (type === 'column') atoms.push({ kind: 'ColumnBreak', payload: '\u000B', order: token.openStart });
+      else atoms.push({ kind: 'LineBreak', payload: '\n', order: token.openStart });
+    } else if (token.localName === 'cr') {
+      atoms.push({ kind: 'CarriageReturn', payload: '\r', order: token.openStart });
+    } else if (token.localName === 'softHyphen') {
+      atoms.push({ kind: 'SoftHyphen', payload: '\u00AD', order: token.openStart });
+    } else if (token.localName === 'noBreakHyphen') {
+      atoms.push({ kind: 'NoBreakHyphen', payload: '\u2011', order: token.openStart });
+    } else if (token.localName === 'lastRenderedPageBreak') {
+      atoms.push({ kind: 'LastRenderedPageBreak', payload: '', order: token.openStart });
+    }
+  }
+  return atoms;
+}`
+};
+function queryReplace(source, name, body) {
+  const re = new RegExp('function ' + name + '\\([\\s\\S]*?\\n}');
+  assert.match(source, re, name); return source.replace(re, () => body);
+}
+async function queryModule(legacy = false, trace = false) {
+  const file = path.resolve(PARSER_PATH), oldFile = process.env.YALKEN_PARSER_QUERY_OLD_SOURCE;
+  let source = queryFs.readFileSync(legacy && oldFile ? oldFile : file, 'utf8');
+  if (legacy && oldFile) assert.equal(crypto.createHash('sha256').update(source).digest('hex'), 'e60a3c0853988b185be7b4d753ae4fbd95f84123da1877422bff491dd8cd7bb8');
+  if (legacy && !oldFile) for (const [name, body] of Object.entries(queryLegacy)) source = queryReplace(source, name, body);
+  if (trace) {
+    const body = source.match(/function parseXmlPart\([\s\S]*?\n\}/u)[0];
+    assert.equal(body.split('tokens.push(last);').length, 2); assert.equal(body.split('tokens.push(token);').length, 2);
+    source = queryReplace(source, 'parseXmlPart', body.replace('tokens.push(last);', 'tokens.push(queryTrace(last));').replace('tokens.push(token);', 'tokens.push(queryTrace(token));'));
+    source += `\nlet queryReads = 0;
+function queryTrace(token) { return new Proxy(token, { get(target, key, receiver) {
+  if (['openStart','closeEnd','localName','namespaceUri','path'].includes(key)) queryReads += 1;
+  return Reflect.get(target, key, receiver); } }); }
+export function queryReadCount(reset = false) { const result = queryReads; if (reset) queryReads = 0; return result; }`;
+  }
+  source = source.replace(/from (['"])(\.[^'"]+)\1/gu, (_, quote, rel) => 'from ' + quote + pathToFileURL(path.resolve(path.dirname(file), rel)).href + quote);
+  source += '\nexport { parseXmlPart, normalizeBudgets, childTokensWithin, paragraphIndexForOffset, extractSemanticAtoms, crc32 };';
+  return import('data:text/javascript;base64,' + Buffer.from(source + '\n// ' + legacy + trace).toString('base64'));
+}
+function queryPorts(module) { return { ...cryptoPort, crc32: value => module.crc32(Buffer.from(String(value), 'utf8')) }; }
+function queryFreeze(value) { if (value && typeof value === 'object') { Object.values(value).forEach(queryFreeze); Object.freeze(value); } return value; }
+function queryRecord(name, value) {
+  const dir = process.env.YALKEN_PARSER_QUERY_EVIDENCE_DIR; if (!dir) return;
+  queryFs.mkdirSync(dir, { recursive: true });
+  queryFs.writeFileSync(path.join(dir, name + '.json'), JSON.stringify(value, (_, v) => typeof v === 'number' && !Number.isFinite(v) ? { number: String(v) } : v, 2) + '\n', { flag: 'wx' });
+}
+function queryDocument(count) { return documentXml(Array.from({ length: count }, (_, i) => '<w:p><w:pPr><w:jc w:val="left"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">' + i + ' Café 🧑‍💻</w:t><w:tab/><w:br/></w:r></w:p>').join('')); }
+function queryScan(module, xml) { return module.parseXmlPart('word/document.xml', xml, module.normalizeBudgets(), queryPorts(module)); }
+
+test('Parser query index preserves complete descendants, postorder and semantic atoms', async () => {
+  const current = await queryModule(), old = await queryModule(true), observations = [];
+  for (const xml of [queryDocument(3), ...['preserve','default'].map(value => documentXml('<w:p xml:space="' + value + '"><w:r><w:t>  α &amp; 中文 </w:t><w:delText>old</w:delText><w:cr/><w:softHyphen/><w:noBreakHyphen/><w:lastRenderedPageBreak/><w:br w:type="page"/><w:br w:type="column"/></w:r><w:pPr><w:tabs><w:tab/></w:tabs></w:pPr></w:p>', 'w', ' xmlns:xml="http://www.w3.org/XML/1998/namespace"')),
+    documentXml('<w:p><w:r><w:t>A</w:t><f:t xmlns:f="urn:foreign">no</f:t><t>no</t><w:ins w:id="1"><w:r><w:t>B</w:t></w:r></w:ins></w:r></w:p>'),
+    documentXmlDefaultNs('<p><r><t>default</t></r></p>', W_NS), documentXml('<w:p/><w:p><w:r/></w:p>'),
+    documentXml('<w:p><w:r><w:t>unclosed</w:t></w:p></w:r>')]) {
+    const scan = queryFreeze(queryScan(current, xml)), legacy = queryFreeze(queryScan(old, xml)); assert.deepEqual(scan, legacy);
+    const containers = [...scan.tokens, ...scan.tokens.filter(t => t.localName === 'p').flatMap(t => [t.openEnd, ...scan.tokens.filter(child => child.openStart > t.openEnd && child.closeEnd < t.closeStart).map(child => child.openStart)].map(closeStart => ({ ...t, closeStart })))];
+    const results = containers.map(container => {
+      const children = current.childTokensWithin(scan, container), atoms = current.extractSemanticAtoms(xml, scan, container);
+      assert.deepEqual(children, old.childTokensWithin(legacy, container)); assert.deepEqual(atoms, old.extractSemanticAtoms(xml, legacy, container));
+      assert.ok(children.every(t => scan.tokens.includes(t))); return { container, children, atoms };
+    }); observations.push({ xml, scan, results });
+  }
+  const xml = queryDocument(2), scan = queryScan(current, xml); scan.tokens.reverse(); queryFreeze(scan);
+  for (const container of scan.tokens) {
+    const children = current.childTokensWithin(scan, container), atoms = current.extractSemanticAtoms(xml, scan, container);
+    assert.deepEqual(children, old.childTokensWithin(scan, container)); assert.deepEqual(atoms, old.extractSemanticAtoms(xml, scan, container));
+    observations.push({ nonmonotonic: true, xml, scan, container, children, atoms });
+  } queryRecord('descendants-atoms', observations);
+});
+
+test('Parser paragraph lookup retains inclusive boundaries and logical table order', async () => {
+  const current = await queryModule(), old = await queryModule(true), xml = documentXml('<w:p/><w:p><w:r><w:t>outer</w:t></w:r><w:p/></w:p><f:p xmlns:f="urn:foreign"/>'), observations = [];
+  for (const order of [null, [], [0, 2], [2, 0], [2, 1], [1, 2], [3, 0]]) {
+    const scan = queryScan(current, xml), paragraphs = scan.tokens.filter(t => t.localName === 'p');
+    if (order) scan.logicalTableParagraphs = order.map(i => ({ token: paragraphs[i] }));
+    queryFreeze(scan); const snapshot = JSON.stringify(scan);
+    const offsets = [undefined, null, '1', -Infinity, Infinity, NaN, -0, ...paragraphs.flatMap(t => [t.openStart - 1, t.openStart, t.openEnd, t.closeEnd - 1, t.closeEnd, t.closeEnd + 1])];
+    const results = offsets.map(offset => { const actual = current.paragraphIndexForOffset(scan, offset); assert.equal(actual, old.paragraphIndexForOffset(scan, offset)); return { offset, actual }; });
+    assert.equal(JSON.stringify(scan), snapshot); observations.push({ order, scan, results });
+  }
+  const scan = queryScan(current, xml), ps = scan.tokens.filter(t => t.localName === 'p' && t.path.length === 3 && t.namespaceUri === W_NS);
+  assert.equal(ps[0].closeEnd, ps[1].openStart); assert.equal(current.paragraphIndexForOffset(scan, ps[1].openStart), 0);
+  for (const order of [ps, [...ps].reverse(), []]) { scan.logicalTableParagraphs = order.map(token => ({ token })); assert.equal(current.paragraphIndexForOffset(scan, 100), old.paragraphIndexForOffset(scan, 100)); }
+  const supplied = { tokens: [...scan.tokens].reverse() }; assert.equal(current.paragraphIndexForOffset(supplied, 100), old.paragraphIndexForOffset(supplied, 100));
+  supplied.tokens.reverse(); assert.deepEqual(current.childTokensWithin(supplied, ps[1]), old.childTokensWithin(supplied, ps[1]));
+  observations.push({ touchingBoundary: ps[1].openStart, fresh: queryScan(current, queryDocument(1)) }); queryRecord('paragraph-boundaries', observations);
+});
+
+test('Parser indexing preserves entire public outputs, typed refusals and immutable inputs', async () => {
+  const current = await queryModule(), old = await queryModule(true), cases = [];
+  for (const n of [10, 20, 40]) cases.push({ label: 'novel-' + n, parts: baseParts(queryDocument(n)), expectedOk: true });
+  for (const [label, xml] of [['foreign', documentXml('<f:p xmlns:f="urn:foreign"><f:r><f:t>foreign</f:t></f:r></f:p>')], ['qname', documentXml('<w:p></x:p>', 'w', ` xmlns:x="${W_NS}"`)], ['unbound', documentXml('<zz:ins/>')], ['DTD', '<!DOCTYPE w:document>' + queryDocument(1)], ['malformed', queryDocument(1).replace('</w:r>', '</w:p>')]]) cases.push({ label, parts: baseParts(xml), ...(label !== 'foreign' ? { expectedOk: false } : {}) });
+  cases.push({ label: 'tight-blocks', parts: baseParts(queryDocument(10)), budgets: { maxBlocks: 2 }, expectedOk: false }, { label: 'tight-output', parts: baseParts(queryDocument(10)), budgets: { maxWorkerOutputBytes: 1 }, expectedOk: false });
+  for (const fixture of require('../fixtures/word-table-cell-shift-native-v1.json').cases) cases.push({ label: 'native-table-' + fixture.operation, parts: fixture.parts });
+  const notes = require('../../src/export/docx/docxReviewPacketNotes.js'), model = require('../../src/core/word-manuscript-notes-v1.cjs');
+  const block = { sceneId: 'roman/a.txt', blockId: 'b', documentParagraphIndex: 0, text: 'Text' };
+  const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Rich Café', marks: [{ type: 'bold' }] }, { type: 'hardBreak' }, { type: 'text', text: '中文' }] }, { type: 'paragraph' }] };
+  const document = { schemaVersion: 1, projectId: 'p', notes: [{ id: 'a', scope: 'manuscript', title: '', body: 'Rich Café\n中文\n', manuscript: model.bindManuscriptPayload({ body, kind: 'footnote', sceneId: block.sceneId, offsetUtf16: 0, sceneContent: 'Text' }) }] };
+  const projection = notes.buildCanonicalNotesExport(document, [], [block], 'p', { editableReturn: true }), noteParts = notes.notePackageParts(projection);
+  const parts = baseParts(documentXml('<w:p>' + notes.noteMarkersForBlock(projection, block).get(0) + '<w:r><w:t>Text</w:t></w:r></w:p>'), Object.fromEntries(noteParts.entries.map(e => [e.name, e.data])));
+  parts['[Content_Types].xml'] = CONTENT_TYPES.replace('</Types>', noteParts.contentTypes + '</Types>'); parts['word/_rels/document.xml.rels'] = '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + noteParts.relationships + '</Relationships>';
+  cases.push({ label: 'rich-note', parts, expectedOk: true });
+  const comments = '<w:comments xmlns:w="' + W_NS + '"><w:comment w:id="7" w:author="Writer"><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>rich</w:t><w:br/><w:t>reply</w:t></w:r></w:p><w:p/></w:comment></w:comments>';
+  cases.push({ label: 'comment', parts: baseParts(documentXml('<w:p><w:commentRangeStart w:id="7"/><w:r><w:t>anchor</w:t></w:r><w:commentRangeEnd w:id="7"/><w:r><w:commentReference w:id="7"/></w:r></w:p>'), { 'word/comments.xml': comments }), expectedOk: true });
+  const observations = cases.map(input => {
+    queryFreeze(input); const snapshot = JSON.stringify(input), options = { cryptoPort: queryPorts(current) };
+    const expected = old.parseReviewTransportPackageV2({ parts: input.parts, budgets: input.budgets }, options), actual = current.parseReviewTransportPackageV2({ parts: input.parts, budgets: input.budgets }, options);
+    assert.deepEqual(actual, expected, input.label); if (input.expectedOk !== undefined) assert.equal(actual.ok, input.expectedOk, input.label + ':' + JSON.stringify(actual.reasons));
+    assert.equal(JSON.stringify(input), snapshot); assert.equal(actual.canApply, false); assert.equal(actual.canWriteManuscript, false); return { input, expected, actual };
+  }); queryRecord('complete-public-parser', observations);
+});
+
+test('Parser query work scales with local ranges instead of every document token per lookup', async () => {
+  const current = await queryModule(false, true), old = await queryModule(true, true), observations = [];
+  for (const n of [32, 64, 128]) {
+    const xml = queryDocument(n), scan = queryFreeze(queryScan(current, xml)), legacy = queryFreeze(queryScan(old, xml));
+    const queries = scan.tokens.filter(t => ['pPr','rPr','p'].includes(t.localName)); current.queryReadCount(true); old.queryReadCount(true);
+    const results = queries.map(container => {
+      const children = current.childTokensWithin(scan, container), expectedChildren = old.childTokensWithin(legacy, container);
+      assert.deepEqual(children, expectedChildren);
+      const paragraph = current.paragraphIndexForOffset(scan, container.openStart), expectedParagraph = old.paragraphIndexForOffset(legacy, container.openStart); assert.equal(paragraph, expectedParagraph);
+      const atoms = current.extractSemanticAtoms(xml, scan, container), expectedAtoms = old.extractSemanticAtoms(xml, legacy, container); assert.deepEqual(atoms, expectedAtoms);
+      return { container, children, paragraph, atoms };
+    }); observations.push({ n, xml, tokens: scan.tokens, results, currentReads: current.queryReadCount(), oldReads: old.queryReadCount() });
+  }
+  queryRecord('scaling', observations); // Save every result before the causal count assertion.
+  for (const row of observations) assert.ok(row.currentReads <= 150 * row.n * (1 + Math.log2(row.n)), JSON.stringify({ n: row.n, actual: row.currentReads, old: row.oldReads }));
+  assert.ok(observations[2].currentReads <= 2.7 * observations[1].currentReads, 'doubling must avoid quadratic repeated scans');
+});

@@ -481,6 +481,30 @@ function rawTagLocalName(raw) {
   return splitQName(readName(raw, nameStart).value).localName;
 }
 
+// Only scans created here get an ephemeral query index. Supplied/subset scans
+// retain their literal lookup behavior and never populate a shared truth cache.
+const scanQueryIndexes = new WeakMap();
+
+function scanQueryIndex(scan) {
+  const index = scanQueryIndexes.get(scan);
+  if (!index || index.tokens !== scan.tokens) return null;
+  if (index.ordered === undefined) index.ordered = index.tokens.every((token, i, tokens) => (
+    Number.isFinite(token.openStart) && Number.isFinite(token.closeEnd)
+    && token.openStart <= token.closeEnd && (!i || tokens[i - 1].closeEnd <= token.closeEnd)
+  ));
+  return index;
+}
+
+function tokenOffsetBound(tokens, key, offset, inclusive) {
+  let low = 0, high = tokens.length;
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2);
+    if (inclusive ? tokens[middle][key] <= offset : tokens[middle][key] < offset) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
+
 function parseXmlPart(partName, xml, budgets, cryptoPort, budgetState = null) {
   const text = rawString(xml);
   const tokens = [];
@@ -660,7 +684,9 @@ function parseXmlPart(partName, xml, budgets, cryptoPort, budgetState = null) {
   if (stack.length > 0) {
     diagnostics.push(reason('RTK_XML_MALFORMED_BLOCKED', partName, 'XML has unclosed elements.'));
   }
-  return { partName, tokens, diagnostics };
+  const scan = { partName, tokens, diagnostics };
+  scanQueryIndexes.set(scan, { tokens });
+  return scan;
 }
 
 function elementBody(xml, token) {
@@ -827,17 +853,12 @@ function isXmlSpacePreserve(token, documentScan) {
 // foreign/empty-namespace elements never contribute semantic text.
 function extractSemanticAtoms(xml, documentScan, container) {
   const atoms = [];
-  const start = container.openEnd;
-  const end = container.closeStart;
-  const inner = documentScan.tokens.filter((token) => (
-    token.openStart >= start && token.closeEnd <= end
-  )).sort((left, right) => left.openStart - right.openStart || right.closeEnd - left.closeEnd);
+  const inner = childTokensWithin(documentScan, container)
+    .sort((left, right) => left.openStart - right.openStart || right.closeEnd - left.closeEnd);
   for (const token of inner) {
     if (token.namespaceUri !== W_NS) continue;
     if (token.localName === 't' || token.localName === 'delText') {
-      const preserve = isXmlSpacePreserve(token, documentScan);
-      const raw = decodeEntities(elementBody(xml, token));
-      const text = preserve ? raw : raw;
+      const text = decodeEntities(elementBody(xml, token));
       atoms.push({ kind: token.localName === 'delText' ? 'DeletedText' : 'Text', payload: text, order: token.openStart });
     } else if (token.localName === 'tab') {
       if(token.path?.at(-2)==='tabs'&&token.path?.at(-3)==='pPr')continue;
@@ -1163,8 +1184,31 @@ function provenance(token) {
 // preserves the b02 determinism pin (C7) and the W2 namespace-invariance control (C6c/C3-test).
 function paragraphIndexForOffset(documentScan, offset) {
   if (typeof offset !== 'number') return null;
+  const queryIndex = scanQueryIndex(documentScan);
+  let indexedParagraphs = null;
+  if (queryIndex) {
+    const logical = Boolean(documentScan.logicalTableParagraphs);
+    const source = documentScan.logicalTableParagraphs || documentScan.tokens;
+    if (queryIndex.paragraphSource !== source || queryIndex.logical !== logical) {
+      queryIndex.paragraphSource = source;
+      queryIndex.logical = logical;
+      queryIndex.paragraphs = (logical ? source.map(record => record.token) : source)
+        .filter(token => isWordToken(token, 'p') && (logical || (token.path.length === 3 && token.path[1] === 'body')));
+      queryIndex.paragraphsOrdered = queryIndex.paragraphs.every((token, i, tokens) => (
+        Number.isFinite(token.openStart) && Number.isFinite(token.closeEnd)
+        && token.openStart <= token.closeEnd && (!i || tokens[i - 1].closeEnd <= token.openStart)
+      ));
+    }
+    indexedParagraphs = queryIndex.paragraphs;
+    if (queryIndex.paragraphsOrdered) {
+      if (Number.isNaN(offset)) return indexedParagraphs.length;
+      const containing = tokenOffsetBound(indexedParagraphs, 'closeEnd', offset, false);
+      if (indexedParagraphs[containing]?.openStart <= offset) return containing;
+      return tokenOffsetBound(indexedParagraphs, 'openStart', offset, true);
+    }
+  }
   let index = 0;
-  const tokens = documentScan.logicalTableParagraphs?.map(record => record.token) || documentScan.tokens;
+  const tokens = indexedParagraphs || documentScan.logicalTableParagraphs?.map(record => record.token) || documentScan.tokens;
   for (const token of tokens) {
     if (!isWordToken(token, 'p') || (!documentScan.logicalTableParagraphs && (token.path.length !== 3 || token.path[1] !== 'body'))) continue;
     if (offset >= token.openStart && offset <= token.closeEnd) return index;
@@ -1834,7 +1878,14 @@ function parseMoveRevisions(documentXml, documentScan, cryptoPort, budgetState, 
 }
 
 function childTokensWithin(documentScan, parent) {
-  return documentScan.tokens.filter((token) => (
+  const index = scanQueryIndex(documentScan);
+  // Completed tokens are appended at close/self-close, so closeEnd is ordered.
+  // Keep the original predicate and postorder; this includes every descendant.
+  const tokens = index?.ordered
+    ? index.tokens.slice(tokenOffsetBound(index.tokens, 'closeEnd', parent.openEnd, false),
+      tokenOffsetBound(index.tokens, 'closeEnd', parent.closeStart, true))
+    : documentScan.tokens;
+  return tokens.filter((token) => (
     token.openStart >= parent.openEnd && token.closeEnd <= parent.closeStart
   ));
 }
