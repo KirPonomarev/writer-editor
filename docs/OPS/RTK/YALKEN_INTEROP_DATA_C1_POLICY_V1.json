@@ -629,7 +629,8 @@
     "test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js",
     "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
     "test/contracts/revision-bridge-docx-intake-gate-command-surface.contract.test.js",
-    "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js"
+    "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
+    "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md"
   ],
   "protectedFiles": [
     {
@@ -858,7 +859,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a75177d7d95755d37b0490465cc0dcac7292a8eef524c2f15ca4a30e5285902d"
+        "sha256": "f54b5d5688d85ab9ee478b21573b5c15f75a0b3e32091d8a235cf1822ce56fa1"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1750,7 +1751,7 @@
       },
       {
         "path": "test/unit/export-book-profile-binding.test.js",
-        "sha256": "eb810d8c9ceaf952ac983ed116a1ae64b58d57e0b7516fede7aa2df1926d8f90"
+        "sha256": "a7130f590d6efa0895f914f014fe42a9c0d9c6f4b2876c55a81accac5e7a53fa"
       },
       {
         "path": "test/contracts/rtk-word-pending-return.contract.test.js",
@@ -2550,15 +2551,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1140c9de77b52f3f3f151792d8e870b840d93b60a6a156fd54356f6af09ec3ba"
+        "sha256": "746bf9e87457b67f05f12ebacda4dc2cb4628c721545ff2595bba86fd71807f9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "24316c19091672fb16a2c17f69eda92976ee5042414750e976ef63fef548e0ba"
+        "sha256": "08f1e56a617b4b058fc4bec0f5100b0dd2069930175ea9347d6c7a36368ced62"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "e3dbe4e25e88d85b5868999a67c26be6c9af4b180dfd8d612385bcd023df4d9a"
+        "sha256": "0573f5ba22bacb6d8aaa88467920bedfc0a6aa4e2fbcc30221e6a65ef6ae6b02"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2775,6 +2776,10 @@
       {
         "path": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
         "sha256": "d24dad28bec2048bf1f33e63e1cdf692106618f38e2a5b06aee590e1af9f692c"
+      },
+      {
+        "path": "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md",
+        "sha256": "76c768e6700e1aee7f57c344fb7f59a4dcc0aac6d64206d2773e0fd941bca6ca"
       }
     ],
     "followupRepair": {

@@ -30026,14 +30026,17 @@ async function handleExportDocxMin(payloadRaw) {
         delete paragraphDocument.attrs.wordUserBookmarks;
         if (!Object.keys(paragraphDocument.attrs).length) delete paragraphDocument.attrs;
       }
-      const paragraphs = pendingTextRevisions.readLedger(snapshot.doc)
+      const pendingLedger = pendingTextRevisions.readLedger(snapshot.doc);
+      const paragraphs = pendingLedger
         ? pendingTextRevisions.paragraphs(paragraphDocument).map(block => (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join(''))
         : commentSceneParagraphs(snapshot.content).map(block => block.text);
-      const paragraphFormats = pendingTextRevisions.readLedger(snapshot.doc)
+      const paragraphFormats = pendingLedger
         ? buildFormatIrParagraphs({ sceneId, doc: paragraphDocument, text: paragraphs.join('\n') }) : null;
+      const pendingNoteSourcePoints = pendingLedger?.schemaVersion === 3
+        ? pendingTextRevisions.noteProjection(snapshot.doc, 'export') : null;
       noteBlocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`, documentParagraphIndex: index, text,
         ...(paragraphFormats ? { formatIr: paragraphFormats[index] } : {}),
-        ...(pendingTextRevisions.readLedger(snapshot.doc)?.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingTextRevisions.noteProjection(snapshot.doc, 'export')
+        ...(pendingLedger?.schemaVersion === 3 ? { pendingNoteSourcePoints: pendingNoteSourcePoints
           .filter(point => point.paragraphIndex === index).map(({ noteId, offsetUtf16 }) => ({ noteId, offsetUtf16 })) } : {}) }));
       if (active) documentNotes = buildCanonicalNotesExport(notes, [], noteBlocks, projectId);
     }

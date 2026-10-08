@@ -3164,3 +3164,28 @@ Native SOURCE38 and ordinary PACKAGED38 must reuse their normally exited owned
 Original large novel, both origins/scopes/three roles/five genuine exchanges,
 simultaneous pending-text/note-body edits and production30s/512MiB remain OPEN.
 NEXT: complete exact checkpoint gates/delivery, then observe native repeat export.
+
+
+## WORD_SCENE_PENDING_EXPORT_PERFORMANCE_MAC_20261008 — code proof; delivery open
+
+At binding base092387eae3a0a6ee606fdbe100ee0828c58b40a2, Main readSource now
+reuses a fresh call-local ledger and schema3 note projection before paragraph map.
+The code delta is6added/3removed Main lines plus292appended regression lines;
+Core, builder/bridge, schema gate, capabilities and queued atomic guards are exact.
+The complete seven-file affected suite actually passed183of183, zero skips/todo.
+On10/20/40-paragraph synthetic cases, old/new whole DOCX and all ZIP members match
+byte-for-byte; direct pre-builder queries change from P+2/P to1/1. Root independently
+read complete Current/Original body,3rich notes and4discussion messages with native
+revision metadata, UTF16 references and anchors. This is three semantic cases.
+Thirty final physical cases include13late-drift and5invalid-source refusals with
+zero output; a fresh second export observes revised source metadata. Both audited
+compiler processes exit0;136inputs and tracked generated outputs remain exact base.
+Root rehashed2336 retained physical corpus files and reviewed the held source.
+Old failed fixtures and root reader errors remain retained, never green evidence.
+Mechanical companions admit only the declared new HARD task in addition to all
+622prior paths/480binding identities;1597inventory paths/230historical tuples stay.
+Source proof is bounded to this scene-export change. Commit/push/PR/official CI,
+normal merge and exact merged verification remain OPEN at this documentation freeze.
+Full native large-novel roles/scopes/five exchanges, save/redo performance and
+production30s/512MiB acceptance remain OPEN; no native or release PASS is claimed.
+Next: complete delivery, then a separately admitted save/redo performance contour.
