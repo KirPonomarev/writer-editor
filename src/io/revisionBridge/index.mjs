@@ -4297,9 +4297,9 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
 
 // Bind only the actual produced package. Main stores this result in its
 // authenticated private round capsule; no returned map can call a writer.
-export function bindUserBookmarkExportTransportPartsV1(exportMap, bytes) {
+export function bindUserBookmarkExportTransportPartsV1(exportMap, bytes, options = {}) {
   if(!isPlainObject(exportMap)||!Array.isArray(exportMap.scenes))throw Error('USER_BOOKMARK_PRIVATE_EXPORT_MAP_REQUIRED');
-  const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{
+  const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:options?.budgets},{cryptoPort:{
     sha256Text:text=>`sha256:${sha256Hex(text)}`,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,
     byteLength:text=>new TextEncoder().encode(text).length,
   }});

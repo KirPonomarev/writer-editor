@@ -631,7 +631,8 @@
     "test/contracts/revision-bridge-docx-intake-gate-command-surface.contract.test.js",
     "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
     "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md",
-    "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md"
+    "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
+    "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md"
   ],
   "protectedFiles": [
     {
@@ -860,7 +861,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f54b5d5688d85ab9ee478b21573b5c15f75a0b3e32091d8a235cf1822ce56fa1"
+        "sha256": "7314377cb87c83ae2e49fc81b7574e97f666d354671052c030d640bc1d014b6b"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -896,7 +897,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "6fa81831ae51aac0efb3078f54b10da47f437134de9c8b9e02abec4e34a0ac86"
+        "sha256": "27fffd0b8c442a9a62cd313d84fff9d54b6e5b80f196008a337ecf597d690be6"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1096,7 +1097,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-        "sha256": "55b7e61b30323dd7a408df5ce9e61ba672b2fb5d94ea2ca97f0d9df5236d5063"
+        "sha256": "1ae82c336d5308b454d59e6d028129cf7662ef8f688084d9f2f17ac6feb406ea"
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
@@ -2552,15 +2553,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6869b1e127f0da823cd16c219ec30e0db09e4eab1bd08af5a3fa3786a28e0f62"
+        "sha256": "fad26247786df103bb9bed1f3645bee741671515ddfef1d009ce7068a2e2278f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5c861f1c91e0a1442e18afdb0fa9345ce3ef2aa0ad7d113ffd08901c4a37b504"
+        "sha256": "54aeacbe6be87343e1fb76123d032bff748aae0442032177911cd76b29607bd9"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "3ffd7d26ebc6dfd4036cc6b3aedbb901a7c355fcee91d23298dc9ad522a57ab9"
+        "sha256": "89c9bf396ac7cad3294a7101eefd590e59c0dae670948c2ce2357893c0674c10"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2785,6 +2786,10 @@
       {
         "path": "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
         "sha256": "5035537f4183982194710643bcc5506706bd8b831cd69f6b4a5ca6cac534b254"
+      },
+      {
+        "path": "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md",
+        "sha256": "86e95680fb120e6ab8e27098003b8b35c501ed72435df6f57549cb900f667230"
       }
     ],
     "followupRepair": {
