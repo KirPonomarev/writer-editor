@@ -1853,3 +1853,130 @@ test('security successor admits exact candidate ORDER and TEXT checkers without 
  }
  assert.equal(order.verifyOrderPostEvaluation({candidateSha:'8ddc4fca57a6f6f14afb81de83dd277f5750bfd2'}).status,'PASS','real historical candidate retains its original policy path');
 });
+
+async function createDataC1BoundedGitArgvFixture() {
+  const data = await import('../../scripts/ops/rtk-interop-data-c1.mjs');
+  const root = path.resolve(__dirname, '../..'), policy = data.loadDataPolicy();
+  const candidate = 'f'.repeat(40), delivery = 'e'.repeat(40);
+  const immutable = [data.DATA_POLICY_PATH, 'scripts/ops/rtk-interop-data-c1-readback.py',
+    'scripts/ops/rtk-interop-data-c1.mjs', 'docs/tasks/2026-09-16--interop-data-recipes-c1.md'];
+  const mutable = policy.admittedPaths.filter(relative => !immutable.includes(relative));
+  const selected = [mutable[0], mutable[Math.floor(mutable.length / 2)], mutable.at(-1)];
+  const unrelated = ['unrelated.txt', selected[0] + '.unrelated'];
+  assert.equal(new Set(selected).size, 3);
+  assert.ok(unrelated.every(relative => !policy.admittedPaths.includes(relative)));
+
+  // Pinned delivery metadata is synthetic; drift below comes from real Git.
+  // Source, policy and protected-file bytes still pass the actual verifier.
+  const adapter = (options = {}, calls = []) => args => {
+    calls.push([...args]);
+    if (args[0] === 'rev-parse') return args[1] === policy.baseSha + '^{tree}'
+      ? options.baseTree ?? policy.baseTree : candidate;
+    if (args[0] === 'ls-tree') return data.DATA_POLICY_PATH;
+    if (args[0] === 'log') return delivery;
+    if (args[0] === 'merge-base') {
+      assert.deepEqual(args, ['merge-base', '--is-ancestor', policy.baseSha, delivery]);
+      if (options.ancestry === false) throw Error('FIXTURE_NOT_ANCESTOR');
+      return '';
+    }
+    if (args[0] === 'show') {
+      const relative = args[1].slice(41), bytes = fs.readFileSync(path.join(root, relative));
+      return relative === options.tamper ? Buffer.concat([bytes, Buffer.from(' ')]) : bytes;
+    }
+    if (args[0] === 'diff') {
+      assert.equal(args.length, 6, `Git diff argv must stay bounded; actual ${args.length}`);
+      if (args[3] === policy.baseSha) {
+        assert.deepEqual(args, ['diff', '--name-only', '--no-renames', policy.baseSha, delivery, '--']);
+        return (options.changed ?? policy.admittedPaths).join('\n');
+      }
+      assert.deepEqual(args, ['diff', '--name-only', '--no-renames', delivery, candidate, '--']);
+      return options.driftGit ? options.driftGit(args) : (options.drift ?? []).join('\n');
+    }
+    throw Error('UNEXPECTED_GIT:' + args[0]);
+  };
+  const retain = (label, fixture, calls, changed, result, error) => {
+    const evidenceRoot = process.env.YALKEN_WINDOWS_ARGV_REPAIR_EVIDENCE_DIR;
+    if (!evidenceRoot) return;
+    const directory = path.join(path.resolve(evidenceRoot), label);
+    fs.mkdirSync(directory, { recursive: true });
+    const bundle = path.join(directory, 'case.bundle');
+    assert.equal(fs.existsSync(bundle), false);
+    git(fixture.repoRoot, ['bundle', 'create', bundle, '--all']);
+    fs.writeFileSync(path.join(directory, 'case.json'), JSON.stringify({
+      qualification: 'REAL_TEMPORARY_GIT_DRIFT_WITH_SYNTHETIC_PINNED_DELIVERY_METADATA',
+      label, candidate, delivery, actualBaseSha: fixture.baseSha, actualCandidateSha: fixture.currentSha,
+      actualBaseTree: git(fixture.repoRoot, ['rev-parse', fixture.baseSha + '^{tree}']),
+      actualCandidateTree: git(fixture.repoRoot, ['rev-parse', fixture.currentSha + '^{tree}']),
+      changed, calls, result, error: error && { name: error.name, message: error.message, code: error.code, stack: error.stack },
+      bundleSha256: sha256File(bundle), policySha256: data.DATA_POLICY_SHA256,
+    }, null, 2) + '\n', { flag: 'wx' });
+  };
+  const protectedPath = policy.protectedFiles.find(binding =>
+    !policy.qualifiedRuntimeRepair.sourceBindings.some(source => source.path === binding.path))?.path;
+  assert.equal(typeof protectedPath, 'string');
+  assert.ok(policy.qualifiedRuntimeRepair.sourceBindings.some(binding => binding.path === 'src/main.js'));
+  return { data, policy, candidate, delivery, immutable, mutable, selected, unrelated, adapter, retain, protectedPath };
+}
+
+test('data C1 bounded Git argv preserves complete drift and refusal authority', async () => {
+  await createDataC1BoundedGitArgvFixture();
+});
+
+for (const label of ['first-middle-last-and-unrelated', 'unrelated-only', 'immutable-checker']) {
+  test('data C1 bounded Git argv: ' + label, async () => {
+    const { data, policy, candidate, delivery, immutable, selected, unrelated, adapter, retain } =
+      await createDataC1BoundedGitArgvFixture();
+    const entry = [
+      { label: 'first-middle-last-and-unrelated', paths: [...selected, ...unrelated] },
+      { label: 'unrelated-only', paths: unrelated },
+      { label: 'immutable-checker', paths: [immutable[1]], error: /SHARED_IMPLEMENTATION_DRIFT/ },
+    ].find(entry => entry.label === label);
+    return withGitDiffFixture(entry.paths, fixture => {
+      const calls = [], changed = git(fixture.repoRoot,
+        ['diff', '--name-only', '--no-renames', fixture.baseSha, fixture.currentSha, '--']).split('\n').filter(Boolean);
+      const driftGit = args => git(fixture.repoRoot,
+        [...args.slice(0, 3), fixture.baseSha, fixture.currentSha, '--']);
+      let result, error;
+      try { result = data.verifyDataC1PostEvaluation({ candidateSha: candidate, git: adapter({ driftGit }, calls) }); }
+      catch (caught) { error = caught; }
+      retain(entry.label, fixture, calls, changed, result, error);
+      if (entry.error) { assert.match(error?.message ?? 'NO_REFUSAL', entry.error); return; }
+      if (error) throw error;
+      assert.deepEqual(result, { status: 'PASS', deliverySha: delivery,
+        admittedPaths: policy.admittedPaths.filter(relative => !changed.includes(relative)),
+        cellAcceptanceAuthority: false, programDone: false });
+      assert.equal(calls.filter(args => args[0] === 'diff').length, 2);
+    });
+  });
+}
+
+test('data C1 bounded Git argv: complete mutable drift retains exactly immutable members', async () => {
+  const { data, policy, immutable, mutable, unrelated, adapter } = await createDataC1BoundedGitArgvFixture();
+  const result = data.verifyDataC1PostEvaluation({ git: adapter({ drift: [...mutable, ...unrelated] }) });
+  assert.deepEqual(result.admittedPaths, policy.admittedPaths.filter(relative => immutable.includes(relative)));
+  assert.equal(result.cellAcceptanceAuthority, false); assert.equal(result.programDone, false);
+});
+
+for (const [index, label] of ['policy', 'checker', 'verifier', 'task'].entries()) {
+  test('data C1 bounded Git argv: immutable refusal: ' + label, async () => {
+    const { data, immutable, adapter } = await createDataC1BoundedGitArgvFixture();
+    const relative = immutable[index];
+    assert.throws(() => data.verifyDataC1PostEvaluation({ git: adapter({ drift: [relative] }) }),
+      /SHARED_IMPLEMENTATION_DRIFT/);
+  });
+}
+
+for (const label of ['policy pin', 'source pin', 'protected pin', 'base tree', 'ancestry', 'unadmitted delivery delta']) {
+  test('data C1 bounded Git argv: ' + label, async () => {
+    const { data, policy, unrelated, adapter, protectedPath } = await createDataC1BoundedGitArgvFixture();
+    const [, options, expected] = [
+      ['policy pin', { tamper: data.DATA_POLICY_PATH }, /DATA_POLICY_PIN/],
+      ['source pin', { tamper: 'src/main.js' }, /DATA_RUNTIME_REPAIR_PIN/],
+      ['protected pin', { tamper: protectedPath }, /SHARED_PROTECTED_FILE/],
+      ['base tree', { baseTree: '0'.repeat(40) }, /DATA_BASE_TREE/],
+      ['ancestry', { ancestry: false }, /FIXTURE_NOT_ANCESTOR/],
+      ['unadmitted delivery delta', { changed: [...policy.admittedPaths, unrelated[0]] }, /SHARED_UNADMITTED_DELTA/],
+    ].find(([title]) => title === label);
+    assert.throws(() => data.verifyDataC1PostEvaluation({ git: adapter(options) }), expected);
+  });
+}

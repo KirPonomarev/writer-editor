@@ -3164,3 +3164,60 @@ Native SOURCE38 and ordinary PACKAGED38 must reuse their normally exited owned
 Original large novel, both origins/scopes/three roles/five genuine exchanges,
 simultaneous pending-text/note-body edits and production30s/512MiB remain OPEN.
 NEXT: complete exact checkpoint gates/delivery, then observe native repeat export.
+
+
+## WORD_SCENE_PENDING_EXPORT_PERFORMANCE_MAC_20261008 — code proof; delivery open
+
+At binding base092387eae3a0a6ee606fdbe100ee0828c58b40a2, Main readSource now
+reuses a fresh call-local ledger and schema3 note projection before paragraph map.
+The code delta is6added/3removed Main lines plus292appended regression lines;
+Core, builder/bridge, schema gate, capabilities and queued atomic guards are exact.
+The complete seven-file affected suite actually passed183of183, zero skips/todo.
+On10/20/40-paragraph synthetic cases, old/new whole DOCX and all ZIP members match
+byte-for-byte; direct pre-builder queries change from P+2/P to1/1. Root independently
+read complete Current/Original body,3rich notes and4discussion messages with native
+revision metadata, UTF16 references and anchors. This is three semantic cases.
+Thirty final physical cases include13late-drift and5invalid-source refusals with
+zero output; a fresh second export observes revised source metadata. Both audited
+compiler processes exit0;136inputs and tracked generated outputs remain exact base.
+Root rehashed2336 retained physical corpus files and reviewed the held source.
+Old failed fixtures and root reader errors remain retained, never green evidence.
+Mechanical companions admit only the declared new HARD task in addition to all
+622prior paths/480binding identities;1597inventory paths/230historical tuples stay.
+Source proof is bounded to this scene-export change. Commit/push/PR/official CI,
+normal merge and exact merged verification remain OPEN at this documentation freeze.
+Full native large-novel roles/scopes/five exchanges, save/redo performance and
+production30s/512MiB acceptance remain OPEN; no native or release PASS is claimed.
+Next: complete delivery, then a separately admitted save/redo performance contour.
+
+
+## 2026-10-08 — same scene-export delivery: Windows argv repair frozen
+
+At repair head9d30eb0e (original base/main092387), official Windows job113188918172
+fails Git argv capacity. One drift-query line now obtains the same full diff and
+filters exact existing623-path membership;481 source identities and all predicates
+remain.102 regression lines append to the byte-exact old prefix. Causal diagnostic
+is15tests6pass9fail at629vs6; corrected selected regression15of15, explicitly name
+filtered. Root independently read6 real tiny Git cases and old pathspec equivalence.
+All579 product/136 compiler inputs and prior183of183 export proof remain held.
+Three whole contracts require the clean follow-up candidate after final bindings
+and seven precommit gates, before push; no uncommitted Git overlay. PR2094 fresh
+official Windows/all CI, merge and exact merged proof remain OPEN. Original full
+novel/native matrix and save/redo remain OPEN; no overall release claim.
+
+## 2026-10-08 — same PR2094 TAP compatibility repair; source frozen
+
+At clean repair binding9addf3 (original base/main092387), official run37744490548
+Windows C1A succeeded; both RTK lanes passed4008of4008 but the unchanged mandatory
+parser refused3994 top-level records. Retained whole3 pure parser diagnosis also
+refuses376versus390; no heavy failed run replay. Only the existing Windows test
+suffix is flattened:127lines,15top-level cases, all17assertion statements and14
+behavior scenarios retained; original96611byte prefix remains exact. Main/unit,
+DATA behavior, runner and workflows are frozen. Same14paths,623admitted paths,
+481binding identities and1597inventory entries;232historical certificate tuples
+stay byte-exact with one nonrecursive successor. Root source review is static,
+not behavior/native acceptance. One clean committed whole4 union covers both
+planned test groups without repeating the denominator; all required gates, fresh
+full official CI, merge and exact merged verification remain delivery steps.
+Save optimisation and original full-novel role/exchange/release matrix remain
+OPEN.40GB is a development ceiling;30s/512MiB belongs to the isolated package gate.
