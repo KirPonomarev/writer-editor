@@ -1303,7 +1303,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
                 ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
             });
             const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
-            if(scene.bodyParagraphEmission) {
+            if(bodyProfile?.schemaVersion===bodyTypography.V2||scene.bodyParagraphEmission) {
               // Ordinary Word replacement groups are inferred on readback, not
               // serialized. Predict them from our own emitted union intervals;
               // retain canonical IDs and decisions outside this expectation.

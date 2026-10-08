@@ -858,7 +858,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f41ceb2edb4bc7a6d0968e4c8ac8f93cac69fa90e6091c00523ca4ae0204efc4"
+        "sha256": "a75177d7d95755d37b0490465cc0dcac7292a8eef524c2f15ca4a30e5285902d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1502,7 +1502,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "f6bc0b226ddab238fb2f9348e268a3ebec9227e8f55e60675c3d669eb1e10e78"
+        "sha256": "e4213d643c9b8031f39aa86d69872e0ab4d103d3452b4398f19a787ab6cb513c"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2102,7 +2102,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "9f5a0f462615d4c1b78afade4c16a6d935ff27130fc1419f75f6c717fc077f08"
+        "sha256": "86f8b0ca37a89d30200e7831192579f51d6ff66e1aa77b49abe5ff4aeeb49e90"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2550,15 +2550,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b9cc51a6c172d13c463d63fa21e2487ece43147bac0d4e685aa9e6e2905887f1"
+        "sha256": "1140c9de77b52f3f3f151792d8e870b840d93b60a6a156fd54356f6af09ec3ba"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "a889e2b88097894bba2b8af064ed0fc2285692ec246ae83cb727d17db8089d48"
+        "sha256": "24316c19091672fb16a2c17f69eda92976ee5042414750e976ef63fef548e0ba"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "ef7953bed17c989532c1404df6f83960d338a7261f9ec20b47b4e67a0c494bf5"
+        "sha256": "e3dbe4e25e88d85b5868999a67c26be6c9af4b180dfd8d612385bcd023df4d9a"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2750,7 +2750,7 @@
       },
       {
         "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
-        "sha256": "4a648a783aab96772c24eba8b35b136e0e190e0980f5c24ca35e2f847a4b0e20"
+        "sha256": "a43cc725cacd7a99ead7a47cf0b3d4ae352c57589b3969c29ebc658214a58d75"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCore.mjs",

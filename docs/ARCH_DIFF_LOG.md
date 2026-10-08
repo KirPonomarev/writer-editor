@@ -574,3 +574,22 @@ merge and exact merged verification.40GB remains the development RSS ceiling.
 No UI/dependency/runtime network/cap/cache/timeout/shadow expansion or old-crash
 reproduction. No canon exception; same contour and rollback to original42b.
 NEXT: finish exact delivery gates and admit fresh short native SOURCE/PACKAGED.
+
+
+### 2026-10-08 — amendment34 source-only replacement-group expectation
+
+Same original42b unfinished PR2093 and88 paths. Actual SOURCE37/PACKAGED37
+repeat export fails only on inferred group occurrences; canonical state is exact.
+Admit only existing Main expectation condition and readable existing-contract
+regressions. Task behavior budget3600 ->3800 avoids dropping assertions or
+compressing coverage; runtime1800, production criteria and40GB dev bound stay.
+Rollback is narrow revert to ff (whole chain original42b); no canon exception,
+parser/source/trust/cap/UI/schema/writer/port/dependency/network change.
+Actual code/native/merged acceptance remains TARGET until mandatory proofs.
+
+
+Amendment34 implementation and fresh finite proof are now frozen at HOLD_01;
+root independent source review b30219ab9ec22035f49a63700fa876191760eb8eec1fb3d21bdffa7af157b260.
+Actual1282of1282/focused248of248 and unchanged compiler outputs do not close
+native repeat export or the original large-novel denominator. Existing task-only
+3800 behavior adjustment and original rollback are unchanged; no canon exception.

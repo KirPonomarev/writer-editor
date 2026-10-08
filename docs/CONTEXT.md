@@ -3114,3 +3114,53 @@ exchanges, release speed/memory, simultaneous note body/format edits with pendin
 text, semantic closure, merge and exact merged verification remain OPEN.
 NEXT: freeze mechanical OPS and pass required gates, commit/push this finite
 checkpoint; then admit a fresh short genuine Word source/packaged proof.
+
+
+### 2026-10-08 — amendment34 same-contour repeat-export target
+
+At clean ff, actual official RTK3974of3974 and19 checks pass. Fresh genuine
+SOURCE/ordinary PACKAGED unchanged SaveAs and four-revision Cancel/Apply preserve
+complete authored body/notes/discussion/recovery. Both normal37 restarts preserve
+state but full reexport FAILS. Inner actual Main cause is source-only replacement-
+group expectation omitted for V2 with single-scene schema2 notes; comments pass.
+Same88 paths/PR2093/original42b rollback. Two-path writer correction remains
+TARGET; runtime1800 unchanged, task-only behavior3600 ->3800 for readable tests.
+No authority/parser/canonical/group/decision/history/resource/release relaxation.
+Fresh whole16+6, source/physical review, required gates/CI and separately admitted
+native proof still required. Original full novel and production30s512MiB OPEN.
+
+
+### 2026-10-08 — amendment34 frozen code proof, native repeat export still open
+
+The only new runtime delta from ff is the existing Main source-only group
+expectation condition: validated body typography V2 also predicts serializer
+replacement groups when single-scene schema2 notes omit bodyParagraphEmission.
+No canonical groupId, revision/native ID, decision, history, notes, comment,
+authority, parser equality, writer, resource cap or production criterion changes.
+147 readable regression lines append to the unchanged existing test prefix.
+Fresh complete22 execute from one frozen snapshot: original16=701of701,
+added6=581of581, total1282of1282, zero failures/cancel/skips/todos/exclusions.
+Processes actually exit0 at535.074s and740.207s; max child RSS2.315GB/4.056GB
+within separate900s and40GB development limits. These are finite synthetic
+proofs, not500k native or production-performance acceptance.
+Focused248of248 and two audited compiler processes actually exit0;136 compiler
+inputs and four generated/preload outputs remain byte-exact, second idempotent.
+HOLD SHA08fb566bf58dbdcdf8daceca163314b210fe454caeb70625fc479f3e0a523383.
+Independent root source review SHA
+b30219ab9ec22035f49a63700fa876191760eb8eec1fb3d21bdffa7af157b260.
+All1370 current physical fixture files rehashed. Independent semantic readback
+covers27replacement cases;3positive/15precommit/2postawait cohort controls plus
+unchanged carrier;34comment controls;12selected scene operands. Remaining4cohort
+and60scene cases have executed tests and physical pins, not a wider independent
+semantic claim. Root metadata/schema reader failures remain with strict
+successors; meaningful old-condition RED and fixture failures remain retained.
+Source/test76 and74untouchedff paths exact; runtime1506of1800,
+behavior3744of3800, generated462 separate/unchanged by this amendment.
+No new UI/dependency/network/schema/cache/port/writer/timeout/cap or canon exception.
+Root final five docs precede mechanical seven OPS and all mandatory gates.
+Commit/push/current-head official CI/merge and merged verification remain open.
+Native SOURCE38 and ordinary PACKAGED38 must reuse their normally exited owned
+37profiles without reseeding, after a new clean checkpoint and pinned admission.
+Original large novel, both origins/scopes/three roles/five genuine exchanges,
+simultaneous pending-text/note-body edits and production30s/512MiB remain OPEN.
+NEXT: complete exact checkpoint gates/delivery, then observe native repeat export.
