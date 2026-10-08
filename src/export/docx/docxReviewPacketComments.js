@@ -193,12 +193,15 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
       anchor: exactCommentAnchor(thread, blocks), messages });
   }
   return { schemaVersion: COMMENT_EXPORT_SCHEMA, projectId, stateRevision: state.revision,
-    stateDigest: commentStateDigest(state), threads, tombstones };
+    stateDigest: commentStateDigest(state), threads, tombstones,
+    ...(exportTypography?.schemaVersion === 'yalken.review-docx.typography-defaults.v2' ? {exportTypography:JSON.parse(JSON.stringify(exportTypography))} : {}) };
 }
 
 const xmlAttribute = value => escapeXml(value).replaceAll('\t', '&#9;').replaceAll('\n', '&#10;').replaceAll('\r', '&#13;');
 function commentPackageParts(projection, exportTypography) {
-  const typography = require('../../core/word-review-typography-v1.cjs').validate(exportTypography,{allowUndefined:true,legacyAnySize:true});
+  // Keep the established malformed-profile error before SOURCE-mode checks.
+  require('../../core/word-review-typography-v1.cjs').validate(exportTypography,{allowUndefined:true,legacyAnySize:true});
+  const typography = commentBody.commentExportTypography(projection,exportTypography,'DOCX_COMMENT_TRANSPORT_BASELINE_UNPROVEN');
   if (!projection || projection.threads.length === 0) return { entries: [], contentTypes: '', relationships: '' };
   demand(projection.schemaVersion === COMMENT_EXPORT_SCHEMA, 'DOCX_COMMENT_EXPORT_SCHEMA_INVALID');
   const comments = [], extended = [], ids = [], extensible = [], links = new Map();
@@ -352,6 +355,15 @@ function commentMarkersForBlock(projection, block) {
 function compareCommentExportReadback(projection, returned) {
   if (!projection) return { ok: true, unchangedThreadIds: [], missing: [], changed: [] };
   const missing = [], changed = [], unchangedThreadIds = [];
+  let typography;
+  try {
+    typography = commentBody.commentExportTypography(projection,undefined,'COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN');
+    if (typography) for (const thread of projection.threads) for (const message of thread.messages) {
+      const stored = Object.getOwnPropertyDescriptor(message,'transportRichBody');
+      demand(stored && Object.hasOwn(stored,'value') && commentBody.commentBodyEqual({body:message.body,richBody:stored.value},
+        {body:message.body,richBody:commentBody.commentBodyWithTypography(message,typography)}),'COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN');
+    }
+  } catch { return {ok:false,unchangedThreadIds,missing,changed:[{code:'COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN'}]}; }
   const deletedIds = new Set((projection.tombstones || []).flatMap(item => item.messageDurableIds || []));
   const byDurable = new Map();
   const expectedRoots = new Set(projection.threads.map(thread => thread.messages[0].durableId));
@@ -403,7 +415,12 @@ function compareCommentExportReadback(projection, returned) {
       try { metadataEqual = stable(normalizeCommentProvenance(actualMetadata)) === stable({ ...message.provenance,
         ...(message.transportDateUtc ? { dateUtc: message.transportDateUtc } : {}) }); } catch { /* Malformed provider provenance never grants continuity. */ }
       let contentEqual = false;
-      try { contentEqual = commentBody.commentBodyEqual(seen, message.transportRichBody ? {...message,richBody:message.transportRichBody} : message); }
+      try {
+        const expectedContent = message.transportRichBody ? {...message,richBody:message.transportRichBody} : message;
+        contentEqual = typography ? commentBody.commentEffectiveEqual(
+          commentBody.commentEffectiveContent(index === 0 ? actual : actual.replies[index - 1]),expectedContent)
+          : commentBody.commentBodyEqual(seen,expectedContent);
+      }
       catch { /* Invalid returned rich content is a publication mismatch, never continuity. */ }
       if (!contentEqual || !metadataEqual) {
         changed.push({ threadId: expected.threadId, canonicalCommentId: message.canonicalCommentId, code: 'COMMENT_BODY_OR_PROVENANCE_CHANGED' });

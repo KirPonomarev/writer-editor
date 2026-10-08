@@ -5091,7 +5091,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
           const content = bodies.get(id);
           if (!content || content.body !== item.body) throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
           item.richBody = content.richBody;
-          if (item !== thread) item.bodyDigest = cryptoPort.sha256Json({ rawId: id, body: item.body, richBody: item.richBody });
+          if (content.effectiveRichBody && admitWorkerOutput(budgetState,reasons,'reviewIr.commentThreads.effectiveRichBody',content.effectiveRichBody))
+            item.effectiveRichBody = content.effectiveRichBody;
+          if (item !== thread) item.bodyDigest = cryptoPort.sha256Json({ rawId: id, body: item.body, richBody: item.richBody,
+            ...(item.effectiveRichBody ? {effectiveRichBody:item.effectiveRichBody} : {}) });
         }
       }
       commentBodyGrammar = { profile: 'RICH_INLINE_V1', status: 'SUPPORTED', normalizationLedger };
@@ -5215,7 +5218,8 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
         : null,
       replyDigests: thread.replies.map((reply) => reply.bodyDigest),
       bodyDigest: cryptoPort.sha256Json({ commentId: thread.commentId, body: thread.body,
-        ...(thread.richBody ? { richBody: thread.richBody } : {}) }),
+        ...(thread.richBody ? { richBody: thread.richBody } : {}),
+        ...(thread.effectiveRichBody ? {effectiveRichBody:thread.effectiveRichBody} : {}) }),
       // CANON-01 C6b: anchor placement participates so relocating a comment between paragraphs
       // changes supportedSemanticDigest.
       placement: placementForCommentAnchor(documentScan, {
@@ -5408,6 +5412,15 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   const require = value => { if (!value) fail(); };
   let xml = parts['word/comments.xml'];
+  const mirroredAliases = new Map();
+  const withoutTokens = (text,tokens,offset=0) => {
+    const outer = [];
+    for (const token of [...tokens].sort((a,b)=>a.openStart-b.openStart || b.closeEnd-a.closeEnd))
+      if (!outer.length || token.openStart >= outer.at(-1).closeEnd) outer.push(token);
+    for (const token of outer.reverse())
+      text = text.slice(0,token.openStart-offset) + text.slice(token.closeEnd-offset);
+    return text;
+  };
   const roots = scan.tokens.filter(t => t.depth === 0);
   require(!scan.diagnostics.length && roots.length === 1 && isWordToken(roots[0], 'comments'));
   const children = parent => directChildTokensWithin(scan, parent);
@@ -5452,7 +5465,10 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
     } else { attrs(token,propertyAttributes[token.localName]); scalar(token);
       if(token.localName==='rFonts') require(token.attributes.some(a=>a.namespaceUri===W_NS&&a.localName!=='hint'));
       if(token.localName==='kern') {require(/^\d{1,4}$/u.test(attr(token,'val',W_NS)) && Number(attr(token,'val',W_NS))<=1638);normalizationLedger.push({part:token.partName,path:token.path.join('/'),offset:token.openStart,attribute:'kern',value:attr(token,'val',W_NS),disposition:'NORMALIZED_NON_AUTHORING_METADATA',reason:'WORD_COMMENT_NON_AUTHORING_PRESENTATION',...(token.partName==='word/styles.xml'?{definitionPart:token.partName}:{})});}
-      if(['bCs','iCs'].includes(token.localName)){require(['','0','1','false','true','off','on'].includes(attr(token,'val',W_NS)));const parent=scan.tokens.find(p=>isWordToken(p,'rPr')&&token.openStart>p.openEnd&&token.closeEnd<=p.closeStart);const peers=parent?children(parent):[];const sibling=peers.find(t=>isWordToken(t,token.localName.slice(0,1)));const bool=t=>!['0','false','off'].includes(attr(t,'val',W_NS));require(sibling&&bool(sibling)===bool(token));}
+      if(['bCs','iCs'].includes(token.localName)){require(['','0','1','false','true','off','on'].includes(attr(token,'val',W_NS)));const parent=scan.tokens.find(p=>isWordToken(p,'rPr')&&token.openStart>p.openEnd&&token.closeEnd<=p.closeStart);const peers=parent?children(parent):[];const sibling=peers.find(t=>isWordToken(t,token.localName.slice(0,1)));const bool=t=>!['0','false','off'].includes(attr(t,'val',W_NS));require(sibling&&bool(sibling)===bool(token));
+        if (!mirroredAliases.has(token.partName)) mirroredAliases.set(token.partName,new Map());
+        mirroredAliases.get(token.partName).set(token.openStart,token);
+      }
     }
   };
   const relXml = parts['word/_rels/comments.xml.rels'];
@@ -5569,11 +5585,22 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
     validateStyles(documentXml);
     let document;
     try {
+      // Only aliases already proven equal to their actual sibling are redundant.
+      // The generic direct parser still receives the literal original XML.
+      const aliases = [...(mirroredAliases.get('word/comments.xml')?.values() || [])]
+        .filter(token=>token.openStart>=paragraphs[0].openStart && token.closeEnd<=paragraphs.at(-1).closeEnd);
+      const scannerContent = withoutTokens(xml.slice(paragraphs[0].openStart,paragraphs.at(-1).closeEnd),[...removed,...aliases],paragraphs[0].openStart);
+      const scannerXml = `${opening}<${bodyPrefix}:body xmlns:${bodyPrefix}="${W_NS}"${xmlns}>${scannerContent}</${bodyPrefix}:body></${prefix}document>`;
+      const formatting = extractReviewTransportFormattingRunsV2(scannerXml,{budgets,cryptoPort,
+        stylesXml:parts['word/styles.xml'] === undefined ? undefined : withoutTokens(parts['word/styles.xml'],mirroredAliases.get('word/styles.xml')?.values() || []),
+        themeXml:parts['word/theme/theme1.xml'],settingsXml:parts['word/settings.xml'],relationshipsXml:parts['word/_rels/comments.xml.rels']});
       document = typeof readCommentRichDocument === 'function'
         ? readCommentRichDocument({documentXml,relationshipPart:'word/_rels/comments.xml.rels'})
-        : richCommentScannerDocument(documentXml,parts,{budgets,cryptoPort});
+        : richCommentScannerDocument(documentXml,parts,{budgets,cryptoPort},formatting);
       const richBody={schemaVersion:'yalken.word.comment-body.v1',document};
-      bodies.set(id,commentBodyModel.validateCommentRichBody(richBody));
+      const checked = commentBodyModel.validateCommentRichBody(richBody);
+      const effectiveRichBody = richCommentEffectiveBody(checked,formatting);
+      bodies.set(id,{...checked,...(effectiveRichBody ? {effectiveRichBody} : {})});
     } catch (error) { throw Object.assign(Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'), { detail:error.message }); }
   }
   require(used.size===rels.size && bodies.size<=commentBodyModel.COMMENT_CAPACITY.messages);
@@ -5587,10 +5614,9 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
   return bodies;
 }
 
-function richCommentScannerDocument(xml,parts,options) {
-  const parsed=extractReviewTransportFormattingRunsV2(xml,{...options,
+function richCommentScannerDocument(xml,parts,options,parsed=extractReviewTransportFormattingRunsV2(xml,{...options,
     stylesXml:parts['word/styles.xml'],themeXml:parts['word/theme/theme1.xml'],settingsXml:parts['word/settings.xml'],
-    relationshipsXml:parts['word/_rels/comments.xml.rels']});
+    relationshipsXml:parts['word/_rels/comments.xml.rels']})) {
   if(!parsed.ok)throw Error('COMMENT_FORMATTING');
   const content=parsed.paragraphs.map(p=>{
     if(p.trackedRevision||p.table||p.typedBreakInvalid||p.unsupportedParagraphNames.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid
@@ -5608,6 +5634,28 @@ function richCommentScannerDocument(xml,parts,options) {
     return {type:'paragraph',...(Object.keys(p.paragraphState).length?{attrs:p.paragraphState}:{}),content};
   });
   return {type:'doc',content};
+}
+
+function richCommentEffectiveBody(checked,formatting) {
+  try {
+    if (!formatting.ok || formatting.paragraphs.length !== checked.richBody.document.content.length) return null;
+    const effectiveRichBody = JSON.parse(JSON.stringify(checked.richBody));
+    for (const [index,paragraph] of effectiveRichBody.document.content.entries()) {
+      const actual = formatting.paragraphs[index], spacing = actual.paragraphState.wordParagraphSpacing;
+      const text = (paragraph.content || []).map(node=>node.type==='hardBreak'?'\n':node.text).join('');
+      if (actual.trackedRevision || actual.table || actual.typedBreakInvalid || actual.unsupportedParagraphNames.length
+        || actual.paragraphFormattingInvalid || actual.wordLanguageInvalid || actual.paragraphStructure?.nodeType !== 'paragraph'
+        || actual.formattedRuns.some(run=>run.unsupportedNames.length || run.invalidSupportedValue || run.wordLanguageInvalid)
+        || actual.effectiveParagraphMarkTypographyInvalid || !actual.effectiveParagraphMarkTypography || !spacing
+        || actual.formattedRuns.map(run=>run.text).join('') !== text) return null;
+      paragraph.attrs ||= {};
+      paragraph.attrs.wordParagraphMarkTypography = actual.effectiveParagraphMarkTypography;
+      // OOXML omitted before/after spacing is intrinsically zero. Line and
+      // lineRule must still be observed from the real document cascade.
+      paragraph.attrs.wordParagraphSpacing = {before:0,after:0,...spacing};
+    }
+    return commentBodyModel.commentEffectiveContent({...checked,effectiveRichBody}).richBody;
+  } catch { return null; } // Incomplete actual facts remain explicitly unproven.
 }
 
 // Rich intake and return share strict body and modern metadata validation.

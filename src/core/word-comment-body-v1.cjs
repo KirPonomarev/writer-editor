@@ -138,6 +138,63 @@ function commentBodyWithTypography(message, typography) {
 function commentBodyEqual(left, right) {
   return stable(canonical(commentBodyDocument(left))) === stable(canonical(commentBodyDocument(right)));
 }
+// The mode belongs to the authenticated SOURCE projection, never returned XML.
+// Legacy projections omit it. An explicit profile cannot disagree with it.
+function commentExportTypography(projection, expected, code) {
+  const profile = require('./word-review-typography-v1.cjs');
+  try {
+    const supplied = profile.validate(expected,{allowUndefined:true,legacyAnySize:true});
+    const descriptor = Object.getOwnPropertyDescriptor(projection || {},'exportTypography');
+    if (descriptor && (!descriptor.enumerable || !Object.hasOwn(descriptor,'value'))) fail(code);
+    const mode = descriptor ? profile.validate(descriptor.value) : null;
+    if (mode && (mode.schemaVersion !== profile.V2 || supplied && stable(mode) !== stable(supplied))
+      || supplied?.schemaVersion === profile.V2 && projection && !mode) fail(code);
+    return mode || supplied;
+  } catch { fail(code); }
+}
+// Actual-only parser evidence uses the existing bounded rich-body grammar.
+// Its two effective paragraph fields cannot replace text, marks or other facts.
+function commentEffectiveContent(message) {
+  const code = 'COMMENT_RETURN_EFFECTIVE_FORMAT_UNPROVEN';
+  try {
+    const direct = validateCommentMessageContent(message);
+    const descriptor = Object.getOwnPropertyDescriptor(message,'effectiveRichBody');
+    if (!direct.richBody || !descriptor || !descriptor.enumerable || !Object.hasOwn(descriptor,'value')) fail(code);
+    const observed = validateCommentMessageContent({body:direct.body,richBody:descriptor.value});
+    const withoutEffective = rich => {
+      const document = JSON.parse(JSON.stringify(rich.document));
+      for (const paragraph of document.content) if (paragraph.attrs) {
+        delete paragraph.attrs.wordParagraphMarkTypography; delete paragraph.attrs.wordParagraphSpacing;
+        if (!Object.keys(paragraph.attrs).length) delete paragraph.attrs;
+      }
+      return document;
+    };
+    if (stable(withoutEffective(direct.richBody)) !== stable(withoutEffective(observed.richBody))) fail(code);
+    const completeLanguage = value => value && ['val','eastAsia','bidi'].every(key=>Object.hasOwn(value,key));
+    for (const paragraph of observed.richBody.document.content) {
+      const attrs = paragraph.attrs || {}, marker = attrs.wordParagraphMarkTypography, spacing = attrs.wordParagraphSpacing;
+      if (!marker?.fontSize || !(marker.fontFamily || marker.fontSlots && ['ascii','hAnsi','eastAsia','cs'].every(key=>Object.hasOwn(marker.fontSlots,key)))
+        || !spacing || !['before','after','line','lineRule'].every(key=>Object.hasOwn(spacing,key))
+        || !completeLanguage(attrs.wordParagraphMarkLanguage)) fail(code);
+      for (const node of paragraph.content || []) {
+        const style = node.marks?.find(mark=>mark.type==='textStyle')?.attrs;
+        if (!style?.fontFamily || !style.fontSize || !completeLanguage(style.wordLanguage)) fail(code);
+      }
+    }
+    return observed;
+  } catch { fail(code); }
+}
+// OFF and clear are effective values only after the actual style cascade.
+// Compare clones of both operands; retain the literal observations for edits.
+function commentEffectiveEqual(left, right) {
+  const meaning = message => {
+    const document = commentBodyDocument(message);
+    for (const paragraph of document.content) if (paragraph.attrs?.wordParagraphMarkTypography)
+      paragraph.attrs.wordParagraphMarkTypography = require('./word-review-typography-v1.cjs').markerMeaning(paragraph.attrs.wordParagraphMarkTypography);
+    return document;
+  };
+  return stable(meaning(left)) === stable(meaning(right));
+}
 // Serialize already validated canonical state without spending its byte budget
 // on indentation. The graph and all history entries remain unchanged.
 function serializeCommentState(state, budgetCode = 'COMMENT_STATE_BUDGET') {
@@ -173,4 +230,4 @@ function assertCommentCapacity(state,code='COMMENT_STATE_BUDGET') {
   if(bytes(JSON.stringify(state))>limits.stateBytes)fail(code);
   return state;
 }
-module.exports = { STATE_V6, COMMENT_CAPACITY, LEGACY_COMMENT_CAPACITY, assertCommentCapacity, serializeCommentState, STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual };
+module.exports = { STATE_V6, COMMENT_CAPACITY, LEGACY_COMMENT_CAPACITY, assertCommentCapacity, serializeCommentState, STATE_V1, STATE_V2, STATE_V3, STATE_V4, STATE_V5, upgradeCommentState, SCHEMA, validateCommentRichBody, validateCommentMessageContent, commentBodyDocument, commentBodyWithTypography, commentBodyEqual, commentExportTypography, commentEffectiveContent, commentEffectiveEqual };

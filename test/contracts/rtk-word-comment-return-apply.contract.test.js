@@ -62,7 +62,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture({ deletion = false, addition = false, replyDeletion = false } = {}) {
+async function fixture({ deletion = false, addition = false, replyDeletion = false, bodyEdit = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -99,6 +99,11 @@ async function fixture({ deletion = false, addition = false, replyDeletion = fal
       scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
         doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] }));
   }
+  if (bodyEdit) {
+    const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts };
+    parts['word/comments.xml'] = parts['word/comments.xml'].replace('Root before', 'Main Word delta');
+    bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  }
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
     sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v),
   } });
@@ -111,11 +116,8 @@ async function fixture({ deletion = false, addition = false, replyDeletion = fal
 
 async function preparedHarness(t, { deletion = false, addition = false, replyDeletion = false, explicitConfirmed = false } = {}) {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source, bytes, reviewIr } = await fixture({ deletion, addition, replyDeletion });
-  if (!deletion && !addition && !replyDeletion) {
-    input.returnedThreads[0].body = 'Main Word delta';
-    input.returnedThreads[0].richBody.document.content[0].content[0].text = 'Main Word delta';
-  }
+  // The ordinary Main intake receives real edited ZIP bytes and both parser observations.
+  const { input, source, bytes, reviewIr } = await fixture({ deletion, addition, replyDeletion, bodyEdit: !deletion && !addition && !replyDeletion });
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;

@@ -1,3 +1,56 @@
+## 2026-10-08 — amendment33 finite source proof; fresh native and original novel OPEN
+
+Same original42b PR2093 at clean1d83115 predecessor, unchanged88-path scope.
+Actual SOURCE34 Word SaveAs preserved text/discussion meaning but materialized
+comment paragraph defaults through styles. Its false edit was cancelled through
+the public path; protected business files stayed exact. Its old SOURCE mode is
+absent and remains typed-refused. No carrier or authentication was repaired.
+Exact1d official RTK CI actually3959of3962 in both lanes, three failures and no
+exclusions, additionally exposed ordinary export profile handoff and mirrored
+script-alias parsing. Historical failures are retained and remain FAIL.
+Four admitted runtime files now bind complete V2 comment export mode to SOURCE,
+independently rederive its stored transport and validate a separately bounded
+actual-only effective comment observation. Direct rich grammar remains strict;
+legacy undefined/V1 laws retain exact old-module output controls in the current
+require closure, not an isolated historical dependency runtime. Missing actual
+facts or old mode refuse; genuinely new messages never receive SOURCE defaults.
+Parser aliases are redundant only after actual sibling equality. Annotation
+reference removal uses disjoint ranges. Existing digests/bounds/Kernel/private
+admission/lease/CAS/atomic recovery/public commands remain governed and unchanged.
+Four already-declared test contracts retain original negatives and assertions.
+The crypto companion preserves both independent hash oracles/stale refusals;
+apply/delta ordinary fixtures now edit real ZIP XML before parsing/hash, while
+pure Core manual edits remain explicitly synthetic and internally consistent.
+A separate actualV2 root/reply ON/OFF clear verifies complete rich defaults,
+IDs/kind/provenance/anchor/status and replay; no genuine Word claim follows.
+Actual complete22 proof is two pinned executions: carried682of682 prior16 and
+fresh581of581 added6, aggregate1263of1263, zero fail/cancel/skip/todo.
+All3437 tracked shared source/script/other-test/package and installed lock/esbuild
+inputs,136 compiler inputs and16 test bytes were pinned and root-rehashed before
+companion writes. Snapshots differ in two test files; no single76/all88 equality
+claim across them. Final ZIP01 changed-files operand requires root recheck after
+these docs/OPS. Whole focused7 also actually239of239, including five unedited
+parser-risk files. Diagnostic name exclusions never count as whole-file proof.
+Two actual audited compiler runs exit0 with136 inputs and identical outputs;
+preload exact. Prebuild tests do not claim execution of the new renderer bundle.
+Root final source/physical review SHA4c87af3877a9809eb9f1698edcc68271fb992d344f2fca543f19e151b6c9a0d4;
+HOLD SHAe55dc59c8fb019eba9dd49c1b8dfbe06779b36565103b801588776b288b096ab.
+Runtime1504of1800, behavior3597of3600, generated462 separate.
+Original681of682 failure, subsequent19 fixture contradictions, causal controls
+and raw logs remain retained. Fresh causal/crypto physical operands never replace
+missing original failed crypto operands. Root pure SOURCE34 reader passed the
+actual retained Word return under current source projection only; no re-auth,
+new app execution, public Apply or release authority follows from that diagnostic.
+Root mechanical seven OPS bindings, seven mandatory gates, final ZIP01 and
+commit/push/current official CI follow; their actual outcomes are separate.
+Fresh short SOURCE35/ordinary WRITER_LOCAL_V1 PACKAGED35 genuine Word controls
+remain OPEN, as do original novel/both origins/scopes/three roles/five genuine
+exchanges, simultaneous pending-text/note-body edits, production30s/512MiB,
+merge and exact merged verification.40GB remains the development RSS ceiling.
+No UI/dependency/runtime network/cap/cache/timeout/shadow expansion or old-crash
+reproduction. No canon exception; same contour and rollback to original42b.
+NEXT: finish exact delivery gates and admit fresh short native SOURCE/PACKAGED.
+
 ## 2026-10-08 — amendment32 finite proof checkpoint
 
 Same original42b PR2093; amendment32 finite source proof is frozen at the

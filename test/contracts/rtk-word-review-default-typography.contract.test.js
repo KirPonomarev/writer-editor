@@ -1054,3 +1054,208 @@ test('undefined and V1 comment emission and missing-transport fallback match exa
  }
  assert.deepEqual({doc:f.doc,state:f.state},f.before);
 });
+
+// A synthetic representation of the observed SOURCE34 Word save. Actual
+// styles own TNR12; only implicit zero spacing and inherited marker spelling
+// move. Canonical SOURCE and all other package members remain untouched.
+function effectiveCommentReturn(f, { inheritedMarker = true } = {}) {
+ const parts = { ...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts };
+ if (inheritedMarker) {
+  const marker = parts['word/comments.xml'].match(/<w:pPr>[^]*?<w:rPr>([^]*?)<\/w:rPr>/u)[1];
+  const fonts = marker.match(/<w:rFonts\b[^>]*\/>/u)[0];
+  // Move literal actual font facts, as Word does; do not invent missing facts.
+  assert.match(parts['word/styles.xml'], new RegExp(marker.match(/<w:sz\b[^>]*\/>/u)[0]));
+  parts['word/styles.xml'] = parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>', '<w:rPrDefault><w:rPr>' + fonts);
+ }
+ parts['word/comments.xml'] = parts['word/comments.xml'].replace(/<w:pPr>([^]*?)<\/w:pPr>/gu, (_, properties) => {
+  properties = properties.replace(/(<w:spacing\b[^>]*?) w:before="0"/gu, '$1');
+  if (inheritedMarker) properties = properties.replace(/<w:rPr>([^]*?)<\/w:rPr>/gu, (_, marker) =>
+   '<w:rPr>' + marker.replace(/<w:(?:rFonts|sz|szCs)\b[^>]*\/>/gu, '') + '</w:rPr>');
+  return '<w:pPr>' + properties + '</w:pPr>';
+ });
+ return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+}
+
+test('finite V2 actual inherited comment marker and implicit zero spacing produce no invented delta', async t => {
+ const f = await commentTypographyFixture(), returned = effectiveCommentReturn(f), delta = commentTypographyDelta(f, returned);
+ retainCommentTypographyEvidence(t.name, f, returned, delta);
+ assert.equal(delta.result.unchanged, true, JSON.stringify(delta.result.changes));
+ assert.equal(delta.result.afterText, delta.input.beforeText);
+ const actual = delta.analysis.reviewIr.commentThreads[0];
+ assert.equal(actual.richBody.document.content[0].attrs.wordParagraphMarkTypography, undefined);
+ assert.equal(actual.richBody.document.content[0].attrs.wordParagraphSpacing.before, undefined);
+ assert.deepEqual(actual.effectiveRichBody.document.content[0].attrs.wordParagraphMarkTypography,
+  {fontFamily:'Times New Roman',fontSize:'12pt'});
+ assert.equal(actual.effectiveRichBody.document.content[0].attrs.wordParagraphSpacing.before, 0);
+ assert.equal(require('../../src/export/docx/docxReviewPacketComments.js').compareCommentExportReadback(f.source.commentExport, delta.input.returnedThreads).ok, true);
+ assert.deepEqual({doc:f.doc,state:f.state}, f.before);
+});
+
+test('finite V2 source-owned comment mode reaches ordinary export without a builder profile handoff', async t => {
+ const f = await commentTypographyFixture({rich:true});
+ const [docxPageSetupBindModule,semanticMappingModule,styleMapModule] = await Promise.all([
+  import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+ const bytes = require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer(
+  {doc:f.doc,plainText:'Anchor writer keeps this sentence.\n\nAfter empty paragraph.\nFinal proofreader unchanged line.',bookProfile:{formatId:'A4'}},
+  {docxPageSetupBindModule,semanticMappingModule,styleMapModule,commentExport:f.source.commentExport,commentBlocks:f.source.blocks});
+ const analysis = f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});
+ const comparison = require('../../src/export/docx/docxReviewPacketComments.js').compareCommentExportReadback(f.source.commentExport, analysis.reviewIr.commentThreads);
+ retainCommentTypographyEvidence(t.name, f, bytes, {analysis,comparison});
+ assert.equal(analysis.ok, true); assert.equal(comparison.ok, true, JSON.stringify(comparison));
+ assert.deepEqual(f.source.commentExport.exportTypography, f.source.exportTypography);
+ assert.deepEqual({doc:f.doc,state:f.state}, f.before);
+});
+
+test('finite V2 standalone comment grammar accepts only its already proven mirrored script booleans', async t => {
+ const f = await commentTypographyFixture({rich:true}), parser = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+ const parts = f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+ retainCommentTypographyEvidence(t.name, f, f.bytes, {parts});
+ assert.equal(parser.validateGenericCommentMetadataV1(parts,{cryptoPort}), true);
+ for (const alias of ['<w:bCs w:val="garbage"/>','<w:bCs w:val="1"/>','<w:unknown/>']) {
+  const changed = {...parts,'word/comments.xml':parts['word/comments.xml'].replace('<w:bCs w:val="0"/>',alias)};
+  assert.notEqual(changed['word/comments.xml'], parts['word/comments.xml']);
+  assert.throws(()=>parser.validateGenericCommentMetadataV1(changed,{cryptoPort}), /DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED/u);
+ }
+ const unpaired = {...parts,'word/comments.xml':parts['word/comments.xml'].replace('<w:b w:val="0"/>','')};
+ assert.throws(()=>parser.validateGenericCommentMetadataV1(unpaired,{cryptoPort}), /DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED/u);
+ for (const value of ['garbage','1']) {
+  const changed = {...parts,'word/comments.xml':parts['word/comments.xml'].replace('<w:iCs w:val="0"/>',`<w:iCs w:val="${value}"/>`)};
+  assert.throws(()=>parser.validateGenericCommentMetadataV1(changed,{cryptoPort}), /DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED/u);
+ }
+ assert.throws(()=>parser.validateGenericCommentMetadataV1({...parts,'word/comments.xml':parts['word/comments.xml'].replace('<w:i w:val="0"/>','')},{cryptoPort}), /DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED/u);
+});
+
+test('finite V2 SOURCE mode refuses cross-mode and stale expectations before graph or no-op interpretation',async t=>{
+ const f=await commentTypographyFixture(),{input}=commentTypographyDelta(f,f.bytes),planner=require('../../src/core/word-comment-return-delta-v1.cjs');
+ const failures=[];
+ for(const [label,mutate]of [
+  ['missing',v=>delete v.baseline.exportTypography],['explicit-undefined',v=>v.baseline.exportTypography=undefined],
+  ['legacy-mode',v=>v.baseline.exportTypography=typography],['partial',v=>delete v.baseline.exportTypography.bodyRunDefaults],
+  ['mismatch',v=>v.baseline.exportTypography.bodyParagraphDefaults.wordParagraphSpacing.after=42],
+  ['absent-map',v=>delete v.exportMap.exportTypography],['legacy-map',v=>v.exportMap.exportTypography=typography]
+ ]) {
+  const candidate=structuredClone(input);mutate(candidate);candidate.returnedThreads=null;
+  const before=JSON.stringify(candidate);assert.throws(()=>planner.planCommentReturnDelta(candidate),error=>{
+   failures.push({label,code:error.code,input:candidate});return error.code==='COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN';
+  });assert.equal(JSON.stringify(candidate),before);
+ }
+ let reads=0;const candidate=structuredClone(input);
+ Object.defineProperty(candidate.baseline,'exportTypography',{enumerable:true,get(){reads++;throw Error('MODE_GETTER_EXECUTED');}});
+ assert.throws(()=>planner.planCommentReturnDelta(candidate),/COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN/u);assert.equal(reads,0);
+ retainCommentTypographyEvidence(t.name,f,f.bytes,{qualification:'PURE_STORED_BASELINE_FAULT_INJECTION_NO_AUTHENTICATION',input,failures,accessorReads:reads});
+ assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});
+
+test('finite V2 actual effective observation is descriptor bounded and cannot replace direct authoring facts',async t=>{
+ const f=await commentTypographyFixture(),{input}=commentTypographyDelta(f,effectiveCommentReturn(f)),planner=require('../../src/core/word-comment-return-delta-v1.cjs');
+ const failures=[];
+ for(const [label,mutate]of [
+  ['missing',m=>delete m.effectiveRichBody],['partial-font',m=>delete m.effectiveRichBody.document.content[0].attrs.wordParagraphMarkTypography.fontSize],
+  ['partial-spacing',m=>delete m.effectiveRichBody.document.content[0].attrs.wordParagraphSpacing.line],
+  ['unknown',m=>m.effectiveRichBody.document.content[0].attrs.unknown='forged'],
+  ['text-replacement',m=>m.effectiveRichBody.document.content[0].content[0].text='forged literal'],
+  ['run-replacement',m=>m.effectiveRichBody.document.content[0].content[0].marks[0].attrs.fontFamily='Arial'],
+  ['budget',m=>m.effectiveRichBody.document.content[0].content[0].text='x'.repeat(65537)]
+ ]) {
+  const candidate=structuredClone(input);mutate(candidate.returnedThreads[0]);const before=JSON.stringify(candidate);
+  assert.throws(()=>planner.planCommentReturnDelta(candidate),error=>{failures.push({label,code:error.code,input:candidate});return error.code==='COMMENT_RETURN_EFFECTIVE_FORMAT_UNPROVEN';});
+  assert.equal(JSON.stringify(candidate),before);
+ }
+ let reads=0;const candidate=structuredClone(input);
+ Object.defineProperty(candidate.returnedThreads[0],'effectiveRichBody',{enumerable:true,get(){reads++;throw Error('OBSERVATION_GETTER_EXECUTED');}});
+ assert.throws(()=>planner.planCommentReturnDelta(candidate),/COMMENT_RETURN_EFFECTIVE_FORMAT_UNPROVEN/u);assert.equal(reads,0);
+ const readback=require('../../src/export/docx/docxReviewPacketComments.js').compareCommentExportReadback(input.baseline,candidate.returnedThreads);
+ assert.equal(readback.ok,false);assert.equal(reads,0);
+ retainCommentTypographyEvidence(t.name,f,effectiveCommentReturn(f),{qualification:'PURE_ACTUAL_OBSERVATION_FAULT_INJECTION',input,failures,readback,accessorReads:reads});
+ assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});
+
+test('finite V2 actual comment observations consume the existing output budget and bind semantic and worker digests',async t=>{
+ const f=await commentTypographyFixture(),bytes=effectiveCommentReturn(f),delta=commentTypographyDelta(f,bytes),artifactSha256='sha256:'+hash(bytes);
+ const packet=f.bridge.buildReturnEvidencePacketV1({requestId:'comment-effective',artifactSha256,returnedProjection:delta.analysis.reviewIr,
+  projectionDigest:delta.analysis.supportedSemanticDigest,effectiveBudgets:delta.analysis.effectiveBudgets,effectiveBudgetDigest:delta.analysis.effectiveBudgetDigest,workerBuildDigest:delta.analysis.parserProfileDigest});
+ assert.equal(f.bridge.verifyReturnEvidencePacketV1(packet,{expectedArtifactSha256:artifactSha256}).ok,true);
+ for(const mutate of [m=>delete m.effectiveRichBody,m=>m.effectiveRichBody.document.content[0].attrs.wordParagraphMarkTypography.fontFamily='Arial']) {
+  const forged=structuredClone(packet);mutate(forged.returnedProjection.commentThreads[0]);
+  assert.equal(f.bridge.verifyReturnEvidencePacketV1(forged,{expectedArtifactSha256:artifactSha256}).detail,'packet-digest-mismatch');
+ }
+ const parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts};
+ parts['word/styles.xml']=parts['word/styles.xml'].replaceAll('Times New Roman','Arial');
+ const returned=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),changed=commentTypographyDelta(f,returned);
+ assert.deepEqual(changed.analysis.reviewIr.commentThreads[0].richBody,delta.analysis.reviewIr.commentThreads[0].richBody);
+ assert.notEqual(changed.analysis.supportedSemanticDigest,delta.analysis.supportedSemanticDigest);
+ assert.equal(changed.result.changes.length,1);assert.equal(JSON.parse(changed.result.afterText).threads[0].messages[0].richBody.document.content[0].attrs.wordParagraphMarkTypography.fontFamily,'Arial');
+ const denied=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:{maxWorkerOutputBytes:20500}},{cryptoPort});
+ assert.equal(denied.ok,false);assert.ok(denied.reasons.some(r=>r.code==='RTK_BUDGET_EXCEEDED'&&r.field==='reviewIr.commentThreads.effectiveRichBody'),JSON.stringify(denied.reasons));
+ retainCommentTypographyEvidence(t.name,f,returned,{input:delta.input,analysis:delta.analysis,changed,packet,denied});
+});
+
+test('finite V2 annotation reference alias descendants cannot consume following comment text',async t=>{
+ const f=await commentTypographyFixture(),parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts};
+ const annotation='<w:r><w:rPr><w:b w:val="0"/><w:bCs w:val="0"/><w:i w:val="0"/><w:iCs w:val="0"/></w:rPr><w:annotationRef/></w:r>';
+ parts['word/comments.xml']=parts['word/comments.xml'].replace('</w:pPr>','</w:pPr>'+annotation);
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),delta=commentTypographyDelta(f,bytes);
+ assert.equal(delta.result.unchanged,true);assert.equal(delta.result.afterText,delta.input.beforeText);
+ assert.equal(delta.analysis.reviewIr.commentThreads[0].body,f.state.threads[0].messages[0].body);
+ assert.equal((await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs')).validateGenericCommentMetadataV1(parts,{cryptoPort}),true);
+ retainCommentTypographyEvidence(t.name,f,bytes,delta);assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});
+
+for(const edited of [false,true])test('finite V2 effective marker preserves authored OFF and clear: '+edited,async t=>{
+ const original=await commentTypographyFixture(),state=structuredClone(original.state);state.schemaVersion='yalken.rtk.word.non-text-return-state.v2';
+ const marker=edited?{bold:true,color:'#AA0000',highlight:'#FFFF00'}:{bold:false,italic:false,underline:false,strike:false,color:null,highlight:null};
+ state.threads[0].messages[0].richBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',attrs:{wordParagraphMarkTypography:marker},content:[{type:'text',text:state.threads[0].messages[0].body}]}]}};
+ const f={...original,...actualBodyPublication(original.doc,original.bridge,{projectId:state.projectId,nonTextReturnState:state}),state,before:{doc:structuredClone(original.doc),state:structuredClone(state)}};
+ const parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts};
+ parts['word/comments.xml']=parts['word/comments.xml'].replace(/<w:pPr>([^]*?)<\/w:pPr>/gu,(_,properties)=>{
+  if(edited)properties=properties.replace('<w:b w:val="1"/>','<w:b w:val="0"/>').replace(/<w:color w:val="AA0000"\/>/iu,'<w:color w:val="auto"/>').replace(/<w:shd w:val="clear" w:fill="FFFF00"\/>/iu,'<w:highlight w:val="none"/>');
+  else properties=properties.replace(/<w:(?:b|bCs|i|iCs|strike) w:val="0"\/>|<w:u w:val="none"\/>|<w:color w:val="auto"\/>|<w:highlight w:val="none"\/>|<w:shd w:val="nil"\/>/gu,'');
+  return '<w:pPr>'+properties+'</w:pPr>';
+ });
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),delta=commentTypographyDelta(f,bytes);
+ retainCommentTypographyEvidence(t.name,f,bytes,delta);
+ if(edited){assert.equal(delta.result.changes.length,1);const actual=JSON.parse(delta.result.afterText).threads[0].messages[0].richBody.document.content[0].attrs.wordParagraphMarkTypography;assert.equal(actual.bold,false);assert.equal(actual.color,null);assert.equal(actual.highlight,null);}
+ else {assert.equal(delta.result.unchanged,true);assert.equal(delta.result.afterText,delta.input.beforeText);}
+ retainCommentTypographyEvidence(t.name,f,bytes,delta);assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});
+
+test('finite V2 new foreign reply retains observed marker, run font and spacing without SOURCE authority',async t=>{
+ const f=await commentTypographyFixture(),parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts},root=f.source.commentExport.threads[0].messages[0];
+ let reply=parts['word/comments.xml'].match(/<w:comment\b[^>]*>[^]*?<\/w:comment>/u)[0];
+ reply=reply.replace(`w:id="${root.commentId}"`,'w:id="900"').replaceAll(root.paraId,'6BCD0090').replace('w:author="Writer"','w:author="Foreign Editor"').replace(root.body,'Known native reply formatting.');
+ reply=reply.replace('<w:pPr>','<w:pPr><w:pStyle w:val="ActualReplyStyle"/>').replace(/(<w:pPr>[^]*?<w:rPr>)[^]*?(<w:lang)/u,'$1$2');
+ reply=reply.replace('<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>','<w:spacing w:before="80" w:after="220" w:line="360" w:lineRule="auto"/>');
+ reply=reply.replaceAll('Times New Roman','Arial');parts['word/comments.xml']=parts['word/comments.xml'].replace('</w:comments>',reply+'</w:comments>');
+ parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:styles>','<w:style w:type="paragraph" w:styleId="ActualReplyStyle"><w:name w:val="Actual reply"/><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:style></w:styles>');
+ parts['word/commentsExtended.xml']=parts['word/commentsExtended.xml'].replace('</w15:commentsEx>',`<w15:commentEx w15:paraId="6BCD0090" w15:paraIdParent="${root.paraId}" w15:done="0"/></w15:commentsEx>`);
+ parts['word/commentsIds.xml']=parts['word/commentsIds.xml'].replace('</w16cid:commentsIds>','<w16cid:commentId w16cid:paraId="6BCD0090" w16cid:durableId="6BCD0190"/></w16cid:commentsIds>');
+ parts['word/commentsExtensible.xml']=parts['word/commentsExtensible.xml'].replace('</w16cex:commentsExtensible>','<w16cex:commentExtensible w16cex:durableId="6BCD0190"/></w16cex:commentsExtensible>');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ retainCommentTypographyEvidence(t.name+':parser',f,bytes,{analysis:f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort})});
+ const delta=commentTypographyDelta(f,bytes);
+ const observed=delta.input.returnedThreads[0].replies[0],after=JSON.parse(delta.result.afterText).threads[0].messages;
+ assert.equal(delta.result.changes.length,1);assert.deepEqual(after[0],f.state.threads[0].messages[0]);assert.equal(observed.richBody.document.content[0].attrs.wordParagraphMarkTypography,undefined);
+ assert.deepEqual(after[1].richBody,observed.effectiveRichBody);assert.deepEqual(after[1].richBody.document.content[0].attrs.wordParagraphMarkTypography,{fontFamily:'Georgia',fontSize:'14pt'});
+ assert.deepEqual(after[1].richBody.document.content[0].attrs.wordParagraphSpacing,{before:80,after:220,line:360,lineRule:'auto'});
+ assert.equal(after[1].richBody.document.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.fontFamily,'Arial');
+ assert.equal(Object.hasOwn(observed,'transportRichBody'),false);
+ const absent=structuredClone(delta.input);delete absent.returnedThreads[0].replies[0].effectiveRichBody;
+ const direct=require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta(absent);assert.equal(direct.changes.length,1);
+ assert.deepEqual(JSON.parse(direct.afterText).threads[0].messages[1].richBody,observed.richBody);
+ const malformed=structuredClone(delta.input);malformed.returnedThreads[0].replies[0].effectiveRichBody.document.content[0].attrs.unknown='invalid';
+ assert.throws(()=>require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta(malformed),/COMMENT_RETURN_EFFECTIVE_FORMAT_UNPROVEN/u);
+ retainCommentTypographyEvidence(t.name,f,bytes,{...delta,qualification:'REAL_NEW_REPLY_OPERATION_NO_SOURCE_FORMAT_EQUALITY_CLAIM',absentInput:absent,directResult:direct});
+ assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});
+
+test('finite V2 missing actual cascade facts remain unproven and never borrow SOURCE defaults',async t=>{
+ const f=await commentTypographyFixture(),parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:effectiveCommentReturn(f)}).parts};
+ parts['word/styles.xml']=parts['word/styles.xml'].replace(/<w:rFonts\b[^>]*\/>/u,'');
+ const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),analysis=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});
+ assert.equal(analysis.ok,true);assert.equal(analysis.reviewIr.commentThreads[0].effectiveRichBody,undefined);
+ const {input}=commentTypographyDelta(f,f.bytes);input.returnedThreads=analysis.reviewIr.commentThreads;input.artifactSha256=hash(bytes);
+ assert.throws(()=>require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta(input),/COMMENT_RETURN_EFFECTIVE_FORMAT_UNPROVEN/u);
+ assert.equal(require('../../src/export/docx/docxReviewPacketComments.js').compareCommentExportReadback(input.baseline,input.returnedThreads).ok,false);
+ retainCommentTypographyEvidence(t.name,f,bytes,{analysis,input,expectedRefusal:'COMMENT_RETURN_EFFECTIVE_FORMAT_UNPROVEN'});
+ assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});

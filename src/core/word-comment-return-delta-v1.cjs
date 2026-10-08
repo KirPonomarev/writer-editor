@@ -1,7 +1,8 @@
 'use strict';
 
 const { sha256UpdateCompatible } = require('./browser-safe-hash.cjs');
-const { serializeCommentState, validateCommentMessageContent, commentBodyEqual, commentBodyWithTypography, upgradeCommentState } = require('./word-comment-body-v1.cjs');
+const { serializeCommentState, validateCommentMessageContent, commentBodyEqual, commentBodyWithTypography, upgradeCommentState,
+  commentExportTypography, commentEffectiveContent, commentEffectiveEqual } = require('./word-comment-body-v1.cjs');
 const { COMMENT_CAPACITY } = require('./word-comment-body-v1.cjs');
 const { readState, exactAnchor } = require('./word-comment-authoring-v1.cjs');
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -65,6 +66,9 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     && Array.isArray(baseline.threads) && baseline.threads.length <= COMMENT_CAPACITY.threads,
   'COMMENT_RETURN_BASELINE_REQUIRED');
   demand(baseline.threads.reduce((n,t)=>n+(t?.messages?.length||0),0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_BASELINE_REQUIRED');
+  const sourceMode = commentExportTypography(baseline,typography || undefined,'COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN');
+  demand(sourceMode?.schemaVersion !== 'yalken.review-docx.typography-defaults.v2'
+    || typography?.schemaVersion === sourceMode.schemaVersion,'COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN');
   if (typography?.schemaVersion === 'yalken.review-docx.typography-defaults.v2') {
     // Refuse old/partial V2 expectations before returned graph interpretation,
     // including no-op/replay. Only authenticated canonical SOURCE owns defaults.
@@ -288,8 +292,13 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
         demand(!known.has(id), 'COMMENT_RETURN_IDENTITY_COLLISION');
         newReplySeen = true;
       }
+      const directContent = returnContent(m);
+      const observedMessage = index === 0 ? actual : m;
+      const useEffective = typography?.schemaVersion === 'yalken.review-docx.typography-defaults.v2'
+        && (old || Object.getOwnPropertyDescriptor(observedMessage,'effectiveRichBody'));
       return { commentId: old?.canonicalCommentId || `word-${index === 0 ? 'root' : 'reply'}-${hash(projectId + '\n' + roundId + '\n' + id)}`,
-        kind: index === 0 ? 'root' : 'reply', ...returnContent(m), provenance: retainedProvenance(m, old) };
+        kind: index === 0 ? 'root' : 'reply', ...(useEffective ? commentEffectiveContent(observedMessage) : directContent),
+        provenance: retainedProvenance(m, old) };
     });
     const deletedMessageIds = expected.messages.slice(1).filter(m => !seen.has(durable(m.durableId))).map(m => m.canonicalCommentId);
     projection.push({ threadId: expected.threadId, sceneId: expected.sceneId, ...(created ? { created: true } : {}),
@@ -342,7 +351,8 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       const transport = exported?.transportRichBody || (old && exportMap.exportTypography
         ? commentBodyWithTypography(old, exportMap.exportTypography) : null);
       const expected = transport ? {...old, richBody:transport} : old;
-      if (old && commentBodyEqual(expected, m)) {
+      if (old && (typography?.schemaVersion === 'yalken.review-docx.typography-defaults.v2'
+        ? commentEffectiveEqual(expected, m) : commentBodyEqual(expected, m))) {
         merged.body = old.body;
         if (old.richBody) merged.richBody = old.richBody;
         else delete merged.richBody;
