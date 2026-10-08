@@ -2910,3 +2910,37 @@ retaining all623 prior ordered identities and the strict equality predicate.
 Runtime/tests/generated artifacts remain exact; fresh post-commit Git-based
 post-evaluation and complete post-audit suite must execute before repush.
 First failed CI and all old proof remain retained; no merge or native claim.
+
+
+## 2026-10-08 — actual full-novel export refusal fixed; delivery pending
+
+Predecessor PR2095 is fully closed at exact006da88009a892ee0559cc3259e595b2d9ebf8d3:
+official19of19, both RTK4017of4017, post-audit359of359 and exact merged whole8
+232of232. Closure SHA51645e200a7f2ed92ad16e016f948d88a5451331160057278d6364119c60d8b1.
+Fresh SOURCE50 public full export of500108words/8391paragraphs/21scenes failed
+USER_BOOKMARK_EXPORT_PACKAGE_INVALID before publication. All28 protected files
+remained exact and the owned app quit normally. No Word exchange was executed.
+Actual causal5001-paragraph old wrapper reproduced missing product profile:
+default5000 blocks rejected; existing50000-block product analysis admitted the
+same complete source. Fix only forwards existing private Main budgets through
+the technical-parts binder; default/tighter/ZIP/CRC/content-type/publication,
+Kernel/lease/CAS/atomic activation and persistence predicates are unchanged.
+Runtime9 lines, append-only behavior118 lines/3cases, original52091B prefix exact.
+Actual complete8 union195of195, zero fail/cancel/skip/todo,303.642s; root reran
+unchanged mandatory TAP parser on the entire log and independently read every
+5001 physical DOCX paragraph, technical-part hash/relationship and full source.
+The produced DOCX is identical to causalRED. Four tighter and malformed/wrong-
+content-type refusals remain observed. All136 compiler inputs and both generated
+bundles exact, no rebuild. Source review
+SHA8f5e359bb2a500cdb450a73ddc29f2df54b7f01642d1678f8033c93af47b6afd;
+HOLD SHA2d522923158596a1463823a5f27fa29313bce598656a11c46588affbb26154e9.
+First WHOLE9 remains FAIL200of203: two unrelated unchanged legacy bridge regexes
+outside maintained RTK catalog and the500k test Node default-heap SIGABRT. No
+old assertion or required CI changed. Complete8 used explicit32GiB test heap
+under owned40GB/900s bounds; measured childRUmax3.709GB, sampled aggregate2.123GB.
+This development profile is not production memory or native Word acceptance.
+Seven mechanical bindings and mandatory gates/full delivery follow; native
+500k export, genuine Word roles/exchanges, both origins/scopes, Save/restart/
+UndoRedo and measured release performance remain OPEN. No historical failed
+native-heavy route or machine crash was reproduced. NEXT: close normal delivery,
+then fresh bounded native full export; read-only composed profiling may overlap CI.

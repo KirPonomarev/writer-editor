@@ -5485,7 +5485,10 @@ async function buildDocxReviewPacketBuffer(source) {
     ? await loadRevisionBridgeModule()
     : null;
   if (revisionBridge && source.localAuthorityCapsule?.exportMap?.scenes?.length) {
-    const privateMap = revisionBridge.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap, documentBuffer);
+    const privateMap = revisionBridge.bindUserBookmarkExportTransportPartsV1(
+      source.localAuthorityCapsule.exportMap, documentBuffer,
+      { budgets: docxReviewReturnIntakeProductBudgets() },
+    );
     source.localAuthorityCapsule.exportMap = privateMap;
     if (source.exportMap) source.exportMap = privateMap;
   }

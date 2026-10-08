@@ -515,3 +515,121 @@ test('Finite actual Main content and import preview retain all three-scene liter
   assert.deepEqual(imported.content.map(p=>(p.content||[]).map(n=>n.text||'').join('')),literal);
   assert.equal(JSON.stringify(source),protectedSource);
 });
+
+function retainFullExportProfileEvidence(name,value,bytes){
+  const dir=process.env.YALKEN_FULL_EXPORT_PROFILE_EVIDENCE_DIR;if(!dir)return;
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,name+'.json'),JSON.stringify(value,null,2)+'\n',{flag:'wx'});
+  if(bytes)fs.writeFileSync(path.join(dir,name+'.docx'),bytes,{flag:'wx'});
+}
+function freezeFullExportProfileOperand(value){
+  if(value&&typeof value==='object'&&!Object.isFrozen(value)){
+    Object.values(value).forEach(freezeFullExportProfileOperand);Object.freeze(value);
+  }
+  return value;
+}
+function actualMainFullExportWrapper(context){
+  context.buildDocxReviewPacketBufferCore=buildDocxReviewPacketBuffer;
+  vm.runInContext('async '+declaration('buildDocxReviewPacketBuffer'),context);
+  return source=>context.buildDocxReviewPacketBuffer(source);
+}
+test('Actual Main full export carries the current product profile beyond 5000 paragraphs',async()=>{
+  const literal=Array.from({length:5001},(_,i)=>'Абзац '+i+' 🧑‍💻');
+  const paragraphs=[literal.slice(0,2501),literal.slice(2501)];
+  const {source,bridge,context}=await fixture(paragraphs,{rich:true});
+  const before=clone(source),bytes=buildDocxReviewPacketBuffer(source),bytesBefore=Buffer.from(bytes);
+  const budgets=freezeFullExportProfileOperand(clone(context.docxReviewReturnIntakeProductBudgets()));
+  const parserOptions={cryptoPort:context.createRtkReviewTransportCryptoPort()};
+  const defaultAnalysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},parserOptions);
+  const productAnalysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets},parserOptions);
+  let packet=null,error=null;
+  try{packet=await actualMainFullExportWrapper(context)(source);}catch(caught){error={name:caught.name,message:caught.message,code:caught.code,stack:caught.stack};}
+  retainFullExportProfileEvidence('actual-main-5001',{paragraphs,sourceBefore:before,sourceAfter:source,
+    parserInputs:{bytesSha256:hash(bytes),defaultBudgets:null,productBudgets:budgets},
+    defaultAnalysis,productAnalysis,actualWrapper:{error,packet}},bytes);
+  assert.equal(defaultAnalysis.ok,false);assert.equal(defaultAnalysis.code,'RTK_BUDGET_EXCEEDED');
+  assert.equal(defaultAnalysis.effectiveBudgets.maxBlocks,5000);
+  assert.equal(defaultAnalysis.effectiveBudgets.maxWorkerOutputBytes,16*1024*1024);
+  assert.ok(defaultAnalysis.reasons.some(reason=>reason.code==='RTK_BUDGET_EXCEEDED'
+    &&reason.field==='word/document.xml.blocks'&&reason.actual===5001&&reason.limit===5000));
+  assert.equal(productAnalysis.ok,true,JSON.stringify(productAnalysis.reasons));
+  assert.equal(productAnalysis.effectiveBudgets.maxBlocks,50000);
+  assert.equal(productAnalysis.effectiveBudgets.maxWorkerOutputBytes,64*1024*1024);
+  assert.deepEqual(productAnalysis.reviewIr.formattingParagraphs.map(p=>p.paragraphText),literal);
+  assert.equal(error,null,'Actual Main wrapper rejected: '+error?.message);
+  assert.equal(packet.publicationGate.ok,true,JSON.stringify(packet.publicationGate));
+  assert.equal(packet.publicationGate.publishAllowed,true);
+  assert.equal(packet.publicationGate.provisionalSelfParse.verified,true);
+  assert.equal(packet.publicationGate.finalSelfParse.semanticEquivalent,true);
+  assert.equal(packet.publicationGate.yrtk2Verification.ok,true);
+  assert.equal(packet.publicationGate.finalArtifactSha256,hash(bytes));
+  assert.deepEqual(packet.documentBuffer,bytes);assert.deepEqual(bytes,bytesBefore);
+  assert.deepEqual(clone(packet.exportCapsule),before.exportCapsule);
+  const bound=source.localAuthorityCapsule.exportMap,technical=bound.userBookmarkTechnicalParts;
+  assert.equal(technical.schemaVersion,'yalken.word-user-bookmark-technical-parts.v1');
+  assert.deepEqual(technical.parts.map(p=>p.partName),['customXml/item1.xml','customXml/itemProps1.xml']);
+  const extracted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes});assert.equal(extracted.ok,true);
+  for(const part of technical.parts){assert.equal(part.contentType,'application/xml');assert.equal(part.partSha256,hash(extracted.parts[part.partName]));}
+  assert.deepEqual(technical.relationships,productAnalysis.reviewIr.technicalPartRelationships);
+  assert.deepEqual(bound.scenes.map(scene=>scene.sceneId),before.localAuthorityCapsule.exportMap.scenes.map(scene=>scene.sceneId));
+  const restored=clone(source);restored.localAuthorityCapsule.exportMap=before.localAuthorityCapsule.exportMap;
+  if(Object.hasOwn(before,'exportMap'))restored.exportMap=before.exportMap;
+  assert.deepEqual(restored,before);
+  assert.throws(()=>bridge.bindUserBookmarkExportTransportPartsV1(before.localAuthorityCapsule.exportMap,bytes),/USER_BOOKMARK_EXPORT_PACKAGE_INVALID/u);
+});
+test('Technical binder keeps legacy results immutable and explicit tighter parser budgets effective',async()=>{
+  const {source,bridge,context}=await fixture([['one','two'],['три 🧑‍💻','four']],{rich:true});
+  const bytes=buildDocxReviewPacketBuffer(source),bytesBefore=Buffer.from(bytes),sourceBefore=clone(source);
+  const map=freezeFullExportProfileOperand(clone(source.localAuthorityCapsule.exportMap));
+  const options=freezeFullExportProfileOperand({budgets:clone(context.docxReviewReturnIntakeProductBudgets())});
+  const legacy=bridge.bindUserBookmarkExportTransportPartsV1(map,bytes);
+  const product=bridge.bindUserBookmarkExportTransportPartsV1(map,bytes,options);
+  const fresh=bridge.bindUserBookmarkExportTransportPartsV1(map,bytes,options);
+  assert.deepEqual(product,legacy);assert.deepEqual(fresh,product);assert.notEqual(fresh,product);
+  assert.notEqual(product,map);assert.notEqual(product.scenes,map.scenes);assert.notEqual(fresh.scenes,product.scenes);
+  const refusals=[];
+  for(const budgets of [{maxBlocks:2},{maxWorkerOutputBytes:1024},{maxDocxBytes:1024},{maxInflatedPartBytes:1024}]){
+    freezeFullExportProfileOperand(budgets);
+    const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+    let error=null;try{bridge.bindUserBookmarkExportTransportPartsV1(map,bytes,{budgets});}catch(caught){error={name:caught.name,message:caught.message,stack:caught.stack};}
+    refusals.push({budgets,analysis,error});
+  }
+  const high={maxBlocks:50001,maxWorkerOutputBytes:64*1024*1024+1};
+  const clamped=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:high},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+  const clampedMap=bridge.bindUserBookmarkExportTransportPartsV1(map,bytes,{budgets:high});
+  retainFullExportProfileEvidence('binder-bounds',{sourceBefore,sourceAfter:source,map,options,legacy,product,fresh,refusals,high,clamped,clampedMap},bytes);
+  for(const refusal of refusals){assert.equal(refusal.analysis.ok,false);assert.equal(refusal.analysis.code,'RTK_BUDGET_EXCEEDED');assert.equal(refusal.error?.message,'USER_BOOKMARK_EXPORT_PACKAGE_INVALID');}
+  assert.equal(clamped.ok,true);assert.equal(clamped.effectiveBudgets.maxBlocks,50000);
+  assert.equal(clamped.effectiveBudgets.maxWorkerOutputBytes,64*1024*1024);
+  assert.deepEqual(clamped.budgetClamps.map(item=>item.field).sort(),['maxBlocks','maxWorkerOutputBytes']);
+  assert.deepEqual(clampedMap,legacy);assert.deepEqual(bytes,bytesBefore);assert.deepEqual(clone(source),sourceBefore);
+  assert.deepEqual(map,sourceBefore.localAuthorityCapsule.exportMap);
+  assert.deepEqual(options,{budgets:{maxBlocks:50000,maxWorkerOutputBytes:64*1024*1024}});
+});
+test('Product profile cannot bypass malformed ZIP or actual technical-part content type validation',async()=>{
+  const {source,bridge,context}=await fixture([['unchanged','текст']],{rich:true});
+  const sourceBefore=clone(source),map=freezeFullExportProfileOperand(clone(source.localAuthorityCapsule.exportMap));
+  const bytes=buildDocxReviewPacketBuffer(source),bytesBefore=Buffer.from(bytes);
+  const options=freezeFullExportProfileOperand({budgets:clone(context.docxReviewReturnIntakeProductBudgets())});
+  const extracted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes});assert.equal(extracted.ok,true);
+  const parts={...extracted.parts};
+  parts['[Content_Types].xml']=parts['[Content_Types].xml'].replace('</Types>',
+    '<Override PartName="/customXml/itemProps1.xml" ContentType="text/plain"/></Types>');
+  assert.notEqual(parts['[Content_Types].xml'],extracted.parts['[Content_Types].xml']);
+  const wrongType=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const operands=[{name:'wrong-type',bytes:wrongType,expected:'USER_BOOKMARK_EXPORT_TECHNICAL_PART_INVALID'},
+    {name:'not-zip',bytes:Buffer.from('not a DOCX'),expected:'USER_BOOKMARK_EXPORT_PACKAGE_INVALID'},
+    {name:'truncated',bytes:bytes.subarray(0,bytes.length-3),expected:'USER_BOOKMARK_EXPORT_PACKAGE_INVALID'}];
+  for(const operand of operands){
+    const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:operand.bytes,budgets:options.budgets},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+    let error=null;try{bridge.bindUserBookmarkExportTransportPartsV1(map,operand.bytes,options);}catch(caught){error={name:caught.name,message:caught.message,stack:caught.stack};}
+    retainFullExportProfileEvidence('binder-'+operand.name,{sourceBefore,sourceAfter:source,map,options,expected:operand.expected,analysis,error},operand.bytes);
+    if(operand.name==='wrong-type'){
+      assert.equal(analysis.ok,true,JSON.stringify(analysis.reasons));
+      assert.equal(analysis.reviewIr.opaqueUnsupported.find(item=>item.partName==='customXml/itemProps1.xml').contentType,'text/plain');
+    }else assert.equal(analysis.ok,false);
+    assert.equal(error?.message,operand.expected);
+  }
+  assert.deepEqual(bytes,bytesBefore);assert.deepEqual(clone(source),sourceBefore);
+  assert.deepEqual(map,sourceBefore.localAuthorityCapsule.exportMap);
+});
