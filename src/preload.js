@@ -43,6 +43,12 @@ function normalizeRequestPayload(value) {
 const COMMAND_BRIDGE_TIMEOUT_MS = 120000;
 const QUERY_BRIDGE_TIMEOUT_MS = 30000;
 
+function commandBridgeTimeoutMs(commandId) {
+  return commandId === 'cmd.project.review.openDocxReviewPreviewSession'
+    ? 600000
+    : COMMAND_BRIDGE_TIMEOUT_MS;
+}
+
 function invokeUiCommand(commandId, payload = {}) {
   const envelope = createEnvelope(
     UI_COMMAND_BRIDGE_CHANNEL,
@@ -51,7 +57,7 @@ function invokeUiCommand(commandId, payload = {}) {
   );
   return withTimeoutBudget(
     () => ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, envelope),
-    { timeoutMs: COMMAND_BRIDGE_TIMEOUT_MS, correlationId: envelope.correlationId },
+    { timeoutMs: commandBridgeTimeoutMs(envelope.commandId), correlationId: envelope.correlationId },
   );
 }
 
@@ -220,7 +226,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     const envelope = createEnvelope(UI_COMMAND_BRIDGE_CHANNEL, commandId, payload);
     return withTimeoutBudget(
       () => ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, envelope),
-      { timeoutMs: COMMAND_BRIDGE_TIMEOUT_MS, correlationId: envelope.correlationId },
+      { timeoutMs: commandBridgeTimeoutMs(envelope.commandId), correlationId: envelope.correlationId },
     );
   },
   invokeWorkspaceQueryBridge: (request) => {
