@@ -1,11 +1,12 @@
 TASK_ID: WORD_SCENE_PENDING_EXPORT_PERFORMANCE_MAC_20261008
 MILESTONE: macOS large-novel Word exchange; bounded scene-export performance step
 TYPE: CORE
-STATUS: CODE_AND_WINDOWS_REPAIR_FROZEN_DELIVERY_OPEN
+STATUS: TAP_COMPATIBILITY_SOURCE_FROZEN_DELIVERY_OPEN
 CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 BINDING_BASE_SHA: 092387eae3a0a6ee606fdbe100ee0828c58b40a2
 WINDOWS_ARGV_REPAIR_BINDING_HEAD: 9d30eb0e15b7af7fd4f958643f7d59f440f7a7f9
+TAP_COMPATIBILITY_REPAIR_BINDING_HEAD: 9addf3eda7ce4b5e2f0dbf58b2887316c4d4f8c9
 BRANCH: codex/word-scene-export-projection-perf-mac-20261008
 COMMIT_REQUIRED: true
 PUSH_REQUIRED: true
@@ -102,7 +103,7 @@ SECURITY_INPUT: current raw input validation and bounds remain unchanged.
 HOT_PATH: no new work on input; queries reused only after the last annotation await
 inside one synchronous readSource body. Each invocation must query Core again.
 PERFORMANCE: one proof process lane,900s finite groups,40,000,000,000-byte development
-RSS limit. Old path is exercised only at10/20/40 paragraphs. Production30s/512MiB
+RSS limit. Old path is exercised only at10/20/40 paragraphs. Isolated package gate30s/512MiB
 and full native novel matrix remain OPEN. No arbitrary timing threshold.
 ACCESSIBILITY: no UI, focus, keyboard, locale or visual changes.
 MIGRATION_ROLLBACK: no migration; one ordinary PR/revert of this contour.
@@ -237,6 +238,47 @@ Main and product test remain held. Writer HOLD SHA3da33b3908b8c455efe7e8330bc57a
 Three whole contracts must execute at the clean follow-up candidate before push;
 final mandatory gates, fresh official Windows/all CI, merge and merged proof OPEN.
 Original full novel/native roles/scopes/five exchanges and save/redo remain OPEN.
+
+TAP_COMPATIBILITY_DELIVERY_REPAIR:
+
+Same PR2094 and original base092387; clean repair head9addf3, tree90eb588c.
+Official run37744490548 Windows C1A succeeded. Both full RTK lanes actually
+passed4008of4008 tests, then the unchanged mandatory TAP parser refused3994
+column-zero status records versus4008 total. All14 indented records originate
+in the102-line appended Windows regression. A pure read of retained clean9add
+whole3 TAP likewise refuses376 records versus390 tests; no heavy failure replay.
+
+Separate writer may refactor ONLY that existing appended suffix, within160
+resulting lines. The first96611bytes remain exact SHA08ade5c40194102b6500d51882f58cd5b3c3de6457acdfbb4366b3f97e8028da.
+Replace one parent plus14 nested cases with15 top-level tests: setup invariants,
+3real-Git cases, complete mutable drift,4immutable refusals and6tamper controls.
+Keep every assertion, actual exported verifier, real fixture isolation/cleanup,
+optional physical evidence, refusal ordering and complete denominator semantics.
+Use fresh private setup per case; no global mutable fixture or trusted bypass.
+No runner/workflow/gate/validator change, excluded test or count padding.
+Main, original unit test and DATA behavior remain frozen; root may refresh only
+its policy SHA. Same14paths,623admitted paths,481qualified identities and1597
+inventory entries. Preserve all232 committed certificate tuples byte-exact;
+append one nonrecursive successor at9addf3. No new feature contour is opened.
+
+Sequence: fresh clean declaration/preflight; amended task E0; pinned writer
+release; suffix edit then HOLD. Root independently reviews every assertion and
+prefix, refreshes four concise docs and seven mechanical companions, then runs
+required precommit gates and creates a normal clean follow-up candidate commit.
+At that exact committed HEAD run ONE complete four-file union with explicit TAP:
+rtk-interop-100-denominator.contract.test.js; rtk-test-graph-catalog.contract.test.js;
+r24-post-audit-certification-set.contract.test.mjs;
+r24-post-audit-corrections.contract.test.mjs. This executes all planned whole2
+and whole3 coverage once with the same clean source, preserving every required
+oracle and avoiding duplicate denominator work. No test-name filter. Execute
+the unchanged mandatory parser on the full retained output; preserve all three
+fresh tiny real-Git bundles and independently review them. Then normal push,
+fresh full official CI, ordinary merge and exact merged verification. Never
+substitute uncommitted git-show, synthetic output, exclusions or Node exit0 for
+mandatory TAP compatibility. Final source suffix127lines;17assertion statements
+match the old suffix ignoring whitespace, all14cases plus setup retained.
+This is static source evidence only; candidate behavior proof remains pending.
+Original full-novel native matrix, Save/Redo performance and release remain OPEN.
 
 ## STOP_CONDITION
 

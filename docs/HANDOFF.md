@@ -3008,3 +3008,20 @@ Three whole contracts require the clean follow-up candidate after final bindings
 and seven precommit gates, before push; no uncommitted Git overlay. PR2094 fresh
 official Windows/all CI, merge and exact merged proof remain OPEN. Original full
 novel/native matrix and save/redo remain OPEN; no overall release claim.
+
+## 2026-10-08 — same PR2094 TAP compatibility repair; source frozen
+
+At clean repair binding9addf3 (original base/main092387), official run37744490548
+Windows C1A succeeded; both RTK lanes passed4008of4008 but the unchanged mandatory
+parser refused3994 top-level records. Retained whole3 pure parser diagnosis also
+refuses376versus390; no heavy failed run replay. Only the existing Windows test
+suffix is flattened:127lines,15top-level cases, all17assertion statements and14
+behavior scenarios retained; original96611byte prefix remains exact. Main/unit,
+DATA behavior, runner and workflows are frozen. Same14paths,623admitted paths,
+481binding identities and1597inventory entries;232historical certificate tuples
+stay byte-exact with one nonrecursive successor. Root source review is static,
+not behavior/native acceptance. One clean committed whole4 union covers both
+planned test groups without repeating the denominator; all required gates, fresh
+full official CI, merge and exact merged verification remain delivery steps.
+Save optimisation and original full-novel role/exchange/release matrix remain
+OPEN.40GB is a development ceiling;30s/512MiB belongs to the isolated package gate.
