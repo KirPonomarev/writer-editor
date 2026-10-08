@@ -19,7 +19,7 @@ function setReturnedBody(message, body) {
   }
 }
 
-async function fixture({ twoThreads = false, empty = false, threeReplies = false, richBreak = false, multi = false } = {}) {
+async function fixture({ twoThreads = false, empty = false, threeReplies = false, richBreak = false, multi = false, legacySizeOnly = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -44,6 +44,16 @@ async function fixture({ twoThreads = false, empty = false, threeReplies = false
   const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: state,
     scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text:paragraphTexts.join('\n'),
       doc: { type: 'doc', content: paragraphTexts.map(text=>({ type: 'paragraph', content: [{ type: 'text', text }] })) } }] });
+  if (legacySizeOnly) {
+    // These historical bare-XML and inheritance fixtures model size-only V1.
+    // This explicit synthetic adapter is not an authenticated legacy export;
+    // the actual fresh full-manuscript producer and all other fixtures stay V2.
+    const exportTypography = {schemaVersion:'yalken.review-docx.typography-defaults.v1',fontSize:'12pt'};
+    source.exportTypography = exportTypography;
+    source.commentExport = require('../../src/export/docx/docxReviewPacketComments.js')
+      .buildCanonicalCommentExport(state, source.blocks, state.projectId, {exportTypography});
+    source.localAuthorityCapsule.exportMap.exportTypography = exportTypography;
+  }
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const bytes = buildDocxReviewPacketBuffer(source);
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
@@ -169,8 +179,8 @@ test('last-thread absence reaches a diagnostic preview only with the local authe
     { authenticatedCommentExport: input.baseline }).reviewPacket, null);
 });
 
-test('Word proofing language is retained as rich authoring data and unsafe metadata remains refused', async () => {
-  const { bytes, input, state } = await fixture();
+test('legacy V1: Word proofing language is retained as rich authoring data and unsafe metadata remains refused', async () => {
+  const { bytes, input, state } = await fixture({legacySizeOnly:true});
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
@@ -212,8 +222,8 @@ test('Word proofing language is retained as rich authoring data and unsafe metad
   ]) assert.equal(analyze(bad).parsed.reviewIr.commentBodyGrammar.status, 'UNSUPPORTED', bad);
 });
 
-test('native Unicode reply font fallback survives typed rich return', async () => {
-  const { bytes, input, state } = await fixture();
+test('legacy V1: native Unicode reply font fallback survives typed rich return', async () => {
+  const { bytes, input, state } = await fixture({legacySizeOnly:true});
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
@@ -271,8 +281,8 @@ test('new reply uses a fresh local identity and preserves the parent/root', asyn
   assert.equal(after.threads[0].messages[2].body, 'New reply');
 });
 
-test('native Word reply style resolves and preserves definitions, defaults and parent', async () => {
-  const { bytes, input, state } = await fixture();
+test('legacy V1: native Word reply style resolves and preserves definitions, defaults and parent', async () => {
+  const { bytes, input, state } = await fixture({legacySizeOnly:true});
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
@@ -725,7 +735,7 @@ test('export-only explicit UTC transport survives return without rewriting canon
 });
 
 test('format-only root and reply deltas upgrade state, replay exactly and explicitly clear stale rich content', async () => {
-  const { input, state } = await fixture();
+  const { input, state, source } = await fixture();
   const enriched = structuredClone(input.returnedThreads);
   const rich = (body, type) => ({ schemaVersion:'yalken.word.comment-body.v1', document:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:body,marks:[{type}]}]}]} });
   enriched[0].richBody = rich(enriched[0].body,'bold');
@@ -737,7 +747,9 @@ test('format-only root and reply deltas upgrade state, replay exactly and explic
   assert.equal(after.threads[0].messages[0].body,state.threads[0].messages[0].body);
   assert.deepEqual(after.threads[0].messages[0].provenance,state.threads[0].messages[0].provenance);
   assert.equal(plan({...changedInput,beforeText:result.afterText}).replay,true);
-  const clearInput={...input,beforeText:result.afterText,roundId:'clear-rich-format',artifactSha256:'e'.repeat(64),baseline:{...input.baseline,stateDigest:hash(stable(after)),stateRevision:after.revision,threads:input.baseline.threads.map((t,i)=>({...t,messages:t.messages.map((m,j)=>({...m,richBody:after.threads[i].messages[j].richBody}))}))}};
+  const clearBaseline = require('../../src/export/docx/docxReviewPacketComments.js')
+    .buildCanonicalCommentExport(after, source.blocks, input.projectId, {exportTypography:input.exportMap.exportTypography});
+  const clearInput={...input,beforeText:result.afterText,roundId:'clear-rich-format',artifactSha256:'e'.repeat(64),baseline:clearBaseline};
   clearInput.returnedThreads=structuredClone(input.returnedThreads);
   delete clearInput.returnedThreads[0].richBody;delete clearInput.returnedThreads[0].replies[0].richBody;
   const cleared=plan(clearInput), final=JSON.parse(cleared.afterText);
@@ -748,8 +760,8 @@ test('format-only root and reply deltas upgrade state, replay exactly and explic
   assert.throws(()=>plan(malformed),/COMMENT_BODY_PROJECTION_MISMATCH/);
 });
 
-test('prior-round baseline lacking rich transport projection derives only its authenticated export typography',async()=>{
- const {input}=await fixture();for(const thread of input.baseline.threads)for(const message of thread.messages)delete message.transportRichBody;
+test('legacy V1: prior-round baseline lacking rich transport projection derives only its authenticated export typography',async()=>{
+ const {input}=await fixture({legacySizeOnly:true});for(const thread of input.baseline.threads)for(const message of thread.messages)delete message.transportRichBody;
  const before=input.beforeText;
  assert.equal(plan(input).unchanged,true);assert.equal(plan(input).afterText,before);
  const changed=structuredClone(input);

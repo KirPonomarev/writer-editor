@@ -58,16 +58,31 @@ function retainedProvenance(message, old) {
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
   baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory, textChanges = [], pendingScenes = [], mixedPendingScene = null, mixedPendingScenes = null, notesText = null, noteContext = null }) {
-  require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
+  const typography = require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
     && Array.isArray(baseline.threads) && baseline.threads.length <= COMMENT_CAPACITY.threads,
   'COMMENT_RETURN_BASELINE_REQUIRED');
+  demand(baseline.threads.reduce((n,t)=>n+(t?.messages?.length||0),0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_BASELINE_REQUIRED');
+  if (typography?.schemaVersion === 'yalken.review-docx.typography-defaults.v2') {
+    // Refuse old/partial V2 expectations before returned graph interpretation,
+    // including no-op/replay. Only authenticated canonical SOURCE owns defaults.
+    try {
+      for (const thread of baseline.threads) {
+        demand(Array.isArray(thread.messages),'COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN');
+        for (const message of thread.messages) {
+          const content = validateCommentMessageContent(message);
+          const stored = Object.getOwnPropertyDescriptor(message,'transportRichBody');
+          demand(stored && Object.hasOwn(stored,'value') && commentBodyEqual({body:content.body,richBody:stored.value},
+            {body:content.body,richBody:commentBodyWithTypography(content,typography)}),'COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN');
+        }
+      }
+    } catch { fail('COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN'); }
+  }
   demand(Array.isArray(returnedThreads) && returnedThreads.length <= COMMENT_CAPACITY.threads
     && Array.isArray(returnedParagraphs) && Array.isArray(exportMap?.scenes), 'COMMENT_RETURN_GRAPH_INCOMPLETE');
   demand(returnedThreads.every(t=>plain(t)&&Array.isArray(t.replies)) && returnedThreads.reduce((n,t)=>n+1+t.replies.length,0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_GRAPH_UNSAFE');
-  demand(baseline.threads.reduce((n,t)=>n+(t?.messages?.length||0),0)<=COMMENT_CAPACITY.messages,'COMMENT_RETURN_BASELINE_REQUIRED');
   demand(Array.isArray(textChanges),'COMMENT_RETURN_TEXT_PROOF_INVALID');
   textChanges = [...textChanges];
   const before = readState(beforeText, projectId);

@@ -899,3 +899,158 @@ test('single full manuscript actual Main publication rejects incomplete local V2
   assert.equal(result.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.match(result.reason,/PENDING_NOTE_(?:BREAK_BASELINE_REQUIRED|BASELINE_MISMATCH)/);
  }
 });
+
+async function commentTypographyFixture({rich=false}={}) {
+ const [,bridge]=await modules,authoring=require('../../src/core/word-comment-authoring-v1.cjs');
+ const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Anchor writer keeps this sentence.'}]},{type:'paragraph'},
+  {type:'paragraph',content:[{type:'text',text:'After empty paragraph.'},{type:'hardBreak'},{type:'text',text:'Final proofreader unchanged line.'}]}]};
+ const projectId='comment-typography-v2',state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{
+  threadId:'native-writer-question',rootCommentId:'native-writer-root',sceneId,status:'open',
+  anchor:authoring.exactAnchor({paragraphIndex:2,startUtf16:23,selectedText:'Final'},sceneId,['Anchor writer keeps this sentence.','','After empty paragraph.\nFinal proofreader unchanged line.']),
+  messages:[{commentId:'native-writer-root',kind:'root',body:'Writer asks the editor to verify this ending.',provenance:{author:'Writer'}}]}]};
+ if(rich) {
+  state.schemaVersion='yalken.rtk.word.non-text-return-state.v2';
+  const richBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[
+   {type:'paragraph',attrs:{textAlign:'right',wordParagraphIndent:{left:720},wordParagraphSpacing:{before:80,after:140,line:300,lineRule:'auto'},
+    wordParagraphMarkTypography:{fontFamily:'Georgia',fontSize:'14pt'},wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'}},content:[
+     {type:'text',text:'First',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'13pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'}}}]},
+     {type:'hardBreak',marks:[{type:'italic'},{type:'textStyle',attrs:{fontFamily:'Arial',fontSize:'15pt',wordLanguage:{bidi:'he-IL'}}}]},{type:'text',text:'after'}]},
+   {type:'paragraph'},
+   {type:'paragraph',attrs:{wordParagraphMarkTypography:{fontSize:'16pt',fontSlots:{ascii:'Georgia'}}},content:[{type:'text',text:'Last link',marks:[{type:'link',attrs:{href:'https://example.invalid/comment'}},{type:'underline'}]},
+    {type:'hardBreak',marks:[{type:'strike'}]},{type:'text',text:'Done',marks:[{type:'italic'}]}]}]}};
+  const content=require('../../src/core/word-comment-body-v1.cjs').validateCommentRichBody(richBody);
+  state.threads[0].messages.push({commentId:'rich-editor-reply',kind:'reply',...content,provenance:{author:'Editor'}});
+  state.threads.push({threadId:'rich-proofreader-root',rootCommentId:'rich-proofreader-message',sceneId,status:'open',
+   anchor:authoring.exactAnchor({paragraphIndex:0,startUtf16:7,selectedText:'writer'},sceneId,['Anchor writer keeps this sentence.']),
+   messages:[{commentId:'rich-proofreader-message',kind:'root',...structuredClone(content),provenance:{author:'Proofreader'}}]});
+ }
+ const before={doc:structuredClone(doc),state:structuredClone(state)},f=actualBodyPublication(doc,bridge,{projectId,nonTextReturnState:state});
+ return {...f,doc,state,before,bridge};
+}
+function foreignCommentDefaults(f) {
+ const parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts};
+ const defaults='<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>';
+ const old=parts['word/styles.xml'];parts['word/styles.xml']=old.replace(/<w:docDefaults>[^]*?<\/w:docDefaults>/u,defaults);
+ assert.notEqual(parts['word/styles.xml'],old);
+ return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+}
+function commentTypographyDelta(f,bytes) {
+ const analysis=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true,JSON.stringify(analysis));
+ const input={beforeText:JSON.stringify(f.state,null,2)+'\n',projectId:f.state.projectId,roundId:f.source.localAuthorityCapsule.roundId,
+  artifactSha256:hash(bytes),baseline:f.source.commentExport,exportMap:f.source.localAuthorityCapsule.exportMap,
+  returnedThreads:analysis.reviewIr.commentThreads,returnedParagraphs:analysis.reviewIr.formattingParagraphs,commentReturnInventory:analysis.reviewIr.commentReturnInventory};
+ return {analysis,input,result:require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta(input)};
+}
+function retainCommentTypographyEvidence(name,f,bytes,observations) {
+ const root=process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT;if(!root)return;
+ const dir=path.join(root,hash(name));fs.mkdirSync(dir,{recursive:true});
+ const entries={'original.docx':f.bytes,'returned.docx':bytes,'provisional.docx':f.source.provisionalSelfParseArtifact.bytes,
+  'canonical-before.json':JSON.stringify(f.before,null,2)+'\n','canonical-after.json':JSON.stringify({doc:f.doc,state:f.state},null,2)+'\n',
+  'source.json':JSON.stringify(f.source,null,2)+'\n','observations.json':JSON.stringify({name,...observations},null,2)+'\n'};
+ const files=Object.entries(entries).map(([name,content])=>{fs.writeFileSync(path.join(dir,name),content);return {name,bytes:Buffer.byteLength(content),sha256:hash(content)};});
+ fs.writeFileSync(path.join(dir,'files.json'),JSON.stringify(files,null,2)+'\n');
+}
+test('finite V2 plain comment survives SOURCE33 document defaults without a false message delta',async t=>{
+ const f=await commentTypographyFixture(),returned=foreignCommentDefaults(f),delta=commentTypographyDelta(f,returned);
+ const gate=await f.publish(f.bytes);retainCommentTypographyEvidence(t.name,f,returned,{...delta,publicationGate:gate});
+ assert.equal(delta.result.unchanged,true,JSON.stringify(delta.result.changes));
+ assert.equal(delta.result.afterText,delta.input.beforeText);
+ assert.deepEqual({doc:f.doc,state:f.state},f.before);
+ const readback=require('../../src/export/docx/docxReviewPacketComments.js').compareCommentExportReadback(f.source.commentExport,delta.analysis.reviewIr.commentThreads);
+ assert.equal(readback.ok,true,JSON.stringify(readback));
+ assert.equal(gate.publishAllowed,true,JSON.stringify(gate));
+ assert.equal(gate.commentProofs.length,2);
+});
+test('finite V2 rich root and reply preserve complete authored paragraphs, marks, languages, links and breaks',async t=>{
+ const f=await commentTypographyFixture({rich:true}),returned=foreignCommentDefaults(f),delta=commentTypographyDelta(f,returned);
+ const gate=await f.publish(f.bytes);retainCommentTypographyEvidence(t.name,f,returned,{...delta,publicationGate:gate});
+ assert.equal(delta.result.unchanged,true,JSON.stringify(delta.result));assert.equal(delta.result.afterText,delta.input.beforeText);
+ assert.deepEqual({doc:f.doc,state:f.state},f.before);
+ for(const message of [delta.analysis.reviewIr.commentThreads[0].replies[0],delta.analysis.reviewIr.commentThreads[1]]) {
+  const [first,blank,last]=message.richBody.document.content;
+  assert.deepEqual(first.attrs,{textAlign:'right',wordParagraphIndent:{left:720},wordParagraphSpacing:{before:80,after:140,line:300,lineRule:'auto'},
+   wordParagraphMarkTypography:{fontFamily:'Georgia',fontSize:'14pt'},wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'}});
+  assert.deepEqual(first.content[0].marks,[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'13pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'}}}]);
+  assert.deepEqual(first.content[1],{type:'hardBreak',marks:[{type:'italic'},{type:'textStyle',attrs:{fontFamily:'Arial',fontSize:'15pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]});
+  assert.equal(blank.content,undefined);assert.deepEqual(blank.attrs.wordParagraphMarkTypography,{fontFamily:'Times New Roman',fontSize:'12pt'});
+  assert.equal(last.attrs.wordParagraphMarkTypography.fontSize,'16pt');assert.equal(last.content[0].marks.find(m=>m.type==='link').attrs.href,'https://example.invalid/comment');
+  assert.deepEqual(last.attrs.wordParagraphMarkTypography.fontSlots,{ascii:'Georgia',hAnsi:'Times New Roman',eastAsia:'Times New Roman',cs:'Times New Roman'});
+  assert.equal(last.content[1].marks.some(m=>m.type==='strike'),true);
+ }
+ const originalParts=storedParts(f.bytes),returnedParts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:returned}).parts;
+ for(const part of originalParts)if(part.name!=='word/styles.xml')assert.equal(returnedParts[part.name],part.data.toString(),part.name);
+ const xml=returnedParts['word/comments.xml'];assert.match(xml,/<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"\/>/u);
+ assert.match(xml,/<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"\/>/u);
+ assert.equal(gate.publishAllowed,true,JSON.stringify(gate));assert.equal(gate.commentProofs.length,2);
+});
+for(const fault of ['missing','old-12pt-only','partial','mismatch'])
+test('finite V2 comment baseline refuses before delta or no-op interpretation: '+fault,async t=>{
+ const f=await commentTypographyFixture(),{input}=commentTypographyDelta(f,f.bytes);input.baseline=structuredClone(input.baseline);
+ const message=input.baseline.threads[0].messages[0],failures=[];
+ if(fault==='missing')delete message.transportRichBody;
+ if(fault==='old-12pt-only')message.transportRichBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{
+  type:'paragraph',content:[{type:'text',text:message.body,marks:[{type:'textStyle',attrs:{fontSize:'12pt'}}]}]}]}};
+ if(fault==='partial')delete message.transportRichBody.document.content[0].attrs;
+ if(fault==='mismatch')message.transportRichBody.document.content[0].content[0].marks[0].attrs.fontSize='14pt';
+ const before=JSON.stringify(input);
+ assert.throws(()=>buildDocxReviewPacketBuffer({...f.source,commentExport:input.baseline}),/DOCX_COMMENT_TRANSPORT_BASELINE_UNPROVEN/u);
+ for(const returnedThreads of [input.returnedThreads,[]])assert.throws(()=>require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta({...input,returnedThreads}),
+  error=>{failures.push({code:error.code,returnedThreadCount:returnedThreads.length});return error.code==='COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN';});
+ assert.equal(JSON.stringify(input),before);assert.deepEqual({doc:f.doc,state:f.state},f.before);
+ retainCommentTypographyEvidence(t.name,f,f.bytes,{qualification:'STALE_LOCAL_BASELINE_FAULT_INJECTION_VALID_ORIGINAL_UNCHANGED',input,failures});
+});
+test('finite V2 emitter and delta reject accessor transport without executing it',async()=>{
+ const f=await commentTypographyFixture(),{input}=commentTypographyDelta(f,f.bytes);input.baseline=structuredClone(input.baseline);
+ const message=input.baseline.threads[0].messages[0];let reads=0;
+ Object.defineProperty(message,'transportRichBody',{enumerable:true,get(){reads++;throw Error('TRANSPORT_GETTER_EXECUTED');}});
+ assert.throws(()=>buildDocxReviewPacketBuffer({...f.source,commentExport:input.baseline}),/DOCX_COMMENT_TRANSPORT_BASELINE_UNPROVEN/u);
+ assert.throws(()=>require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta(input),error=>error.code==='COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN');
+ assert.equal(reads,0);assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});
+for(const operation of ['font','language','paragraph-spacing','body','reply-body','anchor','status'])
+test('finite V2 strict actual ZIP return retains real comment operation: '+operation,async t=>{
+ const f=await commentTypographyFixture({rich:true}),parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts};
+ const original=JSON.stringify(parts),rootId=f.source.commentExport.threads[0].messages[0].commentId;
+ if(operation==='font')parts['word/comments.xml']=parts['word/comments.xml'].replace(/(<w:r><w:rPr>[^]*?)<w:rFonts[^>]*\/>/u,
+  '$1<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>');
+ if(operation==='language')parts['word/comments.xml']=parts['word/comments.xml'].replace('w:val="en-US"','w:val="ru-RU"');
+ if(operation==='paragraph-spacing')parts['word/comments.xml']=parts['word/comments.xml'].replace('w:after="0"','w:after="220"');
+ if(operation==='body')parts['word/comments.xml']=parts['word/comments.xml'].replace('verify this ending.','confirm this ending.');
+ if(operation==='reply-body')parts['word/comments.xml']=parts['word/comments.xml'].replace('>First<','>Edited<');
+ if(operation==='anchor') {
+  const start=`<w:commentRangeStart w:id="${rootId}"/>`;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p\b[^>]*>[^]*?<\/w:p>/gu,p=>p.includes(start)?p.replace(start,'').replace('</w:pPr>','</w:pPr>'+start):p);
+ }
+ if(operation==='status')parts['word/commentsExtended.xml']=parts['word/commentsExtended.xml'].replace('w15:done="0"','w15:done="1"');
+ assert.notEqual(JSON.stringify(parts),original,operation);
+ const returned=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),delta=commentTypographyDelta(f,returned);
+ retainCommentTypographyEvidence(t.name,f,returned,delta);
+ assert.equal(delta.result.unchanged,undefined);assert.equal(delta.result.changes.length,1);
+ const changed=JSON.parse(delta.result.afterText).threads[0],message=changed.messages[0];
+ if(operation==='font')assert.equal(message.richBody.document.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.fontFamily,'Arial');
+ if(operation==='language')assert.equal(message.richBody.document.content[0].attrs.wordParagraphMarkLanguage.val,'ru-RU');
+ if(operation==='paragraph-spacing')assert.equal(message.richBody.document.content[0].attrs.wordParagraphSpacing.after,220);
+ if(operation==='body')assert.equal(message.body,'Writer asks the editor to confirm this ending.');
+ if(operation==='reply-body')assert.equal(changed.messages[1].body,f.state.threads[0].messages[1].body.replace('First','Edited'));
+ if(operation==='anchor'){assert.equal(changed.anchor.startUtf16,0);assert.equal(delta.result.changes[0].anchorChanged,true);}
+ if(operation==='status')assert.equal(changed.status,'resolved');
+ assert.deepEqual(JSON.parse(delta.result.afterText).threads[1],f.state.threads[1]);assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});
+test('undefined and V1 comment emission and missing-transport fallback match exact checkpoint code',async t=>{
+ const cp=require('node:child_process'),Module=require('node:module'),checkpoint='1e732ff9e852ba7dbfdf8edef5f1a6037e605359';
+ const oldModule=relative=>{const filename=path.resolve(__dirname,'../..',relative),loaded=new Module(filename,module);loaded.filename=filename;loaded.paths=module.paths;
+  loaded._compile(cp.execFileSync('git',['show',checkpoint+':'+relative],{encoding:'utf8'}),filename);return loaded.exports;};
+ const oldComments=oldModule('src/export/docx/docxReviewPacketComments.js'),oldDelta=oldModule('src/core/word-comment-return-delta-v1.cjs'),comments=require('../../src/export/docx/docxReviewPacketComments.js'),f=await commentTypographyFixture();
+ for(const profile of [undefined,typography]) {
+  const projection=comments.buildCanonicalCommentExport(f.state,f.source.blocks,f.state.projectId,{exportTypography:profile});
+  const expected=oldComments.commentPackageParts(projection),actual=comments.commentPackageParts(projection,profile);
+  assert.equal(JSON.stringify(actual),JSON.stringify(expected));
+  const source={...f.source,exportTypography:profile,commentExport:projection,localAuthorityCapsule:{...f.source.localAuthorityCapsule,
+   exportMap:{...f.source.localAuthorityCapsule.exportMap,exportTypography:profile}}},legacy={...f,source},bytes=buildDocxReviewPacketBuffer(source),delta=commentTypographyDelta(legacy,bytes);
+  for(const thread of delta.input.baseline.threads)for(const message of thread.messages)delete message.transportRichBody;
+  const before=JSON.stringify(delta.input),old=oldDelta.planCommentReturnDelta(delta.input),current=require('../../src/core/word-comment-return-delta-v1.cjs').planCommentReturnDelta(delta.input);
+  assert.equal(JSON.stringify(current),JSON.stringify(old));assert.equal(JSON.stringify(delta.input),before);
+  retainCommentTypographyEvidence(t.name+':'+(profile?'v1':'undefined'),{...legacy,bytes},bytes,{...delta,legacyExpectedParts:expected,legacyActualParts:actual,oldDelta:old,currentDelta:current});
+ }
+ assert.deepEqual({doc:f.doc,state:f.state},f.before);
+});

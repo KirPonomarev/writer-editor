@@ -856,7 +856,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
   if (new Set(customPropertyNames).size !== customPropertyNames.length) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_DUPLICATE');
   }
-  const comments = commentPackageParts(input.commentExport);
+  const comments = commentPackageParts(input.commentExport, input.exportTypography);
   const stories = require('./docxReviewPacketStories.js').storyPackageParts(input.documentStories, {firstNumId:1000000});
   const notes = notePackageParts(input.documentNotes, { firstNumId: Math.max(0, ...numberingDefinitions.map(n => n.numId)) + 1 });
   numberingDefinitions.push(...[...notes.numberings, ...stories.numberings].map(n => ({ ...n, kind: n.kind === 'orderedList' ? 'ordered' : 'bullet' })));

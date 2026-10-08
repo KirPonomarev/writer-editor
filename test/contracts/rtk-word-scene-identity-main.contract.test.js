@@ -1266,6 +1266,53 @@ for(const variant of ['typed-failure','formatting-failure','secret-filter','canc
   assert.equal(JSON.stringify({statuses:out.statuses,logs:logger.records}).includes('private manuscript'),false);
 });
 
+// These are literal Word-return fixture children, never authenticated SOURCE.
+// Preserve all previously emitted comments, including other-scene messages.
+function appendForeignWordReply(parts, projection, thread, reply) {
+  assert.equal(Object.hasOwn(reply, 'transportRichBody'), false, 'a new Word reply has no SOURCE transport authority');
+  const generated = require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts({
+    schemaVersion: projection.schemaVersion, threads: [{ ...thread, messages: [thread.messages[0], reply] }],
+  }).entries;
+  const specs = [
+    ['word/comments.xml', /<w:comment\b[^>]*>[\s\S]*?<\/w:comment>/gu, `w:id="${reply.commentId}"`, '</w:comments>'],
+    ['word/commentsExtended.xml', /<w15:commentEx\b[^>]*\/>/gu, `w15:paraId="${reply.paraId}"`, '</w15:commentsEx>'],
+    ['word/commentsIds.xml', /<w16cid:commentId\b[^>]*\/>/gu, `w16cid:paraId="${reply.paraId}"`, '</w16cid:commentsIds>'],
+    ['word/commentsExtensible.xml', /<w16cex:commentExtensible\b[^>]*\/>/gu, `w16cex:durableId="${reply.durableId}"`, '</w16cex:commentsExtensible>'],
+  ];
+  for (const [name, pattern, identity, close] of specs) {
+    const emitted = generated.find(entry => entry.name === name).data;
+    const children = [...emitted.matchAll(pattern)].map(match => match[0]).filter(child => child.includes(identity));
+    assert.equal(children.length, 1, name + ' has one new reply child');
+    const prior = parts[name]; assert.ok(prior.endsWith(close), name);
+    assert.equal(prior.includes(identity), false, name + ' new identity is absent from SOURCE');
+    parts[name] = prior.slice(0, -close.length) + children[0] + close;
+    assert.equal(parts[name].replace(children[0], ''), prior, name + ' every existing child stays byte-exact');
+  }
+}
+
+function retainSceneCommentReturnEvidence(t, label, f, source, originalBytes, returnedBytes, bridge, beforeCapture, activation, extra = {}) {
+  const root = process.env.YALKEN_WORD_COMMENT32_SCENE_EVIDENCE_ROOT; if (!root) return;
+  const dir = path.join(root, sha(t.name + '\0' + label)); fs.mkdirSync(dir, { recursive: true });
+  const cryptoPort = { sha256Text: value => 'sha256:' + sha(value), sha256Json: value => 'sha256:' + sha(JSON.stringify(value)), byteLength: value => Buffer.byteLength(value) };
+  const analyze = bytes => bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort });
+  const childHashes = bytes => {
+    const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
+    return Object.fromEntries(['word/comments.xml', 'word/commentsExtended.xml', 'word/commentsIds.xml', 'word/commentsExtensible.xml'].map(name =>
+      [name, [...(parts[name] || '').matchAll(/<(?:w:comment\b[^>]*>[\s\S]*?<\/w:comment|w15:commentEx\b[^>]*\/|w16cid:commentId\b[^>]*\/|w16cex:commentExtensible\b[^>]*\/)>/gu)].map(match => ({ xml: match[0], sha256: sha(match[0]) }))]));
+  };
+  const entries = { 'original.docx': originalBytes, 'returned.docx': returnedBytes,
+    'source.json': { exportTypography: source.exportTypography, commentExport: source.commentExport, localAuthorityCapsule: source.localAuthorityCapsule },
+    'canonical-before.json': beforeCapture, 'canonical-after-preview.json': f.capture(),
+    'original-readback.json': analyze(originalBytes), 'returned-readback.json': analyze(returnedBytes),
+    'observations.json': { name: t.name, label, kind: 'SYNTHETIC_REAL_MAIN_FIXTURE_NOT_NATIVE', activation,
+      originalCommentChildren: childHashes(originalBytes), returnedCommentChildren: childHashes(returnedBytes), ...extra } };
+  const files = Object.entries(entries).map(([name, value]) => {
+    const bytes = Buffer.isBuffer(value) ? value : Buffer.from(JSON.stringify(value, null, 2) + '\n');
+    fs.writeFileSync(path.join(dir, name), bytes, { flag: 'wx' }); return { name, bytes: bytes.length, sha256: sha(bytes) };
+  });
+  fs.writeFileSync(path.join(dir, 'files.json'), JSON.stringify(files, null, 2) + '\n', { flag: 'wx' });
+}
+
 async function cleanTextReturnFixture(t,{continuationLabel='contQinued',emptyTailLanguage=null,nativeTableProfile=false,commentParagraphSpacing=false,tableCommentContinuation=false,bookParagraphs=0,largeCommentGraph=false,anchoredComment=false,omitTextEdit=false,sectionType,typedBreak,headingLevel,schemaDefaults=false,sceneScope=false,bookmarked=true,mutateReturn,localCase,mixedLanguage=false,variedEmphasis=false,listType,continuedList=false,nativeStyle=false,nativeSuffix=false,nativeDefaults=false,inlineParser=true}={}) {
   const f=await fixture(t); if(bookmarked)await installMixedScene(f);
   const initial=read(f.alpha);let parsed=envelope.parseObservablePayload(initial);
@@ -1393,7 +1440,7 @@ async function cleanTextReturnFixture(t,{continuationLabel='contQinued',emptyTai
   }
   const beforeActivation=f.capture();
   const activated=await f.probe.reviewActivate({requestId:'clean-activation',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:inlineParser});
-  return {f,ui,source,bytes,activated,bridge,beforeActivation,getObserved:()=>observed};
+  return {f,ui,source,originalBytes:built.documentBuffer,bytes,activated,bridge,beforeActivation,getObserved:()=>observed};
 }
 for(const bookmarked of [true,false])test(`actual whole Main clean return activation, owner preview, full Apply and replay with bookmarks ${bookmarked}`,async t=>{
   const {f,ui,activated}=await cleanTextReturnFixture(t,{bookmarked});
@@ -2321,7 +2368,8 @@ for(const defaultsMode of ['removed','inherited','foreign-global','native','nati
   const inheritedDefaults=defaultsMode!=='removed',nativeTableProfile=defaultsMode.startsWith('native'),adjacentBreak=defaultsMode.startsWith('native-break-');
   const continuationLabel=defaultsMode==='native-break-grapheme'?'🚀ontQinued':'contQinued';
   const expectedContinuation='\n'+(adjacentBreak?'B'+continuationLabel:continuationLabel+'R')+' cell anchor\n';
-  const {f,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{continuationLabel,nativeTableProfile,commentParagraphSpacing:inheritedDefaults,tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
+  let globalControlBytes;
+  const {f,source,originalBytes,bytes,activated,bridge,beforeActivation}=await cleanTextReturnFixture(t,{continuationLabel,nativeTableProfile,commentParagraphSpacing:inheritedDefaults,tableCommentContinuation:true,anchoredComment:true,bookmarked:false,omitTextEdit:true,mutateReturn:parts=>{
     const before=parts['word/document.xml'];
     if(nativeTableProfile){
       const point=[...parts['word/comments.xml'].matchAll(/<w:comment\b[^>]*w:id="(\d+)"[^>]*>[\s\S]*?<\/w:comment>/gu)].find(match=>match[0].includes(adjacentBreak?'continuation body':'point body'));
@@ -2339,9 +2387,30 @@ for(const defaultsMode of ['removed','inherited','foreign-global','native','nati
       parts['word/styles.xml']=parts['word/styles.xml'].replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
       if(defaultsMode==='foreign-global'||nativeTableProfile)parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>');
     }
-
+    if(defaultsMode==='foreign-global') {
+      globalControlBytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+      const prior=parts['word/comments.xml'];let changed=0;
+      parts['word/comments.xml']=prior.replace(/<w:comment\b[^>]*>[\s\S]*?<\/w:comment>/gu,comment=>{
+        if(!comment.includes('Foreign body'))return comment;changed++;
+        return comment.replace(/<w:rFonts\b[^>]*\/>/gu,'<w:rFonts w:ascii="Georgia" w:eastAsia="Georgia" w:hAnsi="Georgia" w:cs="Georgia"/>')
+          .replace(/<w:lang\b[^>]*\/>/gu,'<w:lang w:val="en-GB" w:eastAsia="ja-JP" w:bidi="he-IL"/>');
+      });
+      assert.equal(changed,1);assert.notEqual(parts['word/comments.xml'],prior,'explicit foreign-comment font/language fault');
+    }
   }});
-  if(defaultsMode==='foreign-global'){assert.equal(activated.ok,false,JSON.stringify(activated));assert.equal(activated.error?.reason,'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT');assert.equal(activated.error?.details?.detail,'COMMENT_TEXT_RETURN_FOREIGN_SCENE');assert.deepEqual(f.capture(),beforeActivation);return;}
+  if(defaultsMode==='foreign-global') {
+    retainSceneCommentReturnEvidence(t,'foreign-global-fault',f,source,originalBytes,bytes,bridge,beforeActivation,activated);
+    assert.equal(activated.ok,false,JSON.stringify(activated));assert.equal(activated.error?.reason,'RTK_CLEAN_TEXT_COMMENT_BINDING_CONFLICT');assert.equal(activated.error?.details?.detail,'COMMENT_TEXT_RETURN_FOREIGN_SCENE');assert.deepEqual(f.capture(),beforeActivation);
+    const control=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:globalControlBytes}).parts;
+    const fault=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+    for(const name of Object.keys(control))if(name!=='word/comments.xml')assert.equal(control[name],fault[name],name+' same manuscript/global/defaults operand');
+    const foreign=xml=>[...xml.matchAll(/<w:comment\b[^>]*>[\s\S]*?<\/w:comment>/gu)].find(match=>match[0].includes('Foreign body'))[0];
+    assert.equal(foreign(control['word/comments.xml']),foreign(bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:originalBytes}).parts['word/comments.xml']),'global defaults leave SOURCE foreign comment literal');
+    assert.equal(control['word/comments.xml'].replace(foreign(control['word/comments.xml']),''),fault['word/comments.xml'].replace(foreign(fault['word/comments.xml']),''),'only foreign comment differs');
+    const accepted=await f.probe.reviewActivate({requestId:'protected-global-control',bufferSource:globalControlBytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+    retainSceneCommentReturnEvidence(t,'foreign-global-protected-control',f,source,originalBytes,globalControlBytes,bridge,beforeActivation,accepted);
+    assert.equal(accepted.ok,true,JSON.stringify(accepted));assert.equal(accepted.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(accepted));assert.deepEqual(f.capture(),beforeActivation);return;
+  }
   assert.equal(activated.ok,true,JSON.stringify(activated));assert.equal(activated.nonOverlapTrackedReplacementProductPath?.prepared,true,JSON.stringify(activated));
   const sibling=read(f.beta),beforeScene=read(f.alpha),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),before=JSON.parse(read(commentPath));
   if(defaultsMode==='native-tamper'){
@@ -2509,7 +2578,7 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts={...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts};
   const projection=structuredClone(source.commentExport),thread=projection.threads.find(t=>t.threadId==='pending-inside'),root=thread.messages[0];
   const reply={canonicalCommentId:'word-new-reply',commentId:'900',kind:'reply',body:'One new Word reply',provenance:{author:'Word reader'},paraId:'6A012345',durableId:'EB012345'};thread.messages.push(reply);
-  for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+  appendForeignWordReply(parts,projection,thread,reply);
   parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="900"/>`)
     .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="900"/><w:r><w:commentReference w:id="900"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
   let split=false;
@@ -2526,6 +2595,7 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
   assert.equal(diagnostic.reviewIr?.commentBodyGrammar?.status,'SUPPORTED',JSON.stringify(diagnostic.reviewIr?.commentBodyGrammar||diagnostic));
   const before=f.capture();let prepared;
   const activated=await f.probe.reviewActivate({requestId:'pending-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;},onPendingReturnPrepared:value=>{prepared=value;}});
+  retainSceneCommentReturnEvidence(t,'pending-initial',f,source,built.documentBuffer,bytes,bridge,before,activated,{scope,combined});
   return {f,paths,docs,source,bridge,bytes,before,activated,prepared,commentPath,state,third};
 }
 
@@ -2579,14 +2649,15 @@ test(`actual Main all-decided ${scope} ${action} Word reply ${tamper || 'keeps l
   const parts={...x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts};
   assert.equal(/<w:(?:ins|del)\b/u.test(parts['word/document.xml']),false);
   const projection=structuredClone(source.commentExport),thread=projection.threads.find(t=>t.threadId==='pending-spanning'),root=thread.messages[0];
-  thread.messages.push({canonicalCommentId:'after-decision-reply',commentId:'900',kind:'reply',body:'Reply after all decisions',provenance:{author:'Word reader'},paraId:'6A012345',durableId:'EB012345'});
-  for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+  const reply={canonicalCommentId:'after-decision-reply',commentId:'900',kind:'reply',body:'Reply after all decisions',provenance:{author:'Word reader'},paraId:'6A012345',durableId:'EB012345'};thread.messages.push(reply);
+  appendForeignWordReply(parts,projection,thread,reply);
   parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="900"/>`)
     .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="900"/><w:r><w:commentReference w:id="900"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
   if(tamper){const prior=parts['word/document.xml'];parts['word/document.xml']=prior.replace('<w:r>','<w:r><w:rPr><w:vanish/></w:rPr>');assert.notEqual(parts['word/document.xml'],prior);}
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
   const before=x.f.capture(),sceneBefore=read(x.third);let prepared;
   const opened=await x.f.probe.reviewActivate({requestId:'decided-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;}});
+  retainSceneCommentReturnEvidence(t,'after-decision',x.f,source,built.documentBuffer,bytes,x.bridge,before,opened,{scope,action,tamper});
   assert.deepEqual(x.f.capture(),before,'preview never writes');
   if(tamper){assert.equal(opened.ok,false,JSON.stringify(opened));assert.equal(prepared,undefined);return;}
   assert.equal(opened.ok,true,JSON.stringify(opened));assert.ok(prepared);
@@ -2877,8 +2948,8 @@ async function composedNotesMainFixture(t,{authored=false,plainSibling=false,ina
   if(wordBodyDefaults)parts['word/styles.xml']=parts['word/styles.xml'].replace('<w:rPrDefault><w:rPr>','<w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/>').replace('</w:docDefaults>','<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>');
   if(inactiveTab){assert.doesNotMatch(parts['word/settings.xml'],/<w:defaultTabStop\b/u);parts['word/settings.xml']=parts['word/settings.xml'].replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>');}
   const beta=projection.threads.find(t=>t.threadId==='protected-sibling'),root=beta.messages[0];
-  beta.messages.push({canonicalCommentId:'book-note-beta-reply',commentId:'910',kind:'reply',body:'Foreign Beta reply retained',provenance:{author:'Beta editor'},paraId:'6A012346',durableId:'EB012346'});
-  for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+  const reply={canonicalCommentId:'book-note-beta-reply',commentId:'910',kind:'reply',body:'Foreign Beta reply retained',provenance:{author:'Beta editor'},paraId:'6A012346',durableId:'EB012346'};beta.messages.push(reply);
+  appendForeignWordReply(parts,projection,beta,reply);
   parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="910"/>`)
    .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="910"/><w:r><w:commentReference w:id="910"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
   let index=0;const count=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].length;
@@ -3072,8 +3143,8 @@ for(const foreignReply of [false,true])test('novel book actual Main mixed return
  const x=await pendingCommentMainFixture(t,{tamper:(parts,{projection})=>{
   if(foreignReply){
    const thread=projection.threads.find(t=>t.threadId==='protected-sibling'),root=thread.messages[0];
-   thread.messages.push({canonicalCommentId:'foreign-beta-reply',commentId:'910',kind:'reply',body:'Protected Beta reply retained',provenance:{author:'Beta editor'},paraId:'6A012346',durableId:'EB012346'});
-   for(const entry of require('../../src/export/docx/docxReviewPacketComments.js').commentPackageParts(projection).entries)parts[entry.name]=entry.data;
+   const reply={canonicalCommentId:'foreign-beta-reply',commentId:'910',kind:'reply',body:'Protected Beta reply retained',provenance:{author:'Beta editor'},paraId:'6A012346',durableId:'EB012346'};thread.messages.push(reply);
+   appendForeignWordReply(parts,projection,thread,reply);
    parts['word/document.xml']=parts['word/document.xml'].replace(`<w:commentRangeStart w:id="${root.commentId}"/>`,`<w:commentRangeStart w:id="${root.commentId}"/><w:commentRangeStart w:id="910"/>`)
     .replace(`<w:commentRangeEnd w:id="${root.commentId}"/>`,`<w:commentRangeEnd w:id="910"/><w:r><w:commentReference w:id="910"/></w:r><w:commentRangeEnd w:id="${root.commentId}"/>`);
   }

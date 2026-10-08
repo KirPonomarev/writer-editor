@@ -1423,6 +1423,14 @@ for (const drift of ['missingStore', 'forgedCard', 'disk', 'capability', 'typing
 
 for (const superseded of [false, true]) test(`actual activation installs its private candidate before refreshing and returning the semantic surface; superseded=${superseded}`, async t => {
   const { h, r, c, change } = await bookmarkReviewUiHarness(t);
+  const revisionBridge = await import('../../src/io/revisionBridge/index.mjs');
+  const cleanDocx = require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer({
+    blocks: [{ blockId: 'controlled-clean', paragraphId: 'controlled-clean', text: 'controlled upstream intake' }],
+    customProperties: [{ name: 'YRTK_C01_AUTH', value: 'controlled-fixture' }, { name: 'YRTK2_TOKEN', value: 'controlled-fixture' }],
+  });
+  const cleanPreview = revisionBridge.buildDocxContentPreviewFromZipBytes(cleanDocx);
+  assert.equal(cleanPreview.ok, true, JSON.stringify(cleanPreview));
+  assert.equal(cleanPreview.contentPreview.pendingRevisionDocument, undefined);
   const capsule = { ...r.store.keyAuthority, projectRoot: path.dirname(h.file),
     authenticatedFullManuscriptExportMap: r.store.keyAuthority.exportMap,
     exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication', returnedArtifactExportMapAccepted: false,
@@ -1431,10 +1439,10 @@ for (const superseded of [false, true]) test(`actual activation installs its pri
   Object.assign(c, { DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID: 'cmd.project.review.activateDocxReviewPreviewSession',
     activeRtkFormattingReturnApplyStore: null, activeRtkStructuralReturnApplyStore: null,
     activeDocxActivationRequestDigestGuard: { check: () => ({ ok: true }), remember: () => {} },
-    decodeDocxIntakeGateBufferSource: () => ({ ok: true, bytes: Buffer.from('controlled upstream intake') }),
+    decodeDocxIntakeGateBufferSource: () => ({ ok: true, bytes: cleanDocx }),
     normalizeDocxIntakeGateRequestId: value => value,
     buildDocxReviewPreviewSessionMainContext: async () => ({ ok: true, projectId: 'p', baselineHash: hash(h.working) }),
-    loadRevisionBridgeModule: async () => ({ buildDocxReviewPreviewSessionCandidateFromZipBytes: () => {} }),
+    loadRevisionBridgeModule: async () => revisionBridge,
     // Authentication belongs to its separately tested intake port; this case
     // exercises the real downstream activation ordering with a controlled result.
     inspectDocxReviewReturnIntakeV2: async () => ({ ok: true, authenticated: true, localAuthorityCapsule: capsule,
@@ -1464,6 +1472,13 @@ for (const superseded of [false, true]) test(`actual activation installs its pri
   assert.ok(budgets); vm.runInContext(budgets[0], c);
   if (superseded) h.afterKey = () => { c.activeDocxReviewIntakeGeneration++; };
   const result = await c.handleDocxReviewPreviewSessionActivationCommandSurface({ requestId: 'activation-order' });
+  if (process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT) {
+    const dir = path.join(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT, hash(t.name)); fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'activation-clean.docx'), cleanDocx);
+    fs.writeFileSync(path.join(dir, 'observations.json'), JSON.stringify({ name: t.name, superseded,
+      qualification: 'REAL_BRIDGE_AND_CLEAN_DOCX_WITH_CONTROLLED_UPSTREAM_AUTHENTICATION_RESULT',
+      cleanPreview, result, importPreview: h.importPreview, writes: h.writes, genericPlans: h.genericPlans || 0 }, null, 2) + '\n');
+  }
   assert.equal(h.importPreview.status, 'blocked', 'first import refresh has no private candidate yet');
   assert.equal(h.writes, 0); assert.equal(h.genericPlans || 0, 0);
   if (superseded) { assert.equal(result.ok, false); assert.equal(result.error.reason, 'RTK_DOCX_ACTIVATION_SUPERSEDED'); }

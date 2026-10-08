@@ -334,6 +334,52 @@ test('production unchanged return revalidates state and refuses unproven comment
   assert.equal(dispatches,0);
 });
 
+test('fresh V2 native comment identity/default churn reaches actual Main unchanged without a prepared delta or writer', async t => {
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),runtime=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+  const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'comment-v2-main-')));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const input=inputs();input.projectRoot=root;input.scenes[0].scenePath=path.join(root,input.scenes[0].sceneId);
+  const canonicalPath=path.join(root,'.yalken/word-review/non-text-return-state.v1.json'),scenePath=input.scenes[0].scenePath;
+  const beforeText=JSON.stringify(input.nonTextReturnState,null,2)+'\n';
+  fs.mkdirSync(path.dirname(canonicalPath),{recursive:true});fs.mkdirSync(path.dirname(scenePath),{recursive:true});
+  fs.writeFileSync(canonicalPath,beforeText);fs.writeFileSync(scenePath,input.scenes[0].observableContent);
+  const source=makeSource(input),original=buildDocxReviewPacketBuffer(source),returnedParts=parts(original);
+  assert.equal(source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+  returnedParts['word/styles.xml']=returnedParts['word/styles.xml'].replace(/<w:docDefaults>[^]*?<\/w:docDefaults>/u,
+    '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="30"/><w:szCs w:val="30"/><w:lang w:val="ru-FI" w:eastAsia="ru-RU" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>')
+    .replace('</w:styles>','<w:style w:type="character" w:styleId="a9"><w:name w:val="annotation reference"/><w:rPr><w:sz w:val="16"/></w:rPr></w:style></w:styles>');
+  returnedParts['word/comments.xml']=returnedParts['word/comments.xml'].replace(/(<w:comment w:id=")(\d+)(")/gu,(_,a,id,b)=>a+(Number(id)+6)+b)
+    .replace('</w:pPr>','</w:pPr><w:r><w:rPr><w:rStyle w:val="a9"/></w:rPr><w:annotationRef/></w:r>');
+  returnedParts['word/document.xml']=returnedParts['word/document.xml'].replace(/(<w:(?:commentRangeStart|commentRangeEnd|commentReference) w:id=")(\d+)(")/gu,(_,a,id,b)=>a+(Number(id)+6)+b);
+  const returned=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(returnedParts).map(([name,data])=>({name,data})));
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:returned},{cryptoPort});assert.equal(analysis.ok,true,JSON.stringify(analysis));
+  const readback=compareCommentExportReadback(source.commentExport,analysis.reviewIr.commentThreads);assert.equal(readback.ok,true,JSON.stringify(readback));
+  let dispatches=0,prepared=0;
+  const ctx=mainHarness(['applyAuthenticatedDocxCommentProductPath','applyAuthenticatedCommentDelta'],{
+    activeStage10ApplicationBootstrap:{generation:1},getProjectRootPath:()=>root,
+    currentLifecycleSubjectId:()=> 'comment-v2-main',currentFilePath:scenePath,lastSignaledEditGeneration:0,
+    loadRtkNonTextReturnModule:async()=>runtime,computeHash:sha,
+    dispatchCommandSurfaceKernel:()=>{dispatches++;throw Error('UNCHANGED_MUST_NOT_DISPATCH');},
+  });
+  // Actual parser, canonical file reader and Main decision; authentication is
+  // the separately governed upstream seam, never asserted from this fixture flag.
+  const args={context:{projectId:input.projectId,projectRoot:root,reviewTransportReturnIntake:{authenticated:true,returnedArtifactSha256:'sha256:'+sha(returned)},
+    reviewTransportAuthorityCapsule:source.localAuthorityCapsule},commentShadowPayload:{reviewIr:analysis.reviewIr,
+    sceneAuthorityIdentityJoin:{ok:true,nativeCommentIdentityJoin:true,unjoinedPlacementCount:0,quoteHeuristicUsed:false,arbitraryThreadIdSuffixParsingUsed:false}},
+    revisionBridge:{...bridge,...runtime},docxBytes:returned,isCurrent:()=>true,onPrepared:()=>{prepared++;}};
+  const outcome=await ctx.applyAuthenticatedDocxCommentProductPath(args);
+  const canonicalAfter=fs.readFileSync(canonicalPath,'utf8'),sceneAfter=fs.readFileSync(scenePath,'utf8');
+  if(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT) {
+    const dir=path.join(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT,sha(t.name));fs.mkdirSync(dir,{recursive:true});
+    const retained={'original.docx':original,'returned.docx':returned,'provisional.docx':source.provisionalSelfParseArtifact.bytes,'source.json':JSON.stringify(source,null,2)+'\n',
+      'canonical-before.json':beforeText,'canonical-after.json':canonicalAfter,'scene-before.txt':input.scenes[0].observableContent,'scene-after.txt':sceneAfter,
+      'observations.json':JSON.stringify({name:t.name,qualification:'ACTUAL_PARSER_CANONICAL_FILE_READER_MAIN_UNCHANGED_DECISION_CONTROLLED_UPSTREAM_AUTHENTICATION',analysis,readback,outcome,dispatches,prepared},null,2)+'\n'};
+    const files=Object.entries(retained).map(([name,bytes])=>{fs.writeFileSync(path.join(dir,name),bytes);return {name,bytes:Buffer.byteLength(bytes),sha256:sha(bytes)};});
+    fs.writeFileSync(path.join(dir,'files.json'),JSON.stringify(files,null,2)+'\n');
+  }
+  assert.equal(outcome.status,'unchanged',JSON.stringify(outcome));assert.equal(outcome.writerCalled,false);assert.equal(outcome.pendingProductApplyLane,false);
+  assert.equal(dispatches,0);assert.equal(prepared,0);assert.equal(canonicalAfter,beforeText);assert.equal(sceneAfter,input.scenes[0].observableContent);
+});
+
 test('actual export handler revalidates inside queue and refuses missing comment proof before any write', async () => {
   const {runDocxReviewPacketExport}=require('../../src/export/docx/docxReviewPacketExportHandler.js');
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),ctx=mainHarness(['buildFullManuscriptPublicationGate']);

@@ -197,14 +197,27 @@ function buildCanonicalCommentExport(state, blocks, projectId, options = {}) {
 }
 
 const xmlAttribute = value => escapeXml(value).replaceAll('\t', '&#9;').replaceAll('\n', '&#10;').replaceAll('\r', '&#13;');
-function commentPackageParts(projection) {
+function commentPackageParts(projection, exportTypography) {
+  const typography = require('../../core/word-review-typography-v1.cjs').validate(exportTypography,{allowUndefined:true,legacyAnySize:true});
   if (!projection || projection.threads.length === 0) return { entries: [], contentTypes: '', relationships: '' };
   demand(projection.schemaVersion === COMMENT_EXPORT_SCHEMA, 'DOCX_COMMENT_EXPORT_SCHEMA_INVALID');
   const comments = [], extended = [], ids = [], extensible = [], links = new Map();
   for (const thread of projection.threads) {
     for (const message of thread.messages) {
       const { author = '', initials = '', date = '', dateUtc = message.transportDateUtc || '' } = message.provenance;
-      const content = commentBody.validateCommentMessageContent(message);
+      let content = commentBody.validateCommentMessageContent(message);
+      if (typography?.schemaVersion === 'yalken.review-docx.typography-defaults.v2') {
+        // The stored expectation and actual emission must independently agree
+        // with canonical SOURCE plus the finite profile, never Word defaults.
+        try {
+          const stored = Object.getOwnPropertyDescriptor(message,'transportRichBody');
+          demand(stored && Object.hasOwn(stored,'value'), 'DOCX_COMMENT_TRANSPORT_BASELINE_UNPROVEN');
+          const transport = commentBody.validateCommentMessageContent({body:content.body,richBody:stored.value});
+          demand(commentBody.commentBodyEqual(transport,{body:content.body,richBody:commentBody.commentBodyWithTypography(content,typography)}),
+            'DOCX_COMMENT_TRANSPORT_BASELINE_UNPROVEN');
+          content = transport;
+        } catch { throw Error('DOCX_COMMENT_TRANSPORT_BASELINE_UNPROVEN'); }
+      }
       const paragraphs = content.richBody ? content.richBody.document.content.map((p,index,array) => {
         const id = index === array.length - 1 ? message.paraId : message.precedingParaIds[index];
         demand(/^[A-F0-9]{8}$/u.test(id), 'DOCX_COMMENT_PARAGRAPH_ID_INVALID');

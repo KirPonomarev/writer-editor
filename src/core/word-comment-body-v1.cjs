@@ -119,8 +119,12 @@ function commentBodyDocument(message) {
 // A derived transport view. Callers supply defaults authenticated by the
 // actual export profile; this function never changes a canonical message.
 function commentBodyWithTypography(message, typography) {
-  typography = require('./word-review-typography-v1.cjs').validate(typography,{legacyAnySize:true},'COMMENT_EXPORT_TYPOGRAPHY_INVALID');
+  const profile = require('./word-review-typography-v1.cjs');
+  typography = profile.validate(typography,{legacyAnySize:true},'COMMENT_EXPORT_TYPOGRAPHY_INVALID');
   const document = commentBodyDocument(message);
+  if (typography.schemaVersion === profile.V2) {
+    return validateCommentRichBody({schemaVersion:SCHEMA,document:profile.document(document,typography)}).richBody;
+  }
   for (const paragraph of document.content) for (const node of paragraph.content || []) {
     if (!['text','hardBreak'].includes(node.type)) continue;
     node.marks ||= [];

@@ -5,7 +5,7 @@ CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true
 TASK_ID: WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
-STATUS: AMENDMENT31_FINITE_SOURCE_PROVED_ORIGINAL_NATIVE_AND_DELIVERY_OPEN
+STATUS: AMENDMENT32_FINITE_PROOF_FROZEN_NATIVE_AND_ORIGINAL_NOVEL_OPEN
 DOCUMENT_CLASS: TASK_CONTRACT
 BINDING_BASE_SHA: 42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8
 DESIGN_TOOL_ROUTER: bound to validated pre-edit declaration; existing UI unchanged
@@ -2514,3 +2514,139 @@ exchanges, release speed/memory, simultaneous note body/format edits with pendin
 text, semantic closure, merge and exact merged verification remain OPEN.
 NEXT: freeze mechanical OPS and pass required gates, commit/push this finite
 checkpoint; then admit a fresh short genuine Word source/packaged proof.
+
+### 2026-10-08 Helsinki — amendment32 explicit owned comment typography
+
+Same original42b unfinished PR2093 and rollback; clean pushed1e732. Fresh
+bootstrap32/preflight32/task gate actual0 precede this first edit. Declaration
+32_01 SHA2560cab0be7b4cd047890435c1d9bac52cfdd09e3e46d0b4beb948660bb13e5cd79;
+clean admission SHA256f99580942458102e7f69d138fa35076b026120f80a4b5a16f073667cd2194052.
+Registered canonical/worktree, remote42b/1e732 and encrypted/unlocked/writable
+T7 verified. Full ordered reads completed; no validated context-cache claim.
+Original88 paths and1800runtime3600behavior budgets remain; before1304/2938,
+generated462 separately. Separate writer owns four runtime and three existing
+contract paths; root owns five docs/seven OPS/proof/Git. CHECK_01 before writes.
+
+O: fresh V2 unchanged Word save creates no invented comment formatting delta;
+real content/format/anchor/status/reply changes remain exact governed operations.
+T: canonical comment + authenticated finite profile -> complete transport clone
+-> explicit DOCX comment emitter -> literal actual parser -> independent SOURCE
+baseline rederivation -> existing Kernel/normal lease/atomic writer only on Apply.
+H: actual SOURCE33 bare comment emitter and12pt-only expectation leave font,
+language and paragraph spacing unowned. Genuine no-edit Word SaveAs adds them;
+strict pure delta reports one changed message with body/anchor/status unchanged.
+Root independent XML/current13-file review SHA256
+40628cd8ed8af297a4235a9300b3293aa7b5f98ebc7845d425e70d82ef7912ea.
+Actual Cancel closed the modal; public ACK timed out. Four authoring files and
+pre-existing backups remain exact; two new comment-shadow derived backups are
+explicitly classified. Owned app normal exit0. Retained1638 full-field XML
+differences are not blanket-normalized or claimed completely equivalent.
+
+MOVE only commentBodyWithTypography V2 complete projection through existing
+typography.document/validator; commentPackageParts checked stored V2 emission;
+builder explicit profile handoff; delta V2 eligibility before graph/no-op.
+Missing/partial/mismatched/old V2 transport receives typed
+COMMENT_RETURN_TRANSPORT_BASELINE_UNPROVEN. Never upgrade a stored round from
+returned fields. Undefined/V1 same-input emission and fallback remain literal.
+Authored run/paragraph/mark/language/spacing/link/break values win; canonical
+state/source/private/history and all authentication/capability/lease/CAS guards
+remain. This narrowly supersedes the earlier font-size-only comment transport
+law for newly produced finite V2; no schema/codec/cap/API/port/writer/cache change.
+
+P: meaningful causal red, fresh plain/rich/root/reply/blank/marked-break and
+foreign-style actual ZIP readback, real-edit controls, stale V2 refusals and
+literal legacy byte parity. Existing default-typography/canonical-reexport tests
+carry these proofs. The bookmark-runtime fixture uses a real clean nonpending
+package and actual bridge API, retaining normal/superseded/order/no-write checks.
+Both official1e732 RTK lanes actually fail3944of3946, zero exclusions, on that
+incomplete controlled dependency; neither is current acceptance. Whole22 serial
+affected files, audited compiler twice/idempotence, root independent review,
+mandatory local gates and fresh full CI follow. No native/large run by writer.
+Root short fresh native SOURCE/ordinary PACKAGED is separately admitted later.
+No Main/timeout/shadow/UI/dependency/network change or canon exception. Full
+genuine novel/both origins/scopes/three roles/five exchanges, pending+note-body
+edits,30s512MiB production targets, semantic closure/merge/merged proof OPEN.
+NEXT: implement and prove only this precise same-contour correction.
+
+### 2026-10-08 — amendment32 exact fixture ownership supplement
+
+Same amendment32 ownership supplement after frozen whole22 terminal FAIL:
+five fixture-contract failures retained. The900s development wall bound stopped
+the run after915 reported tests; no terminal denominator or overall PASS exists.
+Root reviewed exact operands and explicitly assigns the existing already-declared
+rtk-word-comment-return-delta contract to the same writer. Four bare-comment or
+missing-transport historical cases become explicitly synthetic size-only V1,
+using real canonical export/builder/parser and retaining every original assertion.
+The V2 rich-format-clear successor is rebuilt from actual updated canonical state
+through buildCanonicalCommentExport, so its stored complete transport is fresh.
+All remaining fixtures stay V2; new seven actual ZIP edits and rich/default tests
+remain. No runtime/parser/predicate relaxation, test exclusion, new scope or
+1800runtime3600behavior budget expansion; at most60 added behavior-diff lines.
+Original clean32 PRE gates remain historical prewrite gates; not rerun after edit.
+Focused complete companion then all22 files in two nonoverlapping serial batches
+(prior16, added6), each with unchanged900s/40GB development bounds, are required.
+Exact source/test/doc/OPS pins are checked before and after each batch; results
+are aggregated explicitly, never presented as one terminal process. No test is
+removed, skipped or weakened. The observed slow guards381.396s and269.929s are
+preserved. Twice-audited compiler follows successful complete batches. Production
+30s/512MiB acceptance targets remain unchanged and OPEN, as does the full novel.
+
+### 2026-10-08 — amendment32 exact scene-fixture ownership
+
+Same admitted amendment32, fifth behavior-file ownership only. Final batch16
+actually671/671; batch06 actually571/580, nine failures, no exclusions or bound
+termination. The latter is FAIL and no aggregate PASS exists. Its original
+temporary ZIP operands were not retained; full actual errors/tracebacks remain.
+Root read the exact +82/-11 candidate: preserve all original SOURCE comment XML
+children, append only foreign Word reply children at all4 fixture sites, grant
+no SOURCE transport authority, and retain every original Apply/replay/Undo/stale
+assertion. Preserve the foreign-scene typed refusal through an explicit comment
+font/language fault; pair it with identical-global/manuscript protected control.
+Only the already declared scene-identity-main test becomes writer-owned. Four
+runtime and other4 behavior files stay exact; forecast1344/1800 runtime and
+3285/3600 behavior, generated separate. No new scope, dependency or guard change.
+Require exact9-name diagnostic (unmatched tests explicitly excluded there only),
+then complete added6 with zero exclusions under unchanged900s/40GB bounds.
+Carry actual671 only with pinned unchanged shared source/dependency/16test bytes;
+the known ZIP01 changed-files operand is rechecked after root final OPS/docs.
+Final22 combines two pinned process snapshots, never a single TAP execution.
+Final18 physical index combines15 carried cases and3 fresh added6 cases; no
+claim that all18 were rerun and no corpus01 overwrite. New scene-case artifacts
+have a separate root/count. Twice-audited compiler and all root gates follow.
+Original clean32 PRE remains historical, not rerun after write. Root's actual
+stdlib18-case readback is finite synthetic evidence only. Full novel, native
+Word, ordinary packaged macOS and production30s/512MiB acceptance remain OPEN.
+
+### 2026-10-08 — amendment32 finite proof checkpoint
+
+Same original42b PR2093; amendment32 finite source proof is frozen at the
+1e732 predecessor, not delivered or native/release complete. Actual complete
+prior16=671/671 plus fresh added6=580/580, zero fail/cancel/skip/todo; two pinned
+executed snapshots, not one TAP process. Shared1663 source/script/package pins,
+136 compiler inputs and prior16 tests are exact apart from audited generated
+renderer; the final ZIP01 changed-files operand still requires root recheck.
+Root rehashed all76 source/test,5 docs,7 OPS and1804 retained fixture files.
+Independent stdlib XML readback actually18/18 mixed comment cases (15 carried,
+3 fresh, not18 rerun), plus12 selected operands for9 names in the72-case scene
+corpus; all72 file pins checked, no72-case semantic claim. Complete SOURCE
+children remain unchanged when only a new Word reply is appended; foreign-font/
+language negative and identical-global protected control remain distinct.
+Actual two compiler runs0,136 inputs, identical outputs, preload byte exact;
+source tests preceded compilation and do not claim newly built renderer execution.
+Minimal9-file patch3bbc6fdb998b01aac2dc5eebcf5ed9a395a61501276c0a8daad6ff047ff94458;
+runtime1344/1800,behavior3285/3600,generated462 separate;66 untouched source/test.
+HOLD9a2b27b949788e81b097d040691b1aaf2299e47ec9a40f122f798f25e7416b1a;
+root source review6ee1acb5dd01217b7975a8711ef70c04f643a961209163fe89b2f24efad99a72.
+Seven failed processes remain FAIL, including whole900s incomplete and first
+added6 nine failures; its original temporary ZIP operands were not retained.
+Finite legacy oracle uses checkpoint module text with current dependencies;
+no fully historical isolated dependency claim. Genuine SOURCE33 old partialV2
+now typed-refuses without native re-auth or Apply. Its raw1638 XML differences,
+120s public Cancel timeout and separate derived shadow writes remain qualified.
+Root mechanical OPS, all seven gates, cheap whole ZIP01, checkpoint commit/push
+and fresh official CI follow; prior1e732 CI remains FAIL, not current32 green.
+Fresh short SOURCE34 and ordinary WRITER_LOCAL_V1 PACKAGED34 genuine Word
+unchanged/changed/Cancel/Apply/restart/reexport/decisions remain to be executed.
+Full novel, both origins/scopes/three roles/five genuine exchanges and production
+30s/512MiB remain OPEN.40GB is the owner development ceiling. No UI/dependency/
+network/cap/auth/writer/cache/timeout/shadow relaxation or old-crash reproduction.
