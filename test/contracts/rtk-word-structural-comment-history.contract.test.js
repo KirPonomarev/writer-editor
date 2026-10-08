@@ -97,3 +97,73 @@ test('V2 checks original anchor scene and literal quote before replay or Undo',(
  const deleted=JSON.parse(initial);deleted.threads[0].status='deleted';deleted.threads[0].anchor.sceneId='foreign-scene';
  assert.throws(()=>save(before,after,JSON.stringify(deleted),[edit(0,2,0,2,[''],['X'])]),/COMMENT_SAVE_ANCHOR_STALE/);
 });
+
+// Isolated caller observation delegates the real parser and freezes its actual
+// JSON result. Counts exclude envelope/proof/internal pending validators.
+function frozenCommentObserver() {
+ const fs=require('node:fs'),path=require('node:path'),{Module,createRequire}=require('node:module');
+ const file=require.resolve('../../src/core/word-comment-anchor-save-v1.cjs'),actual=createRequire(file),m=new Module(file);let calls=0;
+ const freeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x).forEach(freeze);Object.freeze(x);}return x;};
+ m.filename=file;m.paths=Module._nodeModulePaths(path.dirname(file));
+ m.require=id=>id==='./document-content-envelope-v1.cjs'?{...actual(id),parseObservablePayload(raw){calls++;return freeze(actual(id).parseObservablePayload(raw));}}:actual(id);
+ m._compile(fs.readFileSync(file,'utf8'),file);return {core:m.exports,reset(){calls=0;},count:()=>calls,freeze};
+}
+function observationCommentDoc(n,first='Alpha 😀 tail') {
+ const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
+ return {type:'doc',content:[p(first),p(''),{type:'paragraph',content:[{type:'text',text:'hard'},{type:'hardBreak'},{type:'text',text:'break'}]},
+  ...Array.from({length:n-5},()=>p('repeat')),{type:'orderedList',attrs:{start:3},content:['List alpha','List beta'].map(text=>({type:'listItem',content:[p(text)]}))}]};
+}
+const observationCommentEncode=doc=>envelope.composeObservablePayload({doc});
+const observationCommentTexts=doc=>require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(observationCommentEncode(doc)).map(p=>p.text);
+function observationCommentGraph(doc) {
+ const state=JSON.parse(root(observationCommentTexts(doc),{paragraphIndex:0,startUtf16:0,selectedText:'Alpha'})),own=state.threads[0];
+ own.messages.push({...structuredClone(own.messages[0]),commentId:'reply',kind:'reply',body:'Retained reply'});
+ for(const [id,status] of [['foreign','resolved'],['manual','deleted']]) {const t=structuredClone(own);t.threadId=id;t.rootCommentId=id;t.status=status;t.messages=t.messages.map((m,i)=>({...m,commentId:id+i}));if(id==='foreign'){t.sceneId='roman/foreign.txt';t.anchor.sceneId=t.sceneId;}state.threads.push(t);}
+ return JSON.stringify(state);
+}
+function observationCommentArgs(before,after,state,edits,extra={}) {
+ return {beforeText:state,projectId,sceneId,beforeContent:observationCommentEncode(before),afterContent:observationCommentEncode(after),sessionId:'session',includeUnchanged:true,
+  editIntents:{schemaVersion:2,baselineTextSha256:sha(JSON.stringify(observationCommentTexts(before))),edits},...extra};
+}
+test('frozen same-call comment observations preserve full discussion and saved structural history at 10/20/40 leaves',()=>{
+ const h=frozenCommentObserver();
+ for(const n of [10,20,40]) {
+  let doc=observationCommentDoc(n),state=observationCommentGraph(doc);const initial=JSON.parse(state),normal=()=>observationCommentDoc(n);
+  const split=normal();split.content.splice(0,1,...[{type:'paragraph',content:[{type:'text',text:'Al'}]},{type:'paragraph',content:[{type:'text',text:'pha 😀 tail'}]}]);
+  const steps=[['insert',observationCommentDoc(n,'Al!pha 😀 tail'),edit(0,2,0,2,[''],['!'],'insert')],
+   ['undo',normal(),edit(0,2,0,3,['!'],[''],'insert','undo')],['redo',observationCommentDoc(n,'Al!pha 😀 tail'),edit(0,2,0,2,[''],['!'],'insert','redo')],
+   ['undo',normal(),edit(0,2,0,3,['!'],[''],'insert','undo')],['delete',observationCommentDoc(n,' 😀 tail'),edit(0,0,0,5,['Alpha'],[''],'delete')],
+   ['undo',normal(),edit(0,0,0,0,[''],['Alpha'],'delete','undo')],['split',split,edit(0,2,0,2,[''],['',''],'split')],['undo',normal(),edit(0,2,1,0,['',''],[''],'split','undo')]];
+  for(const [label,next,wire] of steps) {
+   const args=h.freeze(observationCommentArgs(doc,next,state,[wire])),bytes=JSON.stringify(args);h.reset();const result=h.core.planCommentAnchorSave(args),graph=JSON.parse(result.afterText);
+   assert.equal(JSON.stringify(args),bytes);assert.equal(result.beforeText,state);assert.deepEqual(graph.threads[0].messages,initial.threads[0].messages);
+   assert.deepEqual(graph.threads.slice(1),initial.threads.slice(1));assert.equal(graph.threads[0].status,label==='delete'?'deleted':'open');
+   if(label==='split'){assert.equal(graph.threads[0].anchor.kind,'multi-paragraph-range');assert.equal(graph.threads[0].anchor.selectedText,'Al\npha');}
+   assert.equal(h.count(),2,'direct structural-planner parser calls only');state=result.afterText;doc=next;
+  }
+  assert.deepEqual(JSON.parse(state).threads[0].anchor,initial.threads[0].anchor);assert.ok(JSON.parse(state).threads[0].anchorEditHistory.length);
+ }
+});
+test('fresh frozen comment observations retain numbered leaf identity and cross-leaf refusal',()=>{
+ const h=frozenCommentObserver(),before=observationCommentDoc(10),state=observationCommentGraph(before),after=structuredClone(before);
+ after.content.at(-1).content[0].content[0].content[0].text='List !alpha';
+ const args=h.freeze(observationCommentArgs(before,after,state,[edit(8,5,8,5,[''],['!'],'list')]));h.reset();
+ const result=h.core.planCommentAnchorSave(args),expected=JSON.parse(state);expected.revision++;assert.deepEqual(JSON.parse(result.afterText),expected);assert.equal(h.count(),2);
+ const cross=structuredClone(before);cross.content.at(-1).content[0].content[0].content[0].text='List X';cross.content.at(-1).content[1].content[0].content[0].text='Ybeta';
+ assert.throws(()=>h.core.planCommentAnchorSave(h.freeze(observationCommentArgs(before,cross,state,[edit(8,5,9,5,['alpha','List '],['X','Y'],'cross')]))),e=>e.code==='COMMENT_SAVE_STRUCTURE_UNSUPPORTED');
+ const fresh=observationCommentArgs(before,observationCommentDoc(10,'Al!pha 😀 tail'),state,[edit(0,2,0,2,[''],['!'],'fresh')]);
+ assert.equal(JSON.parse(h.core.planCommentAnchorSave(h.freeze(fresh)).afterText).threads[0].anchor.selectedText,'Al!pha');
+ assert.throws(()=>h.core.planCommentAnchorSave({...fresh,afterContent:'[doc-v2 length=1]\n{\n[/doc-v2]'}),e=>e.code==='COMMENT_SAVE_SCENE_INVALID');
+ assert.equal(args.beforeText,state);
+});
+test('comment observation reuse keeps bare-parse/session/paragraph error order and public paragraph admission',()=>{
+ const h=frozenCommentObserver(),doc=observationCommentDoc(10),state=observationCommentGraph(doc),bad='[doc-v2 length=1]\n{\n[/doc-v2]';
+ const args=observationCommentArgs(doc,observationCommentDoc(10,'Al!pha 😀 tail'),state,[edit(0,2,0,2,[''],['!'],'order')]);
+ for(const [extra,code] of [[{beforeContent:bad},'COMMENT_SAVE_SCENE_INVALID'],[{afterContent:bad},'COMMENT_SAVE_SCENE_INVALID'],
+  [{beforeContent:bad,afterContent:null},'COMMENT_SAVE_SCENE_INVALID'],[{beforeContent:bad,sessionId:'!'},'COMMENT_EDIT_SESSION_INVALID'],[{afterContent:null},'COMMENT_SAVE_SCENE_BUDGET']]) {
+  const input=h.freeze({...args,...extra}),bytes=JSON.stringify(input);assert.throws(()=>h.core.planCommentAnchorSave(input),e=>e.name==='Error'&&e.code===code&&e.message===code);assert.equal(JSON.stringify(input),bytes);
+ }
+ assert.deepEqual(h.core.paragraphs('Alpha\n\nTail').map(x=>x.text),['Alpha','','Tail']);
+ assert.deepEqual(h.core.paragraphs(observationCommentEncode(doc)).map(x=>x.text),observationCommentTexts(doc));
+ for(const [input,code] of [[null,'COMMENT_SAVE_SCENE_BUDGET'],[bad,'COMMENT_SAVE_SCENE_INVALID']])assert.throws(()=>h.core.paragraphs(input),e=>e.code===code);
+});

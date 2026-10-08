@@ -2855,3 +2855,58 @@ planned test groups without repeating the denominator; all required gates, fresh
 full official CI, merge and exact merged verification remain delivery steps.
 Save optimisation and original full-novel role/exchange/release matrix remain
 OPEN.40GB is a development ceiling;30s/512MiB belongs to the isolated package gate.
+
+
+## 2026-10-08 — closed export delivery; bounded Save optimisation admitted
+
+PR2094 is merged at f17009c3e8511b945092d8fbec92c4ba19cc7794 with the
+identical candidate tree. Actual official19of19 and both RTK4008of4008 passed;
+exact merged complete11 union592of592, mandatory TAP/strict/guardrails actual0,
+zero fail/cancel/skip/todo. Closure SHA82995f262dd8804420fb3ed97ecb31995070a85d802f65f518d9a8e9f303cb68.
+New WORD_SCENE_SAVE_OBSERVATION_PERFORMANCE_MAC_20261008 starts at this clean
+base after fresh bootstrap/canon/source reads and preflight0. Only same-call
+scene observations and a raw-doc note pair query are admitted: three Core seams,
+three append-only contracts and generated editor bundle,120runtime/400behavior
+hard budgets. Public validation, error order and independent replay stay exact.
+Targets6/4 direct parses and4pair-ledger checks become2/2/2; unexecuted targets,
+not current performance proof. Complete tiny parity/causal/whole8/TAP/two builds
+precede normal full delivery. Historical18.81percent is sampled opportunity only.
+No native/large route during code phase, no old failed heavy workload replay.
+Original macOS novel500k, both origins/scopes/three roles/five genuine Word
+exchanges, simultaneous text/note/format, restart/UndoRedo and measured Save
+performance remain OPEN.40GB is the development ceiling; package30s/512MiB
+remains its separately isolated gate. NEXT: exact task E0 and separate writer.
+
+
+## 2026-10-08 — Save observation implementation; delivery pending
+
+WORD_SCENE_SAVE_OBSERVATION_PERFORMANCE_MAC_20261008 is implemented at
+f17009c3e8511b945092d8fbec92c4ba19cc7794 plus the admitted worktree delta.
+Root independently compared all139 complete old/new inputs/plans/typed errors
+and verified six public functions, original test prefixes and frozen inputs.
+Direct delegated caller seams6/4/4->2/2/2 are observed mechanisms, not total
+validation counts or measured novel speedup. Runtime41of120; appended199of400
+with nine top-level cases. Actual complete8 union232of232, zero exclusions;
+root executed unchanged mandatory parser on both entire logs. First231of232
+was an appended list oracle; its full old expected graph includes revision+1.
+Both failures and corrected evidence remain. Two actual audited compiler builds
+are idempotent;135of136 handwritten inputs and preload exact. Writer HOLD
+SHA52c7008b5515ee536a697f8a9fbc97f7e410acd1cb1e1771ab160d5216f4eb9d;
+root source review SHAfe08e04e26fcab747ccdb74643121939ae9d0d877e158d38d5e2f76fd9eebcc4.
+Mechanical bindings/final gates/commit/push/PR/official CI/merge and exact merged
+proof remain pending. No native or large workload executed in this code phase.
+Original macOS novel500k, both origins/scopes/three roles/five genuine Word
+exchanges, simultaneous text/note/format, restart/UndoRedo and measured Save
+performance remain OPEN. NEXT: normal full delivery, then fresh bounded
+large/native observation; never replay historical failed heavy routes.
+
+
+## 2026-10-08 — exact dual admission list repair in the same PR
+
+CI2095 observed DATA_DELIVERY_SCOPE at candidate93dea: root appended the new
+HARD task to policy624 but omitted it from the second exact loader literal623.
+Same-contour repair appends only that admitted task to DATA_ADMITTED_PATHS,
+retaining all623 prior ordered identities and the strict equality predicate.
+Runtime/tests/generated artifacts remain exact; fresh post-commit Git-based
+post-evaluation and complete post-audit suite must execute before repush.
+First failed CI and all old proof remain retained; no merge or native claim.

@@ -20,6 +20,13 @@ function paragraphs(content) {
   if (typeof content !== 'string' || Buffer.byteLength(content) > 32 * 1024 * 1024) fail('COMMENT_SAVE_SCENE_BUDGET');
   let parsed;
   try { parsed = parseObservablePayload(content); } catch { fail('COMMENT_SAVE_SCENE_INVALID'); }
+  return paragraphsFromParsed(parsed);
+}
+function observedParagraphs(content, parsed) {
+  if (typeof content !== 'string' || Buffer.byteLength(content) > 32 * 1024 * 1024) fail('COMMENT_SAVE_SCENE_BUDGET');
+  return paragraphsFromParsed(parsed);
+}
+function paragraphsFromParsed(parsed) {
   if (parsed.issue) fail('COMMENT_SAVE_SCENE_INVALID');
   if (!parsed.doc) return parsed.text.split('\n').map(text => ({ type: 'paragraph', text }));
   if (parsed.doc.type !== 'doc' || !Array.isArray(parsed.doc.content)
@@ -226,8 +233,7 @@ function validateStructuralSnapshot(snapshot,rows) {
   if(snapshot.pendingUnionLocator)anchor.pendingUnionLocator=JSON.parse(JSON.stringify(snapshot.pendingUnionLocator));
   return anchor;
 }
-function structuralOwners(content,rows) {
-  const parsed=parseObservablePayload(content);
+function structuralOwners(parsed,rows) {
   if(!parsed.doc) return rows.map(row=>({...row,root:true}));
   const result=[];
   const walk=(node,root=false)=>{
@@ -239,13 +245,14 @@ function structuralOwners(content,rows) {
   return rows.map((row,i)=>({...row,root:result[i]}));
 }
 function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,afterContent,editIntents,sessionId,includeUnchanged}) {
-  const pending=require('./word-pending-text-revisions-v1.cjs'),beforeDoc=parseObservablePayload(beforeContent).doc,afterDoc=parseObservablePayload(afterContent).doc;
+  const pending=require('./word-pending-text-revisions-v1.cjs'),beforeParsed=parseObservablePayload(beforeContent),afterParsed=parseObservablePayload(afterContent);
+  const beforeDoc=beforeParsed.doc,afterDoc=afterParsed.doc;
   const oldLedger=beforeDoc&&pending.readLedger(beforeDoc),newLedger=afterDoc&&pending.readLedger(afterDoc);
   const definitions=l=>l.revisions.map(({state,...r})=>r);
   const fixedPendingSource=oldLedger&&newLedger&&historyEqual(oldLedger.source,newLedger.source)&&historyEqual(definitions(oldLedger),definitions(newLedger));
   if(typeof sessionId!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/u.test(sessionId)) fail('COMMENT_EDIT_SESSION_INVALID');
-  let rows=structuralOwners(beforeContent,paragraphs(beforeContent));
-  const finalRows=structuralOwners(afterContent,paragraphs(afterContent));
+  let rows=structuralOwners(beforeParsed,observedParagraphs(beforeContent,beforeParsed));
+  const finalRows=structuralOwners(afterParsed,observedParagraphs(afterContent,afterParsed));
   for(const thread of before.threads.filter(t=>t.sceneId===sceneId)) {
     const a=thread.anchor;
     if(!a||a.sceneId!==sceneId||typeof a.selectedText!=='string'||!a.selectedText.isWellFormed()

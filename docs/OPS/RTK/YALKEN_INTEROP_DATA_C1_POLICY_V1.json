@@ -630,7 +630,8 @@
     "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
     "test/contracts/revision-bridge-docx-intake-gate-command-surface.contract.test.js",
     "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-    "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md"
+    "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md",
+    "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md"
   ],
   "protectedFiles": [
     {
@@ -871,7 +872,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "4fdfe8a6e9a246e005f56957b8ed111eeab7f464f8916bb0faa88ef9e6877498"
+        "sha256": "7258ea86fbefa55645a9f75013717a85630364bf6a6af3c2e4d3e8065d92ef17"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1559,7 +1560,7 @@
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "a55647b0b5c1cc49b5baf930d8045f301c69a403c65da15506204a19085b8309"
+        "sha256": "10de91755aa858c85848f5a04496db436e78995bef09efcfd2c4850166a21f40"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1675,7 +1676,7 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "d37a2e666aa21d2fd489afdbab1f998581327c391a048371b3969eaf00ad20d6"
+        "sha256": "0d01fd78d07c795ba41e5b894309c705b7630052fc00a1429f45fda4d53eae56"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
@@ -1683,7 +1684,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
-        "sha256": "9572451546df4bd3f61b82e9dac3ec37545b1f125fcbf0802558bed57484a790"
+        "sha256": "35a11ad9ef6c055cbcd3b943c023d33df5bb7b23bc6a620002112c757432fb8f"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
@@ -1727,7 +1728,7 @@
       },
       {
         "path": "src/core/word-pending-text-revisions-v1.cjs",
-        "sha256": "1b248fea41c2f7be9c853b5732971aba114426d82f9f1be054740ac375e0ed83"
+        "sha256": "0ec86701ecc7bfcdd366c02a73ba9b48e5007aedc31817a689e76a1da9b0b6b5"
       },
       {
         "path": "src/export/docx/docxPendingRevisions.js",
@@ -2019,7 +2020,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-        "sha256": "8c9944e89f06c69febc8dab3460077b2521e8b9c7a57b54cf0c57c8b4ed780d2"
+        "sha256": "69c54318030ad1bd4d811a23ddac2f8b19a9569d7ad4172436523b9021a8fbc2"
       },
       {
         "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
@@ -2551,15 +2552,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "56c65a83d10c458a1ecc6db2c3fe1dd4ad65ed0119b82f926b04d714ff4e2a79"
+        "sha256": "6869b1e127f0da823cd16c219ec30e0db09e4eab1bd08af5a3fa3786a28e0f62"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c7647ef37f21386f41d86248db3a031bae6195280f2fadb68b4a643501dc0902"
+        "sha256": "5c861f1c91e0a1442e18afdb0fa9345ce3ef2aa0ad7d113ffd08901c4a37b504"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "14e6a6afc91a0b323652879405dfbf31f9804aa53213b280fdb78a764b1639b0"
+        "sha256": "3ffd7d26ebc6dfd4036cc6b3aedbb901a7c355fcee91d23298dc9ad522a57ab9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2599,7 +2600,7 @@
       },
       {
         "path": "test/contracts/rtk-word-structural-comment-history.contract.test.js",
-        "sha256": "f05401078b97e2c0016985f4e5c4b578abd1554b65e4e65db38581423338239d"
+        "sha256": "bd1bac45c44ceb67245d29d87cbf6f2f4cde2f96ba3e14a0fe69bb7a8678c7a5"
       },
       {
         "path": "docs/tasks/2026-10-05--word-structural-comments-mac.md",
@@ -2780,6 +2781,10 @@
       {
         "path": "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md",
         "sha256": "9a6d36228a5db7a9730fe6f09166d974c51e61f6420de54c590fca8e35bf9b2e"
+      },
+      {
+        "path": "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
+        "sha256": "5035537f4183982194710643bcc5506706bd8b831cd69f6b4a5ca6cac534b254"
       }
     ],
     "followupRepair": {

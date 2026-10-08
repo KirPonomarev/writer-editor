@@ -210,3 +210,58 @@ test('32 MiB scene note binding preserves full body and strict source and byte b
  assert.throws(()=>model.planManuscriptNoteAnchorSave({beforeText,projectId:'p',sceneId:'roman/large.txt',beforeContent:raw.slice(1),afterContent:raw}),e=>e.code==='NOTE_REFERENCE_STALE');
  assert.deepEqual(JSON.parse(beforeText),state);assert.deepEqual(body(),before);
 });
+
+function frozenNoteObserver() {
+ const fs=require('node:fs'),path=require('node:path'),{Module,createRequire}=require('node:module'),file=require.resolve('../../src/core/word-manuscript-notes-v1.cjs'),actual=createRequire(file),m=new Module(file);let calls=0;
+ const freeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x).forEach(freeze);Object.freeze(x);}return x;};m.filename=file;m.paths=Module._nodeModulePaths(path.dirname(file));
+ m.require=id=>id==='./document-content-envelope-v1.cjs'?{...actual(id),parseObservablePayload(raw){calls++;return freeze(actual(id).parseObservablePayload(raw));}}:actual(id);
+ m._compile(fs.readFileSync(file,'utf8'),file);return {core:m.exports,freeze,reset(){calls=0;},count:()=>calls};
+}
+const noteObservationEnvelope=require('../../src/core/document-content-envelope-v1.cjs'),noteObservationPending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+const noteObservationEncode=doc=>noteObservationEnvelope.composeObservablePayload({doc});
+function noteObservationDoc(n,first='AxxB 😀 tail') {
+ const p=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});return {type:'doc',content:[p(first),p(''),{type:'paragraph',content:[{type:'text',text:'hard'},{type:'hardBreak'},{type:'text',text:'break'}]},
+  ...Array.from({length:n-5},()=>p('repeat')),{type:'orderedList',attrs:{start:3},content:['List alpha','List beta'].map(text=>({type:'listItem',content:[p(text)]}))}]};
+}
+function noteObservationState(doc,offsets=[1,1,1]) {
+ const state={schemaVersion:1,projectId:'observation',notes:offsets.map((offsetUtf16,i)=>({id:'note-'+i,scope:'manuscript',body:model.validateNoteBody(body()).text,
+  manuscript:model.bindManuscriptPayload({kind:i%2?'endnote':'footnote',body:body(),sceneId:'roman/a.txt',offsetUtf16,sceneContent:noteObservationEncode(doc)})}))};
+ state.notes.push({id:'private',body:'Secret',opaque:{keep:true}},{...structuredClone(state.notes[0]),id:'foreign',manuscript:{...structuredClone(state.notes[0].manuscript),reference:{...state.notes[0].manuscript.reference,sceneId:'roman/foreign.txt'}}},{...structuredClone(state.notes[0]),id:'deleted',deleted:true});return state;
+}
+const noteObservationArgs=(before,after,state,extra={})=>({beforeText:JSON.stringify(state),projectId:'observation',sceneId:'roman/a.txt',beforeContent:noteObservationEncode(before),afterContent:noteObservationEncode(after),includeUnchanged:true,...extra});
+function noteObservationTracked(n) {return noteObservationPending.bindLedger({schemaVersion:3,source:noteObservationDoc(n),revisions:[{id:'revision-1',nativeId:'51',operation:'delete',author:'Editor',date:'',dateUtc:'',paragraphIndex:0,from:1,to:3,state:'pending',groupId:null}],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[],noteSourcePoints:[1,3,1].map((offsetUtf16,i)=>({noteId:'note-'+i,paragraphIndex:0,offsetUtf16}))});}
+test('two frozen scene observations preserve all three rich notes and private/foreign/deleted state through decision Undo Redo',()=>{
+ const h=frozenNoteObserver();
+ for(const n of [10,20,40]) {let before=noteObservationTracked(n),state=noteObservationState(before);
+  for(const [action,offsets] of [['rejectAll',[1,3,1]],['undo',[1,1,1]],['redo',[1,3,1]]]) {
+   const after=noteObservationPending.decide(before,{action}).doc,args=h.freeze(noteObservationArgs(before,after,state)),bytes=JSON.stringify(args),expected=structuredClone(state);
+   expected.notes.slice(0,3).forEach((note,i)=>{note.manuscript.reference.offsetUtf16=offsets[i];note.manuscript.reference.sourceTextSha256=model.sha(model.sceneText(args.afterContent));});
+   h.reset();const result=h.core.planManuscriptNoteAnchorSave(args);assert.deepEqual(JSON.parse(result.afterText),expected);assert.equal(result.beforeText,args.beforeText);assert.equal(result.mode,model.MODE);
+   assert.equal(JSON.stringify(args),bytes);assert.deepEqual(JSON.parse(result.afterText).notes.slice(3),state.notes.slice(3));assert.equal(h.count(),2,'direct notes-planner parser calls; proof/envelope validators separate');state=expected;before=after;
+  }
+ }
+});
+test('note scene public semantics, frozen numbered/empty/hardBreak observations and fresh-call fast paths stay exact',()=>{
+ const h=frozenNoteObserver(),before=noteObservationDoc(10,'Alpha 😀 tail'),after=noteObservationDoc(10,'!Alpha 😀 tail'),state=noteObservationState(before,[1,3,1]);
+ const args=h.freeze(noteObservationArgs(before,after,state)),expected=structuredClone(state);expected.notes.slice(0,3).forEach(n=>{n.manuscript.reference.offsetUtf16++;n.manuscript.reference.sourceTextSha256=model.sha(model.sceneText(args.afterContent));});
+ h.reset();assert.deepEqual(JSON.parse(h.core.planManuscriptNoteAnchorSave(args).afterText),expected);assert.equal(h.count(),2);
+ assert.equal(h.core.sceneText(args.beforeContent),'Alpha 😀 tail\n\nhard\nbreak\nrepeat\nrepeat\nrepeat\nrepeat\nrepeat\nList alpha\nList beta');
+ assert.equal(h.core.sceneText('Alpha\n\nTail'),'Alpha\n\nTail');assert.equal(h.core.sceneText(''),'');
+ for(const beforeText of [null,JSON.stringify({schemaVersion:1,projectId:'observation',notes:[]})]){h.reset();assert.equal(h.core.planManuscriptNoteAnchorSave({...args,beforeText,beforeContent:null,afterContent:null}),null);assert.equal(h.count(),0);}
+ assert.throws(()=>h.core.planManuscriptNoteAnchorSave({...args,afterContent:'[doc-v2 length=1]\n{\n[/doc-v2]'}),e=>e.code==='NOTE_SCENE_INVALID');
+ assert.throws(()=>h.core.sceneText(null),e=>e.code==='NOTE_SCENE_BUDGET');
+});
+test('note observations preserve full recording proof and before/after/proof error precedence',()=>{
+ const h=frozenNoteObserver(),recording=require('../../src/core/word-pending-recording-v1.cjs'),base=noteObservationTracked(10),working=noteObservationPending.normalizeNode(base);working.content[0].content[0].text='!AB 😀 tail';
+ const metadata={author:'Writer',date:'2026-10-05T00:00:00.000Z'},digest=require('../../src/core/word-comment-edit-intents-v1.cjs').textDigest;
+ const previousIntents={schemaVersion:2,baselineTextSha256:digest(require('../../src/core/word-comment-anchor-save-v1.cjs').paragraphs(noteObservationEncode(base)).map(x=>x.text)),edits:[]};
+ const nextIntents={...previousIntents,edits:[{id:'record',historyId:'record',direction:'forward',fromParagraphIndex:0,toParagraphIndex:0,fromUtf16:0,toUtf16:0,removedParagraphs:[''],insertedParagraphs:['!']}]};
+ const after=recording.derive(base,working,metadata,nextIntents).doc,recordingProofJson=JSON.stringify({schemaVersion:1,baselineContent:noteObservationEncode(base),metadata,previousIntents,nextIntents,sessionId:'session'}),state=noteObservationState(base);
+ const args=h.freeze(noteObservationArgs(base,after,state,{recordingProofJson})),bytes=JSON.stringify(args);h.reset();const result=h.core.planManuscriptNoteAnchorSave(args);
+ const expected=structuredClone(state);expected.notes.slice(0,3).forEach(n=>{n.manuscript.reference.offsetUtf16=2;n.manuscript.reference.sourceTextSha256=model.sha(model.sceneText(args.afterContent));});
+ assert.deepEqual(result,{mode:model.MODE,beforeText:args.beforeText,afterText:JSON.stringify(expected,null,2)+'\n',recordingProofJson});assert.equal(JSON.stringify(args),bytes);assert.equal(h.count(),2);
+ const bad='[doc-v2 length=1]\n{\n[/doc-v2]',plain=noteObservationArgs(noteObservationDoc(10),noteObservationDoc(10),noteObservationState(noteObservationDoc(10)));
+ for(const [extra,code] of [[{beforeContent:bad},'NOTE_SCENE_INVALID'],[{afterContent:bad},'NOTE_SCENE_INVALID'],[{beforeContent:null,afterContent:bad},'NOTE_SCENE_BUDGET'],[{beforeText:null,recordingProofJson:'x'},'RECORDING_COMMENT_PROOF_INVALID'],[{beforeText:'{}',beforeContent:null},'NOTE_DOCUMENT_INVALID']]) {
+  const input=h.freeze({...plain,...extra}),snapshot=JSON.stringify(input);assert.throws(()=>h.core.planManuscriptNoteAnchorSave(input),e=>e.name==='Error'&&e.code===code&&e.message===code);assert.equal(JSON.stringify(input),snapshot);
+ }
+});

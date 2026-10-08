@@ -947,3 +947,77 @@ test('single full manuscript producer refuses an active discussion in an absent 
   assert.throws(()=>require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource({projectId,nonTextReturnState:state,
     scenes:[{sceneId:f.ids[0],doc:f.beforeDocs[0],text:envelope.deriveVisibleTextFromDocument(f.beforeDocs[0]),order:0}]}),/DOCX_COMMENT_ANCHOR_STALE/);
 });
+
+// The isolated source inspection delegates the real validator. On this empty
+// history fixture it observes one inspection per full readLedger call only.
+function pairedNoteObserver() {
+ const {Module}=require('node:module'),file=require.resolve('../../src/core/word-pending-text-revisions-v1.cjs'),actual=createRequire(file),m=new Module(file),events=[];
+ m.filename=file;m.paths=Module._nodeModulePaths(path.dirname(file));
+ m.require=id=>id==='./word-paragraph-spacing-v1.cjs'?{...actual(id),inspectDocumentParagraphSpacing(doc){events.push('validate:'+envelope.deriveVisibleTextFromDocument(doc).slice(0,1));return actual(id).inspectDocumentParagraphSpacing(doc);}}:actual(id);
+ m._compile(fs.readFileSync(file,'utf8'),file);return {core:m.exports,events,reset(){events.length=0;}};
+}
+function pairNoteFreeze(x) {if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x).forEach(pairNoteFreeze);Object.freeze(x);}return x;}
+function pairNoteFixture(n=10,schemaVersion=3,first='AxxB 😀 tail') {
+ const source=d(p(first),p(''),{type:'paragraph',content:[{type:'text',text:'hard'},{type:'hardBreak'},{type:'text',text:'break'}]},...Array.from({length:n-5},()=>p('repeat')),
+  {type:'orderedList',attrs:{start:3},content:['List alpha','List beta'].map(text=>({type:'listItem',content:[p(text)]}))});
+ return pending.bindLedger({schemaVersion,source,revisions:[revision(1,3)],undo:[],redo:[],...(schemaVersion>=2?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{}),
+  ...([3,5].includes(schemaVersion)?{noteSourcePoints:[1,3,1].map((offsetUtf16,i)=>({noteId:'note-'+i,paragraphIndex:0,offsetUtf16}))}:{})});
+}
+function pairNotePublicComposition(core,beforeDoc,afterDoc) {
+ const beforeLedger=core.readLedger(beforeDoc),afterLedger=core.readLedger(afterDoc);
+ return {beforeLedger,afterLedger,beforePoints:core.noteProjection(beforeDoc),afterPoints:core.noteProjection(afterDoc)};
+}
+test('paired raw documents retain complete public projections, original aliases and fresh arrays with two full validations',()=>{
+ const h=pairedNoteObserver();
+ for(const n of [10,20,40])for(const schema of [1,2,3,5]) {
+  const before=pairNoteFreeze(pairNoteFixture(n,schema)),after=pairNoteFreeze(pending.decide(before,{action:'rejectAll'}).doc),bytes=JSON.stringify({before,after});
+  h.reset();const expected=pairNotePublicComposition(h.core,before,after);assert.equal(h.events.length,4,'old public composition seam, not total envelope validation');
+  h.reset();const actual=h.core.readNoteProjectionPair(before,after);assert.deepEqual(actual,expected);assert.equal(actual.beforeLedger,before.attrs[pending.KEY]);assert.equal(actual.afterLedger,after.attrs[pending.KEY]);
+  if(schema===3||schema===5){assert.deepEqual(actual.beforePoints.map(x=>x.globalOffsetUtf16),[1,1,1]);assert.deepEqual(actual.afterPoints.map(x=>x.globalOffsetUtf16),[1,3,1]);assert.notEqual(actual.beforePoints,expected.beforePoints);}
+  else {assert.equal(actual.beforePoints,null);assert.equal(actual.afterPoints,null);}
+  assert.equal(JSON.stringify({before,after}),bytes);assert.equal(h.events.length,2,'isolated pair readLedger source inspections; internal point validation retained');
+  const same=h.core.readNoteProjectionPair(before,before),again=h.core.readNoteProjectionPair(before,before);assert.equal(same.beforeLedger,same.afterLedger);
+  if(same.beforePoints){assert.notEqual(same.beforePoints,same.afterPoints);assert.notEqual(same.beforePoints,again.beforePoints);assert.notEqual(same.beforePoints[0],again.beforePoints[0]);}
+ }
+ for(const before of [null,d(p('plain')),{...d(p('plain')),attrs:{[pending.KEY]:null}}])assert.deepEqual(h.core.readNoteProjectionPair(before,before),{beforeLedger:null,afterLedger:null,beforePoints:null,afterPoints:null});
+});
+test('both real raw ledger validations precede either derived projection and preserve before-first refusal',()=>{
+ const h=pairedNoteObserver(),before=pairNoteFixture(),after=pairNoteFixture(10,3,'ZxxB 😀 tail');
+ for(const [label,doc] of [['before',before],['after',after]]) {
+  const l=doc.attrs[pending.KEY];l.noteSourcePoints=new Proxy(l.noteSourcePoints,{get(target,key,receiver){if(key==='map')h.events.push('derive:'+label);return Reflect.get(target,key,receiver);}});
+ }
+ pairNoteFreeze(before);pairNoteFreeze(after);h.reset();const result=h.core.readNoteProjectionPair(before,after);
+ assert.deepEqual(result.beforePoints.map(p=>p.offsetUtf16),[1,1,1]);assert.deepEqual(result.afterPoints.map(p=>p.offsetUtf16),[1,1,1]);
+ assert.deepEqual(h.events,['validate:A','validate:Z','derive:before','derive:after']);
+ const badAfter=plain(after);badAfter.attrs[pending.KEY].schemaVersion=4;h.reset();
+ assert.throws(()=>h.core.readNoteProjectionPair(before,pairNoteFreeze(badAfter)),e=>e.code==='PENDING_REVISIONS_INVALID');assert.deepEqual(h.events,['validate:A']);
+ const badBefore=plain(before);badBefore.attrs[pending.KEY].noteSourcePoints[0].offsetUtf16=2;h.reset();
+ assert.throws(()=>h.core.readNoteProjectionPair(pairNoteFreeze(badBefore),badAfter),e=>e.code==='PENDING_NOTE_REFERENCE_CONSUMED');assert.deepEqual(h.events,['validate:A']);
+ const orderError=Object.assign(Error('DERIVED_MAP_OBSERVED'),{code:'DERIVED_MAP_OBSERVED'}),probe=pairNoteFixture();
+ probe.attrs[pending.KEY].noteSourcePoints=new Proxy(probe.attrs[pending.KEY].noteSourcePoints,{get(target,key,receiver){if(key==='map')throw orderError;return Reflect.get(target,key,receiver);}});
+ assert.throws(()=>h.core.readNoteProjectionPair(probe,badAfter),e=>e.code==='PENDING_REVISIONS_INVALID');
+ assert.throws(()=>h.core.readNoteProjectionPair(probe,after),e=>e===orderError);
+});
+test('paired projection retains modes, schema absence, consumed/surrogate/history/descriptor refusals and fresh calls',()=>{
+ const h=pairedNoteObserver(),healthy=pairNoteFixture(),noPoints=plain(pending.readLedger(healthy));delete noPoints.noteSourcePoints;noPoints.schemaVersion=5;
+ const plainFive=pending.bindLedger(noPoints);assert.equal(h.core.noteProjection(plainFive,'bad'),null);assert.equal(h.core.noteProjection(null,'bad'),null);assert.equal(h.core.noteProjection(d(p('plain')),'bad'),null);
+ for(const [mode,offsets] of [['current',[1,1,1]],['original',[1,3,1]],['export',[1,3,1]]])assert.deepEqual(h.core.noteProjection(healthy,mode).map(p=>p.globalOffsetUtf16),offsets);
+ assert.throws(()=>h.core.noteProjection(healthy,'bad'),e=>e.code==='PENDING_NOTE_POINT_MODE');
+ const mutations=[['PENDING_NOTE_REFERENCE_CONSUMED',l=>l.noteSourcePoints[0].offsetUtf16=2],['PENDING_NOTE_POINT_BOUNDARY',l=>l.noteSourcePoints[0].offsetUtf16=6],
+  ['PENDING_REVISIONS_HISTORY_BUDGET',l=>l.undo=Array(129).fill(['pending'])],['PENDING_NOTE_POINTS_INVALID',l=>l.noteSourcePoints[0].noteId='bad/name'],['PENDING_REVISIONS_INVALID',l=>l.schemaVersion=4]];
+ for(const [code,mutate] of mutations)for(const side of ['before','after','both']) {
+  const bad=plain(healthy);mutate(bad.attrs[pending.KEY]);const input=pairNoteFreeze({before:side==='after'?plain(healthy):plain(bad),after:side==='before'?plain(healthy):plain(bad)}),bytes=JSON.stringify(input);
+  assert.throws(()=>h.core.readNoteProjectionPair(input.before,input.after),e=>e.name==='Error'&&e.code===code&&e.message===code);assert.equal(JSON.stringify(input),bytes);
+ }
+ const mismatched=plain(healthy);mismatched.content[0]=p('forged');assert.throws(()=>h.core.readNoteProjectionPair(healthy,mismatched),e=>e.code==='PENDING_REVISIONS_PROJECTION_MISMATCH');
+ // These are malformed ledger/history operands, not a new outer-doc boundary.
+ for(const kind of ['getter','toJSON','cycle']) {
+  const bad=plain(healthy),l=bad.attrs[pending.KEY];let invoked=0;
+  if(kind==='getter')Object.defineProperty(l,'undo',{get(){invoked++;return [];},enumerable:true});
+  if(kind==='toJSON')l.toJSON=()=>{invoked++;return {};};if(kind==='cycle')l.roundUndo.push(l);
+  assert.throws(()=>h.core.readNoteProjectionPair(bad,healthy),e=>e.code==='PENDING_REVISIONS_DATA_INVALID');assert.equal(invoked,0);
+ }
+ const fresh=plain(healthy),first=h.core.readNoteProjectionPair(fresh,fresh);fresh.attrs[pending.KEY].noteSourcePoints[0].offsetUtf16=4;
+ const second=h.core.readNoteProjectionPair(fresh,fresh);assert.equal(first.beforePoints[0].offsetUtf16,1);assert.equal(second.beforePoints[0].offsetUtf16,2);assert.notEqual(first.beforePoints,second.beforePoints);assert.equal(second.beforeLedger,fresh.attrs[pending.KEY]);
+ fresh.attrs[pending.KEY].noteSourcePoints[0].offsetUtf16=2;assert.throws(()=>h.core.readNoteProjectionPair(fresh,fresh),e=>e.code==='PENDING_NOTE_REFERENCE_CONSUMED');
+});
