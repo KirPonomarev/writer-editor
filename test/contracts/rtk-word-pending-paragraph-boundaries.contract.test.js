@@ -6,6 +6,15 @@ const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { buildStoredZip, buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
 const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+// Fresh full exports materialize this closed SOURCE-owned transport basis;
+// generic imports observe it literally, while the saved authored source stays raw.
+function expectedEmission(doc,profile='full') {
+  if(profile==='minimum')return model.normalizeNode(doc);
+  const typography=require('../../src/core/word-review-typography-v1.cjs');
+  const expected=typography.document(model.normalizeNode(doc),typography.freshBodyTypography());
+  expected.attrs={...expected.attrs,wordDefaultTabStop:doc.attrs?.wordDefaultTabStop??720};
+  return model.normalizeNode(expected);
+}
 const modules = Promise.all([import('../../src/io/revisionBridge/index.mjs'), import('../../src/docxPageSetupBind.mjs'),
   import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
@@ -56,13 +65,13 @@ test('Paragraph boundary decisions are independent, durable and undoable in eith
     assert.deepEqual(model.decide(undone, { action: 'redo' }).doc, decided);
     for (const profile of ['minimum', 'full']) {
       const returned = await cycle(decided, profile);
-      assert.deepEqual(clean(returned), clean(decided));
+      assert.deepEqual(clean(returned), expectedEmission(decided,profile));
       assert.equal(model.readLedger(returned).revisions.length, 1);
     }
   }
   for (const action of ['acceptAll', 'rejectAll']) {
     const result = model.decide(initial, { action }).doc;
-    for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(result, profile)), clean(result));
+    for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(result, profile)), expectedEmission(result,profile));
   }
 });
 test('Five minimum/full serialization and returned-history cycles retain pending paragraph boundaries and identities', async () => {
@@ -72,7 +81,7 @@ test('Five minimum/full serialization and returned-history cycles retain pending
     for (let round = 1; round <= 5; round++) {
       const imported = await cycle(value, profile);
       value = model.replaceFromReturn(value, imported, { roundId: profile + round, artifactSha256: String(round).repeat(64) }).doc;
-      for (const mode of ['original', 'current']) assert.deepEqual(clean(model.materialize(model.readLedger(value), mode)), clean(model.materialize(model.readLedger(initial), mode)));
+      for (const mode of ['original', 'current']) assert.deepEqual(clean(model.materialize(model.readLedger(value), mode)), expectedEmission(model.materialize(model.readLedger(initial), mode),profile));
       assert.deepEqual(model.readLedger(value).revisions.map(r => r.id), ['revision-1', 'revision-2']);
     }
     for (let i = 0; i < 5; i++) value = model.decide(value, { action: 'undo' }).doc;
@@ -82,7 +91,7 @@ test('Five minimum/full serialization and returned-history cycles retain pending
 test('Chained empty paragraph boundaries retain visible empty paragraphs and do not lose neighboring text', async () => {
   for (const xml of [p('', 'ins', 1) + p('', 'ins', 2) + p('text'), p('text', 'del', 1) + p('', 'del', 2) + p('')]) {
     const doc = await parse(pack(xml));
-    for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(doc, profile)), clean(doc));
+    for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(doc, profile)), expectedEmission(doc,profile));
   }
 });
 test('Orphan, duplicate, cross-container, foreign and non-endpoint boundaries fail before import write authority', async () => {
@@ -115,7 +124,7 @@ test('Recording Enter, Delete, blank paragraphs, Unicode and typing preserves ex
     assert.ok(ledger.revisions.some(model.isParagraphBoundary));
     assert.deepEqual(recording.derive(before, working, meta).doc, result);
     assert.deepEqual(clean(model.decide(result, { action: 'undo' }).doc), clean(before));
-    for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(result, profile)), clean(working));
+    for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(result, profile)), expectedEmission(working,profile));
   }
 });
 test('New recording after a pending merge maps visible edits into the existing source without losing its boundary identity', () => {
@@ -141,7 +150,7 @@ test('Paragraph boundaries inside the same table cell survive import/export with
   const initial = await parse(pack(xml));
   assert.equal(model.projection(initial).current, 'leftright');
   assert.equal(initial.content[0].content[0].content[0].content.length, 1);
-  for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(initial, profile)), clean(initial));
+  for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(initial, profile)), expectedEmission(initial,profile));
 });
 
 test('Recording merge retains editor properties as a separate paragraph-format decision with independently reversible boundary', async () => {
@@ -151,7 +160,7 @@ test('Recording merge retains editor properties as a separate paragraph-format d
   assert.deepEqual(ledger.revisions.map(r => r.operation), ['delete', 'format']);
   assert.deepEqual(clean(model.materialize(ledger, 'original')), clean(before));
   assert.deepEqual(clean(result), clean(working));
-  for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(result, profile)), clean(working));
+  for (const profile of ['minimum', 'full']) assert.deepEqual(clean(await cycle(result, profile)), expectedEmission(working,profile));
   const format = ledger.revisions.find(r => r.operation === 'format');
   assert.equal(model.decide(result, { action: 'reject', revisionId: format.id }).doc.content[0].attrs.textAlign, 'right');
 });
@@ -195,15 +204,17 @@ test('New tracked split inside an authenticated bookmark rebinds sections and re
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes(buildDocxReviewPacketBuffer(source)).parts;
   const xml = parts['word/document.xml'], paragraph = [...xml.matchAll(/<w:p\b[\s\S]*?<\/w:p>/g)][1][0];
   assert.match(paragraph, /here\.<\/w:t><\/w:r>/);
-  const split = paragraph.replace('</w:pPr>', mark('ins', 77) + '</w:pPr>')
+  const split = paragraph.replace('</w:rPr></w:pPr>', mark('ins',77).replace(/<\/?w:rPr>/gu,'')+'</w:rPr></w:pPr>')
     .replace('here.</w:t></w:r>', 'he</w:t></w:r></w:p><w:p><w:pPr><w:jc w:val="left"/></w:pPr>' + run('re.'));
   const returnedXml = xml.replace(paragraph, split);
   const options = { allowPendingParagraphSplits: true }, map = source.localAuthorityCapsule.exportMap;
   const mapped = bridge.visibleSceneTextsFromWordDocumentXml(returnedXml, map, options);
   assert.equal(mapped.ok, true, JSON.stringify(mapped));
+  const duplicateOwner=paragraph.replace('</w:pPr>',mark('ins',77)+'</w:pPr>');
+  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(xml.replace(paragraph,duplicateOwner),map,options).code,'PENDING_PARAGRAPH_BOUNDARY_OWNER');
   assert.deepEqual(mapped.paragraphBindings, [0, 1, 1, 2, 3]);
   assert.deepEqual(mapped.sceneTexts, ['Split 😀 \nhe\nre.\nMerge.Next.']);
-  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(returnedXml.replace(mark('ins', 77), ''), map, options).ok, false);
+  assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(returnedXml.replace(mark('ins',77).replace(/<\/?w:rPr>/gu,''), ''), map, options).ok, false);
   assert.equal(bridge.visibleSceneTextsFromWordDocumentXml(returnedXml.replace(/<w:bookmarkEnd[^>]*\/>/, ''), map, options).ok, false);
   const crypto = require('node:crypto'), canonical = value => Array.isArray(value) ? '[' + value.map(canonical).join(',') + ']'
     : value && typeof value === 'object' ? '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonical(value[key])).join(',') + '}' : JSON.stringify(value);

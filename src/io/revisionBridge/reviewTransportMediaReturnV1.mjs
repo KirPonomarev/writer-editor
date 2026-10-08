@@ -1,3 +1,4 @@
+import bodyTypography from '../../core/word-review-typography-v1.cjs';
 import model from '../../core/word-media-return-v1.cjs';
 import media from '../documentMedia.js';
 import bookmarks from '../../core/word-user-bookmarks-v1.cjs';
@@ -17,10 +18,10 @@ function baseRuns(block, defaultSize) {
       style: { ...run.inline, ...(defaultSize && !run.inline.fontSize ? { fontSize: defaultSize } : {}), link: links[0]?.attrs?.href || null } };
   });
 }
-function returnRuns(p, defaultSize) {
+function returnRuns(p, defaultSize, effectiveFont=false) {
   return p.formattedRuns.map(run => {
     if (run.invalidSupportedValue || run.unsupportedNames?.length) throw Error('unsupported-run');
-    const style = { ...run.inlineState, link: run.inlineState?.link || null };
+    const style = { ...run.inlineState,...(effectiveFont&&!run.inlineState?.fontFamily&&run.resolvedFontFamily?{fontFamily:run.resolvedFontFamily}:{}), link: run.inlineState?.link || null };
     delete style.wordBookmarkName;
     if (defaultSize && !style.fontSize) style.fontSize = defaultSize;
     return { from: run.from, to: run.to, text: run.text, style };
@@ -102,7 +103,7 @@ export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryPart
     if (fields.size) return reject('field-inventory');
     let defaultSize = null;
     if (exportMap.exportTypography !== undefined) {
-      if (!same(exportMap.exportTypography, { schemaVersion: 'yalken.review-docx.typography-defaults.v1', fontSize: '12pt' })) return reject('typography');
+      bodyTypography.validate(exportMap.exportTypography);
       defaultSize = '12pt';
     }
     const changes = [], expectedBookmarks = [], expectedLinks = [];
@@ -127,7 +128,8 @@ export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryPart
         }
       });
       for (let i = 0; i < basePs.length; i++) {
-        const b = scene.blocks[i], p = ps[offset + i], format = b.formatIr, paragraph = format.paragraph;
+        const b = scene.blocks[i], p = ps[offset + i], format = b.formatIr;
+        const paragraph = bodyTypography.formatIr(format,exportMap.exportTypography).paragraph;
         if (b.documentParagraphIndex !== offset + i || !same(format, baseFormats[i].formatIr)
           || b.canonicalTextSha256 !== `sha256:${sha256Hex(baseFormats[i].text)}`) return reject('private-source-binding');
         if (p.trackedRevision || p.table || format.table || p.paragraphFormattingInvalid || p.unsupportedParagraphNames?.length
@@ -140,7 +142,7 @@ export function analyzeMediaReturn({ beforeDocs, exportMap, reviewIr, binaryPart
           || !same(paragraph.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null)
           || paragraph.nodeType !== (p.paragraphStructure?.nodeType || 'paragraph')
           || (paragraph.headingLevel ?? null) !== (p.paragraphStructure?.headingLevel ?? null)) return reject('paragraph-change');
-        compareRuns(baseRuns(b, defaultSize), returnRuns(p, defaultSize), p.paragraphText);
+        compareRuns(baseRuns({...b,formatIr:bodyTypography.formatIr(b.formatIr,exportMap.exportTypography)}, defaultSize), returnRuns(p, defaultSize,exportMap.exportTypography?.schemaVersion===bodyTypography.V2), p.paragraphText);
       }
       const rows = placements.filter(p => p.paragraphIndex >= offset && p.paragraphIndex < offset + basePs.length).map(p => {
         const bytes = binaryParts?.[p.partName];

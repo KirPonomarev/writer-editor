@@ -6,6 +6,15 @@ const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { buildStoredZip, buildDocxMinBuffer } = require('../../src/export/docx/docxMinBuilder.js');
 const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+// Fresh full exports materialize this closed SOURCE-owned transport basis;
+// generic imports observe it literally, while the saved authored source stays raw.
+function expectedEmission(doc,profile='full') {
+  if(profile==='minimum')return model.normalizeNode(doc);
+  const typography=require('../../src/core/word-review-typography-v1.cjs');
+  const expected=typography.document(model.normalizeNode(doc),typography.freshBodyTypography());
+  expected.attrs={...expected.attrs,wordDefaultTabStop:doc.attrs?.wordDefaultTabStop??720};
+  return model.normalizeNode(expected);
+}
 const modules = Promise.all([import('../../src/io/revisionBridge/index.mjs'), import('../../src/docxPageSetupBind.mjs'),
   import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
 const pack = parts => buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
@@ -47,7 +56,7 @@ for (const fixture of fixtures.cases) {
     for (const profile of ['minimum', 'full']) {
       const returned = await parse(await exportDoc(doc, profile));
       for (const mode of ['original', 'current']) assert.deepEqual(model.normalizeNode(model.materialize(model.readLedger(returned), mode)),
-        model.normalizeNode(model.materialize(ledger, mode)), `${profile} ${mode}`);
+        expectedEmission(model.materialize(ledger, mode),profile), `${profile} ${mode}`);
     }
   });
   test(`Native Mac cell ${fixture.operation} decisions retain durable history and resolved exports`, async () => {
@@ -60,7 +69,7 @@ for (const fixture of fixtures.cases) {
       const undone = model.decide(reopened, { action: 'undo' }).doc;
       assert.deepEqual(model.normalizeNode(undone), model.normalizeNode(doc));
       assert.deepEqual(model.decide(undone, { action: 'redo' }).doc, reopened);
-      for (const profile of ['minimum', 'full']) assert.deepEqual(model.normalizeNode(await parse(await exportDoc(reopened, profile))), model.normalizeNode(reopened));
+      for (const profile of ['minimum', 'full']) assert.deepEqual(model.normalizeNode(await parse(await exportDoc(reopened, profile))), expectedEmission(reopened,profile));
     }
   });
 }
@@ -173,7 +182,7 @@ for (const kind of ['insertDownXml', 'deleteUpXml']) {
     for (const profile of ['minimum', 'full']) {
       const returned = await parse(await exportDoc(doc, profile));
       for (const mode of ['original', 'current']) assert.deepEqual(model.normalizeNode(model.materialize(model.readLedger(returned), mode)),
-        model.normalizeNode(model.materialize(model.readLedger(doc), mode)), `${profile} ${mode}`);
+        expectedEmission(model.materialize(model.readLedger(doc), mode),profile), `${profile} ${mode}`);
     }
   });
 }
@@ -384,4 +393,21 @@ test('shifted ownership ignores only inherited legacy-language absence while can
  const changedDefaults=stylesXml.replaceAll('w:val="ru-FI"','w:val="fr-FR"');assert.notEqual(changedDefaults,stylesXml);
  const changed=await parse(pack({...fixtures.cases[0].parts,'word/document.xml':documentXml,'word/styles.xml':changedDefaults}));
  assert.deepEqual(bridge.validateShiftedCellReturnOriginalV1(original,changed),{ok:false,code:'PENDING_CELL_SHIFT_ORIGINAL_RICH_MISMATCH'},'ownership compatibility never waives complete Original language proof');
+});
+
+test('Ordinary ownership duplicate detection retains exact unowned semantics with one lookup per occurrence',async()=>{
+  const parser=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const expression=parser.restoreShiftedCellBookmarkOwnershipV1.toString().match(/const duplicateParagraph = ([^;]+);/u)[1];
+  const actual=Function('declared','paragraphOf','return ('+expression+');');
+  for(const owners of [[],[0],[-1],[0,1,2],[0,0],[0,1,0],[-1,0],[-1,-1],[-1,0,-1]]) {
+    const declared=owners.map((owner,id)=>({owner,id}));
+    const previous=declared.some((s,i)=>declared.slice(0,i).some(p=>p.owner===s.owner));
+    assert.equal(actual(declared,token=>token.owner),previous,JSON.stringify(owners));
+  }
+  const distinct=Array.from({length:12},(_,owner)=>({owner}));let lookups=0;
+  assert.equal(actual(distinct,token=>{lookups++;return token.owner;}),false);assert.equal(lookups,distinct.length);
+  const {createHash}=require('node:crypto'),cryptoPort={sha256Text:t=>'sha256:'+createHash('sha256').update(t).digest('hex'),sha256Json:t=>'sha256:'+createHash('sha256').update(JSON.stringify(t)).digest('hex'),byteLength:t=>Buffer.byteLength(t)};
+  const wrap=body=>'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+body+'</w:body></w:document>',mark=(id,name)=>'<w:bookmarkStart w:id="'+id+'" w:name="'+name+'"/><w:bookmarkEnd w:id="'+id+'"/>',blocks=names=>names.map(name=>({wordSignals:[{kind:'bookmarkName',value:{name}}]}));
+  for(const [body,names] of [['<w:p/>',[]],['<w:p>'+mark('1','YRTK_A')+'</w:p>',['YRTK_A']],[mark('1','YRTK_A')+'<w:p/>',['YRTK_A']]]) {const xml=wrap(body);assert.equal(parser.restoreShiftedCellBookmarkOwnershipV1(xml,blocks(names),{cryptoPort}),xml);}
+  for(const body of ['<w:p>'+mark('1','YRTK_A')+mark('2','YRTK_B')+'</w:p>',mark('1','YRTK_A')+mark('2','YRTK_B')+'<w:p/>'])assert.throws(()=>parser.restoreShiftedCellBookmarkOwnershipV1(wrap(body),blocks(['YRTK_A','YRTK_B']),{cryptoPort}),/PENDING_CELL_SHIFT_BOOKMARK_BINDING/u);
 });

@@ -1,3 +1,4 @@
+import bodyTypography from '../../core/word-review-typography-v1.cjs';
 import { normalizeParagraphMarkTypography } from '../inlineTypography.mjs';
 import fullManuscriptSource from '../../export/docx/fullManuscriptDocxReviewPacketSource.js';
 import { analyzeListNumberingReturn, createLegacyNumberingProofComparator, documentPropertyReturnOperation, cleanFormattingConsumptionDigest } from './reviewTransportUserBookmarksV1.mjs';
@@ -4122,6 +4123,14 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
         { failure: localHeader.failure },
       );
     }
+    const compressionRatio = entry.byteSize === 0 ? 0 : entry.byteSize / entry.compressedSize;
+    if (compressionRatio > effective.maxCompressionRatio) {
+      return docxReviewTransportAnalysisFailure('RTK_BUDGET_EXCEEDED', {
+        field: `zip.${entry.entryId}.compressionRatio`,
+        actual: compressionRatio,
+        limit: effective.maxCompressionRatio,
+      });
+    }
     const dataStart = localHeader.dataOffset;
     const dataEnd = dataStart + entry.compressedSize;
     inventoryEntries.push({
@@ -4264,7 +4273,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     // them only through the existing checked pending union view; the raw
     // ReviewIR still retains their independent IDs, snapshots and provenance.
     const numberingXml=result.reviewIr.propertyRevisions?.length
-      ? extractPendingTextRevisionSourceV1(documentXml,{allowCommentMarkers:true,cryptoPort:options.cryptoPort||{
+      ? extractPendingTextRevisionSourceV1(documentXml,{budgets:parserInput.budgets,allowCommentMarkers:true,cryptoPort:options.cryptoPort||{
         sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,
         byteLength:value=>new TextEncoder().encode(value).length,
       }}).xml : documentXml;
@@ -5036,6 +5045,8 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
   scannerReasons = [],
 ) {
   const resolveBlock = docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap);
+  try{bodyTypography.validate(options.fullManuscriptExportMap?.exportTypography,{allowUndefined:true});}
+  catch{return {status:'diagnostics',code:'RTK_FORMATTING_RETURN_TYPOGRAPHY_INVALID',candidates:[],diagnostics:[{code:'RTK_FORMATTING_RETURN_TYPOGRAPHY_INVALID'}]};}
   const candidates = [];
   const diagnostics = Array.isArray(scannerReasons) ? [...scannerReasons] : [];
   const seenOperationIds = new Set();
@@ -5077,9 +5088,10 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       continue;
     }
     if (!authority) continue;
-    const formatIr = isPlainObject(authority.formatIr)
+    const rawFormatIr = isPlainObject(authority.formatIr)
       ? authority.formatIr
       : docxReviewFormattingLegacyFormatIr(paragraph.paragraphText);
+    const formatIr=bodyTypography.formatIr(rawFormatIr,options.fullManuscriptExportMap?.exportTypography);
     const baselineRuns = Array.isArray(formatIr.runs) ? formatIr.runs : [];
     // Equal LF text does not prove equal line/page/column meaning. Bind the
     // entire vector before admitting any paragraph or inline formatting action.
@@ -5107,12 +5119,30 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     const returnedStructure = isPlainObject(paragraph.paragraphStructure)
       ? paragraph.paragraphStructure
       : {};
+    const bodyV2=options.fullManuscriptExportMap?.exportTypography?.schemaVersion===bodyTypography.V2;
+    let comparedParagraph=paragraph;
+    if(bodyV2&&baselineParagraphRecord.nodeType==='codeBlock') {
+      const expectedCode={styleId:'YalkenCodeBlock',shading:{val:'clear',color:'auto',fill:'f3f4f6'}};
+      if(hashCanonicalValue(paragraph.effectiveCodeStyle)!==hashCanonicalValue(expectedCode)
+        ||!bodyTypography.readback(rawFormatIr,paragraph,options.fullManuscriptExportMap.exportTypography)) {
+        diagnostics.push({code:'WORD_BODY_CODE_FORMAT_UNSUPPORTED',sceneId:authority.sceneId,blockId:authority.blockId,paragraphIndex});continue;
+      }
+      comparedParagraph={...paragraph,unsupportedParagraphNames:(paragraph.unsupportedParagraphNames||[]).filter(name=>name!=='shd')};
+    }
     const returnedParagraphState = isPlainObject(paragraph.paragraphState) ? {...paragraph.paragraphState} : {};
+    if(bodyV2) {
+      if(paragraph.effectiveParagraphMarkTypographyInvalid||!paragraph.effectiveParagraphMarkTypography) {
+        diagnostics.push({code:'WORD_BODY_MARK_EFFECTIVE_REQUIRED',sceneId:authority.sceneId,blockId:authority.blockId,paragraphIndex});continue;
+      }
+      baselineParagraph.wordParagraphMarkTypography=bodyTypography.markerMeaning(baselineParagraph.wordParagraphMarkTypography);
+      returnedParagraphState.wordParagraphMarkTypography=bodyTypography.markerMeaning(paragraph.effectiveParagraphMarkTypography);
+      if(returnedParagraphState.wordParagraphSpacing)returnedParagraphState.wordParagraphSpacing={before:0,after:0,...returnedParagraphState.wordParagraphSpacing};
+    }
     for(const [key,effective] of [['wordParagraphIndent',paragraphLayout.effectiveWordParagraphIndent],['wordParagraphTabs',paragraphLayout.effectiveWordParagraphTabs]])if(Object.hasOwn(baselineParagraph,key)&&hashCanonicalValue(effective(baselineParagraph[key]))===hashCanonicalValue(effective(returnedParagraphState[key])))returnedParagraphState[key]=baselineParagraph[key];
     if(Object.hasOwn(baselineParagraph,'textAlign')&&!Object.hasOwn(returnedParagraphState,'textAlign')
       && paragraph.resolvedTextAlign==='left')returnedParagraphState.textAlign='left';
     const returnedParagraphActions = isPlainObject(paragraph.paragraphActions) ? {...paragraph.paragraphActions} : {};
-    if(!paragraph.unsupportedParagraphNames?.length&&!paragraph.paragraphFormattingInvalid)for(const key of ['wordParagraphIndent','wordParagraphTabs','wordParagraphMarkTypography'])if(!Object.hasOwn(returnedParagraphState,key))returnedParagraphActions[key]={action:'remove'};
+    if(!comparedParagraph.unsupportedParagraphNames?.length&&!paragraph.paragraphFormattingInvalid)for(const key of ['wordParagraphIndent','wordParagraphTabs','wordParagraphMarkTypography'])if(!Object.hasOwn(returnedParagraphState,key))returnedParagraphActions[key]={action:'remove'};
     const paragraphAmbiguousRemovals = docxReviewFormattingAmbiguousRemovalKeys(
       baselineParagraph,
       returnedParagraphState,
@@ -5125,7 +5155,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       run.unsupportedNames.length > 0 || run.invalidSupportedValue === true
     ));
     const hasUnsupportedParagraphFormatting = (
-      (Array.isArray(paragraph.unsupportedParagraphNames) && paragraph.unsupportedParagraphNames.length > 0)
+      (Array.isArray(comparedParagraph.unsupportedParagraphNames) && comparedParagraph.unsupportedParagraphNames.length > 0)
       || paragraph.paragraphFormattingInvalid === true
     );
     const hasUnsupportedFormatting = hasUnsupportedRunFormatting || hasUnsupportedParagraphFormatting;
@@ -5165,7 +5195,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
     const returnedText = returnedRuns.map((run) => run.text).join('');
     const baselineText = baselineRuns.map((run) => (typeof run?.text === 'string' ? run.text : '')).join('');
     const expectedMarksDigest = isPlainObject(authority.formatIr)
-      ? `sha256:${hashCanonicalValue(formatIr)}`
+      ? `sha256:${hashCanonicalValue(rawFormatIr)}`
       : `sha256:${hashCanonicalValue({ marks: [] })}`;
     if (
       formatIr.schemaVersion !== 'yalken.rtk.format-ir.v1'
@@ -11294,25 +11324,55 @@ function inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,a
 // Reparse the actual bounded package. Scene slicing follows authenticated
 // complete paragraph occurrences; an ancestor crossing a scene boundary is not
 // flattened into a different document shape.
-export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap,baselineDocuments,baselineDocumentNotes,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
+export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets,exportMap,baselineDocuments,baselineDocumentNotes,documentSections,signedSectionsDigest,allowOfficeDefaultOmissions=false,allowInactiveDefaultTabEmission=false,cryptoPort,retainPendingSceneId,retainPendingScenes=false}) {
   try {
     if(!Array.isArray(exportMap?.scenes))throw Error('PENDING_COMMENT_EXPORT_MAP');
+    const bodyProfile=bodyTypography.validate(exportMap.exportTypography,{allowUndefined:true});
     if(typeof allowInactiveDefaultTabEmission!=='boolean')throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_PERMISSION');
     if(retainPendingScenes!==false&&retainPendingScenes!==true)throw Error('PENDING_COMMENT_SCENE_BINDING');
     if(retainPendingScenes&&(!baselineDocuments||retainPendingSceneId!==undefined))throw Error('PENDING_COMMENT_SCENE_BINDING');
     if(retainPendingSceneId!==undefined&&(!baselineDocuments||exportMap.scenes.length!==1||exportMap.scenes[0].sceneId!==retainPendingSceneId))throw Error('PENDING_COMMENT_SCENE_BINDING');
-    const preview=buildDocxContentPreviewFromZipBytes(bytes);
+    const preview=buildDocxContentPreviewFromZipBytes({bytes,budgets});
     if(!preview.ok)throw Error(preview.diagnostics?.find(d=>d.sourceCode)?.sourceCode||preview.code);
-    let sectionsVerified=false,returnedDocumentNotes;
+    let sectionsVerified=false,returnedDocumentNotes,actualMarkerTransport;
     if(baselineDocuments!==undefined){
       if(!Array.isArray(baselineDocuments)||baselineDocuments.length!==exportMap.scenes.length
         ||new Set(baselineDocuments.map(s=>s.sceneId)).size!==baselineDocuments.length||!documentSections)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
-      const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:cryptoPort||{sha256Text:value=>`sha256:${sha256Hex(value)}`,sha256Json:value=>`sha256:${sha256Hex(JSON.stringify(value))}`,byteLength:value=>new TextEncoder().encode(value).length}});
+      const analysis=buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets},{cryptoPort:cryptoPort||{sha256Text:value=>`sha256:${sha256Hex(value)}`,sha256Json:value=>`sha256:${sha256Hex(JSON.stringify(value))}`,byteLength:value=>new TextEncoder().encode(value).length}});
       const proof=analysis.ok&&fullManuscriptSource.validateFullManuscriptDocumentSectionsReturn({expected:documentSections,returned:analysis.reviewIr.documentSections,
         signedDigest:signedSectionsDigest,allowOfficeDefaultOmissions});
       if(!proof?.ok||proof.applicable!==true||proof.proof?.inactiveGridAdditions?.length)throw Error('PENDING_COMMENT_SECTION_CHANGED');
       sectionsVerified=true;
       returnedDocumentNotes=analysis.reviewIr.documentNotes;
+      if(bodyProfile?.schemaVersion===bodyTypography.V2) {
+        const targets=docxReviewPreviewSessionExtractTargets(bytes);
+        if(!targets.ok)throw Error('WORD_BODY_MARK_PACKAGE_REQUIRED');
+        const actualXml=targets.extractedTargets.get('word/document.xml');
+        const part=name=>docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,name,1024*1024)||new Uint8Array());
+        const options={budgets,cryptoPort:cryptoPort||{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length},
+          stylesXml:part('word/styles.xml'),themeXml:part('word/theme/theme1.xml'),settingsXml:part('word/settings.xml'),relationshipsXml:part('word/_rels/document.xml.rels')};
+        const pending=extractPendingTextRevisionSourceV1(actualXml,{...options,allowCommentMarkers:true});
+        const scan=xml=>{const result=extractReviewTransportFormattingRunsV2(xml,options);
+          if(!result.ok)throw Error(result.code||'WORD_BODY_MARK_FORMAT_UNSUPPORTED');return result.paragraphs;};
+        const union=scan(pending.xml),before=pending.formatBeforeXml?scan(pending.formatBeforeXml):union;
+        const blocks=exportMap.scenes.flatMap(scene=>scene.blocks),names=blocks.map(block=>{
+          const signals=(block.wordSignals||[]).filter(signal=>signal.kind==='bookmarkName');
+          if(signals.length!==1||!signals[0].value?.name)throw Error('WORD_BODY_MARK_SOURCE_BINDING');return signals[0].value.name;});
+        const owners=extractTransportParagraphOwnershipV1(pending.xml,names,options);
+        if(union.length!==blocks.length||before.length!==union.length||owners.length!==union.length
+          ||owners.some((ids,i)=>ids.length!==1||ids[0]!==i))throw Error('WORD_BODY_MARK_SOURCE_BINDING');
+        if(pending.revisions.length&&!pending.originalXml)throw Error('WORD_BODY_MARK_PROJECTION_CHANGED');
+        actualMarkerTransport={union,before,current:scan(pending.currentXml),original:scan(pending.originalXml||pending.xml)};
+      }
+      if(bodyProfile?.schemaVersion===bodyTypography.V2)for(const scene of exportMap.scenes) {
+        const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId);
+        if(!baseline)throw Error('WORD_BODY_CODE_SOURCE_BINDING');
+        const raw=fullManuscriptSource.buildFormatIrParagraphs({sceneId:scene.sceneId,doc:baseline.document,text:parseObservablePayload(composeObservablePayload({doc:baseline.document})).text});
+        for(const [index,block] of scene.blocks.entries())if(block.formatIr?.paragraph?.nodeType==='codeBlock') {
+          if(hashCanonicalValue(raw[index]?.formatIr)!==hashCanonicalValue(block.formatIr)
+            ||!bodyTypography.readback(block.formatIr,analysis.reviewIr.formattingParagraphs[block.documentParagraphIndex],bodyProfile,{allowTextChanges:true}))throw Error('WORD_BODY_CODE_FORMAT_UNSUPPORTED');
+        }
+      }
     }
     const document=preview.contentPreview?.pendingRevisionDocument;
     let ledger=pendingTextRevisions.readLedger(document);
@@ -11332,6 +11392,32 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
       if(parsed.doc?.attrs)source.attrs=JSON.parse(JSON.stringify(parsed.doc.attrs));
       ledger=pendingTextRevisions.validateLedger({schemaVersion:2,source,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
     }
+    if(actualMarkerTransport) {
+      // Generic preview retains direct authored spelling. This scoped V2
+      // comparison transport instead retains complete facts from the actual
+      // bounded style cascade; neither source nor profile fills missing facts.
+      ledger=JSON.parse(JSON.stringify(ledger));
+      const rows=pendingTextRevisions.paragraphs(ledger.source);
+      const marker=(node,row)=>{
+        if(!['paragraph','heading'].includes(node.type))return;
+        if(!row||row.effectiveParagraphMarkTypographyInvalid||row.paragraphFormattingInvalid||row.wordLanguageInvalid
+          ||!row.effectiveParagraphMarkTypography)throw Error('WORD_BODY_MARK_EFFECTIVE_REQUIRED');
+        node.attrs={...node.attrs,wordParagraphMarkTypography:normalizeParagraphMarkTypography(row.effectiveParagraphMarkTypography)};
+      };
+      if(rows.length!==actualMarkerTransport.union.length)throw Error('WORD_BODY_MARK_SOURCE_BINDING');
+      rows.forEach((node,i)=>marker(node,actualMarkerTransport.union[i]));
+      for(const revision of ledger.revisions)if(pendingTextRevisions.isParagraphFormat(revision)) {
+        marker(revision.format.before,actualMarkerTransport.before[revision.paragraphIndex]);
+        marker(revision.format.after,actualMarkerTransport.union[revision.paragraphIndex]);
+      }
+      ledger=pendingTextRevisions.validateLedger(ledger);
+      for(const phase of ['current','original']) {
+        const projected=pendingTextRevisions.paragraphs(pendingTextRevisions.materialize(ledger,phase)),actual=actualMarkerTransport[phase];
+        if(projected.length!==actual.length)throw Error('WORD_BODY_MARK_PROJECTION_CHANGED');
+        projected.forEach((node,i)=>{const observed=JSON.parse(JSON.stringify(node));marker(observed,actual[i]);
+          if(hashCanonicalValue(node.attrs?.wordParagraphMarkTypography)!==hashCanonicalValue(observed.attrs?.wordParagraphMarkTypography))throw Error('WORD_BODY_MARK_PROJECTION_CHANGED');});
+      }
+    }
     const leaves=pendingTextRevisions.paragraphs(ledger.source), index=new Map(leaves.map((p,i)=>[p,i]));
     let inactiveTabEquivalent;
     const seen=new Set(),scenes=[];
@@ -11348,6 +11434,18 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         return {...JSON.parse(JSON.stringify(node)),content:present};
       };
       const source=slice(ledger.source);
+      if(sectionsVerified&&bodyProfile?.schemaVersion===bodyTypography.V2) {
+        // These exact source blocks passed raw IR and actual effective code
+        // style/readback above. DOCX carries no programming-language field.
+        const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId).document;
+        const before=pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(baseline)?.source||baseline),actual=pendingTextRevisions.paragraphs(source);
+        for(const [i,block] of scene.blocks.entries())if(block.formatIr?.paragraph?.nodeType==='codeBlock') {
+          if(before[i]?.type!=='codeBlock'||actual[i]?.type!=='codeBlock'||actual[i].attrs?.language!=='')throw Error('WORD_BODY_CODE_SOURCE_BINDING');
+          actual[i].attrs={...actual[i].attrs};delete actual[i].attrs.language;
+          if(Object.hasOwn(before[i].attrs||{},'language'))actual[i].attrs.language=before[i].attrs.language;
+          if(!Object.keys(actual[i].attrs).length)delete actual[i].attrs;
+        }
+      }
       if(sectionsVerified){
         const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId)?.document;
         if(!baseline)throw Error('PENDING_COMMENT_BASELINE_DOCUMENTS');
@@ -11356,7 +11454,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
         if(registry)source.attrs.wordSections=JSON.parse(JSON.stringify(registry));
         const format=scene.documentFormatIr;
         if(format && source.attrs.wordDefaultTabStop!=null && source.attrs.wordDefaultTabStop!==format.wordDefaultTabStop){
-          if(inactiveTabEquivalent===undefined)inactiveTabEquivalent=source.attrs.wordDefaultTabStop===708
+          if(inactiveTabEquivalent===undefined)inactiveTabEquivalent=bodyProfile?.schemaVersion!==bodyTypography.V2&&source.attrs.wordDefaultTabStop===708
             &&inactiveOfficeDefaultTabEquivalent({bytes,baselineDocuments,exportMap,allowInactiveDefaultTabEmission,baselineDocumentNotes,returnedDocumentNotes});
           if(!inactiveTabEquivalent)throw Error('PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
         }
@@ -11374,7 +11472,9 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,export
 }
 
 export function buildDocxContentPreviewFromZipBytes(input) {
-  const preflight = buildDocxIntakePreflightReportFromZipBytes(input);
+  const byteInput = docxZipInventoryInputToBytes(input) || (isPlainObject(input) ? input.bytes : input);
+  const budgets = isPlainObject(input) && isPlainObject(input.budgets) ? input.budgets : undefined;
+  const preflight = buildDocxIntakePreflightReportFromZipBytes(byteInput);
   const preflightSummary = docxContentPreviewPreflightSummary(preflight);
   if (
     preflight?.ok !== true
@@ -11385,8 +11485,18 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     return docxContentPreviewBlockedByPreflight(preflight);
   }
 
-  const bytes = docxZipInventoryInputToBytes(input);
+  const bytes = docxZipInventoryInputToBytes(byteInput);
   if (bytes === null) return docxContentPreviewBlockedByPreflight(preflight);
+  if (budgets && ['maxDocxBytes','maxZipEntries','maxInflatedPartBytes','maxTotalInflatedBytes','maxCompressionRatio'].some(key=>Object.hasOwn(budgets,key))) {
+    const bounded = extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets});
+    if (!bounded.ok) return docxContentPreviewResult({
+      ok:false,status:'blocked',decision:'blocked',code:DOCX_CONTENT_PREVIEW_CODES.PREFLIGHT_BLOCKED,
+      reason:bounded.code,preflightSummary,parseAttempted:false,parseCompleted:false,
+      diagnostics:[{...docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_CODES.PREFLIGHT_BLOCKED,
+        {sourceCode:bounded.code,actual:bounded.details?.actual,limit:bounded.details?.limit}),field:bounded.details?.field}],
+      evidence:[docxContentPreviewEvidence('packageBudget',{sourceCode:bounded.code,...bounded.details})],
+    });
+  }
 
   // GENERIC-01 (G1): full SHA-256 over raw artifact bytes — computed once at
   // first touch so the identity thread is unbroken from raw bytes to receipt.
@@ -11516,12 +11626,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   let namedStylesNormalized = false;
   try {
     const settingsPart=name=>docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,name,1024*1024)||new Uint8Array());
-    const settingsCrypto={cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}};
+    const settingsCrypto={budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}};
     validateDocumentSettingsBindingV1({settingsXml:settingsPart('word/settings.xml'),relationshipsXml:settingsPart('word/_rels/document.xml.rels'),contentTypesXml:settingsPart('[Content_Types].xml')},settingsCrypto);
-    const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
+    const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
     const inlineStyles = docxInlineStyleCatalog(bytes);
     namedStylesNormalized = inlineStyles.styles.size > 0;
-    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { allowCommentMarkers: true, cryptoPort: {
+    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { budgets, allowCommentMarkers: true, cryptoPort: {
       sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
       byteLength: value => new TextEncoder().encode(value).length,
     } });
@@ -11540,7 +11650,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     if (!parsed.failure && !pendingSource.revisions.length
       && (parsed.diagnostics.some(item=>['w:bookmarkStart','w:bookmarkEnd','w:instrText'].includes(item.tagName))
         || parsed.contentPreview.paragraphs.some(p=>(p.inlineRuns||[]).some(run=>run.href?.startsWith('#'))))) {
-      const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
+      const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
       if (inventory.bookmarks.length || inventory.links.length) {
         if (parsed.paragraphSourceIndexes.some((source,index)=>source !== index)) throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
         parsed.contentPreview.userBookmarkInventory = inventory;
@@ -11630,7 +11740,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
       if (auxiliary('word/footnotes.xml') || auxiliary('word/endnotes.xml')
         || parsed.diagnostics.some(item => ['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName))) {
-        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes, budgets }, { cryptoPort: {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
         } });
@@ -11670,7 +11780,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
         } };
-        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, commentPorts);
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes, budgets }, commentPorts);
         // The same bounded rich grammar applies to native-origin import and
         // authenticated return. Formatting projection never grants return
         // authority: generic import still allocates entirely new local IDs.
@@ -11692,7 +11802,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       const refs = extractDocumentMediaReferencesV1(xmlText, {
         // Match the existing bounded full-manuscript count profile; generic
         // text-only intake retains its own unchanged 64k paragraph ceiling.
-        budgets: { maxBlocks: 50000 },
+        budgets: { maxBlocks: 50000, ...budgets },
         relationshipsXml: Buffer.from(auxiliary('word/_rels/document.xml.rels') || []).toString('utf8'),
         contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
         cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },

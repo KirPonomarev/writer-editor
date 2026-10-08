@@ -6,7 +6,7 @@ const KEY = 'wordPendingRevisions';
 const { inspectTable } = require('../io/documentTables.js');
 const spacing = require('./word-paragraph-spacing-v1.cjs');
 const language = require('./word-language-v1.cjs');
-const MAX_BYTES = 4 * 1024 * 1024;
+const MAX_BYTES = 16 * 1024 * 1024;
 const stable = value => Array.isArray(value) ? '[' + value.map(stable).join(',') + ']' : object(value) ? '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + stable(value[k])).join(',') + '}' : JSON.stringify(value);
 const clone = value => JSON.parse(JSON.stringify(value));
 const fail = code => { throw Object.assign(new Error(code), { code }); };
@@ -795,8 +795,7 @@ function projection(doc) {
 // IDs may change or split in Word; canonical revision identity never does.
 const commentHash = value => require('./browser-safe-hash.cjs').sha256UpdateCompatible(typeof value === 'string' ? value : stable(value));
 function commentTypography(value) {
-  assert(value === undefined || exact(value,['schemaVersion','fontSize']) && value.schemaVersion === 'yalken.review-docx.typography-defaults.v1' && value.fontSize === '12pt', 'PENDING_COMMENT_TYPOGRAPHY_INVALID');
-  return value?.fontSize || null;
+  return require('./word-review-typography-v1.cjs').validate(value,{allowUndefined:true},'PENDING_COMMENT_TYPOGRAPHY_INVALID')?.fontSize || null;
 }
 // Export defaults are properties of a proven source occurrence, never a
 // tolerance applied to returned data. Authored indentation always wins.
@@ -884,18 +883,25 @@ function commentTransportSegments(segments, paragraph = {}) {
     return result;
   });
 }
-function commentBasis(document,exportTypography,schemaVersion=1) {
+function commentBasis(document,exportTypography,schemaVersion=1,sourceEmission=false) {
   const ledger=readLedger(document);
   assert(ledger && ledger.revisions.every(r=>!isStructural(r) && !r.moveName && ['insert','delete','format'].includes(r.operation)
     && (r.operation !== 'format' || ['run','paragraph'].includes(r.format.kind))), 'PENDING_COMMENT_REVISION_UNSUPPORTED');
   const size=commentTypography(exportTypography), exported=exportDocument(ledger), spans=[], nestedFormatSpans=[], rows=[];
+  const bodyTypography=require('./word-review-typography-v1.cjs');
+  const bodyProfile=sourceEmission && bodyTypography.validate(exportTypography,{allowUndefined:true})?.schemaVersion===bodyTypography.V2;
+  const rawExportedParagraphs=paragraphs(exported.doc);
+  if(bodyProfile)exported.doc=bodyTypography.document(exported.doc,exportTypography);
   const exportedParagraphs=paragraphs(exported.doc);
   exported.paragraphs.forEach((p,paragraphIndex)=>{
     const format=ledger.revisions.find(r=>r.paragraphIndex===paragraphIndex&&isParagraphFormat(r)&&r.state==='pending');
     if(format)spans.push({revisionId:format.id,paragraphIndex,fromUtf16:0,toUtf16:(exportedParagraphs[paragraphIndex].content||[]).map(textOf).join('').length,operation:'format',paragraphFormat:true,
-      provenanceSha256:commentHash({author:format.author,date:format.date,dateUtc:format.dateUtc}),formatSha256:commentHash({before:commentRich({type:'doc',content:[{...format.format.before,content:[]}]},size),after:commentRich({type:'doc',content:[{...format.format.after,content:[]}]},size)})});
+      provenanceSha256:commentHash({author:format.author,date:format.date,dateUtc:format.dateUtc}),formatSha256:commentHash(Object.fromEntries(['before','after'].map(side=>[side,
+        commentRich({type:'doc',content:[{...(bodyProfile?bodyTypography.snapshot(format.format[side],exportTypography):format.format[side]),content:[]}]},size)])))});
     let offset=0; const parts=[];
-    for(const segment of schemaVersion===2?commentTransportSegments(p.segments,exportedParagraphs[paragraphIndex]):p.segments) {
+    const transport=schemaVersion===2?commentTransportSegments(p.segments,rawExportedParagraphs[paragraphIndex]):p.segments;
+    const emitted=bodyProfile?bodyTypography.segments(transport,{nodeType:rawExportedParagraphs[paragraphIndex].type,...rawExportedParagraphs[paragraphIndex].attrs},exportTypography,{canonicalCode:true}):transport;
+    for(const segment of emitted) {
       const length=textOf(segment.node).length, from=offset; offset+=length;
       parts.push({fromUtf16:from,toUtf16:offset,node:clone(segment.node),revision:segment.revision,...(segment.formatRevision?{formatRevision:segment.formatRevision}:{})});
       if(segment.formatRevision){const r=segment.formatRevision,last=nestedFormatSpans.at(-1);
@@ -916,7 +922,7 @@ function commentBasis(document,exportTypography,schemaVersion=1) {
     const doc=clone(exported.doc);
     paragraphs(doc).forEach((p,index)=>{
       const format=ledger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r)&&r.state==='pending');
-      if(mode==='original'&&format){p.type=format.format.before.type;if(format.format.before.attrs)p.attrs=clone(format.format.before.attrs);else delete p.attrs;}
+      if(mode==='original'&&format){const before=bodyProfile?bodyTypography.snapshot(format.format.before,exportTypography):format.format.before;p.type=before.type;if(before.attrs)p.attrs=clone(before.attrs);else delete p.attrs;}
       p.content=rows[index].filter(s=>!s.revision || (mode==='current'?s.revision.operation!=='delete':mode==='original'?s.revision.operation!=='insert':true)).map(s=>{
       const node=clone(s.node);
       const format=s.formatRevision|| (s.revision?.operation==='format'?s.revision:null);
@@ -1042,7 +1048,7 @@ function commentAnchorBindings(basis,anchors) {
 function buildCommentExportBinding({document,anchors=[],exportTypography,exportParagraphs,schemaVersion=1}={}) {
   inspectLedgerData({document,anchors,exportTypography,exportParagraphs});
   assert([1,2].includes(schemaVersion),'PENDING_COMMENT_BINDING_VERSION');
-  const basis=commentBasis(document,exportTypography,schemaVersion);
+  const basis=commentBasis(document,exportTypography,schemaVersion,true);
   const indents=commentExportIndents(basis.union,exportParagraphs), leftDefaults=commentLeftDefaults(basis.union,exportParagraphs);
   const projection={union:basis.union,current:basis.current,original:basis.original,segments:basis.rows};
   const binding={schemaVersion,ledgerSha256:commentHash(basis.ledger),
@@ -1103,8 +1109,13 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
   // Match a fresh property change against its checked previous rich snapshot.
   // The published Current and Original projections remain separate and exact.
   const comparison=clone(incoming.union), oldLedger=readLedger(document);
-  const sameRevision=(a,b)=>a.operation===b.operation && a.author===b.author && a.date===b.date && a.dateUtc===b.dateUtc
-    && stable(allowUntrackedRichFormatting?formatTransitionMeaning(a.format):a.format)===stable(allowUntrackedRichFormatting?formatTransitionMeaning(b.format):b.format);
+  const bodyTypography=require('./word-review-typography-v1.cjs'),bodyProfile=bodyTypography.validate(exportTypography,{allowUndefined:true});
+  const sameRevision=(a,b)=>{
+    const expected=bodyProfile?.schemaVersion===bodyTypography.V2&&isParagraphFormat(a)?{...a.format,
+      before:bodyTypography.snapshot(a.format.before,bodyProfile),after:bodyTypography.snapshot(a.format.after,bodyProfile)}:a.format;
+    return a.operation===b.operation && a.author===b.author && a.date===b.date && a.dateUtc===b.dateUtc
+      && stable(allowUntrackedRichFormatting?formatTransitionMeaning(expected):expected)===stable(allowUntrackedRichFormatting?formatTransitionMeaning(b.format):b.format);
+  };
   paragraphs(comparison).forEach((p,index)=>{
     const currentFormat=incoming.ledger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));
     const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===index&&isParagraphFormat(r));

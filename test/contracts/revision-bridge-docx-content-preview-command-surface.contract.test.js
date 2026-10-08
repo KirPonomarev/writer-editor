@@ -53,7 +53,9 @@ function instantiateDocxContentPreviewPort(options = {}) {
     exports: {},
   };
   vm.runInNewContext(
-    `${section}
+    `${mainSource.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n}\);/)[0]}
+${mainSource.match(/function docxReviewReturnIntakeProductBudgets\([^]*?\n}(?=\n|$)/)[0]}
+${section}
 module.exports = {
   DOCX_CONTENT_PREVIEW_COMMAND_ID,
   DOCX_CONTENT_PREVIEW_MAX_BASE64_CHARS,
@@ -67,6 +69,25 @@ module.exports = {
   );
   return sandbox.module.exports;
 }
+
+test('DOCX content preview product profile is Main-owned and public budgets grant no authority', async () => {
+  const bridge = await loadBridge(), bytes = cleanDocxZip();
+  let actual;
+  const port = instantiateDocxContentPreviewPort({ loadRevisionBridgeModule: async () => ({
+    ...bridge,
+    buildDocxContentPreviewFromZipBytes(input) { actual = input; return bridge.buildDocxContentPreviewFromZipBytes(input); },
+  }) });
+  const preview = await port.handleDocxContentPreviewCommandSurface(toPayload(bytes));
+  assert.equal(preview.ok, true); assert.equal(preview.previewOk, true);
+  assert.deepEqual(Buffer.from(actual.bytes), bytes);
+  assert.deepEqual(cloneJsonSafe(actual.budgets), {maxBlocks:50000,maxWorkerOutputBytes:64*1024*1024});
+  assert.equal(preview.docxContentPreviewReport.canWriteStorage, undefined);
+  assert.equal(preview.docxContentPreviewReport.canImportMutate, undefined);
+  actual = null;
+  const denied = await port.handleDocxContentPreviewCommandSurface({...toPayload(bytes), budgets:{maxBlocks:1}});
+  assert.equal(denied.ok, false); assert.equal(denied.error.reason, 'DOCX_CONTENT_PREVIEW_PAYLOAD_UNSUPPORTED_FIELDS');
+  assert.deepEqual(denied.error.details.fields, ['budgets']); assert.equal(actual, null);
+});
 
 function asciiBytes(value) {
   return Buffer.from(value, 'ascii');
@@ -463,4 +484,15 @@ test('DOCX content preview command surface: contour section stays out of UI impo
   for (const marker of forbiddenRuntimeMarkers) {
     assert.equal(section.includes(marker), false, `${marker} must stay out of DOCX content preview command surface`);
   }
+});
+
+// File admission is independent of semantic parsing and never grants Apply.
+test('DOCX_CONTENT_PREVIEW admits exact16MiB and rejects one extra byte before bridge work', () => {
+  const port=instantiateDocxContentPreviewPort();
+  assert.equal(port.DOCX_CONTENT_PREVIEW_MAX_BYTES,16*1024*1024);
+  const bytes=Buffer.alloc(16*1024*1024,0x61);
+  const accepted=port.decodeDocxContentPreviewBufferSource({bufferSource:bytes.toString('base64')});
+  assert.equal(accepted.ok,true);assert.deepEqual(accepted.bytes,bytes);
+  const denied=port.decodeDocxContentPreviewBufferSource({bufferSource:Buffer.concat([bytes,Buffer.from('a')]).toString('base64')});
+  assert.equal(denied.ok,false);assert.equal(denied.error.reason,'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_TOO_LARGE');
 });

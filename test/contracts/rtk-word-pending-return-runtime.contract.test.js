@@ -43,7 +43,7 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
   if(early){const state=JSON.parse(h.commentText);for(const t of state.threads){t.anchor.sceneParagraphIndex=1;t.anchor.paragraphIndex=1;}h.commentText=JSON.stringify(state);}
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
     subjectId: 'life:session', saved: h.commentText ? {text:h.commentText,state:JSON.parse(h.commentText)} : { state: { threads: h.threads || [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
-  const c = { require: value => require(path.resolve(__dirname,'../../src',value)), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
+  const c = { require: require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
     queueDiskOperation: fn => fn(), readCommentAuthoringContext: async () => context(), requestEditorSnapshot: async () => {
       const value = h.snapshot || { generation: 0, content: fs.readFileSync(file, 'utf8') }; if (h.afterSnapshot) h.afterSnapshot(); return value;
     }, loadDocumentContentEnvelopeModule: async () => envelope, fs: fs.promises,
@@ -146,7 +146,9 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
     newNames.forEach((name,i)=>{parts['word/document.xml']=parts['word/document.xml'].replaceAll(name,oldNames[i]);});
     bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
   }
-  const capsule = { ...baselineSource.localAuthorityCapsule, projectRoot: root, roundId: novelDocument||reopenRoot?'capacity-'+hash(context().raw).slice(0,24):'round-1',
+  // Historical fixtures exercise the legacy scene Apply contract. The real
+  // signed full-manuscript admission has its own leased atomic harness below.
+  const capsule = { ...baselineSource.localAuthorityCapsule, scope:'scene', projectRoot: root, roundId: novelDocument||reopenRoot?'capacity-'+hash(context().raw).slice(0,24):'round-1',
     exportMapAuthority: 'main-owned-active-export-authority-store-after-return-authentication', returnedArtifactExportMapAccepted: false,
     scenePathBySceneId: { 'roman/a.txt': file }, baselineObservableContentBySceneId: { 'roman/a.txt': context().raw } };
   h.input = { context: { projectId: 'p', projectRoot: root, reviewTransportAuthorityCapsule: capsule,
@@ -166,6 +168,95 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
     h.route=()=>c.mixedRoute(h.input);
   }
   h.prepare = () => c.prepareAuthenticatedPendingReturn(h.input);
+  return h;
+}
+// Normal production policy and the actual Main private admission handler run
+// here. Only the documented denied policy result is fault-injected in negatives.
+async function fullManuscriptRuntimeFixture(t,{tracked=false,withNotes=true,multi=false}={}) {
+  const cleanup=[],h=await harness({after:fn=>cleanup.push(fn)},{clean:true,commandOnly:true}),c=h.c;
+  const root=c.getProjectRootPath(),prefix=fs.readFileSync(path.join(__dirname,'rtk-word-pending-notes.contract.test.js'),'utf8').split("\ntest('complete book note law")[0];
+  assert.equal(/\ntest\(/u.test(prefix),false,'fixture prefix must not register tests');
+  const factories=new Function('require','__dirname',prefix+'\nreturn {singleFullManuscriptFixture,composedBookFixture};')(require,__dirname);
+  const f=multi?await factories.composedBookFixture():await factories.singleFullManuscriptFixture({tracked,withNotes,ownedSceneId:'roman/a.txt',projectRoot:root});
+  h.f=f;h.file=path.join(root,f.ids[0]);c.currentFilePath=h.file;h.legacyWrites=0;h.kernelCalls=0;h.commitAttempts=0;h.receipts=[];
+  for(const scene of f.scenes)fs.writeFileSync(path.join(root,scene.sceneId),scene.beforeContent);
+  fs.writeFileSync(path.join(root,'roman/foreign.txt'),envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Foreign scene'}]}]}}));
+  h.manifest=path.join(root,'project.craftsman.json');h.notesFile=path.join(root,'notes.craftsman.json');h.commentFile=path.join(root,'.yalken/word-review/non-text-return-state.v1.json');
+  fs.mkdirSync(path.dirname(h.commentFile),{recursive:true});fs.writeFileSync(h.manifest,JSON.stringify({schemaVersion:1,projectId:'project-test',privateMetadata:{keep:'manifest'}}));
+  fs.writeFileSync(h.notesFile,f.notesText);fs.writeFileSync(h.commentFile,f.beforeText);h.editor=fs.readFileSync(h.file,'utf8');
+  const tx=require('../../src/core/project-transaction-v1.cjs'),cohort=await import('../../src/core/project-tree-cohort-v1.mjs');
+  const {createMainProjectManifestAuthority}=await import('../../src/product/mainProjectManifestAuthority.mjs');
+  h.manifestAuthority=createMainProjectManifestAuthority({anchorRoot:path.join(root,'leases'),useLeaseHeartbeatWorker:false});
+  const {evaluateWriterLocalCommandAccess,createWriterLocalProfileProjection}=require('../../src/core/writer-local-profile-v1.cjs');
+  const {decideCommandEntitlement}=require('../../src/core/entitlement-law-v1.cjs');
+  Object.assign(c,{path,cloneJsonSafe:v=>JSON.parse(JSON.stringify(v)),loadRtkNonTextReturnModule:()=>import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),
+    loadProjectTreeCohortModule:async()=>cohort,readVerifiedProjectTreeMutation:tx.readVerifiedProjectTreeMutation,recoverProjectTransaction:tx.recoverProjectTransaction,
+    getMainProjectManifestAuthority:async()=>h.manifestAuthority,
+    commitProjectTransaction:async request=>{h.commitAttempts++;if(h.beforeCommit)await h.beforeCommit(request);const r=await tx.commitProjectTransaction(request);h.receipts.push(r);h.writes++;if(h.afterCommit)await h.afterCommit();return r;},
+    commitWriterProjectSnapshot:async()=>{h.legacyWrites++;throw Error('LEGACY_WRITER_MUST_NOT_RUN');},
+    currentLifecycleSubjectId:()=>h.lifecycle||'life',requestEditorSnapshot:async()=>h.snapshot||{generation:0,content:h.editor},
+    sendEditorText:value=>{assert.equal(value.content,fs.readFileSync(h.file,'utf8'));h.editor=value.content;h.opens++;},
+    evaluateWriterLocalCommandAccess:options=>{assert.equal(options.commandId,id);h.policyCalls=(h.policyCalls||0)+1;if(h.policyDenied)h.policyDenialObserved=true;
+      return h.policyDenied?{allowed:false,reason:'POLICY_DECISION_FAULT_INJECTION'}:evaluateWriterLocalCommandAccess(options);},
+    getWriterLocalRuntimeProfile:()=>createWriterLocalProfileProjection({isPackaged:true,platform:'darwin'}),decideCommandEntitlement,getProductEntitlementTier:()=>'free',
+    validateDocumentNotesReturn:require('../../src/export/docx/docxReviewPacketNotes.js').validateDocumentNotesReturn,
+    DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID:'preview',makeDocxReviewPreviewSessionTypedError:(_type,code)=>({ok:false,code})});
+  const actual=name=>{const found=main.match(new RegExp('(?:async )?function '+name+'\\([^]*?\\n}'));assert.ok(found,name);return found[0];};
+  const comments=main.slice(main.indexOf('const authenticatedCommentDeltaAdmissions ='),main.indexOf('async function applyAuthenticatedDocxCommentProductPath('));
+  vm.runInContext(comments+'\n'+['normalizeRtkSignedSha256','userBookmarkCapability','handleRtkCommentLifecycleReturnCommandSurface','dispatchCommandSurfaceKernel'].map(actual).join('\n'),c);
+  h.handlerFailures=[];
+  const privateId='cmd.rtk.review.applyCommentLifecycleReturn',kernel=createCommandSurfaceKernel({[privateId]:async payload=>{
+    h.kernelCalls++;try{return await c.handleRtkCommentLifecycleReturnCommandSurface(payload);}catch(error){h.handlerFailures.push({message:error.message,code:error.code||null});throw error;}}});
+  c.getInternalCommandSurfaceKernel=()=>kernel;
+  // Multi red uses a supported existing book source, retaining its original
+  // signed carriers too; cardinality therefore cannot conceal missing policy.
+  let bytes=f.bytes;
+  if(multi) {
+    const original=buildDocxReviewPacketBuffer(f.source),parts={...f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes(original).parts};
+    for(const [name,data] of Object.entries(f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes(bytes).parts))if(name.startsWith('word/'))parts[name]=data;
+    bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));f.originalBytes=original;
+  }
+  const capsule=JSON.parse(JSON.stringify(f.source.localAuthorityCapsule));
+  Object.assign(capsule,{projectRoot:root,exportMapAuthority:'main-owned-active-export-authority-store-after-return-authentication',returnedArtifactExportMapAccepted:false,
+    scenePathBySceneId:Object.fromEntries(f.ids.map(id=>[id,path.join(root,id)])),baselineObservableContentBySceneId:Object.fromEntries(f.scenes.map(s=>[s.sceneId,s.beforeContent]))});
+  const analysis=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:f.source.forbiddenSecret,expectedAuthority:capsule.expectedAuthority},
+    {cryptoPort:{...c.createRtkReviewTransportCryptoPort(),hmacSha256Json:(value,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(value)).digest('hex')}});
+  assert.equal(analysis.ok,true,JSON.stringify(analysis));assert.equal(analysis.authorityCarrier.status,'verified-baseline-bound');
+  h.input={context:{projectId:'project-test',projectRoot:root,reviewTransportAuthorityCapsule:capsule,reviewTransportReturnIntake:{authenticated:true,returnedArtifactSha256:'sha256:'+hash(bytes),parserResult:analysis}},
+    requestId:'one-full-return',isCurrent:()=>h.current!==false,docxBytes:bytes,revisionBridge:f.bridge,onPrepared:value=>{h.prepared=value;}};
+  h.authority=installMainDocxRoundAuthority(c,{projectRoot:root,projectId:'project-test',references:[capsule],publishAllocated:true,t:{after:fn=>cleanup.push(fn)}});
+  const route=main.slice(main.indexOf('  if (returnIntake.authenticated === true && returnIntake.localAuthorityCapsule?.commentExport?.threads?.length'),main.indexOf('  const pendingProductPath = await prepareAuthenticatedPendingReturn('));
+  vm.runInContext('async function fullScopeRoute(input) { const activeContext=input.context,returnIntake={...input.context.reviewTransportReturnIntake,localAuthorityCapsule:input.context.reviewTransportAuthorityCapsule},requestId=input.requestId,isCurrent=input.isCurrent,decoded={bytes:input.docxBytes},revisionBridge=input.revisionBridge,options={onPendingReturnPrepared:input.onPrepared};\n'+route+'\nreturn {pendingProductPath:await prepareAuthenticatedPendingReturn(input)};}',c);
+  h.prepare=()=>c.prepareAuthenticatedBookPendingReturn(h.input);h.route=()=>c.fullScopeRoute(h.input);
+  h.business=()=>Object.fromEntries([...f.ids,'roman/foreign.txt','notes.craftsman.json','.yalken/word-review/non-text-return-state.v1.json','project.craftsman.json',
+    ...f.ids.map(id=>id+'.wp201-commit.json'),path.relative(root,tx.treeCommitPathFor(h.manifest))].map(relative=>[relative,fs.existsSync(path.join(root,relative))?fs.readFileSync(path.join(root,relative),'utf8'):null]));
+  h.before=h.business();
+  h.reopen=()=>tx.readVerifiedProjectTreeMutation({manifestPath:h.manifest,projectId:'project-test'});
+  h.assertCompleteDurableCohort=reopened=>{
+    const entries=reopened.retainedPacket.entries;assert.ok(Array.isArray(entries));assert.equal(entries.length,f.ids.length*2+2);
+    assert.equal(entries.filter(entry=>entry.role==='scene').length,f.ids.length);
+    for(const entry of entries) {
+      const target=path.join(root,entry.relativePath);assert.equal(typeof entry.relativePath,'string');
+      if(entry.afterBase64===null)assert.equal(fs.existsSync(target),false,entry.relativePath);
+      else assert.equal(fs.readFileSync(target).toString('base64'),entry.afterBase64,entry.relativePath);
+    }
+  };
+  t.after(async()=>{
+    if(process.env.YALKEN_SINGLE_SCENE31_EVIDENCE_DIR) {
+      const directory=path.join(process.env.YALKEN_SINGLE_SCENE31_EVIDENCE_DIR,'SINGLE_SCENE31_'+(multi?'multi':tracked?'pending':'clean')+'_'+capsule.roundId);
+      fs.mkdirSync(directory,{recursive:true});const saved=[];
+      const save=(name,value)=>{const bytes=Buffer.isBuffer(value)?value:Buffer.from(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n');fs.writeFileSync(path.join(directory,name),bytes,{flag:'wx'});saved.push({name,bytes:bytes.length,sha256:hash(bytes)});};
+      save('original.docx',f.originalBytes);save('returned.docx',h.input.docxBytes);save('source-inputs.json',{source:f.source,document:f.document,state:f.state,scenes:f.scenes,capsule});
+      save('before-business.json',h.before);save('before-apply-business.json',h.expectedBeforeApply||h.before);save('after-business.json',h.business());save('commit-receipts.json',h.receipts);save('round-authority.json',fs.readFileSync(h.authority.storePath,'utf8'));
+      try{save('reopen.json',await h.reopen());}catch(error){save('reopen-error.json',{code:error.code||error.message});}
+      if(h.reexportBytes)save('reexport.docx',h.reexportBytes);
+      save('publication-state.json',{content:h.editor,generation:c.lastSignaledEditGeneration,currentFilePath:c.currentFilePath,publicationCount:h.opens,isDirty:c.isDirty,
+        qualification:'ACTUAL_MAIN_HARNESS_AUTHORING_ADAPTER_STATE_NOT_NATIVE_EDITOR'});
+      save('observations.json',{testName:t.name,options:{tracked,withNotes,multi},caseLabel:h.caseLabel||null,writes:h.writes,commitAttempts:h.commitAttempts,legacyWrites:h.legacyWrites,kernelCalls:h.kernelCalls,policyCalls:h.policyCalls||0,opens:h.opens,handlerFailures:h.handlerFailures,
+        qualification:'FINITE_SYNTHETIC_MAIN_KERNEL_NORMAL_LEASE_ATOMIC_NOT_NATIVE_WORD',policyDenialQualification:h.policyDenialObserved?'POLICY_DECISION_FAULT_INJECTION':'NORMAL_PRODUCTION_POLICY'});save('artifacts.json',saved);
+    }
+    for(const fn of cleanup)await fn();
+  });
   return h;
 }
 test('actual authenticated preparation and Kernel write round history; restart, undo, replay and redo', async t => {
@@ -569,10 +660,14 @@ test('Paragraph mark typography: actual Main compound route uses atomic writer, 
  assert.deepEqual(model.normalizeNode(live.context().parsed.doc),model.normalizeNode(current));assert.equal(JSON.parse(live.commentText).threads.reduce((n,t)=>n+t.messages.length,0),5);
  const mark=model.readLedger(live.context().parsed.doc).revisions.find(model.isParagraphFormat);assert.equal((await live.command('reject',{revisionId:mark.id})).ok,true);
  assert.deepEqual(model.normalizeNode(live.context().parsed.doc).content[mark.paragraphIndex].attrs.wordParagraphMarkTypography,{bold:false,fontFamily:'Arial',fontSize:'12pt'});assert.equal((await live.command('undo')).ok,true);
+ const beforeExport=live.context().raw;
  const exported=buildFullManuscriptDocxReviewPacketSource({projectId:'p',projectRoot:live.context().projectRoot,nonTextReturnState:JSON.parse(live.commentText),scenes:[{sceneId:'roman/a.txt',scenePath:live.file,doc:live.context().parsed.doc,text:envelope.deriveVisibleTextFromDocument(live.context().parsed.doc),order:0}]});
  const b=await import('../../src/io/revisionBridge/index.mjs'),bytes=buildDocxReviewPacketBuffer(exported),preview=b.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));const plan=b.buildDocxImportPreviewPlanFromContentPreview(preview);assert.equal(plan.ok,true);const returned=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
- const emitted=doc=>{const copy=model.normalizeNode(doc);for(const p of copy.content)for(const n of p.content||[]){const marks=n.marks||(n.marks=[]);let style=marks.find(m=>m.type==='textStyle');if(!style)marks.push(style={type:'textStyle',attrs:{}});style.attrs={fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'},...style.attrs};}return model.normalizeNode(copy).content.map(p=>({type:p.type,attrs:p.attrs,characters:(p.content||[]).flatMap(n=>[...(n.text||'\n')].map(text=>({text,marks:n.marks||[]})))}));};
- for(const mode of ['original','current'])assert.deepEqual(emitted(model.materialize(model.readLedger(returned),mode)),emitted(model.materialize(model.readLedger(live.context().parsed.doc),mode)));
+ const emitted=doc=>model.normalizeNode(doc).content.map(p=>({type:p.type,attrs:p.attrs,characters:(p.content||[]).flatMap(n=>[...(n.text||'\n')].map(text=>({text,marks:n.marks||[]})))}));
+ const typography=require('../../src/core/word-review-typography-v1.cjs');
+ for(const mode of ['original','current'])assert.deepEqual(emitted(model.materialize(model.readLedger(returned),mode)),
+   emitted(typography.document(model.materialize(model.readLedger(live.context().parsed.doc),mode),exported.localAuthorityCapsule.exportMap.exportTypography)));
+ assert.equal(live.context().raw,beforeExport,'source and full local history stay unchanged during generic readback');
 });
 
 function novelConfirmationFixture() {
@@ -614,7 +709,7 @@ function installConfirmationPort(context,onConfirmation) {
     }});
 }
 function confirmationContext(onConfirmation) {
-  const context=vm.createContext({pendingTextRevisions:model});
+  const context=vm.createContext({pendingTextRevisions:model,require:require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js'))});
   installConfirmationPort(context,onConfirmation);
   vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),context);
   return context;
@@ -683,4 +778,112 @@ test('bounded grouped 2500 paragraph 100000 word style delta bounds compact rang
   assert.match(shown.detail,/мест: 2500; С1 Абзацы 1–2500/);
   assert.match(shown.detail,/Всего изменённых абзацев: 2500; изменённых исправлений: 0/);
   assert.equal(shown.parent,context.mainWindow);
+});
+
+test('single full manuscript actual Main Kernel normal lease atomic reopen and re-export',async t=>{
+  for(const options of [{tracked:false},{tracked:true},{tracked:false,withNotes:false}]) {
+    const h=await fullManuscriptRuntimeFixture(t,options),f=h.f;
+    const prepared=await h.route(),result=prepared.pendingProductPath;assert.equal(result?.status,'preview-ready',JSON.stringify(prepared));
+    assert.deepEqual(h.business(),h.before);assert.equal(h.writes,0);assert.equal((await h.prepared.apply()).status,'applied');
+    assert.equal(h.writes,1);assert.equal(h.commitAttempts,1);assert.equal(h.kernelCalls,1);assert.equal(h.legacyWrites,0);assert.equal(h.opens,1);assert.ok(h.policyCalls>0);
+    const raw=fs.readFileSync(h.file,'utf8'),doc=envelope.parseObservablePayload(raw).doc,projection=model.projection(doc);
+    assert.equal(projection.current,f.current[0]);assert.equal(projection.original,'AxxB tail\n\nAfter empty paragraph');
+    assert.equal((model.paragraphs(model.readLedger(doc).source)[1].content||[]).length,0);
+    const savedNotes=JSON.parse(fs.readFileSync(h.notesFile,'utf8'));
+    for(const note of savedNotes.notes.filter(n=>n.manuscript?.reference.sceneId===f.ids[0])) {
+      assert.deepEqual(note.manuscript.body,f.richBody);assert.equal(note.manuscript.reference.offsetUtf16,2);assert.equal(note.manuscript.reference.sourceTextSha256,hash(f.current[0]));
+      assert.deepEqual(note.privateMetadata,f.document.notes.find(n=>n.id===note.id).privateMetadata);
+    }
+    assert.deepEqual(savedNotes.notes.filter(n=>!n.manuscript||n.manuscript.reference.sceneId!==f.ids[0]),f.document.notes.filter(n=>!n.manuscript||n.manuscript.reference.sceneId!==f.ids[0]));
+    const state=JSON.parse(fs.readFileSync(h.commentFile,'utf8')),tail=state.threads.find(t=>t.threadId==='single-tail');
+    assert.equal(tail.status,'resolved');assert.equal(tail.anchor.selectedText,'tail');assert.deepEqual(tail.messages.map(m=>m.body),['Writer question','Editor reply']);
+    assert.deepEqual(state.threads.find(t=>t.threadId==='foreign-thread'),f.state.threads[1]);assert.equal(state.threads.filter(t=>t.sceneId===f.ids[0]).length,2);
+    const reopened=await h.reopen();assert.equal(reopened.treeRevision,1);assert.equal(reopened.lastMutation.kind,'word-mixed-return');h.assertCompleteDurableCohort(reopened);
+    assert.deepEqual(JSON.parse(fs.readFileSync(h.manifest,'utf8')),{schemaVersion:1,projectId:'project-test',privateMetadata:{keep:'manifest'}});
+    const source=buildFullManuscriptDocxReviewPacketSource({projectId:'project-test',projectRoot:h.c.getProjectRootPath(),notesDocument:savedNotes,nonTextReturnState:state,
+      scenes:[{sceneId:f.ids[0],scenePath:h.file,text:projection.current,doc,observableContent:raw,order:0}]});
+    h.reexportBytes=buildDocxReviewPacketBuffer(source);
+    const preview=f.bridge.buildDocxContentPreviewFromZipBytes(h.reexportBytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+    assert.equal(model.projection(preview.contentPreview.pendingRevisionDocument).current,f.current[0]);assert.equal(model.projection(preview.contentPreview.pendingRevisionDocument).original,projection.original);
+    const analysis=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:h.reexportBytes},{cryptoPort:h.c.createRtkReviewTransportCryptoPort()});assert.equal(analysis.ok,true,JSON.stringify(analysis));assert.equal((analysis.reviewIr.documentNotes?.notes||[]).length,options.withNotes===false?0:3);
+    await assert.rejects(h.prepared.apply(),/WORD_BOOK_RETURN_PREPARED_CONSUMED/);assert.equal(h.writes,1);
+  }
+});
+test('valid multi book actual policy loss denies before the normal leased atomic commit',async t=>{
+  const h=await fullManuscriptRuntimeFixture(t,{multi:true});assert.equal((await h.prepare()).status,'preview-ready');
+  h.policyDenied=true;let failure;try{await h.prepared.apply();}catch(error){failure=error;}
+  t.diagnostic(JSON.stringify({qualification:'POLICY_DECISION_FAULT_INJECTION',writes:h.writes,commitAttempts:h.commitAttempts,completeBusinessChanged:JSON.stringify(h.before)!==JSON.stringify(h.business())}));
+  assert.match(failure?.message||'',/USER_BOOKMARK_CAPABILITY_DENIED/);assert.equal(h.writes,0);assert.deepEqual(h.business(),h.before);
+});
+test('single full manuscript actual capability and source-scope admission',async t=>{
+  const h=await fullManuscriptRuntimeFixture(t,{tracked:true}),capsule=h.input.context.reviewTransportAuthorityCapsule;
+  h.policyDenied=true;assert.equal((await h.prepare()).code,'USER_BOOKMARK_CAPABILITY_DENIED');h.policyDenied=false;
+  // Synthetic adapter scope only: this is a no-book routing counterexample,
+  // not evidence of a producer-authenticated scene-scope packet.
+  capsule.scope='scene';assert.equal(await h.prepare(),null);capsule.scope='full-manuscript';
+  const mapped=capsule.exportMap.scenes;for(const value of [[],null,{}]){capsule.exportMap.scenes=value;assert.equal(await h.prepare(),null);}capsule.exportMap.scenes=mapped;
+  assert.deepEqual(h.business(),h.before);assert.equal(h.writes,0);
+});
+test('single full manuscript actual prepare keeps artifact source and live draft authority closed',async t=>{
+  const h=await fullManuscriptRuntimeFixture(t,{tracked:true}),capsule=h.input.context.reviewTransportAuthorityCapsule,intake=h.input.context.reviewTransportReturnIntake;
+  const attempts=[
+    ['hash',()=>{intake.returnedArtifactSha256='sha256:'+'0'.repeat(64);},()=>{intake.returnedArtifactSha256='sha256:'+hash(h.input.docxBytes);},'WORD_BOOK_RETURN_AUTHORITY_REQUIRED'],
+    ['returned-map',()=>{capsule.returnedArtifactExportMapAccepted=true;},()=>{capsule.returnedArtifactExportMapAccepted=false;},'WORD_BOOK_RETURN_AUTHORITY_REQUIRED'],
+    ['root',()=>{capsule.projectRoot='/foreign';},()=>{capsule.projectRoot=h.c.getProjectRootPath();},'RTK_ROUND_STALE_AUTHORITY'],
+    ['path',()=>{capsule.scenePathBySceneId[h.f.ids[0]]='/foreign';},()=>{capsule.scenePathBySceneId[h.f.ids[0]]=h.file;},'WORD_BOOK_RETURN_SCENE_BINDING'],
+    ['baseline',()=>{capsule.baselineObservableContentBySceneId[h.f.ids[0]]+=' altered';},()=>{capsule.baselineObservableContentBySceneId[h.f.ids[0]]=h.before[h.f.ids[0]];},'WORD_BOOK_RETURN_SCENE_BINDING'],
+    ['comment-draft',()=>{h.snapshot={generation:0,content:h.editor,commentAuthoringPending:true};},()=>{h.snapshot=null;},'WORD_BOOK_RETURN_EDITOR_STALE'],
+    ['note-draft',()=>{h.snapshot={generation:0,content:h.editor,manuscriptNoteAuthoringPending:true};},()=>{h.snapshot=null;},'WORD_BOOK_RETURN_EDITOR_STALE'],
+    ['live-text',()=>{h.snapshot={generation:0,content:'new unsaved authoring text'};},()=>{h.snapshot=null;},'WORD_BOOK_RETURN_SAVE_FIRST'],
+    ['dirty',()=>{h.c.isDirty=true;},()=>{h.c.isDirty=false;},'WORD_BOOK_RETURN_CONTEXT_STALE'],
+  ];
+  for(const [kind,mutate,restore,code] of attempts){mutate();const result=await h.prepare();assert.equal(result?.code,code,JSON.stringify({kind,result}));restore();assert.deepEqual(h.business(),h.before);}
+  assert.equal(h.writes,0);assert.equal(h.opens,0);
+});
+test('single full manuscript unchanged pending packet produces no lease or business write',async t=>{
+  const h=await fullManuscriptRuntimeFixture(t,{tracked:true}),capsule=h.input.context.reviewTransportAuthorityCapsule;
+  h.caseLabel='unchanged';h.input.docxBytes=h.f.originalBytes;
+  h.input.context.reviewTransportReturnIntake={authenticated:true,returnedArtifactSha256:'sha256:'+hash(h.f.originalBytes),
+    parserResult:h.f.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:h.f.originalBytes,hmacSecret:h.f.source.forbiddenSecret,expectedAuthority:capsule.expectedAuthority},
+      {cryptoPort:{...h.c.createRtkReviewTransportCryptoPort(),hmacSha256Json:(value,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(value)).digest('hex')}})};
+  const result=await h.prepare();assert.equal(result?.status,'unchanged',JSON.stringify(result));
+  assert.equal(h.writes,0);assert.equal(h.commitAttempts,0);assert.equal(h.kernelCalls,0);assert.equal(h.opens,0);assert.deepEqual(h.business(),h.before);
+});
+for(const kind of ['raw-source','generation','lifecycle','bootstrap','superseded','round-expired','manifest','notes','comments','scene-companion','policy-after-prepare','policy-in-lease','lease-busy','fence-loss','forged-cohort']) {
+  test('single full manuscript real leased Apply refuses '+kind+' without partial business writes',async t=>{
+    const h=await fullManuscriptRuntimeFixture(t,{tracked:true});h.caseLabel=kind;
+    assert.equal((await h.prepare()).status,'preview-ready');let held;
+    if(kind==='raw-source')fs.appendFileSync(h.file,'\nforeign external edit');
+    if(kind==='generation')h.c.lastSignaledEditGeneration++;
+    if(kind==='lifecycle')h.lifecycle='foreign-life';
+    if(kind==='bootstrap')h.c.activeStage10ApplicationBootstrap={};
+    if(kind==='superseded')h.current=false;
+    if(kind==='round-expired'){const round=h.authority.roundsById[h.input.context.reviewTransportAuthorityCapsule.roundId];round.lifecycleState='EXPIRED';round.recordVersion++;h.authority.write();}
+    if(kind==='manifest'){const value=JSON.parse(fs.readFileSync(h.manifest,'utf8'));value.privateMetadata.keep='foreign';fs.writeFileSync(h.manifest,JSON.stringify(value));}
+    if(kind==='notes'){const value=JSON.parse(fs.readFileSync(h.notesFile,'utf8'));value.notes.find(n=>n.id==='private-project-note').body+=' foreign';fs.writeFileSync(h.notesFile,JSON.stringify(value));}
+    if(kind==='comments'){const value=JSON.parse(fs.readFileSync(h.commentFile,'utf8'));value.threads[1].messages[0].body+=' foreign';fs.writeFileSync(h.commentFile,JSON.stringify(value));}
+    if(kind==='scene-companion')fs.writeFileSync(h.file+'.wp201-commit.json',JSON.stringify({independent:'foreign'}));
+    if(kind==='policy-after-prepare')h.policyDenied=true;
+    if(kind==='policy-in-lease')h.beforeCommit=()=>{h.policyDenied=true;};
+    if(kind==='lease-busy')held=await h.manifestAuthority.leaseManager.acquire('project-test');
+    if(kind==='fence-loss')h.beforeCommit=()=>{const target=h.manifestAuthority.leaseManager.paths('project-test').fence,value=JSON.parse(fs.readFileSync(target,'utf8'));value.fencingGeneration++;fs.writeFileSync(target,JSON.stringify(value));};
+    if(kind==='forged-cohort')h.beforeCommit=request=>{request.treeCohort=structuredClone(request.treeCohort);request.treeCohort.entries[0].afterBase64=Buffer.from('forged target').toString('base64');};
+    const expected=h.business();h.expectedBeforeApply=expected;
+    try{await assert.rejects(h.prepared.apply(),/WORD_BOOK_RETURN_|RTK_ROUND_|USER_BOOKMARK_CAPABILITY_DENIED|E_TREE_|E_PROJECT_LEASE_|E_COMMAND_FAILED/);}finally{if(held)await h.manifestAuthority.leaseManager.release(held);}
+    if(kind==='raw-source')assert.equal(h.handlerFailures.at(-1).message,'WORD_BOOK_RETURN_SOURCE_STALE');
+    if(kind==='policy-in-lease')assert.equal(h.handlerFailures.at(-1).message,'USER_BOOKMARK_CAPABILITY_DENIED');
+    assert.equal(h.writes,0);assert.equal(h.opens,0);assert.equal(h.legacyWrites,0);assert.deepEqual(h.business(),expected);
+  });
+}
+for(const kind of ['generation','capability'])test('single full manuscript post-commit '+kind+' retains complete durable cohort and newer editor',async t=>{
+  const h=await fullManuscriptRuntimeFixture(t,{tracked:true});h.caseLabel='post-commit-'+kind;
+  assert.equal((await h.prepare()).status,'preview-ready');
+  h.publicationRace=()=>{h.editor='new unsaved authoring text';if(kind==='generation')h.c.lastSignaledEditGeneration++;else h.policyDenied=true;};
+  await assert.rejects(h.prepared.apply(),/E_COMMAND_FAILED/);
+  assert.equal(h.handlerFailures.at(-1).message,kind==='generation'?'WORD_BOOK_RETURN_CONTEXT_STALE':'USER_BOOKMARK_CAPABILITY_DENIED');
+  assert.equal(h.writes,1);assert.equal(h.opens,0);assert.equal(h.editor,'new unsaved authoring text');
+  assert.equal(model.projection(envelope.parseObservablePayload(fs.readFileSync(h.file,'utf8')).doc).current,h.f.current[0]);
+  const reopened=await h.reopen();assert.equal(reopened.treeRevision,1);h.assertCompleteDurableCohort(reopened);
+  assert.equal(JSON.parse(fs.readFileSync(h.commentFile,'utf8')).threads.find(t=>t.threadId==='single-tail').status,'resolved');
+  assert.deepEqual(JSON.parse(fs.readFileSync(h.notesFile,'utf8')).notes.filter(n=>n.manuscript?.reference.sceneId===h.f.ids[0]).map(n=>n.manuscript.reference.offsetUtf16),[2,2,2]);
 });

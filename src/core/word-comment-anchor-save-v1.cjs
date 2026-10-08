@@ -17,7 +17,7 @@ const edges = text => new Set([text.length, ...Array.from(new Intl.Segmenter(und
   { granularity: 'grapheme' }).segment(text), x => x.index)]);
 
 function paragraphs(content) {
-  if (typeof content !== 'string' || Buffer.byteLength(content) > 8 * 1024 * 1024) fail('COMMENT_SAVE_SCENE_BUDGET');
+  if (typeof content !== 'string' || Buffer.byteLength(content) > 32 * 1024 * 1024) fail('COMMENT_SAVE_SCENE_BUDGET');
   let parsed;
   try { parsed = parseObservablePayload(content); } catch { fail('COMMENT_SAVE_SCENE_INVALID'); }
   if (parsed.issue) fail('COMMENT_SAVE_SCENE_INVALID');
@@ -484,13 +484,13 @@ function planIntentSave({before,beforeText,sceneId,beforeContent,afterContent,ed
 }
 
 function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson}) {
-  if(typeof returnProofJson!=='string' || Buffer.byteLength(returnProofJson)>8*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
+  if(typeof returnProofJson!=='string' || Buffer.byteLength(returnProofJson)>32*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
   let proof;try {proof=JSON.parse(returnProofJson);} catch {fail('COMMENT_TEXT_RETURN_PROOF_INVALID');}
   if(proof?.schemaVersion===1&&Object.hasOwn(proof,'returnedDocument')||proof?.schemaVersion===2&&Object.hasOwn(proof,'returnedLedger')) {
     const plan=require('./word-pending-comment-return-v1.cjs').planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afterContent,returnProofJson});
     return {mode:RETURN_MODE,beforeText,afterText:plan.afterText,returnProofJson};
   }
-  if(Buffer.byteLength(returnProofJson)>2*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
+  if(Buffer.byteLength(returnProofJson)>32*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_INVALID');
   if(!proof || Array.isArray(proof) || Object.keys(proof).sort().join(',')!==
     'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedParagraphs,returnedThreads,roundId,textChanges'
     || proof.projectId!==projectId || !Array.isArray(proof.textChanges) || !proof.textChanges.length
@@ -509,7 +509,7 @@ function planCommentTextReturn({beforeText,projectId,sceneId,beforeContent,after
   const before=readState(beforeText,projectId),after=readState(result.afterText,projectId);
   if(JSON.stringify(before.threads.filter(t=>t.sceneId!==sceneId))!==JSON.stringify(after.threads.filter(t=>t.sceneId!==sceneId))) fail('COMMENT_TEXT_RETURN_FOREIGN_SCENE');
   const plan={mode:RETURN_MODE,beforeText,afterText:result.afterText,returnProofJson};
-  if(Buffer.byteLength(JSON.stringify(plan))>2*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_BUDGET');
+  if(Buffer.byteLength(JSON.stringify(plan))>32*1024*1024) fail('COMMENT_TEXT_RETURN_PROOF_BUDGET');
   return plan;
 }
 

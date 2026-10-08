@@ -4,6 +4,23 @@ const recording = require('../../src/core/word-pending-recording-v1.cjs');
 const review = require('../../src/core/word-pending-text-revisions-v1.cjs');
 const doc = (...paragraphs) => ({ type: 'doc', content: paragraphs.map(text => ({ type: 'paragraph', content: text ? [{ type: 'text', text }] : [] })) });
 const meta = { author: 'Кирилл', date: '2026-09-28T07:00:00.000Z' };
+test('imported rich ledger accepts exactly 16 MiB and rejects overflow without changing source or history', () => {
+  const ledger={schemaVersion:2,source:doc('😀x'),revisions:[{id:'revision-1',nativeId:'owned',operation:'delete',author:'Editor',date:meta.date,dateUtc:meta.date,
+    groupId:null,paragraphIndex:0,from:2,to:3,state:'pending'}],undo:[],redo:[['accepted']],roundUndo:[],roundRedo:[],returnReceipts:[]};
+  ledger.source.content[0].content[0].marks=[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'}}}];
+  const limit=16*1024*1024,node=ledger.source.content[0].content[0];
+  node.text+='x'.repeat(limit-Buffer.byteLength(JSON.stringify(ledger)));
+  const original=JSON.stringify(ledger);assert.equal(Buffer.byteLength(original),limit);
+  assert.deepEqual(review.validateLedger(ledger),ledger);
+  const restored=review.readLedger(review.bindLedger(ledger));assert.deepEqual(restored,ledger);
+  const overflow=JSON.parse(original);overflow.source.content[0].content[0].text+='x';
+  assert.equal(Buffer.byteLength(JSON.stringify(overflow)),limit+1);
+  assert.throws(()=>review.bindLedger(overflow),/PENDING_REVISIONS_BUDGET/u);
+  const malformed=JSON.parse(original);malformed.source.content[0].attrs={foreign:true};
+  malformed.source.content[0].content[0].text=malformed.source.content[0].content[0].text.slice(0,-100);
+  assert.throws(()=>review.bindLedger(malformed),/PENDING_REVISIONS_INVALID/u);
+  assert.equal(JSON.stringify(ledger),original);assert.deepEqual(restored.redo,[['accepted']]);
+});
 for (const [name, original, current, operations] of [
   ['insert', 'hello', 'hello world', ['insert']], ['delete', 'hello world', 'hello', ['delete']],
   ['replace', 'hello world', 'hello Word', ['delete', 'insert']], ['empty', '', 'Первый', ['insert']],

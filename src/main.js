@@ -928,7 +928,7 @@ function buildFullManuscriptProvisionalSelfParse({ source, revisionBridge, crypt
   // longer re-extracts DOCX ZIP package parts directly. The bridge helper is
   // the single owner of ZIP part extraction.
   const extracted = typeof revisionBridge.extractDocxReviewTransportWordDocumentProjection === 'function'
-    ? revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes }, { cryptoPort })
+    ? revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes, budgets:docxReviewReturnIntakeProductBudgets() }, { cryptoPort })
     : null;
   if (!extracted || extracted.ok !== true) {
     return {
@@ -1175,8 +1175,83 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
         : [],
     };
   }
+  const bodyTypography=require('./core/word-review-typography-v1.cjs');
+  let bodyProfile;
+  try {
+    bodyProfile=bodyTypography.validate(localAuthority.exportMap.exportTypography,{allowUndefined:true});
+    if(bodyProfile?.schemaVersion===bodyTypography.V2) {
+      if(stableRtkReviewTransportJson(bodyProfile)!==stableRtkReviewTransportJson(bodyTypography.validate(source.exportTypography)))throw Error('WORD_BODY_PROFILE_SOURCE');
+      if((source.officeModeTransport===true)!==(localAuthority.officeModeTransport===true))throw Error('WORD_BODY_OFFICE_MODE_MISMATCH');
+      const sourceModel=require('./export/docx/fullManuscriptDocxReviewPacketSource.js'),canonicalScenes=[];
+      for(const scene of localAuthority.exportMap.scenes) {
+        const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
+        if(typeof raw!=='string'||scene.rawSha256!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BODY_BASELINE');
+        const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
+        if(parsed.issue)throw Error('WORD_BODY_BASELINE');
+        const plain=parsed.version===1&&parsed.payloadVersion===1&&!parsed.doc&&!parsed.hasMetaBlock&&!parsed.hasCardsBlock;
+        canonicalScenes.push({...scene,doc:parsed.doc,text:plain?envelope.normalizeDocumentLineEndings(raw):parsed.text});
+      }
+      const authored=sourceModel.buildFullManuscriptBlocks(canonicalScenes,cryptoPort);
+      const mapped=localAuthority.exportMap.scenes.flatMap(scene=>scene.blocks);
+      if(authored.length!==mapped.length||authored.length!==source.blocks.length
+        ||authored.some((block,index)=>['formatIr','canonicalMarksSha256','canonicalTextSha256'].some(key=>stableRtkReviewTransportJson(block[key])!==stableRtkReviewTransportJson(mapped[index][key])
+          ||stableRtkReviewTransportJson(block[key])!==stableRtkReviewTransportJson(source.blocks[index][key]))))throw Error('WORD_BODY_RAW_FORMAT_BINDING');
+      const reconstructed=require('./export/docx/docxReviewPacketComments.js').bindPendingCommentExport({commentExport:source.commentExport,scenes:canonicalScenes,blocks:source.blocks,exportTypography:bodyProfile});
+      for(const scene of localAuthority.exportMap.scenes)if(stableRtkReviewTransportJson(scene.pendingCommentBinding??null)!==stableRtkReviewTransportJson(reconstructed.pendingCommentBindings.find(item=>item.sceneId===scene.sceneId)?.binding??null))throw Error('WORD_BODY_PENDING_BINDING');
+      for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
+        const read=analysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
+        let rows=read.reviewIr?.formattingParagraphs;
+        if(rows?.some(row=>row.formattedRuns?.some(run=>run.unsupportedNames?.includes('rPrChange')))) {
+          const returned=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
+            baselineDocuments:canonicalScenes.map(scene=>({sceneId:scene.sceneId,document:scene.doc||require('./core/document-content-envelope-v1.cjs').buildParagraphDocumentFromText(scene.text)})),retainPendingScenes:true,
+            documentSections:localAuthority.documentSections,signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
+          if(!returned.ok)throw Error(returned.code||'WORD_BODY_PENDING_READBACK');
+          const checked=new Set();
+          for(const scene of canonicalScenes) {
+            const blocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
+            if(!scene.pendingCommentBinding)continue;
+            // Source-owned canonical anchor reconstruction, identical to the
+            // existing exporter. The returned packet cannot supply this roster.
+            const paragraphs=blocks.map(block=>({text:block.text,...(block.formatIr.table?{table:block.formatIr.table}:{})}));
+            const anchors=(source.commentExport?.threads||[]).filter(thread=>thread.sceneId===scene.sceneId).map(thread=>{
+              const a=thread.anchor,input={paragraphIndex:blocks.findIndex(block=>block.blockId===a.blockId),startUtf16:a.startUtf16,selectedText:a.selectedText,
+                ...(a.kind==='multi-paragraph-range'?{kind:a.kind,endParagraphIndex:blocks.findIndex(block=>block.blockId===a.endBlockId),endUtf16:a.endUtf16}:a.kind==='point'?{kind:'point',affinity:'right'}:{})};
+              return {threadId:thread.threadId,anchor:{...require('./core/word-comment-ranges-v1.cjs').deriveCommentAnchor({sceneId:scene.sceneId,paragraphs,input}),...(a.pendingUnionLocator?{pendingUnionLocator:a.pendingUnionLocator}:{})}};
+            });
+            pendingTextRevisions.verifyCommentReturnBinding({document:scene.doc,binding:scene.pendingCommentBinding,
+              returnedDocument:returned.scenes.find(item=>item.sceneId===scene.sceneId)?.returnedDocument,anchors,
+              exportTypography:bodyProfile,exportParagraphs:blocks.map(block=>block.formatIr.paragraph)});
+            blocks.forEach(block=>checked.add(block.documentParagraphIndex));
+          }
+          // The complete actual wrapper roster (including nested parents,
+          // provenance and both projections) has passed. Keep every other
+          // actual field and diagnostic for the strict body comparison.
+          rows=rows.map((row,index)=>({...row,formattedRuns:row.formattedRuns.map(run=>{
+            if(!run.unsupportedNames?.includes('rPrChange'))return run;
+            if(!checked.has(index))throw Error('WORD_BODY_PENDING_READBACK');
+            return {...run,unsupportedNames:run.unsupportedNames.filter(name=>name!=='rPrChange')};
+          })}));
+        }
+        if(!read.ok||rows?.length!==source.blocks.length||source.blocks.some((block,index)=> {
+          let expected=block.formatIr;
+          const section=localAuthority.documentSections?.protectedSections?.find(section=>section.endParagraphIndex===index);
+          if(phase==='final'&&source.officeModeTransport===true&&block.text===''&&expected.runs.length===0
+            &&section?.breakPlacement==='PARAGRAPH_PROPERTIES'&&section.ordinal<localAuthority.documentSections.protectedSections.length-1) {
+            const names=(rows[index]?.bookmarkNames||[]).filter(name=>/^YRTK_/u.test(name));
+            const owned=(block.wordSignals||[]).filter(signal=>signal.kind==='bookmarkName').map(signal=>signal.value?.name);
+            if(block.canonicalTextSha256!==`sha256:${cryptoPort.sha256Text('')}`||owned.length!==1||names.length!==1||names[0]!==owned[0])throw Error('WORD_BODY_OFFICE_CARRIER_OWNER');
+            expected={...expected,runs:[{from:0,to:1,text:'\u2060',inline:bodyTypography.inline({},expected.paragraph,bodyProfile)}]};
+          }
+          return !bodyTypography.readback(expected,rows[index],bodyProfile);
+        }))throw Error(`WORD_BODY_READBACK_${phase.toUpperCase()}`);
+        const tabStops=localAuthority.exportMap.scenes.map(scene=>scene.documentFormatIr?.wordDefaultTabStop);
+        if(new Set(tabStops).size!==1||read.reviewIr.documentProperties?.effective!==tabStops[0])throw Error('WORD_BODY_TAB_STOP_READBACK');
+      }
+    }
+  }catch(error){return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_BODY_TYPOGRAPHY_MISMATCH',reason:error.code||error.message};}
   let documentNotesBinding = null;
-  if (source.documentNotes?.sourceBindings?.length && localAuthority.exportMap?.scenes?.length>1
+  if (source.documentNotes?.sourceBindings?.length && (localAuthority.exportMap?.scenes?.length>1
+    || localAuthority.exportMap?.scenes?.length===1&&localAuthority.scope==='full-manuscript')
     && localAuthority.exportMap.scenes.some(scene=>scene.pendingCommentBinding?.schemaVersion===2)) {
     try {
       const noteProofs=[];
@@ -1188,11 +1263,11 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
           if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
           const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
           if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
-        const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:localAuthority.exportMap,
+        const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
           baselineDocuments:noteScenes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
           signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
         if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const preview=revisionBridge.buildDocxContentPreviewFromZipBytes(bytes);
+        const preview=revisionBridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()});
         if(!preview.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
         const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
           projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
@@ -1209,7 +1284,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
             // clean and schema1 paths retain their strict comparison below.
             const mapScene=localAuthority.exportMap.scenes.find(item=>item.sceneId===scene.sceneId);
             const emitted=cloneJsonSafe(before),localBlocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
-            if(source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
+            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
               &&localBlocks.every(block=>Array.isArray(block.pendingRevisionSegments))) {
               const leaves=pendingTextRevisions.paragraphs(emitted.source);
               leaves.forEach((paragraph,index)=>{paragraph.content=pendingTextRevisions.commentTransportSegments(
@@ -1219,7 +1294,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
             }
             // Core has independently validated the complete local v3 profile.
             // Rebuild its emitted pPr only in this read-only expectation clone.
-            if(scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
+            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
               if(paragraph.type==='codeBlock')return;
               if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
                 (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
@@ -1227,8 +1302,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
               for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
                 ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
             });
-            const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography);
-            if(scene.bodyParagraphEmission) {
+            const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
+            if(bodyProfile?.schemaVersion===bodyTypography.V2||scene.bodyParagraphEmission) {
               // Ordinary Word replacement groups are inferred on readback, not
               // serialized. Predict them from our own emitted union intervals;
               // retain canonical IDs and decisions outside this expectation.
@@ -5234,8 +5309,12 @@ async function revalidateSceneNoteReviewExportSource(source) {
   check();
 }
 
-function scenePendingExportSemantics(ledger, exportTypography) {
+function scenePendingExportSemantics(ledger, exportTypography, sourceEmission=false) {
   const exported = pendingTextRevisions.exportDocument(ledger);
+  const bodyTypography=require('./core/word-review-typography-v1.cjs');
+  const bodyProfile=sourceEmission&&bodyTypography.validate(exportTypography,{allowUndefined:true})?.schemaVersion===bodyTypography.V2;
+  const rawLeaves=pendingTextRevisions.paragraphs(exported.doc);
+  if(bodyProfile)exported.doc=bodyTypography.document(exported.doc,exportTypography);
   const groups = new Map(), revisions = new Map();
   const effectiveMarks = marks => {
     const result = cloneJsonSafe(marks || []);
@@ -5255,7 +5334,7 @@ function scenePendingExportSemantics(ledger, exportTypography) {
       date: revision.date, dateUtc: revision.dateUtc, group: revision.groupId ? groups.get(revision.groupId) : null,
       move: Boolean(revision.moveName), format: revision.format?.kind === 'run'
         ? { kind: 'run', before: effectiveMarks(revision.format.before), after: effectiveMarks(revision.format.after) }
-        : revision.format || null, boundary: revision.boundary || null,
+        : bodyProfile&&revision.format?.kind==='paragraph'?{...revision.format,before:bodyTypography.snapshot(revision.format.before,exportTypography),after:bodyTypography.snapshot(revision.format.after,exportTypography)}:revision.format || null, boundary: revision.boundary || null,
       structure: revision.structure || null };
   };
   const shape = pendingTextRevisions.normalizeNode(exported.doc);
@@ -5267,9 +5346,10 @@ function scenePendingExportSemantics(ledger, exportTypography) {
     else for (const child of node.content || []) clearLeaves(child);
   };
   clearLeaves(shape);
-  return { shape, paragraphs: exported.paragraphs.map(paragraph => {
+  return { shape, paragraphs: exported.paragraphs.map((paragraph,index) => {
     const segments = [];
-    for (const segment of paragraph.segments) {
+    const emitted=bodyProfile?bodyTypography.segments(paragraph.segments,{nodeType:rawLeaves[index].type,...rawLeaves[index].attrs},exportTypography,{canonicalCode:true}):paragraph.segments;
+    for (const segment of emitted) {
       const node = pendingTextRevisions.normalizeNode(segment.node), revision = revisionMeaning(segment.revision);
       if (node.type === 'text') node.marks = effectiveMarks(node.marks);
       const last = segments.at(-1);
@@ -5334,7 +5414,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (pendingCommentBinding && source.commentExport?.threads.length) {
     if (!notesBinding.ok || source.documentNotes.notes.length || source.documentNotes.sourceBindings.length)
       throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
-    const returned = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: documentBuffer,
+    const returned = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: documentBuffer, budgets: docxReviewReturnIntakeProductBudgets(),
       exportMap: source.localAuthorityCapsule.exportMap,
       baselineDocuments: [{sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId, document: baselineDocument.doc}],
       documentSections: source.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
@@ -5352,7 +5432,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (ledger?.schemaVersion === 3) {
     if (parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest !== source.documentNotes.protectedDigest
       || (parsed.reviewIr.commentThreads || []).length) throw Error('REVIEW_DOCX_EXPORT_NOTES_MISMATCH');
-    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(documentBuffer);
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:documentBuffer,budgets:docxReviewReturnIntakeProductBudgets()});
     if (!preview.ok) throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
     const plan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(preview);
     if (!plan.ok) throw Error('REVIEW_DOCX_EXPORT_PENDING_SEMANTICS_MISMATCH');
@@ -5378,7 +5458,7 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (ledger?.revisions.some(revision => revision.state === 'pending')
     && source.documentNotes.notes.length === 0 && source.documentNotes.sourceBindings.length === 0
     && (parsed.reviewIr.documentNotes?.notes || []).length === 0 && (parsed.reviewIr.commentThreads || []).length === 0) {
-    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(documentBuffer);
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:documentBuffer,budgets:docxReviewReturnIntakeProductBudgets()});
     const returnedDoc = preview?.contentPreview?.pendingRevisionDocument;
     const returnedLedger = returnedDoc && pendingTextRevisions.readLedger(returnedDoc);
     const topology = revisionBridge.validateDocxReviewTableTopology(parsed.reviewIr.formattingParagraphs,
@@ -5628,7 +5708,7 @@ async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload 
 
 // DOCX_INTAKE_GATE_COMMAND_SURFACE_START
 const DOCX_INTAKE_GATE_COMMAND_ID = 'cmd.project.review.inspectDocxIntakeGate';
-const DOCX_INTAKE_GATE_MAX_BYTES = 10 * 1024 * 1024;
+const DOCX_INTAKE_GATE_MAX_BYTES = 16 * 1024 * 1024;
 const DOCX_INTAKE_GATE_MAX_BASE64_CHARS = Math.ceil(DOCX_INTAKE_GATE_MAX_BYTES / 3) * 4;
 const DOCX_INTAKE_GATE_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'bufferSource', 'explicitCanonicalApplyConfirmed']);
 
@@ -6264,7 +6344,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
   // lane when no canonical pending state requires this single-scene writer.
   const hasSingleRichBaseline = capsule?.exportMap?.scenes?.length === 1 && baselines.length === 1;
   if (!baselinePending && capsule?.pendingReturnOnly !== true && !hasSingleRichBaseline) return null;
-  const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+  const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
   const returnedPending = !!preview?.contentPreview?.pendingRevisionDocument;
   if (!baselinePending && !returnedPending) return null;
   try {
@@ -6285,10 +6365,10 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     const sceneId = scenes[0].sceneId;
     if (capsule.scenePathBySceneId?.[sceneId] !== file) throw Error('PENDING_RETURN_OPEN_SCENE_REQUIRED');
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const extracted = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}) }, { cryptoPort });
     if (!extracted.ok) throw Error('PENDING_RETURN_PACKAGE_INVALID');
     const mapped = revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, capsule.exportMap,
-      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(), stylesXml: extracted.stylesXml, relationshipsXml: extracted.relationshipsXml, themeXml: extracted.themeXml, settingsXml: extracted.settingsXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
+      { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}), stylesXml: extracted.stylesXml, relationshipsXml: extracted.relationshipsXml, themeXml: extracted.themeXml, settingsXml: extracted.settingsXml, allowCommentMarkers:Boolean(capsule.commentExport), allowPendingParagraphSplits: true, allowPendingTableRows: true });
     if (!mapped.ok) throw Error(mapped.code);
     if (preview.ok !== true) throw Error('PENDING_RETURN_CONTENT_UNSUPPORTED');
     const mixedComments = Boolean(capsule.commentExport && scenes.length===1
@@ -6330,7 +6410,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
         returnedNotes: noteReplay.returnedNotes, unionReferences: noteReplay.unionReferences, receipt,
         paragraphBindings: mapped.sourceParagraphBindings || (mapped.paragraphBindings?.length !== pendingTextRevisions.paragraphs(pendingTextRevisions.normalizeNode(ledger?.source || current.parsed.doc)).length
           ? mapped.paragraphBindings : undefined) });
-      if (Buffer.byteLength(pendingNoteReturnProofJson) > 8 * manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_RETURN_PROOF_BUDGET');
+      if (Buffer.byteLength(pendingNoteReturnProofJson) > 32 * manuscriptNoteModel.LIMITS.bytes) throw Error('NOTE_RETURN_PROOF_BUDGET');
       beforeDoc = bound.beforeDoc; returnedDoc = bound.returnedDoc;
     }
     notesDigest = notesStateDigest(notesState.document);
@@ -6338,7 +6418,7 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
     if(mixedComments&&!replay) {
       if(capsule.userBookmarksCandidate||capsule.mediaReturnCandidate||capsule.storyReturnCandidate||capsule.cleanLinkLabel?.ok
         ||activeNotes.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length)throw Error('MIXED_RETURN_COMPOSITE_UNSUPPORTED');
-      const parsedScenes=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,exportMap:capsule.exportMap,
+      const parsedScenes=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}),exportMap:capsule.exportMap,
         baselineDocuments:[{sceneId,document:current.parsed.doc}],retainPendingSceneId:sceneId,documentSections:capsule.documentSections,
         signedSectionsDigest:capsule.documentSections?.protectedDigest,allowOfficeDefaultOmissions:capsule.officeModeTransport===true,cryptoPort});
       if(!parsedScenes.ok||parsedScenes.scenes.length!==1)throw Error(parsedScenes.code||'MIXED_RETURN_PARSE_FAILED');
@@ -6388,12 +6468,14 @@ async function prepareAuthenticatedPendingReturn({ context, requestId, isCurrent
 // The complete signed map remains intact for both scene and discussion checks.
 async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurrent,docxBytes,revisionBridge,onPrepared}) {
   const capsule=context?.reviewTransportAuthorityCapsule,intake=context?.reviewTransportReturnIntake;
-  if(intake?.authenticated!==true || capsule?.exportMap?.scenes?.length<=1) return null;
-  const preview=revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+  const mappedScenes=capsule?.exportMap?.scenes;
+  if(intake?.authenticated!==true || !Array.isArray(mappedScenes) || mappedScenes.length<1
+    || mappedScenes.length===1&&capsule.scope!=='full-manuscript') return null;
+  const preview=revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
   if(!preview?.contentPreview?.pendingRevisionDocument) return null;
   try {
     const owner=activeStage10ApplicationBootstrap,lifecycle=currentLifecycleSubjectId(),file=currentFilePath,generation=lastSignaledEditGeneration;
-    const check=()=>{assertFreshDocxReviewRoundAuthority(capsule);
+    const check=()=>{assertFreshDocxReviewRoundAuthority(capsule);userBookmarkCapability('cmd.project.review.decidePendingRevision');
       if(typeof isCurrent!=='function'||!isCurrent()||owner!==activeStage10ApplicationBootstrap||lifecycle!==currentLifecycleSubjectId()
         ||file!==currentFilePath||generation!==lastSignaledEditGeneration||isDirty||autoSaveInProgress||context.projectRoot!==getProjectRootPath())throw Error('WORD_BOOK_RETURN_CONTEXT_STALE');};
     check();
@@ -6413,17 +6495,30 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       if(!relative||path.isAbsolute(relative)||relative.split(path.sep).some(p=>p==='..'||p==='.'||!p))throw Error('WORD_BOOK_RETURN_SCENE_PATH');
       let at=projectRoot;
       for(const component of relative.split(path.sep)) {at=path.join(at,component);const stat=await fs.lstat(at);
-        if(stat.isSymbolicLink()||(at===path.join(projectRoot,relative)?!stat.isFile()||stat.nlink!==1||stat.size>8*1024*1024:!stat.isDirectory()))throw Error('WORD_BOOK_RETURN_SCENE_PATH');}
+        if(stat.isSymbolicLink()||(at===path.join(projectRoot,relative)?!stat.isFile()||stat.nlink!==1||stat.size>32*1024*1024:!stat.isDirectory()))throw Error('WORD_BOOK_RETURN_SCENE_PATH');}
       const parsed=envelope.parseObservablePayload(raw);if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_RETURN_SOURCE_INVALID');
       parsed.doc ||= envelope.buildParagraphDocumentFromText(parsed.text);
       scenes.push({sceneId:scene.sceneId,target,raw,parsed});
     }
     const open=scenes.find(scene=>scene.target===file);if(!open)throw Error('WORD_BOOK_RETURN_OPEN_SCENE_REQUIRED');
+    const bodyTypography=require('./core/word-review-typography-v1.cjs');
+    const compareCodeSchemaDefaults=bodyTypography.validate(capsule.exportMap.exportTypography,{allowUndefined:true})?.schemaVersion===bodyTypography.V2;
+    // The renderer's declared code language default is comparison-only. Raw
+    // source bytes and every explicit language/other attribute remain exact.
+    const liveSavedDocument=value=>{
+      if(!compareCodeSchemaDefaults||!value||typeof value!=='object')return value;
+      const copied=JSON.parse(JSON.stringify(value)),pending=[copied];
+      while(pending.length){const node=pending.pop();
+        if(node.type==='codeBlock'&&!Object.hasOwn(node.attrs||{},'language'))node.attrs={...node.attrs,language:null};
+        if(Array.isArray(node.content))pending.push(...node.content);
+      }
+      return copied;
+    };
     const verifySources=async()=>{check();for(const scene of scenes)if(await fs.readFile(scene.target,'utf8')!==scene.raw)throw Error('WORD_BOOK_RETURN_SOURCE_STALE');
       const snapshot=await requestEditorSnapshot();
       if(!Number.isSafeInteger(snapshot.generation)||snapshot.generation<generation||snapshot.commentAuthoringPending||snapshot.manuscriptNoteAuthoringPending)throw Error('WORD_BOOK_RETURN_EDITOR_STALE');
       const live=envelope.parseObservablePayload(snapshot.content);
-      if(live.issue||!module.commentSceneSnapshotsEqual(live.doc||live.text,open.parsed.doc))throw Error('WORD_BOOK_RETURN_SAVE_FIRST');check();return snapshot;};
+      if(live.issue||!module.commentSceneSnapshotsEqual(liveSavedDocument(live.doc||live.text),liveSavedDocument(open.parsed.doc)))throw Error('WORD_BOOK_RETURN_SAVE_FIRST');check();return snapshot;};
     const manifestPath=path.join(context.projectRoot,'project.craftsman.json');
     const state=await readVerifiedProjectTreeMutation({manifestPath,projectId:context.projectId});
     const snapshot=await verifySources();
@@ -6432,7 +6527,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     const hasNotes=Boolean(capsule.documentNotes?.sourceBindings?.length||intake.parserResult?.reviewIr?.documentNotes?.notes?.length);
     if(hasNotes&&(capsule.documentNotes?.projectId!==context.projectId||capsule.documentNotes?.policy!=='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
       ||intake.parserResult?.authorityCarrier?.selectedCarrier?.payload?.documentNotesDigest!==capsule.documentNotes.protectedDigest))throw Error('PENDING_NOTE_BASELINE_CONFLICT');
-    const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,exportMap:capsule.exportMap,
+    const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets}),exportMap:capsule.exportMap,
       baselineDocuments:scenes.map(scene=>({sceneId:scene.sceneId,document:scene.parsed.doc})),retainPendingScenes:true,
       ...(hasNotes?{baselineDocumentNotes:capsule.documentNotes}:{}),
       documentSections:capsule.documentSections,signedSectionsDigest:capsule.documentSections?.protectedDigest,
@@ -6457,7 +6552,17 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       notesText:await optional('notes.craftsman.json'),commentsText:comments.text,returnProofJson};
     const semantic=require('./core/word-pending-comment-return-v1.cjs').planMixedBookReturn({beforeText:comments.text,projectId:context.projectId,
       scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson,notesText:input.notesText});
-    if(!semantic.scenes.some(scene=>scene.changed))return null;
+    if(!semantic.scenes.some(scene=>scene.changed)) {
+      if(semantic.afterText!==comments.text||semantic.changes.length)throw Error('WORD_BOOK_RETURN_ANNOTATIONS_CHANGED');
+      await verifySources();
+      if(await fs.readFile(manifestPath,'utf8')!==input.beforeManifestText
+        ||await optional('notes.craftsman.json')!==input.notesText
+        ||(await module.readCommentAuthoringState({projectRoot:context.projectRoot,projectId:context.projectId})).text!==comments.text)
+        throw Error('WORD_BOOK_RETURN_BASELINE_CONFLICT');
+      for(const scene of input.scenes)if(await fs.readFile(capsule.scenePathBySceneId[scene.sceneId],'utf8')!==scene.beforeContent
+        ||await optional(scene.sceneId+'.wp201-commit.json')!==scene.commitText)throw Error('WORD_BOOK_RETURN_BASELINE_CONFLICT');
+      check();return {ok:true,status:'unchanged',writerCalled:false,pendingProductApplyLane:false};
+    }
     const plan=model.planProjectMixedWordReturnCohort(input);
     check();let consumed=false;
     const apply=async()=>{
@@ -6485,9 +6590,11 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
       if(result?.ok!==true)throw Error(result?.code||result?.error?.code||'WORD_BOOK_RETURN_DISPATCH_FAILED');
       return {ok:true,status:'applied',writerCalled:true,pendingProductApplyLane:false};
     };
-    const changes={scenes:semantic.scenes.filter(scene=>scene.changed).map(scene=>({sceneId:scene.sceneId,formatOnly:envelope.parseObservablePayload(scene.beforeContent).text===envelope.parseObservablePayload(scene.content).text,before:envelope.parseObservablePayload(scene.beforeContent).doc,after:envelope.parseObservablePayload(scene.content).doc})),
+    const changes={scenes:semantic.scenes.filter(scene=>scene.changed).map(scene=>{
+      const before=scenes.find(source=>source.sceneId===scene.sceneId).parsed,after=envelope.parseObservablePayload(scene.content);
+      return {sceneId:scene.sceneId,formatOnly:before.text===after.text,before:before.doc,after:after.doc||envelope.buildParagraphDocumentFromText(after.text)};}),
       commentsBefore:require('./core/word-comment-authoring-v1.cjs').readState(comments.text,context.projectId).threads,
-      comments:JSON.parse(semantic.afterText).threads,commentChanges:semantic.changes};
+      comments:require('./core/word-comment-authoring-v1.cjs').readState(semantic.afterText,context.projectId).threads,commentChanges:semantic.changes};
     if(typeof onPrepared==='function')onPrepared({apply,changes});
     return {ok:true,status:'preview-ready',code:'WORD_BOOK_RETURN_EXPLICIT_APPLY_REQUIRED',writerCalled:false,pendingProductApplyLane:true};
   } catch(error){return {ok:false,status:'blocked',code:error.code||error.message,writerOutcome:'NOT_CONFIRMED'};}
@@ -6538,7 +6645,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
         for (const component of relative.split(path.sep)) {
           entry = path.join(entry, component);
           const stat = await fs.lstat(entry);
-          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw rejected('NOTE_RETURN_SCENE_PATH_UNSAFE');
+          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024 : !stat.isDirectory())) throw rejected('NOTE_RETURN_SCENE_PATH_UNSAFE');
         }
         const raw = await fs.readFile(target, 'utf8');
         if (raw !== baseline) throw rejected('NOTE_RETURN_SCENE_CONFLICT');
@@ -6612,7 +6719,7 @@ async function prepareAuthenticatedNoteDelta({ context, requestId, isCurrent, do
 // Admission is object-identity scoped to the authenticated main intake. An IPC
 // payload with identical fields cannot authorize this publication.
 const authenticatedCommentDeltaAdmissions = new WeakMap();
-async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge, bookContext = null) {
+async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge, bookContext = null, budgets) {
   const scenes = capsule?.exportMap?.scenes;
   const signedScenes = scenes?.filter(scene => scene.pendingCommentBinding);
   if (!signedScenes?.length) return null;
@@ -6629,7 +6736,7 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
     if (source.issue || !source.doc) throw Error('PENDING_COMMENT_RETURN_BASELINE_INVALID');
     return { sceneId: scene.sceneId, document: source.doc };
   });
-  const parsed = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: docxBytes,
+  const parsed = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets({budgets}),
     exportMap: capsule.exportMap, baselineDocuments, documentSections: capsule.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
     signedSectionsDigest: capsule.documentSections?.protectedDigest,
     allowOfficeDefaultOmissions: capsule.officeModeTransport === true,
@@ -6644,8 +6751,8 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
   if (v3Book) {
     if (!bookContext) throw Error('PENDING_NOTE_BOOK_CONTEXT_INVALID');
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const readback = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:docxBytes},{cryptoPort});
-    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes);
+    const readback = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets})},{cryptoPort});
+    const preview = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets})});
     if (!readback.ok || !preview.ok) throw Error('PENDING_NOTE_BOOK_CONTEXT_INVALID');
     noteBindings = require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({
       document:bookContext.notesDocument,projectId:capsule.commentExport.projectId,baseline:capsule.documentNotes,
@@ -6671,6 +6778,7 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
       if (derived.changed) throw Error('PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED');
       // Core proved the complete actual v3 transport unchanged. Reconstruct
       // only the prior signed comment transport on a canonical read-only clone.
+      if(capsule.exportMap.exportTypography?.schemaVersion!=='yalken.review-docx.typography-defaults.v2') {
       const emitted = cloneJsonSafe(pending.readLedger(derived.document));
       const checkedLeaves = pending.paragraphs(derived.projection.union);
       pending.paragraphs(emitted.source).forEach((paragraph,index)=>{
@@ -6686,6 +6794,7 @@ async function buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisi
           [{node:{type:'text',text:'x'},revision}],leaves[revision.paragraphIndex])[0].revision);
       }
       returnedDocument = scene.pendingCommentBinding ? pending.bindLedger(emitted) : emitted.source;
+      }else if(!scene.pendingCommentBinding)returnedDocument=pending.readLedger(returnedDocument).source;
     }
     if (scene.pendingCommentBinding) result.push({ sceneId: scene.sceneId, document, returnedDocument });
     else {
@@ -6749,7 +6858,7 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     }
     const bookBefore = v3Book ? await module.readCommentAuthoringState({projectRoot:context.projectRoot,projectId:context.projectId}) : null;
     const pendingScenes = await buildAuthenticatedPendingCommentScenes(capsule, docxBytes, revisionBridge,
-      v3Book ? {notesDocument:notesBefore.current.document,commentState:require('./core/word-comment-authoring-v1.cjs').readState(bookBefore.text,context.projectId)} : null);
+      v3Book ? {notesDocument:notesBefore.current.document,commentState:require('./core/word-comment-authoring-v1.cjs').readState(bookBefore.text,context.projectId)} : null, intake.parserResult?.effectiveBudgets);
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
@@ -6784,7 +6893,7 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
         for (const component of relative.split(path.sep)) {
           entry = path.join(entry, component);
           const stat = await fs.lstat(entry);
-          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw rejected('COMMENT_RETURN_SCENE_PATH_UNSAFE');
+          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024 : !stat.isDirectory())) throw rejected('COMMENT_RETURN_SCENE_PATH_UNSAFE');
         }
         const raw = await fs.readFile(target, 'utf8');
         if (raw !== baseline) throw rejected('COMMENT_RETURN_SCENE_CONFLICT');
@@ -9672,7 +9781,7 @@ const DOCX_REVIEW_RETURN_INTAKE_PROFILE_DEFAULTS = Object.freeze({
   maxCandidates: 50_000,
   maxWorkerOutputBytes: 64 * 1024 * 1024,
   maxZipEntries: 50_000,
-  maxInflatedPartBytes: 10 * 1024 * 1024,
+  maxInflatedPartBytes: 16 * 1024 * 1024,
   maxTotalInflatedBytes: 50 * 1024 * 1024,
   maxDocxBytes: 50 * 1024 * 1024,
   hardTimeoutMs: 30_000,
@@ -9686,7 +9795,7 @@ const DOCX_REVIEW_RETURN_INTAKE_CEILING = Object.freeze({
   maxCandidates: 50_000,
   maxWorkerOutputBytes: 64 * 1024 * 1024,
   maxZipEntries: 50_000,
-  maxInflatedPartBytes: 10 * 1024 * 1024,
+  maxInflatedPartBytes: 16 * 1024 * 1024,
   maxTotalInflatedBytes: 50 * 1024 * 1024,
   maxDocxBytes: 50 * 1024 * 1024,
   hardTimeoutMs: 30_000,
@@ -9733,8 +9842,8 @@ const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze(
 
 function docxReviewReturnIntakeProductBudgets(input = {}) {
   return {
-    ...(isPlainObjectValue(input?.budgets) ? input.budgets : {}),
     ...DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS,
+    ...(isPlainObjectValue(input?.budgets) ? input.budgets : {}),
   };
 }
 
@@ -9744,8 +9853,8 @@ function docxReviewReturnIntakeProductBudgets(input = {}) {
 function docxReviewReturnIntakeEffectiveBudgets(input = {}) {
   const callerBudgets = isPlainObjectValue(input?.budgets) ? input.budgets : {};
   const { effective, clampedFields } = resolveDocxReturnIntakeEffectiveBudgets({
-    ...callerBudgets,
     ...DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS,
+    ...callerBudgets,
   });
   return { effective, clampedFields };
 }
@@ -11136,10 +11245,10 @@ async function inspectDocxReviewReturnIntakeV2({
   );
   if (!tableBinding.ok && localAuthority.exportMap?.scenes?.length === 1) {
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets(options) }, { cryptoPort });
     const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
       localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingTableRows: true }) : null;
-    const preview = ownership?.ok && ownership.sourceParagraphBindings ? revisionBridge.buildDocxContentPreviewFromZipBytes(docxBytes) : null;
+    const preview = ownership?.ok && ownership.sourceParagraphBindings ? revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets(options)}) : null;
     if (preview?.ok && preview.contentPreview?.pendingRevisionDocument) {
       tableBinding = { ok: true, applicable: true, reviewIr: verifiedParserResult.reviewIr,
         proof: { kind: 'CHECKED_NATIVE_PENDING_TABLE_ROWS', sourceParagraphBindings: ownership.sourceParagraphBindings,
@@ -11202,7 +11311,7 @@ async function inspectDocxReviewReturnIntakeV2({
   });
   if (!documentSectionsBinding.ok && localAuthority.exportMap?.scenes?.length === 1) {
     const cryptoPort = createRtkReviewTransportCryptoPort();
-    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes }, { cryptoPort });
+    const projection = revisionBridge.extractDocxReviewTransportWordDocumentProjection({ bytes: docxBytes, budgets:docxReviewReturnIntakeProductBudgets(options) }, { cryptoPort });
     const ownership = projection.ok ? revisionBridge.visibleSceneTextsFromWordDocumentXml(projection.documentXml,
       localAuthority.exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets(options), allowPendingParagraphSplits: true, allowPendingTableRows: true }) : null;
     if (ownership?.ok && Array.isArray(ownership.paragraphBindings)) {
@@ -11371,16 +11480,18 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     const commentProductPath = await applyAuthenticatedCommentDelta({ context: activeContext, requestId,
       explicitCanonicalApplyConfirmed: false, isCurrent, docxBytes: decoded.bytes, revisionBridge,
       onPrepared: options.onCommentDeltaPrepared });
+    const completeManuscriptPendingReturn=returnIntake.localAuthorityCapsule.exportMap.scenes.length>1
+      ||returnIntake.localAuthorityCapsule.exportMap.scenes.length===1&&returnIntake.localAuthorityCapsule.scope==='full-manuscript';
     if(commentProductPath.ok!==true
       &&(['PENDING_COMMENT_RETURN_COMPOSITE_UNSUPPORTED','PENDING_COMMENT_PROJECTION_CHANGED','PENDING_COMMENT_PARTITION_CHANGED','COMMENT_RETURN_PENDING_REPLY_ONLY','COMMENT_RETURN_PENDING_ANCHOR_INVALID','COMMENT_RETURN_PENDING_ANCHOR_ENDPOINT','COMMENT_RETURN_PENDING_ANCHOR_QUOTE'].includes(commentProductPath.code)
-        ||returnIntake.localAuthorityCapsule.exportMap.scenes.length>1
+        ||completeManuscriptPendingReturn
           &&(commentProductPath.code==='PENDING_COMMENT_RETURN_NOTES_CHANGED'
             ||commentProductPath.code==='PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED'
               &&returnIntake.localAuthorityCapsule.documentNotes?.policy==='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
               &&returnIntake.localAuthorityCapsule.documentNotes.sourceBindings?.length))) {
       // These typed outcomes require the separate complete mixed proof. All
       // identity, capability, stale and package failures remain terminal.
-      const mixedPath=await (returnIntake.localAuthorityCapsule.exportMap.scenes.length>1?prepareAuthenticatedBookPendingReturn:prepareAuthenticatedPendingReturn)({context:activeContext,requestId,isCurrent,docxBytes:decoded.bytes,revisionBridge,onPrepared:options.onPendingReturnPrepared});
+      const mixedPath=await (completeManuscriptPendingReturn?prepareAuthenticatedBookPendingReturn:prepareAuthenticatedPendingReturn)({context:activeContext,requestId,isCurrent,docxBytes:decoded.bytes,revisionBridge,onPrepared:options.onPendingReturnPrepared});
       if(mixedPath)return {ok:true,commandId:DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,requestId,activated:false,pendingProductPath:mixedPath};
     }
     if (commentProductPath.ok !== true) return makeDocxReviewPreviewSessionTypedError(
@@ -12534,11 +12645,12 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
 // DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_END
 
 // DOCX_IMPORT_PREVIEW_REFERENCES_START
-// A 500k-word content preview is about 4.6 MB. Let one snapshot use up to
-// half of the existing 16 MiB cache; total retention, TTL and input limits stay fixed.
+// The measured 500k-word preview and plan each use about 10 MiB. Retain
+// both context-bound snapshots within 16 MiB each and 32 MiB in total;
+// entry count, TTL, context guards and wire limits remain unchanged.
 const docxImportPreviewReferences = createDocxImportPreviewReferences({
-  maxSnapshotBytes: 8 * 1024 * 1024,
-  maxTotalBytes: 16 * 1024 * 1024,
+  maxSnapshotBytes: 16 * 1024 * 1024,
+  maxTotalBytes: 32 * 1024 * 1024,
 });
 let docxImportPreviewProjectGeneration = 0;
 
@@ -12564,7 +12676,7 @@ function resolveDocxImportPreviewReference(kind, reference) {
 
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
 const DOCX_CONTENT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewContent';
-const DOCX_CONTENT_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
+const DOCX_CONTENT_PREVIEW_MAX_BYTES = 16 * 1024 * 1024;
 const DOCX_CONTENT_PREVIEW_MAX_BASE64_CHARS = Math.ceil(DOCX_CONTENT_PREVIEW_MAX_BYTES / 3) * 4;
 const DOCX_CONTENT_PREVIEW_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'bufferSource']);
 const DOCX_CONTENT_PREVIEW_FORBIDDEN_RESULT_KEYS = new Set([
@@ -12760,7 +12872,7 @@ async function handleDocxContentPreviewCommandSurface(payload = {}) {
 
   let previewResult = null;
   try {
-    previewResult = revisionBridge.buildDocxContentPreviewFromZipBytes(decoded.bytes);
+    previewResult = revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:decoded.bytes,budgets:{maxBlocks:50000,maxWorkerOutputBytes:64*1024*1024}});
   } catch (error) {
     return makeDocxContentPreviewTypedError(
       'E_DOCX_CONTENT_PREVIEW_FAILED',
@@ -23948,12 +24060,24 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
             },
           });
           if (recordingAdmission && receipt.success === true) {
+            const savedComments = await (await loadRtkNonTextReturnModule()).readCommentAuthoringState(recordingAdmission.session);
+            const savedNotes = await (await loadNotesStorageModule()).readNotesStorage(recordingAdmission.session);
+            if (await fs.readFile(filePath, 'utf8') !== content || await fs.readFile(prepared.manifestPath, 'utf8') !== manifestContent) throw Error('RECORDING_SAVE_READBACK_CHANGED');
+            if (savedComments.text !== (commentState ? commentState.afterText : recordingAdmission.expectedComments)
+              || !savedNotes.ok || (savedNotes.sourceExists ? savedNotes.sourceText : null) !== (noteState ? noteState.afterText : recordingAdmission.expectedNotes)) throw Error('RECORDING_SAVE_READBACK_CHANGED');
+            assertPendingRecordingSession(recordingAdmission.session);
             recordingAdmission.session.raw = content; recordingAdmission.session.savedGeneration = revision;
             if (recordingAdmission.session.noteRecording) recordingAdmission.session.expectedNotes = noteState?.afterText ?? recordingAdmission.expectedNotes;
             if (recordingAdmission.nextIntents) {
               recordingAdmission.session.provenance = recordingAdmission.nextIntents;
               recordingAdmission.session.provenanceWire = recordingAdmission.wire;
             }
+            recordingAdmission.session.checkpoint = { output: content, working: recordingAdmission.workingContent,
+              generation: revision, wire: recordingAdmission.workingWire, workingDigest: recordingAdmission.workingDigest,
+              provenance: JSON.stringify(recordingAdmission.session.provenance ?? null),
+              comments: commentState ? commentState.afterText : recordingAdmission.expectedComments,
+              notes: noteState ? noteState.afterText : recordingAdmission.expectedNotes,
+              manifestPath: prepared.manifestPath, manifest: manifestContent };
             pendingRecordingSaveAdmissions.clear();
           }
           if (receipt.success === true) {
@@ -25379,7 +25503,7 @@ async function readCommentAuthoringContext({ pendingRichBlocks = false, userBook
   for (const component of relative.split(path.sep)) {
     entry = path.join(entry, component);
     const stat = await fs.lstat(entry);
-    if (stat.isSymbolicLink() || (entry === filePath ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw new Error('COMMENT_SCENE_PATH_UNSAFE');
+    if (stat.isSymbolicLink() || (entry === filePath ? !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024 : !stat.isDirectory())) throw new Error('COMMENT_SCENE_PATH_UNSAFE');
   }
   const raw = await fs.readFile(filePath, 'utf8');
   const envelope = await loadDocumentContentEnvelopeModule();
@@ -25803,7 +25927,8 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   const envelope = await loadDocumentContentEnvelopeModule();
   const working = envelope.parseObservablePayload(snapshot.content);
   if (working.issue || !working.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
-  let nextIntents, expectedComments, expectedNotes, recordingProofJson;
+  const annotations = await assertPendingRecordingAnnotations(session);
+  let nextIntents, expectedComments = annotations.saved.text, expectedNotes = annotations.noteText, recordingProofJson;
   if (session.commentRecording || session.noteRecording) {
     const model = require('./core/word-comment-edit-intents-v1.cjs');
     if (snapshot.commentEditIntentsJson == null) throw Error('RECORDING_COMMENT_INTENTS_REQUIRED');
@@ -25815,17 +25940,18 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
       && JSON.stringify(incoming.edits.slice(0, prior.edits.length)) === JSON.stringify(prior.edits)) suffix = incoming.edits.slice(prior.edits.length);
     else if (incoming.baselineTextSha256 !== savedDigest) throw Error('RECORDING_COMMENT_PREFIX_STALE');
     nextIntents = model.validateEditIntents(JSON.stringify({ ...session.provenance, edits: [...session.provenance.edits, ...suffix] }));
-    const annotations = await assertPendingRecordingAnnotations(session);
-    expectedComments = annotations.saved.text; expectedNotes = annotations.noteText;
     recordingProofJson = JSON.stringify({ schemaVersion: 1, baselineContent: session.baselineContent,
       metadata: session.metadata, previousIntents: session.provenance, nextIntents, sessionId: session.id });
   }
   const result = pendingRecordingModel.derive(session.baseline, working.doc, session.metadata, nextIntents);
-  const content = envelope.composeObservablePayload({ ...working, doc: result.doc });
+  const content = envelope.composeObservablePayload({ ...working, metaEnabled: working.hasMetaBlock, doc: result.doc });
   assertPendingRecordingSession(session);
   const key = computeHash(content) + ':' + snapshot.generation;
   if (pendingRecordingSaveAdmissions.size >= 32) pendingRecordingSaveAdmissions.clear();
   pendingRecordingSaveAdmissions.set(key, { session, content, generation: snapshot.generation, expected: session.raw,
+    workingContent: snapshot.content, expectedComments, expectedNotes,
+    workingWire: pendingRecordingIntentWire(snapshot.commentEditIntentsJson),
+    workingDigest: require('./core/word-comment-edit-intents-v1.cjs').textDigest(commentSceneParagraphs(snapshot.content).map(p => p.text)),
     ...(session.commentRecording || session.noteRecording ? { nextIntents, expectedComments, expectedNotes, recordingProofJson, wire: JSON.parse(snapshot.commentEditIntentsJson) } : {}) });
   return { ...snapshot, content, doc: result.doc };
 }
@@ -25843,26 +25969,139 @@ async function revalidatePendingRecordingSave(admission) {
   assertPendingRecordingSession(session);
   if (admission.expected !== session.raw || admission.generation < session.savedGeneration) throw Error('RECORDING_SAVE_STALE');
   const annotations = await assertPendingRecordingAnnotations(session);
-  if (session.commentRecording && annotations.saved.text !== admission.expectedComments) throw Error('RECORDING_COMMENTS_CHANGED');
+  if (annotations.saved.text !== admission.expectedComments) throw Error('RECORDING_COMMENTS_CHANGED');
+  if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
   if (session.noteRecording) {
     if (annotations.noteText !== admission.expectedNotes) throw Error('RECORDING_NOTES_CHANGED');
-    require('./core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof({
-      beforeContent: admission.expected, afterContent: admission.content, recordingProofJson: admission.recordingProofJson });
   }
   const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
   if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot) throw Error('RECORDING_PROJECT_CHANGED');
   if (await fs.readFile(session.filePath, 'utf8') !== admission.expected) throw Error('RECORDING_SCENE_CHANGED');
   assertPendingRecordingSession(session);
 }
-async function publishPendingRecordingDocument(session, content, generation, recording) {
+function pendingRecordingIntentWire(value) {
+  return value == null ? null : JSON.stringify(require('./core/word-comment-edit-intents-v1.cjs').validateEditIntents(value));
+}
+function observePendingRecordingEditor(session, publication = null) {
+  assertPendingRecordingSession(session);
+  if (!mainWindow || mainWindow.isDestroyed()) return Promise.reject(Error('RECORDING_EDITOR_UNAVAILABLE'));
+  return new Promise((resolve, reject) => {
+    const requestId = crypto.randomBytes(8).toString('hex');
+    const timeoutId = setTimeout(() => {
+      pendingSnapshotRequests.delete(requestId); reject(Error('RECORDING_PUBLICATION_UNCONFIRMED'));
+    }, 2500);
+    pendingSnapshotRequests.set(requestId, { timeoutId, reject, resolve: snapshot => {
+      try { assertPendingRecordingSession(session); resolve(snapshot); } catch (error) { reject(error); }
+    } });
+    mainWindow.webContents.send(publication ? 'editor:set-text' : 'editor:snapshot-request',
+      publication ? { ...publication, recordingPublicationRequestId: requestId } : { requestId });
+  });
+}
+function assertPendingRecordingObservation(session, snapshot, generation) {
+  assertPendingRecordingSession(session);
+  if (!snapshot || snapshot.projectId !== session.projectId || snapshot.documentId !== session.documentId
+    || snapshot.treeContentPublicationId !== session.treeContentPublicationId
+    || snapshot.generation !== generation || !Number.isSafeInteger(generation)
+    || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending
+    || lastSignaledEditGeneration > generation) throw Error('RECORDING_EDITOR_CHANGED');
+}
+async function revalidatePendingRecordingCheckpoint(session, checkpoint) {
+  assertPendingRecordingSession(session);
+  if (!checkpoint || checkpoint !== session.checkpoint || checkpoint.output !== session.raw
+    || checkpoint.provenance !== JSON.stringify(session.provenance ?? null)) throw Error('RECORDING_CHECKPOINT_STALE');
+  const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
+  if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot
+    || binding.manifestPath !== checkpoint.manifestPath) throw Error('RECORDING_PROJECT_CHANGED');
+  if (await fs.readFile(checkpoint.manifestPath, 'utf8') !== checkpoint.manifest) throw Error('RECORDING_PROJECT_CHANGED');
+  const stat = await fs.lstat(session.filePath);
+  if (stat.isSymbolicLink() || !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024) throw Error('RECORDING_SCENE_CHANGED');
+  if (await fs.readFile(session.filePath, 'utf8') !== checkpoint.output) throw Error('RECORDING_SCENE_CHANGED');
+  const comments = await (await loadRtkNonTextReturnModule()).readCommentAuthoringState(session);
+  if (comments.text !== checkpoint.comments) throw Error('RECORDING_COMMENTS_CHANGED');
+  const notes = await (await loadNotesStorageModule()).readNotesStorage(session);
+  if (!notes.ok || (notes.sourceExists ? notes.sourceText : null) !== checkpoint.notes) throw Error('RECORDING_NOTES_CHANGED');
+  assertPendingRecordingSession(session);
+}
+function pendingRecordingWireMatches(checkpoint, value) {
+  const wire = pendingRecordingIntentWire(value);
+  if (wire === checkpoint.wire) return true;
+  if (wire === null) return false;
+  const parsed = JSON.parse(wire);
+  return parsed.schemaVersion === 2 && parsed.baselineTextSha256 === checkpoint.workingDigest && parsed.edits.length === 0;
+}
+function pendingRecordingUnchangedInput(session, snapshot) {
+  const checkpoint = session.checkpoint;
+  return Boolean(checkpoint && snapshot.generation === checkpoint.generation && snapshot.content === checkpoint.working
+    && pendingRecordingWireMatches(checkpoint, snapshot.commentEditIntentsJson));
+}
+async function pendingRecordingInstalledContent(content, parsedValue = null) {
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const parsed = parsedValue || envelope.parseObservablePayload(content);
+  if (parsed.issue || !parsed.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
+  const ranks = ['link', 'textStyle', 'bold', 'code', 'italic', 'strike', 'highlight', 'underline'];
+  const defaults = (attrs, keys) => {
+    const next = { ...(attrs || {}) };
+    for (const key of keys) if (!Object.prototype.hasOwnProperty.call(next, key)) next[key] = null;
+    return next;
+  };
+  const body = node => {
+    const next = { ...node };
+    if (['paragraph', 'heading'].includes(node.type)) next.attrs = defaults(node.attrs, ['textAlign']);
+    if (node.type === 'codeBlock') next.attrs = defaults(node.attrs, ['language']);
+    if (Array.isArray(node.marks)) {
+      next.marks = node.marks.map(mark => mark.type === 'textStyle'
+        ? { ...mark, attrs: defaults(mark.attrs, ['color', 'fontFamily', 'fontSize']) }
+        : mark.type === 'link' ? { ...mark, attrs: defaults(mark.attrs, ['title', 'wordBookmarkId', 'wordBookmarkName']) } : { ...mark });
+      const types = next.marks.map(mark => mark.type);
+      if (new Set(types).size === types.length && types.every(type => ranks.includes(type))) {
+        next.marks.sort((a, b) => ranks.indexOf(a.type) - ranks.indexOf(b.type));
+      }
+    }
+    if (Array.isArray(node.content)) {
+      next.content = [];
+      for (const child of node.content) {
+        const current = body(child), previous = next.content[next.content.length - 1];
+        if (previous?.type === 'text' && current.type === 'text'
+          && JSON.stringify({ ...previous, text: undefined }) === JSON.stringify({ ...current, text: undefined })) previous.text += current.text;
+        else next.content.push(current);
+      }
+      if (!next.content.length && ['paragraph', 'heading', 'codeBlock'].includes(node.type)) delete next.content;
+    }
+    return next;
+  };
+  // Only LIVE body representation changes. Ledger/source/history remain opaque.
+  const doc = { ...parsed.doc, content: parsed.doc.content.map(body) };
+  doc.attrs = { ...(doc.attrs || {}) };
+  for (const key of ['wordPendingRevisions', 'wordUserBookmarks']) {
+    if (!Object.prototype.hasOwnProperty.call(doc.attrs, key)) doc.attrs[key] = null;
+  }
+  return envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock, doc });
+}
+async function publishPendingRecordingDocument(session, content, generation, expected) {
   const identity = await getProjectDocumentIdentityPayload(session.filePath);
   const context = getDocumentContextFromPath(session.filePath);
-  const payload = await attachProjectIdToEditorPayload({ content, ...identity, projectId: session.projectId,
-    title: context.title, kind: context.kind, metaEnabled: context.metaEnabled }, session.filePath);
-  assertPendingRecordingSession(session);
-  if (isDirty || lastSignaledEditGeneration > generation) throw Error('RECORDING_EDITOR_CHANGED');
-  if (!recording) { activePendingRecording = null; pendingRecordingSaveAdmissions.clear(); }
-  sendEditorText(payload);
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const parsed = envelope.parseObservablePayload(content);
+  if (parsed.issue || !parsed.doc) throw Error('RECORDING_SNAPSHOT_INVALID');
+  const installedContent = await pendingRecordingInstalledContent(content, parsed);
+  const payload = await attachProjectIdToEditorPayload({ content: installedContent, ...identity, projectId: session.projectId,
+    title: context.title, kind: context.kind, metaEnabled: parsed.hasMetaBlock }, session.filePath);
+  assertPendingRecordingObservation(session, expected, generation);
+  if (isDirty) throw Error('RECORDING_EDITOR_CHANGED');
+  await revalidatePendingRecordingCheckpoint(session, session.checkpoint);
+  session.unconfirmedPublication = session.checkpoint;
+  const observed = await observePendingRecordingEditor(session, { ...payload, expectedGeneration: generation,
+    expectedContent: expected.content, expectedCommentEditIntentsJson: pendingRecordingIntentWire(expected.commentEditIntentsJson),
+    expectedTreeContentPublicationId: session.treeContentPublicationId });
+  assertPendingRecordingObservation(session, observed, generation);
+  if (observed.content !== installedContent) throw Error('RECORDING_PUBLICATION_UNCONFIRMED');
+  await revalidatePendingRecordingCheckpoint(session, session.checkpoint);
+  const confirmed = await observePendingRecordingEditor(session);
+  assertPendingRecordingObservation(session, confirmed, generation);
+  if (confirmed.content !== installedContent || pendingRecordingIntentWire(confirmed.commentEditIntentsJson)
+    !== pendingRecordingIntentWire(observed.commentEditIntentsJson)) throw Error('RECORDING_PUBLICATION_UNCONFIRMED');
+  if (lastSignaledEditGeneration > generation || isDirty) throw Error('RECORDING_EDITOR_CHANGED');
+  return confirmed;
 }
 async function handlePendingRecordingCommand(payload = {}) {
   try {
@@ -25878,13 +26117,37 @@ async function handlePendingRecordingCommand(payload = {}) {
         || payload.subjectId !== session.subjectId) throw Error('RECORDING_IDENTITY_STALE');
       if (activeAutoSavePromise) await activeAutoSavePromise;
       assertPendingRecordingSession(session);
-      const saved = await handleSave();
-      if (saved !== true) throw Error('RECORDING_SAVE_FAILED_BUFFER_RETAINED');
+      let snapshot = await observePendingRecordingEditor(session);
+      assertPendingRecordingObservation(session, snapshot, snapshot.generation);
+      let checkpoint = session.checkpoint;
+      if (session.startPublicationPending) {
+        assertPendingRecordingObservation(session, snapshot, checkpoint.generation);
+        if (snapshot.content !== await pendingRecordingInstalledContent(checkpoint.working)
+          || !pendingRecordingWireMatches(checkpoint, snapshot.commentEditIntentsJson)) throw Error('RECORDING_PUBLICATION_UNCONFIRMED');
+        await revalidatePendingRecordingCheckpoint(session, checkpoint);
+        checkpoint.working = snapshot.content;
+        checkpoint.wire = pendingRecordingIntentWire(snapshot.commentEditIntentsJson);
+        session.startPublicationPending = false;
+      }
+      const retry = checkpoint && session.unconfirmedPublication === checkpoint
+        && snapshot.generation === checkpoint.generation && snapshot.content === await pendingRecordingInstalledContent(checkpoint.output);
+      if (!retry && (!pendingRecordingUnchangedInput(session, snapshot) || isDirty)) {
+        const saved = await handleSave();
+        if (saved !== true) throw Error('RECORDING_SAVE_FAILED_BUFFER_RETAINED');
+        snapshot = await observePendingRecordingEditor(session);
+        assertPendingRecordingObservation(session, snapshot, session.savedGeneration);
+        if (!pendingRecordingUnchangedInput(session, snapshot)) throw Error('RECORDING_EDITOR_CHANGED');
+        checkpoint = session.checkpoint;
+      }
       return await queueDiskOperation(async () => {
+        await revalidatePendingRecordingCheckpoint(session, checkpoint);
+        if (retry) {
+          if (isDirty || !pendingRecordingWireMatches(checkpoint, snapshot.commentEditIntentsJson)) throw Error('RECORDING_EDITOR_CHANGED');
+        }
+        await publishPendingRecordingDocument(session, checkpoint.output, checkpoint.generation, snapshot);
         assertPendingRecordingSession(session);
-        const raw = await fs.readFile(session.filePath, 'utf8');
-        if (raw !== session.raw) throw Error('RECORDING_SCENE_CHANGED');
-        await publishPendingRecordingDocument(session, raw, session.savedGeneration, false);
+        if (lastSignaledEditGeneration > checkpoint.generation || isDirty) throw Error('RECORDING_EDITOR_CHANGED');
+        activePendingRecording = null; pendingRecordingSaveAdmissions.clear();
         updateStatus('Запись исправлений завершена. Изменения сохранены.');
         return { ok: true, recording: false };
       }, 'stop pending text recording');
@@ -25913,7 +26176,7 @@ async function handlePendingRecordingCommand(payload = {}) {
       session.expectedNotes = annotations.noteText;
       if (session.commentRecording || session.noteRecording) {
         const model = require('./core/word-comment-edit-intents-v1.cjs');
-        session.baselineContent = envelope.composeObservablePayload({ ...context.parsed, doc: original });
+        session.baselineContent = envelope.composeObservablePayload({ ...context.parsed, metaEnabled: context.parsed.hasMetaBlock, doc: original });
         session.provenance = { schemaVersion: 2, baselineTextSha256: model.textDigest(commentSceneParagraphs(session.baselineContent).map(p => p.text)), edits: [] };
       }
       const fresh = await readCommentAuthoringContext({ pendingRichBlocks: true });
@@ -25923,10 +26186,29 @@ async function handlePendingRecordingCommand(payload = {}) {
       if ((freshAnnotations.saved.text ?? null) !== (annotations.saved.text ?? null)) throw Error('RECORDING_COMMENTS_CHANGED');
       if (freshAnnotations.noteText !== annotations.noteText) throw Error('RECORDING_NOTES_CHANGED');
       pendingRecordingCapability();
+      const binding = await readReviewExactTextApplyProjectBinding(session.filePath);
+      if (!binding.ok || binding.projectId !== session.projectId || binding.projectRoot !== session.projectRoot) throw Error('RECORDING_PROJECT_CHANGED');
+      const workingContent = envelope.composeObservablePayload({ ...context.parsed, metaEnabled: context.parsed.hasMetaBlock, doc: prepared.working });
+      const identity = await getProjectDocumentIdentityPayload(session.filePath);
+      session.documentId = identity.documentId; session.treeContentPublicationId = snapshot.treeContentPublicationId;
+      session.checkpoint = { output: session.raw, working: workingContent, generation: snapshot.generation,
+        wire: pendingRecordingIntentWire(snapshot.commentEditIntentsJson),
+        workingDigest: require('./core/word-comment-edit-intents-v1.cjs').textDigest(commentSceneParagraphs(workingContent).map(p => p.text)),
+        provenance: JSON.stringify(session.provenance ?? null),
+        comments: annotations.saved.text, notes: annotations.noteText, manifestPath: binding.manifestPath,
+        manifest: await fs.readFile(binding.manifestPath, 'utf8') };
+      session.startPublicationPending = true;
       activePendingRecording = session;
       try {
-        await publishPendingRecordingDocument(session, envelope.composeObservablePayload({ ...context.parsed, doc: prepared.working }), snapshot.generation, true);
-      } catch (error) { activePendingRecording = null; throw error; }
+        const observed = await publishPendingRecordingDocument(session, workingContent, snapshot.generation, snapshot);
+        session.checkpoint.working = observed.content;
+        session.checkpoint.wire = pendingRecordingIntentWire(observed.commentEditIntentsJson);
+        session.startPublicationPending = false;
+        session.unconfirmedPublication = null;
+      } catch (error) {
+        if (activePendingRecording === session && !session.unconfirmedPublication) activePendingRecording = null;
+        throw error;
+      }
       updateStatus('Запись исправлений включена');
       return { ok: true, recording: true, sessionId: session.id };
     }, 'start pending text recording');
@@ -33982,7 +34264,7 @@ async function readTreeCohortPath(root, relativePath, allowDirectory = false, op
     try { stat = await fs.lstat(target); }
     catch (error) { if (optional && error.code === 'ENOENT') return null; throw error; }
     if (stat.isSymbolicLink() || (i < parts.length - 1 ? !stat.isDirectory()
-      : allowDirectory && stat.isDirectory() ? false : !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024)) throw treeCohortError('E_TREE_COHORT_PATH_UNSAFE');
+      : allowDirectory && stat.isDirectory() ? false : !stat.isFile() || stat.nlink !== 1 || stat.size > 32 * 1024 * 1024)) throw treeCohortError('E_TREE_COHORT_PATH_UNSAFE');
     if (i === parts.length - 1 && stat.isDirectory()) return { directory: true };
   }
   const bytes = await fs.readFile(target);

@@ -11,15 +11,18 @@ const hash = v => crypto.createHash('sha256').update(v).digest('hex');
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
+// Pure Core unit edits keep their two observations consistent; this is not ZIP or authentication evidence.
 function setReturnedBody(message, body) {
   message.body = body;
   if (message.richBody) {
     const marks = message.richBody.document.content[0]?.content?.find(n => n.type === 'text')?.marks;
-    message.richBody.document = {type:'doc',content:[{type:'paragraph',content:[{type:'text',text:body,...(marks ? {marks:structuredClone(marks)} : {})}]}]};
+    const paragraph = message.richBody.document.content[0];
+    message.richBody.document = {type:'doc',content:[{type:'paragraph',...(paragraph.attrs ? {attrs:structuredClone(paragraph.attrs)} : {}),content:[{type:'text',text:body,...(marks ? {marks:structuredClone(marks)} : {})}]}]};
+    if (message.effectiveRichBody) message.effectiveRichBody.document.content = [{...structuredClone(message.effectiveRichBody.document.content[0]),content:structuredClone(message.richBody.document.content[0].content)}];
   }
 }
 
-async function fixture({ twoThreads = false, empty = false, threeReplies = false, richBreak = false, multi = false } = {}) {
+async function fixture({ twoThreads = false, empty = false, threeReplies = false, richBreak = false, multi = false, legacySizeOnly = false, bodyEdit = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -44,8 +47,23 @@ async function fixture({ twoThreads = false, empty = false, threeReplies = false
   const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: state,
     scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text:paragraphTexts.join('\n'),
       doc: { type: 'doc', content: paragraphTexts.map(text=>({ type: 'paragraph', content: [{ type: 'text', text }] })) } }] });
+  if (legacySizeOnly) {
+    // These historical bare-XML and inheritance fixtures model size-only V1.
+    // This explicit synthetic adapter is not an authenticated legacy export;
+    // the actual fresh full-manuscript producer and all other fixtures stay V2.
+    const exportTypography = {schemaVersion:'yalken.review-docx.typography-defaults.v1',fontSize:'12pt'};
+    source.exportTypography = exportTypography;
+    source.commentExport = require('../../src/export/docx/docxReviewPacketComments.js')
+      .buildCanonicalCommentExport(state, source.blocks, state.projectId, {exportTypography});
+    source.localAuthorityCapsule.exportMap.exportTypography = exportTypography;
+  }
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
-  const bytes = buildDocxReviewPacketBuffer(source);
+  let bytes = buildDocxReviewPacketBuffer(source);
+  if (bodyEdit) {
+    const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts };
+    parts['word/comments.xml'] = parts['word/comments.xml'].replace('Root before', 'Main Word delta');
+    bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  }
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
     sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v),
   } });
@@ -169,8 +187,8 @@ test('last-thread absence reaches a diagnostic preview only with the local authe
     { authenticatedCommentExport: input.baseline }).reviewPacket, null);
 });
 
-test('Word proofing language is retained as rich authoring data and unsafe metadata remains refused', async () => {
-  const { bytes, input, state } = await fixture();
+test('legacy V1: Word proofing language is retained as rich authoring data and unsafe metadata remains refused', async () => {
+  const { bytes, input, state } = await fixture({legacySizeOnly:true});
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
@@ -212,8 +230,8 @@ test('Word proofing language is retained as rich authoring data and unsafe metad
   ]) assert.equal(analyze(bad).parsed.reviewIr.commentBodyGrammar.status, 'UNSUPPORTED', bad);
 });
 
-test('native Unicode reply font fallback survives typed rich return', async () => {
-  const { bytes, input, state } = await fixture();
+test('legacy V1: native Unicode reply font fallback survives typed rich return', async () => {
+  const { bytes, input, state } = await fixture({legacySizeOnly:true});
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
@@ -271,8 +289,8 @@ test('new reply uses a fresh local identity and preserves the parent/root', asyn
   assert.equal(after.threads[0].messages[2].body, 'New reply');
 });
 
-test('native Word reply style resolves and preserves definitions, defaults and parent', async () => {
-  const { bytes, input, state } = await fixture();
+test('legacy V1: native Word reply style resolves and preserves definitions, defaults and parent', async () => {
+  const { bytes, input, state } = await fixture({legacySizeOnly:true});
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
   const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
@@ -423,7 +441,7 @@ test('return port requires publication authority and rejects lease loss without 
 
 test('actual main command with real project lease applies once; forged admission, dirty editor and stale intake cannot write', async t => {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source, bytes, reviewIr } = await fixture(); setReturnedBody(input.returnedThreads[0], 'Main Word delta');
+  const { input, source, bytes, reviewIr } = await fixture({bodyEdit:true});
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;
@@ -724,8 +742,8 @@ test('export-only explicit UTC transport survives return without rewriting canon
   }
 });
 
-test('format-only root and reply deltas upgrade state, replay exactly and explicitly clear stale rich content', async () => {
-  const { input, state } = await fixture();
+test('legacy V1 direct-authoring format-only root/reply deltas retain replay and absent rich clear', async () => {
+  const { input, state, source } = await fixture({legacySizeOnly:true});
   const enriched = structuredClone(input.returnedThreads);
   const rich = (body, type) => ({ schemaVersion:'yalken.word.comment-body.v1', document:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:body,marks:[{type}]}]}]} });
   enriched[0].richBody = rich(enriched[0].body,'bold');
@@ -737,7 +755,9 @@ test('format-only root and reply deltas upgrade state, replay exactly and explic
   assert.equal(after.threads[0].messages[0].body,state.threads[0].messages[0].body);
   assert.deepEqual(after.threads[0].messages[0].provenance,state.threads[0].messages[0].provenance);
   assert.equal(plan({...changedInput,beforeText:result.afterText}).replay,true);
-  const clearInput={...input,beforeText:result.afterText,roundId:'clear-rich-format',artifactSha256:'e'.repeat(64),baseline:{...input.baseline,stateDigest:hash(stable(after)),stateRevision:after.revision,threads:input.baseline.threads.map((t,i)=>({...t,messages:t.messages.map((m,j)=>({...m,richBody:after.threads[i].messages[j].richBody}))}))}};
+  const clearBaseline = require('../../src/export/docx/docxReviewPacketComments.js')
+    .buildCanonicalCommentExport(after, source.blocks, input.projectId, {exportTypography:input.exportMap.exportTypography});
+  const clearInput={...input,beforeText:result.afterText,roundId:'clear-rich-format',artifactSha256:'e'.repeat(64),baseline:clearBaseline};
   clearInput.returnedThreads=structuredClone(input.returnedThreads);
   delete clearInput.returnedThreads[0].richBody;delete clearInput.returnedThreads[0].replies[0].richBody;
   const cleared=plan(clearInput), final=JSON.parse(cleared.afterText);
@@ -748,8 +768,8 @@ test('format-only root and reply deltas upgrade state, replay exactly and explic
   assert.throws(()=>plan(malformed),/COMMENT_BODY_PROJECTION_MISMATCH/);
 });
 
-test('prior-round baseline lacking rich transport projection derives only its authenticated export typography',async()=>{
- const {input}=await fixture();for(const thread of input.baseline.threads)for(const message of thread.messages)delete message.transportRichBody;
+test('legacy V1: prior-round baseline lacking rich transport projection derives only its authenticated export typography',async()=>{
+ const {input}=await fixture({legacySizeOnly:true});for(const thread of input.baseline.threads)for(const message of thread.messages)delete message.transportRichBody;
  const before=input.beforeText;
  assert.equal(plan(input).unchanged,true);assert.equal(plan(input).afterText,before);
  const changed=structuredClone(input);
@@ -765,6 +785,7 @@ test('formatting only a line break is a comment delta, while text and other mess
  assert.equal(plan(input).unchanged,true);
  const changed=structuredClone(input),line=changed.returnedThreads[0].richBody.document.content[0].content.find(n=>n.type==='hardBreak');
  line.marks.push({type:'underline'});
+ changed.returnedThreads[0].effectiveRichBody.document.content[0].content.find(n=>n.type==='hardBreak').marks.push({type:'underline'});
  const result=plan(changed),after=JSON.parse(result.afterText);
  assert.deepEqual(result.changes[0].messageIds,['root-a']);
  assert.equal(after.threads[0].messages[0].body,state.threads[0].messages[0].body);
@@ -870,6 +891,9 @@ test('unchanged pending partition admits one reply with independently checked un
   const {binding}=model.buildCommentExportBinding({document,anchors,exportTypography:f.input.exportMap.exportTypography});
   const returned=structuredClone(ledger),r=returned.revisions[1];
   returned.revisions.splice(1,1,{...r,to:20},{...r,id:'revision-3',nativeId:'90',from:20});
+  // This synthetic Word partition carries the actual source-selected full
+  // transport basis, while document/ledger and their authenticated IDs stay raw.
+  returned.source=require('../../src/core/word-review-typography-v1.cjs').document(returned.source,f.input.exportMap.exportTypography);
   const returnedDocument=model.bindLedger(returned);
   const input=structuredClone(f.input);
   input.exportMap.scenes[0].pendingCommentBinding=binding;
@@ -878,7 +902,7 @@ test('unchanged pending partition admits one reply with independently checked un
   const root=input.returnedThreads[0];
   root.anchorRange={...root.finalTextAnchorRange,endUtf16:23,selectedText:'🧭 removedanchor',blockTextSha256:hash(unionText)};
   root.quotedAnchorText=root.anchorRange.selectedText;
-  const reply=structuredClone(root.replies[0]);reply.durableId='AABBCCDD';reply.body='New reply';delete reply.richBody;root.replies.push(reply);
+  const reply=structuredClone(root.replies[0]);reply.durableId='AABBCCDD';reply.body='New reply';delete reply.richBody;delete reply.effectiveRichBody;root.replies.push(reply);
   const result=plan(input),after=JSON.parse(result.afterText);
   assert.equal(after.threads[0].messages.length,3);
   assert.deepEqual(after.threads[0].anchor,f.state.threads[0].anchor);
@@ -901,4 +925,47 @@ for(const change of ['anchor','status','delete','body'])test('fresh Word return 
  if(change==='body'){setReturnedBody(input.returnedThreads[0],'New root text');const result=plan(input);assert.deepEqual(JSON.parse(result.afterText).threads[0].anchorEditHistory,before.threads[0].anchorEditHistory);assert.equal(JSON.parse(result.afterText).threads[0].messages[0].body,'New root text');}
  else assert.throws(()=>plan(input),/COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT/);
  assert.equal(input.beforeText,f.input.beforeText);
+});
+
+
+test('V2 actual ZIP root/reply mark clearing retains observed defaults and replays once',async()=>{
+ const f=await fixture(),bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts,xml=parts['word/comments.xml'];
+ const parse=commentXml=>{
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries({...parts,'word/comments.xml':commentXml}).map(([name,data])=>({name,data})));
+  if(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT) {
+   const fs=require('node:fs'),path=require('node:path'),dir=path.join(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT,'ACTUAL_V2_CLEAR33_BEFORE_PARSE_'+hash(commentXml));fs.mkdirSync(dir,{recursive:true});
+   for(const [name,value] of Object.entries({'original.docx':f.bytes,'returned.docx':bytes,'source.json':f.source}))fs.writeFileSync(path.join(dir,name),Buffer.isBuffer(value)?value:JSON.stringify(value,null,2)+'\n',{flag:'wx'});
+  }
+  const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:hash,sha256Json:v=>'sha256:'+hash(stable(v)),byteLength:v=>Buffer.byteLength(v)}});
+  assert.equal(parsed.ok,true);
+  return {bytes,artifactSha256:hash(bytes),returnedThreads:parsed.reviewIr.commentThreads,returnedParagraphs:parsed.reviewIr.formattingParagraphs};
+ };
+ const emphasized=xml.replace(/<w:r>[^]*?<\/w:r>/gu,run=>{
+  const name=run.includes('>Root before</w:t>')?'b':run.includes('>Reply before</w:t>')?'i':null;
+  return name?run.replace(`<w:${name} w:val="0"/><w:${name}Cs w:val="0"/>`,`<w:${name} w:val="1"/><w:${name}Cs w:val="1"/>`):run;
+ });
+ const bold=parse(emphasized);
+ assert(bold.returnedThreads[0].richBody.document.content[0].content[0].marks.some(m=>m.type==='bold'));
+ assert(bold.returnedThreads[0].replies[0].richBody.document.content[0].content[0].marks.some(m=>m.type==='italic'));
+ const first=plan({...f.input,...bold}),after=JSON.parse(first.afterText);
+ const baseline=require('../../src/export/docx/docxReviewPacketComments.js').buildCanonicalCommentExport(after,f.source.blocks,f.input.projectId,{exportTypography:f.input.exportMap.exportTypography});
+ const clear=parse(xml),input={...f.input,...clear,beforeText:first.afterText,baseline,roundId:'actual-clear-v2'};
+ const cleared=plan(input),final=JSON.parse(cleared.afterText);
+ for(const [index,message] of final.threads[0].messages.entries()) {
+  assert.equal(message.body,f.state.threads[0].messages[index].body);
+  assert.deepEqual(message.provenance,f.state.threads[0].messages[index].provenance);
+  assert.deepEqual({...message,richBody:undefined},{...f.state.threads[0].messages[index],richBody:undefined});
+  const run=message.richBody.document.content[0].content[0];
+  assert(!run.marks.some(m=>['bold','italic'].includes(m.type)));
+  assert.deepEqual(message.richBody,f.source.commentExport.threads[0].messages[index].transportRichBody);
+ }
+ assert.deepEqual({...final.threads[0],messages:f.state.threads[0].messages},f.state.threads[0]);
+ assert.deepEqual(cleared.changes[0].messageIds,['root-a','reply-a']);
+ assert.equal(plan({...input,beforeText:cleared.afterText}).replay,true);
+ if(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT) {
+  const fs=require('node:fs'),path=require('node:path'),dir=path.join(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT,'ACTUAL_V2_CLEAR33');fs.mkdirSync(dir,{recursive:true});
+  for(const [name,value] of Object.entries({'original.docx':f.bytes,'bold.docx':bold.bytes,'returned.docx':clear.bytes,'source.json':f.source,'first-input.json':{...f.input,...bold},'clear-input.json':input,'outputs.json':{first,cleared,final}}))
+   fs.writeFileSync(path.join(dir,name),Buffer.isBuffer(value)?value:JSON.stringify(value,null,2)+'\n',{flag:'wx'});
+ }
 });

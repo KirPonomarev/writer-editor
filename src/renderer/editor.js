@@ -24308,6 +24308,24 @@ function applyTreeContextPublication(payload) {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (payload?.recordingPublicationRequestId) {
+      const before = composeEditorSnapshot();
+      const parsed = typeof payload.content === 'string' ? parseDocumentContent(payload.content) : null;
+      if (typeof payload.recordingPublicationRequestId !== 'string' || !isTiptapMode || !parsed?.doc || parsed.issue
+        || payload.projectId !== before.projectId || payload.documentId !== before.documentId
+        || payload.expectedGeneration !== before.generation || payload.expectedContent !== before.content
+        || payload.expectedTreeContentPublicationId !== before.treeContentPublicationId
+        || payload.expectedCommentEditIntentsJson !== (before.commentEditIntentsJson ?? null)
+        || before.commentAuthoringPending || before.manuscriptNoteAuthoringPending || flowModeState.active || storyMutationPending
+        || !setTiptapDocumentSnapshot({ doc: parsed.doc, text: parsed.text || '', resetHistory: false })) {
+        window.electronAPI.sendEditorSnapshotResponse(payload.recordingPublicationRequestId, null); return;
+      }
+      metaEnabled = parsed.hasMetaBlock; currentMeta = parsed.meta; currentCards = parsed.cards;
+      plainTextBuffer = parsed.text || '';
+      window.electronAPI.sendEditorSnapshotResponse(payload.recordingPublicationRequestId, composeEditorSnapshot());
+      updateMetaInputs(); updateMetaVisibility(); updateCardsList(); updateWordCount();
+      return;
+    }
     if (payload?.storyPublication === true) {
       const checked = parseDocumentContent(payload.content);
       if (pendingStoryRequestId && payload.storyPublicationRequestId === pendingStoryRequestId

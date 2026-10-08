@@ -339,7 +339,14 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }, userBookmarkIds = new Map()) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null, revisionCounter = { next: 1 }, userBookmarkIds = new Map(), exportTypography) {
+  const bodyTypography=require('../../core/word-review-typography-v1.cjs');
+  const profile=bodyTypography.validate(exportTypography,{allowUndefined:true});
+  const authoredParagraph=block.formatIr?.paragraph;
+  if(profile?.schemaVersion===bodyTypography.V2)block={...block,formatIr:bodyTypography.formatIr(block.formatIr,profile),
+    ...(block.pendingParagraphRevision?{pendingParagraphRevision:{...block.pendingParagraphRevision,format:{...block.pendingParagraphRevision.format,
+      before:bodyTypography.snapshot(block.pendingParagraphRevision.format.before,profile),
+      after:bodyTypography.snapshot(block.pendingParagraphRevision.format.after,profile)}}}:{})};
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
@@ -366,7 +373,9 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     if (userMarkers.size || block.formatIr?.media?.length) throw Error('PENDING_REVISIONS_ANNOTATION_EXPORT_UNSUPPORTED');
     const pendingMarkers = require('./docxPendingRevisions.js').pendingNoteMarkersForBlock(documentNotes, block);
     const rawSegments = block.pendingRowRevision ? block.pendingRevisionSegments.map(s => ({ ...s, revision: block.pendingRowRevision })) : block.pendingRevisionSegments;
-    const emittedSegments = commentExport?.threads?.length ? require('../../core/word-pending-text-revisions-v1.cjs').commentTransportSegments(rawSegments, {type:block.formatIr?.paragraph?.nodeType,attrs:block.formatIr?.paragraph}) : rawSegments;
+    const transportedSegments = profile?.schemaVersion===bodyTypography.V2 ? rawSegments
+      :commentExport?.threads?.length?require('../../core/word-pending-text-revisions-v1.cjs').commentTransportSegments(rawSegments,{type:block.formatIr?.paragraph?.nodeType,attrs:block.formatIr?.paragraph}):rawSegments;
+    const emittedSegments = profile?.schemaVersion===bodyTypography.V2 ? bodyTypography.segments(transportedSegments,authoredParagraph,profile) : transportedSegments;
     textRun = buildPendingRunsXml(emittedSegments, node => {
       const inline = {}, preservedMarks = [];
       for (const mark of node.marks || []) {
@@ -385,7 +394,9 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   // break. A word joiner is visually empty but keeps the authored paragraph
   // and its boundary in the DOCX transport. It is enabled only for C4 export.
   const sectionCarrier = officeModeTransport && sectionBreak && block.text === ''
-    ? '<w:r><w:t>\u2060</w:t></w:r>' : '';
+    ? profile?.schemaVersion===bodyTypography.V2
+      ? buildFormatIrRunsXml({text:'\u2060',formatIr:{runs:[{text:'\u2060',inline:bodyTypography.inline({},authoredParagraph,profile)}]}},hyperlinkByHref)
+      : '<w:r><w:t>\u2060</w:t></w:r>' : '';
   const textAlign = toWordParagraphAlignment(block.formatIr?.paragraph?.textAlign);
   const headingLevel = Number(block.formatIr?.paragraph?.headingLevel);
   const paragraphPropertyParts = [];
@@ -449,7 +460,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   ].join('');
 }
 
-function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false, mediaPackage = null) {
+function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false, mediaPackage = null, exportTypography) {
   const userBookmarkIds=new Map(), opened=new Set(), closed=new Set(), names=new Set(), identities=new Map();
   for (const block of blocks) for (const marker of block.formatIr?.userBookmarks || []) {
     if (!/^ubm-[a-f0-9]{32}$/u.test(marker.id) || typeof marker.name!=='string' || marker.name.length>40 || !/^\p{L}[\p{L}\p{N}_]*$/u.test(marker.name) || /^YRTK_/iu.test(marker.name) || !['start','end'].includes(marker.kind)) throw Error('DOCX_USER_BOOKMARK_MARKER_INVALID');
@@ -481,6 +492,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     mediaPackage,
     revisionCounter,
     userBookmarkIds,
+    exportTypography,
   ), row => buildPendingRowPropertiesXml(row.map(p => p.item.pendingRowRevision), revisionCounter));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
@@ -687,14 +699,30 @@ function buildNumberingXml(definitions) {
 <w:numbering xmlns:w="${WORD_MAIN_NS}">${abstract}${instances}</w:numbering>`;
 }
 
-function buildStylesXml(blocks, noteStyles = '') {
+function buildStylesXml(blocks, noteStyles = '', exportTypography) {
+  const bodyTypography = require('../../core/word-review-typography-v1.cjs');
+  const profile = bodyTypography.validate(exportTypography, { allowUndefined: true });
+  const resetStyles = new Set();
+  if (profile?.schemaVersion === bodyTypography.V2) for (const block of blocks) {
+    const revision = block.pendingParagraphRevision;
+    if (revision?.state !== 'pending' || revision.operation !== 'format' || revision.format?.kind !== 'paragraph') continue;
+    const before = bodyTypography.snapshot(revision.format.before, profile), after = bodyTypography.snapshot(revision.format.after, profile);
+    const marker = value => buildDocxParagraphMarkTypographyXml(value.attrs?.wordParagraphMarkTypography)
+      + buildDocxWordLanguageXml(value.attrs?.wordParagraphMarkLanguage);
+    // Only paragraph-only prior snapshots emit these reset-style references.
+    if (marker(before) === marker(after)) resetStyles.add(before.type === 'heading' ? `Heading${before.attrs.level}` : 'Normal');
+  }
+  const resetXml = [...resetStyles].sort().map(id => {
+    if (!/^(?:Normal|Heading[1-9])$/u.test(id)) throw Error('PENDING_FORMAT_EXPORT_INVALID');
+    return `<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${id}"/></w:style>`;
+  }).join('');
   const ids = ['YalkenCodeBlock', ...blocks.map(block => docxBlockStyleId(
     block.formatIr?.paragraph?.nodeType === 'codeBlock', Number(block.formatIr?.paragraph?.blockquoteDepth || 0),
   )).filter(Boolean)];
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="${WORD_MAIN_NS}">
   <w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>
-  ${buildDocxBlockStyleDefinitions(ids)}
+  ${buildDocxBlockStyleDefinitions(ids)}${resetXml}
   ${[...new Set(blocks.filter(b=>b.formatIr?.paragraph?.list?.continuation===true).map(b=>b.formatIr.paragraph.list.level))].map(level=>`<w:style w:type="paragraph" w:styleId="YalkenListContinuation${level}"><w:name w:val="Yalken List Continuation ${level}"/></w:style>`).join('')}
   <w:style w:type="character" w:styleId="YalkenInlineCode"><w:name w:val="Yalken Inline Code"/><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:rPr></w:style>
 ${noteStyles ? '  ' + noteStyles + '\n' : ''}</w:styles>`;
@@ -828,7 +856,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
   if (new Set(customPropertyNames).size !== customPropertyNames.length) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_DUPLICATE');
   }
-  const comments = commentPackageParts(input.commentExport);
+  const comments = commentPackageParts(input.commentExport, input.exportTypography);
   const stories = require('./docxReviewPacketStories.js').storyPackageParts(input.documentStories, {firstNumId:1000000});
   const notes = notePackageParts(input.documentNotes, { firstNumId: Math.max(0, ...numberingDefinitions.map(n => n.numId)) + 1 });
   numberingDefinitions.push(...[...notes.numberings, ...stories.numberings].map(n => ({ ...n, kind: n.kind === 'orderedList' ? 'ordered' : 'bullet' })));
@@ -843,7 +871,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
   }
 
   let storySectionIndex = 0;
-  const documentXml = buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage).replace(/<w:sectPr(?:\s*\/)>|<w:sectPr>/g, tag => tag === '<w:sectPr>' ? tag + stories.sectionXml(storySectionIndex++) : '<w:sectPr>' + stories.sectionXml(storySectionIndex++) + '</w:sectPr>');
+  const documentXml = buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage, input.exportTypography).replace(/<w:sectPr(?:\s*\/)>|<w:sectPr>/g, tag => tag === '<w:sectPr>' ? tag + stories.sectionXml(storySectionIndex++) : '<w:sectPr>' + stories.sectionXml(storySectionIndex++) + '</w:sectPr>');
   const buffer = buildStoredZip([
     { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes + stories.contentTypes + mergeMediaTypes(mediaPackage.contentTypes, notes.mediaTypes, stories.mediaTypes), Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
@@ -851,7 +879,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'word/document.xml', data: documentXml },
     { name: 'word/settings.xml', data: buildSettingsXml().replace('<w:compat>', defaultTabsXml+(stories.evenAndOddHeaders ? '<w:evenAndOddHeaders/>' : '') + '<w:compat>') },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
-    { name: 'word/styles.xml', data: buildStylesXml(blocks, notes.stylesXml) },
+    { name: 'word/styles.xml', data: buildStylesXml(blocks, notes.stylesXml, input.exportTypography) },
     ...(documentMetadata ? [{ name: 'docProps/core.xml', data: buildCorePropertiesXml(documentMetadata) }] : []),
     { name: 'docProps/custom.xml', data: buildCustomPropertiesXml(customProperties) },
     { name: 'customXml/_rels/item1.xml.rels', data: buildCustomXmlRelsXml() },

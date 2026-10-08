@@ -1,3 +1,4 @@
+import bodyTypography from '../../core/word-review-typography-v1.cjs';
 import storiesModel from '../../core/word-stories-v1.cjs';
 import noteModel from '../../core/word-manuscript-notes-v1.cjs';
 import tables from '../documentTables.js';
@@ -36,6 +37,7 @@ const reject = code => { throw Error(code); };
 // bijection induced by protected section/role references identifies a story.
 export function analyzeDocumentStoriesReturn({ expected, returned, beforeDocs, exportTypography, allowTopology = false, idSeed }) {
   try {
+    bodyTypography.validate(exportTypography,{allowUndefined:true});
     if (!expected) {
       if (returned) reject('WORD_STORIES_RETURN_UNEXPECTED');
       return { ok: true, changed: false, candidates: [] };

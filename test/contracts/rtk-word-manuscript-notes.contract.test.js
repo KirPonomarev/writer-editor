@@ -198,3 +198,15 @@ test('body save refreshes scene identity but never overwrites a concurrent note 
   sandbox.manuscriptDrafts.set('p:note-a', newer);pending(fresh());await work;
   assert.equal(writes.length, 2);assert.equal(sandbox.manuscriptDrafts.get('p:note-a'), newer);
 });
+
+test('32 MiB scene note binding preserves full body and strict source and byte boundaries',()=>{
+ const cap=32*1024*1024,raw='x'.repeat(cap),before=body();
+ assert.equal(model.sceneText(raw),raw);
+ const bound=model.bindManuscriptPayload({kind:'endnote',body:before,sceneId:'roman/large.txt',offsetUtf16:raw.length,sceneContent:raw});
+ assert.deepEqual(bound.body,before);assert.equal(bound.reference.sourceTextSha256,model.sha(raw));assert.equal(bound.reference.offsetUtf16,cap);
+ const state={schemaVersion:1,projectId:'p',notes:[{id:'large',scope:'manuscript',body:model.validateNoteBody(before).text,manuscript:bound}]},beforeText=JSON.stringify(state);
+ assert.equal(model.planManuscriptNoteAnchorSave({beforeText,projectId:'p',sceneId:'roman/large.txt',beforeContent:raw,afterContent:raw,includeUnchanged:true}).afterText,beforeText);
+ assert.throws(()=>model.sceneText(raw+'x'),e=>e.code==='NOTE_SCENE_BUDGET');
+ assert.throws(()=>model.planManuscriptNoteAnchorSave({beforeText,projectId:'p',sceneId:'roman/large.txt',beforeContent:raw.slice(1),afterContent:raw}),e=>e.code==='NOTE_REFERENCE_STALE');
+ assert.deepEqual(JSON.parse(beforeText),state);assert.deepEqual(body(),before);
+});

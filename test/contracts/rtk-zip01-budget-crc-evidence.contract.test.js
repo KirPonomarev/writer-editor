@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { deflateRawSync } = require('node:zlib');
 const { pathToFileURL } = require('node:url');
 const { execFileSync } = require('node:child_process');
 
@@ -71,6 +72,38 @@ const R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST = [
   'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
 ];
 const ALLOWLIST = [
+  'test/unit/project-tree-pathless-contract.test.js',
+  'src/core/browser-safe-hash.cjs',
+  'src/io/inlineTypography.cjs',
+  'test/contracts/rtk-word-core-hash-parity.contract.test.js',
+  'src/core/word-comment-anchor-save-v1.cjs',
+  'src/core/word-manuscript-notes-v1.cjs',
+  'test/contracts/rtk-word-comment-anchor-save.contract.test.js',
+  'test/contracts/rtk-word-manuscript-notes.contract.test.js',
+  'test/contracts/rtk-word-pending-return.contract.test.js',
+  'test/contracts/rtk-interop-word-volume.contract.test.js',
+
+  'src/core/word-pending-recording-comments-v1.cjs',
+  'test/contracts/rtk-word-pending-recording.contract.test.js',
+  'test/contracts/rtk-word-pending-recording-runtime.contract.test.js',
+  'test/contracts/rtk-word-pending-recording-comments.contract.test.js',
+  'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js',
+  'test/contracts/rtk-word-canonical-comment-reexport.contract.test.js',
+  'test/contracts/rtk-word-comment-points.contract.test.js',
+  'test/contracts/rtk-word-comment-return-delta.contract.test.js',
+  'test/contracts/rtk-word-http-links.contract.test.js',
+  'test/contracts/rtk-word-list-pattern-parser.contract.test.js',
+  'test/contracts/rtk-word-media-text-correspondence.contract.test.js',
+  'test/contracts/rtk-word-move-recording.contract.test.js',
+  'test/contracts/rtk-word-pending-formatting.contract.test.js',
+  'test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js',
+  'test/contracts/rtk-word-pending-return-runtime.contract.test.js',
+  'test/contracts/rtk-word-pending-rich-blocks.contract.test.js',
+  'test/contracts/rtk-word-table-cell-shift.contract.test.js',
+  'test/contracts/rtk-word-table-review.contract.test.js',
+  'test/contracts/rtk-word-table-row-revisions.contract.test.js',
+  'test/contracts/rtk-word-tables.contract.test.js',
+
   // ZIP-01 Pass 2c fixture repair (real CRC32 in builder headers).
   '.github/workflows/rtk-required.yml',
   'test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js',
@@ -163,6 +196,52 @@ const ALLOWLIST = [
   'test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js',
   // MULTI-01 Pass 2: closure evaluator accepts the typed blocked profile cell.
   'scripts/ops/rtk-word-release-audit-p0-multiscene-atomic-comment-state-closure.mjs',
+  // Exact already-admitted body task paths; scope remains closed.
+  'src/core/word-review-typography-v1.cjs',
+  'src/core/word-pending-text-revisions-v1.cjs',
+  'src/core/word-pending-comment-return-v1.cjs',
+  'src/core/word-comment-body-v1.cjs',
+  'src/core/word-comment-return-delta-v1.cjs',
+  'src/core/word-note-return-delta-v1.cjs',
+  'src/core/project-tree-cohort-v1.mjs',
+  'src/export/docx/docxReviewPacketBuilder.js',
+  'src/export/docx/docxReviewPacketComments.js',
+  'src/export/docx/docxPendingRevisions.js',
+  'src/export/docx/docxReviewPacketNotes.js',
+  'src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs',
+  'src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs',
+  'src/io/revisionBridge/reviewTransportMediaReturnV1.mjs',
+  'src/io/revisionBridge/reviewTransportStoriesV1.mjs',
+  'test/contracts/rtk-word-review-default-typography.contract.test.js',
+  'test/contracts/rtk-word-effective-style-return.contract.test.js',
+  'test/contracts/rtk-word-clean-link-label.contract.test.js',
+  'test/contracts/rtk-word-user-bookmarks.contract.test.js',
+  'test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js',
+  'test/contracts/rtk-word-mixed-return.contract.test.js',
+  'test/contracts/rtk-word-mixed-return-transaction.contract.test.js',
+  'test/contracts/rtk-word-scene-identity-main.contract.test.js',
+  'test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js',
+  'test/contracts/rtk-word-note-return.contract.test.js',
+  'test/contracts/rtk-word-pending-notes.contract.test.js',
+  'test/contracts/rtk-word-media-return.contract.test.js',
+  'test/contracts/rtk-word-media-return-runtime.contract.test.js',
+  'test/contracts/rtk-word-comment-return-apply.contract.test.js',
+  'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json',
+  'scripts/ops/rtk-interop-data-c1.mjs',
+  'docs/tasks/2026-10-07--word-book-body-typography-mac.md',
+  'docs/HANDOFF.md',
+  'docs/WORKLOG.md',
+  'src/renderer/editor.bundle.js',
+  'src/renderer/editor.js',
+  'src/preload.bundle.cjs',
+  'src/utils/docxImportLocalFilePreview.js',
+  'test/contracts/rtk-word-full-manuscript-volume.contract.test.js',
+  'test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js',
+  'test/contracts/revision-bridge-docx-intake-gate-command-surface.contract.test.js',
+  'test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js',
+  'docs/ARCH_DIFF_LOG.md',
+  'test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js',
   ...R24_A0_AUTHORITY_SOT_ALLOWLIST,
   ...R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST,
 ];
@@ -232,6 +311,8 @@ function zipBytes(entries, options = {}) {
     const content = Buffer.isBuffer(entry.content)
       ? entry.content
       : Buffer.from(String(entry.content ?? ''), 'utf8');
+    const method = entry.method === 8 ? 8 : 0;
+    const compressed = method === 8 ? deflateRawSync(content) : content;
     const realCrc = crc32Bytes(content);
     const localCrc = Number.isSafeInteger(entry.localCrc) ? entry.localCrc : realCrc;
     const centralCrc = Number.isSafeInteger(entry.centralCrc) ? entry.centralCrc : localCrc;
@@ -240,26 +321,26 @@ function zipBytes(entries, options = {}) {
     local.writeUInt32LE(0x04034b50, 0);
     local.writeUInt16LE(20, 4);
     local.writeUInt16LE(0, 6);
-    local.writeUInt16LE(0, 8);
+    local.writeUInt16LE(method, 8);
     local.writeUInt16LE(0, 10);
     local.writeUInt16LE(0, 12);
     local.writeUInt32LE(localCrc, 14);
-    local.writeUInt32LE(content.length, 18);
+    local.writeUInt32LE(compressed.length, 18);
     local.writeUInt32LE(content.length, 22);
     local.writeUInt16LE(name.length, 26);
     local.writeUInt16LE(0, 28);
-    localParts.push(local, name, content);
+    localParts.push(local, name, compressed);
 
     const central = Buffer.alloc(46);
     central.writeUInt32LE(0x02014b50, 0);
     central.writeUInt16LE(20, 4);
     central.writeUInt16LE(20, 6);
     central.writeUInt16LE(0, 8);
-    central.writeUInt16LE(0, 10);
+    central.writeUInt16LE(method, 10);
     central.writeUInt16LE(0, 12);
     central.writeUInt16LE(0, 14);
     central.writeUInt32LE(centralCrc, 16);
-    central.writeUInt32LE(content.length, 20);
+    central.writeUInt32LE(compressed.length, 20);
     central.writeUInt32LE(content.length, 24);
     central.writeUInt16LE(name.length, 28);
     central.writeUInt16LE(0, 30);
@@ -269,7 +350,7 @@ function zipBytes(entries, options = {}) {
     central.writeUInt32LE(0, 38);
     central.writeUInt32LE(offset, 42);
     centralParts.push(central, name);
-    offset += local.length + name.length + content.length;
+    offset += local.length + name.length + compressed.length;
   }
   const centralDirectory = Buffer.concat(centralParts);
   const end = Buffer.alloc(22);
@@ -533,9 +614,9 @@ test('ZIP01-Z5-worker-accepts-transferable-bytes', async () => {
 // ===========================================================================
 test('ZIP01-Z6-pre-inflate-part-budget', async () => {
   const bridge = await loadBridge();
-  // 11 MiB uncompressed part (> 10 MiB V6 maxInflatedPartBytes, < 32 MiB host bound).
-  const bigContent = Buffer.alloc(11 * 1024 * 1024, 0x61);
-  // Add minimal XML wrapping so the part is still .xml-extracted; content stays > 10MiB.
+  // 16 MiB + 1 byte uncompressed part (> 16 MiB V6 maxInflatedPartBytes, < 32 MiB host bound).
+  const bigContent = Buffer.alloc(16 * 1024 * 1024 + 1, 0x61);
+  // Add minimal XML wrapping so the part is still .xml-extracted; content stays > 16MiB.
   const doc = Buffer.concat([Buffer.from(documentXml(''), 'utf8'), bigContent]);
 
   const bytes = zipBytes([
@@ -549,12 +630,12 @@ test('ZIP01-Z6-pre-inflate-part-budget', async () => {
   });
 
   // CURRENT: maxPartBytes defaults to DOCX_REVIEW_PREFLIGHT_BOUNDS.maxTargetPartBytes
-  // which equals 32 MiB, so 11 MiB is admitted (RED).
-  // TARGET: effective budget maxInflatedPartBytes=10MiB rejects pre-inflate.
+  // which equals 32 MiB, so 16 MiB + 1 byte is admitted (RED).
+  // TARGET: effective budget maxInflatedPartBytes=16MiB rejects pre-inflate.
   assert.equal(
     result.ok,
     false,
-    'RED reason: intake uses 32 MiB host bound, not 10 MiB effective V6 ceiling. TARGET: part-bytes budget rejection.',
+    'RED reason: intake uses 32 MiB host bound, not 16 MiB effective V6 ceiling. TARGET: part-bytes budget rejection.',
   );
   assert.equal(
     reasonCodes(result).some((code) => code.includes('BUDGET'))
@@ -789,3 +870,47 @@ function baseParts() {
     'word/document.xml': documentXml('<w:p><w:r><w:t>body</w:t></w:r></w:p>'),
   };
 }
+
+test('ZIP0116MiB exact part admission preserves tighter requests and every declared ceiling',async()=>{
+  const bridge=await loadBridge(),limit=16*1024*1024;
+  const wrap=documentXml(''),doc=Buffer.from(documentXml('x'.repeat(limit-Buffer.byteLength(wrap))));
+  assert.equal(doc.length,limit);
+  const packed=body=>zipBytes([{name:'[Content_Types].xml',content:contentTypesXml()},{name:'_rels/.rels',content:relsXml()},{name:'word/document.xml',content:body}]);
+  const bytes=packed(doc),accepted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes},{cryptoPort:cryptoPort()});
+  assert.equal(accepted.ok,true,JSON.stringify(accepted));assert.equal(Buffer.byteLength(accepted.parts['word/document.xml']),limit);
+  const denied=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:packed(Buffer.concat([doc,Buffer.from('x')]))},{cryptoPort:cryptoPort()});
+  assert.equal(denied.ok,false);assert.equal(denied.code,'RTK_BUDGET_EXCEEDED');
+  const tighter=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:{maxInflatedPartBytes:10*1024*1024}},{cryptoPort:cryptoPort()});
+  assert.equal(tighter.ok,false);assert.equal(tighter.code,'RTK_BUDGET_EXCEEDED');
+  const budget=await import('../../src/io/revisionBridge/reviewTransportZipEvidenceV1.mjs');
+  const {effective,clampedFields}=budget.resolveEffectiveBudgets({requested:{maxInflatedPartBytes:limit+1},profileDefaults:budget.RTK_ZIP_PROFILE_DEFAULTS_V6,ceiling:budget.RTK_ZIP_CEILING_DECLARED});
+  assert.equal(effective.maxInflatedPartBytes,limit);assert.deepEqual(clampedFields,[{field:'maxInflatedPartBytes',requested:limit+1,ceiling:limit}]);
+  for(const [key,value] of Object.entries({maxDocxBytes:50*1024*1024,maxTotalInflatedBytes:50*1024*1024,maxCompressionRatio:200,maxXmlDepth:64,maxAttributes:128,hardTimeoutMs:30000}))assert.equal(effective[key],value,key);
+});
+
+// Actual DEFLATE metadata/CRC remains valid; a tighter ratio is a bound, never authority.
+test('ZIP01 caller compression ratio is enforced before semantic inflation', async()=>{
+  const bridge=await loadBridge();
+  const entries=[{name:'[Content_Types].xml',content:contentTypesXml()},{name:'_rels/.rels',content:relsXml()},{name:'word/document.xml',content:documentXml('<w:p><w:r><w:t>literal repeated text literal repeated text literal repeated text</w:t></w:r></w:p>')}];
+  const bytes=zipBytes(entries.map(entry=>({...entry,method:8})));
+  const rawGate=bridge.inspectDocxHostileFileGateFromZipBytes(bytes);assert.equal(rawGate.ok,true,JSON.stringify(rawGate));
+  const baseline=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes});
+  assert.equal(baseline.ok,true,JSON.stringify(baseline));
+  for(const entry of entries.slice(0,3))assert.equal(baseline.parts[entry.name],entry.content);
+  const ratios=baseline.zipInventory.entries.filter(entry=>entry.byteSize>0).map(entry=>entry.byteSize/entry.compressedSize);
+  assert.ok(ratios.every(ratio=>ratio>1&&ratio<200));
+  for(const maxCompressionRatio of [200,201]){
+    const allowed=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:{maxCompressionRatio}});
+    assert.equal(allowed.ok,true,JSON.stringify(allowed));assert.deepEqual(allowed.parts,baseline.parts);
+  }
+  const denied=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:{maxCompressionRatio:1}});
+  assert.equal(denied.ok,false);assert.equal(denied.code,'RTK_BUDGET_EXCEEDED');
+  assert.match(denied.details.field,/^zip\..+\.compressionRatio$/u);assert.equal(denied.details.limit,1);assert.ok(denied.details.actual>1);
+  const preview=bridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:{maxCompressionRatio:1}});
+  assert.equal(preview.ok,false);assert.equal(preview.reason,'RTK_BUDGET_EXCEEDED');assert.equal(preview.parse.attempted,false);assert.equal(preview.parse.completed,false);
+  assert.equal(preview.diagnostics[0].field,denied.details.field);assert.equal(preview.diagnostics[0].actual,denied.details.actual);
+  assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes).ok,true);
+  const excessive=zipBytes(entries.map(entry=>({...entry,content:entry.name==='word/document.xml'?documentXml('<w:p><w:r><w:t>'+ 'x'.repeat(100000)+'</w:t></w:r></w:p>'):entry.content,method:8})));
+  const hostile=bridge.inspectDocxHostileFileGateFromZipBytes(excessive);assert.equal(hostile.ok,false);
+  assert.ok(hostile.diagnostics.some(diagnostic=>/COMPRESSION_RATIO/u.test(diagnostic.code||'')),JSON.stringify(hostile));
+});

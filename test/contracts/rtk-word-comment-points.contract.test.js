@@ -138,18 +138,25 @@ test('comment-bearing text return keeps fontless boundary breaks without admitti
  assert.equal(require('../../src/core/word-user-bookmarks-v1.cjs').textOf(accepted.doc.content[0]),'\nAlphaX omega\n');
  assert.deepEqual(accepted.doc.content[1],{type:'paragraph'},'unchanged empty paragraph keeps absent content key');
  assert.equal(accepted.doc.content[0].content[0].type,'hardBreak');assert.equal(accepted.doc.content[0].content.at(-1).type,'hardBreak');
- const languageStyles=parts['word/styles.xml'].replace('<w:rPr>','<w:rPr><w:lang w:val="ru-FI"/>');
- assert.notEqual(languageStyles,parts['word/styles.xml']);
- const languageIR=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/styles.xml':languageStyles}).map(([name,data])=>({name,data})))},{cryptoPort}).reviewIr;
+ const emptyOwner=map.scenes[0].blocks[1].wordSignals.find(s=>s.kind==='bookmarkName').value.name;
+ const languageXml=parts['word/document.xml'].replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/gu,row=>row.includes(`w:name="${emptyOwner}"`)?row.replace('w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"','w:val="ru-FI" w:eastAsia="en-US" w:bidi="en-US"'):row);
+ assert.notEqual(languageXml,parts['word/document.xml']);
+ const languageIR=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/document.xml':languageXml}).map(([name,data])=>({name,data})))},{cryptoPort}).reviewIr;
  const languageReturn=analyzer.analyzeUserBookmarksReturn({...input,reviewIr:languageIR});assert.equal(languageReturn.ok,true,JSON.stringify(languageReturn));
  assert.ok(languageReturn.ordinaryTextChanges.every(change=>change.expectedText!==''));
  const emptyLanguage=languageReturn.ordinaryFormattingOperations.find(op=>op.paragraphOrdinal===1 && op.paragraph.wordParagraphMarkLanguage);
  assert.deepEqual({from:emptyLanguage.from,to:emptyLanguage.to,text:emptyLanguage.selectedText,inline:emptyLanguage.inline,paragraph:emptyLanguage.paragraph},
-  {from:0,to:0,text:'',inline:{},paragraph:{wordParagraphMarkLanguage:{action:'set',value:{val:'ru-FI'}}}});
+  {from:0,to:0,text:'',inline:{},paragraph:{wordParagraphMarkLanguage:{action:'set',value:{val:'ru-FI',eastAsia:'en-US',bidi:'en-US'}}}});
  for(const mutate of [
   ir=>{const r=ir.formattingParagraphs[0].formattedRuns.find(r=>r.text.includes('AlphaX'));delete r.inlineState.fontFamily;delete r.resolvedFontFamily;},
   ir=>{const r=ir.formattingParagraphs[0].formattedRuns[0];r.from=1;r.to=2;},
  ]){const altered=structuredClone(ir);mutate(altered);const refused=analyzer.analyzeUserBookmarksReturn({...input,reviewIr:altered});assert.equal(refused.ok,false);assert.equal(refused.detail,'ordinary-text-font-profile-incomplete');}
+ const languageLost=structuredClone(ir);for(const run of languageLost.formattingParagraphs[0].formattedRuns)if(run.text.includes('AlphaX')){delete run.wordLanguage;delete run.inlineState.wordLanguage;}
+ assert.equal(analyzer.analyzeUserBookmarksReturn({...input,reviewIr:languageLost}).ok,false,'unresolved text language is never the bare-break exception');
+ const authoredLanguage=structuredClone(doc);authoredLanguage.content[0].content[0].marks=[{type:'textStyle',attrs:{wordLanguage:{val:'en-US'}}}];
+ const languageMap=structuredClone(map);languageMap.scenes[0].blocks[0].formatIr=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFormatIrParagraphs({sceneId,doc:authoredLanguage,text:env.deriveVisibleTextFromDocument(authoredLanguage)})[0].formatIr;
+ assert.equal(analyzer.analyzeUserBookmarksReturn({...input,baselineDoc:authoredLanguage,exportMap:languageMap}).ok,false,'authored break proofing language cannot disappear');
+ assert.deepEqual(languageReturn.doc,accepted.doc,'empty-language effect does not alter the text, point or bare breaks');
  const styled=structuredClone(doc);styled.content[0].content[0].marks=[{type:'textStyle',attrs:{fontFamily:'Courier New'}}];
  const styledMap=structuredClone(map);const formats=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFormatIrParagraphs({sceneId,doc:styled,text:env.deriveVisibleTextFromDocument(styled)});
  styledMap.scenes[0].blocks[0].formatIr=formats[0].formatIr;

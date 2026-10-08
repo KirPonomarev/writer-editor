@@ -1,3 +1,4 @@
+import bodyTypography from '../../core/word-review-typography-v1.cjs';
 import { bindDocxReviewTableTopology } from './index.mjs';
 import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
@@ -373,7 +374,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     if(nextPs.length!==basePs.length)return reject('scene-topology');
     let defaultFontSize=null;
     if(exportTypography!==undefined){
-      if(exportTypography?.schemaVersion!=='yalken.review-docx.typography-defaults.v1'||exportTypography.fontSize!=='12pt'||Object.keys(exportTypography).sort().join(',')!=='fontSize,schemaVersion')return reject('typography-binding');
+      bodyTypography.validate(exportTypography);
       defaultFontSize='12pt';
     }
     const inventory=reviewIr.userBookmarkInventory;
@@ -417,8 +418,9 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
     const documentOperation=ordinaryTextMode?documentPropertyReturnOperation(scene,reviewIr.documentProperties):null;
     if(documentOperation)ordinaryFormattingOperations.push(documentOperation);
     for(let i=0;i<basePs.length;i++) {
-      const block={...scene.blocks[i],text:baseFormats[i].text},p=observed[offset+i];
+      let block={...scene.blocks[i],text:baseFormats[i].text};const p=observed[offset+i];
       if(!same(block.formatIr,baseFormats[i].formatIr)||block.canonicalTextSha256!==`sha256:${sha256Hex(block.text)}`)return reject('private-format-binding');
+      block={...block,formatIr:bodyTypography.formatIr(block.formatIr,exportTypography)};
       if(p.typedBreakInvalid)return reject('typed-break-invalid');
       const expectedBreaks=wordBreaks.paragraphBreaks(basePs[i]);
       const returnedBreaks=wordBreaks.textBreaks(p.paragraphText,p.typedBreaks);
@@ -427,9 +429,15 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
       const baseP=block.formatIr.paragraph;
       if(!['paragraph','heading'].includes(baseP.nodeType)||Object.keys(baseP).some(k=>!['nodeType','headingLevel','textAlign','wordParagraphSpacing','wordParagraphMarkLanguage','wordParagraphMarkTypography','wordParagraphIndent','wordParagraphTabs',...(ordinaryTextMode?[...(hasLists?['list']:[])]:[])].includes(k))||(baseP.textAlign||'left')!==(p.paragraphState?.textAlign||'left')||(p.paragraphStructure?.nodeType||'paragraph')!==baseP.nodeType||(baseP.headingLevel??null)!==(p.paragraphStructure?.headingLevel??null))return reject('paragraph-semantic-change');
       if(['wordParagraphIndent','wordParagraphTabs'].some(k=>!same(baseP[k]??null,p.paragraphState?.[k]??null)))return reject('paragraph-layout-change');
-      const markChanged=!same(baseP.wordParagraphMarkTypography??null,p.paragraphState?.wordParagraphMarkTypography??null);
+      const completeBody=exportTypography?.schemaVersion===bodyTypography.V2;
+      if(completeBody&&p.effectiveParagraphMarkTypographyInvalid)return reject('paragraph-mark-typography-invalid');
+      const returnedMarker=completeBody?p.effectiveParagraphMarkTypography:p.paragraphState?.wordParagraphMarkTypography;
+      const markChanged=completeBody
+        ?!same(bodyTypography.markerMeaning(baseP.wordParagraphMarkTypography??null),bodyTypography.markerMeaning(returnedMarker??null))
+        :!same(baseP.wordParagraphMarkTypography??null,returnedMarker??null);
       if(markChanged&&!ordinaryTextMode)return reject('paragraph-mark-typography-change');
-      const spacingChanged=!same(baseP.wordParagraphSpacing||null,p.paragraphState?.wordParagraphSpacing||null);
+      const spacingMeaning=value=>completeBody&&value?{before:0,after:0,...value}:value||null;
+      const spacingChanged=!same(spacingMeaning(baseP.wordParagraphSpacing),spacingMeaning(p.paragraphState?.wordParagraphSpacing));
       if(spacingChanged && !ordinaryTextMode)return reject('paragraph-spacing-change');
       const returnedSpacing=p.paragraphState?.wordParagraphSpacing == null ? null
         : paragraphSpacing.normalizeWordParagraphSpacing(p.paragraphState.wordParagraphSpacing);
@@ -438,7 +446,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         sceneId,blockId:block.blockId,paragraphOrdinal:i,from,to,selectedText:p.paragraphText.slice(from,to),inline,paragraph,
         sourceAuthority:'authenticated-full-manuscript-export-map-format-ir-v1',sourceSceneRevision:scene.sceneRevision,sourceRawSha256:scene.rawSha256,
       });
-      if(markChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{}, {wordParagraphMarkTypography:p.paragraphState?.wordParagraphMarkTypography==null?{action:'remove'}:{action:'set',value:p.paragraphState.wordParagraphMarkTypography}}));
+      if(markChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{}, {wordParagraphMarkTypography:returnedMarker==null?{action:'remove'}:{action:'set',value:returnedMarker}}));
       if(spacingChanged)ordinaryFormattingOperations.push(formattingOperation(0,p.paragraphText.length,{},
         {wordParagraphSpacing:returnedSpacing===null?{action:'remove'}:{action:'set',value:returnedSpacing}}));
       if(!ordinaryTextMode&&!same(baseP.wordParagraphMarkLanguage||null,p.paragraphState?.wordParagraphMarkLanguage||null))return reject('paragraph-language-change');
@@ -455,13 +463,13 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           const ordinal=returnedBreaks.findIndex(item=>item.offset===offset);
           if(ordinal<0)return false;
           const oldOffset=expectedBreaks[ordinal]?.offset;
-          const oldRun=before.find(item=>item.from<=oldOffset && item.to>oldOffset);
+          const oldRun=baseFormats[i].formatIr.runs.find(item=>item.from<=oldOffset && item.to>oldOffset);
           let cursor=0,oldBreak;
           for(const node of basePs[i].content||[]){
             if(cursor===oldOffset && node.type==='hardBreak'){oldBreak=node;break;}
             cursor+=node.type==='hardBreak'?1:node.type==='text'?node.text.length:0;
           }
-          return oldRun && !oldRun.style.fontFamily && oldBreak
+          return oldRun && !oldRun.inline.fontFamily && oldBreak
             && !(oldBreak.marks||[]).some(mark=>mark.type==='textStyle' && mark.attrs?.fontFamily);
         });
       const fontlessBreaks=new Set(after.filter(isFontlessBreak));
@@ -477,7 +485,7 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           // explicitly formatted breaks still follow the normal font path.
           if(fontlessBreak(run))continue;
           const family=familyOf(run);
-          const unchanged=block.text===p.paragraphText && before.filter(old=>old.from<run.to&&old.to>run.from)
+          const unchanged=(block.text===p.paragraphText || exportTypography?.schemaVersion===bodyTypography.V2 && before.every(old=>old.style.fontFamily===family)) && before.filter(old=>old.from<run.to&&old.to>run.from)
             .every(old=>old.style.fontFamily===family);
           if(!unchanged){fontChanged=true;ordinaryFormattingOperations.push(formattingOperation(run.from,run.to,{fontFamily:{action:'set',value:family}},{}));}
         }
@@ -491,8 +499,19 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
         for(const run of runs){const last=merged.at(-1);if(last&&same(last.language,run.language)&&last.to===run.from)last.to=run.to;else merged.push({...run});}
         return merged;
       };
-      const languageChanged=!same(baseP.wordParagraphMarkLanguage||null,languageChange.paragraphMark)
+      let languageChanged=!same(baseP.wordParagraphMarkLanguage||null,languageChange.paragraphMark)
         || !same(languages(before.map(run=>({from:run.from,to:run.to,language:run.inline?.wordLanguage||null}))),languages(languageChange.runs));
+      // A source-bare break has no proofing-language-bearing text. This only
+      // suppresses a no-change interpretation; observed rows stay literal.
+      const sourceLanguageAbsentBreak=run=>fontlessBreak(run) && Array.from(run.text,(_,index)=>run.from+index).every(offset=>{
+        const ordinal=returnedBreaks.findIndex(item=>item.offset===offset),oldOffset=expectedBreaks[ordinal]?.offset;
+        const raw=baseFormats[i].formatIr.runs.find(item=>item.from<=oldOffset && item.to>oldOffset);
+        return raw && raw.inline.wordLanguage==null;
+      });
+      if(exportTypography?.schemaVersion===bodyTypography.V2 && same(baseP.wordParagraphMarkLanguage??null,languageChange.paragraphMark)
+        && before.every(run=>same(run.inline?.wordLanguage??null,before[0]?.inline?.wordLanguage??null))
+        && after.every(run=>same(run.wordLanguage??null,before[0]?.inline?.wordLanguage??null)
+          || run.wordLanguage==null && sourceLanguageAbsentBreak(run)))languageChanged=false;
       const hasLanguage=languageChange.paragraphMark!==null || languageChange.runs.some(run=>run.language!==null)
         || baseP.wordParagraphMarkLanguage!=null || before.some(run=>run.inline?.wordLanguage!=null);
       // Bookmark-only returns preserve language through exact style signatures
@@ -518,14 +537,16 @@ export function analyzeUserBookmarksReturn({baselineDoc,returnedDoc,baselineRegi
           if(!block.text||!p.paragraphText
             ||before.some(run=>run.link)||after.some(run=>run.link)
             ||resultPs[i].content.some(node=>!['text','hardBreak'].includes(node.type))
-            ||!before.length||!after.length
-            ||before.some(run=>!same(run.style,before[0].style))
+            ||!before.length||!after.length)return reject('ordinary-text-rich-footprint');
+          if(completeBody&&block.text===p.paragraphText)compareStyles(before,after,0,0,block.text.length);
+          else if(before.some(run=>!same(run.style,before[0].style))
             ||after.some(run=>!same(run.style,before[0].style)))return reject('ordinary-text-rich-footprint');
-          replaceOrdinaryText(resultPs[i],block.text,p.paragraphText);
+          if(!completeBody||block.text!==p.paragraphText)replaceOrdinaryText(resultPs[i],block.text,p.paragraphText);
           if(!same(wordBreaks.paragraphBreaks(resultPs[i]),returnedBreaks))return reject('typed-break-position-change');
-          if(hasLanguage){const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
+          if(hasLanguage&&languageChanged){const effect=completeBody?bodyTypography.languageEffects(resultPs[i],languageChange,exportTypography):languageChange;
+            Object.assign(languageChange,effect);const changed=wordLanguage.applyParagraphLanguage(resultPs[i],languageChange);Object.keys(resultPs[i]).forEach(key=>delete resultPs[i][key]);Object.assign(resultPs[i],changed);}
           ordinaryTextChanges.push({sceneId,blockId:block.blockId,documentParagraphIndex:block.documentParagraphIndex,
-            sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage?{wordLanguageChange:languageChange}:{})});
+            sceneParagraphIndex:i,expectedText:block.text,replacementText:p.paragraphText,blockTextSha256:block.canonicalTextSha256,...(hasLanguage&&languageChanged?{wordLanguageChange:languageChange}:{})});
           continue;
         }
         if(ordinaryTextMode && (hasLanguage && languageChanged || spacingChanged || fontChanged))return reject('label-language-composite-unsupported');
@@ -602,7 +623,8 @@ export function analyzeListNumberingReturn({ exportMap, reviewIr = {}, resolveBl
     const scenes = exportMap?.scenes;
     if (!Array.isArray(scenes)) return fail('private-map');
     const rows = scenes.flatMap(scene => (scene.blocks || []).map(block => ({scene,block})));
-    const hasPatterns = rows.some(({block}) => block.formatIr?.paragraph?.list?.wordNumbering);
+    const hasPatterns = rows.some(({block}) => block.formatIr?.paragraph?.list?.wordNumbering)
+      || bodyTypography.validate(exportMap.exportTypography,{allowUndefined:true})?.schemaVersion===bodyTypography.V2&&rows.some(({block})=>block.formatIr?.paragraph?.list);
     if (!hasPatterns) return {ok:true,hasPatterns:false,operations:[]};
     const proof = reviewIr.listNumbering, observed = reviewIr.formattingParagraphs;
     if (proof?.schemaVersion !== 'yalken.word-list-numbering-proof.v1' || !Array.isArray(proof.paragraphs)

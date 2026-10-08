@@ -66,7 +66,7 @@ function sceneParagraphs(doc) {
   return paragraphs;
 }
 function sceneText(content) {
-  need(typeof content === 'string' && Buffer.byteLength(content) <= 8 * LIMITS.bytes, 'NOTE_SCENE_BUDGET');
+  need(typeof content === 'string' && Buffer.byteLength(content) <= 32 * LIMITS.bytes, 'NOTE_SCENE_BUDGET');
   const parsed = parseObservablePayload(content);
   need(!parsed.issue, 'NOTE_SCENE_INVALID');
   if (!parsed.doc) return parsed.text;
@@ -141,7 +141,7 @@ function validatePendingNoteTransition({ beforeText, projectId, sceneId, beforeC
   const beforeDoc = parseObservablePayload(beforeContent).doc, afterDoc = parseObservablePayload(afterContent).doc;
   const equal = (a, b) => JSON.stringify(envelope.canonicalizeDocumentJson(a)) === JSON.stringify(envelope.canonicalizeDocumentJson(b));
   if (pendingNoteReturnProofJson !== undefined) {
-    need(typeof pendingNoteReturnProofJson === 'string' && Buffer.byteLength(pendingNoteReturnProofJson) <= 8 * LIMITS.bytes, 'NOTE_RETURN_PROOF_BUDGET');
+    need(typeof pendingNoteReturnProofJson === 'string' && Buffer.byteLength(pendingNoteReturnProofJson) <= 32 * LIMITS.bytes, 'NOTE_RETURN_PROOF_BUDGET');
     const proof = JSON.parse(pendingNoteReturnProofJson);
     const required = ['schemaVersion', 'projectId', 'sceneId', 'baseline', 'exportMap', 'returnedDoc', 'returnedNotes', 'unionReferences', 'receipt'];
     need(keys(proof, [...required, 'paragraphBindings']) && required.every(key => Object.hasOwn(proof, key))

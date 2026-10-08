@@ -3045,6 +3045,19 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   const defaultFontFamily = reviewDefaultFontFamily(visibilityStyles);
   const linkStyleCache = {};
   const effectiveStyles = reviewEffectiveStyleCatalog(visibilityStyles,documentScan,options.stylesXml || '',documentXml,{family:defaultFontFamily,size:defaultFontSize});
+  // This is a carrier candidate inventory, never evidence of validity. Check
+  // the entire actual revision graph once, retaining the original union rows.
+  const structuralMarkCandidates = documentScan.tokens.filter(t => ['ins','del'].includes(t.localName)
+    && (t.path.includes('pPr') || t.path.slice(-3).join('/') === 'tr/trPr/' + t.localName));
+  let structuralMarkInvalid = false;
+  if (structuralMarkCandidates.length) try {
+    extractPendingTextRevisionSourceV1(documentXml, { ...options, allowCommentMarkers: true });
+    for (const carrier of structuralMarkCandidates) if (!isWordToken(carrier,carrier.localName) || !carrier.selfClosing
+      || carrier.attributes.some(a => a.qName !== 'xmlns' && a.prefix !== 'xmlns'
+        && !(a.namespaceUri === W_NS && ['id','author','date'].includes(a.localName))
+        && !(a.namespaceUri === W16DU_NS && a.localName === 'dateUtc')))
+      throw Error('PENDING_FORMAT_PROPERTIES_UNSUPPORTED');
+  } catch { structuralMarkInvalid = true; }
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     let linkRuns;
     try { linkRuns = reviewHyperlinkRuns(paragraphRecord, documentXml, linkRelationships); }
@@ -3089,10 +3102,33 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     const paragraphStructureInvalid = paragraphSemanticNames.includes('outlineLvl') && paragraphStructure === null;
     const markProperties = paragraphProperties ? childTokensWithin(paragraphScan, paragraphProperties)
       .filter(t => t.depth === paragraphProperties.depth + 1 && t.localName === 'rPr') : [];
+    const directMark = markProperties[0] ? childTokensWithin(paragraphScan,markProperties[0])
+      .filter(t => t.depth === markProperties[0].depth + 1) : [];
+    let checkedMarkCarrier = null, markViewInvalid = false;
+    try {
+      if (markProperties.length > 1) throw Error('WORD_PARAGRAPH_MARK_DUPLICATE');
+      if (structuralMarkInvalid || directParagraphChildren.some(t => ['ins','del','rPrChange'].includes(t.localName)))
+        throw Error('PENDING_FORMAT_OWNER_UNSUPPORTED');
+      checkedMarkCarrier = checkedParagraphMarkChange({ tokens: [paragraph, ...paragraphRecord.tokens] }, markProperties[0], documentXml);
+      const structural = directMark.filter(t => ['ins','del'].includes(t.localName));
+      if (structural.length) {
+        const carrier = structural[0];
+        if (checkedMarkCarrier || structural.length !== 1 || structuralMarkInvalid
+          || !structuralMarkCandidates.includes(carrier) || !isWordToken(carrier,carrier.localName) || !carrier.selfClosing
+          || carrier.attributes.some(a => a.qName !== 'xmlns' && a.prefix !== 'xmlns'
+            && !(a.namespaceUri === W_NS && ['id','author','date'].includes(a.localName))
+            && !(a.namespaceUri === W16DU_NS && a.localName === 'dateUtc')))
+          throw Error('PENDING_PARAGRAPH_BOUNDARY_OWNER');
+        checkedMarkCarrier = carrier;
+      }
+    } catch { markViewInvalid = true; }
+    // Only the exact checked non-property token is absent from this read view.
+    // The current owner, previous snapshot and every ordinary property stay raw.
+    const currentMarkProperties = directMark.filter(t => t !== checkedMarkCarrier);
     let markLanguage = readWordLanguageProperties(paragraphScan, markProperties[0], documentXml);
     if(paragraphStyle)try {
-      const directMark=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
-      const effectiveMark=effectiveStyles.run(paragraphStyle,directMark,true).find(t=>isWordToken(t,'lang'));
+      if(markViewInvalid)throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
+      const effectiveMark=effectiveStyles.run(paragraphStyle,currentMarkProperties,true).find(t=>isWordToken(t,'lang'));
       if(effectiveMark)markLanguage={value:readEffectiveTuple(effectiveMark,'lang')};
     }catch{markLanguage={invalid:true};}
     if(markLanguage.value){paragraphState.wordParagraphMarkLanguage=markLanguage.value;paragraphActions.wordParagraphMarkLanguage={action:'set',value:markLanguage.value};}
@@ -3102,17 +3138,37 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       && childTokensWithin(paragraphScan, markProperties[0]).every(t => t.depth === markProperties[0].depth + 1 && isWordToken(t, 'lang')
         && !documentXml.slice(markProperties[0].openEnd, t.openStart).trim()
         && !documentXml.slice(t.closeEnd, markProperties[0].closeStart).trim());
+    // Actual effective marker facts are separate from the legacy direct
+    // representation. No export profile or source expectation enters here.
+    let effectiveParagraphMarkTypography, effectiveParagraphMarkTypographyInvalid=false;
+    let effectiveCodeStyle;
+    try {
+      if(!paragraphStyle||markViewInvalid)throw Error('effective-marker-style');
+      const tokens=effectiveStyles.run(paragraphStyle,currentMarkProperties,true),fonts=tokens.find(t=>isWordToken(t,'rFonts'));
+      const slots=Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].map(key=>[key,fonts?attr(fonts,key,W_NS):'']));
+      const actions=formattingInlineActions(tokens),value={};
+      for(const [name,key]of [['b','bold'],['i','italic'],['u','underline'],['strike','strike'],['color','color'],['highlight','highlight'],['shd','highlight'],['sz','fontSize'],['szCs','fontSize']])
+        if(tokens.some(t=>isWordToken(t,name))&&!actions[key])throw Error('effective-marker-property-invalid');
+      for(const [key,action]of Object.entries(actions))value[key]=action.action==='set'?action.value:['bold','italic','underline','strike'].includes(key)?false:null;
+      if(tokens.some(t=>!['b','i','u','strike','color','highlight','shd','rFonts','sz','szCs','lang'].includes(t.localName))
+        ||Object.values(slots).some(v=>!v)||!value.fontSize)throw Error('effective-marker-incomplete');
+      delete value.fontFamily;
+      if(new Set(Object.values(slots)).size===1)value.fontFamily=slots.ascii;else value.fontSlots=slots;
+      effectiveParagraphMarkTypography=normalizeParagraphMarkTypography(value);
+      const style=directParagraphChildren.find(t=>isWordToken(t,'pStyle')),shade=paragraphPropertyChildren.find(t=>isWordToken(t,'shd'));
+      if(style&&attr(style,'val',W_NS)==='YalkenCodeBlock'&&shade)effectiveCodeStyle={styleId:'YalkenCodeBlock',
+        shading:{val:attr(shade,'val',W_NS),color:attr(shade,'color',W_NS).toLowerCase(),fill:attr(shade,'fill',W_NS).toLowerCase()}};
+    }catch{effectiveParagraphMarkTypographyInvalid=true;}
     let markTypographyInvalid=false;
     try {
-      if(markProperties.length>1)throw Error('WORD_PARAGRAPH_MARK_DUPLICATE');
-      const markChange=checkedParagraphMarkChange(paragraphScan,markProperties[0],documentXml);
-      let value=paragraphMarkTypography(paragraphScan,markProperties[0],documentXml,markChange);
-      if(paragraphStyle){const direct=markProperties[0]?childTokensWithin(paragraphScan,markProperties[0]).filter(t=>t.depth===markProperties[0].depth+1):[];
-        const effectiveTokens=effectiveStyles.run(paragraphStyle,direct,true),effectiveActions=formattingInlineActions(effectiveTokens);
+      if(markViewInvalid)throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
+      let value=paragraphMarkTypography(paragraphScan,markProperties[0],documentXml,checkedMarkCarrier);
+      if(paragraphStyle){
+        const effectiveTokens=effectiveStyles.run(paragraphStyle,currentMarkProperties,true),effectiveActions=formattingInlineActions(effectiveTokens);
         // A scalar marker family/size cannot flatten heterogeneous inherited
         // script slots when a direct property overrides only one slot.
         if(value?.fontFamily&&!effectiveActions.fontFamily)throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');
-        if(direct.some(t=>isWordToken(t,'sz')||isWordToken(t,'szCs'))&&!effectiveActions.fontSize)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');
+        if(currentMarkProperties.some(t=>isWordToken(t,'sz')||isWordToken(t,'szCs'))&&!effectiveActions.fontSize)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');
         const effective=formattingInlineState(effectiveActions);
         const inherited=Object.fromEntries(['bold','italic','underline','strike'].filter(key=>effective[key]===true).map(key=>[key,true]));
         if(Object.keys(inherited).length)value={...inherited,...value};
@@ -3225,6 +3281,9 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       ...(markLanguage.value ? { wordParagraphMarkLanguage: markLanguage.value } : {}),
       ...(markLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
       ...(markLanguage.invalid ? { wordLanguageInvalid: true } : {}),
+      ...(effectiveParagraphMarkTypography?{effectiveParagraphMarkTypography}:{}),
+      ...(effectiveParagraphMarkTypographyInvalid?{effectiveParagraphMarkTypographyInvalid:true}:{}),
+      ...(effectiveCodeStyle?{effectiveCodeStyle}:{}),
       paragraphActions,
       paragraphStructure: paragraphStructure || {},
       unsupportedParagraphNames,
@@ -3253,6 +3312,9 @@ function formattingParagraphsSemanticProjection(paragraphs) {
     ...(paragraph.wordParagraphMarkLanguage ? { wordParagraphMarkLanguage: paragraph.wordParagraphMarkLanguage } : {}),
     ...(paragraph.wordParagraphMarkLanguageOnly ? { wordParagraphMarkLanguageOnly: true } : {}),
     ...(paragraph.wordLanguageInvalid ? { wordLanguageInvalid: true } : {}),
+    ...(paragraph.effectiveParagraphMarkTypography?{effectiveParagraphMarkTypography:paragraph.effectiveParagraphMarkTypography}:{}),
+    ...(paragraph.effectiveParagraphMarkTypographyInvalid?{effectiveParagraphMarkTypographyInvalid:true}:{}),
+    ...(paragraph.effectiveCodeStyle?{effectiveCodeStyle:paragraph.effectiveCodeStyle}:{}),
     paragraphActions: paragraph.paragraphActions,
     paragraphStructure: paragraph.paragraphStructure,
     unsupportedParagraphNames: paragraph.unsupportedParagraphNames,
@@ -5029,7 +5091,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
           const content = bodies.get(id);
           if (!content || content.body !== item.body) throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
           item.richBody = content.richBody;
-          if (item !== thread) item.bodyDigest = cryptoPort.sha256Json({ rawId: id, body: item.body, richBody: item.richBody });
+          if (content.effectiveRichBody && admitWorkerOutput(budgetState,reasons,'reviewIr.commentThreads.effectiveRichBody',content.effectiveRichBody))
+            item.effectiveRichBody = content.effectiveRichBody;
+          if (item !== thread) item.bodyDigest = cryptoPort.sha256Json({ rawId: id, body: item.body, richBody: item.richBody,
+            ...(item.effectiveRichBody ? {effectiveRichBody:item.effectiveRichBody} : {}) });
         }
       }
       commentBodyGrammar = { profile: 'RICH_INLINE_V1', status: 'SUPPORTED', normalizationLedger };
@@ -5153,7 +5218,8 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
         : null,
       replyDigests: thread.replies.map((reply) => reply.bodyDigest),
       bodyDigest: cryptoPort.sha256Json({ commentId: thread.commentId, body: thread.body,
-        ...(thread.richBody ? { richBody: thread.richBody } : {}) }),
+        ...(thread.richBody ? { richBody: thread.richBody } : {}),
+        ...(thread.effectiveRichBody ? {effectiveRichBody:thread.effectiveRichBody} : {}) }),
       // CANON-01 C6b: anchor placement participates so relocating a comment between paragraphs
       // changes supportedSemanticDigest.
       placement: placementForCommentAnchor(documentScan, {
@@ -5346,6 +5412,15 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   const require = value => { if (!value) fail(); };
   let xml = parts['word/comments.xml'];
+  const mirroredAliases = new Map();
+  const withoutTokens = (text,tokens,offset=0) => {
+    const outer = [];
+    for (const token of [...tokens].sort((a,b)=>a.openStart-b.openStart || b.closeEnd-a.closeEnd))
+      if (!outer.length || token.openStart >= outer.at(-1).closeEnd) outer.push(token);
+    for (const token of outer.reverse())
+      text = text.slice(0,token.openStart-offset) + text.slice(token.closeEnd-offset);
+    return text;
+  };
   const roots = scan.tokens.filter(t => t.depth === 0);
   require(!scan.diagnostics.length && roots.length === 1 && isWordToken(roots[0], 'comments'));
   const children = parent => directChildTokensWithin(scan, parent);
@@ -5390,7 +5465,10 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
     } else { attrs(token,propertyAttributes[token.localName]); scalar(token);
       if(token.localName==='rFonts') require(token.attributes.some(a=>a.namespaceUri===W_NS&&a.localName!=='hint'));
       if(token.localName==='kern') {require(/^\d{1,4}$/u.test(attr(token,'val',W_NS)) && Number(attr(token,'val',W_NS))<=1638);normalizationLedger.push({part:token.partName,path:token.path.join('/'),offset:token.openStart,attribute:'kern',value:attr(token,'val',W_NS),disposition:'NORMALIZED_NON_AUTHORING_METADATA',reason:'WORD_COMMENT_NON_AUTHORING_PRESENTATION',...(token.partName==='word/styles.xml'?{definitionPart:token.partName}:{})});}
-      if(['bCs','iCs'].includes(token.localName)){require(['','0','1','false','true','off','on'].includes(attr(token,'val',W_NS)));const parent=scan.tokens.find(p=>isWordToken(p,'rPr')&&token.openStart>p.openEnd&&token.closeEnd<=p.closeStart);const peers=parent?children(parent):[];const sibling=peers.find(t=>isWordToken(t,token.localName.slice(0,1)));const bool=t=>!['0','false','off'].includes(attr(t,'val',W_NS));require(sibling&&bool(sibling)===bool(token));}
+      if(['bCs','iCs'].includes(token.localName)){require(['','0','1','false','true','off','on'].includes(attr(token,'val',W_NS)));const parent=scan.tokens.find(p=>isWordToken(p,'rPr')&&token.openStart>p.openEnd&&token.closeEnd<=p.closeStart);const peers=parent?children(parent):[];const sibling=peers.find(t=>isWordToken(t,token.localName.slice(0,1)));const bool=t=>!['0','false','off'].includes(attr(t,'val',W_NS));require(sibling&&bool(sibling)===bool(token));
+        if (!mirroredAliases.has(token.partName)) mirroredAliases.set(token.partName,new Map());
+        mirroredAliases.get(token.partName).set(token.openStart,token);
+      }
     }
   };
   const relXml = parts['word/_rels/comments.xml.rels'];
@@ -5507,11 +5585,22 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
     validateStyles(documentXml);
     let document;
     try {
+      // Only aliases already proven equal to their actual sibling are redundant.
+      // The generic direct parser still receives the literal original XML.
+      const aliases = [...(mirroredAliases.get('word/comments.xml')?.values() || [])]
+        .filter(token=>token.openStart>=paragraphs[0].openStart && token.closeEnd<=paragraphs.at(-1).closeEnd);
+      const scannerContent = withoutTokens(xml.slice(paragraphs[0].openStart,paragraphs.at(-1).closeEnd),[...removed,...aliases],paragraphs[0].openStart);
+      const scannerXml = `${opening}<${bodyPrefix}:body xmlns:${bodyPrefix}="${W_NS}"${xmlns}>${scannerContent}</${bodyPrefix}:body></${prefix}document>`;
+      const formatting = extractReviewTransportFormattingRunsV2(scannerXml,{budgets,cryptoPort,
+        stylesXml:parts['word/styles.xml'] === undefined ? undefined : withoutTokens(parts['word/styles.xml'],mirroredAliases.get('word/styles.xml')?.values() || []),
+        themeXml:parts['word/theme/theme1.xml'],settingsXml:parts['word/settings.xml'],relationshipsXml:parts['word/_rels/comments.xml.rels']});
       document = typeof readCommentRichDocument === 'function'
         ? readCommentRichDocument({documentXml,relationshipPart:'word/_rels/comments.xml.rels'})
-        : richCommentScannerDocument(documentXml,parts,{budgets,cryptoPort});
+        : richCommentScannerDocument(documentXml,parts,{budgets,cryptoPort},formatting);
       const richBody={schemaVersion:'yalken.word.comment-body.v1',document};
-      bodies.set(id,commentBodyModel.validateCommentRichBody(richBody));
+      const checked = commentBodyModel.validateCommentRichBody(richBody);
+      const effectiveRichBody = richCommentEffectiveBody(checked,formatting);
+      bodies.set(id,{...checked,...(effectiveRichBody ? {effectiveRichBody} : {})});
     } catch (error) { throw Object.assign(Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'), { detail:error.message }); }
   }
   require(used.size===rels.size && bodies.size<=commentBodyModel.COMMENT_CAPACITY.messages);
@@ -5525,10 +5614,9 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
   return bodies;
 }
 
-function richCommentScannerDocument(xml,parts,options) {
-  const parsed=extractReviewTransportFormattingRunsV2(xml,{...options,
+function richCommentScannerDocument(xml,parts,options,parsed=extractReviewTransportFormattingRunsV2(xml,{...options,
     stylesXml:parts['word/styles.xml'],themeXml:parts['word/theme/theme1.xml'],settingsXml:parts['word/settings.xml'],
-    relationshipsXml:parts['word/_rels/comments.xml.rels']});
+    relationshipsXml:parts['word/_rels/comments.xml.rels']})) {
   if(!parsed.ok)throw Error('COMMENT_FORMATTING');
   const content=parsed.paragraphs.map(p=>{
     if(p.trackedRevision||p.table||p.typedBreakInvalid||p.unsupportedParagraphNames.length||p.paragraphFormattingInvalid||p.wordLanguageInvalid
@@ -5546,6 +5634,28 @@ function richCommentScannerDocument(xml,parts,options) {
     return {type:'paragraph',...(Object.keys(p.paragraphState).length?{attrs:p.paragraphState}:{}),content};
   });
   return {type:'doc',content};
+}
+
+function richCommentEffectiveBody(checked,formatting) {
+  try {
+    if (!formatting.ok || formatting.paragraphs.length !== checked.richBody.document.content.length) return null;
+    const effectiveRichBody = JSON.parse(JSON.stringify(checked.richBody));
+    for (const [index,paragraph] of effectiveRichBody.document.content.entries()) {
+      const actual = formatting.paragraphs[index], spacing = actual.paragraphState.wordParagraphSpacing;
+      const text = (paragraph.content || []).map(node=>node.type==='hardBreak'?'\n':node.text).join('');
+      if (actual.trackedRevision || actual.table || actual.typedBreakInvalid || actual.unsupportedParagraphNames.length
+        || actual.paragraphFormattingInvalid || actual.wordLanguageInvalid || actual.paragraphStructure?.nodeType !== 'paragraph'
+        || actual.formattedRuns.some(run=>run.unsupportedNames.length || run.invalidSupportedValue || run.wordLanguageInvalid)
+        || actual.effectiveParagraphMarkTypographyInvalid || !actual.effectiveParagraphMarkTypography || !spacing
+        || actual.formattedRuns.map(run=>run.text).join('') !== text) return null;
+      paragraph.attrs ||= {};
+      paragraph.attrs.wordParagraphMarkTypography = actual.effectiveParagraphMarkTypography;
+      // OOXML omitted before/after spacing is intrinsically zero. Line and
+      // lineRule must still be observed from the real document cascade.
+      paragraph.attrs.wordParagraphSpacing = {before:0,after:0,...spacing};
+    }
+    return commentBodyModel.commentEffectiveContent({...checked,effectiveRichBody}).richBody;
+  } catch { return null; } // Incomplete actual facts remain explicitly unproven.
 }
 
 // Rich intake and return share strict body and modern metadata validation.
@@ -6221,7 +6331,7 @@ export function restoreShiftedCellBookmarkOwnershipV1(documentXml, blocks, optio
   // Ordinary/split bookmarks retain their existing guards. Shifted ranges
   // either share a recipient paragraph or change the authenticated name order.
   const declaredNames = declared.map(t => attr(t, 'name', W_NS));
-  const duplicateParagraph = declared.some((s, i) => declared.slice(0, i).some(p => paragraphOf(p) === paragraphOf(s)));
+  const duplicateParagraph = new Set(declared.map(paragraphOf)).size !== declared.length;
   const ordinaryNames = blocks.map(b => (b.wordSignals || []).filter(s => s.kind === 'bookmarkName'));
   // Legacy/non-transport maps and unaffected ordinary returns stay on the
   // caller's original validation path; restoration cannot manufacture a map.

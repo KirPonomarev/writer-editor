@@ -3,7 +3,7 @@ const { pathToFileURL } = require('node:url');
 
 const DOCX_IMPORT_LOCAL_FILE_PREVIEW_SCHEMA = 'revision-bridge.docx-import-local-file-preview.v1';
 const DOCX_IMPORT_LOCAL_FILE_PREVIEW_TYPE = 'docx.import.localFilePreview';
-const DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
+const DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES = 16 * 1024 * 1024;
 const DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_REQUEST_ID_CHARS = 120;
 const DOCX_IMPORT_LOCAL_FILE_PREVIEW_ALLOWED_INPUT_KEYS = new Set(['requestId']);
 const DOCX_IMPORT_LOCAL_FILE_PREVIEW_FORBIDDEN_KEYS = new Set([
@@ -158,7 +158,7 @@ function copyValidatedDocxUserBookmarkInventory(contentPreview) {
   const raw = (value, depth = 0) => {
     if (++nodes > 100000 || depth > 12) fail();
     if (value === null || typeof value === 'boolean' || typeof value === 'number' && Number.isFinite(value)) return;
-    if (typeof value === 'string') { characters += value.length; if (characters > DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES) fail(); return; }
+    if (typeof value === 'string') { characters += value.length; if (characters > 10 * 1024 * 1024) fail(); return; }
     if (!value || typeof value !== 'object'
       || ![Object.prototype, Array.prototype, null].includes(Object.getPrototypeOf(value))) fail();
     const descriptors = Object.getOwnPropertyDescriptors(value);

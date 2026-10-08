@@ -114,7 +114,7 @@ export const RTK_REASON_CODES = Object.freeze([
 export const RTK_V6_BUDGETS = Object.freeze({
   maxDocxBytes: 50 * 1024 * 1024,
   maxZipEntries: 512,
-  maxInflatedPartBytes: 10 * 1024 * 1024,
+  maxInflatedPartBytes: 16 * 1024 * 1024,
   maxTotalInflatedBytes: 50 * 1024 * 1024,
   maxCompressionRatio: 200,
   maxXmlDepth: 64,

@@ -558,3 +558,28 @@ test('manual typing after two round Undos retains protected identities and permi
  assert.equal(JSON.parse(state).threads[0].anchor.selectedText,'AlYXpha');
  assert.equal(JSON.parse(state).threads[0].anchorEditHistory.filter(h=>h.sessionId.startsWith('recording-round:')&&!h.undone).length,2);
 });
+
+test('32 MiB scene and closed clean return retain exact source and bounded serialized plan',()=>{
+ const model=require('../../src/core/word-comment-anchor-save-v1.cjs'),cap=32*1024*1024;
+ const raw='x'.repeat(cap);assert.deepEqual(model.paragraphs(raw),[{type:'paragraph',text:raw}]);
+ assert.throws(()=>model.paragraphs(raw+'x'),e=>e.code==='COMMENT_SAVE_SCENE_BUDGET');
+ const beforeContent='old',afterContent='new',beforeText=JSON.stringify({schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[]});
+ const proof={projectId,roundId:'capacity-clean',artifactSha256:'a'.repeat(64),baseline:{projectId,schemaVersion:'yalken.rtk.canonical-comment-export.v1',threads:[]},
+  exportMap:{scenes:[{sceneId,rawSha256:'sha256:'+sha(beforeContent),blocks:[{documentParagraphIndex:0,formatIr:{runs:[{text:beforeContent}]}}]}]},
+  returnedThreads:[],returnedParagraphs:[{paragraphIndex:0,paragraphText:afterContent,trackedRevision:false}],commentReturnInventory:null,
+  textChanges:[{sceneId,paragraphIndex:0,oldText:beforeContent,newText:afterContent}]};
+ const input={projectId,sceneId,beforeContent,afterContent,beforeText},small=JSON.stringify(proof);
+ proof.baseline.stateRevision=0;proof.baseline.stateDigest=require('../../src/export/docx/docxReviewPacketComments.js').commentStateDigest(JSON.parse(beforeText));
+ const encoded=JSON.stringify(proof);
+ const normal=model.planCommentTextReturn({...input,returnProofJson:encoded});assert.equal(normal.afterText,beforeText);
+ const exact=encoded+' '.repeat(cap-Buffer.byteLength(JSON.stringify(normal)));
+ const result=model.planCommentTextReturn({...input,returnProofJson:exact});assert.equal(Buffer.byteLength(JSON.stringify(result)),cap);
+ assert.deepEqual({...result,returnProofJson:encoded},normal);
+ assert.throws(()=>model.planCommentTextReturn({...input,returnProofJson:exact+' '}),e=>e.code==='COMMENT_TEXT_RETURN_PROOF_BUDGET');
+ assert.throws(()=>model.planCommentTextReturn({...input,returnProofJson:encoded+' '.repeat(cap+1-encoded.length)}),e=>e.code==='COMMENT_TEXT_RETURN_PROOF_INVALID');
+ const stale=structuredClone(proof);stale.exportMap.scenes[0].rawSha256='sha256:'+'0'.repeat(64);
+ assert.throws(()=>model.planCommentTextReturn({...input,returnProofJson:JSON.stringify(stale)+' '.repeat(3*1024*1024)}),e=>e.code==='COMMENT_TEXT_RETURN_SOURCE_STALE');
+ const forged=structuredClone(proof);forged.textChanges[0].oldText='foreign';
+ assert.throws(()=>model.planCommentTextReturn({...input,returnProofJson:JSON.stringify(forged)}),e=>e.code==='COMMENT_RETURN_TEXT_PROOF_INVALID');
+ assert.equal(beforeContent,'old');assert.equal(afterContent,'new');assert.equal(beforeText,normal.beforeText);
+});

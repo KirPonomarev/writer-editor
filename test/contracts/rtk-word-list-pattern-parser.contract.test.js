@@ -286,7 +286,7 @@ test('literal note alpha stays legacy only inside proven common range; custom an
   }
 });
 
-async function continuationReturnFixture({nativeStyled=false,initialOverride=false,twoScenes=false}={}) {
+async function continuationReturnFixture({nativeStyled=false,initialOverride=false,twoScenes=false,legacy=false}={}) {
   const io=await bridge, analyzer=await import('../../src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs');
   const envelope=require('../../src/core/document-content-envelope-v1.cjs');
   const {buildDocxReviewPacketBuffer,REVIEW_DOCX_TYPOGRAPHY_DEFAULTS}=require('../../src/export/docx/docxReviewPacketBuilder.js');
@@ -306,18 +306,25 @@ async function continuationReturnFixture({nativeStyled=false,initialOverride=fal
     {type:'text',text:'Authored',marks:[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',color:null}}]},
     {type:'text',text:' first',marks:[{type:'textStyle',attrs:{fontFamily:'Aptos',fontSize:'12pt',color:''}}]},
   ];
-  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'continuation',projectRoot:'/synthetic',scenes:(twoScenes?['a.txt','b.txt']:['a.txt']).map((sceneId,order)=>({sceneId,scenePath:'/synthetic/'+sceneId,order,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}))},{cryptoPort,createdAtUtc:'2026-10-04T10:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
+  let makeSource=buildFullManuscriptDocxReviewPacketSource;
+  if(legacy){
+    const path=require('node:path'),filename=require.resolve('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+    const bytes=require('node:child_process').execFileSync('git',['show','42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:src/export/docx/fullManuscriptDocxReviewPacketSource.js'],{cwd:path.resolve(__dirname,'../..'),encoding:'utf8'});
+    assert.equal(hash(bytes),'829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d');
+    const historical=new (require('node:module'))(filename,module);historical.filename=filename;historical.paths=module.paths;historical._compile(bytes,filename);makeSource=historical.exports.buildFullManuscriptDocxReviewPacketSource;
+  }
+  const source=makeSource({projectId:'continuation',projectRoot:'/synthetic',scenes:(twoScenes?['a.txt','b.txt']:['a.txt']).map((sceneId,order)=>({sceneId,scenePath:'/synthetic/'+sceneId,order,doc:baselineDoc,text:envelope.deriveVisibleTextFromDocument(baselineDoc),observableContent:envelope.composeObservablePayload({doc:baselineDoc})}))},{cryptoPort,createdAtUtc:'2026-10-04T10:00:00.000Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'synthetic-test-key-only'});
   const original=buildDocxReviewPacketBuffer(source),exportMap=io.bindUserBookmarkExportTransportPartsV1(source.localAuthorityCapsule.exportMap,original);
   const parts=io.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
   const parse=(xml,overrides={})=>{const result=io.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,...overrides,'word/document.xml':xml}).map(([name,data])=>({name,data})))},{cryptoPort});assert.equal(result.ok,true,JSON.stringify(result));return result.reviewIr;};
-  const input=reviewIr=>({baselineDoc,sceneId:'a.txt',exportMap,reviewIr,ordinaryTextMode:true,exportTypography:REVIEW_DOCX_TYPOGRAPHY_DEFAULTS});
+  const input=reviewIr=>({baselineDoc,sceneId:'a.txt',exportMap,reviewIr,ordinaryTextMode:true,exportTypography:source.localAuthorityCapsule.exportMap.exportTypography});
   return {analyzer,baselineDoc,exportMap,parts,parse,input,cryptoPort};
 }
 test('authenticated list continuation accepts a Word paragraph-tail edit after its transport bookmark without creating an item',async()=>{
   const f=await continuationReturnFixture();
   const rows=f.exportMap.scenes[0].blocks;
   assert.deepEqual(rows.map(b=>b.formatIr.paragraph.list.continuation===true),[false,false,false,true,false,true]);
-  const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> native-grid-09</w:t></w:r>');
+  const xml=appendOwnedTail(f.parts['word/document.xml'],' native-grid-09');
   assert.notEqual(xml,f.parts['word/document.xml']);
   const reviewIr=f.parse(xml);
   assert.deepEqual(reviewIr.listNumbering.paragraphs.map(p=>p.list?.ordinal??null),[4,5,6,null,1,null]);
@@ -357,6 +364,12 @@ test('authenticated numbering-definition route preserves continuation ownership 
   const result=f.analyzer.analyzeListNumberingReturn(changed);assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.operations.length,1);
 });
 
+function appendOwnedTail(xml,text) {
+  const row=[...xml.matchAll(/<w:p\b[\s\S]*?<\/w:p>/gu)].find(match=>match[0].includes('>After child</w:t>'))?.[0];
+  assert.ok(row);const properties=row.match(/<w:rPr>([\s\S]*?)<\/w:rPr>/u)?.[0]||'';
+  const changed=row.replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r>'+properties+'<w:t xml:space="preserve">'+text+'</w:t></w:r>');
+  assert.notEqual(changed,row);return xml.replace(row,changed);
+}
 function nativeWordDefaultStyles(parts,{language=true}={}) {
   // Literal defaults observed in Word-saved PACKAGED-10, not exporter output.
   const defaults='<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/>'
@@ -366,7 +379,7 @@ function nativeWordDefaultStyles(parts,{language=true}={}) {
   assert.notEqual(styles,parts['word/styles.xml']);return {'word/styles.xml':styles};
 }
 test('native Word defaults plus a continuation tail produce private lossless spacing font and language composition',async()=>{
-  const f=await continuationReturnFixture(),io=await bridge;
+  const f=await continuationReturnFixture({legacy:true}),io=await bridge;
   const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
   const envelope=require('../../src/core/document-content-envelope-v1.cjs'),bookmarks=require('../../src/core/word-user-bookmarks-v1.cjs');
   const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> native-continuation-10</w:t></w:r>');
@@ -393,8 +406,15 @@ test('native Word defaults plus a continuation tail produce private lossless spa
   const forged=structuredClone(ir);forged.formattingParagraphs[0].bookmarkNames=[];
   assert.equal(f.analyzer.analyzeUserBookmarksReturn(f.input(forged)).ok,false);
 });
+test('fresh body direct defaults remain source-exact when Word materializes different global defaults',async()=>{
+  const f=await continuationReturnFixture(),before=structuredClone(f.baselineDoc),map=structuredClone(f.exportMap);
+  const ir=f.parse(f.parts['word/document.xml'],nativeWordDefaultStyles(f.parts));
+  const result=f.analyzer.analyzeUserBookmarksReturn(f.input(ir));assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(result.ordinaryTextChanges,undefined);assert.deepEqual(result.ordinaryFormattingOperations||[],[]);
+  assert.deepEqual(result.doc,before);assert.deepEqual(f.baselineDoc,before);assert.deepEqual(f.exportMap,map);
+});
 test('metadata-only Word inherited font materializes through the existing explicit formatting lane',async()=>{
-  const f=await continuationReturnFixture(),io=await bridge;
+  const f=await continuationReturnFixture({legacy:true}),io=await bridge;
   const ir=f.parse(f.parts['word/document.xml'],nativeWordDefaultStyles(f.parts,{language:false}));
   const clean=f.analyzer.analyzeUserBookmarksReturn(f.input(ir));assert.equal(clean.ok,true,JSON.stringify(clean));
   assert.equal(clean.ordinaryTextChanges,undefined,'no fabricated text or language edits');
@@ -405,7 +425,7 @@ test('metadata-only Word inherited font materializes through the existing explic
 });
 test('font no-op is proved on final replacement coverage without splitting preserved native textStyle leaves',async()=>{
   const f=await continuationReturnFixture({nativeStyled:true});
-  const xml=f.parts['word/document.xml'].replace(/(> first<\/w:t><\/w:r>)(<w:bookmarkEnd)/u,'$1<w:r><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos" w:eastAsia="Aptos" w:cs="Aptos"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve"> CLEAN_EDIT</w:t></w:r>$2');
+  const xml=f.parts['word/document.xml'].replace(/(> first<\/w:t><\/w:r>)(<w:bookmarkEnd)/u,'$1<w:r><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos" w:eastAsia="Aptos" w:cs="Aptos"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"/></w:rPr><w:t xml:space="preserve"> CLEAN_EDIT</w:t></w:r>$2');
   assert.notEqual(xml,f.parts['word/document.xml']);
   const result=f.analyzer.analyzeUserBookmarksReturn(f.input(f.parse(xml)));
   assert.equal(result.ok,true,JSON.stringify(result));
@@ -441,7 +461,7 @@ test('authenticated text and numbering composition retains original source autho
   const f=await continuationReturnFixture({initialOverride:true}),io=await bridge;
   const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
   const envelope=require('../../src/core/document-content-envelope-v1.cjs');
-  const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> native-composite14</w:t></w:r>');
+  const xml=appendOwnedTail(f.parts['word/document.xml'],' native-composite14');
   const numbering=f.parts['word/numbering.xml'].replace('<w:start w:val="4"/>','<w:start w:val="7"/>')
     .replace('<w:lvlOverride w:ilvl="0"><w:startOverride w:val="4"/></w:lvlOverride>','');
   const original=structuredClone(f.exportMap),baseline=structuredClone(f.baselineDoc);
@@ -483,7 +503,7 @@ test('authenticated text and numbering composition retains original source autho
 
 test('composite numbering proofs remain scene-local and leave other scene formatting independently available',async()=>{
   const f=await continuationReturnFixture({twoScenes:true}),io=await bridge;
-  const xml=f.parts['word/document.xml'].replace(/(>After child<\/w:t><\/w:r><w:bookmarkEnd[^>]*\/>)/u,'$1<w:r><w:t xml:space="preserve"> composite</w:t></w:r>');
+  const xml=appendOwnedTail(f.parts['word/document.xml'],' composite');
   const numbering=f.parts['word/numbering.xml'].replaceAll('<w:numFmt w:val="decimal"/>','<w:numFmt w:val="upperRoman"/>');
   const ir=f.parse(xml,{'word/numbering.xml':numbering});
   const a=f.analyzer.analyzeUserBookmarksReturn(f.input(ir));assert.equal(a.ok,true,JSON.stringify(a));

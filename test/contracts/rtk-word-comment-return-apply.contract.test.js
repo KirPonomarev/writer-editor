@@ -16,7 +16,11 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
   const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options, maxBuffer: 64 * 1024 * 1024 });
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
-  const current = cert.R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR;
+  // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
+  const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
+  const literal = [...committed.matchAll(/^export const R24_INTEROP_WORD_[A-Z0-9_]+_SUCCESSOR=Object\.freeze\((\{[\s\S]*?\})\);$/gmu)].at(-1);
+  assert.ok(literal, 'candidate must declare its direct Word successor');
+  const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);
@@ -58,7 +62,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture({ deletion = false, addition = false, replyDeletion = false } = {}) {
+async function fixture({ deletion = false, addition = false, replyDeletion = false, bodyEdit = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
@@ -95,6 +99,11 @@ async function fixture({ deletion = false, addition = false, replyDeletion = fal
       scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
         doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] }));
   }
+  if (bodyEdit) {
+    const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts };
+    parts['word/comments.xml'] = parts['word/comments.xml'].replace('Root before', 'Main Word delta');
+    bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  }
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
     sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v),
   } });
@@ -107,11 +116,8 @@ async function fixture({ deletion = false, addition = false, replyDeletion = fal
 
 async function preparedHarness(t, { deletion = false, addition = false, replyDeletion = false, explicitConfirmed = false } = {}) {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source, bytes, reviewIr } = await fixture({ deletion, addition, replyDeletion });
-  if (!deletion && !addition && !replyDeletion) {
-    input.returnedThreads[0].body = 'Main Word delta';
-    input.returnedThreads[0].richBody.document.content[0].content[0].text = 'Main Word delta';
-  }
+  // The ordinary Main intake receives real edited ZIP bytes and both parser observations.
+  const { input, source, bytes, reviewIr } = await fixture({ deletion, addition, replyDeletion, bodyEdit: !deletion && !addition && !replyDeletion });
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;

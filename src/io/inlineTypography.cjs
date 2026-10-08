@@ -68,7 +68,7 @@ function inspectParagraphMarkTypography(value) {
     if(item.exit){ancestors.delete(node);continue;}
     if(++count>1000000||item.depth>128||ancestors.has(node))fail();ancestors.add(node);pending.push({value:node,exit:true});
     const descriptors=Object.getOwnPropertyDescriptors(node);
-    for(const [key,d]of Object.entries(descriptors)){
+    for(const key of Object.keys(descriptors)){const d=descriptors[key];
       if(!Object.hasOwn(d,'value'))fail();
       if(key==='wordParagraphMarkTypography'&&d.value!=null){if(item.owner!=='attrs'||!['paragraph','heading'].includes(item.type))fail();normalizeParagraphMarkTypography(d.value);present=true;}
       if(d.value&&typeof d.value==='object')pending.push({value:d.value,depth:item.depth+1,owner:key,type:descriptors.type?.value});

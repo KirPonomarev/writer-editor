@@ -183,3 +183,413 @@ Owner-approved WORD420_TABLE_AUTOFIT_CLOSURE_20260925 repairs a native Word retu
 - Narrow representation exception: this task uses NONE plus a precise reason for no new events, migrations or irrelevant fields. No field is omitted or empty, no architecture responsibility changes, and no runtime/authority/acceptance gate is waived. The fixed confirmation remains an effect returning intent to the existing independently revalidated Apply path.
 - Do not broaden E0 or add a governance subsystem during the UI repair. Both full manifests remain reviewable in the declared task document. The unused-field wording exception belongs only to this task and does not change the doctrine or future output rules.
 - Rollback/removal: revert the task together with the single repair chain if needed. A separately scoped future task-shape correction can reconcile exact normative markers; do not reuse this exception as standing authority.
+
+## 2026-10-07 — owner-authorized16MiB novel DOCX capacity profile
+
+- Authority: direct owner instruction to increase megabyte limits and finish the
+  macOS large-novel product direction; same WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007
+  original42b PR2093, clean1859cb40b pre-edit56-path declaration/preflight/E0.
+- Deviation: WordV4 PACKAGE_BUDGETS part10MiB becomes task-versioned16MiB for
+  bounded strict DOCX review package intake. Existing Main/local DOCX input
+  limits10MiB become16MiB. Shared V6 and mirrored Core defaults/declared ceiling
+  change together; effective-budget digest continues to bind the actual values.
+  This limit concerns each inflated part, including auxiliary XML. Generic
+  content preview retains existing32MiB host part envelope; no claim of16MiB
+  inflated generic enforcement. No new public profile/schema or authority flag.
+- Reason: actual500108-word exported DOCX8772919B disproves old test8MiB limit;
+  bounded16MiB provides declared headroom for authored formatting and corrections.
+  Raising byte capacity alone does not prove full transfer, latency or memory.
+- Protected:50MiB raw package/strict total, ratio200, depth64, attributes128,
+  hard30s and canon512MiB memory; existing generic host and source8MiB/snapshot/
+  private/round caps. Tighter requested budgets and all integrity/CAS/no-write
+  gates remain. No Google execution or broader semantic capability is opened.
+- Risk: larger inputs may need more memory/time. Real boundary, hostile package,
+  full rich500k publication and production phase measurements are mandatory;
+  an exhausted unchanged resource budget remains a typed refusal, never PASS.
+- Rollback: revert only the single coherent delivery through ordinary Git path;
+  preserve readable projects, original DOCX, all history and failed evidence.
+  No scene rewrite, pruning, reset or old-profile crash reproduction.
+- Removal: integrate the measured capacity into a later explicitly versioned
+  canonical profile after full native/resource qualification, or restore10MiB
+  through verified no-loss delivery. Until then this is one owner-bound task
+  exception; it never waives remaining original novel or delivery requirements.
+
+- Executed qualification18: exact16MiB/+1/tighter limits pass; complete clean
+  500108-word publication is observed through real Main,86946.656ms and
+  peakRSS1842774016B. This exceeds the unchanged memory target; no resource or
+  native whole-feature PASS follows. The test did not retain its final package.
+  Remaining actual Office empty-section RAW binding and untouched third-fixture
+  identity failures remain open; no safety/semantic refusal is waived.
+
+## 2026-10-07 — measured private large-novel import snapshot capacity
+
+- Authority: direct owner megabyte expansion and full macOS novel implementation;
+  same original42b task, PR2093, declared72 paths and clean9a81 preflight.
+- Deviation: only Main-owned disposable import references change from8MiB per
+  snapshot/16MiB total to16MiB per snapshot/32MiB total. Utility defaults stay;
+ 64-entry bound,10-minute TTL, project-generation context and invalidation stay.
+- Cause: actual500k DOCX8772919B parses and full21scene text compares correctly,
+  but actual Main content snapshot10901820B exceeds8MiB. Actual plan10473416B plus
+  preview fit32MiB together; independent original-factory wrong-context lookup
+  refuses. Exact artifact and failed85.989s/RSS1610596352B observation are retained.
+- Protected: existing IPC4MiB wire limit, reference-only confirmation, per-input
+  DOCX16MiB strict profile,50MiB package/total, ratio200, CRC/XML/identity/HMAC,
+  source/private bounds, admission/CAS/lease and atomic no-loss writers unchanged.
+  No broader public budget or mutation authority is created.
+- Proof duty: actual same-package full500k Main preview/plan and complete literal
+  readback, store bounds/eviction/TTL/context negatives, native storage/reopen and
+  measured resources remain required. Canon512MiB and hard30s are not raised;
+  synthetic observed resource excess is not performance or release acceptance.
+- Rollback/removal: ordinary revert of the one coherent original42b delivery;
+  retain original DOCX, readable projects/history and failed evidence. Integrate
+  this owner-bound capacity only after full native qualification or restore old
+  limits through verified no-loss delivery. No scene rewrite/pruning/crash replay.
+
+### Amendment23 measured final candidate and open authoring capacity finding
+
+Root independently byte-verifies final HOLD02 SHA256
+505c681ff15bef767cdcc729d74ebc41ebe6f47f9ae3fe387bf4815bdae5b21d:
+60 source/test/generated pins, all retained logs/addenda/artifacts, seven final
+diffs and exact five pre-final admission docs. Runtime988of1800 and behavior
+2044of2600 from original42b; compiler133 closure and generated outputs unchanged.
+Executed finite suites22of22 cell-shift,57of57 ZIP/content/reference/e2e,
+231of231 pending/notes/mixed/transaction/typography,23of23 finite volume.
+The separately planned500k test now executes1of1 at these exact frozen bytes:
+complete21-scene publication/readback plus Main content/plan and every8391
+literal paragraph,500108 whitespace-delimited words;90.071s, sampled owned
+aggregate RSS1891090432B, no watchdog. No native or resource acceptance follows.
+
+Independent actual strict Main references preserve both real snapshots within
+16MiB each/32MiB total and refuse wrong context/kind and actual generation
+invalidation.11.582s, sampled793608192B. Actual leased Core atomic import writes
+one rich scene9680486B, SHA256
+d9860ae52481988026ac595726f8d1593c7d8c91343c434ef6680cf1059ba2e5;
+all complete proposed/raw document bytes and literal text match. Idempotent
+retry makes zero further manifest writes;15.787s, sampled789544960B.
+Host Function evaluation of verbatim Main sections shares the original strict
+guard and real provider realm. Original observer01 incorrectly mixed host
+guard with foreign VM command-result prototype; actual refusal after one
+write is retained, observer-only correction02 is explicit. No guard weakened.
+These are synthetic actual Main/Core disk proofs, not native renderer/ACK.
+
+Fresh5001 SOURCE control75.495s, sampled1133838336B preserves all literal
+source/current/original/provenance nodes, complete ledger and nonempty redo;
+absent profile and tight budgets still refuse. No publicApply/native claim.
+Ordinary complete XML unchanged at1280 paragraphs:2667.407ms before versus
+28.368ms after local equivalent predicate. This is one component measurement,
+not full Word latency or portable performance acceptance.
+
+OPEN PRODUCT FINDING: the actual atomically imported9680486-byte rich scene
+is refused by Main readCommentAuthoringContext8MiB guard. Actual Core one-edit
+ledger input6784185B refuses PENDING_REVISIONS_BUDGET at4MiB. Root actual
+read-only observation retains unchanged scene and manifest bytes. Importing
+whole text is therefore not three-role authoring completion. Other book/notes/
+comments/tree8MiB guards are source findings, not executed acceptance. Next
+bounded same-original42b continuation must align import and real authoring
+capacity after current checkpoint gates/Git; no silent bypass or speculative
+registry. Native SOURCE/ordinary PACKAGED, both origins/scopes, three roles,
+five real exchanges, hard30s/512MiB targets, merge and release remain OPEN.
+Same72 paths, one rollback, draft PR2093; no new independent write contour.
+
+
+## 2026-10-07 — owner-bound imported novel authoring byte capacity
+
+Authority: direct owner larger-byte instruction and full novel implementation.
+Deviation is limited to five existing Main scene guards32MiB, pending ledger
+16MiB and annotated recording proof32MiB; existing atomic and aggregate bounds
+remain32MiB. Canon resource30s/512MiB is unchanged. Reason is actual full-import
+authoring refusal at9680486B and ledger input6784185B; sizing success is not
+yet observed. Risk: envelope/history duplication can exceed atomic or resource
+bounds, so actual complete bytes and five rounds must be measured before claim.
+Rollback/removal: ordinary revert of same coherent original42b PR2093; retain
+readable imported source, full history and failed artifacts. No data pruning,
+scene rewrite or crash replay. Integrate into later explicit canonical profile
+only after full native/resource qualification, or restore through no-loss proof.
+
+### Same-contour amendment24 measured imported novel authoring capacity
+
+O: the complete atomically imported rich500k scene can enter governed recording
+and annotations, save/reopen full history and return without losing source,
+Current/Original, marks, notes or discussions. T: canonical saved scene and
+Core ledger -> existing Kernel recording/decision commands -> source/revision/
+generation/annotation CAS -> same leased atomic32MiB scene writer -> readback.
+H: actual imported9680486B exceeds Main8MiB authoring; exact Core one-edit input
+6784185B exceeds4MiB; annotated recording proof contains the entire baseline.
+Retained actual read-only failures and unchanged business hashes are evidence.
+
+Clean1bf5 continues original42b PR2093 and one rollback. Full fresh24 ordered
+authority reads, bootstrap/preflight/taskE0 actual0 precede first write. Exact
+declaration24_01 SHA256b1cb08f736ca31f4dc431c2561b0e3ef7815924729c15c42fe62467c7256ae2a.
+76 task paths: previous72 plus four already622-admitted/480-source-bound existing
+recording Core/tests; original1800runtime2600behavior budgets unchanged.
+CHECK_01 before edits; CHECK_02+ afterward. Root owns five docs/OPS/proof/Git;
+separate existing writer owns the immediate code/test correction. No new contour.
+
+MOVE only five existing Main scene-stat8MiB guards (book, note, comment return,
+shared authoring, tree cohort) to32MiB; Core pending ledger MAX_BYTES4to16MiB;
+existing annotated recording proof consumer8to32MiB. These are finite sizing
+hypotheses until actual complete pending envelope, recording proof and five
+small successive rounds are measured. Keep existing single-scene import; no
+silent paragraph chunking. Keep totalbook/tree32MiB, atomic scene32MiB, media
+companions20MiB, authorityencoded16MiB/decoded64MiB, intent64KiB, manualmap8MiB,
+paragraph10000/revision1024/history128/node1M and all parser/resource caps.
+No schema/helper/registry/cache/flag/API/port/writer/dependency/UI source changes.
+Compiler closure includes Core: only unchanged audited compiler may regenerate
+existing declared outputs; no manual bundle patch or altered build inputs.
+
+P: actual retained red, finite boundary+1/forged/stale/no-write and whole recording
+consumers; complete literal rich source/history/metadata/annotations and both
+projections, autosave prefixes/ACK/stop/UndoRedo/reopen. Root serial owned500k
+small-edit/return disk measurements follow exact HOLD; no simultaneous large
+lanes. Runtime32MiB pending scenes must fit the existing atomic writer; failure
+is retained and stops widening. Root five final docs before seven OPS bindings;
+all219 historical tuples/622paths/480pins/1597inventory remain unchanged.
+Native SOURCE and ordinary PACKAGED, both origins/scopes/three roles/five genuine
+Word cycles, hard30s/512MiB resource acceptance and merge remain OPEN. Existing
+synthetic code proof never becomes native or release acceptance by this change.
+
+### Amendment24 frozen finite correction and actual imported500k refusal
+
+Exact HOLD24_01 SHA256
+47aed9a58b3f6f059644a6dbcae312cd96a30508d3d84a6f6c6efe9ececbd5e8
+binds64 source/test/generated files at clean predecessor1bf5. Root independently
+verifies all current/predecessor pins,9 actual logs,7 artifacts,136 compiler
+inputs and source/dist outputs. Runtime1002of1800, behavior2099of2600;
+generated456 separate. Only seven runtime bound literals, three finite boundary
+controls, four literal ZIP-list paths and the generated editor literal changed.
+Actual pre-runtime red0of3 is retained. Final whole recording75of75,
+notes/mixed/transaction/typography231of231 and ZIP14of14 give320 distinct whole
+cases, zero exclusions. The three boundary cases are already included in320.
+Two unchanged audited compiler executions0 produce byte-idempotent outputs;
+preload remains exact. Controlled stat and padded legal JSON cases establish
+bounds, not whole-novel readiness or resource acceptance.
+
+Actual complete imported500k copy enters the real Main/Kernel recording route
+with existing platform stubs and Core/leased disk writer; START refuses
+COMMENT_SAVE_SCENE_BUDGET at word-comment-anchor-save-v1.cjs line20.
+Owned seed scene9680486B SHA256
+d9860ae52481988026ac595726f8d1593c7d8c91343c434ef6680cf1059ba2e5
+and seed manifest remain exact; original imported scene remains exact.
+Zero recording sessions completed. Actual bounded03 took5.294s and sampled
+owned aggregate RSS548077568B; no watchdog. No native or production target
+acceptance follows. Retained external observer01 extraction ReferenceError and
+02 import-loader target error were corrected only in external03; product
+validation remains unchanged. Actual failure and all logs remain evidence.
+Next precise clean admission must cover this existing shared8MiB anchor reader
+and affected test boundaries; no bypass, silent chunking or unbounded widening.
+
+Official exact1bf5 CI23 RTK3853of3854 and actual-renderer RTK3853of3854 each
+fail the same cache test line61: stale8MiB rejection operand after admitted
+16MiB snapshot/32MiB aggregate. Merge gate fails required dependency result.
+Actual logs independently retrieved; CI is not green. Outside76 pending-return
+line93 also contains a4MiB budget operand, read-only finding not yet executed.
+These precise existing assertions remain untouched for clean next admission.
+
+This is an interim checkpoint in the same original42b contour and PR2093,
+with76 declared paths and one rollback. Historical219 tuples,622 admitted paths,
+480 source pins and1597 inventory must remain intact before appending the new
+nonrecursive exact-byte successor. Required gates and Git bind only this finite
+candidate; they never convert retained product refusal into success. Genuine
+macOS Word SOURCE/ordinary PACKAGED, both origins/scopes, all three roles,
+five real exchanges, complete large recording/reopen, hard30s/512MiB targets,
+required CI, merge and exact merged verification remain OPEN.
+
+### Amendment25 — complete imported novel and closed replay capacity
+
+Same unfinished original42b contour, PR2093 and rollback; clean0ddb predecessor.
+Fresh full ordered startup/bootstrap25, architecture preflight25 and taskE0
+executed0 before this first repository write. Declaration25_01 SHA256
+12fc7c7c1abc5114aaccee4f2ed54ea5ac48a5003ed53f07b89ff5bfff4b1a2f.
+82 exact paths,1800runtime2600behavior budgets. Existing writer owns code/tests;
+root owns5docs/7OPS/independent proof/Git; CHECK_01 before, CHECK_02+ after.
+Actual readonly25 sizing: raw9680486B, pending envelope20904089B, ledger6785331B,
+producer map11751705B and full paragraph observations4049323B; mixed operand
+floor22586359B. Actual notes reader refuses NOTE_SCENE_BUDGET. Source untouched;
+18.930s, sampled1323384832B. This is sizing, not valid return/native acceptance.
+MOVE only9 byte literals in existing anchor/notes/pending-comment/Main consumers
+to32MiB; align exact existing stale16MiB cache/ledger and32MiB eviction fixtures.
+Preserve all schema/source/private/history/CurrentOriginal/geometry/CAS/lease/
+capability laws, atomic scene32MiB, ledger16MiB, commentstate2MiB, notebody1MiB,
+all count/intent/authority/parser/resource caps. No new helper/schema/port/cache/
+flag/writer/dependency/UI, silent splitting or weaker oracle. Six exact ZIP
+allowlist additions only; unchanged audited compiler may refresh existing outputs.
+PROVE finite boundary/+1/forged/stale/no-write and whole affected consumers, then
+actual complete imported500k recording with comments/notes/atomic UndoRedo/reopen.
+32MiB closed proof remains a hypothesis until actual full return acceptance.
+Preserve220 historical tuples,622admitted/480pins/1597inventory. Five recording
+sessions are not five genuine Word exchanges. Full SOURCE/ordinaryPACKAGED,
+both origins/scopes/three roles/five genuine exchanges,30s/512MiB,CI/merge OPEN.
+
+
+### Amendment25 — exact byte checkpoint; whole novel speed remains open
+
+Root independently verified HOLD25_01 SHA256
+66168e0347633bdaa780cc5b2e9036c8787cef1c01504d9bf774e84580b1b61d:
+70 source/predecessor pins,7 actual logs,11 artifacts,136 compiler inputs and4
+output/copy bytes. Exactly9 byte literals changed; runtime1020of1800,
+behavior2173of2600, generated456 separate. Whole11 finite files294of294,
+zero exclusions,73.279s; closed32MiB whitespace controls are finite byte laws,
+not full500k return acceptance. Both builds0 and predecessor-exact outputs.
+Actual full8391-paragraph500108-word imported copy with1 comment,rich foot/end
+notes and private note reached a real leased save: proof22474828B,1 atomic write,
+start14.522s and profiled save163.019s. Two bounded whole-cycle attempts stopped
+at240s; aggregate RSS samples2546581504B and2097610752B. Full completion,
+stop/ACK/UndoRedo and five sessions remain UNKNOWN; no repeat without a new
+hypothesis. Independent complete durable Current/Original/source formatting,
+messages, private/rich note bodies/metadata and both exact points were verified
+on the first stopped owned copy; original import bytes stayed exact.
+Retained V8 save profile07989cc948a6d3d5873e1af4b77db1de4ce0f0b8747f0ec0fb7d95611ed8c801
+shows paragraph-mark descriptor inspection26.486s self and byte hashing43.042s
+inclusive; these are measured hotspots, not authority to weaken validation.
+Tiny real producer/parser one-scene composed pending+comments+rich notes proof
+12496B is Core-refused MIXED_RETURN_SCENE_REQUIRED; Main book early eligibility
+returns null under controlled upstream flag, without Main key-authentication or
+writer proof. Full single-scene composition remains an observed eligibility gap.
+Current0ddb official CI3855of3857 in each RTK lane has exactly the two old ceiling
+assertions corrected in25; current25 official CI is not yet run. Preserve220 old
+tuples before one nonrecursive successor;622 paths480 pins1597 inventory exact.
+Same original42b contour,PR2093,82 paths and rollback. Genuine Word SOURCE and
+ordinary PACKAGED,both origins/scopes,three roles,five genuine exchanges,
+hard30s512MiB,full current CI/merge/exact merged verification remain OPEN.
+NEXT: checkpoint25 with mandatory exact gates, then fresh measured hotspot admission.
+
+
+### 2026-10-08 Helsinki — amendment31 clean admission: one-scene full manuscript
+
+Same unfinished original42b PR2093, clean pushed predecessord9458811b65ff0d26b399a5185aa983433afba69.
+Actual current30 official19 checks and whole job logs bind receipt SHA4fe0393579ada8ada2235fe81fd6f5c89f7044899464c4598515f09de46c3257.
+Clean bootstrap/preflight/taskE0 all0 before first edit; declaration31_02
+SHAda1bda0349f42c7785f533e193309d8207dd0d0cc3e79b5a9425955bdabf361a. Separate writer completed full ordered startup reads, no cache.
+This is implementation admission, not current one-scene or release evidence.
+Scope87 adds only existing admitted tree-cohort ->88. Runtime1800 unchanged;
+task-only behavior2600 explicitly becomes3600 for forecast500–700 readable
+integration lines (before1277runtime2582behavior/generated462 separately).
+No canon, security/input cap, release criterion or acceptance denominator changes.
+
+Separate writer owns only Main/pending-comment planner/note binder/tree cohort
+and existing pending-notes/pending-return-runtime/default-typography tests.
+Fresh authenticated owned full-manuscript scope gates positive one; legacy scene
+schema1/2 and multi V1/V2/V3 remain. Single V2 emission and complete roster are
+independently validated before binding; no single-to-multi profile substitution.
+Actual book check gains unchanged public pending-review capability predicate:
+normal production Free/WRITER_LOCAL admission; denial is documented
+POLICY_DECISION_FAULT_INJECTION at dependency, with actual predicate/Kernel.
+Old valid-multi causal red must expose missing enforcement before correction.
+
+Retain original signed producer carriers/bookmark owners. Require actual parser
+authentication, real Main/private Kernel/normal lease/atomic regeneration/CAS/
+readback, full business bytes, reopen/re-export and both publication note proofs.
+Root owns five docs/seven mechanical OPS companions after source/test HOLD.
+No oracle weakening, exclusions, new command/port/writer/cache/schema/codec/
+producer/dependency/renderer/UI/runtime-network/native changes. No heavy500k
+run admitted here; owner40GB development ceiling remains. Simultaneous note-body
+edits with pending text, genuine Word both origins/scopes/three roles/five exchanges,
+SOURCE/ordinary PACKAGED performance and original merge/merged proof remain OPEN.
+
+
+### 2026-10-08 Helsinki — amendment31 finite source proof; native novel remains open
+
+At predecessord945, fresh producer-authenticated one-scene full-manuscript now
+uses complete mixed schema3/4 proof, independently checked single V2 note
+emission/roster, existing public capability revalidation and normal atomic cohort.
+Legacy scene and multi-scene laws remain. Four runtime paths changed; the ZIP
+scope guard gains only the already-admitted cohort literal, no weaker predicate.
+Actual final serial chain:656of656 across16files, zero fail/cancel/skip/todo,
+478.929382s; sampled aggregate RSS1995243520B/5s, development ceiling40GB.
+Five existing100k scene-adapter exchanges plus Undo/Redo passed; these are
+synthetic regression evidence, not genuine Word or full-manuscript100k proof.
+Focused exact-scope ZIP14of14. Actual compiler twice exit0, retained136-input
+closure rehashed,76source/test pins and5root admission docs exact; four renderer/
+preload outputs byte-idempotent. Compiler evidence predates this doc finalization.
+Original-base delta: runtime1304of1800; behavior2938of3600; generated462 separate.
+Root rehashed all224 retained fixture directories/2423files and15actual process
+receipts/16raw logs, including failures. Independent standard-library physical
+readback covers3positive signed whole-package/full-text/rich-notes/discussion/
+atomic/reopen/re-export cases;15precommit refusals preserve all business bytes,
+and2post-await publication refusals preserve new unsaved text. Policy negatives
+are explicit dependency fault injection; foreign discussion is a deleted tombstone.
+Whole01 timed out with child terminal outcome UNKNOWN. Whole02 actually failed
+655of656 on the exact allowlist literal; corrected whole03 alone is656of656.
+HOLD02 SHAfa1fe1222be375b5c7244256782d6a42e80fca245bb3ef2bada6744c07eef968.
+Root source review SHA7515d93da2bc16f424f41dcb03d35669d7222d9a06597d540e1ea0510eeeb896.
+No canon exception, new dependency/schema/command/port/writer/cache/UI/runtime
+network/native or heavy500k authority. Same original42b task/rollback and PR2093.
+Final mechanical OPS bindings, seven mandatory gates, commit/push and current CI
+remain required and are recorded separately when actually executed. Original
+SOURCE/ordinary PACKAGED genuine Word, both origins/scopes/three roles/five
+exchanges, release speed/memory, simultaneous note body/format edits with pending
+text, semantic closure, merge and exact merged verification remain OPEN.
+NEXT: freeze mechanical OPS and pass required gates, commit/push this finite
+checkpoint; then admit a fresh short genuine Word source/packaged proof.
+
+### 2026-10-08 — amendment33 finite source proof; fresh native and original novel OPEN
+
+Same original42b PR2093 at clean1d83115 predecessor, unchanged88-path scope.
+Actual SOURCE34 Word SaveAs preserved text/discussion meaning but materialized
+comment paragraph defaults through styles. Its false edit was cancelled through
+the public path; protected business files stayed exact. Its old SOURCE mode is
+absent and remains typed-refused. No carrier or authentication was repaired.
+Exact1d official RTK CI actually3959of3962 in both lanes, three failures and no
+exclusions, additionally exposed ordinary export profile handoff and mirrored
+script-alias parsing. Historical failures are retained and remain FAIL.
+Four admitted runtime files now bind complete V2 comment export mode to SOURCE,
+independently rederive its stored transport and validate a separately bounded
+actual-only effective comment observation. Direct rich grammar remains strict;
+legacy undefined/V1 laws retain exact old-module output controls in the current
+require closure, not an isolated historical dependency runtime. Missing actual
+facts or old mode refuse; genuinely new messages never receive SOURCE defaults.
+Parser aliases are redundant only after actual sibling equality. Annotation
+reference removal uses disjoint ranges. Existing digests/bounds/Kernel/private
+admission/lease/CAS/atomic recovery/public commands remain governed and unchanged.
+Four already-declared test contracts retain original negatives and assertions.
+The crypto companion preserves both independent hash oracles/stale refusals;
+apply/delta ordinary fixtures now edit real ZIP XML before parsing/hash, while
+pure Core manual edits remain explicitly synthetic and internally consistent.
+A separate actualV2 root/reply ON/OFF clear verifies complete rich defaults,
+IDs/kind/provenance/anchor/status and replay; no genuine Word claim follows.
+Actual complete22 proof is two pinned executions: carried682of682 prior16 and
+fresh581of581 added6, aggregate1263of1263, zero fail/cancel/skip/todo.
+All3437 tracked shared source/script/other-test/package and installed lock/esbuild
+inputs,136 compiler inputs and16 test bytes were pinned and root-rehashed before
+companion writes. Snapshots differ in two test files; no single76/all88 equality
+claim across them. Final ZIP01 changed-files operand requires root recheck after
+these docs/OPS. Whole focused7 also actually239of239, including five unedited
+parser-risk files. Diagnostic name exclusions never count as whole-file proof.
+Two actual audited compiler runs exit0 with136 inputs and identical outputs;
+preload exact. Prebuild tests do not claim execution of the new renderer bundle.
+Root final source/physical review SHA4c87af3877a9809eb9f1698edcc68271fb992d344f2fca543f19e151b6c9a0d4;
+HOLD SHAe55dc59c8fb019eba9dd49c1b8dfbe06779b36565103b801588776b288b096ab.
+Runtime1504of1800, behavior3597of3600, generated462 separate.
+Original681of682 failure, subsequent19 fixture contradictions, causal controls
+and raw logs remain retained. Fresh causal/crypto physical operands never replace
+missing original failed crypto operands. Root pure SOURCE34 reader passed the
+actual retained Word return under current source projection only; no re-auth,
+new app execution, public Apply or release authority follows from that diagnostic.
+Root mechanical seven OPS bindings, seven mandatory gates, final ZIP01 and
+commit/push/current official CI follow; their actual outcomes are separate.
+Fresh short SOURCE35/ordinary WRITER_LOCAL_V1 PACKAGED35 genuine Word controls
+remain OPEN, as do original novel/both origins/scopes/three roles/five genuine
+exchanges, simultaneous pending-text/note-body edits, production30s/512MiB,
+merge and exact merged verification.40GB remains the development RSS ceiling.
+No UI/dependency/runtime network/cap/cache/timeout/shadow expansion or old-crash
+reproduction. No canon exception; same contour and rollback to original42b.
+NEXT: finish exact delivery gates and admit fresh short native SOURCE/PACKAGED.
+
+
+### 2026-10-08 — amendment34 source-only replacement-group expectation
+
+Same original42b unfinished PR2093 and88 paths. Actual SOURCE37/PACKAGED37
+repeat export fails only on inferred group occurrences; canonical state is exact.
+Admit only existing Main expectation condition and readable existing-contract
+regressions. Task behavior budget3600 ->3800 avoids dropping assertions or
+compressing coverage; runtime1800, production criteria and40GB dev bound stay.
+Rollback is narrow revert to ff (whole chain original42b); no canon exception,
+parser/source/trust/cap/UI/schema/writer/port/dependency/network change.
+Actual code/native/merged acceptance remains TARGET until mandatory proofs.
+
+
+Amendment34 implementation and fresh finite proof are now frozen at HOLD_01;
+root independent source review b30219ab9ec22035f49a63700fa876191760eb8eec1fb3d21bdffa7af157b260.
+Actual1282of1282/focused248of248 and unchanged compiler outputs do not close
+native repeat export or the original large-novel denominator. Existing task-only
+3800 behavior adjustment and original rollback are unchanged; no canon exception.

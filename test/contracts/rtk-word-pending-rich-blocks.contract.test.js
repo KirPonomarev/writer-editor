@@ -10,6 +10,15 @@ const envelope = require('../../src/core/document-content-envelope-v1.cjs');
 const { buildDocxMinBuffer, buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
 const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+// Fresh full exports materialize this closed SOURCE-owned transport basis;
+// generic imports observe it literally, while the saved authored source stays raw.
+function expectedEmission(doc,profile='full') {
+  if(profile==='minimum')return model.normalizeNode(doc);
+  const typography=require('../../src/core/word-review-typography-v1.cjs');
+  const expected=typography.document(model.normalizeNode(doc),typography.freshBodyTypography());
+  expected.attrs={...expected.attrs,wordDefaultTabStop:doc.attrs?.wordDefaultTabStop??720};
+  return model.normalizeNode(expected);
+}
 const modules = Promise.all([import('../../src/io/revisionBridge/index.mjs'), import('../../src/docxPageSetupBind.mjs'),
   import('../../src/derived/semanticMapping.mjs'), import('../../src/derived/styleMap.mjs')]);
 const p = text => ({ type: 'paragraph', content: text ? [{ type: 'text', text }] : [] });
@@ -50,11 +59,16 @@ async function parse(bytes) {
   assert.equal(parsed.issue, null);
   return parsed.doc;
 }
-async function exportDoc(doc, profile) {
+function legacySourceFactory() {
+ const source=require('node:child_process').execFileSync('git',['show','42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:src/export/docx/fullManuscriptDocxReviewPacketSource.js'],{cwd:path.resolve(__dirname,'../..'),encoding:'utf8'});
+ assert.equal(crypto.createHash('sha256').update(source).digest('hex'),'829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d');
+ const filename=require.resolve('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js'),loaded=new (require('node:module'))(filename,module);loaded.filename=filename;loaded.paths=module.paths;loaded._compile(source,filename);return loaded.exports.buildFullManuscriptDocxReviewPacketSource;
+}
+async function exportDoc(doc, profile, legacy = false) {
   const [, docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await modules;
   if (profile === 'minimum') return buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } },
     { docxPageSetupBindModule, semanticMappingModule, styleMapModule });
-  return buildDocxReviewPacketBuffer(buildFullManuscriptDocxReviewPacketSource({ projectId: 'pending-rich', projectRoot: '/synthetic',
+  return buildDocxReviewPacketBuffer((legacy?legacySourceFactory():buildFullManuscriptDocxReviewPacketSource)({ projectId: 'pending-rich', projectRoot: '/synthetic',
     scenes: [{ sceneId: 'roman/rich.txt', scenePath: '/synthetic/roman/rich.txt', doc,
       text: envelope.deriveVisibleTextFromDocument(doc), observableContent: envelope.composeObservablePayload({ doc }), order: 0 }] }));
 }
@@ -83,7 +97,7 @@ test('Five ordinary and authenticated Word cycles retain pending edits after ver
       const result = model.projection(doc);
       assert.equal(result.original, expected.original, profile + round);
       assert.equal(result.current, expected.current, profile + round);
-      assert.deepEqual(shape(doc), shape(original));
+      assert.deepEqual(shape(doc), shape(expectedEmission(original,profile)));
       assert.deepEqual(result.revisions.map(r => [r.paragraphIndex, r.operation, r.text, r.author, r.state]),
         expected.revisions.map(r => [r.paragraphIndex, r.operation, r.text, r.author, r.state]));
     }
@@ -111,7 +125,7 @@ test('Recording inside a table list retains cell identity, records formatting an
   }
 });
 test('Returned rich rounds retain stable revision ownership through five durable undo and redo steps', async () => {
-  let doc = fixture(); const expected = model.projection(doc), expectedShape = shape(doc);
+  let doc = fixture(); const expected = model.projection(doc), expectedShape = shape(expectedEmission(doc));
   for (let round = 1; round <= 5; round++) {
     const returned = await parse(await exportDoc(doc, 'full'));
     doc = model.replaceFromReturn(doc, returned, { roundId: 'rich-round-' + round, artifactSha256: String(round).padStart(64, '0') }).doc;
@@ -209,7 +223,7 @@ test('Tracked table mutations and text revisions targeting a continuation cell c
 });
 
 test('Actual authenticated pending return preserves exact empty-block positions and rejects mismatched or stale input', async () => {
-  const doc = fixture(), raw = envelope.composeObservablePayload({ doc }), bytes = await exportDoc(doc, 'full');
+  const doc = fixture(), raw = envelope.composeObservablePayload({ doc }), bytes = await exportDoc(doc, 'full', true);
   const [bridge] = await modules;
   const incoming = await parse(bytes), exactText = model.paragraphs(model.normalizeNode(incoming)).map(text).join('\n');
   assert.notEqual(envelope.deriveVisibleTextFromDocument(incoming), exactText);
@@ -240,6 +254,20 @@ test('Actual authenticated pending return preserves exact empty-block positions 
     revisionBridge: adapter, isCurrent, onPrepared: value => { prepared = value; } });
   assert.equal((await run()).code, 'PENDING_RETURN_EXPLICIT_APPLY_REQUIRED');
   assert.deepEqual(shape(prepared.changes.after), shape(doc));
+  // The technical legacy adapter above checks exact empty geometry. Fresh V2
+  // canonical equality is independently exercised through the actual scoped parser.
+  const captured=JSON.stringify(doc),fresh=buildFullManuscriptDocxReviewPacketSource({projectId:'pending-rich',projectRoot:'/synthetic',scenes:[{sceneId:'roman/rich.txt',scenePath:'/synthetic/roman/rich.txt',doc,text:envelope.deriveVisibleTextFromDocument(doc),observableContent:raw,order:0}]}),map=fresh.localAuthorityCapsule.exportMap;
+  const scoped=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildDocxReviewPacketBuffer(fresh),exportMap:map,baselineDocuments:[{sceneId:'roman/rich.txt',document:doc}],retainPendingScenes:true,documentSections:fresh.documentSections,signedSectionsDigest:fresh.documentSections.protectedDigest});
+  assert.deepEqual(scoped,{ok:false,code:'PENDING_RETURN_BOOKMARK_UNOWNED'});assert.equal(JSON.stringify(doc),captured);
+  // Merged-cell synthetic continuation paragraphs remain outside the novel
+  // path. Keep their explicit scoped refusal and original legacy geometry oracle.
+  const ordinaryPending=model.bindLedger({...structuredClone(model.readLedger(doc)),source:{type:'doc',content:[p('before'),p(''),p('oldNEW'),p(''),p('after')]},revisions:model.readLedger(doc).revisions.slice(0,2).map(revision=>({...revision,paragraphIndex:2}))});
+  const ordinary=model.decide(model.decide(ordinaryPending,{action:'accept',revisionId:model.readLedger(ordinaryPending).revisions[0].id}).doc,{action:'undo'}).doc;assert.equal(model.readLedger(ordinary).redo.length,1);
+  const ordinaryRaw=JSON.stringify(ordinary),owned=buildFullManuscriptDocxReviewPacketSource({projectId:'pending-rich',projectRoot:'/synthetic',scenes:[{sceneId:'roman/rich.txt',scenePath:'/synthetic/roman/rich.txt',doc:ordinary,text:envelope.deriveVisibleTextFromDocument(ordinary),observableContent:envelope.composeObservablePayload({doc:ordinary}),order:0}]}),ownedMap=owned.localAuthorityCapsule.exportMap;
+  const actual=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildDocxReviewPacketBuffer(owned),exportMap:ownedMap,baselineDocuments:[{sceneId:'roman/rich.txt',document:ordinary}],retainPendingScenes:true,documentSections:owned.documentSections,signedSectionsDigest:owned.documentSections.protectedDigest});
+  assert.equal(actual.ok,true,JSON.stringify(actual));
+  const derived=require('../../src/core/word-pending-comment-return-v1.cjs').deriveMixedPendingDocument({document:ordinary,returnedDocument:actual.scenes[0].returnedDocument,binding:ownedMap.scenes[0].pendingCommentBinding,exportTypography:ownedMap.exportTypography,exportParagraphs:ownedMap.scenes[0].blocks.map(block=>block.formatIr.paragraph),allowUntrackedRichFormatting:true});
+  assert.equal(derived.changed,false);assert.deepEqual(derived.document,ordinary);assert.equal(JSON.stringify(ordinary),ordinaryRaw);
   mappedText = exactText.replace('before', 'different');
   assert.equal((await run()).code, 'PENDING_RETURN_PROJECTION_MISMATCH');
   mappedText = exactText;
@@ -261,7 +289,7 @@ test('Pending rich export binds cell preferred widths to the retained grid inclu
     const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }, { cryptoPort }).parts;
     const widths = [...parts['word/document.xml'].matchAll(/<w:tcW w:w="(\d+)" w:type="dxa"\/>/gu)].map(m => Number(m[1]));
     assert.deepEqual(widths, [4359, 4408, 4359, 2781, 1627]);
-    assert.deepEqual(shape(await parse(bytes)), shape(doc));
+    assert.deepEqual(shape(await parse(bytes)), shape(expectedEmission(doc,profile)));
   }
 });
 
@@ -293,7 +321,7 @@ test('Preferred width scalar bounds never invalidate a supported merged-cell gri
       content: [{ type: 'tableRow', content: [wide] }] }] };
     for (const profile of ['minimum', 'full']) {
       const bytes = await exportDoc(doc, profile);
-      assert.deepEqual(shape(await parse(bytes)), shape(doc));
+      assert.deepEqual(shape(await parse(bytes)), shape(expectedEmission(doc,profile)));
       assert.equal(bytes.includes(Buffer.from('<w:tcW w:w="' + width + '"')), width <= 31680);
     }
   }

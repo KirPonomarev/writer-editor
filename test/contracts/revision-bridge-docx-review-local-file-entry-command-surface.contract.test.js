@@ -633,7 +633,7 @@ test('DOCX review local-file entry: extension, size, read, empty, and changed-fi
   assert.equal(unsupported.calls.readFile.length, 0);
 
   const oversizedHint = instantiateDocxReviewLocalFileEntryPort({
-    statSizes: [10 * 1024 * 1024 + 1],
+    statSizes: [16 * 1024 * 1024 + 1],
   });
   const oversizedHintResult = await oversizedHint.handleDocxReviewPreviewSessionLocalFileCommandSurface({});
   assert.equal(oversizedHintResult.ok, false);

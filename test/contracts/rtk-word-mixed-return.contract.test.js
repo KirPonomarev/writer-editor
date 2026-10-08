@@ -87,7 +87,8 @@ test('v3 book transport keeps authored absent and partial body fields through pa
  }
  const legacy=await notesBookFixture({noteProfileV2:true}),proof=structuredClone(legacy.proof);
  proof.returnedScenes[0].ledger.source.content[0].attrs={wordParagraphSpacing:{after:160,line:278,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-FI',eastAsia:'ru-RU',bidi:'ar-SA'}};
- assert.throws(()=>model.planMixedBookReturn({beforeText:legacy.beforeText,projectId:legacy.document.projectId,scenes:legacy.scenes,notesText:legacy.notesText,returnProofJson:JSON.stringify(proof)}),/MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED/u);
+ assert.equal(legacy.source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ assert.throws(()=>model.planMixedBookReturn({beforeText:legacy.beforeText,projectId:legacy.document.projectId,scenes:legacy.scenes,notesText:legacy.notesText,returnProofJson:JSON.stringify(proof)}),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/u);
 });
 test('v3 notes and discussions preserve unchanged codeBlock through changed text while its original typed format guard rejects actual ZIP mutations',async()=>{
  const f=await notesBookFixture({includeCodeBlock:true}),model=require('../../src/core/word-pending-comment-return-v1.cjs'),{buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
@@ -97,7 +98,12 @@ test('v3 notes and discussions preserve unchanged codeBlock through changed text
  assert.equal(result.scenes[1].content,f.scenes[1].beforeContent);assert.equal(JSON.parse(result.afterText).threads.find(t=>t.threadId==='thread-1').messages.at(-1).body,'Foreign Beta reply retained');
  assert.deepEqual(review.readLedger(review.decide(doc,{action:'undo'}).doc).source,f.beforeDocs[0]);
  const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts,codeParagraph=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)][1][0];
- assert.match(codeParagraph,/<w:pStyle w:val="YalkenCodeBlock"\/>/u);assert.doesNotMatch(codeParagraph,/<w:spacing\b|<w:lang\b/u);
+ assert.equal(f.source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ assert.match(codeParagraph,/<w:pStyle w:val="YalkenCodeBlock"\/>/u);
+ assert.match(codeParagraph,/<w:spacing w:before="80" w:after="80" w:line="240" w:lineRule="auto"\/>/u);
+ assert.match(codeParagraph,/<w:rFonts w:ascii="Menlo" w:hAnsi="Menlo" w:eastAsia="Menlo" w:cs="Menlo"\/>/u);
+ assert.match(codeParagraph,/<w:sz w:val="20"\/><w:szCs w:val="20"\/>/u);
+ assert.match(codeParagraph,/<w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="en-US"\/>/u);
  const parse=xml=>f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes:buildStoredZip(Object.entries({...parts,'word/document.xml':xml}).map(([name,data])=>({name,data}))),
   exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),retainPendingScenes:true,
   documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest});
@@ -105,10 +111,10 @@ test('v3 notes and discussions preserve unchanged codeBlock through changed text
  // proofing language has no representation here; it is not a claimed invariant.
  for(const property of ['<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>','<w:sz w:val="28"/>']){
   const changed=codeParagraph.replace('<w:r>','<w:r><w:rPr>'+property+'</w:rPr>');assert.notEqual(changed,codeParagraph);
-  const rejected=parse(parts['word/document.xml'].replace(codeParagraph,changed));assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.equal(rejected.code,'DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
+  const rejected=parse(parts['word/document.xml'].replace(codeParagraph,changed));assert.equal(rejected.ok,false,JSON.stringify(rejected));assert.equal(rejected.code,'WORD_BODY_CODE_FORMAT_UNSUPPORTED');
  }
  const forged=structuredClone(f.proof);forged.returnedScenes[0].ledger.source.content[1].attrs.language='python';
- assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(forged)}),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/u);
+ assert.throws(()=>model.planMixedBookReturn({...input,returnProofJson:JSON.stringify(forged)}),/MIXED_RETURN_CODE_LANGUAGE_CHANGED/u);
 });
 test('Signed code emission distinguishes Menlo defaults from authored Word styles without losing rich round inverse',async()=>{
  const {deriveMixedPendingDocument}=require('../../src/core/word-pending-comment-return-v1.cjs'),bridge=await import('../../src/io/revisionBridge/index.mjs');
@@ -176,8 +182,32 @@ async function fixture(clean=false,markChange=false) {
   afterState.threads[0].messages[0].body='Edited query';
   afterState.threads[1].anchor=exactAnchor({paragraphIndex:1,startUtf16:9,selectedText:'BBB'},sceneId,['new','tail ZZZ BBB']);
   afterState.threads.push({threadId:'new-root-thread',rootCommentId:'new-root',sceneId,status:'open',anchor:exactAnchor({paragraphIndex:1,startUtf16:6,selectedText:'ZZ'},sceneId,['new','tail ZZZ BBB']),messages:[{commentId:'new-root',kind:'root',body:'Fresh insertion query',provenance:{author:'Editor'}}]});
-  let bytes=build(makeSource({projectId,projectRoot:'/project',nonTextReturnState:afterState,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail ZZZ BBB',doc:returnedDoc}]}));
+  const afterSource=makeSource({projectId,projectRoot:'/project',nonTextReturnState:afterState,scenes:[{sceneId,scenePath:'/project/'+sceneId,order:0,text:'new\ntail ZZZ BBB',doc:returnedDoc}]});
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),cryptoPort={sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v)};
+  const protectedSources=JSON.stringify({exported,afterSource,beforeDoc,returnedDoc});
+  const originalParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(build(exported)).parts;
+  const returnedParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(build(afterSource)).parts;
+  const originalXml=originalParts['word/document.xml'],returnedXml=returnedParts['word/document.xml'];
+  const names=xml=>[...xml.matchAll(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu)].map(match=>match[1]);
+  const originalNames=names(originalXml),returnedNames=names(returnedXml);
+  const occurrence=map=>map.scenes.flatMap(scene=>scene.blocks.map((block,index)=>[scene.sceneId,index,block.documentParagraphIndex]));
+  assert.deepEqual(occurrence(afterSource.localAuthorityCapsule.exportMap),occurrence(exported.localAuthorityCapsule.exportMap));
+  const declared=exported.localAuthorityCapsule.exportMap.scenes.flatMap(scene=>scene.blocks.map(block=>block.wordSignals.filter(signal=>signal.kind==='bookmarkName')[0].value.name));
+  assert.deepEqual(originalNames,declared);assert.equal(returnedNames.length,originalNames.length);
+  const {extractTransportParagraphOwnershipV1}=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const paragraphOwners=originalNames.map((_,index)=>[index]);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(originalXml,originalNames,{cryptoPort}),paragraphOwners);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedXml,returnedNames,{cryptoPort}),paragraphOwners);
+  // Word edits retain the original round's owned body bookmark occurrences.
+  // The second producer supplies changed XML only, never replacement authority.
+  let ordinal=0;
+  returnedParts['word/document.xml']=returnedXml.replace(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu,(tag,name)=>{
+    assert.equal(name,returnedNames[ordinal]);return tag.replace(`w:name="${name}"`,`w:name="${originalNames[ordinal++]}"`);
+  });
+  assert.equal(ordinal,originalNames.length);assert.deepEqual(names(returnedParts['word/document.xml']),originalNames);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedParts['word/document.xml'],originalNames,{cryptoPort}),paragraphOwners);
+  let bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(returnedParts).map(([name,data])=>({name,data})));
+  assert.equal(JSON.stringify({exported,afterSource,beforeDoc,returnedDoc}),protectedSources);
   if(markChange==='omit-off'){const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;parts['word/document.xml']=parts['word/document.xml'].replaceAll('<w:b w:val="0"/>','');bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));}
   const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true);
   const capsule=exported.localAuthorityCapsule;
@@ -317,4 +347,27 @@ test('Paragraph mark fontSlots: compound text discussions retain source slots th
  const undone=review.decide(doc,{action:'undo'}).doc;assert.deepEqual(review.normalizeNode(undone),before);
  const redone=review.decide(undone,{action:'redo'}).doc;assert.deepEqual(review.normalizeNode(redone),review.normalizeNode(doc));await assertDiscussionReadback(redone,p.afterText);
  const forged=structuredClone(f),ledger=review.readLedger(forged.proof.returnedDocument);ledger.revisions.find(review.isParagraphFormat).format.before.attrs.wordParagraphMarkTypography.fontSlots.ascii='Courier New';forged.proof.returnedDocument=review.bindLedger(ledger);assert.throws(()=>plan(forged),/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED/);
+ const protectedRaw=JSON.stringify(f.beforeDoc);
+ for(const side of ['before','after'])for(const slot of ['ascii','hAnsi','eastAsia','cs']){
+  const forged=structuredClone(f),ledger=review.readLedger(forged.proof.returnedDocument),r=ledger.revisions.find(review.isParagraphFormat);
+  r.format[side].attrs.wordParagraphMarkTypography.fontSlots[slot]='Courier New';
+  assert.throws(()=>{forged.proof.returnedDocument=review.bindLedger(ledger);return plan(forged);},/MIXED_RETURN_STRUCTURE_OR_FORMAT_CHANGED|PENDING_FORMAT_SOURCE_MISMATCH/u,side+':'+slot);
+  assert.equal(JSON.stringify(f.beforeDoc),protectedRaw);
+ }
+
+});
+
+test('32 MiB closed single and complete book replay preserve ledger history and reject forged sources',async()=>{
+ const cap=32*1024*1024,single=await fixture(),book=await notesBookFixture();
+ const bookModel=require('../../src/core/word-pending-comment-return-v1.cjs');
+ for(const [proof,run] of [[single.proof,json=>planMixedPendingReturn({...single,returnProofJson:json})],
+  [book.proof,json=>bookModel.planMixedBookReturn({beforeText:book.beforeText,projectId:book.document.projectId,scenes:book.scenes,notesText:book.notesText,returnProofJson:json})]]){
+  const captured=JSON.stringify(proof),normal=run(captured),exact=captured+' '.repeat(cap-Buffer.byteLength(captured));
+  const full=run(exact);assert.deepEqual(full,Object.hasOwn(normal,'returnProofJson')?{...normal,returnProofJson:exact}:normal);
+  assert.throws(()=>run(exact+' '),e=>e.code==='MIXED_RETURN_PROOF_BUDGET');
+  const forged=structuredClone(proof);forged.exportMap.scenes[0].rawSha256='sha256:'+'0'.repeat(64);
+  assert.throws(()=>run(JSON.stringify(forged)+' '.repeat(9*1024*1024)),e=>e.code==='MIXED_RETURN_BASELINE_STALE');
+  assert.throws(()=>run('{'+ ' '.repeat(9*1024*1024)),e=>e.code==='MIXED_RETURN_PROOF_INVALID');
+  assert.equal(JSON.stringify(proof),captured);
+ }
 });

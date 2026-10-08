@@ -58,7 +58,7 @@ test('main-owned 500k content and plan references fit while total cache and inpu
  const plan=buildDocxImportPreviewPlanFromContentPreview(port.resolve('content',ref));assert.equal(plan.ok,true);
  const planRef=port.remember('plan',plan,port.capture());assert.match(planRef,/^[a-f0-9]{64}$/);
  assert.equal(port.resolve('plan',planRef).candidateCreatePlan.entries[0].content,fixture.sourceParagraphs.join('\n'));
- assert.equal(port.remember('content',{text:'x'.repeat(8*1024*1024)},port.capture()),'');
- const filler={text:'z'.repeat(7*1024*1024)};port.remember('content',filler,port.capture());port.remember('plan',filler,port.capture());
+ assert.equal(port.remember('content',{text:'x'.repeat(16*1024*1024)},port.capture()),'');
+ const filler={text:'z'.repeat(15*1024*1024)};port.remember('content',filler,port.capture());port.remember('plan',filler,port.capture());
  assert.equal(port.resolve('content',ref),null);assert.equal(port.resolve('plan',planRef),null);
 });

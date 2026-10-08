@@ -1,3 +1,4 @@
+import bodyTypography from '../../core/word-review-typography-v1.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
 import { createHash } from 'node:crypto';
 import links from '../docxHyperlinks.cjs';
@@ -20,7 +21,7 @@ function shape(state) {
   if (Object.hasOwn(out,'link')) out.link = links.normalizeDocxHttpHref(out.link);
   return out;
 }
-function runs(input, text, returned, defaultFontSize = null) {
+function runs(input, text, returned, defaultFontSize = null, effectiveFont=false) {
   if (!Array.isArray(input) || input.length > 4096 || typeof text !== 'string' || text.length > 65536) throw Error('run-budget');
   const out = []; let offset=0;
   for (const r of input) {
@@ -28,7 +29,7 @@ function runs(input, text, returned, defaultFontSize = null) {
       || text.slice(r.from,r.to)!==r.text) throw Error('run-bijection');
     if (returned && (r.invalidSupportedValue || r.unsupportedNames?.length)) throw Error('unsupported-run');
     let inline;
-    if (returned) inline=shape({...r.inlineState,...(!r.inlineState?.fontSize && r.inheritedFontSize ? {fontSize:r.inheritedFontSize} : {})});
+    if (returned) inline=shape({...r.inlineState,...(effectiveFont&&!r.inlineState?.fontFamily&&r.resolvedFontFamily?{fontFamily:r.resolvedFontFamily}:{}),...(!r.inlineState?.fontSize && r.inheritedFontSize ? {fontSize:r.inheritedFontSize} : {})});
     else {
       inline={...r.inline};
       for (const mark of r.preservedMarks || []) {
@@ -56,9 +57,7 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
     // A returned stylesheet or historical round cannot invent its own baseline.
     let defaultFontSize=null;
     if (exportTypography !== undefined) {
-      if (!plain(exportTypography) || Object.keys(exportTypography).sort().join(',')!=='fontSize,schemaVersion'
-        || exportTypography.schemaVersion!=='yalken.review-docx.typography-defaults.v1'
-        || exportTypography.fontSize!=='12pt') return reject('export-typography-binding');
+      bodyTypography.validate(exportTypography);
       defaultFontSize=exportTypography.fontSize;
     }
     if (!sceneId || !Array.isArray(baselineParagraphs) || !baselineParagraphs.length
@@ -89,7 +88,8 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
     if ((reviewIr.structureChanges || []).some(x=>x.writerAuthorityImpact!=='inventory-only')) return reject('structure');
     let effect=null, total=0;
     for (let i=0;i<baselineParagraphs.length;i++) {
-      const base=baselineParagraphs[i], next=returnedParagraphs[i], format=base?.formatIr;
+      const base=baselineParagraphs[i], next=returnedParagraphs[i];
+      const format=base?.formatIr?bodyTypography.formatIr(base.formatIr,exportTypography):null;
       if (!plain(format) || !plain(next) || next.trackedRevision || next.table || format.table || format.media?.length
         || next.paragraphFormattingInvalid || next.unsupportedParagraphNames?.length) return reject('paragraph-semantics');
       const p=format.paragraph||{};
@@ -107,7 +107,7 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       } else if (Object.hasOwn(p,'headingLevel') || Object.hasOwn(structure,'headingLevel')) {
         return reject('unexpected-heading-level');
       }
-      const oldRuns=runs(format.runs,base.text,false,defaultFontSize), newRuns=runs(next.formattedRuns,next.paragraphText,true);
+      const oldRuns=runs(format.runs,base.text,false,defaultFontSize), newRuns=runs(next.formattedRuns,next.paragraphText,true,null,exportTypography?.schemaVersion===bodyTypography.V2);
       total+=base.text.length+next.paragraphText.length;
       if (total>262144 || oldRuns.length!==newRuns.length) return reject('shape-or-total-budget');
       for (let j=0;j<oldRuns.length;j++) {

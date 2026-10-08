@@ -18,8 +18,8 @@ const revision = (from, to, operation = 'delete') => ({ id: 'revision-1', native
 const ledger = (source, revisions) => ({ schemaVersion: 2, source, revisions, undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 // Shared owned fixture, loaded without registering this file's tests by the
 // other two contracts. Every expected point/text below is a literal oracle.
-async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false, noteProfileV2 = false, bodyParagraphAttrs = null, authoredRunLanguage = null, includeCodeBlock = false } = {}) {
-  const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
+async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = false, noteProfileV2 = false, bodyParagraphAttrs = null, authoredRunLanguage = null, includeCodeBlock = false, sourceFactory = null } = {}) {
+  const ids=[sceneId,'roman/b.txt','roman/c.txt'],makeSource=sourceFactory||require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
   const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
   const event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:'Prior writer'});
   const beforeDocs=[d(p('AxxB tail')),d(p('Control Beta')),pending.bindNoteSourcePoints(pending.bindLedger(ledger(d(p('oldnew tail')),[event(1,'delete',0,3),event(2,'insert',3,6)])),[{noteId:'note-gamma',paragraphIndex:0,offsetUtf16:8}])];
@@ -58,8 +58,32 @@ async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = fa
   afterState.threads[2].anchor=exactAnchor({paragraphIndex:0,startUtf16:2,selectedText:'e'},ids[2],[current[2]]);
   afterState.threads[1].messages.push({commentId:'foreign-reply',kind:'reply',body:'Foreign Beta reply retained',provenance:{author:'Beta editor'}});
   afterState.threads[2].messages.push({commentId:'gamma-reply',kind:'reply',body:'Gamma reply retained',provenance:{author:'Word editor'}});
-  const afterSource=packet(afterDocs,afterNotes,afterState),bytes=builder.buildDocxReviewPacketBuffer(afterSource),bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const afterSource=packet(afterDocs,afterNotes,afterState),bridge=await import('../../src/io/revisionBridge/index.mjs');
   const cryptoPort={sha256Text:hash,sha256Json:value=>'sha256:'+hash(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)};
+  const protectedSources=JSON.stringify({source,afterSource,beforeDocs,afterDocs});
+  const originalParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(builder.buildDocxReviewPacketBuffer(source)).parts;
+  const returnedParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(builder.buildDocxReviewPacketBuffer(afterSource)).parts;
+  const originalXml=originalParts['word/document.xml'],returnedXml=returnedParts['word/document.xml'];
+  const names=xml=>[...xml.matchAll(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu)].map(match=>match[1]);
+  const originalNames=names(originalXml),returnedNames=names(returnedXml);
+  const occurrence=map=>map.scenes.flatMap(scene=>scene.blocks.map((block,index)=>[scene.sceneId,index,block.documentParagraphIndex]));
+  assert.deepEqual(occurrence(afterSource.localAuthorityCapsule.exportMap),occurrence(source.localAuthorityCapsule.exportMap));
+  const declared=source.localAuthorityCapsule.exportMap.scenes.flatMap(scene=>scene.blocks.map(block=>block.wordSignals.filter(signal=>signal.kind==='bookmarkName')[0].value.name));
+  assert.deepEqual(originalNames,declared);assert.equal(returnedNames.length,originalNames.length);
+  const {extractTransportParagraphOwnershipV1}=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const paragraphOwners=originalNames.map((_,index)=>[index]);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(originalXml,originalNames,{cryptoPort}),paragraphOwners);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedXml,returnedNames,{cryptoPort}),paragraphOwners);
+  // Word edits retain the original round's owned body bookmark occurrences.
+  // The second producer supplies changed XML only, never replacement authority.
+  let ordinal=0;
+  returnedParts['word/document.xml']=returnedXml.replace(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu,(tag,name)=>{
+    assert.equal(name,returnedNames[ordinal]);return tag.replace(`w:name="${name}"`,`w:name="${originalNames[ordinal++]}"`);
+  });
+  assert.equal(ordinal,originalNames.length);assert.deepEqual(names(returnedParts['word/document.xml']),originalNames);
+  assert.deepEqual(extractTransportParagraphOwnershipV1(returnedParts['word/document.xml'],originalNames,{cryptoPort}),paragraphOwners);
+  const bytes=buildStoredZip(Object.entries(returnedParts).map(([name,data])=>({name,data})));
+  assert.equal(JSON.stringify({source,afterSource,beforeDocs,afterDocs}),protectedSources);
   const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true,JSON.stringify(analysis));
   const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true);
   const parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:source.localAuthorityCapsule.exportMap,baselineDocuments:ids.map((id,i)=>({sceneId:id,document:beforeDocs[i]})),
@@ -72,6 +96,73 @@ async function composedBookFixture(bodyOverride = null, { legacyNoteProfile = fa
     returnedParagraphs:analysis.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),commentReturnInventory:analysis.reviewIr.commentReturnInventory};
   const scenes=ids.map((id,i)=>({sceneId:id,beforeContent:envelope.composeObservablePayload({doc:beforeDocs[i]})}));
   return {ids,beforeDocs,document,state,source,afterSource,afterDocs,afterNotes,bytes,bridge,analysis,preview,proof,scenes,notesText:JSON.stringify(document),beforeText:JSON.stringify(state),current,afterOffsets};
+}
+// A new producer is invoked with exactly one real source scene. Preserve that
+// producer's signed carriers; the second producer supplies Word edits only.
+async function singleFullManuscriptFixture({tracked=false,withNotes=true,ownedSceneId=sceneId,projectRoot='/project'}={}) {
+  const makeSource=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource;
+  const {exactAnchor}=require('../../src/core/word-comment-authoring-v1.cjs');
+  const ids=[ownedSceneId],event=(id,operation,from,to)=>({...revision(from,to,operation),id:'revision-'+id,nativeId:String(id),author:id===1?'Prior writer':'Word editor'});
+  const sourceDoc=d(p('AxxB tail'),p(''),p('After empty paragraph'));
+  let beforeDoc=tracked?pending.bindLedger(ledger(sourceDoc,[event(1,'delete',1,3)])):sourceDoc;
+  const identities=['note-left','note-right','note-colocated'],rawOffsets=[1,3,1];
+  if(tracked&&withNotes)beforeDoc=pending.bindNoteSourcePoints(beforeDoc,identities.map((noteId,i)=>({noteId,paragraphIndex:0,offsetUtf16:rawOffsets[i]})));
+  const richBody=d({type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},content:[
+    {type:'text',text:'Rich body',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},
+    {type:'hardBreak'},{type:'text',text:'kept'},{type:'hardBreak'}]},p(''),p('Final note paragraph'));
+  const beforeTextValue=tracked?'AB tail':'AxxB tail';
+  const document={schemaVersion:1,projectId,notes:(withNotes?identities:[]).map((id,i)=>({id,title:'',scope:'manuscript',body:notes.validateNoteBody(richBody).text,
+    privateMetadata:{keep:'exact-'+id},manuscript:notes.bindManuscriptPayload({kind:i===1?'endnote':'footnote',body:richBody,sceneId:ownedSceneId,
+      offsetUtf16:tracked?1:rawOffsets[i],sceneContent:envelope.composeObservablePayload({doc:beforeDoc})})}))};
+  document.notes.push({id:'private-project-note',scope:'project',title:'Private',body:'Private text',privateMetadata:{keep:'private'}},
+    {id:'foreign-manuscript-note',scope:'manuscript',title:'Foreign',body:'Foreign body',manuscript:notes.bindManuscriptPayload({kind:'footnote',body:d(p('Foreign body')),
+      sceneId:'roman/foreign.txt',offsetUtf16:2,sceneContent:envelope.composeObservablePayload({doc:d(p('Foreign scene'))})})});
+  const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[
+    {threadId:'single-tail',rootCommentId:'single-root',sceneId:ownedSceneId,status:'open',anchor:exactAnchor({paragraphIndex:0,startUtf16:tracked?3:5,selectedText:'tail'},ownedSceneId,[beforeTextValue,'','After empty paragraph']),
+      messages:[{commentId:'single-root',kind:'root',body:'Writer question',provenance:{author:'Writer'}}]},
+    {threadId:'foreign-thread',rootCommentId:'foreign-root',sceneId:'roman/foreign.txt',status:'deleted',deleted:true,anchor:exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Foreign'},'roman/foreign.txt',['Foreign scene']),
+      messages:[{commentId:'foreign-root',kind:'root',body:'Foreign discussion',provenance:{author:'Another writer'}}]}]};
+  const packet=(doc,notesDocument,nonTextReturnState)=>makeSource({projectId,projectRoot,notesDocument,nonTextReturnState,
+    scenes:[{sceneId:ownedSceneId,scenePath:path.join(projectRoot,ownedSceneId),doc,text:envelope.deriveVisibleTextFromDocument(doc),observableContent:envelope.composeObservablePayload({doc}),order:0}]});
+  const source=packet(beforeDoc,document,state),union=d(p('!AxxB tail'),p(''),p('After empty paragraph'));
+  const revisions=tracked?[event(3,'insert',0,1),event(1,'delete',2,4),event(4,'delete',4,5)]:[event(3,'insert',0,1),event(4,'delete',2,4)];
+  let afterDoc=pending.bindLedger(ledger(union,revisions));
+  if(withNotes)afterDoc=pending.bindNoteSourcePoints(afterDoc,identities.map((noteId,i)=>({noteId,paragraphIndex:0,offsetUtf16:rawOffsets[i]+1})));
+  const current=[(tracked?'!A tail':'!AB tail')+'\n\nAfter empty paragraph'],afterNotes=plain(document);
+  for(const note of afterNotes.notes.filter(note=>identities.includes(note.id))) {note.manuscript.reference.offsetUtf16=2;note.manuscript.reference.sourceTextSha256=hash(current[0]);}
+  const afterState=plain(state),thread=afterState.threads[0];
+  thread.anchor=exactAnchor({paragraphIndex:0,startUtf16:tracked?3:4,selectedText:'tail'},ownedSceneId,current[0].split('\n'));
+  thread.status='resolved';thread.messages.push({commentId:'single-reply',kind:'reply',body:'Editor reply',provenance:{author:'Editor'}});
+  afterState.threads.push({threadId:'single-insert',rootCommentId:'single-insert-root',sceneId:ownedSceneId,status:'open',
+    anchor:exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'!'},ownedSceneId,current[0].split('\n')),
+    messages:[{commentId:'single-insert-root',kind:'root',body:'Inserted text discussion',provenance:{author:'Proofreader'}}]});
+  const afterSource=packet(afterDoc,afterNotes,afterState),bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const cryptoPort={sha256Text:hash,sha256Json:value=>'sha256:'+hash(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)};
+  const originalBytes=builder.buildDocxReviewPacketBuffer(source),originalParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(originalBytes).parts;
+  const editedParts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(builder.buildDocxReviewPacketBuffer(afterSource)).parts;
+  const parts={...originalParts};for(const [name,data] of Object.entries(editedParts))if(name.startsWith('word/'))parts[name]=data;
+  const names=xml=>[...xml.matchAll(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu)].map(m=>m[1]);
+  const ownedNames=names(originalParts['word/document.xml']),editedNames=names(parts['word/document.xml']);
+  assert.equal(ownedNames.length,3);assert.equal(editedNames.length,3);
+  let index=0;parts['word/document.xml']=parts['word/document.xml'].replace(/<w:bookmarkStart\b[^>]*\bw:name="(YRTK_[^"]+)"[^>]*\/>/gu,(tag,name)=>tag.replace(`w:name="${name}"`,`w:name="${ownedNames[index++]}"`));
+  const bytes=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},
+    {cryptoPort:{...cryptoPort,hmacSha256Json:(value,key)=>'hmac-sha256:'+crypto.createHmac('sha256',key).update(JSON.stringify(value)).digest('hex')}});
+  assert.equal(analysis.ok,true,JSON.stringify(analysis));assert.equal(analysis.authorityCarrier.status,'verified-baseline-bound');
+  const preview=bridge.buildDocxContentPreviewFromZipBytes(bytes);assert.equal(preview.ok,true,JSON.stringify(preview));
+  const parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:source.localAuthorityCapsule.exportMap,
+    baselineDocuments:[{sceneId:ownedSceneId,document:beforeDoc}],retainPendingScenes:true,...(withNotes?{baselineDocumentNotes:source.documentNotes}:{}),
+    documentSections:source.documentSections,signedSectionsDigest:source.documentSections.protectedDigest,cryptoPort});
+  assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  const exportMap=plain(source.localAuthorityCapsule.exportMap);delete exportMap.commentExport;
+  const proof={schemaVersion:withNotes?4:3,projectId,roundId:source.localAuthorityCapsule.roundId,artifactSha256:'sha256:'+hash(bytes),baseline:source.commentExport,exportMap,
+    returnedScenes:parsed.scenes.map(s=>({sceneId:s.sceneId,ledger:pending.readLedger(s.returnedDocument)})),returnedThreads:analysis.reviewIr.commentThreads,
+    returnedParagraphs:analysis.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision})),commentReturnInventory:analysis.reviewIr.commentReturnInventory,
+    ...(withNotes?{noteContext:{baseline:source.documentNotes,returnedNotes:bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true}),
+      returnedReferences:analysis.reviewIr.documentNotes.references,unionReferences:preview.contentPreview.pendingNoteReferences}}:{})};
+  const scenes=[{sceneId:ownedSceneId,beforeContent:envelope.composeObservablePayload({doc:beforeDoc})}];
+  return {ids,beforeDocs:[beforeDoc],afterDocs:[afterDoc],document,state,source,afterSource,afterNotes,afterState,richBody,bytes,originalBytes,bridge,analysis,preview,proof,scenes,
+    notesText:JSON.stringify(document),beforeText:JSON.stringify(state),current,afterOffsets:withNotes?[2,2,2]:[]};
 }
 test('complete book note law retains typed spacing/language/breaks and rejects every changed or unknown body field',async()=>{
   const f=await composedBookFixture(),input={document:f.document,projectId,baseline:f.proof.noteContext.baseline,exportMap:f.proof.exportMap,
@@ -96,8 +187,16 @@ test('complete book note law retains typed spacing/language/breaks and rejects e
   }
 });
 test('inactive 720-to-708 tab emission requires complete local book-note bodies and returned identities',async()=>{
-  const f=await composedBookFixture(),original=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+  // Execute the exact predecessor producer, which selects its own V1 law.
+  // This observes compatibility; it grants no runtime round/write authority.
+  const file=require.resolve('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js'),Module=require('node:module');
+  const old=require('node:child_process').execFileSync('git',['show','42b7d2e930aac884b580bcbe8b2d6faa44ab9ac8:src/export/docx/fullManuscriptDocxReviewPacketSource.js'],{cwd:path.resolve(__dirname,'../..'),encoding:'utf8'});
+  assert.equal(hash(old),'829fb5729f333a17a45ee06113ec0cbd07fffcf358b8b88b459f78f15294213d');
+  const predecessor=new Module(file,module);predecessor.filename=file;predecessor.paths=Module._nodeModulePaths(path.dirname(file));predecessor._compile(old,file);
+  const f=await composedBookFixture(null,{sourceFactory:predecessor.exports.buildFullManuscriptDocxReviewPacketSource}),original=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
   const pack=parts=>buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  assert.equal(f.source.exportTypography,undefined,'predecessor packet retains its original top-level shape');
+  assert.equal(f.source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v1');
   assert.doesNotMatch(original['word/settings.xml'],/<w:defaultTabStop\b/u);
   assert.ok(f.source.localAuthorityCapsule.exportMap.scenes.every(scene=>scene.documentFormatIr.explicit===false&&scene.documentFormatIr.wordDefaultTabStop===720));
   const parts={...original,'word/settings.xml':original['word/settings.xml'].replace('</w:settings>','<w:defaultTabStop w:val="708"/></w:settings>')},bytes=pack(parts);
@@ -136,6 +235,21 @@ test('inactive 720-to-708 tab emission requires complete local book-note bodies 
   }
   for(const defaultTab of [719,721])refuse({...input,bytes:pack({...parts,'word/settings.xml':parts['word/settings.xml'].replace('w:val="708"',`w:val="${defaultTab}"`)})});
   for(const kind of ['header','footer'])refuse({...input,bytes:pack({...parts,[`word/${kind}1.xml`]:`<w:${kind==='header'?'hdr':'ftr'} xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p/></w:${kind==='header'?'hdr':'ftr'}>`})});
+});
+test('fresh body720 book-note transport preserves all raw source and refuses a genuine single708 setting edit',async()=>{
+ const f=await composedBookFixture(),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+ const protectedRaw=JSON.stringify({scenes:f.scenes,beforeDocs:f.beforeDocs,notes:f.notesText,source:f.source.localAuthorityCapsule.exportMap});
+ assert.equal(f.source.exportTypography.schemaVersion,'yalken.review-docx.typography-defaults.v2');
+ assert.match(parts['word/settings.xml'],/<w:defaultTabStop w:val="720"\/>/u);
+ const input={bytes:f.bytes,exportMap:f.source.localAuthorityCapsule.exportMap,baselineDocuments:f.ids.map((sceneId,i)=>({sceneId,document:f.beforeDocs[i]})),
+  baselineDocumentNotes:f.source.documentNotes,documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest,
+  allowInactiveDefaultTabEmission:true,retainPendingScenes:true};
+ const unchanged=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);assert.equal(unchanged.ok,true,JSON.stringify(unchanged));
+ assert.deepEqual(unchanged.scenes,f.proof.returnedScenes.map(scene=>({sceneId:scene.sceneId,returnedDocument:pending.bindLedger(scene.ledger)})));
+ parts['word/settings.xml']=parts['word/settings.xml'].replace('<w:defaultTabStop w:val="720"/>','<w:defaultTabStop w:val="708"/>');
+ const changed=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),refused=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({...input,bytes:changed});
+ assert.equal(refused.ok,false);assert.equal(refused.code,'PENDING_COMMENT_DOCUMENT_FORMAT_CHANGED');
+ assert.equal(JSON.stringify({scenes:f.scenes,beforeDocs:f.beforeDocs,notes:f.notesText,source:f.source.localAuthorityCapsule.exportMap}),protectedRaw);
 });
 test('book note styles resolve completely while no-notes styles and global defaults remain byte-exact',async()=>{
   const f=await composedBookFixture(null,{legacyNoteProfile:true}),parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
@@ -338,6 +452,15 @@ test('source points distinguish both deletion boundaries across round undo, deci
     assert.deepEqual(state.notes.map(n => n.manuscript.body), beforeNotes.notes.map(n => n.manuscript.body));
     doc = envelope.parseObservablePayload(afterContent).doc; pending.readLedger(doc); previous = doc;
   };
+  const proofJson=JSON.stringify(proof),cap=32*1024*1024,exact=proofJson+' '.repeat(cap-Buffer.byteLength(proofJson));
+  const args={beforeText:JSON.stringify(beforeNotes),projectId,sceneId,beforeContent:envelope.composeObservablePayload({doc:original}),afterContent:envelope.composeObservablePayload({doc})};
+  const normal=notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:proofJson});
+  const full=notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:exact});
+  assert.deepEqual({...full,pendingNoteReturnProofJson:proofJson},normal);notes.validateNoteCohort(full,args);
+  assert.throws(()=>notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:exact+' '}),e=>e.code==='NOTE_RETURN_PROOF_BUDGET');
+  const forged=structuredClone(proof);forged.baseline.stateDigest='0'.repeat(64);
+  assert.throws(()=>notes.planManuscriptNoteAnchorSave({...args,pendingNoteReturnProofJson:JSON.stringify(forged)+' '.repeat(9*1024*1024)}),/PENDING_NOTE_/);
+  assert.equal(JSON.stringify(proof),proofJson);
   observe([1,1]);
   for (const [action, expected] of [['rejectAll',[1,3]],['undo',[1,1]],['acceptAll',[1,1]],['undo',[1,1]],['undo',[1,3]],['redo',[1,1]]]) {
     doc = pending.decide(doc, { action }).doc; observe(expected);
@@ -783,4 +906,44 @@ test('equal visible text with changed source occurrence commits the note cohort 
     assert.equal(notes.sceneText(fs.readFileSync(h.file,'utf8')),'AxxB');
     assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')).notes.map(n=>n.manuscript.body),h.document.notes.map(n=>n.manuscript.body));
   }
+});
+
+for(const tracked of [false,true])test('single full manuscript complete note and discussion cohort '+(tracked?'pending':'clean'),async()=>{
+  const f=await singleFullManuscriptFixture({tracked}),before=JSON.stringify(f.proof),mixed=require('../../src/core/word-pending-comment-return-v1.cjs');
+  assert.equal(f.source.localAuthorityCapsule.scope,'full-manuscript');assert.equal(f.source.documentNotes.breakEmission.schemaVersion,2);
+  const plan=mixed.planMixedBookReturn({projectId,beforeText:f.beforeText,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(f.proof)});
+  const actual=pending.projection(envelope.parseObservablePayload(plan.scenes[0].content).doc);
+  assert.equal(actual.current,f.current[0]);assert.equal(actual.original,'AxxB tail\n\nAfter empty paragraph');
+  const state=JSON.parse(plan.afterText);assert.equal(state.threads.find(t=>t.threadId==='single-tail').status,'resolved');
+  assert.deepEqual(state.threads.find(t=>t.threadId==='foreign-thread'),f.state.threads[1]);assert.equal(JSON.stringify(f.proof),before);
+  const model=await import('../../src/core/project-tree-cohort-v1.mjs');
+  const cohort=model.planProjectMixedWordReturnCohort({operation:'word-mixed-return',operationId:'one-complete',projectId,manifestPath:'/project/project.craftsman.json',
+    beforeManifestText:JSON.stringify({projectId}),expectedTreeRevision:0,scenes:f.scenes.map(s=>({...s,commitText:null})),notesText:f.notesText,commentsText:f.beforeText,returnProofJson:JSON.stringify(f.proof)});
+  model.validateProjectTreeCohort(cohort);assert.equal(cohort.affectedScenes.length,1);
+});
+
+for(const kind of ['missing-profile','profile-v1','profile-v3','partial-profile','unknown-profile','missing-note','duplicate-native','wrong-native','wrong-identity','wrong-offset','body-change','break-change']) {
+  test('single full manuscript strict complete note refusal '+kind,async()=>{
+    const f=await singleFullManuscriptFixture({tracked:true}),proof=plain(f.proof),ctx=proof.noteContext,baseline=ctx.baseline;
+    if(kind==='missing-profile')delete baseline.breakEmission;
+    if(kind==='profile-v1')baseline.breakEmission={schemaVersion:1,fontSize:'12pt'};
+    if(kind==='profile-v3')baseline.breakEmission.schemaVersion=3;
+    if(kind==='partial-profile')delete baseline.breakEmission.wordLanguage;
+    if(kind==='unknown-profile')baseline.breakEmission.unrecognized=true;
+    if(kind==='missing-note')ctx.returnedNotes.pop();
+    if(kind==='duplicate-native') {ctx.returnedReferences[1].nativeId=ctx.returnedReferences[0].nativeId;ctx.returnedReferences[1].kind=ctx.returnedReferences[0].kind;}
+    if(kind==='wrong-native')ctx.returnedReferences[0].nativeId='999';
+    if(kind==='wrong-identity')ctx.returnedNotes[0].transportIdentity='_YALKEN_NOTE_'+'0'.repeat(24);
+    if(kind==='wrong-offset')ctx.unionReferences[0].offsetUtf16++;
+    if(kind==='body-change')ctx.returnedNotes[0].body.content[0].content[0].text+=' changed';
+    if(kind==='break-change')ctx.returnedNotes[0].breakProjection=[];
+    const protectedInput=JSON.stringify({scenes:f.scenes,document:f.document,state:f.state,proof});
+    assert.throws(()=>require('../../src/core/word-pending-comment-return-v1.cjs').planMixedBookReturn({projectId,beforeText:f.beforeText,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(proof)}),/PENDING_NOTE_/);
+    assert.equal(JSON.stringify({scenes:f.scenes,document:f.document,state:f.state,proof}),protectedInput);
+  });
+}
+test('single full manuscript producer refuses an active discussion in an absent scene',async()=>{
+  const f=await singleFullManuscriptFixture(),state=plain(f.state);state.threads[1].status='open';delete state.threads[1].deleted;
+  assert.throws(()=>require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource({projectId,nonTextReturnState:state,
+    scenes:[{sceneId:f.ids[0],doc:f.beforeDocs[0],text:envelope.deriveVisibleTextFromDocument(f.beforeDocs[0]),order:0}]}),/DOCX_COMMENT_ANCHOR_STALE/);
 });

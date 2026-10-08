@@ -74,6 +74,21 @@ test('Former Node.update public byteview API hashes exact raw slice and rejects 
   }
 });
 
+test('SHA padding boundaries preserve binary offset slices, backing storage and fallback Unicode bytes', () => {
+  const fallback = { module: { exports: {} }, TextEncoder: undefined };
+  vm.runInNewContext(fs.readFileSync(path.join(core, 'browser-safe-hash.cjs'), 'utf8'), fallback);
+  for (const length of [0,1,54,55,56,57,63,64,65,118,119,120,127,128,129,1023,1024,1025]) {
+    const backing = Uint8Array.from({ length: length + 19 }, (_, i) => (i * 173 + 251) & 255);
+    const before = backing.slice(), view = new DataView(backing.buffer, 7, length);
+    assert.equal(hashing.sha256UpdateCompatible(view), native(view), `binary length ${length}`);
+    assert.equal(fallback.module.exports.sha256UpdateCompatible(view), native(view));
+    assert.deepEqual(backing, before, 'padding never changes either the slice or adjacent bytes');
+    const text = 'x'.repeat(length) + 'Я\0世界👩🏽‍💻e\u0301\ud800z\udc00';
+    assert.equal(hashing.sha256Hex(text), native(text));
+    assert.equal(fallback.module.exports.sha256Hex(text), native(text));
+  }
+});
+
 test('Four Core domain modules preserve complete comment, anchor, return and note outputs against Node crypto', async () => {
   const oracle = nativeOracleModules(), authorName = names[0], saveName = names[1], returnName = names[2], notesName = names[3];
   const models = Object.fromEntries(names.map(name => [name, require(path.join(core, name))]));
@@ -109,16 +124,45 @@ test('Four Core domain modules preserve complete comment, anchor, return and not
   assert.deepEqual(models[returnName].planCommentReturnDelta(returnInput), oracle[returnName].planCommentReturnDelta(returnInput));
   const changedReturn = { ...returnInput, returnedThreads: structuredClone(returnInput.returnedThreads) };
   changedReturn.returnedThreads[0].body = 'Changed Unicode 世界 😀';
+  const mismatchOperand = structuredClone(changedReturn);
   for (const module of [models[returnName], oracle[returnName]]) {
     assert.throws(() => module.planCommentReturnDelta(changedReturn), { code: 'COMMENT_BODY_PROJECTION_MISMATCH' });
   }
   const paragraph = changedReturn.returnedThreads[0].richBody.document.content[0];
   changedReturn.returnedThreads[0].richBody.document.content = [{ ...paragraph,
     content: [{ ...paragraph.content[0], text: 'Changed Unicode 世界 😀' }] }];
+  // Direct and effective observations must describe the same actual return.
+  for (const model of [models[returnName], oracle[returnName]])
+    assert.throws(() => model.planCommentReturnDelta(changedReturn), { code: 'COMMENT_RETURN_EFFECTIVE_FORMAT_UNPROVEN' });
+  const staleOperand = structuredClone(changedReturn);
+  const changedParts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts };
+  let firstText = true;
+  changedParts['word/comments.xml'] = changedParts['word/comments.xml'].replace(/<w:t\b[^>]*>[^]*?<\/w:t>/gu, () => {
+    if (!firstText) return ''; firstText = false;
+    return '<w:t xml:space="preserve">Changed Unicode 世界 😀</w:t>';
+  }).replace(/<w:br\s*\/>/gu, '');
+  assert.equal(firstText, false);
+  const changedBytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(changedParts).map(([name, data]) => ({ name, data })));
+  const changedAnalysis = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: changedBytes },
+    { cryptoPort: { sha256Text: native, sha256Json: value => 'sha256:' + native(hashing.canonicalSerialize(value)), byteLength: value => Buffer.byteLength(value) } });
+  assert.equal(changedAnalysis.ok, true, JSON.stringify(changedAnalysis));
+  assert.equal(changedAnalysis.reviewIr.commentThreads[0].body, 'Changed Unicode 世界 😀');
+  assert.deepEqual(changedAnalysis.reviewIr.formattingParagraphs, analysis.reviewIr.formattingParagraphs);
+  changedReturn.artifactSha256 = native(changedBytes);
+  changedReturn.returnedThreads = changedAnalysis.reviewIr.commentThreads;
   const changed = models[returnName].planCommentReturnDelta(changedReturn);
-  assert.deepEqual(changed, oracle[returnName].planCommentReturnDelta(changedReturn));
+  const nativeChanged = oracle[returnName].planCommentReturnDelta(changedReturn);
+  assert.deepEqual(changed, nativeChanged);
+  if (process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT) {
+    const dir = path.join(process.env.YALKEN_WORD_COMMENT32_EVIDENCE_ROOT, 'HASH_PARITY33_CHANGED_UNICODE'); fs.mkdirSync(dir, { recursive: true });
+    for (const [name, data] of Object.entries({ 'original.docx': bytes, 'returned.docx': changedBytes,
+      'source.json': JSON.stringify(source), 'original-input.json': JSON.stringify(returnInput), 'direct-mismatch-input.json': JSON.stringify(mismatchOperand), 'stale-input.json': JSON.stringify(staleOperand),
+      'actual-input.json': JSON.stringify(changedReturn), 'outputs.json': JSON.stringify({ qualification: 'FINITE_ZIP_PARSER_CORE_HASH_PARITY_NOT_AUTH_OR_NATIVE', changed, nativeChanged }) }))
+      fs.writeFileSync(path.join(dir, name), data, { flag: 'wx' });
+  }
   assert.equal(changed.unchanged, undefined);
   assert.match(changed.afterText, /Changed Unicode 世界 😀/);
+  assert.equal(JSON.parse(changed.afterText).threads[0].messages[0].body, 'Changed Unicode 世界 😀');
 });
 
 test('Pure implementation retains UTF8 fallback and bundles for browser without Node effects', async () => {
