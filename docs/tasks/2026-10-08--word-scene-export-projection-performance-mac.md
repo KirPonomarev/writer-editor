@@ -1,10 +1,11 @@
 TASK_ID: WORD_SCENE_PENDING_EXPORT_PERFORMANCE_MAC_20261008
 MILESTONE: macOS large-novel Word exchange; bounded scene-export performance step
 TYPE: CORE
-STATUS: CODE_PROOF_COMPLETE_DELIVERY_OPEN
+STATUS: CODE_AND_WINDOWS_REPAIR_FROZEN_DELIVERY_OPEN
 CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
 BINDING_BASE_SHA: 092387eae3a0a6ee606fdbe100ee0828c58b40a2
+WINDOWS_ARGV_REPAIR_BINDING_HEAD: 9d30eb0e15b7af7fd4f958643f7d59f440f7a7f9
 BRANCH: codex/word-scene-export-projection-perf-mac-20261008
 COMMIT_REQUIRED: true
 PUSH_REQUIRED: true
@@ -26,7 +27,10 @@ schemas, resource caps and the full large-novel release remain separate and OPEN
 A small Main query-placement correction, appended readable behavioral regression,
 physical tiny-corpus DOCX artifacts and complete required delivery.
 Root owns task/docs/OPS, proof review and Git. Separate code writer owns exactly
-the two runtime/test paths below. Predecessor PR2093 is merged at binding base;
+the original two runtime/test paths below; these are now immutable HOLD.
+For the observed Windows delivery repair, writer owns only the data-verifier drift
+query and appended existing denominator contract; root updates its policy SHA
+only after writer HOLD. No second feature or acceptance-policy change. Predecessor PR2093 is merged at binding base;
 its exact merged focused248of248, ZIP14of14 and guardrails actually passed.
 Native short proof ran at predecessor72272be9 with the identical whole tree;
 it is not a new native run at this base or a full-novel release certificate.
@@ -35,6 +39,7 @@ it is not a new native run at this base or a full-novel release certificate.
 
 - src/main.js
 - test/unit/export-book-profile-binding.test.js
+- test/contracts/rtk-interop-100-denominator.contract.test.js
 - docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -53,7 +58,11 @@ prefix and assertions stay byte-exact. Root documents stay concise.
 Seven OPS companions may update exact source-binding hashes after writer HOLD
 and append only this already declared task to admission/source bindings. Preserve
 the complete old622-path and480-binding prefixes,1597 inventory paths and230
-historical certification tuples; append one nonrecursive successor tuple.
+historical certification tuples; the original nonrecursive successor is already
+committed. Preserve all231 candidate tuples and append one repair successor.
+Observed Windows repair permits exactly one verifier drift-query replacement
+plus at most160 appended denominator-test lines. All existing test assertions and
+the held Main/unit bytes remain exact. No path or source-binding identity added.
 No approval-only PR or alternate tracker. External proof uses owned evidence
 directory, finite synthetic fixtures and the existing bounded runner.
 
@@ -162,7 +171,7 @@ inputs and generated/preload outputs preserved, second process idempotent.
 CHECK_07_POST_GATES: exact task E0, current interop-data-C1 strict actual runner,
 frozen R24 E0 behavior/mutants, OSS policy, npm audit and agent guardrails; official
 required CI must execute actual full inventories rather than echoes/count claims.
-CHECK_08_POST_DELIVERY: exact staged13path maximum, commit, push, attached PR,
+CHECK_08_POST_DELIVERY: exact staged14path maximum, commit, push, attached PR,
 all required actual CI, normal merge, exact remote/head/tree and clean merged
 verification with relevant whole-suite repeat; report actual outcomes and limits.
 
@@ -188,6 +197,46 @@ DELIVERY_STATE: final root docs and exact mechanical bindings are prepared next;
 mandatory final gates, commit/push/official CI/merge/exact merged proof remain OPEN.
 FULL_RELEASE_STATE: genuine large-novel multi-round Word roles/scopes, save/redo
 performance and production30s/512MiB acceptance remain OPEN. No full release PASS.
+
+WINDOWS_CI_REPAIR: same delivery chain, admitted at clean candidate9d30eb0e.
+Original binding base/main092387 remains unchanged. Official Windows run37740205204
+job113188918172 fails spawnSync git ENAMETOOLONG:623 file arguments cause629 argv
+entries and32666 path characters. Retained raw official log is62524bytes with
+SHA347251b38b32ad00c286e52259016d1d5e53bcd696ede7974640fdeba988807d.
+Hypothesis: ask Git for the same complete name-only/no-renames diff at the same
+resolved SHAs using six arguments, then filter exact existing admitted membership.
+All623 literal ASCII paths are unique without pathspec metacharacters or nested
+prefixes. Preserve all immutable/source/policy/protected/base/ancestry predicates,
+timeout/maxBuffer, ordered denominator and fail-closed behavior.
+Repair sequence: clean preflight; amended exact-task E0; explicit two-file writer
+release; retained causal RED at old629-entry invocation; one-line replacement;
+complete focused real-Git/denominator/refusal regression; writer HOLD; root
+independent review, four concise docs and seven exact mechanical bindings; seven
+precommit gates and a normal follow-up candidate commit. At its CLEAN exact HEAD
+execute all three whole affected contracts before push to same PR2094, fresh full
+official CI, normal merge and exact merged proof. The outer contract calls actual
+git show HEAD; no uncommitted Git overlay or oracle substitution is permitted. Never retry unchanged failed CI as proof.
+The existing temporary real-Git helper covers first/middle/last admitted drift,
+unrelated and prefix-lookalike names. Test all mutable admitted names and each
+immutable name; retain policy/source tamper, wrong tree, ancestry and unadmitted
+base-delta controls. No native app or large workload is admitted by this repair.
+Held Main SHA f54b5d5688d85ab9ee478b21573b5c15f75a0b3e32091d8a235cf1822ce56fa1
+and product test SHA a7130f590d6efa0895f914f014fe42a9c0d9c6f4b2876c55a81accac5e7a53fa
+must remain exact. Completed183of183 product proof is retained; this repair does
+not claim the official Windows failure green or the original full novel done.
+
+ACTUAL_WINDOWS_REPAIR_FROZEN: one drift-query line plus102 appended test lines;
+old96611byte test prefix exact. Causal diagnostic child1:15tests6pass9fail at629vs6;
+corrected diagnostic child0:15of15. Both intentionally name-filter other tests;
+TAPskip0 does not grant whole-file proof. Root independently read all6 retained
+real Git bundles/cases and executed old literal pathspec equivalence on the tiny
+fixtures. Mixed drift removes exactly3admitted paths, unrelated-only retains623,
+and immutable checker drift refuses; complete mutable/immutable and6tamper controls
+pass in the selected regression. All579 product and136 compiler inputs are exact;
+Main and product test remain held. Writer HOLD SHA3da33b3908b8c455efe7e8330bc57a4b85ebb738e485045067eecdce52536387.
+Three whole contracts must execute at the clean follow-up candidate before push;
+final mandatory gates, fresh official Windows/all CI, merge and merged proof OPEN.
+Original full novel/native roles/scopes/five exchanges and save/redo remain OPEN.
 
 ## STOP_CONDITION
 

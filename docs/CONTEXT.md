@@ -3189,3 +3189,18 @@ normal merge and exact merged verification remain OPEN at this documentation fre
 Full native large-novel roles/scopes/five exchanges, save/redo performance and
 production30s/512MiB acceptance remain OPEN; no native or release PASS is claimed.
 Next: complete delivery, then a separately admitted save/redo performance contour.
+
+
+## 2026-10-08 — same scene-export delivery: Windows argv repair frozen
+
+At repair head9d30eb0e (original base/main092387), official Windows job113188918172
+fails Git argv capacity. One drift-query line now obtains the same full diff and
+filters exact existing623-path membership;481 source identities and all predicates
+remain.102 regression lines append to the byte-exact old prefix. Causal diagnostic
+is15tests6pass9fail at629vs6; corrected selected regression15of15, explicitly name
+filtered. Root independently read6 real tiny Git cases and old pathspec equivalence.
+All579 product/136 compiler inputs and prior183of183 export proof remain held.
+Three whole contracts require the clean follow-up candidate after final bindings
+and seven precommit gates, before push; no uncommitted Git overlay. PR2094 fresh
+official Windows/all CI, merge and exact merged proof remain OPEN. Original full
+novel/native matrix and save/redo remain OPEN; no overall release claim.

@@ -1075,7 +1075,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "08ade5c40194102b6500d51882f58cd5b3c3de6457acdfbb4366b3f97e8028da"
+        "sha256": "5658ed6e303942d94e0a7c2b65df03a4e95d28e4be6298e35914d7f324233cfe"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -2551,15 +2551,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "746bf9e87457b67f05f12ebacda4dc2cb4628c721545ff2595bba86fd71807f9"
+        "sha256": "52bf9de52ed3677a61219e398b34ab8665947a071c26b38fdae319df21e79d52"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "08f1e56a617b4b058fc4bec0f5100b0dd2069930175ea9347d6c7a36368ced62"
+        "sha256": "f04d560525c179e2577aa4b4a38e856ca889e8f719d4647cc74ef3b5536be46f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "0573f5ba22bacb6d8aaa88467920bedfc0a6aa4e2fbcc30221e6a65ef6ae6b02"
+        "sha256": "08818e7f76a6ccac236dfe0c0b0620fb0e8f19c6e9d80eaaf45bd6d6544680e9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2779,7 +2779,7 @@
       },
       {
         "path": "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md",
-        "sha256": "76c768e6700e1aee7f57c344fb7f59a4dcc0aac6d64206d2773e0fd941bca6ca"
+        "sha256": "901a45baa39b3aac75709f2a426ac4c40d4125fe5f026915d86774f8a8d2d5bb"
       }
     ],
     "followupRepair": {

@@ -7,7 +7,7 @@ import {performance} from 'node:perf_hooks';
 import {ORDER_CELL,readOrderFile,stableOrderJson,validateOrderRunId,selectOrderObservation,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {TEXT_CELL,TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 export const DATA_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
-export const DATA_POLICY_SHA256='18e49367b5829e7fae60fb3aa780b2557fc0d7ddf51d10516f5db771d0be9087';
+export const DATA_POLICY_SHA256='d0933647eca661f763e0fc4f4681ad24d30a531264b19314ab12a26d9bebe104';
 export const DATA_MODE='DATA_C1_MACHINE_REVIEW_V1';
 export const CELLS=[TEXT_CELL,ORDER_CELL];
 export const stableSharedJson=stableOrderJson;
@@ -117,7 +117,7 @@ export function verifyDataC1PostEvaluation({candidateSha='HEAD',git=gitAt(ROOT)}
   demand(changed.every(p=>DATA_ADMITTED_PATHS.includes(p)),'SHARED_UNADMITTED_DELTA');
   for(const b of policy.protectedFiles)
     demand(hash(git(['show',resolved+':'+b.path]))===b.sha256,'SHARED_PROTECTED_FILE');
-  const drift=new Set(String(git(['diff','--name-only','--no-renames',delivery,resolved,'--',...DATA_ADMITTED_PATHS])).trim().split('\n').filter(Boolean));
+  const drift=new Set(String(git(['diff','--name-only','--no-renames',delivery,resolved,'--'])).trim().split('\n').filter(p=>DATA_ADMITTED_PATHS.includes(p)));
   const immutable=[DATA_POLICY_PATH,RAW_PATH,'scripts/ops/rtk-interop-data-c1.mjs',
     'docs/tasks/2026-09-16--interop-data-recipes-c1.md'];
   demand(immutable.every(p=>!drift.has(p)),'SHARED_IMPLEMENTATION_DRIFT');
