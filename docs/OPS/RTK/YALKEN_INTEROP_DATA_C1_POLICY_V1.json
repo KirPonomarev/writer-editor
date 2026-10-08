@@ -632,7 +632,8 @@
     "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
     "docs/tasks/2026-10-08--word-scene-export-projection-performance-mac.md",
     "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
-    "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md"
+    "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md",
+    "docs/tasks/2026-10-08--word-parser-query-performance-mac.md"
   ],
   "protectedFiles": [
     {
@@ -977,7 +978,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "e60a3c0853988b185be7b4d753ae4fbd95f84123da1877422bff491dd8cd7bb8"
+        "sha256": "49f88e3ec23dbb268fb9b89aa98f9bd0069dd7291f5458e08468bd141bdd067a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -2501,7 +2502,7 @@
       },
       {
         "path": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
-        "sha256": "981d77c5df0d96ecfc57a97ddcc8b032a3498bc481cc0f13379cb27ce13be632"
+        "sha256": "cd71021cf682828085c3d1d9257cdf16c805c2e82644d64f4e71986cc26718fe"
       },
       {
         "path": "docs/tasks/2026-10-04--word-import-attempts-mac.md",
@@ -2553,15 +2554,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "fad26247786df103bb9bed1f3645bee741671515ddfef1d009ce7068a2e2278f"
+        "sha256": "a486fb4b89c16bb4f0d1a820a072e2fb1ca1b2462eff33151fff534b795b118d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "54aeacbe6be87343e1fb76123d032bff748aae0442032177911cd76b29607bd9"
+        "sha256": "ccabce66ab5511f04907a311069e7d9b448ea66220bb9420718e3ddcc67af3f6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "89c9bf396ac7cad3294a7101eefd590e59c0dae670948c2ce2357893c0674c10"
+        "sha256": "d1ff0e0e9ed56e965399a58d63129aa6da1001e811c3c8bdb454127acba42634"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2790,6 +2791,10 @@
       {
         "path": "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md",
         "sha256": "86e95680fb120e6ab8e27098003b8b35c501ed72435df6f57549cb900f667230"
+      },
+      {
+        "path": "docs/tasks/2026-10-08--word-parser-query-performance-mac.md",
+        "sha256": "9e5985999a7b2f027d03d0d7939eed499b90e221a2183949ab2f4dec39168e66"
       }
     ],
     "followupRepair": {
