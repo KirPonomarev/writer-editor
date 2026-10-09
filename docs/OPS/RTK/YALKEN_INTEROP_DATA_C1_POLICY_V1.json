@@ -869,7 +869,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "1581b70a29aaee28fa601047571a17acbd5d4e0d2491377fa396207f1ae93513"
+        "sha256": "504defd267427652e8fc861434b8dc8f70947c391a0ab5b89efc3c7060508b62"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1105,7 +1105,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-        "sha256": "1ae82c336d5308b454d59e6d028129cf7662ef8f688084d9f2f17ac6feb406ea"
+        "sha256": "b2ecf144f5c57189567b8d9b9c667b56f8ac01908bcfa77c4627b3e95f7fda76"
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
@@ -2561,15 +2561,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9894acc34d1abeb030262eacf4cf228cf71da8d3844029f4a25e5ce96386d7a9"
+        "sha256": "94c42b22369e4d507e53f97516b6b08071f6fc63c06ca25df058518aa2954fba"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "b482fa26dde36b51929116b1b6262d3ddabe5b1fa1e8ba43a2d875428ff1e131"
+        "sha256": "e3f605a6dacf6d9b52e4b1cd98ae3e57e1c59dabba6bfb20dee7c9af60faa7d2"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "960c141dc62828e78572f9328390cb31d70a69a516ecf5a19173c51bad6b7622"
+        "sha256": "0c52ef81b5f48ee9cac47bc98b3d8d139e064012bd8ec0b841d6eee902f8cf2a"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2825,7 +2825,7 @@
       },
       {
         "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
-        "sha256": "ea701455f7b0678d96431e0f748e4783976d33d963f369bd87df049f3698660a"
+        "sha256": "78d7c53ad97dadc8ac5c73316706dac1198b2c9e6885960d39a431bf3eab9f95"
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",

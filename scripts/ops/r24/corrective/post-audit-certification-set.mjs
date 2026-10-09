@@ -15098,7 +15098,7 @@ export const R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "1581b70a29aaee28fa601047571a17acbd5d4e0d2491377fa396207f1ae93513"
+      "sha256": "504defd267427652e8fc861434b8dc8f70947c391a0ab5b89efc3c7060508b62"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -15298,7 +15298,7 @@ export const R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-      "sha256": "1ae82c336d5308b454d59e6d028129cf7662ef8f688084d9f2f17ac6feb406ea"
+      "sha256": "b2ecf144f5c57189567b8d9b9c667b56f8ac01908bcfa77c4627b3e95f7fda76"
     },
     {
       "path": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
@@ -15470,7 +15470,7 @@ export const R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
-      "sha256": "ea701455f7b0678d96431e0f748e4783976d33d963f369bd87df049f3698660a"
+      "sha256": "78d7c53ad97dadc8ac5c73316706dac1198b2c9e6885960d39a431bf3eab9f95"
     },
     {
       "path": "src/utils/docxImportSafeCreate.js",
@@ -15496,7 +15496,7 @@ export const R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b0947ace91b0974785f2f956859e81c4131c0b21f55917941cf36e6df06a26be"
+      "sha256": "fbba6262167a76e7e834e315aad14bb0cfe0df48e7922999bf01c18912395511"
     }
   ]
 });

@@ -1,7 +1,7 @@
 TASK_ID: WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009
 MILESTONE: macOS large novel; ordinary Word-origin import as editable chapters
 TYPE: CORE
-STATUS: SOURCE_PROOF_COMPLETE_DELIVERY_PENDING
+STATUS: SOURCE28_PROOF_COMPLETE_DELIVERY_PENDING
 ROLE: BOUNDED_EXECUTION_TASK
 CLAIM_BOUNDARY: canonical-default uniform-section DOCX partition; original full novel OPEN
 CANON_VERSION: v3.13a-final
@@ -88,6 +88,7 @@ needed for the new maintained test, with no runner/evaluator/workflow change.
 - test/unit/r24-wp201-project-transaction-mutants.test.js
 - test/contracts/rtk-word-novel-import-partition.contract.test.js
 - test/contracts/rtk-word-comment-authoring.contract.test.js
+- test/contracts/rtk-word-full-manuscript-volume.contract.test.js
 - docs/tasks/2026-10-09--word-origin-novel-partition-mac.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -555,6 +556,88 @@ Required exact mechanical OPS, gates, commit/push/PR/CI/merge/exact-merged proof
 are not yet complete. Candidate source proof is not delivered capability.
 NEXT: complete this delivery chain, then the next actual full-novel gap.
 
+### Same-contour actual CI capacity correction
+
+Two independently completed official candidate7453 RTK jobs execute4051of4052,
+zero skips/todo/cancelled, and both fail only the existing actual500k positive:
+Main plan reference returns E_DOCX_IMPORT_REFERENCE_UNAVAILABLE with reason
+DOCX_IMPORT_REFERENCE_STALE_OR_FULL. Full raw logs994498a710c1fbd019f7cffbd8be39d1fa7b73f7dfdfd6f832703d4880843c98 andddd506218ebcb60a579f594a243b5dbee6315c619a4bc2c1e81d759120d5808a are retained.
+The full500k publication/semantic gates and content reference pass; the new
+partitioned plan can exceed the previous Main16MiB snapshot ceiling. Aggregate
+capacity evicts snapshots, so only the exact serialized before operand can
+choose a sufficient finite profile. No failing suite is repeatedly rerun.
+
+Root current clean e095 preflight07 is actual0, declaration38cb9ab24fda923536b3486166a12d60bfbbeb32c8b3c6dbcf61e19e5966b6ab.
+Separate writer clean preflight is actual0, declaration792020a01f239842c0244c67ddc676890dc14f711585fae74fae93509f93d737 and full3444-path
+pre-edit freeze0e478c2f70ef15a4207941fd373745976c5b145a39e57b50bfc6731dfa6df0f6.
+Root docs/OPS ownership and original M delivery base remain. Existing43-path
+maximum adds only the existing full-manuscript volume contract; handwritten
+runtime and test a+d remain within the original1600plus1600 budget. Current
+runtime correction is src/main.js only. No renderer/compiler input changes.
+
+Direct owner full500k and earlier larger-megabyte instructions admit a measured
+finite Main disposable-reference profile. First perform one separately pinned
+external read-only diagnostic on the same actual500k corpus and exact current
+Main/bridge/store, retaining complete operands in the Yandex test folder. Bind
+exact head/source/helper/command and existing900s/40GB finite owned proof lane.
+No native launch, application profile, manuscript write, Save/Undo or new
+500k corpus. This diagnosis is not a product PASS or write authority.
+
+After the measured before operand, change only the Main local reference
+profile, at most32MiB per snapshot, with a sufficient finite aggregate for the
+complete content and plan together. Shared store defaults4MiB/16MiB,64entries,
+TTL/context/random references, direct IPC4MiB, file DOCX16MiB, parser/ZIP
+ceilings, Core32MiB plan/packet/journal and immutable20MiB/129 resource bound
+remain exact. No renderer-supplied capacity, unlimited state or new cache.
+
+Amend only the existing500k positive's obsolete one-scene Main expectation to
+ordered word-novel-root-partitions. Compare complete canonical paragraph types
+and literal texts joined in order; source remains exact. Separately execute
+the existing default combined builder against the identical report and retain
+its original one-scene control. Preserve every publication, semantic, transport,
+parser tighter-budget and all other existing assertion. New finite-store
+boundary controls are required; no skips, filtering, test weakening or count-only
+success. Final complete unfiltered affected union is28 files: original27 plus
+this one existing volume contract. Execute unchanged mandatory TAP on its full
+log, source/preload/compiler freeze, full operands, required root gates and
+fresh complete official CI before normal merge and exact-merged repeat.
+
+Candidate02 CI is retained as superseded/cancelled after exact identical-source
+causal failure, never PASS. No native or new contour starts before this chain
+closes. Original full macOS novel release remains OPEN.
+
+### Completed current capacity correction and source proof
+
+Actual unchanged-corpus measurement and independent full operand review prove
+500108words,8391paragraphs and42 ordered novel scenes. Content10901820B plus
+plan20977790B totals31879610B, already below the old32MiB aggregate. The actual
+failure is only the old16MiB per-snapshot ceiling. Main now admits32MiB per
+snapshot and a finite48MiB aggregate, deliberately reserving headroom for the
+previous16MiB content plus existing32MiB Core candidate; not a measured
+aggregate failure. Shared defaults and all other authority/bounds remain exact.
+Independent review6fe9270c375aabc2af485019b85cb355480547e74c429d2b8a7c0007b92efe19.
+
+The complete current28-file unfiltered union actually exits0:628of628, zero
+failed/cancelled/skipped/todo;472.220740208s, childRUmax3855548416B, no bound.
+Root runs the unchanged mandatory TAP against all628 raw records and summary:
+8280319bb8afc72d7e1f18857a8a249d3d089f69e65ccb9cabebe35229eb14fa.
+Full raw log412eed7933e94a650425e12f69eafd0d23977a390f2508699d4867d3687ecc3d.
+Complete current500k paragraphs, attrs, marks and literal text equal the actual
+unchanged default combined builder; both complete snapshots coexist. Exact
+32MiB/+1,48MiB/+1,64/65entries,600000ms TTL/kind/context/default controls pass.
+Independent stdlib raw Word XML preserves all8391 literal paragraphs; no
+product parser oracle is used for that comparison. Review3848125a2c1c1e957f237e7a82185484d412103ec518ab9b6bbdd1c9e7160fbb.
+Root rehashes3444 sources,81 fresh physical files877367429B and73 old files;
+136 compiler inputs and2 generated artifacts stay exact. Handwritten runtime
+817of1600 and tests1100of1600. Full source review0342a54413c9338508e4e623e3da9e360e9a8acab5af40165757cc813323b525.
+
+This source proof does not execute500k SafeCreate or prove that corpus's actual
+origin packet/immutable20MiB capacity. Native both profiles/scopes/three roles,
+five changed Word exchanges, note Apply, chapter UndoRedo and shipping SLO
+remain OPEN. Full PR2101 fresh CI/merge/exact-merged proof is pending; old
+failed and superseded cancelled CI are never relabeled green. Heavy artifacts
+remain locally retained in Yandex; remote upload is PENDING.
+
 ## IMPLEMENTATION_STEPS
 
 1. Complete clean root/writer startup, declaration/preflight and original byte
@@ -576,7 +659,7 @@ NEXT: complete this delivery chain, then the next actual full-novel gap.
    ownership and no invented section break. No monolithic novel Save/Undo.
 7. At most1600 handwritten runtime a+d and1600 test a+d. Regenerate editor
    bundle only with two actual audited deterministic builds; preload held.
-   Run the complete maintained27-file affected union and freeze DRAFT_HANDOFF.
+   Run the complete maintained28-file affected union and freeze DRAFT_HANDOFF.
 8. Root independently reviews code, full operands and exact scope, completes
    factual docs/mechanical OPS/catalog, required gates, normal commit/push/PR/
    official CI/merge and exact-merged relevant repeat. Native500k proof follows
@@ -587,16 +670,16 @@ NEXT: complete this delivery chain, then the next actual full-novel gap.
 CHECK_1_PRE_AUTHORITY_AND_BYTES: actual clean bootstrap/registry/mount/base/branch/preflights and full579/136/2/3436 original freeze before any repository edit.
 CHECK_2_POST_TASK_AND_ORIGINAL_BASELINE: actual HARD E0; complete original20 untouched source/test baseline before code edits, full TAP and terminal facts.
 CHECK_3_POST_BEHAVIOR: causal5001 RED and complete tiny semantic/authority/recovery/independent Save/restart/reexport proof.
-CHECK_4_POST_SCOPE: exact42-path maximum/ownership,1600+1600 budgets, no omitted meaning/authority leak and two deterministic builds if needed.
-CHECK_5_POST_DELIVERY: complete27 maintained union, mandatory gates, official CI, normal merge and clean exact-merged relevant repeat.
+CHECK_4_POST_SCOPE: exact43-path maximum/ownership,1600+1600 budgets, no omitted meaning/authority leak and two deterministic builds if needed.
+CHECK_5_POST_DELIVERY: complete28 maintained union, mandatory gates, official CI, normal merge and clean exact-merged relevant repeat.
 
 CHECK_1 executes BEFORE any change; CHECK_2+ execute AFTER task creation.
 Original source/test baseline is retained old-byte evidence, not a PRE check
 rerun after edits. The first20 existing test paths in ALLOWLIST are the complete
 affected baseline; final union adds the new novel contract and the six existing
-annotation/notes affected suites named above, totaling27 files.
+annotation/notes affected suites named above, totaling27 retained candidate files; the admitted same-contour volume correction adds one existing file for the final28.
 No filters, excluded failing cases, skip, todo, cancellation or zero-test pass.
-Use unchanged evaluateMandatoryTapOutput on complete logs, expected20 for the retained original baseline or27 for the final affected union.
+Use unchanged evaluateMandatoryTapOutput on complete logs, expected20 for the retained original baseline,27 for the retained candidate proof or28 for the corrected final affected union.
 The retained original20 baseline actually exits0 with437of437 and no skipped,
 todo, cancelled or failed tests; its mandatory oracle remains FAIL because two
 existing nested WP201 CAS tests yield435 top-level records versus437 summary.

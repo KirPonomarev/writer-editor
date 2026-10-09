@@ -1,3 +1,30 @@
+## 2026-10-09 — Word-origin novel capacity corrected; current source proof, delivery pending
+
+Same PR2101 at e095c0df; original delivery base5ca5d936 remains reachable.
+Measured500108-word plan20977790B exceeded the old16MiB snapshot; content
+10901820B plus plan already fits32MiB aggregate. Main32MiB snapshot/48MiB
+aggregate gives deliberate finite headroom, preserving ordinary defaults,
+TTL/count/context, IPC/DOCX/parser/Core/immutable-resource limits.
+Current complete28 unfiltered:628of628, zero fail/cancel/skip/todo,472.220740208s,
+childRUmax3855548416B under900s/40GB development bounds; no bound termination.
+Root unchanged full-log mandatory TAP8280319bb8afc72d7e1f18857a8a249d3d089f69e65ccb9cabebe35229eb14fa;
+raw log412eed7933e94a650425e12f69eafd0d23977a390f2508699d4867d3687ecc3d.
+All8391 paragraphs retain complete attrs/marks/structure and literal text over
+42 scenes, with same-report default combined one-scene control. Independent
+stdlib raw Word XML proves all8391 literal paragraphs, review3848125a2c1c1e957f237e7a82185484d412103ec518ab9b6bbdd1c9e7160fbb.
+Root rehashes3444 source paths,81 complete fresh files877367429B and73 preserved
+old operands. Compiler136/generated2 exact; runtime817of1600/test1100of1600.
+Root review0342a54413c9338508e4e623e3da9e360e9a8acab5af40165757cc813323b525.
+Original macOS novel release remains OPEN: actual500k SafeCreate and that
+corpus's origin packet20MiB capacity are UNKNOWN; native both profiles/scopes,
+three roles/five changed Word exchanges, authenticated changed-note Apply,
+chapter UndoRedo and shipping SLO remain unproved. Original note hardBreak
+formatting gap remains; earlier source600 proof is retained old-byte evidence.
+Failed candidate01 and cancelled candidate02 CI remain retained, never PASS.
+Heavy materials stay in Yandex test folder; remote upload remains PENDING.
+NEXT: normal fresh commit and same-PR push, all required CI, merge and clean
+exact-merged repeat; no new product contour until this chain closes.
+
 ## 2026-10-09 — Word-origin novel scenes; source proof complete, delivery pending
 
 WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009 is one bounded continuation at

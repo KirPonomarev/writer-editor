@@ -12677,12 +12677,13 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
 // DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_END
 
 // DOCX_IMPORT_PREVIEW_REFERENCES_START
-// The measured 500k-word preview and plan each use about 10 MiB. Retain
-// both context-bound snapshots within 16 MiB each and 32 MiB in total;
-// entry count, TTL, context guards and wire limits remain unchanged.
+// The measured 500k-word partition plan exceeds the old 16 MiB snapshot.
+// Allow the existing 32 MiB Core plan ceiling; 48 MiB total reserves room
+// for a 16 MiB content preview alongside it. The measured pair fits 32 MiB.
+// Entry count, TTL, context guards and wire limits remain unchanged.
 const docxImportPreviewReferences = createDocxImportPreviewReferences({
-  maxSnapshotBytes: 16 * 1024 * 1024,
-  maxTotalBytes: 32 * 1024 * 1024,
+  maxSnapshotBytes: 32 * 1024 * 1024,
+  maxTotalBytes: 48 * 1024 * 1024,
 });
 let docxImportPreviewProjectGeneration = 0;
 
