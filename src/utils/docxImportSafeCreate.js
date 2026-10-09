@@ -10,7 +10,7 @@ const {
   joinPathSegmentsWithinRoot,
 } = require('../core/io/path-boundary');
 const { commitProjectTransaction, recoverProjectTransaction, readPendingProjectTransactionBinding,
-  readVerifiedProjectTransaction } = require('../core/project-transaction-v1.cjs');
+  readVerifiedProjectTransaction, readVerifiedProjectTreeMutation } = require('../core/project-transaction-v1.cjs');
 
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA = 'revision-bridge.docx-import-safe-create-receipt.v1';
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE = 'docx.import.safeCreate.receipt';
@@ -423,6 +423,7 @@ function validateDocxImportPreviewPlan(plan) {
       { field: 'candidateCreatePlan' },
     );
   }
+  if (candidate.sceneStrategy === 'word-novel-root-partitions') return validateDocxNovelPreviewPlan(plan);
   if (
     candidate.mode !== 'create-only'
     || candidate.sceneStrategy !== 'single-scene'
@@ -615,6 +616,32 @@ function validateDocxImportPreviewPlan(plan) {
       previewHash: plan.previewHash,
     },
   };
+}
+
+function validateDocxNovelPreviewPlan(plan) {
+  try {
+    const candidate=plan.candidateCreatePlan;
+    if (candidate.mode!=='create-only' || !Array.isArray(candidate.entries) || candidate.entries.length<1 || candidate.entries.length>512
+      || candidate.entryCount!==candidate.entries.length || unsupportedKeys(candidate,new Set(['mode','sceneStrategy','entryCount','entries','sourceCandidate','policy','cohortDigest'])).length) throw Error('E_DOCX_NOVEL_CANDIDATE');
+    const {cohortDigest,...body}=candidate;
+    if (!isSha256Hex(cohortDigest) || cohortDigest!==hashExactBytes(docxCanonicalJson({artifactSha256:plan.source.sourceArtifactSha256,...body}))
+      || plan.source.candidateContentSha256!==cohortDigest || Buffer.byteLength(stableStringify(plan))>32*1024*1024) throw Error('E_DOCX_NOVEL_DIGEST');
+    const source=candidate.sourceCandidate;
+    if (!isPlainObject(source) || hashExactBytes(source.content)!==source.candidateContentSha256) throw Error('E_DOCX_NOVEL_SOURCE');
+    const combined={...cloneJsonSafe(plan),source:{...cloneJsonSafe(plan.source),candidateContentSha256:source.candidateContentSha256},
+      candidateCreatePlan:{mode:'create-only',sceneStrategy:'single-scene',entryCount:1,entries:[cloneJsonSafe(source)]}};
+    combined.previewHash=recomputeDocxImportPreviewHash(combined);
+    const legacy=validateDocxImportPreviewPlan(combined); if(!legacy.ok) return legacy;
+    for(const entry of candidate.entries) {
+      if (!isPlainObject(entry) || unsupportedKeys(entry,new Set([...DOCX_IMPORT_SAFE_CREATE_ALLOWED_ENTRY_KEYS,'partition'])).length
+        || typeof entry.content!=='string' || !/^docx-import-scene-[a-f0-9]{64}$/u.test(entry.sceneId)
+        || entry.candidateContentSha256!==hashExactBytes(entry.content) || entry.contentTextHash!==docxStableHash(entry.content)) throw Error('E_DOCX_NOVEL_ENTRY');
+      const parsed=require('../core/document-content-envelope-v1.cjs').parseObservablePayload(entry.content);
+      if(parsed.issue) throw Error('E_DOCX_NOVEL_ENTRY'); require('../core/word-pending-text-revisions-v1.cjs').readLedger(parsed.doc);
+    }
+    return {ok:true,value:{...legacy.value,novel:true,candidate:cloneJsonSafe(candidate),entries:cloneJsonSafe(candidate.entries),
+      entry:{...candidate.entries[0],candidateContentSha256:cohortDigest}}};
+  } catch(error) { return buildError('DOCX_SAFE_CREATE_PREVIEW_INVALID','docx_import_novel_preview_invalid',{code:error.code || error.message}); }
 }
 
 function sanitizeFilename(name) {
@@ -1086,6 +1113,7 @@ function validateDocxImportManifestAuthority(manifestAuthority, importOperationI
 }
 
 async function validateExistingDocxImportReceipt(options) {
+  if (options.validated.value.novel) return validateExistingDocxNovelReceipt(options);
   const {
     receipt,
     plan,
@@ -1437,7 +1465,90 @@ async function prepareGenericNoteState({ entry, projectRoot, targetPath, project
     importOperationId, beforeText, createdAt });
 }
 
+async function validateExistingDocxNovelReceipt(options) {
+  const {receipt,plan,validated,projectRoot,projectId,manifestPath,importOperationId,operationNonce,transactionAuthority}=options;
+  const fail=field=>buildIdempotentReceiptIntegrityError(field,validated.value.entry.sceneId,'novel_cohort_binding_mismatch');
+  try {
+    const keys=['schemaVersion','type','reason','sceneStrategy','importOperationId','importOperationNonce','projectId','sourceArtifactSha256','candidateContentSha256','sourcePreviewHash','inputHash','outputHash','createdSceneIds','createdScenes','sceneTreeIdentities','publicSceneLocators','publicSceneLocator','lossReport','carrierIgnored','createdAt','manifestAuthority'];
+    if(!isPlainObject(receipt) || unsupportedKeys(receipt,new Set(keys)).length || Object.keys(receipt).length!==keys.length
+      || receipt.schemaVersion!==DOCX_IMPORT_RECEIPT_V3_SCHEMA || receipt.type!==DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE
+      || receipt.reason!==DOCX_IMPORT_SAFE_CREATE_READY_REASON || receipt.sceneStrategy!=='word-novel-root-partitions'
+      || receipt.importOperationId!==importOperationId || receipt.importOperationNonce!==operationNonce || receipt.projectId!==projectId
+      || receipt.sourceArtifactSha256!==validated.value.sourceArtifactSha256 || receipt.candidateContentSha256!==validated.value.candidate.cohortDigest
+      || receipt.inputHash!==hashDocxImportPreviewPlanForAdmission(plan) || receipt.sourcePreviewHash!==validated.value.previewHash
+      || !jsonStableEqual(receipt.lossReport,validated.value.lossReport) || !jsonStableEqual(receipt.carrierIgnored,validated.value.carrierIgnored)
+      || !isIsoCreatedAt(receipt.createdAt) || !validateDocxImportManifestAuthority(receipt.manifestAuthority,importOperationId).ok) return fail('receipt');
+    const model=await import('../core/project-tree-cohort-v1.mjs');
+    const expected=model.materializeDocxNovelCandidate({candidate:validated.value.candidate,artifactSha256:validated.value.sourceArtifactSha256,
+      projectId,operationId:importOperationId,operationNonce,now:receipt.createdAt,notesText:null,commentsText:null});
+    const scenes=expected.createdScenes, locators=scenes.map(s=>s.publicSceneLocator);
+    if(!jsonStableEqual(receipt.createdScenes,scenes) || !jsonStableEqual(receipt.createdSceneIds,scenes.map(s=>s.sceneId))
+      || !jsonStableEqual(receipt.publicSceneLocators,locators) || !jsonStableEqual(receipt.publicSceneLocator,locators[0])
+      || !jsonStableEqual(receipt.sceneTreeIdentities,scenes.map(({sceneId,treeNodeId,treeId})=>({sceneId,treeNodeId,treeId})))
+      || receipt.outputHash!==hashExactBytes(docxCanonicalJson({createdScenes:scenes}))) return fail('siblings');
+    const manifest=JSON.parse(await fs.readFile(manifestPath,'utf8'));
+    if(manifest.projectId!==projectId) return fail('project');
+    const stored=await fs.readFile(buildReceiptStorePath(projectRoot,importOperationId));
+    for(const scene of scenes) {
+      const scenePath=path.join(projectRoot,scene.relativeFile);
+      const identity=manifest.treeIdentity?.nodes?.[scene.treeNodeId];
+      if(identity?.bindingKey!=='file:'+scene.relativeFile || identity.kind!=='scene' || identity.present===false) return fail('identity');
+      const commit=await readVerifiedProjectTransaction({scenePath,manifestPath,fsAdapter:options.fsAdapter,
+        verifyManifestContinuation:args=>transactionAuthority.verifyManifestContinuation({...args,projectId})});
+      if(commit.sceneDigest!==scene.outputHash || commit.revision<receipt.manifestAuthority.fencingGeneration
+        || !commit.resources?.some(r=>r.path===buildReceiptStorePath(projectRoot,importOperationId) && r.digest===hashExactBytes(stored))) return fail('commit');
+      if(hashExactBytes(await fs.readFile(scenePath))!==scene.outputHash) return fail('content');
+    }
+    const owned=new Set(scenes.map(s=>s.relativeFile));
+    let actualNotes=null;try {actualNotes=await fs.readFile(path.join(projectRoot,'notes.craftsman.json'),'utf8');}catch(error){if(error.code!=='ENOENT')throw error;}
+    const noteModel=require('../core/word-manuscript-notes-v1.cjs');
+    const notes=actualNotes===null?[]:noteModel.validateManuscriptDocument(JSON.parse(actualNotes),projectId).notes;
+    if(!jsonStableEqual(notes.filter(n=>owned.has(n.manuscript?.reference?.sceneId)),expected.notesAfter===null?[]:JSON.parse(expected.notesAfter).notes)) return fail('notes');
+    const comments=await readGenericCommentState(projectRoot), commentModel=require('../core/word-comment-authoring-v1.cjs');
+    const threads=comments.text===null?[]:commentModel.readState(comments.text,projectId).threads;
+    if(!jsonStableEqual(threads.filter(t=>owned.has(t.sceneId)),expected.commentsAfter===null?[]:JSON.parse(expected.commentsAfter).threads)) return fail('comments');
+    for(const entry of validated.value.entries) await verifyDocxMediaAssetFiles(entry.content,projectRoot,entry.notes);
+    return {ok:true,receipt};
+  } catch { return fail('durableCohort'); }
+}
+
+async function applyDocxNovelImportInLease(input, options) {
+  const plan=input.docxImportPreviewPlan, validated=validateDocxImportPreviewPlan(plan);
+  if(!validated.ok) return validated;
+  if(!isDocxImportPreviewPlanAdmitted(plan)) return buildError('DOCX_SAFE_CREATE_PREVIEW_NOT_ADMITTED','docx_import_safe_create_preview_not_admitted');
+  const {projectRoot,romanRoot,projectId,manifestPath,transactionAuthority}=options;
+  const roots=validateTrustedRoots(projectRoot,romanRoot); if(!roots.ok)return roots;
+  const operationNonce=normalizeDocxImportOperationNonce(options.importRequestNonce), attempt=importAttemptFromPlan(validated,projectId,operationNonce), importOperationId=attempt.importOperationId;
+  const prior=await readDocxImportAttempt({projectRoot,projectId});
+  if(prior.record?.requestId===operationNonce) {const {schemaVersion,...expected}=attempt;importAttempt.assertImportAttemptMatches(prior.record,expected);}
+  const stored=await readDurableReceiptRecord(projectRoot,importOperationId);
+  const verify=receipt=>validateExistingDocxNovelReceipt({receipt,plan,validated,projectRoot,romanRoot,projectId,manifestPath,importOperationId,operationNonce,transactionAuthority,fsAdapter:options.fsAdapter});
+  if(stored.status!=='missing') {
+    const checked=stored.status==='ok'?await verify(stored.receipt):buildIdempotentReceiptIntegrityError('receipt',validated.value.entry.sceneId,'novel_receipt_unreadable');
+    if(!checked.ok)return checked; await options.assertPublication();
+    return {ok:true,value:{created:false,idempotent:true,safeCreate:true,createdSceneIds:checked.receipt.createdSceneIds,publicSceneLocators:checked.receipt.publicSceneLocators,publicSceneLocator:checked.receipt.publicSceneLocator,receipt:checked.receipt,importOperationId}};
+  }
+  if(typeof options.captureTreeCohortInventory!=='function') throw Error('E_DOCX_NOVEL_INVENTORY_REQUIRED');
+  await options.assertPublication(); const captured=await options.captureTreeCohortInventory(projectRoot); await options.assertPublication();
+  const current=await readVerifiedProjectTreeMutation({manifestPath,projectId,fsAdapter:options.fsAdapter}); await options.assertPublication();
+  const model=await import('../core/project-tree-cohort-v1.mjs');
+  const materialized=model.materializeDocxNovelCandidate({candidate:validated.value.candidate,artifactSha256:validated.value.sourceArtifactSha256,
+    projectId,operationId:importOperationId,operationNonce,now:'1970-01-01T00:00:00.000Z',notesText:null,commentsText:null});
+  const mediaBindings=[];
+  for(const entry of validated.value.entries) await prepareDocxMediaEntries(entry.content,projectRoot,entry.notes);
+  for(const [relativePath] of materialized.resources) {let beforeBase64=null; try{beforeBase64=(await fs.readFile(path.join(projectRoot,relativePath))).toString('base64');}catch(error){if(error.code!=='ENOENT')throw error;} mediaBindings.push({relativePath,beforeBase64});}
+  const cohort=model.planProjectDocxImportCohort({operation:'word-generic-import',projectId,operationId:importOperationId,operationNonce,
+    manifestPath,beforeManifestText:options.manifestRaw,expectedTreeRevision:current.treeRevision,fencingGeneration:options.lease.fencingGeneration,
+    candidate:validated.value.candidate,artifactSha256:validated.value.sourceArtifactSha256,previewPlanHash:hashDocxImportPreviewPlanForAdmission(plan),previewHash:validated.value.previewHash,
+    lossReport:validated.value.lossReport,carrierIgnored:validated.value.carrierIgnored,now:new Date().toISOString(),...captured,mediaBindings});
+  await options.assertPublication(); await retainDocxImportAttempt(attempt,options);
+  await commitProjectTransaction({manifestPath,revision:options.lease.fencingGeneration,treeCohort:cohort,publishManifest:options.publishManifest,revalidate:options.assertPublication,fsAdapter:options.fsAdapter});
+  const checked=await verify(cohort.importReceipt); if(!checked.ok)return checked; await options.assertPublication();
+  return {ok:true,value:{created:true,safeCreate:true,createdSceneIds:checked.receipt.createdSceneIds,publicSceneLocators:checked.receipt.publicSceneLocators,publicSceneLocator:checked.receipt.publicSceneLocator,receipt:checked.receipt,importOperationId}};
+}
+
 async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
+  if (input.docxImportPreviewPlan?.candidateCreatePlan?.sceneStrategy === 'word-novel-root-partitions') return applyDocxNovelImportInLease(input,options);
   const projectRoot = typeof options.projectRoot === 'string' ? options.projectRoot.trim() : '';
   const romanRoot = typeof options.romanRoot === 'string' ? options.romanRoot.trim() : '';
 

@@ -27,6 +27,7 @@ import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../para
 import { readDocxBlockStyleId } from '../../export/docx/docxBlockStyles.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import { genericCommentCandidates } from './genericWordComments.mjs';
+import { partitionDocxImportCandidate } from '../../core/project-tree-cohort-v1.mjs';
 import { analyzeCleanLinkLabelReturn } from './reviewTransportCleanLinkLabel.mjs';
 import {
   validateDocumentSettingsBindingV1,
@@ -12965,6 +12966,20 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   });
 }
 // RB_12_DOCX_IMPORT_PREVIEW_PLAN_END
+
+// Main selects this bounded create-only projection. The default combined
+// builder above remains the contract for every other caller.
+export function buildDocxNovelImportPreviewPlanFromContentPreview(input = {}, policy = {}) {
+  const combined = buildDocxImportPreviewPlanFromContentPreview(input);
+  if (!combined.ok) return combined;
+  try {
+    const candidateCreatePlan = partitionDocxImportCandidate(combined.candidateCreatePlan, combined.source.sourceArtifactSha256, policy);
+    if (candidateCreatePlan === combined.candidateCreatePlan) return combined;
+    return docxImportPreviewResult({...combined,candidateCreatePlan,
+      source:{...combined.source,candidateContentSha256:candidateCreatePlan.cohortDigest}});
+  } catch(error) { return docxImportPreviewBlocked(DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+    {field:'candidateCreatePlan',sourceCode:error.code || error.message}); }
+}
 
 function missingField(field) {
   return {

@@ -10,7 +10,8 @@ const path = require('node:path');
 const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
 const { MODE: COMMENT_REBASE_MODE, RETURN_MODE: COMMENT_TEXT_RETURN_MODE, planCommentAnchorSave, planCommentTextReturn } = require('./word-comment-anchor-save-v1.cjs');
 const { validateNoteCohort, validateManuscriptDocument, planManuscriptNoteAnchorSave, MODE: NOTE_REBASE_MODE, LIMITS: NOTE_LIMITS } = require('./word-manuscript-notes-v1.cjs');
-const { readState: readCanonicalCommentState } = require('./word-comment-authoring-v1.cjs');
+const { readState: readCanonicalCommentState, planCommentAuthoring } = require('./word-comment-authoring-v1.cjs');
+const COMMENT_AUTHORING_MODE = 'COMMENT_AUTHORING_V1';
 const MEDIA_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v6';
 const MEDIA_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v6';
 const TREE_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v7';
@@ -154,13 +155,21 @@ function resourceBindings(resources) {
   return resources.map(({ path: targetPath, content }) => ({ path: targetPath, digest: sha256hex(content), bytes: content.length }));
 }
 
+function retainedOriginId(target, manifestPath) {
+  if (typeof target !== 'string') return null;
+  const match = /^wp201-([a-f0-9]{64})\.json$/u.exec(path.basename(target));
+  return match && target === recoveryPacketPathFor(manifestPath, match[1]) ? match[1] : null;
+}
+
 function normalizeRetainedResources(value, scenePath, manifestPath) {
   if (!Array.isArray(value) || !value.length || value.length > MAX_RESOURCES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RETAINED_RESOURCES', TRANSACTION_PHASES.ADMIT);
   let bytes = 0; const seen = new Set();
   for (const entry of value) {
     if (!entry || Object.keys(entry).sort().join(',') !== 'bytes,digest,path' || !isDigest(entry.digest)
       || !Number.isSafeInteger(entry.bytes) || entry.bytes < 0 || seen.has(entry.path)) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RETAINED_RESOURCES', TRANSACTION_PHASES.ADMIT);
-    normalizeResources([{ path: entry.path, content: Buffer.alloc(0) }], { scenePath, manifestPath });
+    // This syntax exception is read-only. Every use separately regenerates the
+    // exact novel-origin packet, scene receipt and immutable import receipt.
+    if (!retainedOriginId(entry.path, manifestPath)) normalizeResources([{ path: entry.path, content: Buffer.alloc(0) }], { scenePath, manifestPath });
     seen.add(entry.path); bytes += entry.bytes;
   }
   if (bytes > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.ADMIT);
@@ -174,6 +183,9 @@ async function verifyRetainedResources(resources, scenePath, manifestPath, fsAda
     if (bytes === null || bytes.length !== entry.bytes || sha256hex(bytes) !== entry.digest)
       throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_READBACK', TRANSACTION_PHASES.READBACK);
   }
+  const origins = resources.filter(entry => retainedOriginId(entry.path, manifestPath));
+  if (origins.length > 1) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOVEL_ORIGIN', TRANSACTION_PHASES.READBACK);
+  return origins.length ? readNovelOriginResource(origins[0], resources, scenePath, manifestPath, fsAdapter) : null;
 }
 
 const commentStatePath = manifestPath => path.join(path.dirname(manifestPath), '.yalken', 'word-review', 'non-text-return-state.v1.json');
@@ -184,6 +196,24 @@ const commentBinding = value => value ? { beforeDigest: digestOptional(value.bef
 function normalizeCommentState(value, scenePath, manifestPath, scenePair = null) {
   if (value === undefined || value === null) return null;
   const fail = () => { throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT); };
+  if (value?.mode === COMMENT_AUTHORING_MODE) {
+    if (!scenePair || scenePair.before.scene !== scenePair.after.scene
+      || Object.keys(value).sort().join(',') !== 'afterText,authoringProofJson,beforeText,mode'
+      || !(value.beforeText === null || typeof value.beforeText === 'string') || typeof value.afterText !== 'string'
+      || [value.beforeText || '',value.afterText].some(text=>Buffer.byteLength(text)>COMMENT_CAPACITY.stateBytes)
+      || typeof value.authoringProofJson !== 'string' || Buffer.byteLength(value.authoringProofJson)>131072) fail();
+    try {
+      const proof=JSON.parse(value.authoringProofJson), projectId=JSON.parse(scenePair.before.manifest).projectId;
+      if (!proof || Object.keys(proof).sort().join(',') !== 'input,now'
+        || JSON.parse(scenePair.after.manifest).projectId !== projectId) fail();
+      const expected=planCommentAuthoring({beforeText:value.beforeText,projectId,
+        sceneId:path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/'),
+        sceneSha256:sha256hex(scenePair.before.scene),paragraphs:require('./word-comment-anchor-save-v1.cjs').paragraphs(scenePair.before.scene),
+        input:proof.input,now:proof.now});
+      if (expected.afterText !== value.afterText) fail();
+      return {mode:COMMENT_AUTHORING_MODE,beforeText:value.beforeText,afterText:value.afterText,authoringProofJson:value.authoringProofJson};
+    } catch { fail(); }
+  }
   if(value?.mode===COMMENT_TEXT_RETURN_MODE) {
     if(!scenePair || Object.keys(value).sort().join(',')!=='afterText,beforeText,mode,returnProofJson'
       || !['beforeText','afterText'].every(k=>(k==='beforeText' && value[k]===null) || typeof value[k]==='string' && Buffer.byteLength(value[k])<=COMMENT_CAPACITY.stateBytes)) fail();
@@ -550,7 +580,11 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
     || (commentState && resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
   }
-  const noteState = normalizePersistedNoteState(journal.noteState, scenePath, manifestPath, { before, after });
+  if (commentState?.mode === COMMENT_AUTHORING_MODE && (!continuation || !retainedResources.some(entry=>retainedOriginId(entry.path,manifestPath))))
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOVEL_ORIGIN',TRANSACTION_PHASES.RECOVER);
+  const noteState = continuation && retainedResources.some(entry => retainedOriginId(entry.path, manifestPath))
+    ? normalizeNoteState(journal.noteState, scenePath, manifestPath, { before, after })
+    : normalizePersistedNoteState(journal.noteState, scenePath, manifestPath, { before, after });
   if (journal.schemaVersion === MEDIA_JOURNAL_SCHEMA_VERSION || (continuation && resources.length)) validateMediaUpdateResources(resources, { scenePath, manifestPath, before: before.scene, after: after.scene, noteState });
   if (journal.schemaVersion !== MEDIA_JOURNAL_SCHEMA_VERSION && !continuation && (journal.schemaVersion === NOTE_JOURNAL_SCHEMA_VERSION) !== Boolean(noteState)
     || (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath)))) {
@@ -608,9 +642,9 @@ async function readCommitRecordState({
   } else if (record.resources !== undefined) return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
   if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || ([NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION, TREE_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion) && record.commentState !== undefined)) {
-    if (!record.commentState || (!(record.commentState.mode === COMMENT_TEXT_RETURN_MODE && record.commentState.beforeDigest === null) && !isDigest(record.commentState.beforeDigest)) || !isDigest(record.commentState.afterDigest)
+    if (!record.commentState || (!([COMMENT_TEXT_RETURN_MODE,...(record.schemaVersion===TREE_COMMIT_SCHEMA_VERSION?[COMMENT_AUTHORING_MODE]:[])].includes(record.commentState.mode) && record.commentState.beforeDigest === null) && !isDigest(record.commentState.beforeDigest)) || !isDigest(record.commentState.afterDigest)
       || (record.schemaVersion === ANCHOR_COMMIT_SCHEMA_VERSION ? ![COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(record.commentState.mode)
-        : record.schemaVersion === TREE_COMMIT_SCHEMA_VERSION ? ![undefined, COMMENT_REBASE_MODE, COMMENT_TEXT_RETURN_MODE, 'PROJECT_TREE_COHORT_V1'].includes(record.commentState.mode)
+        : record.schemaVersion === TREE_COMMIT_SCHEMA_VERSION ? ![undefined, COMMENT_REBASE_MODE, COMMENT_TEXT_RETURN_MODE, COMMENT_AUTHORING_MODE, 'PROJECT_TREE_COHORT_V1'].includes(record.commentState.mode)
         : [NOTE_COMMIT_SCHEMA_VERSION, MEDIA_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion) ? ![undefined, COMMENT_REBASE_MODE, COMMENT_TEXT_RETURN_MODE].includes(record.commentState.mode) : record.commentState.mode !== undefined)) {
       return corruptCommitState(source, 'COMMIT_COMMENT_SCHEMA');
     }
@@ -857,7 +891,9 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   const source = await readOptionalText(journalPath, fsAdapter);
   if (source === null) return Object.freeze({ recovered: false, outcome: 'NO_JOURNAL' });
   const journal = parseJournal(source, { scenePath, manifestPath });
-  await verifyRetainedResources(journal.retainedResources || [], scenePath, manifestPath, fsAdapter);
+  const novelOrigin = await verifyRetainedResources(journal.retainedResources || [], scenePath, manifestPath, fsAdapter);
+  if (journal.commentState?.mode === COMMENT_AUTHORING_MODE) novelNeed(novelOrigin,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  if (novelOrigin && journal.noteState?.mode === 'MANUSCRIPT_BODY_UPDATE_V1') validateNovelNoteAuthoring(journal.noteState,scenePath,manifestPath);
   if (journal.resources.length) {
     await assertResourceBoundary(scenePath, manifestPath, fsAdapter, resourceStagingPath({ path: scenePath }, journal.transactionId));
     await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
@@ -886,6 +922,15 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
     });
   }
   const committed = commitState.status === 'VALID' && commitState.relation === 'CURRENT';
+  let novelBaseline = null;
+  if (novelOrigin) {
+    novelNeed(commitState.status === 'VALID');
+    novelBaseline = await readNovelSceneBaseline(commitState.record,scenePath,manifestPath,verifyManifestContinuation,fsAdapter,novelOrigin);
+    if (committed) novelNeed((await readNovelSuccessPacket(commitState.record,scenePath,manifestPath,fsAdapter)).journal.transactionId === journal.transactionId);
+    else await assertNovelAnnotations(novelBaseline,scenePath,manifestPath,fsAdapter,{
+      notesText:journal.noteState?.beforeText ?? (await readResource({path:noteStatePath(manifestPath)},manifestPath,fsAdapter))?.toString('utf8') ?? null,
+      commentsText:journal.commentState?.beforeText ?? (await readResource({path:commentStatePath(manifestPath)},manifestPath,fsAdapter))?.toString('utf8') ?? null});
+  }
   // Classify all companions and their ownership before any recovery mutation.
   const resourceStates = await inspectResources(stagedResources, manifestPath, fsAdapter, journal.transactionId, !committed);
   await inspectCommentState(journal.commentState, manifestPath, fsAdapter);
@@ -948,6 +993,7 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   if (finalManifest !== target.manifest || finalScene !== target.scene) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RECOVERY_READBACK', TRANSACTION_PHASES.RECOVER);
   }
+  if (novelBaseline) await assertNovelAnnotations(novelBaseline,scenePath,manifestPath,fsAdapter);
   await cleanupResourceStaging(stagedResources, manifestPath, fsAdapter, journal.transactionId);
   await removeDurably(journalPath, fsAdapter);
   return Object.freeze({
@@ -995,11 +1041,11 @@ async function commitProjectTransaction({
   if (mediaUpdate && createResources !== undefined) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_MODE', TRANSACTION_PHASES.ADMIT);
   const inputResources = mediaUpdate ? mediaUpdateResources : createResources;
   const resources = inputResources === undefined ? [] : normalizeResources(inputResources, { scenePath, manifestPath });
-  const commentState = normalizeCommentState(inputCommentState, scenePath, manifestPath, {
+  let commentState = normalizeCommentState(inputCommentState, scenePath, manifestPath, {
     before: { scene: expectedSceneContent, manifest: expectedManifestContent },
     after: { scene: sceneContent, manifest: manifestContent },
   });
-  const noteState = normalizeNoteState(inputNoteState, scenePath, manifestPath, {
+  let noteState = normalizeNoteState(inputNoteState, scenePath, manifestPath, {
     before: { scene: expectedSceneContent, manifest: expectedManifestContent },
     after: { scene: sceneContent, manifest: manifestContent },
   });
@@ -1007,13 +1053,13 @@ async function commitProjectTransaction({
   if (noteState && resources.some(entry => entry.path === noteStatePath(manifestPath))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_STATE', TRANSACTION_PHASES.ADMIT);
   }
-  if (commentState && ([COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(commentState.mode)
+  if (commentState && ([COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE,COMMENT_AUTHORING_MODE].includes(commentState.mode)
     ? (!mediaUpdate && resources.length !== 0)
     : !resources.length || resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT);
   }
   if (resources.length && !mediaUpdate && expectedSceneContent !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.ADMIT);
-  if (resources.length || [COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(commentState?.mode) || noteState) {
+  if (resources.length || [COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE,COMMENT_AUTHORING_MODE].includes(commentState?.mode) || noteState) {
     await assertResourceBoundary(scenePath, manifestPath, fsAdapter);
     await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
     await assertResourceBoundary(commitPathFor(scenePath), manifestPath, fsAdapter);
@@ -1032,10 +1078,34 @@ async function commitProjectTransaction({
   const before = { scene: expectedSceneContent, manifest: expectedManifestContent };
   const after = { scene: sceneContent, manifest: manifestContent };
   const retainedCommit = await readCommitRecordState({ scenePath, manifestPath, observedScene, observedManifest, verifyManifestContinuation, fsAdapter });
-  let retainedResources = !mediaUpdate && retainedCommit.status === 'VALID'
+  const novel = retainedCommit.status === 'VALID'
+    ? await readNovelSceneBaseline(retainedCommit.record,scenePath,manifestPath,verifyManifestContinuation,fsAdapter) : null;
+  if (!novel && (commentState?.mode === COMMENT_AUTHORING_MODE || await selectsNovelReceipt(scenePath,manifestPath,fsAdapter))) novelNeed(false,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  if (novel && noteState?.mode === 'MANUSCRIPT_BODY_UPDATE_V1') validateNovelNoteAuthoring(noteState,scenePath,manifestPath);
+  const novelAuthoring=novel && (commentState?.mode===COMMENT_AUTHORING_MODE || noteState?.mode==='MANUSCRIPT_BODY_UPDATE_V1');
+  if (novelAuthoring) novelNeed(typeof revalidate==='function','E_PROJECT_TRANSACTION_NOVEL_REVALIDATION_REQUIRED');
+  let retainedResources = (!mediaUpdate || novel) && retainedCommit.status === 'VALID'
     && retainedCommit.record.resources?.length ? normalizeRetainedResources(retainedCommit.record.resources, scenePath, manifestPath) : [];
+  if (novel) {
+    const current = await assertNovelAnnotations(novel,scenePath,manifestPath,fsAdapter);
+    if (!retainedResources.some(entry=>entry.path === novel.resource.path)) retainedResources.push(novel.resource);
+    normalizeRetainedResources(retainedResources,scenePath,manifestPath);
+    if (!noteState) {
+      const unchanged = planManuscriptNoteAnchorSave({beforeText:current.notesText,projectId:current.projectId,sceneId:current.sceneId,
+        beforeContent:before.scene,afterContent:after.scene,includeUnchanged:true});
+      novelNeed(!unchanged || unchanged.afterText === unchanged.beforeText,'E_PROJECT_TRANSACTION_NOVEL_NOTE_COHORT_REQUIRED');
+      if (unchanged) noteState = normalizeNoteState(unchanged,scenePath,manifestPath,{before,after});
+      else novelNeed(ownedNovelNotes(current.notesText,current.projectId,current.sceneId).notes.length === 0,'E_PROJECT_TRANSACTION_NOVEL_NOTE_COHORT_REQUIRED');
+    }
+    if (!commentState) {
+      const unchanged = planCommentAnchorSave({beforeText:current.commentsText,projectId:current.projectId,sceneId:current.sceneId,
+        beforeContent:before.scene,afterContent:after.scene,includeUnchanged:true});
+      novelNeed(!unchanged || unchanged.afterText === unchanged.beforeText,'E_PROJECT_TRANSACTION_NOVEL_COMMENT_COHORT_REQUIRED');
+      if (unchanged) commentState = normalizeCommentState(unchanged,scenePath,manifestPath,{before,after});
+    }
+  }
   retainedResources = await consumeRestoredTreeAnnotationResources(retainedResources, scenePath, manifestPath, before, fsAdapter);
-  if ([COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE].includes(commentState?.mode)) {
+  if ([COMMENT_REBASE_MODE,COMMENT_TEXT_RETURN_MODE,COMMENT_AUTHORING_MODE].includes(commentState?.mode)) {
     // The independently recomputed anchor plan takes ownership of this one
     // mutable canonical file. Its current bytes remain bound by the existing
     // comment CAS, journal and recovery protocol; other import pins stay exact.
@@ -1102,12 +1172,15 @@ async function commitProjectTransaction({
     });
   }
   const priorCommit = priorCommitState.status === 'VALID' ? priorCommitState.record : null;
+  if (novelAuthoring) await revalidate();
   if (!resources.length && priorCommit
     && priorCommit.revision === revision
     && priorCommit.sceneDigest === sha256hex(after.scene)
     && priorCommit.manifestDigest === sha256hex(after.manifest)
     && priorCommit.scenePath === scenePath
-    && priorCommit.manifestPath === manifestPath) {
+    && priorCommit.manifestPath === manifestPath
+    && (!novel || ((!commentState || priorCommit.commentState?.afterDigest === sha256hex(commentState.afterText))
+      && (!noteState || priorCommit.noteState?.afterDigest === sha256hex(noteState.afterText))))) {
     return Object.freeze({
       success: true,
       phases: TRANSACTION_PHASE_CHAIN,
@@ -1121,16 +1194,34 @@ async function commitProjectTransaction({
   }
 
   const journalPath = journalPathFor(manifestPath);
+  const journalSource = `${JSON.stringify(journal)}\n`;
+  let baselineArgs = null, baselineBytes = null;
+  if (novel) {
+    const checkedJournal = parseJournal(journalSource,{scenePath,manifestPath});
+    baselineArgs = {manifestPath,journal:checkedJournal,journalSource,
+      commitState:{reason:'NOVEL_SCENE_BASELINE',source:priorCommitState.source},currentScene:before.scene,currentManifest:before.manifest,fsAdapter};
+    baselineBytes = canonicalBytes(buildRecoveryPacket(baselineArgs));
+    assertText(baselineBytes,'E_PROJECT_TRANSACTION_NOVEL_BASELINE',TRANSACTION_PHASES.PREPARE_JOURNAL);
+    const target = recoveryPacketPathFor(manifestPath,transactionId);
+    await assertResourceBoundary(target,manifestPath,fsAdapter);
+    const existing = await readOptionalText(target,fsAdapter);
+    novelNeed(existing === null || existing === baselineBytes,'E_PROJECT_COMMIT_RECOVERY_PACKET_CONFLICT');
+  }
+  if (novelAuthoring) await revalidate();
   await durableSaveTransaction({
     filePath: journalPath,
-    content: `${JSON.stringify(journal)}\n`,
+    content: journalSource,
     revision,
     fsAdapter,
   });
+  // Retain truthful prewrite observations before any business byte changes.
+  // Only the later exact CURRENT marker can make this baseline authoritative.
+  if (baselineArgs) await preserveRecoveryPacket(baselineArgs);
 
   for (const entry of resources) await publishResource(entry, manifestPath, revision, fsAdapter, transactionId);
   if (resources.length) await ensureCompanionDirectory(scenePath, manifestPath, fsAdapter);
 
+  if (novelAuthoring) await revalidate();
   await publishManifestExact({
     publishManifest,
     manifestPath,
@@ -1150,7 +1241,9 @@ async function commitProjectTransaction({
     fsAdapter,
   });
 
+  if (novelAuthoring) await revalidate();
   if (commentState) await publishCommentState(commentState, manifestPath, commentState.afterText, revision, fsAdapter);
+  if (novelAuthoring) await revalidate();
   if (noteState) await publishNoteState(noteState, manifestPath, noteState.afterText, revision, fsAdapter);
   const commitRecord = {
     schemaVersion: retainedResources.length ? TREE_COMMIT_SCHEMA_VERSION : mediaUpdate ? MEDIA_COMMIT_SCHEMA_VERSION : noteState ? NOTE_COMMIT_SCHEMA_VERSION : commentState ? commentCommitSchema(commentState) : resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
@@ -1164,6 +1257,7 @@ async function commitProjectTransaction({
     manifestDigest: sha256hex(after.manifest),
     ...(resources.length || retainedResources.length ? { resources: [...retainedResources, ...resourceBindings(resources)] } : {}),
   };
+  if (novelAuthoring) await revalidate();
   await durableSaveTransaction({
     filePath: commitPathFor(scenePath),
     content: `${JSON.stringify(commitRecord)}\n`,
@@ -1186,9 +1280,12 @@ async function commitProjectTransaction({
   if (finalScene !== after.scene || finalManifest !== after.manifest) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_READBACK', TRANSACTION_PHASES.READBACK);
   }
+  if (baselineArgs) novelNeed((await readNovelSuccessPacket(commitRecord,scenePath,manifestPath,fsAdapter)).source === baselineBytes);
+  if (novelAuthoring) await revalidate();
   await cleanupResourceStaging(stagedResources, manifestPath, fsAdapter, transactionId);
   await removeDurably(journalPath, fsAdapter);
 
+  if (novelAuthoring) await revalidate();
   return Object.freeze({
     success: true,
     phases: TRANSACTION_PHASE_CHAIN,
@@ -1315,6 +1412,10 @@ async function repairCorruptProjectCommit({
     const resources = packet.companionResources === undefined ? [] : normalizeResources(packet.companionResources, { scenePath, manifestPath }, true);
     const continuation = packet.resourceMode === 'SCENE_RESOURCE_CONTINUATION_V1';
     const retainedResources = continuation ? normalizeRetainedResources(packet.retainedResources, scenePath, manifestPath) : [];
+    if (commentState?.mode === COMMENT_AUTHORING_MODE) {
+      novelNeed(continuation,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+      novelNeed(await verifyRetainedResources(retainedResources,scenePath,manifestPath,fsAdapter),'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    }
     if (!continuation && packet.retainedResources !== undefined) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_MODE', TRANSACTION_PHASES.RECOVER);
     const mediaUpdate = packet.resourceMode === 'MEDIA_UPDATE_V1' || continuation;
     if (packet.resourceMode !== undefined && !mediaUpdate) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_MODE', TRANSACTION_PHASES.RECOVER);
@@ -1405,7 +1506,9 @@ async function repairCorruptProjectCommit({
     throw new ProjectTransactionError('E_PROJECT_COMMIT_REPAIR_CONTEXT_CHANGED', TRANSACTION_PHASES.RECOVER);
   }
 
-  await verifyRetainedResources(journal.retainedResources || [], scenePath, manifestPath, fsAdapter);
+  const repairOrigin=await verifyRetainedResources(journal.retainedResources || [], scenePath, manifestPath, fsAdapter);
+  if (journal.commentState?.mode === COMMENT_AUTHORING_MODE) novelNeed(repairOrigin,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  if (repairOrigin && journal.noteState?.mode === 'MANUSCRIPT_BODY_UPDATE_V1') validateNovelNoteAuthoring(journal.noteState,scenePath,manifestPath);
   if (syntheticJournal) {
     journalSource = `${JSON.stringify(journalWireRecord(journal))}\n`;
     await durableSaveTransaction({
@@ -1451,6 +1554,191 @@ async function repairCorruptProjectCommit({
   });
 }
 
+function novelNeed(value, code = 'E_PROJECT_TRANSACTION_NOVEL_BASELINE') {
+  if (!value) throw new ProjectTransactionError(code, TRANSACTION_PHASES.READBACK);
+}
+async function readNovelOriginResource(resource, resources, scenePath, manifestPath, fsAdapter) {
+  const id = retainedOriginId(resource.path, manifestPath);
+  novelNeed(id, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  normalizeRetainedResources(resources, scenePath, manifestPath);
+  const bytes = await readResource(resource, manifestPath, fsAdapter);
+  novelNeed(bytes && bytes.length === resource.bytes && sha256hex(bytes) === resource.digest, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  let packet; try { packet = JSON.parse(bytes); } catch { novelNeed(false, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN'); }
+  await validateTreePacket(packet, manifestPath);
+  novelNeed(packet.transactionId === id && packet.plan.kind === 'word-generic-import'
+    && bytes.equals(Buffer.from(canonicalBytes(packet))), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  const relative = path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/');
+  novelNeed(packet.plan.importReceipt.createdScenes.some(scene => scene.relativeFile === relative), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  const commit = packet.entries.find(entry => entry.role === 'sceneCommit' && entry.relativePath === relative + '.wp201-commit.json');
+  novelNeed(commit?.afterBase64, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  const originalRecord = JSON.parse(treeText(commit.afterBase64));
+  for (const expected of originalRecord.resources || []) {
+    novelNeed(resources.some(entry => canonicalize(entry) === canonicalize(expected)), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  }
+  const receipt = packet.entries.find(entry => entry.role === 'importReceipt');
+  novelNeed(receipt?.afterBase64 && (await treeRead(treeAbsolute(manifestPath, receipt.relativePath), manifestPath, fsAdapter)) === receipt.afterBase64,
+    'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  const annotation = role => treeText(packet.entries.find(entry => entry.role === role)?.afterBase64 ?? null);
+  return { packet, resource, originalRecord, notesText: annotation('notes'), commentsText: annotation('comments') };
+}
+async function readNovelSceneBaseline(record, scenePath, manifestPath, verifyManifestContinuation, fsAdapter, origin = null) {
+  if (record?.schemaVersion !== TREE_COMMIT_SCHEMA_VERSION) return null;
+  const origins = (record.resources || []).filter(entry => retainedOriginId(entry.path, manifestPath));
+  novelNeed(origins.length <= 1, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  if (!origin && origins.length) origin = await readNovelOriginResource(origins[0], record.resources, scenePath, manifestPath, fsAdapter);
+  if (!origin) {
+    // A receipt is only a selector. Regeneration and the exact scene commit
+    // below must prove that this is a new novel cohort rather than legacy v7.
+    let selected = false;
+    for (const resource of record.resources || []) {
+      if (path.dirname(resource.path) !== path.join(path.dirname(manifestPath), '.yalken', 'docx-import', 'receipts')) continue;
+      const bytes = await readResource(resource, manifestPath, fsAdapter); let receipt;
+      try { receipt = JSON.parse(bytes); } catch { continue; }
+      if (receipt?.schemaVersion === 'revision-bridge.docx-import-receipt.v3' && receipt.sceneStrategy === 'word-novel-root-partitions') selected = true;
+    }
+    if (!selected) return null;
+    const target = recoveryPacketPathFor(manifestPath, record.transactionId), bytes = await readResource({path:target}, manifestPath, fsAdapter);
+    novelNeed(bytes, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    const resource = {path:target,digest:sha256hex(bytes),bytes:bytes.length};
+    origin = await readNovelOriginResource(resource, [...record.resources,resource], scenePath, manifestPath, fsAdapter);
+  }
+  if (record.transactionId === origin.packet.transactionId) {
+    novelNeed(canonicalize(record) === canonicalize(origin.originalRecord), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    return origin;
+  }
+  novelNeed(origins.length === 1 && canonicalize(origins[0]) === canonicalize(origin.resource), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  if (record.manifestDigest !== origin.originalRecord.manifestDigest) {
+    const proof = typeof verifyManifestContinuation === 'function' && await verifyManifestContinuation({manifestPath,
+      fromDigest:origin.originalRecord.manifestDigest,toDigest:record.manifestDigest});
+    novelNeed(proof?.ok === true && proof.manifestPath === manifestPath && proof.fromDigest === origin.originalRecord.manifestDigest
+      && proof.toDigest === record.manifestDigest, 'E_PROJECT_TRANSACTION_NOVEL_MANIFEST');
+  }
+  const packet = await readNovelSuccessPacket(record, scenePath, manifestPath, fsAdapter);
+  return {...origin, latestPacket:packet.packet, notesText:packet.journal.noteState?.afterText ?? origin.notesText,
+    commentsText:packet.journal.commentState?.afterText ?? origin.commentsText};
+}
+async function readNovelSuccessPacket(record, scenePath, manifestPath, fsAdapter) {
+  const target = recoveryPacketPathFor(manifestPath, record.transactionId);
+  await assertResourceBoundary(target, manifestPath, fsAdapter);
+  let source; try { novelNeed((await fsAdapter.stat(target)).size <= MAX_ARTIFACT_BYTES); source = await fsAdapter.readFile(target,'utf8'); }
+  catch (error) { if (error.code === 'ENOENT') novelNeed(false); throw error; }
+  let packet; try { packet = JSON.parse(source); } catch { novelNeed(false); }
+  const journalSource = decodePacketRole(packet,'TRANSACTION_JOURNAL'), journal = parseJournal(journalSource,{scenePath,manifestPath});
+  const state = await readCommitRecordState({scenePath,manifestPath,expectedJournal:journal,fsAdapter});
+  novelNeed(state.status === 'VALID' && state.relation === 'CURRENT' && canonicalize(state.record) === canonicalize(record));
+  const prior = decodePacketRole(packet,'CORRUPT_COMMIT_METADATA');
+  let previous; try { previous = JSON.parse(prior); } catch { novelNeed(false); }
+  novelNeed(previous?.scenePath === scenePath && previous.manifestPath === manifestPath && isDigest(previous.transactionId)
+    && previous.sceneDigest === sha256hex(journal.before.scene) && isDigest(previous.manifestDigest));
+  const expected = buildRecoveryPacket({journal,journalSource,commitState:{reason:'NOVEL_SCENE_BASELINE',source:prior},
+    currentScene:journal.before.scene,currentManifest:journal.before.manifest});
+  novelNeed(packet.binding?.transactionId === record.transactionId && source === canonicalBytes(expected));
+  return {packet,journal,source};
+}
+function ownedNovelNotes(text, projectId, sceneId, allIds = new Set(), ownIds = new Set()) {
+  const doc = text === null ? {schemaVersion:1,projectId,notes:[]} : validateManuscriptDocument(JSON.parse(text),projectId);
+  const relevant = row => {
+    if (!row || Object.keys(row).sort().join(',')!=='artifactSha256,changes,inputDigest,operationId,resultDigest,roundId'
+      || !['operationId','inputDigest','resultDigest','roundId','artifactSha256'].every(key=>typeof row[key]==='string')
+      || !row.roundId.length || row.roundId.length>256 || !/^(?:sha256:)?[a-f0-9]{64}$/u.test(row.artifactSha256)
+      || !isDigest(row.inputDigest) || !isDigest(row.resultDigest)
+      || row.operationId!==`word-note-return-${sha256hex(row.roundId+'\n'+row.artifactSha256)}`
+      || !Array.isArray(row.changes) || !row.changes.length || row.changes.length>256) return true;
+    const foreign = change => {
+      if (!change || Object.keys(change).sort().join(',')!=='after,before,noteId,operation'
+        || !allIds.has(change.noteId) || ownIds.has(change.noteId)
+        || !({create:change.before===null && !!change.after,update:!!change.before && !!change.after,delete:!!change.before && change.after===null})[change.operation]) return false;
+      try {return [change.before,change.after].filter(Boolean).every(value=> {
+        require('./word-manuscript-notes-v1.cjs').validateManuscriptPayload(value);
+        return value.reference.sceneId!==sceneId;
+      });} catch {return false;}
+    };
+    return !row.changes.every(foreign); // Unknown/unscoped and own/deleted receipts remain protected.
+  };
+  return {root:Object.fromEntries(Object.entries(doc).filter(([k])=>!['notes','updatedAtUtc','wordNoteReturnReceipts'].includes(k))),
+    notes:doc.notes.filter(note=>note?.manuscript?.reference.sceneId === sceneId),
+    receipts:doc.wordNoteReturnReceipts===undefined?[]:Array.isArray(doc.wordNoteReturnReceipts)?doc.wordNoteReturnReceipts.filter(relevant):doc.wordNoteReturnReceipts};
+}
+function validateNovelNoteAuthoring(change,scenePath,manifestPath) {
+  const before=JSON.parse(change.beforeText),after=JSON.parse(change.afterText);
+  const sceneId=path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/');
+  const foreign=doc=>doc.notes.filter(note=>note?.manuscript?.reference.sceneId !== sceneId);
+  novelNeed(canonicalize(foreign(before))===canonicalize(foreign(after))
+    && canonicalize(before.wordNoteReturnReceipts)===canonicalize(after.wordNoteReturnReceipts),'E_PROJECT_TRANSACTION_NOTE_STATE');
+}
+function ownedNovelComments(text, projectId, sceneId, allIds, ownIds) {
+  const state = readCanonicalCommentState(text,projectId);
+  const relevant = event => {
+    if (event?.type === 'WORD_COMMENT_AUTHORED' && Object.keys(event).sort().join(',')==='action,at,inputDigest,operationId,resultingRevision,threadId,type'
+      && typeof event.operationId==='string' && /^[\w:.-]{1,160}$/u.test(event.operationId) && isDigest(event.inputDigest)
+      && ['create','reply','edit','resolve','reopen','reanchor','delete'].includes(event.action)
+      && Number.isSafeInteger(event.resultingRevision) && event.resultingRevision>=0 && typeof event.at==='string' && Number.isFinite(Date.parse(event.at))
+      && allIds.has(event.threadId)) return ownIds.has(event.threadId);
+    const recognizedChange=change=>change && allIds.has(change.threadId)
+      && Object.keys(change).every(key=>['threadId','messageIds','anchorChanged','statusBefore','statusAfter','created','deletedMessageIds','deletionDecision'].includes(key))
+      && Array.isArray(change.messageIds) && change.messageIds.every(id=>typeof id==='string') && typeof change.anchorChanged==='boolean'
+      && [null,'open','resolved','deleted'].includes(change.statusBefore) && ['open','resolved','deleted'].includes(change.statusAfter)
+      && (change.created===undefined || change.created===true) && (change.deletedMessageIds===undefined || Array.isArray(change.deletedMessageIds) && change.deletedMessageIds.every(id=>typeof id==='string'))
+      && (change.deletionDecision===undefined || change.deletionDecision==='CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION');
+    if (event?.type === 'WORD_COMMENT_RETURN_APPLIED' && Object.keys(event).sort().join(',')==='artifactSha256,changes,inputDigest,operationId,resultingRevision,roundId,threadDigest,type'
+      && typeof event.operationId==='string' && event.operationId.length<=160 && typeof event.roundId==='string' && event.roundId.length<=256
+      && /^(?:sha256:)?[a-f0-9]{64}$/u.test(event.artifactSha256) && isDigest(event.inputDigest) && isDigest(event.threadDigest)
+      && Number.isSafeInteger(event.resultingRevision) && event.resultingRevision>=0 && Array.isArray(event.changes) && event.changes.length
+      && event.changes.every(recognizedChange)) return event.changes.some(change=>ownIds.has(change.threadId));
+    return true; // Unscoped/unknown events are protected rather than discarded.
+  };
+  return {root:Object.fromEntries(Object.entries(state).filter(([k])=>!['schemaVersion','revision','threads','events'].includes(k))),
+    threads:state.threads.filter(thread=>thread.sceneId === sceneId),events:state.events.filter(relevant)};
+}
+async function assertNovelAnnotations(baseline, scenePath, manifestPath, fsAdapter, texts = null) {
+  const projectId = baseline.packet.projectId, sceneId = path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/');
+  const notesText = texts ? texts.notesText : (await readResource({path:noteStatePath(manifestPath)},manifestPath,fsAdapter))?.toString('utf8') ?? null;
+  const commentsText = texts ? texts.commentsText : (await readResource({path:commentStatePath(manifestPath)},manifestPath,fsAdapter))?.toString('utf8') ?? null;
+  try {
+    const noteDocs=[baseline.notesText,notesText].map(text=>text===null?{notes:[]}:validateManuscriptDocument(JSON.parse(text),projectId));
+    const allNotes=new Set(noteDocs.flatMap(doc=>doc.notes.map(note=>note.id)));
+    const ownNotes=new Set(noteDocs.flatMap(doc=>doc.notes.filter(note=>note?.manuscript?.reference.sceneId===sceneId).map(note=>note.id)));
+    novelNeed(canonicalize(ownedNovelNotes(notesText,projectId,sceneId,allNotes,ownNotes)) === canonicalize(ownedNovelNotes(baseline.notesText,projectId,sceneId,allNotes,ownNotes)), 'E_PROJECT_TRANSACTION_NOTE_READBACK');
+    const states = [readCanonicalCommentState(baseline.commentsText,projectId),readCanonicalCommentState(commentsText,projectId)];
+    const all = new Set(states.flatMap(state=>state.threads.map(thread=>thread.threadId)));
+    const own = new Set(states.flatMap(state=>state.threads.filter(thread=>thread.sceneId === sceneId).map(thread=>thread.threadId)));
+    novelNeed(canonicalize(ownedNovelComments(commentsText,projectId,sceneId,all,own))
+      === canonicalize(ownedNovelComments(baseline.commentsText,projectId,sceneId,all,own)), 'E_PROJECT_TRANSACTION_COMMENT_READBACK');
+  } catch (error) {
+    if (error instanceof ProjectTransactionError) throw error;
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOVEL_ANNOTATION',TRANSACTION_PHASES.READBACK,error.code || 'SCHEMA');
+  }
+  return {notesText,commentsText,projectId,sceneId};
+}
+
+// A receipt only selects a fail-closed lineage check, never mutation authority.
+async function selectsNovelReceipt(scenePath,manifestPath,fsAdapter) {
+  const directory=path.join(path.dirname(manifestPath),'.yalken','docx-import','receipts');
+  let names; try {names=await fsAdapter.readdir(directory);} catch(error) {if(error.code==='ENOENT')return false;throw error;}
+  novelNeed(names.length<=10000,'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
+  const relative=path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/');
+  const projectId=JSON.parse(await fsAdapter.readFile(manifestPath,'utf8')).projectId; let total=0;
+  for (const name of names) {
+    if (!name.endsWith('.json')) continue;
+    const bytes=await readResource({path:path.join(directory,name)},manifestPath,fsAdapter);
+    if (!bytes) continue;
+    total+=bytes.length;novelNeed(total<=MAX_RESOURCE_BYTES,'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
+    let receipt;try {receipt=JSON.parse(bytes);}catch {continue;}
+    if (receipt?.schemaVersion==='revision-bridge.docx-import-receipt.v3' && receipt.sceneStrategy==='word-novel-root-partitions'
+      && receipt.projectId===projectId && Array.isArray(receipt.createdScenes) && receipt.createdScenes.some(scene=>scene?.relativeFile===relative)) return true;
+  }
+  return false;
+}
+async function readVerifiedNovelAnnotationLineage({scenePath,manifestPath,verifyManifestContinuation,fsAdapter=fsp}) {
+  assertPathPair(scenePath,manifestPath);
+  const state=await readCommitRecordState({scenePath,manifestPath,observedScene:await readOptionalText(scenePath,fsAdapter),
+    observedManifest:await readOptionalText(manifestPath,fsAdapter),verifyManifestContinuation,fsAdapter});
+  const baseline=state.status==='VALID'?await readNovelSceneBaseline(state.record,scenePath,manifestPath,verifyManifestContinuation,fsAdapter):null;
+  if (!baseline) {novelNeed(state.record?.commentState?.mode!==COMMENT_AUTHORING_MODE,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');novelNeed(!await selectsNovelReceipt(scenePath,manifestPath,fsAdapter),'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');return null;}
+  await readVerifiedProjectTransaction({scenePath,manifestPath,verifyManifestContinuation,fsAdapter});
+  return Object.freeze({projectId:baseline.packet.projectId,sceneId:path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/'),transactionId:state.record.transactionId});
+}
+
 // Readback of a committed create transaction is independent of the import
 // receipt's own assertions. Every recorded companion must still match bytes.
 async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyManifestContinuation, fsAdapter = fsp }) {
@@ -1462,8 +1750,11 @@ async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyM
     observedScene: await readOptionalText(scenePath, fsAdapter),
     observedManifest: await readOptionalText(manifestPath, fsAdapter), verifyManifestContinuation, fsAdapter });
   if (state.status !== 'VALID') throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMIT_READBACK', TRANSACTION_PHASES.READBACK);
+  let origin = null;
   if (state.record.resources) {
-    normalizeResources(state.record.resources.map(entry => ({ path: entry.path, content: '' })), { scenePath, manifestPath });
+    if (state.record.resources.some(entry=>retainedOriginId(entry.path,manifestPath))) {
+      origin = await verifyRetainedResources(state.record.resources,scenePath,manifestPath,fsAdapter);
+    } else normalizeResources(state.record.resources.map(entry => ({ path: entry.path, content: '' })), { scenePath, manifestPath });
     let total = 0;
     for (const entry of state.record.resources) {
       total += entry.bytes;
@@ -1474,15 +1765,18 @@ async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyM
       }
     }
   }
+  const novel = await readNovelSceneBaseline(state.record,scenePath,manifestPath,verifyManifestContinuation,fsAdapter,origin);
+  novelNeed(novel || state.record.commentState?.mode!==COMMENT_AUTHORING_MODE,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  if (novel) await assertNovelAnnotations(novel,scenePath,manifestPath,fsAdapter);
   if (state.record.commentState) {
     const value = await readResource({ path: commentStatePath(manifestPath) }, manifestPath, fsAdapter);
-    if (value === null || sha256hex(value) !== state.record.commentState.afterDigest) {
+    if ((value === null || sha256hex(value) !== state.record.commentState.afterDigest) && !novel) {
       throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_READBACK', TRANSACTION_PHASES.READBACK);
     }
   }
   if (state.record.noteState) {
     const value = await readResource({ path: noteStatePath(manifestPath) }, manifestPath, fsAdapter);
-    if (value === null || sha256hex(value) !== state.record.noteState.afterDigest) {
+    if ((value === null || sha256hex(value) !== state.record.noteState.afterDigest) && !novel) {
       throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOTE_READBACK', TRANSACTION_PHASES.READBACK);
     }
   }
@@ -1585,7 +1879,7 @@ async function treeDirectoryState(target, manifestPath, fsAdapter) {
 // Only the new structural operation owns annotation rebinding. Historical
 // move/copy packets must regenerate byte-for-byte with their original receipts.
 function hasStructuralAnnotationCohort(plan) {
-  return plan.kind === 'word-mixed-return' || Array.isArray(plan.scenePartitions) || Boolean(plan.input?.recoveredCopy?.sourceNodeId)
+  return plan.kind === 'word-mixed-return' || plan.kind === 'word-generic-import' || Array.isArray(plan.scenePartitions) || Boolean(plan.input?.recoveredCopy?.sourceNodeId)
     || plan.kind === 'undo' && Boolean(plan.input?.retainedPacket?.plan?.input?.recoveredCopy?.sourceNodeId);
 }
 function treeManagedAnnotationEntries(plan, manifestPath) {
@@ -1599,8 +1893,8 @@ function treeManagedAnnotationEntries(plan, manifestPath) {
     treeNeed(matches.length === 1, 'E_TREE_COHORT_ANNOTATION_BINDING');
     const entry = matches[0];
     // An absent canonical owner cannot discharge a historical resource proof.
-    if (entry.beforeBase64 === null || entry.afterBase64 === null) continue;
-    for (const encoded of new Set([entry.beforeBase64, entry.afterBase64])) {
+    if (entry.afterBase64 === null || entry.beforeBase64 === null && plan.kind !== 'word-generic-import') continue;
+    for (const encoded of new Set([entry.beforeBase64, entry.afterBase64].filter(x=>x!==null))) {
       const raw = treeText(encoded);
       if (role === 'notes') validateManuscriptDocument(JSON.parse(raw), plan.projectId);
       else readCanonicalCommentState(raw, plan.projectId);
@@ -1624,7 +1918,7 @@ async function consumeRestoredTreeAnnotationResources(resources, scenePath, mani
 }
 async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = null) {
   const managed = treeManagedAnnotationEntries(packet.plan, manifestPath);
-  const stagedMedia = new Set(packet.plan.entries.filter(entry=>entry.role==='storyMedia').map(entry=>treeAbsolute(manifestPath,entry.relativePath)));
+  const stagedMedia = new Set(packet.plan.entries.filter(entry=>entry.role==='storyMedia' || packet.plan.kind==='word-generic-import' && ['importReceipt','importMedia'].includes(entry.role)).map(entry=>treeAbsolute(manifestPath,entry.relativePath)));
   for (const entry of packet.entries.filter(e => e.role === 'sceneCommit' && e.relativePath.endsWith('.wp201-commit.json'))) {
     for (const raw of new Set([entry.beforeBase64, entry.afterBase64].filter(Boolean))) {
       let record; try { record = JSON.parse(treeText(raw)); } catch { treeError('E_TREE_COHORT_COMMIT_INVALID'); }
@@ -1697,6 +1991,11 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
         const target=treeAbsolute(manifestPath,asset.attrs.assetPath), staged=byPath.get(asset.attrs.assetPath);
         if(staged) treeNeed(staged.role==='storyMedia' && staged.afterBase64===asset.attrs.dataBase64,'E_TREE_COHORT_RESOURCE_CONFLICT');
         resources.set(target,{path:target,digest:sha256hex(asset.bytes),bytes:asset.bytes.length});
+      }
+    }
+    if (plan.kind === 'word-generic-import' && plan.affectedScenes.some(item=>item.to===scene.relativePath)) {
+      for (const entry of entries.filter(e=>['importReceipt','importMedia'].includes(e.role))) {
+        resources.set(treeAbsolute(manifestPath,entry.relativePath),{path:treeAbsolute(manifestPath,entry.relativePath),digest:sha256hex(Buffer.from(entry.afterBase64,'base64')),bytes:Buffer.from(entry.afterBase64,'base64').length});
       }
     }
     const note = entries.find(entry => entry.role === 'notes'), comment = entries.find(entry => entry.role === 'comments');
@@ -1823,7 +2122,7 @@ async function readVerifiedProjectTreeMutation({ manifestPath, projectId, fsAdap
   treeNeed(packet.projectId === parsed.projectId && packet.transactionId === receipt.transactionId
     && model.projectTreeCohortDigest(packet) === receipt.packetDigest && packet.plan.expectedTreeRevision + 1 === receipt.treeRevision
     && packet.plan.kind === receipt.kind, 'E_TREE_COHORT_RECEIPT_BINDING');
-  let canUndo = !['undo','word-mixed-return'].includes(receipt.kind), unavailableReason = canUndo ? null : receipt.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : 'TREE_UNDO_CONSUMED';
+  let canUndo = !['undo','word-mixed-return','word-generic-import'].includes(receipt.kind), unavailableReason = canUndo ? null : receipt.kind === 'word-generic-import' ? 'IMPORT_COHORT_INVERSE_UNPROVEN' : receipt.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : 'TREE_UNDO_CONSUMED';
   if (canUndo) try { await inspectTreePacket(packet, manifestPath, fsAdapter, 'after'); }
   catch (error) { canUndo = false; unavailableReason = error.code || error.message; }
   return { treeRevision: receipt.treeRevision, lastMutation: { id: receipt.transactionId, kind: receipt.kind, canUndo, unavailableReason }, receipt, retainedPacket: packet };
@@ -1855,6 +2154,14 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
     manifestPath, transactionId, previousReceiptText, receiptText, packet };
   const journalText = canonicalBytes(journal);
   await parseTreeJournal(journalText, manifestPath);
+  if (plan.kind === 'word-generic-import') {
+    const packetText = canonicalBytes(packet), origin = {path:recoveryPacketPathFor(manifestPath,transactionId),digest:sha256hex(packetText),bytes:Buffer.byteLength(packetText)};
+    for (const scene of packet.entries.filter(entry => entry.role === 'scene' && entry.beforeBase64 === null)) {
+      const commit = packet.entries.find(entry => entry.role === 'sceneCommit' && entry.relativePath === scene.relativePath+'.wp201-commit.json');
+      const record = JSON.parse(treeText(commit.afterBase64));
+      normalizeRetainedResources([...(record.resources || []),origin],record.scenePath,manifestPath);
+    }
+  }
   await revalidate();
   await durableSaveTransaction({ filePath: journalPathFor(manifestPath), content: journalText, revision, fsAdapter });
   await publishTreeSide(packet, 'after', { manifestPath, publishManifest, revalidate, fsAdapter });
@@ -1869,7 +2176,7 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   await inspectTreePacket(packet, manifestPath, fsAdapter, 'after');
   await removeDurably(journalPathFor(manifestPath), fsAdapter);
   return { success: true, changed: true, code: 'TREE_COHORT_COMMITTED', transactionId, treeRevision: receipt.treeRevision,
-    lastMutation: { id: transactionId, kind: plan.kind, canUndo: !['undo','word-mixed-return'].includes(plan.kind), unavailableReason: plan.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : plan.kind === 'undo' ? 'TREE_UNDO_CONSUMED' : null },
+    lastMutation: { id: transactionId, kind: plan.kind, canUndo: !['undo','word-mixed-return','word-generic-import'].includes(plan.kind), unavailableReason: plan.kind === 'word-generic-import' ? 'IMPORT_COHORT_INVERSE_UNPROVEN' : plan.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : plan.kind === 'undo' ? 'TREE_UNDO_CONSUMED' : null },
     affectedScenes: plan.affectedScenes, pathBindings: plan.pathBindings, identityMap: plan.identityMap, revision,
     manifestDigest: sha256hex(plan.manifestText), recovery: { recovered: false, outcome: 'NO_JOURNAL' } };
 }
@@ -1888,6 +2195,7 @@ module.exports = Object.freeze({
   journalPathFor,
   readPendingProjectTransactionBinding,
   readVerifiedProjectTransaction,
+  readVerifiedNovelAnnotationLineage,
   recoveryPacketPathFor,
   recoverProjectTransaction,
   repairCorruptProjectCommit,

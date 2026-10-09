@@ -491,14 +491,77 @@ test('500k-word publication uses the bounded16MiB full-manuscript file profile',
   assert.deepEqual(clone(content.docxContentPreviewReport.contentPreview.paragraphs.map(p=>p.text)),literal);
   const plan=await context.handleDocxImportPreviewCommandSurface({requestId:'volume-plan',docxContentPreviewRef:content.docxContentPreviewRef});
   assert.equal(plan.importPreviewOk,true,JSON.stringify(plan));assert.match(plan.docxImportPreviewRef,/^[a-f0-9]{64}$/u);
-  const entries=plan.docxImportPreviewPlan.candidateCreatePlan.entries;assert.equal(entries.length,1);
-  const imported=require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(entries[0].content).doc;
+  const candidate=plan.docxImportPreviewPlan.candidateCreatePlan,entries=candidate.entries;
+  const parse=require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload;
+  assert.equal(candidate.sceneStrategy,'word-novel-root-partitions');
+  assert.ok(entries.length>1);assert.equal(entries.length,candidate.entryCount);
+  assert.equal(new Set(entries.map(entry=>entry.sceneId)).size,entries.length);
+  const importedScenes=entries.map(entry=>parse(entry.content).doc);
+  assert.ok(importedScenes.every(doc=>doc?.type==='doc'));
+  const imported={content:importedScenes.flatMap(doc=>doc.content)};
+  const combined=bridge.buildDocxImportPreviewPlanFromContentPreview(content.docxContentPreviewReport);
+  assert.equal(combined.ok,true,JSON.stringify(combined));
+  assert.equal(combined.candidateCreatePlan.sceneStrategy,'single-scene');
+  assert.equal(combined.candidateCreatePlan.entryCount,1);assert.equal(combined.candidateCreatePlan.entries.length,1);
+  const combinedDocument=parse(combined.candidateCreatePlan.entries[0].content).doc;
+  assert.deepEqual(imported.content,combinedDocument.content,'every original paragraph structure, attribute and mark');
+  assert.deepEqual(combinedDocument.content.map(p=>p.type),literal.map(()=> 'paragraph'));
+  assert.deepEqual(combinedDocument.content.map(p=>(p.content||[]).map(n=>n.text||'').join('')),literal);
+  const contentBytes=Buffer.byteLength(JSON.stringify(content.docxContentPreviewReport));
+  const planBytes=Buffer.byteLength(JSON.stringify(plan.docxImportPreviewPlan));
+  assert.ok(planBytes>16*1024*1024&&planBytes<=32*1024*1024);
+  assert.ok(contentBytes+planBytes<=48*1024*1024);
+  const contextKey=context.captureDocxImportPreviewContext();
+  assert.ok(JSON.stringify(context.resolveDocxImportPreviewReference('content',content.docxContentPreviewRef))===JSON.stringify(content.docxContentPreviewReport),'complete content retained beside plan');
+  assert.ok(JSON.stringify(context.resolveDocxImportPreviewReference('plan',plan.docxImportPreviewRef))===JSON.stringify(plan.docxImportPreviewPlan),'complete plan retained beside content');
+  const directory=process.env.YALKEN_FULL_EXPORT_PROFILE_EVIDENCE_DIR;
+  if(directory){fs.mkdirSync(directory,{recursive:true});fs.writeFileSync(path.join(directory,'novel-500k-complete-preview.v8'),require('node:v8').serialize({corpus,source,bytes,content,plan,combined,importedScenes,contentBytes,planBytes,contextKey}),{flag:'wx'});}
   assert.deepEqual(imported.content.map(p=>p.type),literal.map(()=> 'paragraph'));
   assert.deepEqual(imported.content.map(p=>(p.content||[]).map(n=>n.text||'').join('')),literal);
   assert.equal(hash(JSON.stringify(source)),protectedSource);
   const rejected=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:{maxInflatedPartBytes:1024},hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
   assert.equal(rejected.ok,false);
   assert.equal(rejected.code,'RTK_BUDGET_EXCEEDED');
+});
+
+
+test('Actual Main novel reference profile admits exact finite boundaries and preserves ordinary store defaults',t=>{
+  let time=0;t.mock.method(Date,'now',()=>time);
+  const context=harness(),store=vm.runInContext('docxImportPreviewReferences',context),key=context.captureDocxImportPreviewContext();
+  const snapshotBytes=32*1024*1024,totalBytes=48*1024*1024;
+  const first={text:'x'.repeat(snapshotBytes-11)},second={text:'y'.repeat(totalBytes-snapshotBytes-11)};
+  assert.equal(Buffer.byteLength(JSON.stringify(first)),snapshotBytes);
+  assert.equal(Buffer.byteLength(JSON.stringify(second)),totalBytes-snapshotBytes);
+  const a=store.remember('plan',first,key);assert.match(a,/^[a-f0-9]{64}$/u);
+  assert.equal(store.remember('plan',{text:first.text+'x'},key),'','one byte over snapshot refuses');
+  assert.equal(store.resolve('plan',a,key).text,first.text);
+  assert.equal(store.resolve('content',a,key),null);assert.equal(store.resolve('plan',a,key+':other'),null);
+  const b=store.remember('content',second,key);assert.match(b,/^[a-f0-9]{64}$/u);
+  assert.equal(store.resolve('plan',a,key).text,first.text,'exact aggregate retains both snapshots');
+  assert.equal(store.resolve('content',b,key).text,second.text);
+  const c=store.remember('plan',{text:''},key);assert.match(c,/^[a-f0-9]{64}$/u);
+  assert.equal(store.resolve('plan',a,key),null,'aggregate overflow evicts oldest rather than growing unbounded');
+  assert.equal(store.resolve('content',b,key).text,second.text);assert.equal(store.resolve('plan',c,key).text,'');
+  store.clear();assert.equal(store.resolve('content',b,key),null);assert.equal(store.resolve('plan',c,key),null);
+  const a2=store.remember('plan',first,key),oneOver={text:second.text+'y'};
+  assert.equal(Buffer.byteLength(JSON.stringify(first))+Buffer.byteLength(JSON.stringify(oneOver)),totalBytes+1);
+  const b2=store.remember('content',oneOver,key);assert.match(b2,/^[a-f0-9]{64}$/u);
+  assert.equal(store.resolve('plan',a2,key),null,'exactly one byte over aggregate evicts oldest');
+  assert.equal(store.resolve('content',b2,key).text,oneOver.text);store.clear();
+  const defaults=require('../../src/utils/docxImportPreviewReferences').createDocxImportPreviewReferences();
+  const ordinary={text:'z'.repeat(4*1024*1024-11)};assert.equal(Buffer.byteLength(JSON.stringify(ordinary)),4*1024*1024);
+  const d=defaults.remember('plan',ordinary,key);assert.match(d,/^[a-f0-9]{64}$/u);
+  assert.equal(defaults.remember('plan',{text:ordinary.text+'z'},key),'','ordinary per-snapshot4MiB unchanged');
+  assert.equal(defaults.resolve('plan',d,key).text,ordinary.text);
+  const bounded=harness(),entryStore=vm.runInContext('docxImportPreviewReferences',bounded),entryKey=bounded.captureDocxImportPreviewContext();
+  const refs=Array.from({length:64},(_,index)=>entryStore.remember('plan',{index},entryKey));
+  for(const [index,ref] of refs.entries()){assert.match(ref,/^[a-f0-9]{64}$/u);assert.equal(entryStore.resolve('plan',ref,entryKey).index,index);}
+  const sixtyFifth=entryStore.remember('plan',{index:64},entryKey);assert.match(sixtyFifth,/^[a-f0-9]{64}$/u);
+  assert.equal(entryStore.resolve('plan',refs[0],entryKey),null,'entry65 evicts oldest at unchanged64-entry bound');
+  for(const [index,ref] of refs.entries())if(index)assert.equal(entryStore.resolve('plan',ref,entryKey).index,index);
+  time=599999;assert.equal(entryStore.resolve('plan',sixtyFifth,entryKey).index,64);
+  time=600000;assert.equal(entryStore.resolve('plan',sixtyFifth,entryKey),null,'exact ten-minute TTL unchanged and read never renews');
+  for(const ref of refs)assert.equal(entryStore.resolve('plan',ref,entryKey),null);
 });
 
 test('Finite actual Main content and import preview retain all three-scene literal paragraphs through bounded references',async()=>{

@@ -185,7 +185,7 @@ function copyValidatedDocxUserBookmarkInventory(contentPreview) {
   return cloneJsonSafe(inventory);
 }
 
-function sanitizeContentPreviewReport(report) {
+function sanitizeContentPreviewReport(report, options = {}) {
   const userBookmarkInventory = copyValidatedDocxUserBookmarkInventory(report?.contentPreview);
   if (!isPlainObject(report)) return null;
   return {
@@ -248,6 +248,7 @@ function sanitizeContentPreviewReport(report) {
                 'wordParagraphSpacing', 'wordParagraphIndent', 'wordParagraphTabs',
                 'wordParagraphMarkLanguage', 'wordParagraphMarkTypography',
                 'list',
+                ...(options.novelImport === true ? ['listContinuationLevel','sectionBreakType','sectionBreakTypeImplicit'] : []),
                 'blockKind',
                 'blockquoteDepth',
                 'table',
@@ -318,6 +319,10 @@ function sanitizeImportPreviewPlan(plan) {
           mode: plan.candidateCreatePlan.mode,
           sceneStrategy: plan.candidateCreatePlan.sceneStrategy,
           entryCount: plan.candidateCreatePlan.entryCount,
+          ...(plan.candidateCreatePlan.sceneStrategy === 'word-novel-root-partitions' ? {
+            sourceCandidate: cloneJsonSafe(plan.candidateCreatePlan.sourceCandidate),
+            policy: cloneJsonSafe(plan.candidateCreatePlan.policy),cohortDigest:plan.candidateCreatePlan.cohortDigest,
+          } : {}),
           entries: Array.isArray(plan.candidateCreatePlan.entries)
             ? plan.candidateCreatePlan.entries
               .map((entry) => {
@@ -327,6 +332,7 @@ function sanitizeImportPreviewPlan(plan) {
                   kind: entry.kind,
                   title: entry.title,
                   content: entry.content,
+                  ...(entry.partition !== undefined ? {partition:cloneJsonSafe(entry.partition)} : {}),
                   ...(entry.comments !== undefined ? { comments: cloneJsonSafe(entry.comments) } : {}),
                   ...(entry.notes !== undefined ? { notes: cloneJsonSafe(entry.notes) } : {}),
                   contentTextHash: entry.contentTextHash,
@@ -661,7 +667,8 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
 
   let contentPreviewReport = null;
   try {
-    contentPreviewReport = revisionBridge.buildDocxContentPreviewFromZipBytes(fileBytes);
+    contentPreviewReport = revisionBridge.buildDocxContentPreviewFromZipBytes(options.novelImport === true
+      ? {bytes:fileBytes,budgets:options.contentPreviewBudgets} : fileBytes);
   } catch {
     return buildError(
       'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID',
@@ -684,7 +691,7 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
   }
 
   let sanitizedContentPreviewReport;
-  try { sanitizedContentPreviewReport = sanitizeContentPreviewReport(contentPreviewReport); }
+  try { sanitizedContentPreviewReport = sanitizeContentPreviewReport(contentPreviewReport,options); }
   catch { return buildError('E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID',
     DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.CONTENT_REPORT_INVALID); }
   if (!sanitizedContentPreviewReport) {
@@ -704,7 +711,9 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
 
   let importPreviewPlan = null;
   try {
-    importPreviewPlan = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(
+    const build = options.novelImport === true && typeof revisionBridge.buildDocxNovelImportPreviewPlanFromContentPreview === 'function'
+      ? revisionBridge.buildDocxNovelImportPreviewPlanFromContentPreview : revisionBridge.buildDocxImportPreviewPlanFromContentPreview;
+    importPreviewPlan = build(
       sanitizedContentPreviewReport,
     );
   } catch {

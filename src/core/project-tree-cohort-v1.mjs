@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { sha256Hex } from './browser-safe-hash.mjs';
-import { planProjectTreeIdentityCohort, normalizeProjectTreeIdentity } from './projectTreeIdentity.mjs';
+import { planProjectTreeIdentityCohort, normalizeProjectTreeIdentity, createDeterministicTreeNodeId } from './projectTreeIdentity.mjs';
 import envelope from './document-content-envelope-v1.cjs';
 import bookmarks from './word-user-bookmarks-v1.cjs';
 import pending from './word-pending-text-revisions-v1.cjs';
@@ -13,6 +13,8 @@ import mediaModel from './word-media-return-v1.cjs';
 import storyModel from './word-stories-v1.cjs';
 import mediaData from '../io/documentMedia.js';
 import { replayDocumentStoryMutationSteps } from '../io/revisionBridge/reviewTransportStoriesV1.mjs';
+import { materializeGenericComments } from '../io/revisionBridge/genericWordComments.mjs';
+import sections from './word-sections-v1.cjs';
 
 export const TREE_COHORT_MODE = 'PROJECT_TREE_COHORT_V1';
 export const TREE_COHORT_LIMITS = Object.freeze({ files: 2048, bytes: 32 * 1024 * 1024, scenes: 512 });
@@ -35,6 +37,123 @@ export function treeRelativePath(value) {
 const matches = (value, base) => value === base || value.startsWith(base + '/');
 const NOTE_PATH = 'notes.craftsman.json', COMMENT_PATH = '.yalken/word-review/non-text-return-state.v1.json';
 const roles = new Set(['scene', 'sceneCommit', 'recoverySnapshot', 'backupSnapshot', 'backupMetadata', 'directory']);
+
+export const DOCX_NOVEL_STRATEGY = 'word-novel-root-partitions';
+export const DOCX_NOVEL_POLICY = Object.freeze({ targetParagraphs: 200, targetUtf16: 100000,
+  maxSceneUtf16: 250000, maxSceneBytes: 4 * 1024 * 1024, maxScenes: 512 });
+const novelHash = value => { let h = 2166136261; for (let i = 0; i < value.length; i++) h = ((h ^ value.charCodeAt(i)) * 16777619) >>> 0; return h.toString(16).padStart(8, '0'); };
+// A storage boundary has no section meaning. This first profile accepts only
+// the existing exporter's effective default; nondefault context cannot be
+// represented on intermediate scenes without inventing a real section end.
+const novelDefaultSection = { type: 'nextPage', pageSize: { widthTwips: 11906, heightTwips: 16838, orientation: 'portrait' },
+  margins: { topTwips: 1440, rightTwips: 1440, bottomTwips: 1440, leftTwips: 1440, headerTwips: 720, footerTwips: 720, gutterTwips: 0 }, columns: { count: 1, spaceTwips: 720 } };
+export function partitionDocxImportCandidate(candidate, artifactSha256, requested = {}) {
+  need(candidate?.mode === 'create-only'
+    && candidate.entries?.length === 1 && candidate.entryCount === 1, 'E_DOCX_NOVEL_SOURCE');
+  need(Object.keys(requested).every(k => Object.hasOwn(DOCX_NOVEL_POLICY, k)), 'E_DOCX_NOVEL_POLICY');
+  const policy = { ...DOCX_NOVEL_POLICY, ...requested };
+  for (const k of Object.keys(policy)) need(Number.isSafeInteger(policy[k]) && policy[k] > 0 && policy[k] <= DOCX_NOVEL_POLICY[k], 'E_DOCX_NOVEL_POLICY');
+  const sourceCandidate = clone(candidate.entries[0]), parsed = parsedScene(sourceCandidate.content);
+  const doc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text), ledger = pending.readLedger(doc);
+  if (sourceCandidate.notes?.length) need(!ledger, 'NOTE_PENDING_IMPORT_REQUIRES_AUTHENTICATED_RETURN');
+  const source = ledger ? ledger.source : doc, leaves = bookmarks.paragraphs(source), leafTexts = leaves.map(bookmarks.textOf);
+  const roots = source.content, metrics = [], prefix = [0];
+  for (const root of roots) { const rows = bookmarks.paragraphs({ type: 'doc', content: [root] });
+    need(rows.length > 0, 'E_DOCX_NOVEL_ROOT'); metrics.push(rows.length); prefix.push(prefix.at(-1) + rows.length); }
+  need(leaves.length > 0 && leaves.length <= 10000 && prefix.at(-1) === leaves.length, 'E_DOCX_NOVEL_COVERAGE');
+  if (leaves.length <= policy.targetParagraphs && leafTexts.join('\n').length <= policy.targetUtf16) return candidate;
+  need(candidate.sceneStrategy === 'single-scene', 'E_DOCX_NOVEL_SOURCE');
+  need(/^[a-f0-9]{64}$/u.test(artifactSha256), 'E_DOCX_NOVEL_ARTIFACT');
+  need(sourceCandidate.candidateContentSha256 === sha(sourceCandidate.content), 'E_DOCX_NOVEL_SOURCE_SHA');
+  const registry = sections.read(doc);
+  need(!storyModel.read(doc), 'E_DOCX_NOVEL_STORIES_UNSUPPORTED');
+  need(!registry || registry.boundaries.length === 0 && same(sections.withDefaults(registry.final, novelDefaultSection), novelDefaultSection), 'E_DOCX_NOVEL_SECTION_UNSUPPORTED');
+  const marks = bookmarks.readRegistry(doc), protectedSpans = [];
+  const protect = (a,b) => { need(Number.isSafeInteger(a) && Number.isSafeInteger(b) && a >= 0 && b >= a && b < leaves.length, 'E_DOCX_NOVEL_RANGE'); protectedSpans.push([a,b]); };
+  for (const mark of marks?.bookmarks || []) if (mark.state !== 'deleted') protect(mark.start.paragraphIndex, mark.end.paragraphIndex);
+  for (const c of sourceCandidate.comments || []) protect(c.paragraphIndex, c.endParagraphIndex ?? c.paragraphIndex);
+  const groups = new Map();
+  for (const r of ledger?.revisions || []) {
+    protect(r.paragraphIndex, r.paragraphIndex + (r.boundary ? 1 : 0));
+    if (r.groupId) { const values = groups.get(r.groupId) || []; values.push(r.paragraphIndex); groups.set(r.groupId, values); }
+  }
+  for (const group of groups.values()) protect(Math.min(...group), Math.max(...group));
+  const numberingSpans = new Map();
+  const numbering = (node, rootIndex) => {
+    const attrs = node.attrs || {}, pattern = attrs.wordNumbering;
+    const key = attrs.wordListId != null ? 'legacy:' + attrs.wordListId : pattern ? 'pattern:' + (pattern.lineageId || pattern.instanceId) : null;
+    if (key) { const span = numberingSpans.get(key) || [prefix[rootIndex], prefix[rootIndex+1]-1];
+      span[1] = prefix[rootIndex+1]-1; numberingSpans.set(key, span); }
+    for (const child of node.content || []) numbering(child, rootIndex);
+  };
+  roots.forEach(numbering); for (const [a,b] of numberingSpans.values()) protect(a,b);
+  const safe = cut => !protectedSpans.some(([a,b]) => a < prefix[cut] && prefix[cut] <= b);
+  const cuts = [0]; let start = 0, count = 0, chars = 0;
+  for (let i = 0; i < roots.length; i++) {
+    const preferred = roots[i].type === 'heading' && roots[i].attrs?.level === 1;
+    if (i > start && safe(i) && (preferred || count >= policy.targetParagraphs || chars >= policy.targetUtf16)) {
+      cuts.push(i); start = i; count = 0; chars = 0;
+    }
+    count += metrics[i]; chars += leafTexts.slice(prefix[i], prefix[i+1]).reduce((n,t) => n+t.length+1,0);
+    need(chars <= policy.maxSceneUtf16, 'E_DOCX_NOVEL_INDIVISIBLE_BUDGET');
+  }
+  cuts.push(roots.length); need(cuts.length - 1 <= policy.maxScenes, 'E_DOCX_NOVEL_SCENE_BUDGET');
+  if (cuts.length === 2) need(chars <= policy.maxSceneUtf16, 'E_DOCX_NOVEL_INDIVISIBLE_BUDGET');
+  const entries = [];
+  for (let i = 0; i < cuts.length-1; i++) {
+    const rootFrom = cuts[i], rootTo = cuts[i+1], leafFrom = prefix[rootFrom], leafTo = prefix[rootTo];
+    let local = { ...clone(doc), content: clone(roots.slice(rootFrom, rootTo)), attrs: { ...(clone(doc.attrs || {})) } };
+    delete local.attrs.wordPendingRevisions; delete local.attrs.wordUserBookmarks; delete local.attrs.wordSections;
+    if (registry && i === cuts.length-2) local = sections.bind(local, registry);
+    if (marks) {
+      const records = marks.bookmarks.filter(m => m.state === 'deleted' ? i === 0 : m.start.paragraphIndex >= leafFrom && m.start.paragraphIndex < leafTo).map(m => {
+        const record = clone(m); if (m.state !== 'deleted') for (const key of ['start','end']) record[key].paragraphIndex -= leafFrom; return record; });
+      local.attrs.wordUserBookmarks = { ...marks, bookmarks: records }; bookmarks.readRegistry(local);
+    }
+    const walkLinks = node => { for (const mark of node.marks || []) if (mark.type === 'link') bookmarks.inspectInternalLink(mark, bookmarks.readRegistry(local)); for (const n of node.content || []) walkLinks(n); };
+    walkLinks(local); // A link whose target lives in another scene is refused.
+    if (ledger) {
+      need([ledger.undo,ledger.redo,ledger.roundUndo || [],ledger.roundRedo || [],ledger.returnReceipts || []].every(x => x.length === 0)
+        && !ledger.noteSourcePoints, 'E_DOCX_NOVEL_PENDING_HISTORY');
+      const revisions = ledger.revisions.filter(r => r.paragraphIndex >= leafFrom && r.paragraphIndex < leafTo).map(r => {
+        const next = { ...clone(r), paragraphIndex: r.paragraphIndex-leafFrom };
+        if (r.structure) next.structure.tableIndex -= roots.slice(0, rootFrom).filter(n => n.type === 'table').length;
+        return next;
+      });
+      const localLedger = { ...clone(ledger), schemaVersion: ledger.schemaVersion === 1 && !revisions.length ? 2 : ledger.schemaVersion,
+        source: { ...clone(source), attrs:clone(local.attrs), content: clone(roots.slice(rootFrom,rootTo)) }, revisions, undo: [], redo: [] };
+      if (localLedger.schemaVersion >= 2) Object.assign(localLedger,{roundUndo:[],roundRedo:[],returnReceipts:[]});
+      local = pending.bindLedger(localLedger);
+    }
+    const content = envelope.composeObservablePayload({ doc: local });
+    const observed = parsedScene(content).doc;
+    need(same((pending.readLedger(observed)?.source || observed).content, roots.slice(rootFrom,rootTo)), 'E_DOCX_NOVEL_ROOT_CONSERVATION');
+    need(Buffer.byteLength(content) <= policy.maxSceneBytes, 'E_DOCX_NOVEL_SCENE_BUDGET');
+    const comments = (sourceCandidate.comments || []).filter(c => c.paragraphIndex >= leafFrom && c.paragraphIndex < leafTo).map(c => {
+      const item = { ...clone(c), paragraphIndex:c.paragraphIndex-leafFrom };
+      if (item.endParagraphIndex !== undefined) item.endParagraphIndex -= leafFrom;
+      if (item.pendingUnionLocator) {
+        const old = item.pendingUnionLocator, binding = pending.buildCommentExportBinding({document:local});
+        const input = {paragraphIndex:item.paragraphIndex,startUtf16:item.startUtf16,selectedText:item.selectedText,
+          ...(item.kind === commentRanges.MULTI ? {kind:item.kind,endParagraphIndex:item.endParagraphIndex,endUtf16:item.endUtf16} : item.kind === 'point' ? {kind:'point',affinity:'right'} : {})};
+        const anchor = commentRanges.deriveCommentAnchor({sceneId:'generic-preview',paragraphs:commentAnchors.paragraphs(content),input});
+        item.pendingUnionLocator = pending.createCommentUnionLocator({projection:binding.projection,anchor,
+          unionStart:{...old.unionStart,paragraphIndex:old.unionStart.paragraphIndex-leafFrom},unionEnd:{...old.unionEnd,paragraphIndex:old.unionEnd.paragraphIndex-leafFrom}});
+      }
+      return item;
+    });
+    const notes = (sourceCandidate.notes || []).filter(n => n.paragraphIndex >= leafFrom && n.paragraphIndex < leafTo).map(n => ({...clone(n),paragraphIndex:n.paragraphIndex-leafFrom}));
+    entries.push({sceneId:`docx-import-scene-${sha(`${artifactSha256}\n${i}\n${rootFrom}\n${rootTo}`)}`,kind:'scene',title:`${String(i+1).padStart(4,'0')} Imported DOCX`,content,
+      contentTextHash:novelHash(content),candidateContentSha256:sha(content),source:{...clone(sourceCandidate.source),paragraphRange:{start:leafFrom,end:leafTo-1}},
+      partition:{rootFrom,rootTo,leafFrom,leafTo},...(comments.length?{comments}:{}),...(notes.length?{notes}:{})});
+  }
+  if (ledger) for (const mode of ['current','original']) need(entries.map(e=>pending.projection(parsedScene(e.content).doc)[mode]).join('\n') === pending.projection(doc)[mode], 'E_DOCX_NOVEL_PENDING_CONSERVATION');
+  else need(entries.flatMap(e=>bookmarks.paragraphs(parsedScene(e.content).doc).map(bookmarks.textOf)).join('\n') === leafTexts.join('\n'), 'E_DOCX_NOVEL_CONSERVATION');
+  const result = {mode:'create-only',sceneStrategy:DOCX_NOVEL_STRATEGY,entryCount:entries.length,sourceCandidate,policy,entries};
+  result.cohortDigest = sha(stable({artifactSha256,...result}));
+  need(Buffer.byteLength(stable(result)) <= TREE_COHORT_LIMITS.bytes, 'E_DOCX_NOVEL_PROJECTION_BUDGET');
+  return frozen(result);
+}
 function validateInventory(input) {
   need(Array.isArray(input) && input.length <= TREE_COHORT_LIMITS.files, 'E_TREE_COHORT_BUDGET');
   const found = new Map(); let size = 0;
@@ -676,8 +795,112 @@ export function planProjectMixedWordReturnCohort(input) {
   return frozen(plan);
 }
 
+export function validateDocxNovelCandidate(candidate, artifactSha256) {
+  need(candidate?.sceneStrategy === DOCX_NOVEL_STRATEGY, 'E_DOCX_NOVEL_STRATEGY');
+  const regenerated = partitionDocxImportCandidate({mode:'create-only',sceneStrategy:'single-scene',entryCount:1,entries:[candidate.sourceCandidate]},artifactSha256,candidate.policy);
+  need(same(regenerated,candidate), 'E_DOCX_NOVEL_PLAN_MISMATCH'); return candidate;
+}
+export function materializeDocxNovelCandidate(input) {
+  const candidate=validateDocxNovelCandidate(input.candidate,input.artifactSha256);
+  const instance = sha(stable([input.projectId,input.operationId,input.operationNonce,input.artifactSha256,candidate.cohortDigest]));
+  const entries = [];
+  let notesAfter = input.notesText, commentsAfter = input.commentsText;
+  need(notesAfter === null || typeof notesAfter === 'string'); need(commentsAfter === null || typeof commentsAfter === 'string');
+  if (notesAfter !== null) notesModel.validateManuscriptDocument(JSON.parse(notesAfter),input.projectId);
+  if (commentsAfter !== null) commentsModel.readState(commentsAfter,input.projectId);
+  const occupied = new Set(input.occupiedBookmarkNames || []);
+  const createdScenes = [], affectedScenes = [], resources = new Map();
+  for (let i=0;i<candidate.entries.length;i++) {
+    const entry=candidate.entries[i], relativeFile=`roman/Imported/${String(i+1).padStart(4,'0')} Imported DOCX ${instance}.txt`;
+    let content=entry.content, doc=parsedScene(content).doc; const registry=bookmarks.readRegistry(doc);
+    if (registry) {
+      need(registry.bookmarks.every(m=>m.state==='active'), 'E_DOCX_NOVEL_BOOKMARK_STATE');
+      for (const m of registry.bookmarks) { const key=bookmarks.nameKey(m.name); need(!occupied.has(key),'E_DOCX_NOVEL_BOOKMARK_COLLISION'); occupied.add(key); }
+      doc=clone(doc); delete doc.attrs.wordUserBookmarks;
+      const strip=node=>{for(const mark of node.marks||[]) if(mark.type==='link' && mark.attrs?.href?.startsWith('#')) {delete mark.attrs.wordBookmarkId;delete mark.attrs.wordBookmarkName;} for(const child of node.content||[])strip(child);};strip(doc);
+      doc=bookmarks.importInventory(doc,{bookmarks:registry.bookmarks.map(m=>({name:m.name,start:m.start,end:m.end}))},`${instance}:${i}`);
+      content=envelope.composeObservablePayload({doc});
+    }
+    const bindingKey='file:'+relativeFile, nodeId=createDeterministicTreeNodeId(input.projectId,bindingKey);
+    const publicSceneLocator={sceneId:entry.sceneId,nodeId,label:path.posix.basename(relativeFile,'.txt'),kind:'scene'};
+    createdScenes.push({sceneId:entry.sceneId,kind:'scene',title:entry.title,bytesWritten:Buffer.byteLength(content),outputHash:sha(content),treeNodeId:nodeId,
+      treeId:`yalken.scene.tree.root.${instance.slice(0,16)}`,relativeFile,partition:clone(entry.partition),publicSceneLocator});
+    entries.push({relativePath:relativeFile,role:'scene',beforeBase64:null,afterBase64:b64(content)}); affectedScenes.push({from:relativeFile,to:relativeFile,copy:false});
+    if (entry.notes?.length) notesAfter=notesModel.materializeImportedNotes({candidates:entry.notes,sceneContent:content,projectId:input.projectId,sceneId:relativeFile,importOperationId:`${instance}:${i}`,beforeText:notesAfter,createdAt:input.now}).afterText;
+    if (entry.comments?.length) commentsAfter=materializeGenericComments({candidates:entry.comments,paragraphs:commentAnchors.paragraphs(content),pendingDocument:doc,
+      projectId:input.projectId,sceneId:relativeFile,importOperationId:`${instance}:${i}`,beforeText:commentsAfter}).afterText;
+    for(const item of mediaData.documentMedia(doc).assets) resources.set(item.attrs.assetPath,item.attrs.dataBase64);
+    for(const note of entry.notes||[]) for(const item of mediaData.documentMedia(note.body).assets) resources.set(item.attrs.assetPath,item.attrs.dataBase64);
+  }
+  return {entries,createdScenes,affectedScenes,notesAfter,commentsAfter,resources:[...resources]};
+}
+export function planProjectDocxImportCohort(input) {
+  need(input?.operation === 'word-generic-import' && typeof input.projectId === 'string' && input.projectId.length > 0
+    && /^docx-import-op-[a-f0-9]{12}$/u.test(input.operationId), 'E_DOCX_NOVEL_IDENTITY');
+  need(typeof input.manifestPath === 'string' && path.isAbsolute(input.manifestPath)
+    && typeof input.beforeManifestText === 'string' && Number.isSafeInteger(input.expectedTreeRevision) && input.expectedTreeRevision >= 0, 'E_DOCX_NOVEL_INPUT');
+  need(Number.isSafeInteger(input.fencingGeneration) && input.fencingGeneration > 0
+    && /^[a-f0-9]{64}$/u.test(input.previewPlanHash) && /^[a-f0-9]{8}$/u.test(input.previewHash)
+    && typeof input.operationNonce === 'string' && input.operationNonce.length > 0
+    && typeof input.now === 'string' && new Date(input.now).toISOString() === input.now, 'E_DOCX_NOVEL_BINDING');
+  const proof = input.candidate; let candidate;
+  if (proof && typeof proof === 'object' && !Array.isArray(proof)
+    && Object.keys(proof).sort().join(',') === 'cohortDigest,policy,sourceCandidate') {
+    need(proof.sourceCandidate && typeof proof.sourceCandidate.content === 'string'
+      && proof.sourceCandidate.candidateContentSha256 === sha(proof.sourceCandidate.content), 'E_DOCX_NOVEL_SOURCE_SHA');
+    need(proof.policy && typeof proof.policy === 'object' && !Array.isArray(proof.policy)
+      && Object.keys(proof.policy).sort().join(',') === Object.keys(DOCX_NOVEL_POLICY).sort().join(','), 'E_DOCX_NOVEL_POLICY');
+    candidate = partitionDocxImportCandidate({mode:'create-only',sceneStrategy:'single-scene',entryCount:1,entries:[proof.sourceCandidate]}, input.artifactSha256, proof.policy);
+    need(candidate.sceneStrategy === DOCX_NOVEL_STRATEGY && /^[a-f0-9]{64}$/u.test(proof.cohortDigest)
+      && candidate.cohortDigest === proof.cohortDigest && same(candidate.policy,proof.policy), 'E_DOCX_NOVEL_PLAN_MISMATCH');
+  } else candidate = validateDocxNovelCandidate(proof, input.artifactSha256);
+  const inventory = validateInventory(input.inventory);
+  const manifest = JSON.parse(input.beforeManifestText); need(manifest.projectId === input.projectId, 'E_TREE_COHORT_PROJECT');
+  const identity = normalizeProjectTreeIdentity(manifest.treeIdentity); need(identity.ok, 'E_TREE_COHORT_IDENTITY');
+  // The v7 journal orders object keys. Materialize from that same derived order
+  // so retained input regenerates byte-identical annotation and receipt files.
+  input = JSON.parse(stable({...clone(input),candidate:{sourceCandidate:candidate.sourceCandidate,policy:candidate.policy,cohortDigest:candidate.cohortDigest}}));
+  candidate = JSON.parse(stable(candidate));
+  const next = clone(manifest); next.treeIdentity = clone(identity.value);
+  const occupiedBookmarkNames=[];
+  for(const entry of inventory.values()) if(entry.role==='scene') { const doc=parsedScene(text(entry.contentBase64)).doc;
+    if(doc) for(const m of bookmarks.readRegistry(doc)?.bookmarks || []) occupiedBookmarkNames.push(bookmarks.nameKey(m.name)); }
+  const materialized=materializeDocxNovelCandidate({...input,candidate,occupiedBookmarkNames});
+  const {createdScenes,affectedScenes,notesAfter,commentsAfter}=materialized, resources=new Map(materialized.resources);
+  const entries=[...inventory.values()].filter(x=>x.role!=='directory').map(x=>({relativePath:x.relativePath,role:x.role,beforeBase64:x.contentBase64,afterBase64:x.contentBase64}));
+  entries.push(...materialized.entries);
+  for(const scene of createdScenes) {
+    need(!inventory.has(scene.relativeFile) && !inventory.has(scene.relativeFile+'.wp201-commit.json'),'E_TREE_COHORT_COLLISION');
+    const bindingKey='file:'+scene.relativeFile,nodeId=scene.treeNodeId;
+    need(!next.treeIdentity.nodes[nodeId] && !Object.values(next.treeIdentity.nodes).some(n=>n.present!==false && n.bindingKey===bindingKey),'E_TREE_COHORT_COLLISION');
+    next.treeIdentity.nodes[nodeId]={bindingKey,kind:'scene',present:true};
+  }
+  need(inventory.size+createdScenes.length*2 <= TREE_COHORT_LIMITS.files && [...inventory.values()].filter(x=>x.role==='scene').length+createdScenes.length <= TREE_COHORT_LIMITS.scenes,'E_TREE_COHORT_BUDGET');
+  need(Array.isArray(input.mediaBindings) && input.mediaBindings.length===resources.size,'E_DOCX_NOVEL_MEDIA');
+  for(const [relativePath,afterBase64] of resources) { const matches=input.mediaBindings.filter(x=>x.relativePath===relativePath);
+    need(matches.length===1 && Object.keys(matches[0]).sort().join(',')==='beforeBase64,relativePath' && (matches[0].beforeBase64===null || matches[0].beforeBase64===afterBase64),'E_DOCX_NOVEL_MEDIA');
+    entries.push({relativePath,role:'importMedia',beforeBase64:matches[0].beforeBase64,afterBase64}); }
+  next.lastCommandId=(Number.isSafeInteger(next.lastCommandId) && next.lastCommandId>=0?next.lastCommandId:0)+1;
+  const manifestText=json(next), locators=createdScenes.map(s=>s.publicSceneLocator);
+  const receipt={schemaVersion:'revision-bridge.docx-import-receipt.v3',type:'docx.import.safeCreate.receipt',reason:'DOCX_IMPORT_SAFE_CREATE_APPLIED',sceneStrategy:DOCX_NOVEL_STRATEGY,
+    importOperationId:input.operationId,importOperationNonce:input.operationNonce,projectId:input.projectId,sourceArtifactSha256:input.artifactSha256,candidateContentSha256:candidate.cohortDigest,
+    sourcePreviewHash:input.previewHash,inputHash:input.previewPlanHash,outputHash:sha(stable({createdScenes})),createdSceneIds:createdScenes.map(s=>s.sceneId),createdScenes,
+    sceneTreeIdentities:createdScenes.map(({sceneId,treeNodeId,treeId})=>({sceneId,treeNodeId,treeId})),publicSceneLocators:locators,publicSceneLocator:locators[0],
+    lossReport:clone(input.lossReport),carrierIgnored:clone(input.carrierIgnored),createdAt:input.now,manifestAuthority:{fencingGeneration:input.fencingGeneration,revision:String(input.fencingGeneration),previousHash:sha(input.beforeManifestText),nextHash:sha(manifestText),durablePublication:true}};
+  const receiptRelativePath=`.yalken/docx-import/receipts/${input.operationId}.json`;
+  entries.push({relativePath:NOTE_PATH,role:'notes',beforeBase64:b64(input.notesText),afterBase64:b64(notesAfter)},
+    {relativePath:COMMENT_PATH,role:'comments',beforeBase64:b64(input.commentsText),afterBase64:b64(commentsAfter)},
+    {relativePath:receiptRelativePath,role:'importReceipt',beforeBase64:null,afterBase64:b64(json(receipt))});
+  const directories=[...inventory.values()].filter(x=>x.role==='directory').map(x=>({relativePath:x.relativePath,before:true,after:true}));
+  if(!directories.some(x=>x.relativePath==='roman/Imported'))directories.push({relativePath:'roman/Imported',before:false,after:true});
+  const plan={mode:TREE_COHORT_MODE,kind:'word-generic-import',projectId:input.projectId,operationId:input.operationId,expectedTreeRevision:input.expectedTreeRevision,changed:true,code:'TREE_COHORT_READY',
+    beforeManifestText:input.beforeManifestText,manifestText,entries:entries.sort((a,b)=>a.relativePath.localeCompare(b.relativePath)),directories,affectedScenes,pathBindings:[],identityMap:{nodes:{},scenes:{},notes:{},bookmarks:{},threads:{},messages:{}},importReceipt:receipt,input:clone(input)};
+  plan.planDigest=sha(stable(plan));need(Buffer.byteLength(stable(plan))<=TREE_COHORT_LIMITS.bytes,'E_TREE_COHORT_BUDGET');return frozen(plan);
+}
+
 export function validateProjectTreeCohort(plan) {
   need(plan?.mode === TREE_COHORT_MODE, 'E_TREE_COHORT_MODE');
+  if (plan.kind === 'word-generic-import') { need(same(planProjectDocxImportCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'word-mixed-return') { need(same(planProjectMixedWordReturnCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'story-bodies') { need(same(planProjectStoryBodyCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'undo') {
@@ -689,7 +912,7 @@ export function validateProjectTreeCohort(plan) {
 export function planProjectTreeUndo(input) {
   const { receipt, retainedPacket: packet } = input;
   need(receipt?.projectId === input.projectId && packet?.projectId === input.projectId
-    && receipt.kind !== 'undo' && receipt.kind !== 'word-mixed-return' && receipt.transactionId === input.lastMutation
+    && !['undo','word-mixed-return','word-generic-import'].includes(receipt.kind) && receipt.transactionId === input.lastMutation
     && receipt.treeRevision === input.expectedTreeRevision, 'E_TREE_UNDO_UNAVAILABLE');
   need(packet.plan?.kind !== 'undo' && packet.transactionId === receipt.transactionId
     && sha(stable(packet)) === receipt.packetDigest, 'E_TREE_UNDO_PACKET');
