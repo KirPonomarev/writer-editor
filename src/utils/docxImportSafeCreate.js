@@ -10,7 +10,7 @@ const {
   joinPathSegmentsWithinRoot,
 } = require('../core/io/path-boundary');
 const { commitProjectTransaction, recoverProjectTransaction, readPendingProjectTransactionBinding,
-  readVerifiedProjectTransaction, readVerifiedProjectTreeMutation } = require('../core/project-transaction-v1.cjs');
+  readVerifiedProjectTransaction, readVerifiedProjectDocxNovelCohort, readVerifiedProjectTreeMutation } = require('../core/project-transaction-v1.cjs');
 
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA = 'revision-bridge.docx-import-safe-create-receipt.v1';
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE = 'docx.import.safeCreate.receipt';
@@ -802,6 +802,11 @@ async function acknowledgeDocxImportAttempt(input, options = {}) {
     if ((await readDocxImportAttempt({ projectRoot, projectId })).text !== current.text) throw Error('DOCX_IMPORT_ATTEMPT_CONFLICT');
     const { unlinkDurable } = await import('../io/markdown/atomicWriteFile.mjs');
     const target = await importAttemptPath(projectRoot);
+    if (validated.value.candidate?.sceneStrategy === 'word-novel-root-partitions') {
+      const final=await validateExistingDocxImportReceipt({receipt:stored.receipt,plan,validated,projectRoot,romanRoot,
+        targetPath,importOperationId:expected.importOperationId,operationNonce:requestId,projectId,transactionAuthority:authority,manifestPath});
+      if(!final.ok) throw Error('DOCX_IMPORT_ATTEMPT_RECEIPT_INVALID');
+    }
     const openResult = assertOpen();
     if (openResult && typeof openResult.then === 'function') throw Error('DOCX_IMPORT_ATTEMPT_ACK_INVALID');
     await unlinkDurable(target);
@@ -1489,15 +1494,10 @@ async function validateExistingDocxNovelReceipt(options) {
     const manifest=JSON.parse(await fs.readFile(manifestPath,'utf8'));
     if(manifest.projectId!==projectId) return fail('project');
     const stored=await fs.readFile(buildReceiptStorePath(projectRoot,importOperationId));
+    const scenePaths=scenes.map(scene=>path.join(projectRoot,scene.relativeFile));
     for(const scene of scenes) {
-      const scenePath=path.join(projectRoot,scene.relativeFile);
       const identity=manifest.treeIdentity?.nodes?.[scene.treeNodeId];
       if(identity?.bindingKey!=='file:'+scene.relativeFile || identity.kind!=='scene' || identity.present===false) return fail('identity');
-      const commit=await readVerifiedProjectTransaction({scenePath,manifestPath,fsAdapter:options.fsAdapter,
-        verifyManifestContinuation:args=>transactionAuthority.verifyManifestContinuation({...args,projectId})});
-      if(commit.sceneDigest!==scene.outputHash || commit.revision<receipt.manifestAuthority.fencingGeneration
-        || !commit.resources?.some(r=>r.path===buildReceiptStorePath(projectRoot,importOperationId) && r.digest===hashExactBytes(stored))) return fail('commit');
-      if(hashExactBytes(await fs.readFile(scenePath))!==scene.outputHash) return fail('content');
     }
     const owned=new Set(scenes.map(s=>s.relativeFile));
     let actualNotes=null;try {actualNotes=await fs.readFile(path.join(projectRoot,'notes.craftsman.json'),'utf8');}catch(error){if(error.code!=='ENOENT')throw error;}
@@ -1508,6 +1508,14 @@ async function validateExistingDocxNovelReceipt(options) {
     const threads=comments.text===null?[]:commentModel.readState(comments.text,projectId).threads;
     if(!jsonStableEqual(threads.filter(t=>owned.has(t.sceneId)),expected.commentsAfter===null?[]:JSON.parse(expected.commentsAfter).threads)) return fail('comments');
     for(const entry of validated.value.entries) await verifyDocxMediaAssetFiles(entry.content,projectRoot,entry.notes);
+    // All asynchronous utility comparisons precede the Core's final snapshot.
+    const cohort=await readVerifiedProjectDocxNovelCohort({scenePaths,manifestPath,projectId,fsAdapter:options.fsAdapter,
+      verifyManifestContinuation:args=>transactionAuthority.verifyManifestContinuation({...args,projectId})});
+    for(const [i,scene] of scenes.entries()) {
+      const commit=cohort.records[i];
+      if(commit.sceneDigest!==scene.outputHash || commit.revision<receipt.manifestAuthority.fencingGeneration
+        || !commit.resources?.some(r=>r.path===buildReceiptStorePath(projectRoot,importOperationId) && r.digest===hashExactBytes(stored))) return fail('commit');
+    }
     return {ok:true,receipt};
   } catch { return fail('durableCohort'); }
 }

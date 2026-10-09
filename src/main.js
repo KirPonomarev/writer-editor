@@ -88,6 +88,7 @@ const {
   commitProjectTransaction,
   readPendingProjectTransactionBinding,
   readVerifiedProjectTreeMutation,
+  readVerifiedProjectDocxNovelCohort,
   readVerifiedNovelAnnotationLineage,
   recoverProjectTransaction,
 } = require('./core/project-transaction-v1.cjs');
@@ -14146,6 +14147,7 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
 
   let safeCreateResult = null;
   let acceptedBinding = null;
+  let acceptedTransactionAuthority = null;
   try {
     const requestId = normalizeDocxImportSafeCreateRequestId(payload?.requestId);
     await recoverPendingWriterProjectTransaction();
@@ -14157,6 +14159,7 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
     const projectBinding = await resolveProjectBindingForFile(romanRoot);
     // Missing authority is a command failure before any import publication.
     const docxImportTransactionAuthority = await getMainProjectManifestAuthority();
+    acceptedTransactionAuthority = docxImportTransactionAuthority;
     assertImportCurrent();
     acceptedBinding = { projectRoot: importProjectRoot, projectId: projectBinding?.projectId, manifestPath: projectBinding?.manifestPath };
     safeCreateResult = await applyDocxImportSafeCreate(
@@ -14224,6 +14227,18 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
     const attempt = await readDocxImportAttempt(acceptedBinding);
     assertCurrentReferenceContext();
     if (!attempt?.record || attempt.record.requestId !== commandResult.requestId) throw new Error('DOCX_IMPORT_ATTEMPT_MISSING');
+    if (novel) {
+      await acceptedTransactionAuthority.withProjectLease(acceptedBinding.projectId, lease => lease.publish(async proof => {
+        await proof.assertOwned(); assertImportCurrent();
+        const scenes=commandResult.receipt.createdScenes;
+        const current=await readVerifiedProjectDocxNovelCohort({manifestPath:acceptedBinding.manifestPath,projectId:acceptedBinding.projectId,
+          scenePaths:scenes.map(scene=>path.join(acceptedBinding.projectRoot,scene.relativeFile)),
+          verifyManifestContinuation:args=>acceptedTransactionAuthority.verifyManifestContinuation({...args,projectId:acceptedBinding.projectId})});
+        assertImportCurrent();
+        if(current.attemptDigest!==attempt.sha256 || current.records.some((record,i)=>record.sceneDigest!==scenes[i].outputHash)) throw Error('DOCX_IMPORT_NOVEL_PUBLICATION_CHANGED');
+      }));
+      assertImportCurrent();
+    }
     docxImportOpenAcknowledgement = { ...acceptedBinding, referenceContext,
       requestId: commandResult.requestId, attemptSha256: attempt.sha256,
       plan: cloneJsonSafe(validated.docxImportPreviewPlan) };
@@ -14539,7 +14554,7 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
       },
       maxBytes: DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
       novelImport: true,
-      contentPreviewBudgets: {maxBlocks:50_000},
+      contentPreviewBudgets: {maxBlocks:50_000,maxWorkerOutputBytes:64*1024*1024},
     });
     assertCurrent();
   } catch (error) {

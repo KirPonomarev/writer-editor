@@ -114,3 +114,26 @@ for(const [beforeVersion,afterVersion] of [...[1,2,3,4].map(v=>[v,4]),...[1,2,3,
  await tx.recoverProjectTransaction({scenePath:f.scenePath,manifestPath:f.manifestPath,publishManifest:request.publishManifest});
  assert.deepEqual(JSON.parse(fs.readFileSync(commentPath,'utf8')),after);
 });
+
+
+test('Word transaction: exactly one finite48MiB retained novel selector remains separate from ordinary20MiB and total129',t=>{
+ const f=fixture(t),filename=require.resolve('../../src/core/project-transaction-v1.cjs'),{Module,createRequire}=require('node:module');
+ const observer=new Module(filename);observer.filename=filename;observer.paths=Module._nodeModulePaths(path.dirname(filename));observer.require=createRequire(filename);
+ observer._compile(fs.readFileSync(filename,'utf8')+'\nmodule.exports={normalizeRetainedResources,normalizeResources};',filename);
+ const origin={path:tx.recoveryPacketPathFor(f.manifestPath,'a'.repeat(64)),digest:'b'.repeat(64),bytes:48*1024*1024};
+ const ordinary={path:path.join(f.root,'ordinary.dat'),digest:'c'.repeat(64),bytes:20*1024*1024};
+ const checked=resources=>observer.exports.normalizeRetainedResources(resources,f.scenePath,f.manifestPath);
+ assert.deepEqual(checked([origin,ordinary]),[origin,ordinary],'finite68MiB combined metadata; semantic origin validation is still required by every use');
+ for(const [resources,code] of [
+  [[{...origin,bytes:origin.bytes+1}],'E_PROJECT_TRANSACTION_RESOURCE_BUDGET'],
+  [[origin,{...ordinary,bytes:ordinary.bytes+1}],'E_PROJECT_TRANSACTION_RESOURCE_BUDGET'],
+  [[origin,{...origin,path:tx.recoveryPacketPathFor(f.manifestPath,'d'.repeat(64))}],'E_PROJECT_TRANSACTION_RESOURCE_BUDGET'],
+  [[origin,origin],'E_PROJECT_TRANSACTION_RETAINED_RESOURCES'],
+ ])assert.throws(()=>checked(resources),error=>error.code===code);
+ const maximum=[origin,...Array.from({length:128},(_,i)=>({...ordinary,path:path.join(f.root,'companion-'+i),bytes:0}))];
+ assert.equal(checked(maximum).length,129);assert.throws(()=>checked([...maximum,{...ordinary,path:path.join(f.root,'extra'),bytes:0}]),/RETAINED_RESOURCES/);
+ const pair={scenePath:f.scenePath,manifestPath:f.manifestPath};
+ assert.equal(observer.exports.normalizeResources([{path:ordinary.path,content:Buffer.alloc(ordinary.bytes)}],pair)[0].content.length,ordinary.bytes);
+ assert.throws(()=>observer.exports.normalizeResources([{path:ordinary.path,content:Buffer.alloc(ordinary.bytes+1)}],pair),/RESOURCE_BUDGET/);
+ assert.throws(()=>observer.exports.normalizeResources([{path:origin.path,content:'caller supplied origin'}],pair),/RESOURCE_PATH/,'a filename selector never creates write authority');
+});

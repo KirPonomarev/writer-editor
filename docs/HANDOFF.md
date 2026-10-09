@@ -1,3 +1,63 @@
+## 2026-10-09 — Complete Word-origin500k atomic import; current source proof, normal delivery pending
+
+WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009 binds merged basef7eaa746f3f5857809139f2f61b3e3ce07c45e36.
+Prior PR2101 is CLOSED: candidate2a8d9f22 and mergedf7eaa746 have the
+same bb426ead tree, all19 official checks succeeded; exact merged whole3
+50of50 and independent full-source/physical closure615de767e8a0772fe731734190cdcefd5540dd3df6081827508c4ae4d26afb6f.
+Historical failed receipts below remain unchanged historical evidence.
+
+Current bounded correction uses the existing64MiB local notes worker option,
+finite fully regenerated48MiB novel origin and complete wrapped journal,
+and one Core-owned invocation-private whole-cohort read query. Ordinary
+20MiB media/companions,32MiB latest chapter/recovery and TOTAL129 remain.
+Initial reads check physical size before allocation; all observed operands
+and absence are freshly compared before success under current lease/identity.
+No cross-call cache, caller-provided trusted origin, bypass or new dependency.
+
+Genuine SOURCE65 public Main handler plus real fs/lease run06 executed at
+original PRE03. Current runtime3/original2 loaded test/helper inputs remain
+byte-exact; only the unloaded reference test and root task changed under
+explicit17-path admission before edit. Current PRE04 independently maps that
+controlled delta; old global source snapshots stay assigned to the old runs.
+Run06 actual outcome:
+all500108 words/8391 rich paragraphs,42 chapters,3notes and200threads/400messages;
+origin37159475B. Local/plan/import/replay/ACK observed 35.215s, 6.679s, 106.262s, 57.87s, 59.669s:
+each stays below the existing120s handler limit. Complete driver wall
+712.985s/RU4491968512B;900s/40GB bounds
+not reached. Rawc21e2c78bfd9d5aec3fbe2e332bda94da7d4bd650ab9dc5a8c1c43ff5527a35f.
+Fresh replay creates no duplicate; fresh reopen and six real Core chapter
+Saves at0/21/41 in two cycles succeed. Root stdlib compares all8391 physical
+paragraph structures/attrs/marks with the pinned admitted canonical paragraphs;
+separately raw Word XML confirms complete body literal and3full notes/points,
+400full message bodies/ownership/ranges/root-reply/author/date.
+Independent final observer proves exactly6 requested edits, all42 current
+commit digests and39 unedited scene bodies AND commits byte-identical.
+This proves source handlers and durable files; native editor Save/restart/
+UndoRedo and full Command Kernel/native execution are not proved here.
+
+All29 affected whole maintained files run unfiltered in preselected disjoint
+2+27 chunks: 642of642, zero fail/cancel/skip/todo.
+Each original raw TAP is independently evaluated by the unchanged mandatory
+parser; union29/intersection0, no synthetic concatenation or name filters.
+Raw1 6e797e4f47ee3ae16431464b75d72af3f76cfab256a9c0e8e39e5f43f8247d93;
+raw2 6aa74ac9f3f2b8822c9f75c299b1300477254e26a242f309b4c0c6b005963560.
+Root fully rehashes3444 source inputs,136 compiler/2generated,29 tests,
+6writer/17scope,1964 current retained physical files
+7022564838B, prior329 and16 predecessor closure binding files.
+Current source reviewc962f03fa835b0630a587e9dc4f63d11e171dee2061ff77c1cc2bb98cc741ab2; PRE04e98ffbbb4d7ef60960b80f4ab4cbd4e387d88c0b5fe9f377e5d4268b73368ee7;
+original proof PRE0367d7d9e8f9a9281c8f246b149b8176fd568485e4e07dff291e294bb106504a9e.
+Runtime a+d266, existing tests a+d356 within declared limits.
+One factual docs pass and seven mechanical OPS companions follow this proof;
+current candidate commit/push/PR/official CI/merge/exact-merged proof PENDING.
+
+Original macOS full-novel release remains OPEN: both origins/scopes in SOURCE
+and ordinary PACKAGED, all three roles and five genuinely changed Word rounds,
+authenticated changed-note Apply, arbitrary rich note hardBreak formatting,
+native chapter Save/restart/UndoRedo and shipping performance. Preserve old
+crash no-replay and no monolithic500k Save/Undo restrictions. All heavy
+materials remain locally retained in authorized Yandex folder; remote upload
+PENDING. Next: close this normal delivery chain before another runtime contour.
+
 ## 2026-10-09 — Word-origin novel boundary CI correction; current29 source proof complete
 
 Same existing PR2101 at4ad201aa; delivery base5ca5d936 remains unchanged.

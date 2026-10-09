@@ -359,7 +359,7 @@ async function projectFixture(t,name='project',fixtureOptions={}) {
 }
 async function mainProjectPort(f,options={}) {
   const source=readSource(MAIN_PATH), bridge=await import('../../src/io/revisionBridge/index.mjs');
-  const references=require('../../src/utils/docxImportPreviewReferences.js').createDocxImportPreviewReferences();
+  const createDocxImportPreviewReferences=require('../../src/utils/docxImportPreviewReferences.js').createDocxImportPreviewReferences;
   const calls={admissions:[],queues:[],continuity:0,capabilities:[],manifestPublication:[],helper:[],transactions:[]};
   const safePath=path.join(REPO_ROOT,'src/utils/docxImportSafeCreate.js'), {Module,createRequire}=require('node:module'), realRequire=createRequire(safePath);
   const observedModule=new Module(safePath);observedModule.filename=safePath;observedModule.paths=Module._nodeModulePaths(path.dirname(safePath));
@@ -372,14 +372,18 @@ async function mainProjectPort(f,options={}) {
   const sandbox={Buffer,crypto,path,fs:fsp,cloneJsonSafe,isPlainObjectValue,module:{exports:{}},currentProjectName:'Novel',DEFAULT_PROJECT_NAME:'Novel',
     currentFilePath:'',mainWindow:{id:'owned-window'},activeStage10ApplicationBootstrap:{id:'owned-bootstrap'},commentAuthoringSessionId:'owned-session',lastSignaledEditGeneration:0,
     isDirty:false,activePendingRecording:false,autoSaveInProgress:false,
-    currentLifecycleSubjectId:()=> 'owned-subject',captureDocxImportPreviewContext:()=>f.projectId+':owned-project',
+    currentLifecycleSubjectId:()=> 'owned-subject',createDocxImportPreviewReferences,
+    createDocxImportLocalFilePreview,DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
+    readExternalFileBounded:require('../../src/utils/externalFileAuthority.js').readExternalFileBounded,
+    getProjectManifestPath:()=>f.manifestPath,fileManager:{getDocumentsPath:()=>f.root},
+    dialog:{showOpenDialog:async()=>({canceled:false,filePaths:[options.localPath]}),showMessageBox:async()=>({response:0})},
+    readVerifiedProjectDocxNovelCohort:tx.readVerifiedProjectDocxNovelCohort,
     copyValidatedDocxUserBookmarkInventory:require('../../src/utils/docxImportLocalFilePreview.js').copyValidatedDocxUserBookmarkInventory,
     loadRevisionBridgeModule:async()=>bridge,loadDocumentContentEnvelopeModule:async()=>envelope,
     loadRtkNonTextReturnModule:()=>import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),userBookmarkModel:bookmarks,pendingTextRevisions:pending,
-    rememberDocxImportPreviewReference:(kind,value,context)=>references.remember(kind,value,context),resolveDocxImportPreviewReference:(kind,value)=>references.resolve(kind,value,sandbox.captureDocxImportPreviewContext()),
     rememberDocxImportPreviewPlanAdmission:plan=>{calls.admissions.push(cloneJsonSafe(plan));return intake.rememberDocxImportPreviewPlanAdmission(plan);},
     isDocxImportPreviewPlanAdmitted:intake.isDocxImportPreviewPlanAdmitted,applyDocxImportSafeCreate:async(...args)=>{const result=await intake.applyDocxImportSafeCreate(...args);calls.helper.push(cloneJsonSafe(result));return result;},
-    readDocxImportAttempt:intake.readDocxImportAttempt,acknowledgeDocxImportAttempt:intake.acknowledgeDocxImportAttempt,
+    readDocxImportAttempt:async args=>{const result=await intake.readDocxImportAttempt(args);if(options.afterAttempt)await options.afterAttempt(result,sandbox);return result;},acknowledgeDocxImportAttempt:intake.acknowledgeDocxImportAttempt,
     getProjectRootPath:()=>f.root,getProjectSectionPath:name=>path.join(f.root,name),
     ensureProjectStructure:async()=>{await fsp.mkdir(f.romanRoot,{recursive:true});if(options.afterAwait)await options.afterAwait(sandbox);},
     resolveProjectBindingForFile:async()=>({projectId:f.projectId,manifestPath:f.manifestPath,manifestRaw:await fsp.readFile(f.manifestPath,'utf8')}),
@@ -394,9 +398,9 @@ async function mainProjectPort(f,options={}) {
       const parsed=envelope.parseObservablePayload(await fsp.readFile(sandbox.currentFilePath,'utf8'));return {projectId:f.projectId,documentId:nodeId,generation:sandbox.lastSignaledEditGeneration,content:envelope.composeObservablePayload({...parsed,metaEnabled:true})};},
     saveLastFile:async args=>{args.beforeWrite();calls.continuity++;return {ok:true};},
   };
-  const sectionsText=[['DOCX_IMPORT_PREVIEW_COMMAND_SURFACE'],['DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE']].map(([s])=>extractMarkedSection(source,'// '+s+'_START','// '+s+'_END')).join('\n');
-  vm.runInNewContext(sectionsText+'\n'+namedFunction(source,'readTreeCohortPath')+'\n'+namedFunction(source,'captureTreeCohortInventory')+'\n'+namedFunction(source,'treeSceneSnapshotsEqual')+'\nmodule.exports={handleDocxImportPreviewCommandSurface,handleDocxImportSafeCreateCommandSurface};',sandbox,{filename:MAIN_PATH});
-  return {...sandbox.module.exports,sandbox,calls,references,bridge};
+  const sectionsText=[['DOCX_IMPORT_PREVIEW_REFERENCES'],['DOCX_IMPORT_PREVIEW_COMMAND_SURFACE'],['DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE'],['DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE']].map(([s])=>extractMarkedSection(source,'// '+s+'_START','// '+s+'_END')).join('\n');
+  vm.runInNewContext(sectionsText+'\n'+namedFunction(source,'readTreeCohortPath')+'\n'+namedFunction(source,'captureTreeCohortInventory')+'\n'+namedFunction(source,'treeSceneSnapshotsEqual')+'\nmodule.exports={handleDocxImportLocalFilePreviewCommandSurface,handleDocxImportPreviewCommandSurface,handleDocxImportSafeCreateCommandSurface,references:docxImportPreviewReferences};',sandbox,{filename:MAIN_PATH});
+  return {...sandbox.module.exports,sandbox,calls,bridge};
 }
 test('novel import: actual Main admission, real lease/cohort and verified all-sibling open acknowledgement',async t=>{
   const f=await projectFixture(t,'main-chain'), port=await mainProjectPort(f), bytes=richNovelBytes(20,{inflate:10000});
@@ -605,7 +609,7 @@ function directPublisher() {return async({manifestPath,expectedText,nextText,rev
   assert.equal(textFile(manifestPath),expectedText,'actual manifest byte CAS');
   return require('../../src/core/save-coordinator-v1.cjs').durableSaveTransaction({filePath:manifestPath,content:nextText,revision});
 };}
-test('novel import: actual original packet and immutable resources refuse oversized capacity before every durable write',async t=>{
+test('novel import: regenerated original packet above ordinary resource capacity is durable and remains readable',async t=>{
   const f=await projectFixture(t,'packet-capacity'),source=await tinyPlan(20);
   fs.writeFileSync(path.join(f.romanRoot,'Old.txt'),'Old valid paragraph '.repeat(173016));
   const plan=await plannedTiny(f,source,'packet-capacity'),revision=1,transactionId=sha(`${plan.projectId}\n${plan.planDigest}\n${revision}`);
@@ -616,12 +620,18 @@ test('novel import: actual original packet and immutable resources refuse oversi
     entries:observer.exports.buildTreeEntries(plan,f.manifestPath,revision,transactionId)};
   const packetText=observer.exports.canonicalBytes(packet),packetBytes=Buffer.byteLength(packetText),before=snapshotFiles(f.root),writes=[];
   const adapter={...fsp};for(const method of ['mkdir','writeFile','rename','unlink'])adapter[method]=async(...args)=>{writes.push({method,args});return fsp[method](...args);};
-  let error;try{await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision,treeCohort:plan,publishManifest:directPublisher(),fsAdapter:adapter,revalidate:async()=>{}});}
+  let result,error;try{result=await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision,treeCohort:plan,publishManifest:directPublisher(),fsAdapter:adapter,revalidate:async()=>{}});}
   catch(e){error={code:e.code,phase:e.phase,message:e.message,stack:e.stack};}
-  const after=snapshotFiles(f.root);retain('original-packet-capacity-prewrite',{source,plan,packet,packetText,packetBytes,before,error,writes,after});
-  assert.ok(packetBytes>20*1024*1024&&packetBytes<32*1024*1024,'actual Core packet crosses resource capacity but not artifact capacity');
-  assert.equal(error?.code,'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');assert.equal(error?.phase,'ADMIT');
-  equal(writes,[],'no durable journal or business publication was attempted');equal(after,before,'all existing and unknown files remain byte-exact with no new file');
+  const after=snapshotFiles(f.root);retain('original-packet-capacity-durable',{source,plan,packet,packetText,packetBytes,before,result,error,writes,after});
+  assert.ok(packetBytes>20*1024*1024&&packetBytes<32*1024*1024,'actual novel packet crosses ordinary resource capacity but not artifact capacity');
+  assert.equal(error,undefined);assert.equal(result.success,true);assert.ok(writes.length>0);
+  const scenes=plan.importReceipt.createdScenes;
+  const verified=await tx.readVerifiedProjectDocxNovelCohort({manifestPath:f.manifestPath,projectId:f.projectId,
+    scenePaths:scenes.map(scene=>path.join(f.root,scene.relativeFile)),verifyManifestContinuation:args=>f.transactionAuthority.verifyManifestContinuation({...args,projectId:f.projectId})});
+  equal(verified.records.map(record=>record.sceneDigest),scenes.map(scene=>scene.outputHash),'every actual durable scene verified independently');
+  assert.ok(fs.readFileSync(path.join(f.romanRoot,'Old.txt')).equals(before['roman/Old.txt']),'pre-existing full scene unchanged');
+  for(const [name,bytes] of Object.entries(before).filter(([name])=>!['project.craftsman.json','notes.craftsman.json'].includes(name)))assert.ok(after[name]?.equals(bytes),'every unrelated original byte preserved');
+  assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
 });
 test('novel import: one journal rolls back each interrupted member and rolls forward only after the durable marker',async t=>{
   const source=await tinyPlan(20),outcomes=[];
@@ -946,4 +956,300 @@ test('novel import: genuine changed-note plan has an explicit typed Apply gap an
   retain('changed-return-typed-gap',{sourceInput:x.input,source:x.source,originalBytes:x.bytes,returnedBytes,analysis,returnedNotes,plan,outcome});
   assert.equal(outcome.error?.code,'E_PROJECT_TRANSACTION_NOTE_STATE','changed authenticated return has no canonical-authoring bypass');
   for(const [name,bytes] of Object.entries(outcome.before))assert.ok(outcome.after[name]?.equals(bytes),'typed refusal preserves every existing business byte');
+});
+
+function portableFullNovelBytes(paragraphs) {
+  const O='http://schemas.openxmlformats.org/officeDocument/2006/relationships', P='http://schemas.openxmlformats.org/package/2006/relationships';
+  const W14='http://schemas.microsoft.com/office/word/2010/wordml',W15='http://schemas.microsoft.com/office/word/2012/wordml';
+  const xml=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const body=paragraphs.map((text,i)=>{
+    const root=i<200?i*2:null, note=i===0?'<w:r><w:footnoteReference w:id="7"/></w:r>':i===Math.floor(paragraphs.length/2)?'<w:r><w:endnoteReference w:id="8"/></w:r>':i===paragraphs.length-1?'<w:r><w:footnoteReference w:id="9"/></w:r>':'';
+    return `<w:p>${root===null?'':`<w:commentRangeStart w:id="${root}"/>`}<w:r><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/><w:sz w:val="28"/><w:szCs w:val="28"/><w:lang w:val="ru-RU"/>${i%2?'<w:b/>':'<w:i/>'}</w:rPr><w:t xml:space="preserve">${xml(text)}</w:t></w:r>${root===null?'':`<w:commentRangeEnd w:id="${root}"/><w:r><w:commentReference w:id="${root}"/></w:r>`}${note}</w:p>`;
+  }).join('');
+  const comments=Array.from({length:400},(_,i)=>`<w:comment w:id="${i}" w:author="${i%2?'Corrector':'Editor'}" w:date="2026-10-09T00:00:00Z"><w:p w14:paraId="${(i+1).toString(16).padStart(8,'0')}"><w:r><w:rPr><w:b/></w:rPr><w:t>${i%2?'Complete reply 漢字':'Complete root Ж🧭'} ${i}</w:t></w:r></w:p></w:comment>`).join('');
+  const commentEx=Array.from({length:400},(_,i)=>`<w15:commentEx w15:paraId="${(i+1).toString(16).padStart(8,'0')}"${i%2?` w15:paraIdParent="${i.toString(16).padStart(8,'0')}"`:''} w15:done="0"/>`).join('');
+  const note=(kind,id)=>`<w:${kind} w:id="${id}"><w:p><w:r><w:${kind}Ref/></w:r><w:r><w:rPr><w:b/><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/><w:sz w:val="28"/><w:szCs w:val="28"/><w:lang w:val="ru-RU"/></w:rPr><w:t xml:space="preserve"> Complete note ${id} Ж🧭 </w:t><w:br/><w:t>second line 漢字</w:t></w:r></w:p><w:p/></w:${kind}>`;
+  const types=['document','comments','commentsExtended','footnotes','endnotes'];
+  return buildStoredZip([
+    {name:'[Content_Types].xml',data:`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>${types.map(n=>`<Override PartName="/word/${n}.xml" ContentType="${n==='commentsExtended'?'application/vnd.ms-word.commentsExtended+xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.'+(n==='document'?'document.main':n)+'+xml'}"/>`).join('')}</Types>`},
+    {name:'_rels/.rels',data:`<Relationships xmlns="${P}"><Relationship Id="d" Type="${O}/officeDocument" Target="word/document.xml"/></Relationships>`},
+    {name:'word/_rels/document.xml.rels',data:`<Relationships xmlns="${P}">${types.filter(n=>n!=='document').map(n=>`<Relationship Id="${n}" Type="${n==='commentsExtended'?'http://schemas.microsoft.com/office/2011/relationships/commentsExtended':O+'/'+n}" Target="${n}.xml"/>`).join('')}</Relationships>`},
+    {name:'word/document.xml',data:`<w:document xmlns:w="${W_NS}"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/></w:sectPr></w:body></w:document>`},
+    {name:'word/comments.xml',data:`<w:comments xmlns:w="${W_NS}" xmlns:w14="${W14}">${comments}</w:comments>`},
+    {name:'word/commentsExtended.xml',data:`<w15:commentsEx xmlns:w15="${W15}">${commentEx}</w15:commentsEx>`},
+    {name:'word/footnotes.xml',data:`<w:footnotes xmlns:w="${W_NS}">${note('footnote',7)}${note('footnote',9)}</w:footnotes>`},
+    {name:'word/endnotes.xml',data:`<w:endnotes xmlns:w="${W_NS}">${note('endnote',8)}</w:endnotes>`},
+  ]);
+}
+function retainDirectory(name,files) {
+  const evidence=process.env.YALKEN_NOVEL_PARTITION_EVIDENCE_DIR;if(!evidence)return null;
+  const root=path.join(evidence,name);assert.equal(fs.existsSync(root),false,'fresh physical evidence directory');
+  fs.mkdirSync(root,{recursive:true});
+  for(const [relative,bytes] of Object.entries(files))if(Buffer.isBuffer(bytes)) {
+    const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes);
+  }
+  return root;
+}
+async function runFullNovelImportProof(t,{bytes,label}) {
+  const f=await projectFixture(t,'full500k-'+label,{canonicalNotes:true}),evidence=process.env.YALKEN_NOVEL_PARTITION_EVIDENCE_DIR;
+  const inputDir=evidence||f.root,sourcePath=path.join(inputDir,label+'-input.docx');assert.equal(fs.existsSync(sourcePath),false);fs.mkdirSync(inputDir,{recursive:true});fs.writeFileSync(sourcePath,bytes);
+  const port=await mainProjectPort(f,{localPath:sourcePath}),handlers={
+    'cmd.project.docx.previewLocalFile':port.handleDocxImportLocalFilePreviewCommandSurface,
+    'cmd.project.docx.previewImportPlan':port.handleDocxImportPreviewCommandSurface,
+    'cmd.project.docx.importSafeCreate':port.handleDocxImportSafeCreateCommandSurface};
+  const timings=[];
+  const dispatch=async(id,payload)=>{const start=process.hrtime.bigint(),result=await handlers[id](payload);const seconds=Number(process.hrtime.bigint()-start)/1e9;timings.push({id,seconds});retain(label+'-timings',timings);assert.ok(seconds<120,'actual public handler remains below existing120s: '+id);return result;};
+  const local=await dispatch('cmd.project.docx.previewLocalFile',{requestId:label+'-local'});
+  retain(label+'-local',{bytes,local,timings});assert.equal(local.contentPreviewOk,true,`complete local parser: ${local.reason||local.code}`);
+  assert.match(local.docxContentPreviewRef,/^[a-f0-9]{64}$/);
+  const beforePlan=productFiles(f),preview=await dispatch('cmd.project.docx.previewImportPlan',{requestId:label+'-plan',docxContentPreviewRef:local.docxContentPreviewRef});
+  assert.equal(preview.importPreviewOk,true,`full preview: ${preview.reason||preview.code}`);equal(productFiles(f),beforePlan,'local/plan preview never writes canonical product files');
+  const candidate=preview.docxImportPreviewPlan.candidateCreatePlan;
+  assert.equal(candidate.entries.length,42);assert.equal(candidate.sceneStrategy,'word-novel-root-partitions');
+  const expectedParagraphs=envelope.parseObservablePayload(candidate.sourceCandidate.content).doc.content;
+  assert.equal(expectedParagraphs.length,8391);assert.equal(bookmarks.paragraphs({type:'doc',content:expectedParagraphs}).map(bookmarks.textOf).join(' ').trim().split(/\s+/u).length,500108);
+  assert.equal(candidate.sourceCandidate.notes.length,3);assert.equal(candidate.sourceCandidate.comments.length,200);
+  assert.equal(candidate.sourceCandidate.comments.reduce((sum,c)=>sum+c.messages.length,0),400);
+  const accepted=await dispatch('cmd.project.docx.importSafeCreate',{requestId:label+'-import',docxImportPreviewRef:preview.docxImportPreviewRef});
+  retain(label+'-accepted',{accepted,preview,timings,calls:port.calls});assert.equal(accepted.ok,true,`full public SafeCreate: ${accepted.error?.reason||accepted.reason||accepted.code}`);
+  f.scenes=accepted.receipt.createdScenes;assert.equal(f.scenes.length,42);
+  const initial=productFiles(f),initialRoot=retainDirectory(label+'-initial',initial);
+  const expectedPath=evidence?path.join(evidence,label+'-expected-canonical-paragraphs.json'):null;
+  if(expectedPath)fs.writeFileSync(expectedPath,JSON.stringify(expectedParagraphs));
+  const actual=f.scenes.flatMap(scene=>envelope.parseObservablePayload(textFile(path.join(f.root,scene.relativeFile))).doc.content);
+  equal(actual,expectedParagraphs,'complete durable paragraph structures, attributes and marks');
+  const m=await modelPromise,expected=m.materializeDocxNovelCandidate({candidate,artifactSha256:preview.docxImportPreviewPlan.source.sourceArtifactSha256,
+    projectId:f.projectId,operationId:accepted.receipt.importOperationId,operationNonce:label+'-import',now:accepted.receipt.createdAt,
+    notesText:f.original['notes.craftsman.json'].toString(),commentsText:null});
+  equal(JSON.parse(textFile(path.join(f.root,'notes.craftsman.json'))),JSON.parse(expected.notesAfter),'all complete rich note bodies, points, private/deleted notes and document metadata');
+  equal(JSON.parse(textFile(commentPath(f))),JSON.parse(expected.commentsAfter),'all200 root/reply threads,400 messages, author/date/format/range/provenance and state');
+  const query=authority=>tx.readVerifiedProjectDocxNovelCohort({manifestPath:f.manifestPath,projectId:f.projectId,scenePaths:f.scenes.map(scene=>path.join(f.root,scene.relativeFile)),verifyManifestContinuation:args=>authority.verifyManifestContinuation({...args,projectId:f.projectId})});
+  const records=(await query(f.transactionAuthority)).records;equal(records.map(r=>r.sceneDigest),f.scenes.map(scene=>scene.outputHash),'all42 current commit digests');
+  const origin=tx.recoveryPacketPathFor(f.manifestPath,records[0].transactionId),originBytes=fs.readFileSync(origin);
+  assert.ok(originBytes.length>0 && originBytes.length<=48*1024*1024,'actual full canonical novel packet fits finite48');
+  if(label==='genuine500k')assert.ok(originBytes.length>32*1024*1024,'genuine SOURCE65 packet exercises capacity above ordinary32');
+  const beforeReplay=productFiles(f),replay=await dispatch('cmd.project.docx.importSafeCreate',{requestId:label+'-import',docxImportPreviewRef:preview.docxImportPreviewRef});
+  assert.equal(replay.ok,true);equal(productFiles(f),beforeReplay,'fresh same-nonce replay creates no duplicate and changes no file');
+  port.sandbox.currentFilePath=path.join(f.root,f.scenes[0].relativeFile);
+  const ack=await dispatch('cmd.project.docx.importSafeCreate',{action:'acknowledge-open',requestId:label+'-import',projectId:f.projectId,nodeId:accepted.publicSceneLocator.nodeId});
+  assert.equal(ack.ok,true,JSON.stringify(ack));assert.equal(ack.cleared,true);assert.equal((await safe.readDocxImportAttempt(f)).record,null);
+  let current=await realAuthority.withRealDocxImportAuthority({...f,transactionAuthority:undefined});
+  await query(current.transactionAuthority);const saves=[];
+  for(let round=0;round<2;round++) {
+    if(round)current=await realAuthority.withRealDocxImportAuthority({...f,transactionAuthority:undefined});
+    for(const index of [0,21,41]) {
+      const siblings=f.scenes.filter((_,i)=>i!==index).map(scene=>[scene.relativeFile,fs.readFileSync(path.join(f.root,scene.relativeFile))]);
+      const save=await saveOrdinaryScene({...f,...current},f.scenes[index],label+'-SAVE-'+round+'-'+index);saves.push(save);
+      assert.equal(save.result.success,true);assert.equal(save.verified.sceneDigest,sha(save.after));
+      for(const [relative,prior] of siblings)assert.ok(fs.readFileSync(path.join(f.root,relative)).equals(prior),'all41 sibling scene bodies remain exact after every Save');
+    }
+    const verified=await query(current.transactionAuthority);assert.equal(verified.records.length,42);
+    for(const record of verified.records)assert.equal(record.sceneDigest,sha(fs.readFileSync(record.scenePath)),'every current chapter commit after reopen/Save');
+  }
+  const final=productFiles(f),finalRoot=retainDirectory(label+'-after-six-saves',final);
+  for(const scene of f.scenes.filter((_,i)=>![0,21,41].includes(i)))assert.ok(final[scene.relativeFile].equals(initial[scene.relativeFile]),'all39 unedited chapters exact');
+  for(const [name,prior] of Object.entries(f.original).filter(([name])=>!['project.craftsman.json','notes.craftsman.json'].includes(name)&&!name.startsWith('.test-authority/')))assert.ok(final[name]?.equals(prior),'all old/foreign files remain exact');
+  equal(JSON.parse(textFile(path.join(f.root,'notes.craftsman.json'))).notes.slice(0,2),JSON.parse(f.original['notes.craftsman.json']).notes,'private/deleted notes exact after all six Saves');
+  assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+  const summary={label,projectId:f.projectId,paragraphs:8391,words:500108,chapters:42,notes:3,threads:200,messages:400,originBytes:originBytes.length,
+    sourcePath,liveProjectRoot:f.root,initialRoot,expectedPath,finalRoot,importReceiptRelative:path.relative(f.root,path.join(f.root,'.yalken/docx-import/receipts',accepted.receipt.importOperationId+'.json')),
+    sceneFiles:f.scenes.map(scene=>scene.relativeFile),timings,saves:saves.length};
+  retain(label+'-complete',{summary,local,preview,accepted,replay,expected,initial,saves,final});
+  if(evidence)fs.writeFileSync(path.join(evidence,label+'-summary.json'),JSON.stringify(summary,null,2)+'\n');
+  return summary;
+}
+test('novel import: complete portable500108-word rich source uses actual public Main, real lease, reopen and six independent chapter Saves',async t=>{
+  const {buildWordVolumeFixture}=await import('../../scripts/ops/rtk-interop-word-volume-fixtures.mjs');
+  const corpus=buildWordVolumeFixture('LARGE_DOCUMENT');
+  await runFullNovelImportProof(t,{bytes:portableFullNovelBytes(corpus.sourceParagraphs),label:'portable500k'});
+});
+
+
+test('novel import: private complete query regenerates once per call and refuses incomplete, foreign or stale cohorts',async t=>{
+ const f=await importedTiny(t,'complete-query'),scenePaths=f.scenes.map(scene=>path.join(f.root,scene.relativeFile));
+ const filename=require.resolve('../../src/core/project-transaction-v1.cjs'),{Module,createRequire}=require('node:module');
+ const observed=new Module(filename);observed.filename=filename;observed.paths=Module._nodeModulePaths(path.dirname(filename));observed.require=createRequire(filename);
+ const source=readSource(filename),needle='  model.validateProjectTreeCohort(packet.plan);';assert.equal(source.split(needle).length,2);
+ observed._compile('let actualOriginRegenerations=0;\n'+source.replace(needle,needle+'\n  if(isNovelTreePacket(packet))actualOriginRegenerations++;')+'\nmodule.exports={...module.exports,actualOriginRegenerations:()=>actualOriginRegenerations};',filename);
+ const request={manifestPath:f.manifestPath,projectId:f.projectId,scenePaths,verifyManifestContinuation:args=>f.transactionAuthority.verifyManifestContinuation({...args,projectId:f.projectId})};
+ const first=await observed.exports.readVerifiedProjectDocxNovelCohort(request);
+ assert.equal(observed.exports.actualOriginRegenerations(),1,'actual complete semantic origin regeneration occurs once across all siblings');
+ equal(first.records.map(record=>record.sceneDigest),f.scenes.map(scene=>scene.outputHash),'each member has its own original record');
+ assert.ok(Object.isFrozen(first)&&Object.isFrozen(first.records)&&first.records.every(Object.isFrozen));
+ await observed.exports.readVerifiedProjectDocxNovelCohort(request);assert.equal(observed.exports.actualOriginRegenerations(),2,'fresh next invocation does not reuse a prior verification');
+ for(const scenePath of [scenePaths[0],scenePaths.at(-1)])await observed.exports.readVerifiedProjectTransaction({...request,scenePath});
+ assert.equal(observed.exports.actualOriginRegenerations(),4,'standalone selected reads remain independently regenerated');
+ const outcomes=[];
+ for(const [label,change] of [
+  ['missing',{scenePaths:scenePaths.slice(0,-1)}],['extra',{scenePaths:[...scenePaths,path.join(f.romanRoot,'Old.txt')]}],
+  ['duplicate',{scenePaths:[...scenePaths,scenePaths[0]]}],['reordered',{scenePaths:[...scenePaths].reverse()}],
+  ['project',{projectId:'foreign'}],['caller-origin',{origin:{packet:'trusted'}}],['caller-invocation',{invocation:{origin:{}}}],
+ ]) {
+  const before=productFiles(f);let error;try{await tx.readVerifiedProjectDocxNovelCohort({...request,...change});}catch(e){error={code:e.code,message:e.message};}
+  outcomes.push({label,error,before,after:productFiles(f)});retain('complete-query-negatives',outcomes);
+  assert.match(error?.code||'',/^E_PROJECT_TRANSACTION_/);equal(productFiles(f),before,'query has no write authority for '+label);
+ }
+ const origin=tx.recoveryPacketPathFor(f.manifestPath,first.records[0].transactionId),receipt=path.join(f.root,'.yalken/docx-import/receipts',f.result.value.receipt.importOperationId+'.json');
+ for(const [label,target] of [['early-scene',scenePaths[0]],['early-commit',tx.commitPathFor(scenePaths[0])],['origin',origin],['receipt',receipt],
+  ['notes',path.join(f.root,'notes.craftsman.json')],['comments',commentPath(f)]]) {
+  const original=fs.readFileSync(target);let fired=false,error;
+  const adapter={...fsp,readFile:async(p,...args)=>{const value=await fsp.readFile(p,...args);if(!fired&&p===scenePaths.at(-1)){fired=true;fs.writeFileSync(target,Buffer.concat([original,Buffer.from(' changed')]));}return value;}};
+  try{await tx.readVerifiedProjectDocxNovelCohort({...request,fsAdapter:adapter});}catch(e){error={code:e.code,message:e.message};}
+  const after=productFiles(f);outcomes.push({label,target,fired,error,after});retain('complete-query-negatives',outcomes);
+  assert.equal(fired,true);assert.match(error?.code||'',/^E_PROJECT_TRANSACTION_/,'late '+label+' cannot publish a stale complete result');
+  assert.ok(fs.readFileSync(target).equals(Buffer.concat([original,Buffer.from(' changed')])),'query never overwrites foreign bytes');fs.writeFileSync(target,original);
+ }
+ let afterLast=false,finalTargetReads=0,oversizeStats=0;
+ const bounded={...fsp,readFile:async(p,...args)=>{if(afterLast&&p===scenePaths[0])finalTargetReads++;const value=await fsp.readFile(p,...args);if(p===scenePaths.at(-1))afterLast=true;return value;},
+  stat:async p=>{const stat=await fsp.stat(p);if(afterLast&&p===scenePaths[0]){oversizeStats++;return {isFile:()=>true,size:stat.size+1};}return stat;}};
+ await assert.rejects(tx.readVerifiedProjectDocxNovelCohort({...request,fsAdapter:bounded}),e=>e.code==='E_PROJECT_TRANSACTION_NOVEL_STALE');
+ assert.equal(oversizeStats,1);assert.equal(finalTargetReads,0,'a changed oversize stat refuses before final allocation, using only tiny ordinary bytes');
+ retain('complete-query-bounded-final-read',{afterLast,oversizeStats,finalTargetReads});
+ const initialBounds=[];
+ for(const [kind,target] of [['journal',tx.journalPathFor(f.manifestPath)],['scene',scenePaths[0]],['manifest',f.manifestPath]]) {
+  let reads=0,stats=0;const adapter={...fsp,stat:async p=>{if(p===target){stats++;return {size:32*1024*1024+1,isFile:()=>true};}return fsp.stat(p);},
+   readFile:async(p,...args)=>{if(p===target)reads++;return fsp.readFile(p,...args);}};
+  await assert.rejects(tx.readVerifiedProjectDocxNovelCohort({...request,fsAdapter:adapter}),e=>e.code==='E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
+  assert.equal(stats,1);assert.equal(reads,0,'initial '+kind+' oversize refuses before allocation');initialBounds.push({kind,stats,reads});
+ }
+ for(const size of [-1,NaN,Infinity,Number.MAX_SAFE_INTEGER+1]) {
+  let reads=0;const adapter={...fsp,stat:async p=>p===scenePaths[0]?{size,isFile:()=>true}:fsp.stat(p),readFile:async(p,...args)=>{if(p===scenePaths[0])reads++;return fsp.readFile(p,...args);}};
+  await assert.rejects(tx.readVerifiedProjectDocxNovelCohort({...request,fsAdapter:adapter}),e=>e.code==='E_PROJECT_TRANSACTION_RESOURCE_BUDGET');assert.equal(reads,0,'invalid stat size never allocates');
+ }
+ let grewReads=0;const grew={...fsp,stat:async p=>p===scenePaths[0]?{size:0,isFile:()=>true}:fsp.stat(p),readFile:async(p,...args)=>{if(p===scenePaths[0]){grewReads++;return Buffer.from('tiny grew');}return fsp.readFile(p,...args);}};
+ await assert.rejects(tx.readVerifiedProjectDocxNovelCohort({...request,fsAdapter:grew}),e=>e.code==='E_PROJECT_TRANSACTION_NOVEL_STALE');assert.equal(grewReads,1,'post-read length detects growth with only9 actual bytes');
+ retain('complete-query-bounded-initial-read',{initialBounds,grewReads});
+});
+
+test('novel import: Main refuses early member changes during its post-SafeCreate attempt await before publishing open acknowledgement',async t=>{
+ const f=await projectFixture(t,'main-final-await'),source=await tinyPlan(20,{inflate:10000});let fired=false,foreign;
+ const port=await mainProjectPort(f,{afterAttempt:async result=>{
+  if(fired||!result.record)return;const receipt=JSON.parse(textFile(path.join(f.root,'.yalken/docx-import/receipts',result.record.importOperationId+'.json')));
+  const target=path.join(f.root,receipt.createdScenes[0].relativeFile),before=fs.readFileSync(target);foreign={target,before,after:Buffer.concat([before,Buffer.from(' foreign late')] )};fired=true;fs.writeFileSync(target,foreign.after);
+ }});
+ const preview=await port.handleDocxImportPreviewCommandSurface({requestId:'late-plan',docxContentPreviewReport:source.report});assert.equal(preview.importPreviewOk,true);
+ const result=await port.handleDocxImportSafeCreateCommandSurface({requestId:'late-final-await',docxImportPreviewRef:preview.docxImportPreviewRef});
+ retain('main-post-helper-await-refusal',{result,fired,foreign,files:productFiles(f),calls:port.calls});
+ assert.equal(fired,true);assert.equal(result.ok,false);assert.equal(result.error?.code,'E_DOCX_IMPORT_ACK_PREPARATION_FAILED');
+ assert.ok(fs.readFileSync(foreign.target).equals(foreign.after),'final refusal does not overwrite changed authored state');assert.ok((await safe.readDocxImportAttempt(f)).record,'attempt remains recoverable');
+});
+
+
+test('novel import: one protected indivisible partition remains a complete supported cohort and existing512 admission is preserved',async t=>{
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),original=richNovelBytes(40,{notes:false});
+ const extracted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes(original);assert.equal(extracted.ok,true);
+ const parts={...extracted.parts};let xml=parts['word/document.xml'];
+ xml=xml.replace('<w:commentRangeStart w:id="0"/>','').replace('<w:commentRangeEnd w:id="0"/>','').replace('<w:r><w:commentReference w:id="0"/></w:r>','');
+ xml=xml.replace('<w:p>','<w:p><w:commentRangeStart w:id="0"/>');
+ const last=xml.lastIndexOf('</w:p>');xml=xml.slice(0,last)+'<w:commentRangeEnd w:id="0"/><w:r><w:commentReference w:id="0"/></w:r>'+xml.slice(last);parts['word/document.xml']=xml;
+ const bytes=buildStoredZip(Object.entries({...parts,...extracted.binaryParts}).map(([name,data])=>({name,data}))),report=bridge.buildDocxContentPreviewFromZipBytes(bytes);
+ const plan=bridge.buildDocxNovelImportPreviewPlanFromContentPreview(report,{targetParagraphs:4});assert.equal(plan.ok,true);
+ assert.equal(plan.candidateCreatePlan.sceneStrategy,'word-novel-root-partitions');assert.equal(plan.candidateCreatePlan.entries.length,1);
+ const f=await projectFixture(t,'one-protected-partition'),applied=await applyPlan(f,plan,'one-protected');assert.equal(applied.ok,true,JSON.stringify(applied.error));
+ const scenePaths=applied.value.receipt.createdScenes.map(scene=>path.join(f.root,scene.relativeFile));
+ const verified=await tx.readVerifiedProjectDocxNovelCohort({manifestPath:f.manifestPath,projectId:f.projectId,scenePaths});assert.equal(verified.records.length,1);
+ const many=bridge.buildDocxNovelImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(novelBytes(512)),{targetParagraphs:1});
+ assert.equal(many.ok,true);assert.equal(many.candidateCreatePlan.entries.length,512,'unchanged model512 exact supported membership');
+ let reads=0;const deniedFs={...fsp,readFile:async()=>{reads++;throw Object.assign(Error('owned absent source'),{code:'ENOENT'});}};
+ const request={manifestPath:f.manifestPath,projectId:f.projectId,scenePaths:Array.from({length:512},(_,i)=>path.join(f.romanRoot,'selected-'+i+'.txt')),fsAdapter:deniedFs};
+ await assert.rejects(tx.readVerifiedProjectDocxNovelCohort(request),/COMMIT_READBACK/);assert.ok(reads>0,'512 metadata reaches independent readback; no arbitrary256 restriction');
+ reads=0;await assert.rejects(tx.readVerifiedProjectDocxNovelCohort({...request,scenePaths:[...request.scenePaths,path.join(f.romanRoot,'selected-512.txt')]}),/NOVEL_COHORT/);assert.equal(reads,0,'513 refuses before reads');
+ retain('one-and512-supported',{bytes,report,plan,applied,verified,many});
+});
+
+function actualTreePacketObserver() {
+ const filename=require.resolve('../../src/core/project-transaction-v1.cjs'),{Module,createRequire}=require('node:module');
+ const observer=new Module(filename);observer.filename=filename;observer.paths=Module._nodeModulePaths(path.dirname(filename));observer.require=createRequire(filename);
+ observer._compile(readSource(filename)+'\nmodule.exports={buildTreeEntries,canonicalBytes,validateTreePacket,parseTreeJournal};',filename);return observer.exports;
+}
+async function novelPacketFactory(f,source) {
+ const base=await plannedTiny(f,source,'finite-boundary'),m=await modelPromise,core=actualTreePacketObserver();
+ const make=(oldBytes,metadataBytes=0)=>{
+  const input=cloneJsonSafe(base.input);input.beforeManifestText=JSON.stringify({...JSON.parse(input.beforeManifestText),privateMetadata:'x'.repeat(metadataBytes)});
+  input.inventory.find(entry=>entry.relativePath==='roman/Old.txt').contentBase64=Buffer.from('O'.repeat(oldBytes)).toString('base64');
+  const plan=m.planProjectDocxImportCohort(input),revision=1,transactionId=sha(`${plan.projectId}\n${plan.planDigest}\n${revision}`);
+  const packet={schemaVersion:'yalken.project-transaction.journal.v7',projectId:plan.projectId,manifestPath:f.manifestPath,transactionId,revision,plan,
+   entries:core.buildTreeEntries(plan,f.manifestPath,revision,transactionId)};
+  return {packet,bytes:Buffer.byteLength(core.canonicalBytes(packet)),oldBytes,metadataBytes};
+ };
+ const zero=make(0),three=make(3),metadata=make(0,1);
+ assert.equal(three.bytes-zero.bytes,20,'five real base64 before/after bindings grow20B for3 literal bytes');
+ assert.equal(metadata.bytes-zero.bytes,3,'three protected real manifest snapshots grow3B per metadata byte');
+ const exact=target=>{const residual=(target-zero.bytes)%20,metadataBytes=(residual*7)%20;
+  const oldBytes=((target-zero.bytes-3*metadataBytes)/20)*3;assert.ok(Number.isSafeInteger(oldBytes)&&oldBytes>0);
+  const built=make(oldBytes,metadataBytes);assert.equal(built.bytes,target,'exact semantic canonical packet bytes');return built;};
+ return {core,m,make,exact};
+}
+test('novel import: semantic origin and wrapped journal enforce exact48MiB and genuine plus1 without padding the packet',async t=>{
+ const f=await projectFixture(t,'semantic48'),source=await tinyPlan(20),factory=await novelPacketFactory(f,source),limit=48*1024*1024,before=productFiles(f);
+ const admitted=factory.exact(limit);assert.ok(Buffer.byteLength(factory.core.canonicalBytes(admitted.packet.plan))<32*1024*1024,'unchanged pure candidate32 bound');
+ assert.equal(await factory.core.validateTreePacket(admitted.packet,f.manifestPath),admitted.packet,'full independent model regeneration accepts exact48');
+ const refused=factory.exact(limit+1);await assert.rejects(factory.core.validateTreePacket(refused.packet,f.manifestPath),e=>e.code==='E_TREE_COHORT_BUDGET');
+ const compact=factory.make(0),packet=compact.packet,receipt={schemaVersion:'yalken.project-transaction.tree-receipt.v1',projectId:f.projectId,
+  transactionId:packet.transactionId,packetDigest:factory.m.projectTreeCohortDigest(packet),treeRevision:1,kind:packet.plan.kind};
+ const journal={schemaVersion:packet.schemaVersion,manifestPath:f.manifestPath,transactionId:packet.transactionId,packet,
+  previousReceiptText:'',receiptText:factory.core.canonicalBytes(receipt)};
+ const overhead=Buffer.byteLength(factory.core.canonicalBytes(journal));journal.previousReceiptText='p'.repeat(limit-overhead);
+ const exactJournal=factory.core.canonicalBytes(journal);assert.equal(Buffer.byteLength(exactJournal),limit);
+ assert.equal((await factory.core.parseTreeJournal(exactJournal,f.manifestPath)).packet.transactionId,packet.transactionId,'complete wrapped exact48 semantic parser acceptance');
+ await assert.rejects(factory.core.parseTreeJournal(exactJournal+' ',f.manifestPath),e=>e.code==='E_TREE_COHORT_BUDGET','genuine wrapped plus1');
+ const negatives=[];
+ for(const [label,mutate,code] of [
+  ['project',j=>{j.packet.projectId='foreign';},'E_TREE_COHORT_JOURNAL'],
+  ['shape',j=>{delete j.packet.plan.input.candidate.policy;},'E_DOCX_NOVEL_STRATEGY'],
+  ['recipe',j=>{j.packet.plan.input.candidate.policy.targetParagraphs=1;},'E_DOCX_NOVEL_PLAN_MISMATCH'],
+  ['entries',j=>{j.packet.entries[0].afterBase64='Zm9yZ2Vk';},'E_TREE_COHORT_JOURNAL_BINDING'],
+  ['envelope',j=>{j.transactionId='f'.repeat(64);},'E_TREE_COHORT_JOURNAL'],
+  ['receipt-digest',j=>{j.receiptText=JSON.stringify({...receipt,packetDigest:'f'.repeat(64)});},'E_TREE_COHORT_RECEIPT'],
+  ['receipt-kind',j=>{j.receiptText=JSON.stringify({...receipt,kind:'rename'});},'E_TREE_COHORT_RECEIPT'],
+ ]) {const j=cloneJsonSafe({...journal,previousReceiptText:null});mutate(j);let error;try{await factory.core.parseTreeJournal(factory.core.canonicalBytes(j),f.manifestPath);}catch(e){error={code:e.code,message:e.message};}
+  negatives.push({label,error});assert.equal(error?.code,code,'exact typed '+label+' refusal');}
+ equal(productFiles(f),before,'all parser/boundary probes remain read-only');
+ retain('semantic48-boundaries',{source,admitted,refused,exactJournal,negatives,before,after:productFiles(f)});
+});
+test('novel import: caller-plan mutation across revalidation cannot change the privately verified publication',async t=>{
+ const f=await projectFixture(t,'caller-plan-await'),source=await tinyPlan(20),original=await plannedTiny(f,source),plan=cloneJsonSafe(original);let changed=false;
+ const result=await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:directPublisher(),revalidate:async()=>{
+  if(!changed){changed=true;plan.input.candidate.sourceCandidate.content+=' caller invented text';plan.entries.find(e=>e.role==='scene'&&e.beforeBase64===null).afterBase64=Buffer.from('caller invented text').toString('base64');}
+ }});
+ assert.equal(changed,true);assert.equal(result.success,true);const packet=JSON.parse(textFile(tx.recoveryPacketPathFor(f.manifestPath,result.transactionId)));
+ equal(packet.plan,original,'only complete admitted immutable meaning is published');
+ const query=await tx.readVerifiedProjectDocxNovelCohort({manifestPath:f.manifestPath,projectId:f.projectId,scenePaths:original.importReceipt.createdScenes.map(scene=>path.join(f.root,scene.relativeFile))});
+ equal(query.records.map(r=>r.sceneDigest),original.importReceipt.createdScenes.map(scene=>scene.outputHash),'all durable chapter bytes ignore mutable caller replacements');
+ retain('caller-plan-await-sealed',{source,original,changedPlan:plan,result,packet,query,files:productFiles(f)});
+ const immediate=await projectFixture(t,'caller-initial-microtask'),immediateOriginal=await plannedTiny(immediate,source,'original-admitted'),replacement=await plannedTiny(immediate,source,'foreign-microtask'),mutable=cloneJsonSafe(immediateOriginal);let fired=false;
+ const pending=tx.commitProjectTransaction({manifestPath:immediate.manifestPath,revision:1,treeCohort:mutable,publishManifest:directPublisher(),revalidate:async()=>{}});
+ queueMicrotask(()=>{for(const key of Object.keys(mutable))delete mutable[key];Object.assign(mutable,cloneJsonSafe(replacement));fired=true;});
+ const complete=await pending;assert.equal(fired,true);assert.equal(complete.success,true);
+ const sealed=JSON.parse(textFile(tx.recoveryPacketPathFor(immediate.manifestPath,complete.transactionId)));
+ equal(sealed.plan,immediateOriginal,'even an independently valid replacement in the first microtask cannot change admitted source or operation identity');
+ retain('caller-initial-microtask-sealed',{source,immediateOriginal,replacement,mutable,fired,complete,sealed,files:productFiles(immediate)});
+});
+test('novel import: typed original and journal above32MiB recover before and after commit without weakening corruption or symlink refusal',async t=>{
+ const source=await tinyPlan(20),outcomes=[];
+ for(const stage of ['before-marker','after-marker']) {
+  const f=await projectFixture(t,'large-journal-'+stage),factory=await novelPacketFactory(f,source),built=factory.exact(40*1024*1024),plan=built.packet.plan;
+  fs.writeFileSync(path.join(f.romanRoot,'Old.txt'),'O'.repeat(built.oldBytes));fs.writeFileSync(f.manifestPath,plan.beforeManifestText);
+  const before=productFiles(f);let fired=false,error;
+  const adapter={...fsp,unlink:async p=>{if(stage==='after-marker'&&!fired&&p===tx.journalPathFor(f.manifestPath)){fired=true;throw Error('owned large cleanup');}return fsp.unlink(p);}};
+  try{await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,treeCohort:plan,publishManifest:directPublisher(),revalidate:async()=>{},fsAdapter:adapter,
+   afterTreeFilesPublish:()=>{if(stage==='before-marker'){fired=true;throw Error('owned large pre-marker');}}});}catch(e){error={code:e.code,message:e.message};}
+  assert.equal(fired,true);assert.ok(error);const journalPath=tx.journalPathFor(f.manifestPath),journal=fs.readFileSync(journalPath);
+  assert.ok(journal.length>32*1024*1024&&journal.length<=48*1024*1024,'actual complete wrapped journal uses only typed48');
+  const corrupted=JSON.parse(journal);corrupted.packet.entries[0].afterBase64='Zm9yZ2Vk';fs.writeFileSync(journalPath,JSON.stringify(corrupted));const foreign=productFiles(f);
+  await assert.rejects(tx.recoverProjectTransaction({manifestPath:f.manifestPath,publishManifest:directPublisher(),revalidate:async()=>{}}),e=>e.code==='E_TREE_COHORT_JOURNAL_BINDING');
+  equal(productFiles(f),foreign,'corrupt journal refusal preserves every foreign byte');fs.writeFileSync(journalPath,journal);
+  const recovered=await tx.recoverProjectTransaction({manifestPath:f.manifestPath,publishManifest:directPublisher(),revalidate:async()=>{}}),after=productFiles(f);
+  assert.equal(recovered.outcome,stage==='before-marker'?'UNCOMMITTED_ROLLED_BACK':'COMMITTED_ROLLED_FORWARD');
+  if(stage==='before-marker')equal(Object.fromEntries(Object.entries(after).filter(([p])=>!p.startsWith('.yalken-recovery/'))),before,'all original business bytes roll back exactly');
+  else {
+   const scenePaths=plan.importReceipt.createdScenes.map(scene=>path.join(f.root,scene.relativeFile)),query=await tx.readVerifiedProjectDocxNovelCohort({manifestPath:f.manifestPath,projectId:f.projectId,scenePaths});
+   equal(query.records.map(r=>r.sceneDigest),plan.importReceipt.createdScenes.map(scene=>scene.outputHash),'complete fresh recovered membership');
+   const origin=tx.recoveryPacketPathFor(f.manifestPath,query.records[0].transactionId),originBytes=fs.readFileSync(origin),foreignPath=path.join(f.root,'foreign-original.json');
+   fs.renameSync(origin,foreignPath);fs.symlinkSync(foreignPath,origin);const linked=productFiles(f);
+   await assert.rejects(tx.readVerifiedProjectDocxNovelCohort({manifestPath:f.manifestPath,projectId:f.projectId,scenePaths}),/RESOURCE_BOUNDARY/);
+   equal(productFiles(f),linked,'large origin symlink never grants read/publication or write authority');fs.unlinkSync(origin);fs.renameSync(foreignPath,origin);assert.ok(fs.readFileSync(origin).equals(originBytes));
+  }
+  assert.equal(fs.existsSync(journalPath),false);outcomes.push({stage,built,before,error,journal,recovered,after});retain('large-origin-journal-recovery',outcomes);
+ }
 });
