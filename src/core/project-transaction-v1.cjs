@@ -36,6 +36,8 @@ const MAX_RESOURCES = 129;
 const RECOVERY_PACKET_SCHEMA_VERSION = 'yalken.project-transaction.recovery-packet.v1';
 const PROJECT_COMMIT_REPAIR_CAPABILITY_ID = 'CAP_R24_PROJECT_COMMIT_REPAIR';
 const MAX_ARTIFACT_BYTES = 32 * 1024 * 1024;
+// One regenerated immutable novel origin is separate from ordinary media.
+const MAX_NOVEL_ORIGIN_BYTES = 48 * 1024 * 1024;
 
 const TRANSACTION_PHASES = Object.freeze({
   ADMIT: 'ADMIT',
@@ -163,29 +165,32 @@ function retainedOriginId(target, manifestPath) {
 
 function normalizeRetainedResources(value, scenePath, manifestPath) {
   if (!Array.isArray(value) || !value.length || value.length > MAX_RESOURCES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RETAINED_RESOURCES', TRANSACTION_PHASES.ADMIT);
-  let bytes = 0; const seen = new Set();
+  let bytes = 0, origins = 0; const seen = new Set();
   for (const entry of value) {
     if (!entry || Object.keys(entry).sort().join(',') !== 'bytes,digest,path' || !isDigest(entry.digest)
       || !Number.isSafeInteger(entry.bytes) || entry.bytes < 0 || seen.has(entry.path)) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RETAINED_RESOURCES', TRANSACTION_PHASES.ADMIT);
     // This syntax exception is read-only. Every use separately regenerates the
     // exact novel-origin packet, scene receipt and immutable import receipt.
     if (!retainedOriginId(entry.path, manifestPath)) normalizeResources([{ path: entry.path, content: Buffer.alloc(0) }], { scenePath, manifestPath });
-    seen.add(entry.path); bytes += entry.bytes;
+    if (retainedOriginId(entry.path, manifestPath)) {
+      if (++origins > 1 || entry.bytes > MAX_NOVEL_ORIGIN_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.ADMIT);
+    } else bytes += entry.bytes;
+    seen.add(entry.path);
   }
   if (bytes > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.ADMIT);
   return value.map(entry => ({ ...entry }));
 }
-async function verifyRetainedResources(resources, scenePath, manifestPath, fsAdapter) {
+async function verifyRetainedResources(resources, scenePath, manifestPath, fsAdapter, invocation = null) {
   if (!resources.length) return;
   normalizeRetainedResources(resources, scenePath, manifestPath);
-  for (const entry of resources) {
+  for (const entry of resources.filter(entry => !retainedOriginId(entry.path, manifestPath))) {
     const bytes = await readResource(entry, manifestPath, fsAdapter);
     if (bytes === null || bytes.length !== entry.bytes || sha256hex(bytes) !== entry.digest)
       throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_READBACK', TRANSACTION_PHASES.READBACK);
   }
   const origins = resources.filter(entry => retainedOriginId(entry.path, manifestPath));
   if (origins.length > 1) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_NOVEL_ORIGIN', TRANSACTION_PHASES.READBACK);
-  return origins.length ? readNovelOriginResource(origins[0], resources, scenePath, manifestPath, fsAdapter) : null;
+  return origins.length ? readNovelOriginResource(origins[0], resources, scenePath, manifestPath, fsAdapter, invocation) : null;
 }
 
 const commentStatePath = manifestPath => path.join(path.dirname(manifestPath), '.yalken', 'word-review', 'non-text-return-state.v1.json');
@@ -445,8 +450,11 @@ async function readResource(entry, manifestPath, fsAdapter, transactionId = null
   await assertResourceBoundary(entry.path, manifestPath, fsAdapter, transactionId ? resourceStagingPath(entry, transactionId) : null);
   try {
     const stat = await fsAdapter.stat(entry.path);
-    if (stat.size > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.RECOVER);
-    return await fsAdapter.readFile(entry.path);
+    const limit = retainedOriginId(entry.path, manifestPath) ? MAX_NOVEL_ORIGIN_BYTES : MAX_RESOURCE_BYTES;
+    if (stat.size > limit) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.RECOVER);
+    const bytes = await fsAdapter.readFile(entry.path);
+    if (bytes.length > limit) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.RECOVER);
+    return bytes;
   } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
 }
 
@@ -636,7 +644,7 @@ async function readCommitRecordState({
     || (record.schemaVersion === NOTE_COMMIT_SCHEMA_VERSION && record.resources !== undefined)) {
     if (!Array.isArray(record.resources) || !record.resources.length || record.resources.length > MAX_RESOURCES
       || record.resources.some(entry => !entry || typeof entry.path !== 'string' || !isDigest(entry.digest)
-        || !Number.isSafeInteger(entry.bytes) || entry.bytes < 0 || entry.bytes > MAX_RESOURCE_BYTES)) {
+        || !Number.isSafeInteger(entry.bytes) || entry.bytes < 0 || entry.bytes > (record.schemaVersion === TREE_COMMIT_SCHEMA_VERSION && retainedOriginId(entry.path, manifestPath) ? MAX_NOVEL_ORIGIN_BYTES : MAX_RESOURCE_BYTES))) {
       return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
     }
   } else if (record.resources !== undefined) return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
@@ -1557,35 +1565,46 @@ async function repairCorruptProjectCommit({
 function novelNeed(value, code = 'E_PROJECT_TRANSACTION_NOVEL_BASELINE') {
   if (!value) throw new ProjectTransactionError(code, TRANSACTION_PHASES.READBACK);
 }
-async function readNovelOriginResource(resource, resources, scenePath, manifestPath, fsAdapter) {
+async function readNovelOriginResource(resource, resources, scenePath, manifestPath, fsAdapter, invocation = null) {
   const id = retainedOriginId(resource.path, manifestPath);
   novelNeed(id, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
   normalizeRetainedResources(resources, scenePath, manifestPath);
-  const bytes = await readResource(resource, manifestPath, fsAdapter);
-  novelNeed(bytes && bytes.length === resource.bytes && sha256hex(bytes) === resource.digest, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
-  let packet; try { packet = JSON.parse(bytes); } catch { novelNeed(false, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN'); }
-  await validateTreePacket(packet, manifestPath);
-  novelNeed(packet.transactionId === id && packet.plan.kind === 'word-generic-import'
-    && bytes.equals(Buffer.from(canonicalBytes(packet))), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  let shared = invocation?.origin;
+  if (shared) novelNeed(canonicalize(shared.resource) === canonicalize(resource), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  else {
+    const bytes = await readResource(resource, manifestPath, fsAdapter);
+    novelNeed(bytes && bytes.length === resource.bytes && sha256hex(bytes) === resource.digest, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    let packet; try { packet = JSON.parse(bytes); } catch { novelNeed(false, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN'); }
+    await validateTreePacket(packet, manifestPath);
+    novelNeed(packet.transactionId === id && isNovelTreePacket(packet)
+      && bytes.equals(Buffer.from(canonicalBytes(packet))), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    const receipt = packet.entries.find(entry => entry.role === 'importReceipt');
+    novelNeed(receipt?.afterBase64 && (await treeRead(treeAbsolute(manifestPath, receipt.relativePath), manifestPath, fsAdapter)) === receipt.afterBase64,
+      'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    const annotation = role => treeText(packet.entries.find(entry => entry.role === role)?.afterBase64 ?? null);
+    shared = {packet, resource, notesText:annotation('notes'), commentsText:annotation('comments')};
+    if (invocation) invocation.origin = shared;
+  }
   const relative = path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/');
-  novelNeed(packet.plan.importReceipt.createdScenes.some(scene => scene.relativeFile === relative), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
-  const commit = packet.entries.find(entry => entry.role === 'sceneCommit' && entry.relativePath === relative + '.wp201-commit.json');
+  novelNeed(shared.packet.plan.importReceipt.createdScenes.some(scene => scene.relativeFile === relative), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  const commit = shared.packet.entries.find(entry => entry.role === 'sceneCommit' && entry.relativePath === relative + '.wp201-commit.json');
   novelNeed(commit?.afterBase64, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  // This record belongs to this scene, never the first member of the query.
   const originalRecord = JSON.parse(treeText(commit.afterBase64));
   for (const expected of originalRecord.resources || []) {
     novelNeed(resources.some(entry => canonicalize(entry) === canonicalize(expected)), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
   }
-  const receipt = packet.entries.find(entry => entry.role === 'importReceipt');
-  novelNeed(receipt?.afterBase64 && (await treeRead(treeAbsolute(manifestPath, receipt.relativePath), manifestPath, fsAdapter)) === receipt.afterBase64,
-    'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
-  const annotation = role => treeText(packet.entries.find(entry => entry.role === role)?.afterBase64 ?? null);
-  return { packet, resource, originalRecord, notesText: annotation('notes'), commentsText: annotation('comments') };
+  return {...shared, originalRecord};
 }
-async function readNovelSceneBaseline(record, scenePath, manifestPath, verifyManifestContinuation, fsAdapter, origin = null) {
+async function readNovelSceneBaseline(record, scenePath, manifestPath, verifyManifestContinuation, fsAdapter, origin = null, invocation = null) {
   if (record?.schemaVersion !== TREE_COMMIT_SCHEMA_VERSION) return null;
   const origins = (record.resources || []).filter(entry => retainedOriginId(entry.path, manifestPath));
   novelNeed(origins.length <= 1, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
-  if (!origin && origins.length) origin = await readNovelOriginResource(origins[0], record.resources, scenePath, manifestPath, fsAdapter);
+  if (!origin && origins.length) origin = await readNovelOriginResource(origins[0], record.resources, scenePath, manifestPath, fsAdapter, invocation);
+  if (!origin && invocation?.origin) {
+    novelNeed(record.transactionId === invocation.origin.packet.transactionId, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    origin = await readNovelOriginResource(invocation.origin.resource,[...(record.resources || []),invocation.origin.resource],scenePath,manifestPath,fsAdapter,invocation);
+  }
   if (!origin) {
     // A receipt is only a selector. Regeneration and the exact scene commit
     // below must prove that this is a new novel cohort rather than legacy v7.
@@ -1597,10 +1616,15 @@ async function readNovelSceneBaseline(record, scenePath, manifestPath, verifyMan
       if (receipt?.schemaVersion === 'revision-bridge.docx-import-receipt.v3' && receipt.sceneStrategy === 'word-novel-root-partitions') selected = true;
     }
     if (!selected) return null;
-    const target = recoveryPacketPathFor(manifestPath, record.transactionId), bytes = await readResource({path:target}, manifestPath, fsAdapter);
-    novelNeed(bytes, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
-    const resource = {path:target,digest:sha256hex(bytes),bytes:bytes.length};
-    origin = await readNovelOriginResource(resource, [...record.resources,resource], scenePath, manifestPath, fsAdapter);
+    const target = recoveryPacketPathFor(manifestPath, record.transactionId);
+    let resource = invocation?.origin?.resource;
+    if (resource) novelNeed(resource.path === target, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+    else {
+      const bytes = await readResource({path:target}, manifestPath, fsAdapter);
+      novelNeed(bytes, 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+      resource = {path:target,digest:sha256hex(bytes),bytes:bytes.length};
+    }
+    origin = await readNovelOriginResource(resource, [...record.resources,resource], scenePath, manifestPath, fsAdapter, invocation);
   }
   if (record.transactionId === origin.packet.transactionId) {
     novelNeed(canonicalize(record) === canonicalize(origin.originalRecord), 'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
@@ -1741,7 +1765,10 @@ async function readVerifiedNovelAnnotationLineage({scenePath,manifestPath,verify
 
 // Readback of a committed create transaction is independent of the import
 // receipt's own assertions. Every recorded companion must still match bytes.
-async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyManifestContinuation, fsAdapter = fsp }) {
+async function readVerifiedProjectTransaction(options) {
+  return readVerifiedProjectTransactionInInvocation(options);
+}
+async function readVerifiedProjectTransactionInInvocation({ scenePath, manifestPath, verifyManifestContinuation, fsAdapter = fsp }, invocation = null) {
   assertPathPair(scenePath, manifestPath);
   if (await readOptionalText(journalPathFor(manifestPath), fsAdapter) !== null) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RECOVERY_REQUIRED', TRANSACTION_PHASES.READBACK);
@@ -1753,10 +1780,11 @@ async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyM
   let origin = null;
   if (state.record.resources) {
     if (state.record.resources.some(entry=>retainedOriginId(entry.path,manifestPath))) {
-      origin = await verifyRetainedResources(state.record.resources,scenePath,manifestPath,fsAdapter);
+      origin = await verifyRetainedResources(state.record.resources,scenePath,manifestPath,fsAdapter,invocation);
     } else normalizeResources(state.record.resources.map(entry => ({ path: entry.path, content: '' })), { scenePath, manifestPath });
     let total = 0;
     for (const entry of state.record.resources) {
+      if (retainedOriginId(entry.path, manifestPath)) continue;
       total += entry.bytes;
       if (total > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.READBACK);
       const content = await readResource(entry, manifestPath, fsAdapter);
@@ -1765,7 +1793,7 @@ async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyM
       }
     }
   }
-  const novel = await readNovelSceneBaseline(state.record,scenePath,manifestPath,verifyManifestContinuation,fsAdapter,origin);
+  const novel = await readNovelSceneBaseline(state.record,scenePath,manifestPath,verifyManifestContinuation,fsAdapter,origin,invocation);
   novelNeed(novel || state.record.commentState?.mode!==COMMENT_AUTHORING_MODE,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
   if (novel) await assertNovelAnnotations(novel,scenePath,manifestPath,fsAdapter);
   if (state.record.commentState) {
@@ -1781,6 +1809,66 @@ async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyM
     }
   }
   return Object.freeze({ ...state.record });
+}
+
+// Complete read-only query. Its reuse context and observed bytes are created
+// here, never accepted from a caller or retained across invocations.
+async function readVerifiedProjectDocxNovelCohort(options) {
+  novelNeed(options && Object.keys(options).every(key => ['manifestPath','projectId','scenePaths','verifyManifestContinuation','fsAdapter'].includes(key)), 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  const {manifestPath,projectId,scenePaths,verifyManifestContinuation,fsAdapter=fsp} = options;
+  novelNeed(typeof manifestPath === 'string' && path.isAbsolute(manifestPath) && typeof projectId === 'string'
+    && Array.isArray(scenePaths) && scenePaths.length >= 1 && scenePaths.length <= 512
+    && new Set(scenePaths).size === scenePaths.length, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  const observed = new Map(), invocation = {origin:null};
+  const capture = (target, bytes) => {
+    const binding = bytes === null ? null : {bytes:Buffer.byteLength(bytes),digest:sha256hex(bytes)};
+    if (observed.has(target)) novelNeed(canonicalize(observed.get(target)) === canonicalize(binding), 'E_PROJECT_TRANSACTION_NOVEL_STALE');
+    observed.set(target,binding);
+  };
+  const reader = {...fsAdapter,readFile:async(target,...args)=>{
+    try {
+      const limit=retainedOriginId(target,manifestPath)?MAX_NOVEL_ORIGIN_BYTES:MAX_ARTIFACT_BYTES;
+      const stat=await fsAdapter.stat(target);
+      novelNeed(Number.isSafeInteger(stat.size) && stat.size>=0 && typeof stat.isFile==='function' && stat.isFile() && stat.size<=limit,
+        'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
+      const bytes=await fsAdapter.readFile(target,...args),length=Buffer.byteLength(bytes);
+      novelNeed(length<=limit,'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
+      novelNeed(length===stat.size,'E_PROJECT_TRANSACTION_NOVEL_STALE');
+      capture(target,bytes);return bytes;
+    }
+    catch(error) {if(error.code==='ENOENT')capture(target,null);throw error;}
+  }};
+  const records=[];
+  for (const scenePath of scenePaths) {
+    novelNeed(typeof scenePath === 'string' && path.isAbsolute(scenePath), 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+    records.push(await readVerifiedProjectTransactionInInvocation({scenePath,manifestPath,verifyManifestContinuation,fsAdapter:reader},invocation));
+  }
+  const origin=invocation.origin;
+  novelNeed(origin?.packet.projectId === projectId, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  const scenes=origin.packet.plan.importReceipt.createdScenes;
+  novelNeed(canonicalize(scenePaths) === canonicalize(scenes.map(scene=>treeAbsolute(manifestPath,scene.relativeFile))), 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  const manifestText=await readOptionalText(manifestPath,reader),manifest=JSON.parse(manifestText);
+  novelNeed(manifest.projectId===projectId, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  for(const scene of scenes) {
+    const node=manifest.treeIdentity?.nodes?.[scene.treeNodeId];
+    novelNeed(node?.bindingKey==='file:'+scene.relativeFile && node.kind==='scene' && node.present!==false, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  }
+  const attemptPath=treeAbsolute(manifestPath,'.yalken/docx-import/active-attempt.v1.json');
+  const attemptBytes=await readResource({path:attemptPath},manifestPath,reader);
+  novelNeed(attemptBytes===null || attemptBytes.length<=4096, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  // Every participating read, including absent journal and annotation files,
+  // is checked again after the last member; the result is immutable.
+  await Promise.all([...observed].map(async([target,binding])=>{
+    await assertResourceBoundary(target,manifestPath,fsAdapter);
+    let stat;try {stat=await fsAdapter.stat(target);}catch(error){if(error.code!=='ENOENT')throw error;stat=null;}
+    novelNeed(stat===null ? binding===null : binding!==null && stat.isFile() && stat.size===binding.bytes,
+      'E_PROJECT_TRANSACTION_NOVEL_STALE');
+    let value=null;if(stat!==null)try {value=await fsAdapter.readFile(target);}catch(error){if(error.code!=='ENOENT')throw error;}
+    const actual=value===null?null:{bytes:Buffer.byteLength(value),digest:sha256hex(value)};
+    novelNeed(canonicalize(actual)===canonicalize(binding), 'E_PROJECT_TRANSACTION_NOVEL_STALE');
+  }));
+  const freeze=value=>{if(value && typeof value==='object'){for(const child of Object.values(value))freeze(child);Object.freeze(value);}return value;};
+  return freeze({projectId,manifestDigest:sha256hex(manifestText),attemptDigest:attemptBytes===null?'':sha256hex(attemptBytes),records});
 }
 
 function classifyProjectTransactionState({ scenePath, manifestPath }) {
@@ -2010,31 +2098,65 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
   }
   return entries.sort((a,b)=>a.relativePath.localeCompare(b.relativePath));
 }
-async function validateTreePacket(packet, manifestPath) {
-  const model = await treeModel();
+function isNovelTreePacket(packet) {
+  return packet?.plan?.kind === 'word-generic-import' && packet.plan.importReceipt?.sceneStrategy === 'word-novel-root-partitions';
+}
+function validateTreePacketShape(packet, manifestPath) {
   treeNeed(packet?.schemaVersion === TREE_JOURNAL_SCHEMA_VERSION && packet.manifestPath === manifestPath
     && typeof packet.projectId === 'string' && packet.projectId === packet.plan?.projectId
     && Number.isSafeInteger(packet.revision) && packet.revision >= 0, 'E_TREE_COHORT_JOURNAL');
-  model.validateProjectTreeCohort(packet.plan);
+}
+function validateTreePacketBinding(packet, manifestPath) {
+  validateTreePacketShape(packet, manifestPath);
   const id = sha256hex(`${packet.projectId}\n${packet.plan.planDigest}\n${packet.revision}`);
   treeNeed(packet.transactionId === id && canonicalize(packet.entries) === canonicalize(buildTreeEntries(packet.plan, manifestPath, packet.revision, id)), 'E_TREE_COHORT_JOURNAL_BINDING');
+  treeNeed(Buffer.byteLength(isNovelTreePacket(packet) ? canonicalBytes(packet) : canonicalize(packet))
+    <= (isNovelTreePacket(packet) ? MAX_NOVEL_ORIGIN_BYTES : MAX_ARTIFACT_BYTES), 'E_TREE_COHORT_BUDGET');
+}
+async function validateTreePacket(packet, manifestPath) {
+  const model = await treeModel();
+  validateTreePacketShape(packet, manifestPath);
+  model.validateProjectTreeCohort(packet.plan);
   if (packet.plan.kind === 'undo') await validateTreePacket(packet.plan.input.retainedPacket, manifestPath);
   if (packet.plan.input.recoveredCopy) await validateTreePacket(packet.plan.input.recoveredCopy.retainedPacket, manifestPath);
-  treeNeed(Buffer.byteLength(canonicalize(packet)) <= MAX_ARTIFACT_BYTES, 'E_TREE_COHORT_BUDGET');
+  validateTreePacketBinding(packet, manifestPath);
   return packet;
 }
-async function parseTreeJournal(source, manifestPath) {
-  treeNeed(typeof source === 'string' && Buffer.byteLength(source) <= MAX_ARTIFACT_BYTES, 'E_TREE_COHORT_BUDGET');
-  let journal; try { journal = JSON.parse(source); } catch { treeError('E_TREE_COHORT_JOURNAL'); }
-  await validateTreePacket(journal.packet, manifestPath);
+function freezeTreeValue(value) {
+  if(value && typeof value === 'object') {for(const child of Object.values(value))freezeTreeValue(child);Object.freeze(value);}
+  return value;
+}
+async function buildVerifiedTreePacket(plan, manifestPath, revision) {
+  // Own the complete bounded input before any await. A caller cannot change
+  // admitted meaning while this invocation later revalidates filesystem state.
+  const source=canonicalize(plan);
+  treeNeed(Buffer.byteLength(source)<=MAX_ARTIFACT_BYTES,'E_TREE_COHORT_BUDGET');
+  const privatePlan=JSON.parse(source),model=await treeModel();
+  model.validateProjectTreeCohort(privatePlan); // Before extracting any packet paths.
+  const transactionId=sha256hex(`${privatePlan.projectId}\n${privatePlan.planDigest}\n${revision}`);
+  const packet={schemaVersion:TREE_JOURNAL_SCHEMA_VERSION,projectId:privatePlan.projectId,manifestPath,transactionId,
+    revision,plan:privatePlan,entries:buildTreeEntries(privatePlan,manifestPath,revision,transactionId)};
+  if(privatePlan.kind==='undo')await validateTreePacket(privatePlan.input.retainedPacket,manifestPath);
+  if(privatePlan.input.recoveredCopy)await validateTreePacket(privatePlan.input.recoveredCopy.retainedPacket,manifestPath);
+  validateTreePacketBinding(packet,manifestPath);
+  return freezeTreeValue(packet);
+}
+function validateTreeJournalEnvelope(journal, source, manifestPath, model) {
+  treeNeed(Buffer.byteLength(source) <= (isNovelTreePacket(journal.packet) ? MAX_NOVEL_ORIGIN_BYTES : MAX_ARTIFACT_BYTES), 'E_TREE_COHORT_BUDGET');
   treeNeed(journal.schemaVersion === TREE_JOURNAL_SCHEMA_VERSION && journal.transactionId === journal.packet.transactionId
     && journal.manifestPath === manifestPath && (journal.previousReceiptText === null || typeof journal.previousReceiptText === 'string'), 'E_TREE_COHORT_JOURNAL');
   const receipt = JSON.parse(journal.receiptText);
-  const model = await treeModel();
   treeNeed(receipt.schemaVersion === TREE_RECEIPT_SCHEMA_VERSION && receipt.projectId === journal.packet.projectId
     && receipt.transactionId === journal.transactionId && receipt.packetDigest === model.projectTreeCohortDigest(journal.packet)
     && receipt.treeRevision === journal.packet.plan.expectedTreeRevision + 1 && receipt.kind === journal.packet.plan.kind, 'E_TREE_COHORT_RECEIPT');
   return journal;
+}
+async function parseTreeJournal(source, manifestPath) {
+  treeNeed(typeof source === 'string' && Buffer.byteLength(source) <= MAX_NOVEL_ORIGIN_BYTES, 'E_TREE_COHORT_BUDGET');
+  let journal; try { journal = JSON.parse(source); } catch { treeError('E_TREE_COHORT_JOURNAL'); }
+  await validateTreePacket(journal.packet, manifestPath);
+  const model = await treeModel();
+  return validateTreeJournalEnvelope(journal,source,manifestPath,model);
 }
 async function publishTreeSide(packet, side, { manifestPath, publishManifest, revalidate, fsAdapter }) {
   await revalidate();
@@ -2116,9 +2238,9 @@ async function readVerifiedProjectTreeMutation({ manifestPath, projectId, fsAdap
   let receipt; try { receipt = JSON.parse(treeText(source)); } catch { treeError('E_TREE_COHORT_RECEIPT'); }
   treeNeed(receipt.schemaVersion === TREE_RECEIPT_SCHEMA_VERSION && receipt.projectId === parsed.projectId
     && isDigest(receipt.transactionId) && isDigest(receipt.packetDigest) && Number.isSafeInteger(receipt.treeRevision) && receipt.treeRevision > 0, 'E_TREE_COHORT_RECEIPT');
-  const packetSource = await treeRead(recoveryPacketPathFor(manifestPath, receipt.transactionId), manifestPath, fsAdapter);
+  const packetSource = await readResource({path:recoveryPacketPathFor(manifestPath, receipt.transactionId)}, manifestPath, fsAdapter);
   treeNeed(packetSource !== null, 'E_TREE_COHORT_PACKET_MISSING');
-  const packet = await validateTreePacket(JSON.parse(treeText(packetSource)), manifestPath), model = await treeModel();
+  const packet = await validateTreePacket(JSON.parse(packetSource), manifestPath), model = await treeModel();
   treeNeed(packet.projectId === parsed.projectId && packet.transactionId === receipt.transactionId
     && model.projectTreeCohortDigest(packet) === receipt.packetDigest && packet.plan.expectedTreeRevision + 1 === receipt.treeRevision
     && packet.plan.kind === receipt.kind, 'E_TREE_COHORT_RECEIPT_BINDING');
@@ -2131,7 +2253,10 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   treeNeed(typeof revalidate === 'function' && typeof publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
   treeNeed(Number.isSafeInteger(revision) && revision >= 0 && plan?.input?.manifestPath === manifestPath ||
     (plan?.kind === 'undo' && plan?.input?.retainedPacket?.manifestPath === manifestPath && Number.isSafeInteger(revision) && revision >= 0), 'E_TREE_COHORT_IDENTITY');
-  const model = await treeModel(); model.validateProjectTreeCohort(plan);
+  const localNovel=isNovelTreePacket({plan});let packet=null;
+  if(localNovel) {packet=await buildVerifiedTreePacket(plan,manifestPath,revision);plan=packet.plan;}
+  const model = await treeModel();
+  if(!localNovel)model.validateProjectTreeCohort(plan);
   await revalidate();
   if (await readOptionalText(journalPathFor(manifestPath), fsAdapter) !== null) treeError('E_PROJECT_TRANSACTION_RECOVERY_REQUIRED');
   const current = await readVerifiedProjectTreeMutation({ manifestPath, projectId: plan.projectId, fsAdapter });
@@ -2142,10 +2267,12 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
     && canonicalize(current.receipt) === canonicalize(plan.input.recoveredCopy.receipt)
     && canonicalize(current.retainedPacket) === canonicalize(plan.input.recoveredCopy.retainedPacket), 'E_TREE_RECOVERY_BINDING');
   if (!plan.changed) return { success: true, changed: false, code: 'TREE_COHORT_UNCHANGED', treeRevision: current.treeRevision, lastMutation: current.lastMutation };
-  const transactionId = sha256hex(`${plan.projectId}\n${plan.planDigest}\n${revision}`);
-  const packet = { schemaVersion: TREE_JOURNAL_SCHEMA_VERSION, projectId: plan.projectId, manifestPath, transactionId,
-    revision, plan, entries: buildTreeEntries(plan, manifestPath, revision, transactionId) };
-  await validateTreePacket(packet, manifestPath);
+  const transactionId=sha256hex(`${plan.projectId}\n${plan.planDigest}\n${revision}`);
+  if(!packet) {
+    packet={schemaVersion:TREE_JOURNAL_SCHEMA_VERSION,projectId:plan.projectId,manifestPath,transactionId,
+      revision,plan,entries:buildTreeEntries(plan,manifestPath,revision,transactionId)};
+    await validateTreePacket(packet,manifestPath);
+  }
   await inspectTreePacket(packet, manifestPath, fsAdapter, 'before');
   const previousReceiptText = await readOptionalText(treeCommitPathFor(manifestPath), fsAdapter);
   const receipt = { schemaVersion: TREE_RECEIPT_SCHEMA_VERSION, projectId: plan.projectId, transactionId,
@@ -2153,7 +2280,10 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   const receiptText = canonicalBytes(receipt), journal = { schemaVersion: TREE_JOURNAL_SCHEMA_VERSION,
     manifestPath, transactionId, previousReceiptText, receiptText, packet };
   const journalText = canonicalBytes(journal);
-  await parseTreeJournal(journalText, manifestPath);
+  // These canonical bytes come from this invocation's frozen, fully verified
+  // packet. External and recovery journals still regenerate through the parser.
+  if(localNovel)validateTreeJournalEnvelope(journal,journalText,manifestPath,model);
+  else await parseTreeJournal(journalText,manifestPath);
   if (plan.kind === 'word-generic-import') {
     const packetText = canonicalBytes(packet), origin = {path:recoveryPacketPathFor(manifestPath,transactionId),digest:sha256hex(packetText),bytes:Buffer.byteLength(packetText)};
     for (const scene of packet.entries.filter(entry => entry.role === 'scene' && entry.beforeBase64 === null)) {
@@ -2195,6 +2325,7 @@ module.exports = Object.freeze({
   journalPathFor,
   readPendingProjectTransactionBinding,
   readVerifiedProjectTransaction,
+  readVerifiedProjectDocxNovelCohort,
   readVerifiedNovelAnnotationLineage,
   recoveryPacketPathFor,
   recoverProjectTransaction,

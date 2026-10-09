@@ -10,7 +10,7 @@ const {
   joinPathSegmentsWithinRoot,
 } = require('../core/io/path-boundary');
 const { commitProjectTransaction, recoverProjectTransaction, readPendingProjectTransactionBinding,
-  readVerifiedProjectTransaction, readVerifiedProjectTreeMutation } = require('../core/project-transaction-v1.cjs');
+  readVerifiedProjectTransaction, readVerifiedProjectDocxNovelCohort, readVerifiedProjectTreeMutation } = require('../core/project-transaction-v1.cjs');
 
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA = 'revision-bridge.docx-import-safe-create-receipt.v1';
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE = 'docx.import.safeCreate.receipt';
@@ -126,6 +126,14 @@ function isPlainObject(value) {
 function cloneJsonSafe(value) {
   if (value === undefined) return undefined;
   return JSON.parse(JSON.stringify(value));
+}
+
+function freezeDocxImportSnapshot(value) {
+  if (value && typeof value === 'object') {
+    for (const child of Object.values(value)) freezeDocxImportSnapshot(child);
+    Object.freeze(value);
+  }
+  return value;
 }
 
 function normalizeText(value) {
@@ -802,6 +810,11 @@ async function acknowledgeDocxImportAttempt(input, options = {}) {
     if ((await readDocxImportAttempt({ projectRoot, projectId })).text !== current.text) throw Error('DOCX_IMPORT_ATTEMPT_CONFLICT');
     const { unlinkDurable } = await import('../io/markdown/atomicWriteFile.mjs');
     const target = await importAttemptPath(projectRoot);
+    if (validated.value.candidate?.sceneStrategy === 'word-novel-root-partitions') {
+      const final=await validateExistingDocxImportReceipt({receipt:stored.receipt,plan,validated,projectRoot,romanRoot,
+        targetPath,importOperationId:expected.importOperationId,operationNonce:requestId,projectId,transactionAuthority:authority,manifestPath});
+      if(!final.ok) throw Error('DOCX_IMPORT_ATTEMPT_RECEIPT_INVALID');
+    }
     const openResult = assertOpen();
     if (openResult && typeof openResult.then === 'function') throw Error('DOCX_IMPORT_ATTEMPT_ACK_INVALID');
     await unlinkDurable(target);
@@ -1379,12 +1392,12 @@ async function validateExistingDocxImportReceipt(options) {
 // Derive every asset path from validated canonical bytes. Existing content-
 // addressed assets are reused only after exact readback; no incoming path is
 // trusted and no image becomes an independent filesystem writer.
-async function prepareDocxMediaEntries(content, projectRoot, notes = []) {
+async function inspectDocxMediaEntries(content, projectRoot, notes = []) {
   const { parseObservablePayload } = await import('../renderer/documentContentEnvelope.mjs');
   const parsed = parseObservablePayload(content);
   if (parsed.issue) throw Error('DOCX_MEDIA_DOCUMENT_INVALID');
   const storyBlocks = require('../core/word-stories-v1.cjs').read(parsed.doc)?.stories.flatMap(story => story.body.content) || [];
-  const graph = documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...notes.flatMap(note => note.body.content), ...storyBlocks] }), entries = [];
+  const graph = documentMedia({ type: 'doc', content: [...(parsed.doc?.content || []), ...notes.flatMap(note => note.body.content), ...storyBlocks] }), entries = [], bindings = [];
   for (const asset of graph.assets) {
     const target = path.join(projectRoot, asset.attrs.assetPath);
     if (!isPathInsideBoundary(projectRoot, target, { resolveSymlinks: true })) throw Error('DOCX_MEDIA_PATH');
@@ -1400,12 +1413,18 @@ async function prepareDocxMediaEntries(content, projectRoot, notes = []) {
     try {
       const actual = await fs.readFile(target);
       if (!actual.equals(asset.bytes)) throw Error('DOCX_MEDIA_EXISTING_BYTES');
+      bindings.push({ relativePath: asset.attrs.assetPath, beforeBase64: actual.toString('base64') });
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
       entries.push({ path: target, content: asset.bytes });
+      bindings.push({ relativePath: asset.attrs.assetPath, beforeBase64: null });
     }
   }
-  return entries;
+  return { entries, bindings };
+}
+
+async function prepareDocxMediaEntries(content, projectRoot, notes = []) {
+  return (await inspectDocxMediaEntries(content, projectRoot, notes)).entries;
 }
 
 async function verifyDocxMediaAssetFiles(content, projectRoot, notes = []) {
@@ -1489,15 +1508,10 @@ async function validateExistingDocxNovelReceipt(options) {
     const manifest=JSON.parse(await fs.readFile(manifestPath,'utf8'));
     if(manifest.projectId!==projectId) return fail('project');
     const stored=await fs.readFile(buildReceiptStorePath(projectRoot,importOperationId));
+    const scenePaths=scenes.map(scene=>path.join(projectRoot,scene.relativeFile));
     for(const scene of scenes) {
-      const scenePath=path.join(projectRoot,scene.relativeFile);
       const identity=manifest.treeIdentity?.nodes?.[scene.treeNodeId];
       if(identity?.bindingKey!=='file:'+scene.relativeFile || identity.kind!=='scene' || identity.present===false) return fail('identity');
-      const commit=await readVerifiedProjectTransaction({scenePath,manifestPath,fsAdapter:options.fsAdapter,
-        verifyManifestContinuation:args=>transactionAuthority.verifyManifestContinuation({...args,projectId})});
-      if(commit.sceneDigest!==scene.outputHash || commit.revision<receipt.manifestAuthority.fencingGeneration
-        || !commit.resources?.some(r=>r.path===buildReceiptStorePath(projectRoot,importOperationId) && r.digest===hashExactBytes(stored))) return fail('commit');
-      if(hashExactBytes(await fs.readFile(scenePath))!==scene.outputHash) return fail('content');
     }
     const owned=new Set(scenes.map(s=>s.relativeFile));
     let actualNotes=null;try {actualNotes=await fs.readFile(path.join(projectRoot,'notes.craftsman.json'),'utf8');}catch(error){if(error.code!=='ENOENT')throw error;}
@@ -1508,13 +1522,20 @@ async function validateExistingDocxNovelReceipt(options) {
     const threads=comments.text===null?[]:commentModel.readState(comments.text,projectId).threads;
     if(!jsonStableEqual(threads.filter(t=>owned.has(t.sceneId)),expected.commentsAfter===null?[]:JSON.parse(expected.commentsAfter).threads)) return fail('comments');
     for(const entry of validated.value.entries) await verifyDocxMediaAssetFiles(entry.content,projectRoot,entry.notes);
+    // All asynchronous utility comparisons precede the Core's final snapshot.
+    const cohort=await readVerifiedProjectDocxNovelCohort({scenePaths,manifestPath,projectId,fsAdapter:options.fsAdapter,
+      verifyManifestContinuation:args=>transactionAuthority.verifyManifestContinuation({...args,projectId})});
+    for(const [i,scene] of scenes.entries()) {
+      const commit=cohort.records[i];
+      if(commit.sceneDigest!==scene.outputHash || commit.revision<receipt.manifestAuthority.fencingGeneration
+        || !commit.resources?.some(r=>r.path===buildReceiptStorePath(projectRoot,importOperationId) && r.digest===hashExactBytes(stored))) return fail('commit');
+    }
     return {ok:true,receipt};
   } catch { return fail('durableCohort'); }
 }
 
-async function applyDocxNovelImportInLease(input, options) {
-  const plan=input.docxImportPreviewPlan, validated=validateDocxImportPreviewPlan(plan);
-  if(!validated.ok) return validated;
+async function applyDocxNovelImportInLease(input, options, validated) {
+  const plan=input.docxImportPreviewPlan;
   if(!isDocxImportPreviewPlanAdmitted(plan)) return buildError('DOCX_SAFE_CREATE_PREVIEW_NOT_ADMITTED','docx_import_safe_create_preview_not_admitted');
   const {projectRoot,romanRoot,projectId,manifestPath,transactionAuthority}=options;
   const roots=validateTrustedRoots(projectRoot,romanRoot); if(!roots.ok)return roots;
@@ -1532,11 +1553,15 @@ async function applyDocxNovelImportInLease(input, options) {
   await options.assertPublication(); const captured=await options.captureTreeCohortInventory(projectRoot); await options.assertPublication();
   const current=await readVerifiedProjectTreeMutation({manifestPath,projectId,fsAdapter:options.fsAdapter}); await options.assertPublication();
   const model=await import('../core/project-tree-cohort-v1.mjs');
-  const materialized=model.materializeDocxNovelCandidate({candidate:validated.value.candidate,artifactSha256:validated.value.sourceArtifactSha256,
-    projectId,operationId:importOperationId,operationNonce,now:'1970-01-01T00:00:00.000Z',notesText:null,commentsText:null});
-  const mediaBindings=[];
-  for(const entry of validated.value.entries) await prepareDocxMediaEntries(entry.content,projectRoot,entry.notes);
-  for(const [relativePath] of materialized.resources) {let beforeBase64=null; try{beforeBase64=(await fs.readFile(path.join(projectRoot,relativePath))).toString('base64');}catch(error){if(error.code!=='ENOENT')throw error;} mediaBindings.push({relativePath,beforeBase64});}
+  const media=new Map();
+  for(const entry of validated.value.entries) {
+    const inspected=await inspectDocxMediaEntries(entry.content,projectRoot,entry.notes);
+    for(const binding of inspected.bindings) {
+      if(media.has(binding.relativePath) && media.get(binding.relativePath).beforeBase64!==binding.beforeBase64) throw Error('DOCX_MEDIA_EXISTING_BYTES');
+      media.set(binding.relativePath,binding);
+    }
+  }
+  const mediaBindings=[...media.values()];
   const cohort=model.planProjectDocxImportCohort({operation:'word-generic-import',projectId,operationId:importOperationId,operationNonce,
     manifestPath,beforeManifestText:options.manifestRaw,expectedTreeRevision:current.treeRevision,fencingGeneration:options.lease.fencingGeneration,
     candidate:validated.value.candidate,artifactSha256:validated.value.sourceArtifactSha256,previewPlanHash:hashDocxImportPreviewPlanForAdmission(plan),previewHash:validated.value.previewHash,
@@ -1547,8 +1572,8 @@ async function applyDocxNovelImportInLease(input, options) {
   return {ok:true,value:{created:true,safeCreate:true,createdSceneIds:checked.receipt.createdSceneIds,publicSceneLocators:checked.receipt.publicSceneLocators,publicSceneLocator:checked.receipt.publicSceneLocator,receipt:checked.receipt,importOperationId}};
 }
 
-async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
-  if (input.docxImportPreviewPlan?.candidateCreatePlan?.sceneStrategy === 'word-novel-root-partitions') return applyDocxNovelImportInLease(input,options);
+async function applyDocxImportSafeCreateInLease(input = {}, options = {}, novelValidation) {
+  if (input.docxImportPreviewPlan?.candidateCreatePlan?.sceneStrategy === 'word-novel-root-partitions') return applyDocxNovelImportInLease(input,options,novelValidation);
   const projectRoot = typeof options.projectRoot === 'string' ? options.projectRoot.trim() : '';
   const romanRoot = typeof options.romanRoot === 'string' ? options.romanRoot.trim() : '';
 
@@ -1808,6 +1833,11 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   if (!isDocxImportPreviewPlanAdmitted(input.docxImportPreviewPlan)) {
     return buildError('DOCX_SAFE_CREATE_PREVIEW_NOT_ADMITTED', 'docx_import_safe_create_preview_not_admitted');
   }
+  // Validation precedes cloning, so forbidden fields cannot disappear during
+  // JSON normalization. Only this invocation owns and reuses the sealed proof.
+  const ownedInput = validated.value.novel
+    ? { ...input, docxImportPreviewPlan: freezeDocxImportSnapshot(cloneJsonSafe(input.docxImportPreviewPlan)) } : input;
+  const novelValidation = validated.value.novel ? freezeDocxImportSnapshot(cloneJsonSafe(validated)) : undefined;
   const roots = validateTrustedRoots(options.projectRoot, options.romanRoot);
   if (!roots.ok) return roots;
   const authority = options.transactionAuthority;
@@ -1854,8 +1884,8 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
         manifestPath: options.manifestPath, publishManifest, verifyManifestContinuation, fsAdapter });
       const manifestRaw = await fs.readFile(options.manifestPath, 'utf8');
       if (JSON.parse(manifestRaw).projectId !== options.projectId) throw Error('DOCX_SAFE_CREATE_PROJECT_IDENTITY_MISMATCH');
-      const result = await applyDocxImportSafeCreateInLease(input, { ...options, manifestRaw, lease,
-        publishManifest, verifyManifestContinuation, fsAdapter, assertPublication });
+      const result = await applyDocxImportSafeCreateInLease(ownedInput, { ...options, manifestRaw, lease,
+        publishManifest, verifyManifestContinuation, fsAdapter, assertPublication }, novelValidation);
       await assertPublication();
       return result;
     })), options.operationLabel || 'safe create DOCX import transaction');

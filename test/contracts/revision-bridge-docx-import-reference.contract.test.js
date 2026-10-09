@@ -50,6 +50,7 @@ function harness(t, options = {}) {
     Buffer, createDocxImportPreviewReferences, cloneJsonSafe: copy, isPlainObjectValue: record,
     ...admission, currentProjectName: 'A', path, sanitizeFilename: value => value,
     fs: fs.promises, crypto,
+    readVerifiedProjectDocxNovelCohort: require('../../src/core/project-transaction-v1.cjs').readVerifiedProjectDocxNovelCohort,
     mainWindow: { id: 'reference-window' }, activeStage10ApplicationBootstrap: { id: 'reference-bootstrap' },
     commentAuthoringSessionId: 'reference-session', currentLifecycleSubjectId: () => 'reference-subject',
     currentFilePath: '', lastSignaledEditGeneration: 0, isDirty: false, activePendingRecording: false, autoSaveInProgress: false,
