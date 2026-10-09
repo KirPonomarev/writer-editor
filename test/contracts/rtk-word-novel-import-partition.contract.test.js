@@ -992,7 +992,9 @@ function retainDirectory(name,files) {
 }
 async function runFullNovelImportProof(t,{bytes,label}) {
   const f=await projectFixture(t,'full500k-'+label,{canonicalNotes:true}),evidence=process.env.YALKEN_NOVEL_PARTITION_EVIDENCE_DIR;
-  const inputDir=evidence||f.root,sourcePath=path.join(inputDir,label+'-input.docx');assert.equal(fs.existsSync(sourcePath),false);fs.mkdirSync(inputDir,{recursive:true});fs.writeFileSync(sourcePath,bytes);
+  const inputDir=evidence||fs.mkdtempSync(path.join(os.tmpdir(),'full500k-docx-source-'));
+  if(!evidence)t.after(()=>fs.rmSync(inputDir,{recursive:true,force:true}));
+  const sourcePath=path.join(inputDir,label+'-input.docx');assert.equal(fs.existsSync(sourcePath),false);fs.mkdirSync(inputDir,{recursive:true});fs.writeFileSync(sourcePath,bytes);
   const port=await mainProjectPort(f,{localPath:sourcePath}),handlers={
     'cmd.project.docx.previewLocalFile':port.handleDocxImportLocalFilePreviewCommandSurface,
     'cmd.project.docx.previewImportPlan':port.handleDocxImportPreviewCommandSurface,
@@ -1000,7 +1002,7 @@ async function runFullNovelImportProof(t,{bytes,label}) {
   const timings=[];
   const dispatch=async(id,payload)=>{const start=process.hrtime.bigint(),result=await handlers[id](payload);const seconds=Number(process.hrtime.bigint()-start)/1e9;timings.push({id,seconds});retain(label+'-timings',timings);assert.ok(seconds<120,'actual public handler remains below existing120s: '+id);return result;};
   const local=await dispatch('cmd.project.docx.previewLocalFile',{requestId:label+'-local'});
-  retain(label+'-local',{bytes,local,timings});assert.equal(local.contentPreviewOk,true,`complete local parser: ${local.reason||local.code}`);
+  retain(label+'-local',{bytes,local,timings});assert.equal(local.contentPreviewOk,true,`complete local parser: ${JSON.stringify(local.error||{reason:local.reason,code:local.code})}`);
   assert.match(local.docxContentPreviewRef,/^[a-f0-9]{64}$/);
   const beforePlan=productFiles(f),preview=await dispatch('cmd.project.docx.previewImportPlan',{requestId:label+'-plan',docxContentPreviewRef:local.docxContentPreviewRef});
   assert.equal(preview.importPreviewOk,true,`full preview: ${preview.reason||preview.code}`);equal(productFiles(f),beforePlan,'local/plan preview never writes canonical product files');

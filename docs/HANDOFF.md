@@ -1,3 +1,9 @@
+## 2026-10-09 — PR2102 default CI source placement corrected; delivery pending
+
+The optional evidence-env fallback put its DOCX inside the protected project. Actual Main correctly refused EXTERNAL_SOURCE_INSIDE_PROJECT_DENIED; the maintained test now creates an owned external source directory. Product bytes, assertions, limits and handler timeouts are unchanged. Fresh whole3 passes55of55, unchanged mandatory TAP actual0:500108words/8391richparagraphs/42chapters/3notes/200threads400messages, replay/reopen/sixCoreSaves. Case403.086s; process583.912s/RU7182237696B, bounds not reached. No newly retained default-env project or numeric handler timing claim.
+
+Rawd8fab69a6bd983f0bf4a8b4c71c874819f6f31a91239c58d1ecbae0c04cd5a5c; root independent review943aa8a6ea286d358c426177716e471c3ef66fc0f1eca6e91c0b36306f019674. Prior597 whole27 and genuine06 retain original identities; only unchanged effective inputs qualify, reference overlap counted once. Candidate38 official run37921392629 FAILED and remains historical. Fresh CI, normal merge and exact merged proof are required before the next contour. Changed-note Apply, conflicts/recovery/UndoRedo and fresh SOURCE/PACKAGED three-role/five-changed-round native release remain OPEN.
+
 ## 2026-10-09 — Complete Word-origin500k atomic import; current source proof, normal delivery pending
 
 WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009 binds merged basef7eaa746f3f5857809139f2f61b3e3ce07c45e36.

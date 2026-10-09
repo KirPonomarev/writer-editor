@@ -15913,7 +15913,7 @@ export const R24_INTEROP_WORD_NOVEL_FULL500K_ATOMIC_IMPORT_SUCCESSOR=Object.free
     },
     {
       "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-      "sha256": "bbde6c08b78164354d8950e9ca0e363a3682742c3e83409b35f7057ede6ff573"
+      "sha256": "54ab87922fbc6fae91fdc6c302fee8ef2d584fade9df3bf9096db214d48468b6"
     },
     {
       "path": "test/unit/r24-wp201-project-transaction.test.js",
@@ -15925,25 +15925,25 @@ export const R24_INTEROP_WORD_NOVEL_FULL500K_ATOMIC_IMPORT_SUCCESSOR=Object.free
     },
     {
       "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
-      "sha256": "728e2d786a24e7e497a9893b0aa863bb1f8adbbef21ed459927a1126b32ec538"
+      "sha256": "2cf43b4322ea770b9ecf330ba3d62fc355eaca8659811ffd058b855171458600"
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "920ebbf1461448e0108574cf1bb12ee5454afe6212973801c11ab0caec5cf7e5"
+      "sha256": "62fb7b5b5db0ff8d4ff5c24c21e8902e44b5416a78ba16467520d2dd7b0c0638"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "fa3b71ed69ab8a4a3bd0765bebb9276e805a159514a2dc620de3b7e9fc382428"
+      "sha256": "d8962bbc69ba45e42efafb638643b35546b6b859b7cf6776b5a2631b13db2cfc"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "e3ba103d23d508da4aa6ff5495b148110738e6dea4fecf918826321bff3dfa4e"
+      "sha256": "82c1d143eda26cdbcec1089ad1f8efa45bbd47726b7bd600788cf7829c11babe"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "cacffb6126abbac75d1c667b7217c2888eb52dbe454d533b7adf093e283fc014"
+      "sha256": "39a7dd09ff5b10c54e67509298c6bb6ef9a12abe14d37d229648152e11902db5"
     }
   ]
 });
