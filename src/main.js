@@ -88,6 +88,7 @@ const {
   commitProjectTransaction,
   readPendingProjectTransactionBinding,
   readVerifiedProjectTreeMutation,
+  readVerifiedNovelAnnotationLineage,
   recoverProjectTransaction,
 } = require('./core/project-transaction-v1.cjs');
 const { planCommentAnchorSave, paragraphs: commentSceneParagraphs } = require('./core/word-comment-anchor-save-v1.cjs');
@@ -13228,6 +13229,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'wordParagraphSpacing', 'wordParagraphIndent', 'wordParagraphTabs',
                 'wordParagraphMarkLanguage', 'wordParagraphMarkTypography',
                 'list',
+                'listContinuationLevel',
                 'blockKind',
                 'blockquoteDepth',
                 'table',
@@ -13523,7 +13525,9 @@ async function handleDocxImportPreviewCommandSurface(payload = {}) {
 
   let importPreviewResult = null;
   try {
-    importPreviewResult = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(
+    const build = typeof revisionBridge.buildDocxNovelImportPreviewPlanFromContentPreview === 'function'
+      ? revisionBridge.buildDocxNovelImportPreviewPlanFromContentPreview : revisionBridge.buildDocxImportPreviewPlanFromContentPreview;
+    importPreviewResult = build(
       validated.docxContentPreviewReport,
     );
   } catch (error) {
@@ -14124,6 +14128,14 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
   };
   const validated = validateDocxImportSafeCreatePayload(payload);
   if (!validated.ok) return validated;
+  const novel = validated.docxImportPreviewPlan.candidateCreatePlan?.sceneStrategy === 'word-novel-root-partitions';
+  const captureNovelIdentity = () => [mainWindow,activeStage10ApplicationBootstrap,commentAuthoringSessionId,currentLifecycleSubjectId(),currentFilePath,lastSignaledEditGeneration];
+  const novelIdentity = novel ? captureNovelIdentity() : null;
+  const previousContextGuard = assertCurrentReferenceContext;
+  const assertImportCurrent = () => { previousContextGuard(); if(novel) {
+    userBookmarkCapability(DOCX_IMPORT_SAFE_CREATE_COMMAND_ID);
+    if(captureNovelIdentity().some((x,i)=>x!==novelIdentity[i]) || isDirty || activePendingRecording || autoSaveInProgress) throw Error('DOCX_IMPORT_NOVEL_AUTHORING_CONTEXT_CHANGED');
+  } };
   if (typeof applyDocxImportSafeCreate !== 'function') {
     return makeDocxImportSafeCreateTypedError(
       'E_DOCX_IMPORT_SAFE_CREATE_UNAVAILABLE',
@@ -14136,15 +14148,15 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
   try {
     const requestId = normalizeDocxImportSafeCreateRequestId(payload?.requestId);
     await recoverPendingWriterProjectTransaction();
-    assertCurrentReferenceContext();
+    assertImportCurrent();
     await ensureProjectStructure(currentProjectName || DEFAULT_PROJECT_NAME);
-    assertCurrentReferenceContext();
+    assertImportCurrent();
     const importProjectRoot = getProjectRootPath();
     const romanRoot = getProjectSectionPath('roman');
     const projectBinding = await resolveProjectBindingForFile(romanRoot);
     // Missing authority is a command failure before any import publication.
     const docxImportTransactionAuthority = await getMainProjectManifestAuthority();
-    assertCurrentReferenceContext();
+    assertImportCurrent();
     acceptedBinding = { projectRoot: importProjectRoot, projectId: projectBinding?.projectId, manifestPath: projectBinding?.manifestPath };
     safeCreateResult = await applyDocxImportSafeCreate(
       {
@@ -14163,11 +14175,12 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
           ? projectBinding.manifestRaw
           : '',
         queueDiskOperation: (operation, label) => queueDiskOperation(async () => {
-          assertCurrentReferenceContext();
+          assertImportCurrent();
           return operation();
         }, label),
         operationLabel: 'safe create DOCX import transaction',
-        assertPublication: assertCurrentReferenceContext,
+        assertPublication: assertImportCurrent,
+        captureTreeCohortInventory: typeof captureTreeCohortInventory === 'function' ? captureTreeCohortInventory : undefined,
         transactionAuthority: docxImportTransactionAuthority,
         importRequestNonce: requestId,
       },
@@ -14524,6 +14537,8 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
         return bytes;
       },
       maxBytes: DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
+      novelImport: true,
+      contentPreviewBudgets: {maxBlocks:50_000},
     });
     assertCurrent();
   } catch (error) {
@@ -17056,7 +17071,10 @@ async function writeProjectNotesDocument(context, current, document, commandId, 
     const manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
     if (path.dirname(manifestPath) !== context.projectRoot) throw Error('NOTE_MEDIA_PROJECT_STALE');
     const resources = await prepareWordMediaReturnResources(mediaDoc, manifestPath);
-    if (resources.length) {
+    const noteAuthority = await getMainProjectManifestAuthority();
+    const novel = await readVerifiedNovelAnnotationLineage({scenePath:options.mediaCohort.scenePath,manifestPath,
+      verifyManifestContinuation:request=>noteAuthority.verifyManifestContinuation({...request,projectId:context.projectId})});
+    if (resources.length || novel) {
       const { lease, scenePath, revision } = options.mediaCohort;
       const authority = await getMainProjectManifestAuthority();
       const sceneContent = await fs.readFile(scenePath, 'utf8');
@@ -17068,7 +17086,8 @@ async function writeProjectNotesDocument(context, current, document, commandId, 
       await options.beforeWrite();
       const result = await commitProjectTransaction({ scenePath, sceneContent, expectedSceneContent: sceneContent,
         manifestPath, manifestContent, expectedManifestContent: manifestContent, revision,
-        mediaUpdateResources: resources,
+        ...(resources.length?{mediaUpdateResources:resources}:{}),
+        ...(novel?{revalidate:options.revalidate}:{}),
         noteState: { mode: 'MANUSCRIPT_BODY_UPDATE_V1', beforeText: current.sourceText,
           afterText: `${JSON.stringify(document, null, 2)}\n` },
         verifyManifestContinuation: request => authority.verifyManifestContinuation({ ...request, projectId: context.projectId }),
@@ -17200,17 +17219,20 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
           projectId: context.projectId, ...(typeof options.now === 'function' ? { now: options.now } : {}),
         });
         if (!result.ok) return makeNotesCommandError(commandId, result.code, result.reason);
-        const beforeWrite = async () => {
+        const revalidate = async () => {
           await lease.assertOwned();
           if (currentFilePath !== source.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== source.subjectId
             || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation) throw Error('NOTE_SOURCE_IDENTITY_STALE');
           if (await fs.readFile(source.filePath, 'utf8') !== source.raw) throw Error('NOTE_SOURCE_REVISION_STALE');
+        };
+        const beforeWrite = async () => {
+          await revalidate();
           const readback = await readProjectNotesDocument(context, options);
           if (!readback.ok || readback.current.sourceText !== fresh.current.sourceText) throw Error('NOTES_REVISION_STALE');
         };
         await beforeWrite();
         const written = await writeProjectNotesDocument(context, fresh.current, result.document, commandId,
-          { ...options, beforeWrite, inDiskOperation: true, mediaCohort: { lease, scenePath: source.filePath, revision: snapshot.generation } });
+          { ...options, beforeWrite, revalidate, inDiskOperation: true, mediaCohort: { lease, scenePath: source.filePath, revision: snapshot.generation } });
         if (!written.ok) return written;
         return { ok: true, note: result.note,
           receipt: buildNotesMutationReceipt({ commandId, mutation, result, recovery: written.recovery }) };
@@ -26375,9 +26397,35 @@ async function handleCommentAuthoringCommand(payload = {}) {
           const fresh = await readCommentAuthoringContext();
           if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw new Error('COMMENT_SCENE_CHANGED');
         };
+        await revalidate();
+        const manifestPath=context.manifestPath, now=new Date().toISOString();
+        const novel=await readVerifiedNovelAnnotationLineage({scenePath:context.filePath,manifestPath,
+          verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId})});
+        let atomicWriter;
+        if (novel) {
+          const markdownIo=await loadMarkdownIoModule();
+          const statePath=path.join(context.projectRoot,'.yalken','word-review','non-text-return-state.v1.json');
+          const recoveryPath=path.join(context.projectRoot,'.yalken','recovery','non-text-return-state.v1.json');
+          atomicWriter=async (target,content,options)=> {
+            if (target===recoveryPath) return markdownIo.atomicWriteFile(target,content,options);
+            if (target!==statePath) throw Error('COMMENT_CANONICAL_PATH_REQUIRED');
+            await revalidate();
+            const manifestContent=await fs.readFile(manifestPath,'utf8');
+            const result=await commitProjectTransaction({scenePath:context.filePath,sceneContent:context.raw,expectedSceneContent:context.raw,
+              manifestPath,manifestContent,expectedManifestContent:manifestContent,revision:snapshot.generation,
+              commentState:{mode:'COMMENT_AUTHORING_V1',beforeText:context.saved.text,afterText:content,authoringProofJson:JSON.stringify({input:payload,now})},
+              verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId}),revalidate,
+              publishManifest:async ({manifestPath:targetPath,expectedText,nextText,reason})=> {
+                if (targetPath!==manifestPath) throw Error('COMMENT_CANONICAL_PATH_REQUIRED');
+                await authority.commitManifestText({projectId:context.projectId,lease,targetPath,expectedText,nextText,label:`comment authoring:${reason}`});
+              }});
+            if (result.success!==true) throw Error('COMMENT_TRANSACTION_NOT_CONFIRMED');
+            return result;
+          };
+        }
         return module.commitCommentAuthoring({ projectRoot: context.projectRoot, projectId: context.projectId,
           sceneId: context.sceneId, sceneSha256: context.sceneSha256, paragraphs: commentSceneParagraphs(context.raw),
-          input: payload, now: new Date().toISOString() }, { publish: operation => lease.publish(operation), revalidate });
+          input: payload, now }, { publish: operation => lease.publish(operation), revalidate, ...(atomicWriter?{atomicWriter}:{}) });
       });
     }, 'canonical comment authoring');
   } catch (error) {

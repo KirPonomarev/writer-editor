@@ -121,14 +121,13 @@ test('WP201 commits scene and manifest under one durable commit point and ACK', 
   assert.equal(ack.ack.kind, 'SAVED');
 });
 
-test('WP201 refuses scene or manifest CAS drift before an acknowledged publication', async (t) => {
+test('WP201 refuses scene drift before an acknowledged publication', async () => {
   const base = {
     sceneContent: 'new scene',
     manifestContent: '{"revision":2}',
     revision: 2,
     publishManifest: manifestPublisher(),
   };
-  await t.test('scene drift', async () => {
     const { scenePath, manifestPath } = sandbox();
     await assert.rejects(
       commitProjectTransaction({
@@ -141,8 +140,15 @@ test('WP201 refuses scene or manifest CAS drift before an acknowledged publicati
       (error) => error instanceof ProjectTransactionError && error.code === 'E_PROJECT_TRANSACTION_SCENE_CAS',
     );
     assert.equal(fs.existsSync(journalPathFor(manifestPath)), false);
-  });
-  await t.test('manifest drift', async () => {
+});
+
+test('WP201 refuses manifest drift before an acknowledged publication', async () => {
+  const base = {
+    sceneContent: 'new scene',
+    manifestContent: '{"revision":2}',
+    revision: 2,
+    publishManifest: manifestPublisher(),
+  };
     const { scenePath, manifestPath } = sandbox();
     await assert.rejects(
       commitProjectTransaction({
@@ -155,7 +161,6 @@ test('WP201 refuses scene or manifest CAS drift before an acknowledged publicati
       (error) => error instanceof ProjectTransactionError && error.code === 'E_PROJECT_TRANSACTION_MANIFEST_CAS',
     );
     assert.equal(fs.existsSync(journalPathFor(manifestPath)), false);
-  });
 });
 
 test('WP201 leaves a recoverable journal when manifest authority fails', async () => {

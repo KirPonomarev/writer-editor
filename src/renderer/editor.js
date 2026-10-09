@@ -20901,8 +20901,11 @@ function findDocxImportSceneNode(root, locators) {
 
 async function openImportedDocxSceneAfterAccept(plan, createdSceneIds, acceptedValue = null) {
   const publicLocators = getDocxImportPublicSceneLocatorsFromValue(acceptedValue);
+  const novel = plan?.candidateCreatePlan?.sceneStrategy === 'word-novel-root-partitions';
+  const primary = acceptedValue?.publicSceneLocator || acceptedValue?.receipt?.publicSceneLocator;
+  if(novel && (!primary?.nodeId || primary.nodeId !== publicLocators[0]?.nodeId)) return {opened:false,reason:'imported-primary-locator-mismatch'};
   const locators = publicLocators.length > 0
-    ? publicLocators
+    ? (novel ? [publicLocators[0]] : publicLocators)
     : getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds);
   if (locators.length === 0) {
     return { opened: false, reason: 'no-created-scene-locator' };
@@ -21036,7 +21039,8 @@ function summarizeDocxImportPreview(value) {
   const firstEntry = Array.isArray(plan?.candidateCreatePlan?.entries)
     ? plan.candidateCreatePlan.entries[0]
     : null;
-  const textLength = typeof firstEntry?.content === 'string' ? firstEntry.content.length : 0;
+  const textLength = Array.isArray(plan?.candidateCreatePlan?.entries)
+    ? plan.candidateCreatePlan.entries.reduce((n,entry)=>n+(typeof entry.content==='string'?entry.content.length:0),0) : 0;
   if (!plan || plan.ok !== true) {
     const code = value?.docxContentPreviewReport?.code;
     const reason = {

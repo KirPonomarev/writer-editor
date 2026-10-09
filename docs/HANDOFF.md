@@ -1,3 +1,57 @@
+## 2026-10-09 — Word-origin novel scenes; source proof complete, delivery pending
+
+WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009 is one bounded continuation at
+5ca5d936a0a2020fcbaa280bbb7ee753a378fa81, after fully delivered PR2100.
+A supported canonical-default uniform-section Word import now uses the existing
+public preview/admission/SafeCreate and one atomic v7 cohort to create ordered,
+independently editable scenes. Complete protected spans, rich content,
+annotations and separate pending Current/Original are retained. Default/small
+combined consumers and existing capability/lease/CAS/recovery guards remain.
+Unsupported sections/stories/cross-scene links and pending-plus-notes refuse.
+The compact retained proof keeps one complete source candidate, finite policy
+and cohort digest; Core independently regenerates the complete plan. Actual
+origin packet plus immutable resources must fit the unchanged20MiB/129 limit
+before journal/business writes; the32MiB artifact bound also remains.
+
+Actual complete unfiltered27 is600of600, zero fail/cancel/skip/todo,
+441.771181s, childRUmax3591143424B under900s/40GB development bounds.
+Root executed the unchanged mandatory TAP evaluator on the full raw log:
+5fe7d8428ce86937db2a6a42aa3de481b1326756f8043aad817abb0e7e5b1dfd.
+Root rehashed3444 current source paths and all73 physical files/444324979B:
+efe9ff21b19aed139dbe6616f2a167f1c5e809f828b7cee1ad5d4790a671ea26.
+Independent full literal4500-paragraph readback matches all44 ordered scenes;
+actual origin packet17921898B and retained packet+receipt17996053B fit20MiB.
+Review d5b234d377c4c75a9c8f637156d81f4e0da946c0bbdf78465a3a742044e7a050.
+The actual23231218B oversized negative refuses atADMIT with zero mutating calls
+and all three protected files exact; full Main four-scene cohort/ACK and seven
+corrupted source proofs are checked by c636d531a84394ee55a93c40bee916111bf894ef0d80ebd29eabf3d169232377.
+Complete actual Main30 covers seven comment mutations/seven no-write replays,
+eleven ordinary chapter Save/fresh Core reopen observations, four manuscript
+note mutations and one private-note update. Full review62da90155ad7044bcb2d806e4fc5f1d0644cc6041d34436833ed24f4969ed5c3.
+Six independent complete raw-XML observations cover full/first/last reexports,
+provisional and final, with complete text/notes/discussions and phase meaning:
+af8ec14f382b7a47d721bf91ec22e311435ff330659a8f873fe8d79a50b6a51e.
+Core/planner regeneration shares product code; raw XML and literal/physical
+byte comparisons supply independent output observations within their scope.
+Handwritten runtime806of1600/test1033of1600; two actual audited compiler runs
+and current136 compiler inputs/two generated artifacts are held. No new UI,
+dependency, runtime network, command, storage schema or writer. Original failed
+baseline/599/reference observers and every raw operand remain retained.
+
+Original macOS500k novel release remains OPEN. Actual current Word-origin500k,
+both native modes/scopes, three roles/five genuine changed Word exchanges,
+chapter UndoRedo and shipping SLO remain unproved. Changed authenticated note
+Apply on novel origin still refuses; its XML-edit contract is synthetic, not
+actual Word execution. Original-to-final note hardBreak run properties lose
+font/size/language/bold; this is independently proven at clean predecessor,
+with literal note text retained. No full formatting-fidelity claim follows.
+Heavy materials are retained in the Yandex test folder; upload is PENDING,
+not cloud-only. No historical crash or monolithic500k Save/Undo replay.
+Root source/operand review7dd7b826af1fb0196ac99148a8ab52936a76856a3c86c259448e20dee249e3c0.
+Required exact mechanical OPS, gates, commit/push/PR/CI/merge/exact-merged proof
+are not yet complete. Candidate source proof is not delivered capability.
+NEXT: complete this delivery chain, then the next actual full-novel gap.
+
 ## 2026-10-08 — fresh-book rich-note correction; source proof complete, delivery pending
 
 PR2099 is fully closed at1fc42de1f3aede0f7eaaeadfddce0e307fb58a53:

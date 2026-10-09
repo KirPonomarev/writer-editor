@@ -4,12 +4,15 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const vm = require('node:vm');
+const crypto = require('node:crypto');
+const v8 = require('node:v8');
 const { pathToFileURL } = require('node:url');
 const { createDocxImportPreviewReferences } = require('../../src/utils/docxImportPreviewReferences');
 const { buildStoredZip, escapeXml } = require('../../src/export/docx/docxMinBuilder');
 const { createEnvelope, validateIpcEnvelope } = require('../../src/core/ipc-envelope-v1.cjs');
 const admission = require('../../src/utils/docxImportSafeCreate');
 const { withRealDocxImportAuthority } = require('../fixtures/docx-import-real-authority.cjs');
+const { parseObservablePayload } = require('../../src/core/document-content-envelope-v1.cjs');
 const root = path.resolve(__dirname, '../..');
 const main = fs.readFileSync(path.join(root, 'src/main.js'), 'utf8');
 const bridge = () => import(pathToFileURL(path.join(root, 'src/io/revisionBridge/index.mjs')).href);
@@ -31,6 +34,14 @@ function section(name) {
   return main.slice(begin, end);
 }
 
+function namedMainFunction(name) {
+  const start = main.indexOf(`async function ${name}(`) >= 0
+    ? main.indexOf(`async function ${name}(`) : main.indexOf(`function ${name}(`);
+  const next = main.slice(start + 1).search(/\n(?:async )?function /u);
+  assert.ok(start >= 0 && next >= 0, name);
+  return main.slice(start, start + 1 + next);
+}
+
 function harness(t, options = {}) {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docx-reference-'));
   t.after(() => fs.rmSync(tempRoot, { recursive: true, force: true }));
@@ -38,6 +49,11 @@ function harness(t, options = {}) {
   const sandbox = {
     Buffer, createDocxImportPreviewReferences, cloneJsonSafe: copy, isPlainObjectValue: record,
     ...admission, currentProjectName: 'A', path, sanitizeFilename: value => value,
+    fs: fs.promises, crypto,
+    mainWindow: { id: 'reference-window' }, activeStage10ApplicationBootstrap: { id: 'reference-bootstrap' },
+    commentAuthoringSessionId: 'reference-session', currentLifecycleSubjectId: () => 'reference-subject',
+    currentFilePath: '', lastSignaledEditGeneration: 0, isDirty: false, activePendingRecording: false, autoSaveInProgress: false,
+    userBookmarkCapability: commandId => assert.equal(commandId, 'cmd.project.docx.importSafeCreate'),
     recoverPendingWriterProjectTransaction: async () => {
       const core = require('../../src/core/project-transaction-v1.cjs');
       const binding = await core.readPendingProjectTransactionBinding({ manifestPath: path.join(sandbox.getProjectRootPath(), 'project.craftsman.json') });
@@ -71,7 +87,8 @@ function harness(t, options = {}) {
   };
   const setter = main.slice(main.indexOf('function setActiveProjectNameFromRoot('), main.indexOf('function makeProjectLifecycleError('));
   const source = ['DOCX_IMPORT_PREVIEW_REFERENCES', 'DOCX_CONTENT_PREVIEW_COMMAND_SURFACE', 'DOCX_IMPORT_PREVIEW_COMMAND_SURFACE', 'DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE'].map(section).join('\n');
-  vm.runInNewContext(source + '\n' + setter + '\nmodule.exports = { handleDocxContentPreviewCommandSurface, handleDocxImportPreviewCommandSurface, handleDocxImportSafeCreateCommandSurface, invalidateDocxImportPreviewReferences, setActiveProjectNameFromRoot };', sandbox);
+  const inventory = ['treeCohortError', 'readTreeCohortPath', 'captureTreeCohortInventory', 'computeHash'].map(namedMainFunction).join('\n');
+  vm.runInNewContext(source + '\n' + setter + '\n' + inventory + '\nmodule.exports = { handleDocxContentPreviewCommandSurface, handleDocxImportPreviewCommandSurface, handleDocxImportSafeCreateCommandSurface, invalidateDocxImportPreviewReferences, setActiveProjectNameFromRoot };', sandbox);
   return { ...sandbox.module.exports, state, sandbox, tempRoot };
 }
 
@@ -141,7 +158,19 @@ test('64-paragraph actual parser and main command chain preserve content through
 test('large admitted plans retain the wire limit and import through a bounded current reference', async t => {
   const port = harness(t);
   const paragraphs = Array.from({ length: 4500 }, (_, index) => `${index}: ${'large bound payload '.repeat(48)}`);
-  const { plan } = await preview(port, paragraphs);
+  const retain = (name, value) => {
+    const directory = process.env.YALKEN_NOVEL_PARTITION_EVIDENCE_DIR;
+    if (directory) { fs.mkdirSync(directory, { recursive: true }); fs.writeFileSync(path.join(directory, `large-reference-${name}.v8`), v8.serialize(value)); }
+  };
+  const { content, plan } = await preview(port, paragraphs);
+  const combined = (await bridge()).buildDocxImportPreviewPlanFromContentPreview(content.docxContentPreviewReport);
+  retain('input', { paragraphs, content, plan, combined });
+  assert.equal(combined.ok, true);
+  assert.equal(combined.candidateCreatePlan.sceneStrategy, 'single-scene');
+  assert.equal(combined.candidateCreatePlan.entryCount, 1);
+  assert.equal(combined.candidateCreatePlan.entries.length, 1);
+  assert.ok(combined.candidateCreatePlan.entries[0].content === paragraphs.join('\n'), 'default combined builder preserves every literal paragraph');
+  assert.equal(plan.docxImportPreviewPlan.candidateCreatePlan.sceneStrategy, 'word-novel-root-partitions');
   const direct = { requestId: 'large-direct', docxImportPreviewPlan: plan.docxImportPreviewPlan };
   assert.ok(JSON.stringify(direct).length > 4 * 1024 * 1024);
   const rejected = await port.handleDocxImportSafeCreateCommandSurface(direct);
@@ -150,14 +179,34 @@ test('large admitted plans retain the wire limit and import through a bounded cu
   const payload = { requestId: 'large-reference', docxImportPreviewRef: plan.docxImportPreviewRef };
   assert.equal(validateIpcEnvelope(createEnvelope('ui:command-bridge', 'cmd.project.docx.importSafeCreate', payload), 'ui:command-bridge').ok, true);
   const result = await port.handleDocxImportSafeCreateCommandSurface(payload);
+  retain('result', { direct, rejected, payload, result, writes: port.state.writes });
   assert.equal(result.safeCreateOk, true, JSON.stringify(result));
   assert.equal(port.state.writes, 1);
   const imported = path.join(port.tempRoot, 'A', 'roman', 'Imported');
   const files = fs.readdirSync(imported).filter(name => name.endsWith('.txt'));
-  assert.equal(files.length, 1);
-  assert.equal(fs.readFileSync(path.join(imported, files[0]), 'utf8'), paragraphs.join('\n'));
+  const scenes = result.receipt.createdScenes;
+  const readback = scenes.map(scene => { const content = fs.readFileSync(path.join(port.tempRoot, 'A', scene.relativeFile), 'utf8');
+    return { scene, content, parsed: parseObservablePayload(content) }; });
+  const commits = scenes.map(scene => { const source = fs.readFileSync(path.join(port.tempRoot, 'A', scene.relativeFile+'.wp201-commit.json'), 'utf8');
+    return { scene, source, record: JSON.parse(source) }; });
+  const packetPath = require('../../src/core/project-transaction-v1.cjs').recoveryPacketPathFor(port.state.binding.manifestPath, commits[0].record.transactionId);
+  const packetBytes = fs.readFileSync(packetPath);
+  retain('readback', { readback, files, commits, packetPath, packetBytes, manifestText: fs.readFileSync(port.state.binding.manifestPath, 'utf8'), result });
+  assert.ok(scenes.length > 1);
+  assert.equal(scenes.length, plan.docxImportPreviewPlan.candidateCreatePlan.entryCount);
+  assert.equal(result.receipt.sceneStrategy, 'word-novel-root-partitions');
+  const orderedFiles = scenes.map(scene => path.basename(scene.relativeFile));
+  assert.equal(new Set(orderedFiles).size, scenes.length, 'no duplicate scene files');
+  assert.deepEqual(files.sort(), orderedFiles.slice().sort(), 'no missing or extra scenes');
+  assert.deepEqual(copy(result.createdSceneIds), scenes.map(scene => scene.sceneId));
+  assert.deepEqual(copy(result.publicSceneLocators), scenes.map(scene => scene.publicSceneLocator));
+  assert.deepEqual(copy(result.publicSceneLocator), copy(result.publicSceneLocators[0]));
+  assert.ok(readback.every(scene => !scene.parsed.issue), 'all canonical scene envelopes parse without loss');
+  assert.ok(readback.map(scene => scene.parsed.text).join('\n') === paragraphs.join('\n'), 'ordered scenes preserve every literal paragraph');
   port.invalidateDocxImportPreviewReferences();
-  assert.equal((await port.handleDocxImportSafeCreateCommandSurface(payload)).ok, false);
+  const invalidated = await port.handleDocxImportSafeCreateCommandSurface(payload);
+  retain('invalidated', { invalidated, writes: port.state.writes });
+  assert.equal(invalidated.ok, false);
   assert.equal(port.state.writes, 1);
 });
 
