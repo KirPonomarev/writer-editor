@@ -15370,7 +15370,7 @@ export const R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
-      "sha256": "a05bff690a1e879b2a8b68b5c218846b0e7cbffdbe873b3ce559e78fddb21b18"
+      "sha256": "a56c4c6b9de1ee81b3ea37d5aa8eceedd0879d7f54fea232fc97bf6568b42f20"
     },
     {
       "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
@@ -15470,7 +15470,7 @@ export const R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
-      "sha256": "78d7c53ad97dadc8ac5c73316706dac1198b2c9e6885960d39a431bf3eab9f95"
+      "sha256": "69441e9a95838111120f88713f2d6ef9eb0342c5af7043dfa346eea661c0f19d"
     },
     {
       "path": "src/utils/docxImportSafeCreate.js",
@@ -15496,7 +15496,7 @@ export const R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "fbba6262167a76e7e834e315aad14bb0cfe0df48e7922999bf01c18912395511"
+      "sha256": "50f40423d477a11942a97e286511e48f3bccac1174614fd1ea542cda3cf26f7b"
     }
   ]
 });

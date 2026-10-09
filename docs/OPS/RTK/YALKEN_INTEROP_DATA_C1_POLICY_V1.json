@@ -1093,7 +1093,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
-        "sha256": "a05bff690a1e879b2a8b68b5c218846b0e7cbffdbe873b3ce559e78fddb21b18"
+        "sha256": "a56c4c6b9de1ee81b3ea37d5aa8eceedd0879d7f54fea232fc97bf6568b42f20"
       },
       {
         "path": "test/unit/rtk-interop-word-volume.test.py",
@@ -2561,15 +2561,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "94c42b22369e4d507e53f97516b6b08071f6fc63c06ca25df058518aa2954fba"
+        "sha256": "f6233c07a80d0199f661f318e2f6f0ce7c756f2e8e388a7ad19c4f86f2d4896c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e3f605a6dacf6d9b52e4b1cd98ae3e57e1c59dabba6bfb20dee7c9af60faa7d2"
+        "sha256": "18609e42d3b102fc11bebccc9f17b3dd51aabf974a8b0d22a989b82fe9a777ab"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "0c52ef81b5f48ee9cac47bc98b3d8d139e064012bd8ec0b841d6eee902f8cf2a"
+        "sha256": "08ae2259898799bdfcfc8823f84d54f563e228e5d340774ce8fb8e6994d531b5"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2825,7 +2825,7 @@
       },
       {
         "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
-        "sha256": "78d7c53ad97dadc8ac5c73316706dac1198b2c9e6885960d39a431bf3eab9f95"
+        "sha256": "69441e9a95838111120f88713f2d6ef9eb0342c5af7043dfa346eea661c0f19d"
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",

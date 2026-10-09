@@ -1,3 +1,41 @@
+## 2026-10-09 — Word-origin novel boundary CI correction; current29 source proof complete
+
+Same existing PR2101 at4ad201aa; delivery base5ca5d936 remains unchanged.
+Official candidate03 full19 terminal:15 succeeded,4 failed; both RTK jobs
+executed4052of4053, solely the old interop16MiB refusal assertion. This is
+retained failed evidence, never green. Candidate04 normal delivery is pending.
+Only the existing interop volume contract changes: exact32MiB snapshot accepts,
+plus one byte refuses; two complete24MiB operands remain at exact48MiB aggregate.
+All5 original tests,500k literal comparison, independent Python reader, IPC,
+forged context and original eviction assertions remain; runtime byte-identical.
+Current unfiltered29:633of633, zero fail/cancel/skip/todo,497.579362375s,
+childRUmax3777413120B/sample2692087808B;900s/40GB bounds not reached.
+Raw TAP8ce57dd6d13d78c9cc0d4f9e7801080984446d22da5d5b8d6f04fd85ae4babb8;
+root unchanged evaluator bb3d9a1c15a08ea1eccf37f7c9f8b63c8e2dffd035b5910d78b7b5edca36ce26.
+Root independently rehashes3444 source inputs,44 scope paths,136 compiler and
+2 generated outputs,81 fresh physical files877350865B and154 prior files.
+All8391 canonical paragraphs retain full attrs/marks/structure/literal over42
+parts, with the default combined one-scene control. Independent stdlib raw
+Word body XML agrees at every paragraph; reviewc6c5a171a0aaae5565398db34db5876dd0e0ff3ed415b30586f2622be0bac30a.
+Current source review796172342d5d00113d5aebcdab0862bb8d273f5fa305e4982b0a5ea20f27b3dd;
+writer postfreeze59a80dadd3dcbc01f13e1ebdc7d6dbde4e7aa2d8ad1bb88e6e773580cbe94bcf.
+Original macOS full-novel release remains OPEN. Read-only actual Core full500k
+packet36709967B refuses E_TREE_COHORT_BUDGET at ADMIT without write calls.
+Genuine Word500k local profile refuses DOCX_GENERIC_NOTES_INCOMPLETE because
+16MiB worker output is too small; the already-existing sibling64MiB option
+preserves all8391 paragraphs,3notes and200threads in a37154288B Core packet.
+That diagnostic is not an executed Main SafeCreate or native acceptance.
+Next product hypothesis is one bounded3-runtime-path full local import outcome:
+typed48MiB original novel packet/journal and one fresh complete cohort query
+removing repeated whole-origin regeneration. Ordinary20MiB resources,32MiB
+latest chapter Save/recovery, all authority and semantic guards stay protected.
+Actual public120s import, both native profiles/scopes, three roles/five changed
+Word exchanges, changed-note Apply, chapter UndoRedo and shipping SLO remain
+unproved; original rich note hardBreak formatting gap also remains.
+Heavy material stays in the local Yandex test folder; remote upload PENDING.
+NEXT: normal commit and same-PR push; all required current CI; merge and clean
+exact-merged relevant repeat. No next product write before chain closure.
+
 ## 2026-10-09 — Word-origin novel capacity corrected; current source proof, delivery pending
 
 Same PR2101 at e095c0df; original delivery base5ca5d936 remains reachable.
