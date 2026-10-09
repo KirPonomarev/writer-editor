@@ -1255,3 +1255,79 @@ test('novel import: typed original and journal above32MiB recover before and aft
   assert.equal(fs.existsSync(journalPath),false);outcomes.push({stage,built,before,error,journal,recovered,after});retain('large-origin-journal-recovery',outcomes);
  }
 });
+
+function observedNovelIntake() {
+ const filename=require.resolve('../../src/utils/docxImportSafeCreate.js'),{Module,createRequire}=require('node:module'),observed=new Module(filename);
+ observed.filename=filename;observed.paths=Module._nodeModulePaths(path.dirname(filename));observed.require=createRequire(filename);
+ let source=readSource(filename);
+ for(const [needle,replacement] of [
+  ['function validateDocxImportPreviewPlan(plan) {','function validateDocxImportPreviewPlan(plan) { if(plan?.candidateCreatePlan?.sceneStrategy===\'word-novel-root-partitions\')actualNovelChecks++;'],
+  ['const expected=model.materializeDocxNovelCandidate(','actualReceiptMaterializations++; const expected=model.materializeDocxNovelCandidate('],
+  ['const cohort=model.planProjectDocxImportCohort(','actualCohortPlans++; const cohort=model.planProjectDocxImportCohort('],
+ ]) {assert.equal(source.split(needle).length,2,'one real observed callsite');source=source.replace(needle,replacement);}
+ observed._compile('let actualNovelChecks=0,actualReceiptMaterializations=0,actualCohortPlans=0;\n'+source+'\nmodule.exports={...module.exports,inspectDocxMediaEntries,actualCounts:()=>({novelChecks:actualNovelChecks,receiptMaterializations:actualReceiptMaterializations,cohortPlans:actualCohortPlans})};',filename);
+ return observed.exports;
+}
+
+test('novel import: one private validated preview survives queued caller mutation without discarding a full materialization',async t=>{
+ const intake=observedNovelIntake(),f=await projectFixture(t,'sealed-preview',{canonicalNotes:true}),source=await tinyPlan(20),original=cloneJsonSafe(source.plan),caller=cloneJsonSafe(original);let queued=false;
+ intake.rememberDocxImportPreviewPlanAdmission(caller);
+ const result=await intake.applyDocxImportSafeCreate({docxImportPreviewPlan:caller},{...f,manifestRaw:textFile(f.manifestPath),importRequestNonce:'sealed-preview',queueDiskOperation:async operation=>{
+  queued=true;caller.candidateCreatePlan.sourceCandidate.content+=' foreign queued source';caller.candidateCreatePlan.entries[0].content+=' foreign queued chapter';return operation();
+ }});
+ assert.equal(queued,true);assert.equal(result.ok,true,JSON.stringify(result.error));
+ assert.equal(result.value.receipt.inputHash,intake.hashDocxImportPreviewPlanForAdmission(original),'publication remains bound to the original admitted preview');
+ const roots=result.value.receipt.createdScenes.flatMap(scene=>envelope.parseObservablePayload(textFile(path.join(f.root,scene.relativeFile))).doc.content);
+ equal(roots,envelope.parseObservablePayload(original.candidateCreatePlan.sourceCandidate.content).doc.content,'every original rich paragraph is preserved despite caller mutation');
+ equal(intake.actualCounts(),{novelChecks:1,receiptMaterializations:1,cohortPlans:1},'actual independent receipt proof remains; preview semantic validation occurs once');
+ const forbidden=cloneJsonSafe(original);forbidden.filePath=undefined;const before=productFiles(f);let entered=false;
+ const rejected=await intake.applyDocxImportSafeCreate({docxImportPreviewPlan:forbidden},{...f,queueDiskOperation:async()=>{entered=true;assert.fail('forbidden field cannot reach the queue');}});
+ assert.equal(rejected.ok,false);assert.equal(rejected.error.code,'DOCX_SAFE_CREATE_PREVIEW_FORBIDDEN_FIELD');assert.equal(entered,false);equal(productFiles(f),before,'validation before cloning preserves the forbidden-undefined refusal');
+ retain('private-preview-owned-once',{original,caller,result,rejected,counts:intake.actualCounts(),files:productFiles(f)});
+});
+
+test('novel import: guarded media bindings include deduplicated existing and missing body, note and story assets',async t=>{
+ const intake=observedNovelIntake(),f=await projectFixture(t,'complete-media'),source=await tinyPlan(20,{story:true}),doc=envelope.parseObservablePayload(source.combined.candidateCreatePlan.entries[0].content).doc;
+ const {createImageAttrs}=require('../../src/io/documentMedia.js'),jpeg=require('../fixtures/document-jpeg-fixtures.cjs'),attrs=['rgb','gray','subsampled'].map(key=>createImageAttrs(jpeg[key])),image=i=>({type:'image',attrs:attrs[i]});
+ doc.content[0].content.push(image(0));doc.content[1].content.push(image(0));doc.attrs.wordStories.stories[0].body.content[0].content.push(image(2));
+ const noteBodies=[{body:{type:'doc',content:[{type:'paragraph',content:[image(1)]}]}}],content=envelope.composeObservablePayload({doc}),existing=path.join(f.root,attrs[0].assetPath);
+ fs.mkdirSync(path.dirname(existing),{recursive:true});fs.writeFileSync(existing,jpeg.rgb);
+ const checked=await intake.inspectDocxMediaEntries(content,f.root,noteBodies);
+ assert.equal(checked.bindings.length,3,'all three story/body/note assets appear once');assert.equal(checked.entries.length,2,'existing exact bytes are reused');
+ equal(checked.bindings.find(binding=>binding.relativePath===attrs[0].assetPath),{relativePath:attrs[0].assetPath,beforeBase64:jpeg.rgb.toString('base64')});
+ for(const a of attrs.slice(1))equal(checked.bindings.find(binding=>binding.relativePath===a.assetPath),{relativePath:a.assetPath,beforeBase64:null});
+ fs.writeFileSync(existing,Buffer.from('foreign bytes'));await assert.rejects(intake.inspectDocxMediaEntries(content,f.root,noteBodies),/^Error: DOCX_MEDIA_EXISTING_BYTES$/);
+ fs.unlinkSync(existing);const outside=path.join(f.root,'outside.jpg');fs.writeFileSync(outside,jpeg.rgb);fs.symlinkSync(outside,existing);
+ await assert.rejects(intake.inspectDocxMediaEntries(content,f.root,noteBodies),/^Error: DOCX_MEDIA_PATH$/);
+ retain('complete-guarded-media-bindings',{attrs,checked,content,noteBodies,files:productFiles(f)});
+});
+
+async function observedNovelPartition(legacy=false) {
+ const filename=require.resolve('../../src/core/project-tree-cohort-v1.mjs'),{pathToFileURL}=require('node:url');
+ const selected='let local = { ...clone({ ...doc, content: roots.slice(rootFrom, rootTo) }), attrs: { ...(clone(doc.attrs || {})) } };',whole='let local = { ...clone(doc), content: clone(roots.slice(rootFrom, rootTo)), attrs: { ...(clone(doc.attrs || {})) } };';
+ let source=readSource(filename);assert.equal(source.split(selected).length,2,'one actual local partition clone');
+ source=source.replace(selected,legacy?whole.replace('clone(doc)','observedLocalClone(doc,doc)'):selected.replace('clone({ ...doc, content: roots.slice(rootFrom, rootTo) })','observedLocalClone({ ...doc, content: roots.slice(rootFrom, rootTo) },doc)'));
+ source=`let actualLocalCopies=[]; const observedLocalClone=(input,source)=>{ const result=clone(input),owned=new Set();
+  const collect=x=>{if(x&&typeof x==='object'){owned.add(x);Object.values(x).forEach(collect);}};collect(source);
+  const check=x=>{if(x&&typeof x==='object'){need(!owned.has(x),'E_TEST_PARTITION_ALIAS');Object.values(x).forEach(check);}};check(result);
+  actualLocalCopies.push(input.content.length);return result;};\n`+source+'\nexport const actualPartitionCopies=()=>actualLocalCopies.slice();\n';
+ source=source.replace(/(from\s+)(['"])(\.{1,2}\/[^'"]+)\2/g,(_,a,q,p)=>a+q+pathToFileURL(path.resolve(path.dirname(filename),p)).href+q);
+ return import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+}
+test('novel import: partition copies only selected roots with deep ownership and byte-identical complete rich cohorts',async t=>{
+ const actual=await observedNovelPartition(),legacy=await observedNovelPartition(true),policy={targetParagraphs:200,targetUtf16:100000},outcomes=[];
+ for(const [label,opts] of [['rich-notes-comments',{}],['bookmarks',{bookmark:true}],['pending',{pendingText:true,notes:false}]]) {
+  const f=await projectFixture(t,'local-clone-'+label,{canonicalNotes:true}),source=await tinyPlan(20,{...opts,inflate:10000},policy),base=await plannedTiny(f,source,'local-'+label),inputBefore=JSON.stringify(base.input);
+  const offset=actual.actualPartitionCopies().length,oldOffset=legacy.actualPartitionCopies().length;
+  const candidate=actual.partitionDocxImportCandidate(source.combined.candidateCreatePlan,source.plan.source.sourceArtifactSha256,policy),prior=legacy.partitionDocxImportCandidate(source.combined.candidateCreatePlan,source.plan.source.sourceArtifactSha256,policy);
+  assert.equal(candidate.entries.length,4);assert.equal(JSON.stringify(candidate),JSON.stringify(prior),'all source/chapter structures, attributes, marks and annotation recipes stay byte-identical');
+  const copied=actual.actualPartitionCopies().slice(offset),oldCopied=legacy.actualPartitionCopies().slice(oldOffset);
+  equal(copied,candidate.entries.map(entry=>entry.partition.rootTo-entry.partition.rootFrom),'actual local clone receives only each selected root interval');
+  assert.ok(copied.reduce((a,b)=>a+b,0)<oldCopied.reduce((a,b)=>a+b,0),'whole-book copies are removed');
+  const cohort=actual.planProjectDocxImportCohort(base.input),oldCohort=legacy.planProjectDocxImportCohort(base.input);
+  assert.equal(JSON.stringify(cohort),JSON.stringify(oldCohort),'entire canonical cohort/receipt/digests retain exact bytes');equal(cohort,base);assert.equal(JSON.stringify(base.input),inputBefore,'caller-owned rich source is unchanged');
+  const admitted=JSON.stringify(candidate);source.combined.candidateCreatePlan.entries[0].content+=' foreign caller mutation';assert.equal(JSON.stringify(candidate),admitted,'immutable candidate is independently owned');
+  outcomes.push({label,copied,oldCopied,candidate,cohort});
+ }
+ retain('selected-root-clone-conservation',outcomes);
+});

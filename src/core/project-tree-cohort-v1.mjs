@@ -102,7 +102,7 @@ export function partitionDocxImportCandidate(candidate, artifactSha256, requeste
   const entries = [];
   for (let i = 0; i < cuts.length-1; i++) {
     const rootFrom = cuts[i], rootTo = cuts[i+1], leafFrom = prefix[rootFrom], leafTo = prefix[rootTo];
-    let local = { ...clone(doc), content: clone(roots.slice(rootFrom, rootTo)), attrs: { ...(clone(doc.attrs || {})) } };
+    let local = { ...clone({ ...doc, content: roots.slice(rootFrom, rootTo) }), attrs: { ...(clone(doc.attrs || {})) } };
     delete local.attrs.wordPendingRevisions; delete local.attrs.wordUserBookmarks; delete local.attrs.wordSections;
     if (registry && i === cuts.length-2) local = sections.bind(local, registry);
     if (marks) {

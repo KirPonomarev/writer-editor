@@ -1,7 +1,7 @@
 TASK_ID: WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009
 MILESTONE: macOS Word-origin large novel; complete local import and independent chapters
 TYPE: CORE
-STATUS: CORRECTED_SOURCE_PROOF_DELIVERY_PENDING
+STATUS: SOURCE_VERIFIED_DELIVERY_IN_PROGRESS
 ROLE: BOUNDED_EXECUTION_TASK
 CLAIM_BOUNDARY: public handler plus real filesystem and lease; native release remains OPEN
 CANON_VERSION: v3.13a-final
@@ -24,11 +24,11 @@ Owner correction: YALKEN_WORD_FINISH_AND_PROCESS_CLEANUP_V1. Remaining user outc
 - Complete required conflicts/replay/recovery and chapter Undo/Redo.
 - Prove fresh macOS SOURCE and ordinary PACKAGED for writer/editor/proofreader, five changed Word rounds and measured operation budgets.
 
-Current blocker: fresh official CI and exact merged delivery remain pending. The test-only source-placement defect is corrected and the default CI environment passes the full portable novel. Next step: finish PR2102 before the changed-note contour. Full feature remains OPEN.
+Current blocker: normal delivery of the corrected PR2102 candidate. Official a5 run37929891767 failed before these source changes; it remains historical. Fresh current source whole29 passes645of645 (48+597), zero fail/cancel/skip/todo; genuine08 actual500108/8391rich/42chapters/3notes/200roots400messages, replay/ACK/reopen/sixCoreSaves and independent full physical body/annotation/sixSave comparisons pass. Actual SafeCreate90.397705291s versus prior07 98.53903475s; full driver618.598772833s versus673.4536s, single observations only. All five handlers retain120s assertions. Root independently rehashed7896 operands/15275021623B and executed unchanged mandatory TAP on both full raw logs. PRE06f3795a2d349f008c7f6eb7263f4e0ce2270ea8ccb803d28481f85980b73a6178, writer terminal05d04b9cac687d69879820847ddf3460b0fe07a6a9cd501b673c858a0b03a506ae and root reviewbe5d77f30093929de61d781268dcfe825a6e3a2f0b01115b557fd564329805a8 bind this source proof. Required gates, fresh CI and exact merged verification are pending. Individual sixSave durations and native release are not proved. Changed-note work starts only after this delivery closes.
 
 ## ARTIFACT
 
-One coherent three-runtime-file import correction and three existing maintained test edits, with exactly17 admitted paths. Root owns this task, factual docs, seven mechanical OPS companions and delivery; the existing separate code writer owns the six source/test paths. No new module, dependency, format/schema version, registry, renderer/compiler/bundle change or command. Rollback remains the exact merged PR2101 basef7eaa746f3f5857809139f2f61b3e3ce07c45e36. Historical detailed task/preflight/proof bytes remain in candidate38 and retained evidence.
+One coherent four-runtime-file import correction and three existing maintained test edits, with exactly18 admitted paths. Root owns this task, factual docs, seven mechanical OPS companions and delivery; the existing separate code writer owns the seven source/test paths. No new module, dependency, format/schema version, registry, renderer/compiler/bundle change or command. Rollback remains the exact merged PR2101 basef7eaa746f3f5857809139f2f61b3e3ce07c45e36. Historical detailed task/preflight/proof bytes remain in candidate38 and retained evidence.
 
 Original source handoff and independent full body/annotation/sixSave oracles completed. Qualified whole29 union642of642 is bound to its own original inputs. Prior genuine06 observes500108 words/8391paragraphs/42chapters/3notes/200roots400messages and106.261553s SafeCreate; this is one actual observation, no native/shipping SLO claim. Original and scope17 clean declarations/preflights/PRE remain preserved; the real Core reference-harness binding is retained. Other5 writer paths remain frozen during the following test-only CI correction.
 
@@ -44,10 +44,24 @@ Fresh default-environment whole3 completes55of55 with zero fail/cancel/skip/todo
 
 After frozen corrected writer handoff, root performs one factual/mechanical pass, inventory/order/fullness and unchanged strict required gates, normal successor commit/push on the same PR, complete fresh official CI, normal merge and exact merged relevant whole3/source/physical verification. No new tracker, duplicate report chain, test framework or unrelated common-tools refactor. The next note-return contour remains blocked until this delivery closes. Native old admission is expired and never authorizes Save/Undo/Apply; fresh exact-build admission remains mandatory.
 
+Supplemental performance correction remains inside this same17-path contour and original delivery basef7. Root clean currenta5 declaration/preflight0 and PRE independently rehash3444 source inputs/136 compiler/2 generated/29 tests/6 writer/17 scope. The existing separate writer must also complete its clean currenta5 declaration/preflight/PRE before any repository edit. Root amends this existing task and actual task E0 passes before writer source edits; root then freezes companions until source handoff.
+
+Hypothesis: utility outer and private in-lease validation repeat the same full novel plan work; the cold-create route fully materializes scenes/notes/comments just to consume resources. Confirm with a tiny actual public Main, real filesystem and real lease using pass-through call counters. Minimal candidate is an invocation-owned validated snapshot before the first await, reused only through private lexical calls, and complete guarded media bindings from the existing media graph. External payload validation precedes normalization; no caller trusted flag/cache. Caller mutation while queued, existing/missing/duplicate media and hostile symlink/wrong bytes must retain safe behavior. Both independently fresh complete Core queries and all120s,20/48/32/129 limits, lease/CAS/context/revision/generation guards stay unchanged. Core and Main remain frozen unless a separately observed blocker requires a declared in-scope amendment.
+
+Proof order is cheap causal before/after and focused negative controls, then the existing pinned genuine500108 public Main/FS/lease import/replay/ACK/reopen/six chapter Saves with complete physical body/notes/comments comparison. Only after that outcome execute the whole29 maintained affected files and required gates. Instrument actual handler wall/RSS inside these necessary runs under the existing900s/40GB owned SIGTERM-only development barrier. Previous source executions stay historical after changed runtime bytes and cannot qualify current behavior; unchanged independent source/oracle operands may be reused at exact hashes. Preserve every failed raw log; no synthetic TAP, repeated blind benchmark, timeout increase or runner/catalog/assertion weakening. Update factual/mechanical companions once at handoff, complete normal successor commit/push/fresh official CI/merge/exact merged verification on PR2102, then start the note-return contour. Fresh native admission and original three-role/five-changed-round release remain OPEN.
+
+
+Supplemental selected-clone correction explicitly expands the SAME import contour17->18 before model write; original f7 delivery base/branch/rollback remain unchanged. Root and separate writer declarations bind exacta5 and actual clean registered a5 preflight witness; target W is DIRTY_OWNED_PRESERVED with exactly the three known task/utility/novel-test changes bound before write, never falsely clean. Writer terminal04 freezes complete genuine07 and644of644/29-file source baseline, which becomes BEFORE MODEL evidence after the following edit.
+
+Actual tiny pure partition counterfactual confirms identical complete candidate and canonical cohort JSON bytes/digests for rich notes/comments, bookmarks and pending fixtures, with unchanged caller inputs. Four partitions copy76 whole-document roots instead of19 selected roots (pending80 instead of20). The single admitted model delta deep-clones {...doc, content: selectedRoots} before the unchanged attrs/registry/projection pipeline; it must retain deep ownership of every non-content field, canonical output/order/digests and all rejection policies. Add meaningful ownership/conservation controls to the existing novel contract. Raw288b46b8a3009f15e1d144379fff95e44688821e4474acf662893bba711f9a01 and all old artifacts remain retained.
+
+After the cheap actual changed-model regression, execute one fresh genuine500108 public Main/FS/lease chain and complete raw Word/body/notes/comments/sixSave comparisons, THEN the full affected29 and mandatory delivery gates. No timing claim from tiny fixtures, no reuse of pre-model current execution, no altered120s assertion/runner/catalog/limits/compiler/bundles or fresh Core query weakening. Root factual/mechanical companions remain frozen until writer handoff.
+
 ## ALLOWLIST
 
 - src/main.js
 - src/core/project-transaction-v1.cjs
+- src/core/project-tree-cohort-v1.mjs
 - src/utils/docxImportSafeCreate.js
 - test/contracts/rtk-word-novel-import-partition.contract.test.js
 - test/unit/word-import-transaction-resources.test.js
@@ -66,7 +80,7 @@ After frozen corrected writer handoff, root performs one factual/mechanical pass
 
 ## DENYLIST
 
-All unlisted paths; specifically local preview utility/parser/library defaults, bridge, project-tree cohort model, renderer, preload, generated bundles, packages/lock, workflows, runner/TAP evaluator, catalog, notes/comments/revision validators and exporter. No private data, native launch, monolithic500k Save/Undo, old crash replay, cross-call memoization/global cache, exposed trusted origin or bypass flag, new storage writer, dependency or runtime network. No silently normalized/dropped paragraph/annotation/formatting. Ordinary media/companions aggregate20MiB, ordinary packet/latest chapter/recovery32MiB, per-scene4MiB, resource count129 and original reference/IPC/ZIP/path/capability/lease/CAS/revision/generation semantics are protected. Native requires a separate fresh exact-build admission after this delivery closes. Preserve all old evidence and canonical/frozen native worktrees.
+All unlisted paths; specifically local preview utility/parser/library defaults, bridge, renderer, preload, generated bundles, packages/lock, workflows, runner/TAP evaluator, catalog, notes/comments/revision validators and exporter. No private data, native launch, monolithic500k Save/Undo, old crash replay, cross-call memoization/global cache, exposed trusted origin or bypass flag, new storage writer, dependency or runtime network. No silently normalized/dropped paragraph/annotation/formatting. Ordinary media/companions aggregate20MiB, ordinary packet/latest chapter/recovery32MiB, per-scene4MiB, resource count129 and original reference/IPC/ZIP/path/capability/lease/CAS/revision/generation semantics are protected. Native requires a separate fresh exact-build admission after this delivery closes. Preserve all old evidence and canonical/frozen native worktrees.
 
 ## CONTRACT / SHAPES
 
@@ -132,7 +146,7 @@ Before success, reread/snapshot every participating origin, immutable import rec
 CHECK_01_PRE_IDENTITY_AND_AUTHORITY: original exact merged base/branch/mount/registry, clean root/writer startup/preflights/PRE full source and compiler/generated bytes, preserved previous delivery and protected evidence. CHECK_01 executes BEFORE any changes; CHECK_02+ execute AFTER.
 CHECK_02_POST_TASK_AND_CAUSAL: actual HARD task E0, complete untouched whole resources baseline and admitted causal full novel capacity refusal without crash reproduction; unchanged raw mandatory evaluator.
 CHECK_03_POST_BEHAVIOR: tiny full semantic/adversarial/race/recovery controls, portable and genuine full public500k durable outcome, real lease/current authority, all42 scene/commit/annotation readbacks, fresh replay, fresh reopen and six chapter Saves. Actual measurements, complete operands and independent root raw-XML comparison required.
-CHECK_04_POST_SCOPE: exactly17-path maximum, runtime a+d<=1800 and tests a+d<=2200 excluding root factual/mechanical files; three runtime/three existing tests only; no compiler/generated/runner/catalog/dependency drift. If a coherent required correction exceeds the budget, root must explicitly amend BEFORE edits; it is never silent scope extension.
+CHECK_04_POST_SCOPE: exactly18-path maximum, runtime a+d<=1800 and tests a+d<=2200 excluding root factual/mechanical files; four runtime/three existing tests only; no compiler/generated/runner/catalog/dependency drift. If a coherent required correction exceeds the budget, root must explicitly amend BEFORE edits; it is never silent scope extension.
 CHECK_05_POST_DELIVERY: whole29 affected union with actual numerator/denominator and zero fail/cancel/skip/todo, task/frozen E0 and40mutants, strict DATA/GOV, inventory/catalog, OSS, actual audit, guardrails, strict doctor; normal commit/push/PR/fresh complete official CI/merge and clean exact-merged relevant full suites. Cheapest sufficient repeat and explicit test-only input mapping are selected before execution; runtime or actual loaded proof-input drift invalidates it.
 
 Affected unfiltered whole test files, exact existing29 denominator:
