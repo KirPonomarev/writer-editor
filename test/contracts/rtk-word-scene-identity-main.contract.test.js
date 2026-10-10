@@ -69,6 +69,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     fullGate:async(source,bytes)=>buildFullManuscriptPublicationGate(source,bytes,await loadRevisionBridgeModule()),
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,reviewLocalFile:handleDocxReviewPreviewSessionLocalFileCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
+    confirmPending:confirmLocalWordPendingReturn,intakeBudgets:docxReviewReturnIntakeProductBudgets,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
     publishReview:publishReviewSceneWithProjectTransaction,
     failAfterReviewPublication() { const original=publishReviewSceneWithProjectTransaction;let armed=true;
@@ -2566,13 +2567,13 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
   state.threads[0].messages.push({commentId:'old-reply',kind:'reply',body:'Existing reply retained',provenance:{author:'Prior reader'}});
   comments.readState(JSON.stringify(state),f.query.projectId);
   const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,JSON.stringify(state));
-  const observed=()=>read(third);mountRenderer(f,observed,0,null,()=>({projectId:f.query.projectId,documentId:thirdNode.nodeId}));f.probe.state({filePath:third,projectName:'Роман'});
+  let observed=read(third);mountRenderer(f,()=>observed,0,null,()=>({projectId:f.query.projectId,documentId:thirdNode.nodeId}),payload=>{observed=payload.content;});f.probe.state({filePath:third,projectName:'Роман'});
   if(process.env.YALKEN_BOOK_SEED_DIR && tamper) {
     fs.mkdirSync(process.env.YALKEN_BOOK_SEED_DIR,{recursive:true});
     fs.writeFileSync(path.join(process.env.YALKEN_BOOK_SEED_DIR,'three-scene-seed.json'),JSON.stringify({schemaVersion:1,kind:'SYNTHETIC_TEST_SEED_NOT_NATIVE_ACCEPTANCE',projectId:f.query.projectId,
       manifest:JSON.parse(read(f.manifestPath)),scenes:paths.map((file,i)=>({sceneId:sceneIds[i],raw:read(file)})),comments:state},null,2));
   }
-  if(beforeExport)await beforeExport({f,paths,sceneIds,docs,third});
+  if(beforeExport)await beforeExport({f,paths,sceneIds,docs,third});observed=read(third);
   const source=await (scope==='scene'?f.probe.sceneSource():f.probe.fullSource()),built=await f.probe.reviewBuild(source);
   assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
   const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts={...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts};
@@ -2596,7 +2597,7 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
   const before=f.capture();let prepared;
   const activated=await f.probe.reviewActivate({requestId:'pending-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;},onPendingReturnPrepared:value=>{prepared=value;}});
   retainSceneCommentReturnEvidence(t,'pending-initial',f,source,built.documentBuffer,bytes,bridge,before,activated,{scope,combined});
-  return {f,paths,docs,source,bridge,bytes,before,activated,prepared,commentPath,state,third};
+  return {f,paths,docs,source,originalBytes:built.documentBuffer,bridge,bytes,before,activated,prepared,commentPath,state,third,diagnostic};
 }
 
 test('actual Main pending decisions and comments commit together, restore after reopen and preserve both exports',async t=>{
@@ -2985,16 +2986,16 @@ for(const plainSibling of [false,true])test('book notes actual Main commits both
  assert.equal(graph.threads.find(t=>t.threadId==='pending-inside').messages.at(-1).body,'One new Word reply');
  const appliedBytes=x.f.capture(),replay=await x.f.probe.reviewActivate({requestId:'book-notes-replay',bufferSource:x.bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
  assert.equal(replay.error?.reason,'RTK_RETURN_INTAKE_STALE_FULL_MANUSCRIPT_SCENE',JSON.stringify(replay));assert.deepEqual(x.f.capture(),appliedBytes);
- const appliedScenes=x.paths.map(read),reopened=await fixture(t,false,'01_Alpha.txt',false,x.f.temp);
+ const appliedScenes=x.paths.map(read),appliedNotes=read(notePath),beforeComments=Buffer.from(x.before.files[path.relative(x.f.root,x.commentPath).split(path.sep).join('/')],'base64').toString(),appliedComments=read(x.commentPath),reopened=await fixture(t,false,'01_Alpha.txt',false,x.f.temp);
  const messages=graph.threads.map(t=>({threadId:t.threadId,messages:t.messages}));
- for(const [i,action] of [[2,'undo'],[0,'undo'],[0,'redo'],[2,'redo']]) {
-  const file=x.paths[i],before=x.paths.map(read),tree=await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'}),node=find(tree.root,i===0?'Alpha':'Gamma');
-  mountRenderer(reopened,()=>read(file),0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}));reopened.probe.state({filePath:file,projectName:'Роман'});
+ for(const [i,action] of [[2,'undo'],[0,'redo'],[0,'undo'],[2,'redo']]) {
+  const file=x.paths[i],tree=await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'}),node=find(tree.root,i===0?'Alpha':'Gamma');let working=read(file);
+  mountRenderer(reopened,()=>working,0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}),payload=>{working=payload.content;});reopened.probe.state({filePath:file,projectName:'Роман'});
   const context=await reopened.probe.pendingContext(),result=await reopened.probe.pendingDecision({projectId:context.projectId,sceneId:context.sceneId,subjectId:context.subjectId,expectedSceneSha256:context.sceneSha256,action});
-  assert.equal(result.ok,true,JSON.stringify(result));for(let j=0;j<3;j++)if(j!==i)assert.equal(read(x.paths[j]),before[j]);
+  assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(x.paths.map(read),action==='undo'?beforeDocs:appliedScenes);assert.equal(read(x.paths[1]),protectedRaw);
   const current=JSON.parse(read(notePath));assert.deepEqual(current.notes.map(n=>n.manuscript.body),originalNotes.notes.map(n=>n.manuscript.body));
-  assert.deepEqual(current.notes[2],originalNotes.notes[2]);assert.deepEqual(JSON.parse(read(x.commentPath)).threads.map(t=>({threadId:t.threadId,messages:t.messages})),messages);
-  if(i===0)assert.deepEqual(current.notes.slice(0,2).map(n=>n.manuscript.reference.offsetUtf16),action==='undo'?[1,3]:[1,1]);
+  assert.deepEqual(current.notes[2],originalNotes.notes[2]);assert.equal(read(notePath),action==='undo'?beforeNotes:appliedNotes);assert.equal(read(x.commentPath),action==='undo'?beforeComments:appliedComments);
+  assert.deepEqual(current.notes.slice(0,2).map(n=>n.manuscript.reference.offsetUtf16),action==='undo'?[1,3]:[1,1]);
   if(action==='redo')assert.equal(read(file),appliedScenes[i]);
  }
  const source=await reopened.probe.fullSource(),built=await reopened.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
@@ -3042,12 +3043,14 @@ test('book notes actual Main admits only inactive tab emission through complete 
  assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
  const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
  const original=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:x.bytes}).parts;
- for(const properties of ['<w:b/>','<w:lang w:val="en-GB"/>','<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>']) {
+ for(const properties of ['<w:b/>']) {
   const parts={...original,'word/footnotes.xml':original['word/footnotes.xml'].replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`)};
   assert.notEqual(parts['word/footnotes.xml'],original['word/footnotes.xml']);
   const result=await x.f.probe.reviewActivate({requestId:'inactive-tab-rich-refusal',bufferSource:pack(parts).toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
   assert.equal(result.pendingProductPath?.code,'PENDING_NOTE_BREAK_CHANGED',JSON.stringify(result));assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
  }
+ for(const [properties,style] of [['<w:lang w:val="en-GB"/>',{wordLanguage:{val:'en-GB'}}],['<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>',{fontFamily:'Arial'}]])
+  await assertSupportedBookBreakReturn(t,properties,style,predecessorFullSourceFactory());
  const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'inactive-tab.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
  const cancelled=await x.f.probe.reviewLocalFile({requestId:'inactive-tab-cancel'},options);
  assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify(cancelled));assert.deepEqual(x.f.capture(),before);assert.equal(read(notePath),beforeNotes);
@@ -3084,6 +3087,65 @@ for(const corrupt of ['raw source','malformed envelope','after bytes'])test('boo
  assert.deepEqual(x.f.capture(),before);assert.equal(read(x.paths[1]),Buffer.from(before.files[path.relative(x.f.root,x.paths[1])],'base64').toString());
 });
 
+function emittedFixtureNoteBody(body,emission) {
+ const expected=structuredClone(body),defaults={fontFamily:emission.fontFamily,fontSize:emission.fontSize,wordLanguage:emission.wordLanguage};
+ for(const p of expected.content){
+  p.attrs={textAlign:'left',...p.attrs,wordParagraphSpacing:{...emission.paragraphSpacing,...p.attrs?.wordParagraphSpacing},wordParagraphMarkLanguage:{...emission.wordLanguage,...p.attrs?.wordParagraphMarkLanguage}};
+  for(const run of p.content){const marks=structuredClone(run.marks||[]),style=marks.find(m=>m.type==='textStyle'),authored=style?.attrs||{};
+   if(style)style.attrs={...defaults,...authored,wordLanguage:{...defaults.wordLanguage,...authored.wordLanguage}};else marks.push({type:'textStyle',attrs:structuredClone(defaults)});run.marks=marks;}
+ }return expected;
+}
+async function assertSupportedBookBreakReturn(t,properties,style,sourceFactory=null){
+ const cleanups=[],owned={name:t.name+' '+properties,after:fn=>cleanups.push(fn)};
+ try{
+  const {x,notePath}=await composedNotesMainFixture(owned,{sourceFactory}),before=x.f.capture(),beforeNotes=JSON.parse(read(notePath)),sceneBefore=x.paths.map(read),commentBefore=read(x.commentPath);
+  const emission=x.source.documentNotes.breakEmission,expected=emittedFixtureNoteBody(beforeNotes.notes[0].manuscript.body,emission),line=expected.content[0].content.find(n=>n.type==='hardBreak'),run=line.marks.find(m=>m.type==='textStyle');
+  run.attrs={...run.attrs,...style,...(style.wordLanguage?{wordLanguage:{...run.attrs.wordLanguage,...style.wordLanguage}}:{})};
+  const parts=x.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:x.originalBytes}).parts,original=parts['word/footnotes.xml'];
+  parts['word/footnotes.xml']=original.replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`);assert.notEqual(parts['word/footnotes.xml'],original,properties);
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':value&&typeof value==='object'?'{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stable(value[k])).join(',')+'}':JSON.stringify(value),
+   cryptoPort={sha256Text:value=>'sha256:'+sha(value),sha256Json:value=>'sha256:'+sha(stable(value)),byteLength:value=>Buffer.byteLength(value)},analysis=x.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort}),returnedNotes=x.bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true});
+  const emittedBefore=beforeNotes.notes.map(note=>emittedFixtureNoteBody(note.manuscript.body,emission));emittedBefore[0]=expected;assert.deepEqual(returnedNotes.map(note=>note.body),emittedBefore,'complete BEFORE-derived Word note meanings '+properties);
+  const expectedReference=structuredClone(beforeNotes.notes[0].manuscript.reference),options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'supported-line.docx'),size:bytes.length}),readLocalFileBytes:async()=>bytes},kernel=x.f.probe.observeKernelResults();cleanups.push(()=>kernel.restore());
+  const physical=()=>Object.fromEntries(fs.readdirSync(x.f.root,{recursive:true}).filter(name=>!name.startsWith('.test-authority/')&&fs.statSync(path.join(x.f.root,name)).isFile()).sort().map(name=>[name,sha(fs.readFileSync(path.join(x.f.root,name)))])),beforePhysical=physical();
+  const cancelled=await x.f.probe.reviewLocalFile({requestId:'supported-line-cancel'},options);assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify({properties,cancelled}));assert.equal(kernel.results.length,0);assert.deepEqual(x.f.capture(),before);assert.deepEqual(physical(),beforePhysical,'Cancel writes no business files or recovery packets');
+  const clockBefore=Date.now();x.f.chooseMessageResponse(1);const applied=await x.f.probe.reviewLocalFile({requestId:'supported-line-apply'},options);assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify({properties,applied}));assert.equal(kernel.results.length,1);assert.equal(kernel.results[0].ok,true,JSON.stringify(kernel.results));assert.deepEqual(kernel.failures,[]);
+  assert.deepEqual(x.paths.map(read),sceneBefore);assert.equal(read(x.commentPath),commentBefore);
+  const tx=require('../../src/core/project-transaction-v1.cjs'),tree=await tx.readVerifiedProjectTreeMutation({manifestPath:x.f.manifestPath,projectId:x.f.query.projectId}),proof=JSON.parse(tree.retainedPacket.plan.input.returnProofJson);assert.equal(proof.schemaVersion,5);assert.deepEqual(proof.noteContext.baseline,x.source.documentNotes);assert.deepEqual(proof.noteContext.returnedNotes,returnedNotes);assert.ok(Date.parse(proof.now)>=clockBefore&&Date.parse(proof.now)<=Date.now());
+  const wanted=structuredClone(beforeNotes);wanted.notes[0].manuscript.body=expected;wanted.notes[0].updatedAtUtc=proof.now;assert.deepEqual(wanted.notes[0].manuscript.reference,expectedReference);
+  const changes=[{noteId:beforeNotes.notes[0].id,operation:'update',before:beforeNotes.notes[0].manuscript,after:wanted.notes[0].manuscript}];
+  wanted.wordNoteReturnReceipts=[...(beforeNotes.wordNoteReturnReceipts||[]),{operationId:'word-note-return-'+sha(proof.roundId+'\n'+proof.artifactSha256),inputDigest:sha(stable({projectId:x.f.query.projectId,roundId:proof.roundId,artifactSha256:proof.artifactSha256,baseline:sha(stable(beforeNotes)),returnedNotes})),resultDigest:sha(stable({...wanted,wordNoteReturnReceipts:[]})),roundId:proof.roundId,artifactSha256:proof.artifactSha256,changes}];
+  assert.deepEqual(JSON.parse(read(notePath)),wanted,'complete canonical notes identities references private metadata clocks and receipt');
+  const packetPath=tx.recoveryPacketPathFor(x.f.manifestPath,tree.receipt.transactionId),packetDir=path.dirname(packetPath),packetAdditions=Object.keys(physical()).filter(name=>path.dirname(path.join(x.f.root,name))===packetDir&&!Object.hasOwn(beforePhysical,name));assert.deepEqual(packetAdditions,[path.relative(x.f.root,packetPath)]);assert.equal(fs.existsSync(tx.journalPathFor(x.f.manifestPath)),false);
+  const afterPhysical=physical();for(const [name,digest]of Object.entries(beforePhysical))if(name!==path.relative(x.f.root,notePath)&&!name.endsWith('.wp201-commit.json')&&name!=='project.craftsman.json')assert.equal(afterPhysical[name],digest,'protected full file '+name);
+  retainSceneCommentReturnEvidence(owned,'supported-line-applied',x.f,x.source,x.originalBytes,bytes,x.bridge,before,applied,{properties,style,expectedBody:expected,expectedNotes:wanted,sourceNotes:beforeNotes,returnedNotes,tree,kernelResults:kernel.results,cancelled,beforePhysical,afterPhysical});
+  const reopened=await fixture(owned,false,'01_Alpha.txt',false,x.f.temp);let working=read(x.third);const node=find((await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'})).root,'Gamma');
+  mountRenderer(reopened,()=>working,0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}),payload=>{working=payload.content;});reopened.probe.state({filePath:x.third,projectName:'Роман'});
+  const source=await reopened.probe.fullSource(),built=await reopened.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify({properties,gate:built.publicationGate}));
+  for(const binding of source.documentNotes.sourceBindings)assert.deepEqual(binding.richBody,wanted.notes.find(note=>note.id===binding.noteId).manuscript.body);
+  const reanalysis=x.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:built.documentBuffer},{cryptoPort}),reparsed=x.bridge.parseDocumentNotesRichReturn(built.documentBuffer,reanalysis.reviewIr.documentNotes,{includeBreakProjection:true});
+  assert.deepEqual(reparsed.map(note=>note.body),wanted.notes.map(note=>emittedFixtureNoteBody(note.manuscript.body,source.documentNotes.breakEmission)));assert.deepEqual(JSON.parse(read(notePath)),wanted);assert.deepEqual(x.paths.map(read),sceneBefore);assert.equal(read(x.commentPath),commentBefore);assert.deepEqual(physical(),afterPhysical);
+  retainSceneCommentReturnEvidence(owned,'supported-line-reopened-reexport',reopened,source,built.documentBuffer,built.documentBuffer,x.bridge,before,{gate:built.publicationGate},{properties,expectedNotes:wanted,reparsed,kernelResults:kernel.results});
+ }finally{for(const cleanup of cleanups.reverse())await cleanup();}
+}
+test('actual Main atomic confirmation includes complete note and joint deltas and refuses empty malformed or oversized choices',async t=>{
+ const f=await fixture(t,true);mountRenderer(f,()=>f.source,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const before=JSON.parse(read(path.join(f.root,'notes.craftsman.json'))).notes[0].manuscript,after=structuredClone(before);
+ after.kind='endnote';after.reference.offsetUtf16=3;after.body.content[0].attrs={textAlign:'center',wordParagraphSpacing:{before:40,after:120,line:300,lineRule:'auto'},wordParagraphMarkLanguage:{val:'ru-RU'}};
+ after.body.content[0].content.push({type:'hardBreak',marks:[{type:'bold'},{type:'link',attrs:{href:'https://example.test/note'}},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]});
+ const note={noteId:'note-source',operation:'update',before,after},sceneBefore={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Alpha'}]}]},sceneAfter=structuredClone(sceneBefore);sceneAfter.content[0].content[0].text+=' Writer';
+ const oldThread={threadId:'discussion',status:'open',anchor:{sceneParagraphIndex:0,selectedText:'Alpha'},messages:[{commentId:'root',body:'Discussion before',provenance:{author:'Editor'}}]},nextThread=structuredClone(oldThread);nextThread.messages[0].body='Discussion after';
+ const delta={scenes:[{sceneId:path.relative(f.root,f.alpha),before:sceneBefore,after:sceneAfter}],notes:[note],commentsBefore:[oldThread],comments:[nextThread],commentChanges:[{threadId:'discussion'}]};
+ const physical=()=>Object.fromEntries(fs.readdirSync(f.root,{recursive:true}).filter(name=>fs.statSync(path.join(f.root,name)).isFile()).sort().map(name=>[name,sha(fs.readFileSync(path.join(f.root,name)))])),initial=physical();
+ assert.equal(await f.probe.confirmPending({fileName:'Joint Word return',changes:delta}),false);
+ const choice=f.pendingConfirmations.at(-1);assert.equal(f.pendingConfirmations.length,1);for(const text of ['Writer','Discussion before','Discussion after','Сноска → Концевая сноска','Перенос строки (line): полужирное','Georgia','14pt','ru-RU','ja-JP','he-IL','wordParagraphSpacing','120','https://example.test/note'])assert.ok(choice.detail.includes(text),text);
+ assert.equal(choice.detail.includes(before.reference.sourceTextSha256),false,'integrity hashes stay in proof, not the writer choice');assert.deepEqual(physical(),initial);
+ assert.equal(await f.probe.confirmPending({fileName:'Note-only Word return',changes:{scenes:[],notes:[note],commentChanges:[]}}),false);assert.match(f.pendingConfirmations.at(-1).detail,/Изменённых сцен: 0/u);assert.deepEqual(physical(),initial);
+ const invalid=[{scenes:[],notes:[],commentChanges:[]},{scenes:[],notes:{length:1}},{scenes:[],commentChanges:{length:1}},{scenes:[],commentChanges:[{threadId:'missing'}],commentsBefore:[],comments:[]},
+  {scenes:[],notes:[{...note,after:{...after,reference:{...after.reference,offsetUtf16:-1}}}]},{scenes:[],notes:[{...note,after:{...after,body:{type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak',marks:null}]}]}}}]}];
+ const huge=structuredClone(note);huge.after.body.content[0].content=[{type:'text',text:'x'.repeat(17000)}];huge.before.body.content[0].content=[{type:'text',text:'y'.repeat(17000)}];invalid.push({scenes:[],notes:[huge]});
+ for(const changes of invalid){const count=f.pendingConfirmations.length;await assert.rejects(f.probe.confirmPending({fileName:'Invalid Word return',changes}));assert.equal(f.pendingConfirmations.length,count);assert.deepEqual(physical(),initial);}
+});
 test('book notes actual Main retains real ZIP break evidence and refuses altered formatting before publication or write',async t=>{
  const {x,originalNotes}=await composedNotesMainFixture(t),built=await x.f.probe.reviewBuild(x.source),before=x.f.capture();
  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
@@ -3095,18 +3157,29 @@ test('book notes actual Main retains real ZIP break evidence and refuses altered
   const original=parts['word/footnotes.xml'];parts['word/footnotes.xml']=original.replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`);
   assert.notEqual(parts['word/footnotes.xml'],original,'actual note break ZIP mutation');return pack(parts);
  };
+ const observations=[];
  for(const properties of ['<w:b w:val="1"/>','<w:color w:val="FF0000"/>','<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>',
   ...['val','eastAsia','bidi'].map(field=>`<w:lang w:${field}="en-GB"/>`)]) {
   const gate=await x.f.probe.fullGate(x.source,mutate(built.documentBuffer,properties));
-  assert.equal(gate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(gate.reason,'PENDING_NOTE_BREAK_CHANGED');
-  const rejected=await x.f.probe.reviewActivate({requestId:'book-note-break-corruption',bufferSource:mutate(x.bytes,properties).toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
-  assert.equal(rejected.pendingProductPath?.status,'blocked',JSON.stringify(rejected));assert.equal(rejected.pendingProductPath?.code,'PENDING_NOTE_BREAK_CHANGED');
-  assert.deepEqual(x.f.capture(),before,'no canonical writes on corrupted real note break');
+  const bytes=mutate(x.bytes,properties),preview=x.bridge.buildDocxContentPreviewFromZipBytes({bytes,budgets:x.f.probe.intakeBudgets()}),readback=x.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:value=>'sha256:'+sha(value),sha256Json:value=>'sha256:'+sha(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)}});
+  let parsedNotes;try{parsedNotes={ok:true,notes:x.bridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes,{includeBreakProjection:true})};}catch(error){parsedNotes={ok:false,code:error.code||error.message};}
+  const rejected=await x.f.probe.reviewActivate({requestId:'book-note-break-corruption-'+observations.length,bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+  const observation={properties,gate,preview,parsedNotes,activation:rejected,capture:x.f.capture(),sourceNotes:originalNotes,signedBaseline:x.source.documentNotes,
+   sourceBodyHashes:originalNotes.notes.map(note=>({noteId:note.id,sha256:sha(JSON.stringify(note.manuscript.body))})),returnedBodyHashes:parsedNotes.ok?parsedNotes.notes.map(note=>({transportIdentity:note.transportIdentity,sha256:sha(JSON.stringify(note.body))})):null};
+  observations.push(observation);retainSceneCommentReturnEvidence(t,'break-vector-'+observations.length,x.f,x.source,built.documentBuffer,bytes,x.bridge,before,rejected,observation);
+  console.log('BOOK_NOTE_BREAK_VECTOR '+JSON.stringify({properties,sourceTypography:x.source.localAuthorityCapsule.exportMap.exportTypography.schemaVersion,sourceBodyHashes:observation.sourceBodyHashes,returnedBodyHashes:observation.returnedBodyHashes,
+   previewOk:preview.ok,previewCode:preview.code,pendingDocumentPresent:!!preview.contentPreview?.pendingRevisionDocument,parsedNotesOk:parsedNotes.ok,parsedNotesCode:parsedNotes.code,activation:rejected}));
+ }
+ for(const {properties,gate,capture} of observations){
+  assert.equal(gate.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',properties);assert.equal(gate.reason,'PENDING_NOTE_BREAK_CHANGED',properties);
+  assert.deepEqual(capture,before,'no canonical writes on corrupted real note break '+properties);
  }
  const bytes=mutate(x.source.provisionalSelfParseArtifact.bytes,'<w:b w:val="1"/>'),source={...x.source,
   provisionalSelfParseArtifact:{...x.source.provisionalSelfParseArtifact,bytes},advisoryManifest:{...x.source.advisoryManifest,coreManifest:structuredClone(x.source.advisoryManifest.coreManifest)}};
  source.advisoryManifest.coreManifest.artifactIdentities.provisionalDocxSha256='sha256:'+sha(bytes);
  const gate=await x.f.probe.fullGate(source,built.documentBuffer);assert.equal(gate.reason,'PENDING_NOTE_BREAK_CHANGED');assert.deepEqual(x.f.capture(),before);
+ for(const {properties,activation} of observations){if(properties.startsWith('<w:b ')){assert.equal(activation.pendingProductPath?.status,'blocked',JSON.stringify({properties,activation}));assert.equal(activation.pendingProductPath?.code,'PENDING_NOTE_BREAK_CHANGED',properties);}else assert.equal(activation.pendingProductPath?.status,'preview-ready',JSON.stringify({properties,activation}));}
+ for(const [properties,style]of [['<w:color w:val="FF0000"/>',{color:'#ff0000'}],['<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>',{fontFamily:'Arial'}],...['val','eastAsia','bidi'].map(field=>[`<w:lang w:${field}="en-GB"/>`,{wordLanguage:{[field]:'en-GB'}}])])await assertSupportedBookBreakReturn(t,properties,style);
 });
 
 test('book notes publication uses exact local emitted defaults and authored overrides, refusing every run language field and font corruption',async t=>{
@@ -3466,7 +3539,7 @@ test('v3 replacement publication refuses actual span provenance format move boun
   console.log('REPLACEMENT_REFUSAL '+JSON.stringify({phase,name,code:gate.code,reason:gate.reason,canonicalBytesExact:JSON.stringify(x.f.capture())===JSON.stringify(before)}));
  }
 });
-for(const change of ['text','font','spacing','quote indent','list continuation indent','note'])test(`v3 original comment-only Main refuses changed ${change} without writes`,async t=>{
+for(const change of ['text','font','spacing','quote indent','list continuation indent','note'])test(`v3 original comment-only Main ${change==='note'?'applies supported changed':'refuses changed'} ${change} ${change==='note'?'through typed atomic return':'without writes'}`,async t=>{
  const x=await protectedNoteCommentFixture(t,parts=>{
   if(change==='note'){const before=parts['word/footnotes.xml'];parts['word/footnotes.xml']=before.replace('Protected note kept','Protected note changed');assert.notEqual(parts['word/footnotes.xml'],before);return;}
   const paragraphs=[...parts['word/document.xml'].matchAll(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu)].map(match=>match[0]);
@@ -3478,8 +3551,38 @@ for(const change of ['text','font','spacing','quote indent','list continuation i
   assert.notEqual(changed,original,'actual owned Word property changed');parts['word/document.xml']=parts['word/document.xml'].replace(original,changed);
  });
  if(change==='note'){
-  assert.equal(x.activated.activated,false,JSON.stringify(x.activated));assert.equal(x.activated.pendingProductPath?.status,'blocked');
-  assert.equal(x.activated.pendingProductPath.code,'PENDING_NOTE_BREAK_CHANGED');
+  assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);assert.deepEqual(x.f.capture(),x.before);
+  const notePath=path.join(x.f.root,'notes.craftsman.json'),before=JSON.parse(read(notePath)),expected=emittedFixtureNoteBody(before.notes[0].manuscript.body,x.source.documentNotes.breakEmission);
+  expected.content[0].content[0].text='Protected note changed';
+  const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(x.f.temp,'changed-note.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
+  const kernel=x.f.probe.observeKernelResults();t.after(()=>kernel.restore());const sceneBefore=x.paths.map(read),commentsBefore=JSON.parse(read(x.commentPath));
+  const returnedNotes=x.bridge.parseDocumentNotesRichReturn(x.bytes,x.diagnostic.reviewIr.documentNotes,{includeBreakProjection:true});assert.deepEqual(returnedNotes[0].body,expected);
+  const cancelled=await x.f.probe.reviewLocalFile({requestId:'changed-note-cancel'},options);assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify(cancelled));assert.deepEqual(x.f.capture(),x.before);assert.equal(kernel.results.length,0);
+  const choice=x.f.pendingConfirmations.at(-1);assert.equal(choice.message,'Применить все перечисленные изменения?');for(const text of ['Protected note kept','Protected note changed','One new Word reply','Сноска','12pt'])assert.ok(choice.detail.includes(text),text);
+  x.f.chooseMessageResponse(1);const applied=await x.f.probe.reviewLocalFile({requestId:'changed-note-apply'},options);assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));
+  assert.equal(kernel.results.length,1);assert.equal(kernel.results[0].ok,true,JSON.stringify(kernel.results));assert.deepEqual(kernel.failures,[]);assert.deepEqual(x.paths.map(read),sceneBefore);
+  const after=JSON.parse(read(notePath));assert.deepEqual(after.notes[0].manuscript.body,expected);assert.equal(after.notes[0].body,'Protected note changed');assert.deepEqual(after.notes[0].manuscript.reference,before.notes[0].manuscript.reference);
+  const tree=await require('../../src/core/project-transaction-v1.cjs').readVerifiedProjectTreeMutation({manifestPath:x.f.manifestPath,projectId:x.f.query.projectId}),proof=JSON.parse(tree.retainedPacket.plan.input.returnProofJson);assert.equal(proof.schemaVersion,5);
+  retainSceneCommentReturnEvidence(t,'changed-note-applied',x.f,x.source,x.originalBytes,x.bytes,x.bridge,x.before,applied,{expectedBody:expected,tree,kernelResults:kernel.results,confirmation:x.f.pendingConfirmations.at(-1)});
+  assert.deepEqual(proof.noteContext.baseline,x.source.documentNotes);assert.deepEqual(proof.noteContext.returnedNotes,returnedNotes);
+  const stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':value&&typeof value==='object'?'{'+Object.keys(value).sort().map(key=>JSON.stringify(key)+':'+stable(value[key])).join(',')+'}':JSON.stringify(value);
+  const wanted=structuredClone(before);wanted.notes[0].body='Protected note changed';wanted.notes[0].manuscript.body=expected;wanted.notes[0].updatedAtUtc=proof.now;
+  const changes=[{noteId:before.notes[0].id,operation:'update',before:before.notes[0].manuscript,after:wanted.notes[0].manuscript}];
+  wanted.wordNoteReturnReceipts=[...(before.wordNoteReturnReceipts||[]),{operationId:'word-note-return-'+sha(proof.roundId+'\n'+proof.artifactSha256),
+   inputDigest:sha(stable({projectId:x.f.query.projectId,roundId:proof.roundId,artifactSha256:proof.artifactSha256,baseline:sha(stable(before)),returnedNotes})),
+   resultDigest:sha(stable({...wanted,wordNoteReturnReceipts:[]})),roundId:proof.roundId,artifactSha256:proof.artifactSha256,changes}];assert.deepEqual(after,wanted);
+  const commentsAfter=JSON.parse(read(x.commentPath)),oldThread=commentsBefore.threads.find(t=>t.threadId==='pending-inside'),newThread=commentsAfter.threads.find(t=>t.threadId===oldThread.threadId),oldCount=oldThread.messages.length;
+  assert.equal(commentsAfter.schemaVersion,'yalken.rtk.word.non-text-return-state.v2');assert.equal(commentsAfter.projectId,commentsBefore.projectId);assert.deepEqual(Object.keys(commentsAfter).sort(),Object.keys(commentsBefore).sort());for(const key of Object.keys(commentsBefore))if(!['schemaVersion','revision','events','threads'].includes(key))assert.deepEqual(commentsAfter[key],commentsBefore[key]);
+  const expectedThread=structuredClone(oldThread),rawReply=x.diagnostic.reviewIr.commentThreads.flatMap(thread=>thread.replies||[]).find(reply=>reply.durableId==='EB012345');assert.ok(rawReply);assert.equal(rawReply.body,'One new Word reply');assert.equal(rawReply.author,'Word reader');
+  const expectedReplyBody={schemaVersion:'yalken.word.comment-body.v1',document:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'One new Word reply',marks:[{type:'textStyle',attrs:{fontSize:'12pt'}}]}]}]}};assert.deepEqual(rawReply.richBody,expectedReplyBody);assert.equal(Object.hasOwn(rawReply,'effectiveRichBody'),false);
+  expectedThread.messages.push({commentId:'word-reply-'+sha(x.f.query.projectId+'\n'+proof.roundId+'\nEB012345'),kind:'reply',body:'One new Word reply',richBody:expectedReplyBody,provenance:{author:'Word reader'}});
+  assert.deepEqual(newThread,expectedThread);for(const thread of commentsBefore.threads.filter(t=>t.threadId!==oldThread.threadId))assert.deepEqual(commentsAfter.threads.find(t=>t.threadId===thread.threadId),thread);
+  assert.equal(commentsAfter.revision,commentsBefore.revision+1);assert.deepEqual(commentsAfter.events.slice(0,-1),commentsBefore.events);const event=commentsAfter.events.at(-1);assert.equal(event.type,'WORD_COMMENT_RETURN_APPLIED');assert.equal(event.roundId,proof.roundId);assert.equal(event.artifactSha256,proof.artifactSha256);assert.equal(event.threadDigest,sha(stable(commentsAfter.threads)));assert.equal(newThread.messages.length,oldCount+1);
+  const reopened=await fixture(t,false,'01_Alpha.txt',false,x.f.temp);assert.deepEqual(JSON.parse(read(notePath)),after);let working=read(x.third);const node=find((await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'})).root,'Gamma');
+  mountRenderer(reopened,()=>working,0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}),payload=>{working=payload.content;});reopened.probe.state({filePath:x.third,projectName:'Роман'});
+  const reexport=await reopened.probe.fullSource(),built=await reopened.probe.reviewBuild(reexport);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  assert.deepEqual(reexport.documentNotes.sourceBindings[0].richBody,expected);const analysis=x.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:built.documentBuffer},{cryptoPort:{sha256Text:value=>'sha256:'+sha(value),sha256Json:value=>'sha256:'+sha(stable(value)),byteLength:value=>Buffer.byteLength(value)}});
+  assert.deepEqual(x.bridge.parseDocumentNotesRichReturn(built.documentBuffer,analysis.reviewIr.documentNotes,{includeBreakProjection:true}).map(note=>note.body),[expected]);assert.deepEqual(JSON.parse(read(notePath)),wanted);assert.deepEqual(JSON.parse(read(x.commentPath)),commentsAfter);assert.deepEqual(x.paths.map(read),sceneBefore);return;
  }else assert.equal(x.activated.ok,false,JSON.stringify(x.activated));
  assert.equal(x.prepared,undefined);assert.deepEqual(x.f.capture(),x.before);
 });

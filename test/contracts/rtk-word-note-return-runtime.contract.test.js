@@ -16,11 +16,12 @@ const helper = sourceMain.slice(sourceMain.indexOf('const authenticatedNoteDelta
 const handler = sourceMain.slice(sourceMain.indexOf('async function handleNotesUpdateCommand('), sourceMain.indexOf('async function handleNotesDeleteCommand('));
 const bus = sourceMain.slice(sourceMain.indexOf('function dispatchMenuCommand('), sourceMain.indexOf('function buildCommandClickHandler('));
 const snapshotNormalizer = sourceMain.slice(sourceMain.indexOf('function normalizeEditorSnapshotPayload('), sourceMain.indexOf('function requestEditorSnapshot('));
-const noteConfirmation = sourceMain.slice(sourceMain.indexOf('async function confirmLocalWordNoteDelta('), sourceMain.indexOf('async function confirmLocalWordCommentDelta('));
+const noteConfirmation = sourceMain.slice(sourceMain.indexOf('function isPlainObjectValue('), sourceMain.indexOf('function normalizeStableProjectId(')) + '\n'
+  + sourceMain.slice(sourceMain.indexOf('function describeLocalWordNoteDelta('), sourceMain.indexOf('async function confirmLocalWordCommentDelta('));
 function confirmationHarness({ response = false, parent = { isDestroyed: () => false }, unavailable = false } = {}) {
   const BrowserWindow = unavailable ? undefined : function OwnedBrowserWindow() {};
   const screen = { ownedDisplay: true }, requests = [];
-  const ctx = vm.createContext({ manuscriptNoteModel: model, mainWindow: parent, BrowserWindow, screen,
+  const ctx = vm.createContext({ Object, require: createRequire(path.join(__dirname, '../../src/main.js')), wordMediaData: require('../../src/io/documentMedia.js'), manuscriptNoteModel: model, mainWindow: parent, BrowserWindow, screen,
     confirmWordReturn: async (request, adapter) => {
       assert.equal(request.parent, parent);
       assert.deepEqual(Object.keys(request).sort(), ['detail', 'message', 'parent', 'title']);
@@ -43,14 +44,14 @@ test('bounded confirmation exposes exact formatting-only changes and refuses an 
   after.body.content[0].content[0].marks = [{ type: 'bold' }, { type: 'italic' }, { type: 'underline' }, { type: 'strike' },
     { type: 'textStyle', attrs: { fontFamily: 'Aptos', fontSize: '10pt', color: '#112233' } },
     { type: 'link', attrs: { href: 'https://example.invalid/exact' } }, { type: 'highlight', attrs: { color: '#ffff00' } }];
-  const input = { fileName: 'return.docx', changes: [{ operation: 'update', before, after }] };
+  const input = { fileName: 'return.docx', changes: [{ noteId: 'note-a', operation: 'update', before, after }] };
   assert.equal(await ctx.confirmLocalWordNoteDelta(input), false);
   const shown = h.requests[0];
   assert.equal(shown.title, 'Сноски из Word'); assert.equal(shown.message, 'Применить изменения сносок?');
   for (const text of ['Оформление до:', 'по левому краю', 'Оформление после:', 'по центру', 'полужирное', 'курсив', 'подчёркивание', 'зачёркивание', 'Aptos', '10pt', '#112233', '#ffff00', 'https://example.invalid/exact']) assert(shown.detail.includes(text), text);
   h.choose(true); assert.equal(await ctx.confirmLocalWordNoteDelta(input), true);
   const huge = JSON.parse(JSON.stringify(after)); huge.body.content[0].content[0].text = 'x'.repeat(20000);
-  await assert.rejects(ctx.confirmLocalWordNoteDelta({ ...input, changes: [{ operation: 'update', before, after: huge }] }), /NOTE_RETURN_PREVIEW_BUDGET/);
+  await assert.rejects(ctx.confirmLocalWordNoteDelta({ ...input, changes: [{ noteId: 'note-a', operation: 'update', before, after: huge }] }), /NOTE_RETURN_PREVIEW_BUDGET/);
   assert.equal(h.requests.length, 2, 'oversized details cannot open a truncated confirmation');
 });
 test('complete note detail includes headers and deletion suffix at the exact 32000-unit boundary', async () => {
@@ -58,11 +59,11 @@ test('complete note detail includes headers and deletion suffix at the exact 320
   const body = text => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
   const before = model.bindManuscriptPayload({ body: body('Before'), kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
   let fileName = 'boundary.docx';
-  const expectedDetail = text => `${fileName}\nИзменений: 1. Удалённых: 0.\n1. Изменить: Сноска → Сноска\nПозиция: roman/a.txt: 0 → roman/a.txt: 0\nТекст: Before\n→ ${text}\nОформление до:\nАбзац 1: по левому краю\n«Before»: обычное, параметры абзаца\nОформление после:\nАбзац 1: по левому краю\n«${text}»: обычное, параметры абзаца\nУдалённые сноски сохранятся с отметкой удаления.`;
+  const expectedDetail = text => `${fileName}\nИзменений: 1. Удалённых: 0.\n1. Изменить: Сноска → Сноска\nПозиция: roman/a.txt: 0 → roman/a.txt: 0\nТекст: Before\n→ ${text}\nОформление до:\nАбзац 1: по левому краю; параметры: {}\n«Before»: обычное, параметры абзаца\nОформление после:\nАбзац 1: по левому краю; параметры: {}\n«${text}»: обычное, параметры абзаца\nУдалённые сноски сохранятся с отметкой удаления.`;
   if ((32000 - expectedDetail('').length) % 2) fileName = 'x' + fileName;
   const text = '<&🧭'.repeat(3000) + 'x'.repeat((32000 - expectedDetail('').length) / 2 - 12000);
   const after = { ...before, body: body(text) };
-  const input = { fileName, changes: [{ operation: 'update', before, after }] };
+  const input = { fileName, changes: [{ noteId: 'note-a', operation: 'update', before, after }] };
   assert.equal(expectedDetail(text).length, 32000);
   assert.equal(await h.ctx.confirmLocalWordNoteDelta(input), true);
   assert.equal(h.requests[0].detail, expectedDetail(text), 'every unit and the complete suffix reach the adapter');
@@ -72,7 +73,7 @@ test('complete note detail includes headers and deletion suffix at the exact 320
 test('note choice requires explicit boolean true and unavailable parents never invoke a choice', async () => {
   const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Note' }] }] };
   const after = model.bindManuscriptPayload({ body, kind: 'footnote', sceneId: 'roman/a.txt', offsetUtf16: 0, sceneContent: 'Text' });
-  const input = { fileName: 'return.docx', changes: [{ operation: 'create', before: null, after }] };
+  const input = { fileName: 'return.docx', changes: [{ noteId: 'note-a', operation: 'create', before: null, after }] };
   const h = confirmationHarness();
   for (const value of [false, undefined, null, 1, 'true', { response: 1 }]) {
     h.choose(value); assert.equal(await h.ctx.confirmLocalWordNoteDelta(input), false);
@@ -130,7 +131,7 @@ async function harness(t) {
     current: true, duringWrite: null, duringPublish: null };
   const context = { projectRoot: root, projectId, reviewTransportAuthorityCapsule: source.localAuthorityCapsule,
     reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: model.sha(bytes), parserResult: parsed } };
-  const sandbox = { Buffer, console, manuscriptNoteModel: model, require: createRequire(path.join(__dirname, '../../src/main.js')), fs: fs.promises, path,
+  const sandbox = { Object, Buffer, console, wordMediaData: require('../../src/io/documentMedia.js'), manuscriptNoteModel: model, require: createRequire(path.join(__dirname, '../../src/main.js')), fs: fs.promises, path,
     activeStage10ApplicationBootstrap: {}, currentLifecycleSubjectId: () => 'life', currentFilePath: scenePath,
     lastSignaledEditGeneration: 0, isDirty: false, autoSaveInProgress: false, notesStateDigest,
     COMMAND_BUS_ROUTE: 'command.bus', evaluateWriterLocalCommandAccess: () => ({ allowed: h.profileAllowed !== false, reason: 'PROFILE_DENIED' }),

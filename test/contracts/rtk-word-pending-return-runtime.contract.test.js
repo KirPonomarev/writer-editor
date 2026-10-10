@@ -714,9 +714,10 @@ function installConfirmationPort(context,onConfirmation) {
     }});
 }
 function confirmationContext(onConfirmation) {
-  const context=vm.createContext({pendingTextRevisions:model,require:require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js'))});
+  const context=vm.createContext({Object,pendingTextRevisions:model,require:require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js'))});
   installConfirmationPort(context,onConfirmation);
-  vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),context);
+  vm.runInContext(main.slice(main.indexOf('function isPlainObjectValue('),main.indexOf('function normalizeStableProjectId('))+'\n'
+    +main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),context);
   return context;
 }
 test('bounded grouped novel confirmation retains all ten scenes, 200 discussions, 400 rich messages and three genuine insertions below 32k',async t=>{

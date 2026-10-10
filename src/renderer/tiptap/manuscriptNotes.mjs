@@ -95,7 +95,9 @@ export function readManuscriptBodyDocument(editor, profile = 'manuscript') {
       return {...node,...(node.content?{content:node.content.map((child,i)=>project(child,[...at,i]))}:{})};
     };
     let doc=canonicalizeDocumentJson(project(raw));if(doc.attrs&&!Object.keys(doc.attrs).length)delete doc.attrs;
+    const rootAttrs=doc.attrs;delete doc.attrs;
     doc=richBody.validateRichBody(doc).body;
+    if(rootAttrs!==undefined)doc.attrs=rootAttrs;
     for(const {at,attrs}of breaks) {
       let owner=doc;for(const i of at.slice(0,-1))owner=owner.content[i];const run=owner.content[at.at(-1)];
       if(run.type!=='text'||run.text!=='\n')throw Error('NOTE_BODY_BREAK');

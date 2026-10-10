@@ -6497,7 +6497,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
   const mappedScenes=capsule?.exportMap?.scenes;
   if(intake?.authenticated!==true || !Array.isArray(mappedScenes) || mappedScenes.length<1
     || mappedScenes.length===1&&capsule.scope!=='full-manuscript'&&!capsule.documentNotes?.sourceBindings?.length) return null;
-  const preview=capsule.documentNotes?.sourceBindings?.length?null:revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
+  let preview=capsule.documentNotes?.sourceBindings?.length?null:revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
   if(!preview?.contentPreview?.pendingRevisionDocument&&!capsule.documentNotes?.sourceBindings?.length) return null;
   try {
     const roundGuard=createDocxReviewRoundAuthorityGuard(capsule);
@@ -6509,6 +6509,10 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
     const authority=await getMainProjectManifestAuthority(),manifestPath=path.join(context.projectRoot,'project.craftsman.json');
     const novel=await readVerifiedNovelAnnotationLineage({scenePath:file,manifestPath,
       verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId})});
+    if(!novel) {
+      preview ||= revisionBridge.buildDocxContentPreviewFromZipBytes({bytes:docxBytes,budgets:docxReviewReturnIntakeProductBudgets({budgets:intake.parserResult?.effectiveBudgets})});
+      if(!preview?.contentPreview?.pendingRevisionDocument)return null;
+    }
     if(mappedScenes.length===1&&capsule.scope!=='full-manuscript'&&!novel)return null;
     if(capsule.projectRoot!==context.projectRoot||capsule.exportMapAuthority!=='main-owned-active-export-authority-store-after-return-authentication'
       ||capsule.returnedArtifactExportMapAccepted!==false||!Buffer.isBuffer(docxBytes)||computeHash(docxBytes)!==intake.returnedArtifactSha256?.replace(/^sha256:/u,''))throw Error('WORD_BOOK_RETURN_AUTHORITY_REQUIRED');
@@ -12339,7 +12343,7 @@ function describeLocalWordPendingReturn({fileName,changes}) {
 // This summary never creates an admission or changes the prepared Apply payload.
 function describeLocalWordPendingReturnDelta({fileName, changes}) {
   const scenes = Array.isArray(changes?.scenes) ? changes.scenes : [{...changes, sceneId:'текущая сцена'}];
-  if (!scenes.length || scenes.length > 512) throw Error('PENDING_RETURN_PREVIEW_INVALID');
+  if (scenes.length > 512 || (!scenes.length && ![changes.notes,changes.commentChanges].some(rows=>Array.isArray(rows)&&rows.length))) throw Error('PENDING_RETURN_PREVIEW_INVALID');
   const lines = [fileName, `Изменённых сцен: ${scenes.length}. Полный сгруппированный перечень изменений.`];
   let length = lines.join('\n').length, semanticCount = 0;
   const append = line => { length += line.length + 1; if(length > 32000)throw Error('PENDING_RETURN_PREVIEW_BUDGET'); lines.push(line); };
@@ -12484,6 +12488,13 @@ function describeLocalWordPendingReturnDelta({fileName, changes}) {
 }
 async function confirmLocalWordPendingReturn({fileName,changes}) {
   if(!mainWindow||mainWindow.isDestroyed())return false;
+  if(changes?.notes!==undefined&&!Array.isArray(changes.notes))throw Error('PENDING_RETURN_PREVIEW_INVALID');
+  for(const key of ['commentChanges','commentsBefore','comments'])if(changes?.[key]!==undefined&&!Array.isArray(changes[key]))throw Error('PENDING_RETURN_PREVIEW_INVALID');
+  for(const change of changes?.commentChanges||[]){
+    if(!isPlainObjectValue(change)||typeof change.threadId!=='string'||!change.threadId
+      ||![...(changes.commentsBefore||[]),...(changes.comments||[])].some(thread=>thread?.threadId===change.threadId))throw Error('PENDING_RETURN_PREVIEW_INVALID');
+  }
+  const noteDetail=changes?.notes?.length?describeLocalWordNoteDelta({fileName,changes:changes.notes}):'';
   let detail,book=Array.isArray(changes?.scenes);
   const sceneChanges=book?changes.scenes:[changes];
   // Cheap shape selection only; the grouped projection still reads validated
@@ -12491,7 +12502,7 @@ async function confirmLocalWordPendingReturn({fileName,changes}) {
   const manyLeaves=doc=>{let count=0;const visit=node=>{if(!node||count>32)return;
     if(['paragraph','heading','codeBlock'].includes(node.type))count++;
     else for(const child of node.content||[])visit(child);};visit(doc?.attrs?.wordPendingRevisions?.source||doc);return count>32;};
-  const large=(changes?.commentChanges?.length||0)>12||(book&&sceneChanges.length>4)||sceneChanges?.some(scene=>manyLeaves(scene?.after));
+  const large=(changes?.commentChanges?.length||0)>12||(book&&(sceneChanges.length===0||sceneChanges.length>4))||sceneChanges?.some(scene=>manyLeaves(scene?.after));
   if(large)detail=describeLocalWordPendingReturnDelta({fileName,changes});
   if(!detail&&book){
     if(changes.scenes.length<1||changes.scenes.length>512)throw Error('PENDING_RETURN_PREVIEW_INVALID');
@@ -12499,14 +12510,24 @@ async function confirmLocalWordPendingReturn({fileName,changes}) {
       changes:{...scene,commentChanges:[],...(index===0?{comments:changes.comments,commentsBefore:changes.commentsBefore,commentChanges:changes.commentChanges}:{})}}));
     detail=fileName+'\nИзменённых сцен: '+changes.scenes.length+'\n'+rows.join('\n\n');
   } else if(!detail) {if(!changes?.before||!changes?.after)return false;detail=describeLocalWordPendingReturn({fileName,changes});}
+  if(noteDetail)detail+='\n\n'+noteDetail;
   if(detail.length>32000)throw Error('PENDING_RETURN_PREVIEW_BUDGET');
   return confirmWordReturn({parent:mainWindow,title:'Исправления из Word',
-    message:book?'Применить возврат Word ко всем перечисленным сценам?':'Применить возврат Word к этой сцене?',
+    message:book?(changes.scenes.length?'Применить возврат Word ко всем перечисленным сценам?':'Применить все перечисленные изменения?'):'Применить возврат Word к этой сцене?',
     detail}, {BrowserWindow,screen});
 }
 
-async function confirmLocalWordNoteDelta({ fileName, changes }) {
-  if (!mainWindow || mainWindow.isDestroyed() || !Array.isArray(changes) || !changes.length) return false;
+function describeLocalWordNoteDelta({ fileName, changes }) {
+  if(!Array.isArray(changes)||!changes.length||changes.length>manuscriptNoteModel.LIMITS.notes)throw Error('NOTE_RETURN_PREVIEW_INVALID');
+  for(const change of changes){
+    if(!isPlainObjectValue(change)||Object.keys(change).some(key=>!['noteId','operation','before','after'].includes(key))
+      ||typeof change.noteId!=='string'||!/^[A-Za-z0-9._:-]{1,128}$/u.test(change.noteId)
+      ||!['create','update','delete'].includes(change.operation)
+      ||(change.operation==='create'?change.before!==null:!change.before)
+      ||(change.operation==='delete'?change.after!==null:!change.after))throw Error('NOTE_RETURN_PREVIEW_INVALID');
+    if(change.before)manuscriptNoteModel.validateManuscriptPayload(change.before);
+    if(change.after)manuscriptNoteModel.validateManuscriptPayload(change.after);
+  }
   const body = value => value ? manuscriptNoteModel.validateNoteBody(value.body).text : '—';
   const formatting = value => {
     if (!value) return '—';
@@ -12528,7 +12549,6 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
         if (table.paragraphIndex === 0 && table.wordCell) location += `Ячейка: предпочтительная ширина ${table.wordCell.widthDxa === undefined ? 'по сетке' : table.wordCell.widthDxa / 20 + ' пт'}; заливка ${fill(table.wordCell.shading)}; границы ${borders(table.wordCell.borders)}.\n`;
       }
       const runs = (paragraph.content || []).map(node => {
-        if (node.type === 'hardBreak') return 'Перенос строки';
         if (node.type === 'image') {
           const size = wordMediaData.imageDisplaySize(node.attrs);
           return `Изображение «${node.attrs.displayName}»: ${node.attrs.width} × ${node.attrs.height} пикселей; размер ${Math.round(size.cx / 36000) / 10} × ${Math.round(size.cy / 36000) / 10} см; описание «${node.attrs.alt}»; отпечаток ${node.attrs.sha256}.`;
@@ -12538,11 +12558,12 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
           if (mark.type === 'link') return [`ссылка: ${mark.attrs.href}`];
           if (mark.type === 'highlight') return [`выделение: ${mark.attrs.color}`];
           return Object.entries(mark.attrs || {}).filter(([, v]) => v != null).map(([key, v]) =>
-            `${({ fontFamily: 'гарнитура', fontSize: 'кегль', color: 'цвет' })[key] || key}: ${v}`);
+            `${({ fontFamily: 'гарнитура', fontSize: 'кегль', color: 'цвет' })[key] || key}: ${typeof v==='object'?JSON.stringify(v):v}`);
         });
+        if(node.type==='hardBreak')return `Перенос строки (${node.attrs?.wordBreakType||'line'}): ${properties.join(', ')||'обычное, параметры абзаца'}`;
         return `«${node.text}»: ${properties.join(', ') || 'обычное, параметры абзаца'}`;
       });
-      return location + `Абзац ${index + 1}${list ? ` · ${list.kind === 'orderedList' ? 'нумерованный' : 'маркированный'} список ${list.numId}, уровень ${list.level + 1}, начало ${list.start}` : ''}: ${alignments[paragraph.attrs?.textAlign || 'left']}\n${runs.join('\n')}`;
+      return location + `Абзац ${index + 1}${list ? ` · ${list.kind === 'orderedList' ? 'нумерованный' : 'маркированный'} список ${list.numId}, уровень ${list.level + 1}, начало ${list.start}` : ''}: ${alignments[paragraph.attrs?.textAlign || 'left']}; параметры: ${JSON.stringify(paragraph.attrs||{})}\n${runs.join('\n')}`;
     }).join('\n');
   };
   const kind = value => value?.kind === 'footnote' ? 'Сноска' : value ? 'Концевая сноска' : '—';
@@ -12553,6 +12574,11 @@ async function confirmLocalWordNoteDelta({ fileName, changes }) {
   // Bound the complete display, including headers and deletion notice, before
   // any choice effect. The caller reports this typed no-write refusal.
   if (detail.length > 32000) throw Error('NOTE_RETURN_PREVIEW_BUDGET');
+  return detail;
+}
+async function confirmLocalWordNoteDelta({ fileName, changes }) {
+  if (!mainWindow || mainWindow.isDestroyed() || !Array.isArray(changes) || !changes.length) return false;
+  const detail=describeLocalWordNoteDelta({fileName,changes});
   return (await confirmWordReturn({ parent: mainWindow, title: 'Сноски из Word',
     message: 'Применить изменения сносок?',
     detail }, { BrowserWindow, screen })) === true;
