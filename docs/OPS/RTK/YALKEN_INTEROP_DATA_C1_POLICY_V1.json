@@ -644,7 +644,8 @@
     "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
     "docs/tasks/2026-10-09--word-novel-atomic-note-return-mac.md",
     "test/contracts/menu-presentation-modes.contract.test.js",
-    "docs/tasks/2026-10-10--mac-normal-quit-novel.md"
+    "docs/tasks/2026-10-10--mac-normal-quit-novel.md",
+    "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md"
   ],
   "protectedFiles": [
     {
@@ -1145,7 +1146,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "7f6c9288ecf2cbb080125ea1e0a29d84436e75c95bf7a2eaa11e8919397b6e67"
+        "sha256": "8651ce6c8cbe19c9060bb3dcb43525b2fa75aadadbf5c7847eb272ad2c9f9f72"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -2053,15 +2054,15 @@
       },
       {
         "path": "src/core/project-tree-cohort-v1.mjs",
-        "sha256": "d8f681513e6db9cd406184d11db516b46c3073a479555df2d683f3d4291c22b4"
+        "sha256": "03117bc9c472b24d41883d33b9b35368cfa5ff345bba040e33ef8d4a4508653e"
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-        "sha256": "58be28eabd365b1b8b54b43fe8bf99b8956150c79bc68a6138d43528ddda367f"
+        "sha256": "9bcd6382148f2ca9194c65f0d1286774a768ed96f4546bdd1d5da7efab3cd2c5"
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "9ec524bed327530700cc55c69e1f1980892a1775d6b4b37341d1d6b12501bfcc"
+        "sha256": "2ae3c2aba7d07d2f1d15d99fda3447e405a84871a431e99bbebc9089cf9f0f3a"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2565,15 +2566,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "eaacd953ba3998dd295d83a81194aa1e2583e6b57990e260550e3b35eac4b515"
+        "sha256": "26f9a1155f9c5e50c23d92b6fb2a74b750fadc1eadaf33dac409f1cc2f21fb78"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e8feadae29e22fff54057e605976dd6c51c24f1be6b0e172b95eeb196fab14a1"
+        "sha256": "b60f2649e440f3e8adc37cb9125e721ea726f9835e7920e477ac85a12f6911c3"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "b8ce3875f785f5ba9a6e12293f07ec9dbe7e16a84454fcf537ad37e6c791bcdd"
+        "sha256": "13b16c4858d90daff618266fed68166b00187b601842900577c1e251f18a9693"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2850,6 +2851,10 @@
       {
         "path": "docs/tasks/2026-10-10--mac-normal-quit-novel.md",
         "sha256": "7d22a56d7b1bc28c333ebe76106ddb5ffff5cba2107799302c910b96e2c80c76"
+      },
+      {
+        "path": "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md",
+        "sha256": "593848711fff4fcae33022eab858cd22a2ba8661250276fe17a3b3e1b8076fd5"
       }
     ],
     "followupRepair": {

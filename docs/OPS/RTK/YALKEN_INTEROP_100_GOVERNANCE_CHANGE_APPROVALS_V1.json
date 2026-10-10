@@ -913,15 +913,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "src/core/project-transaction-v1.cjs",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized complete supported macOS Word-origin500k local import, finite semantic48MiB origin with ordinary20/32 ceilings and TOTAL129 unchanged, invocation-private fresh whole-cohort verification, real atomic filesystem and lease readback/replay/reopen plus six chapter Saves. Separate frozen whole29 source proof and independent complete operands bind this bounded delivery; native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,634 admitted paths,492 source identities,240 byte-identical historical tuples plus one coherent241st set; predicates, runner, catalog, dependencies and generated artifacts unchanged. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs.",
-      "sha256": "7f6c9288ecf2cbb080125ea1e0a29d84436e75c95bf7a2eaa11e8919397b6e67"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
@@ -3639,33 +3630,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "src/core/project-tree-cohort-v1.mjs",
-      "sha256": "d8f681513e6db9cd406184d11db516b46c3073a479555df2d683f3d4291c22b4",
-      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
-      "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized same PR2102 large-novel import correction: immutable invocation-owned validation snapshot, complete guarded media bindings, selected chapter deep-cloning with byte-identical canonical outputs. Fresh genuine500108 public Main/fs/lease/replay/reopen/sixSaves and independent complete raw Word/body/annotation/sixSave oracles;645of645 whole29 source tests. Existing120s/20/48/32/129 limits, bothfreshCorequeries and all authority/race/recovery guards unchanged. SafeCreate90.398s/full618.599s are single source observations, not CI/native/shipping SLO. Scope18, inventory1598, admitted634/source492 and same241st108-binding tuple; prior240 tuples byte-exact. Three-role/five-changed-round native feature remains OPEN; no dependency/runner/catalog/compiler/generated changes. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-      "sha256": "58be28eabd365b1b8b54b43fe8bf99b8956150c79bc68a6138d43528ddda367f",
-      "approvedAtUtc": "2026-10-05T01:56:45.096428Z",
-      "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005",
-      "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: exact root paragraph structural edit provenance and retained comment histories through current authoring, save, Undo/Redo, import/export and explicit authenticated return. Preserve same-cell ownership, revision/lease/CAS, atomic recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "9ec524bed327530700cc55c69e1f1980892a1775d6b4b37341d1d6b12501bfcc",
-      "approvedAtUtc": "2026-10-10T08:00:48.675Z",
-      "approvedBy": "owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_SCENE_CLEAN_RETURN_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_NATIVE_PREVIEW_MAC_20261006|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
-      "rationale": "Owner-authorized macOS novel Word rich-note correction at exact merged1fc42de after full PR2099 closure. Existing finite fresh-book V2 and preserved pending-comment V3, complete body/break/local-map/roster comparison and both-phase publication checks; authored semantics, explicit Kernel authority and legacy controls remain. Exact-byte companions only; preserve630 ordered admissions,488 source identities,1597 inventory paths and238 historical certificate tuples. Append this HARD task to631/489 and one nonrecursive96-binding successor. Full native three-role novel release remains OPEN. Owner-authorized same PR2103 source correction binds ordinary routing, auxiliary root preservation, complete bounded note confirmation and actual isolated VM dependencies. Full50 source proof1485/1485 keeps original seal01/02/03 qualifications; every prior RED, native release and genuine120s failure remains open. Exact1598 inventory/635 admitted paths/493 source bindings and112 current bindings preserve all241 historical tuples. No new product scope, UI composition, dependency, runtime network, driver chain, optimization or limit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
       "sha256": "bb86b2c049d2c3986de62027df75f429d85c699a6bb7a8c4adef8532ddc0fca4",
       "approvedAtUtc": "2026-10-02T04:02:45.302746Z",
@@ -5413,84 +5377,120 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/WORKLOG.md",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "b8ce3875f785f5ba9a6e12293f07ec9dbe7e16a84454fcf537ad37e6c791bcdd"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "eaacd953ba3998dd295d83a81194aa1e2583e6b57990e260550e3b35eac4b515"
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "26f9a1155f9c5e50c23d92b6fb2a74b750fadc1eadaf33dac409f1cc2f21fb78"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "e8feadae29e22fff54057e605976dd6c51c24f1be6b0e172b95eeb196fab14a1"
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "b60f2649e440f3e8adc37cb9125e721ea726f9835e7920e477ac85a12f6911c3"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "788b0d65909b9036da70a77336bc43cb30b92382994f327cafc6b2be8dccab47"
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "0696716abfba00413f8b24662af3e0d3b47a563e1462612b908086e1ae8d4c8d"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "49612674d13b7c6829812d3ed831bac86280907a74e879d4e1dc7385d8209bf6"
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "f69b8141ede387f05b45ae8ca6c4c4726e23e060021674fba4a99c83587da2c1"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "ab95d2842e285ea431d687b9d2c2def28fc00463fb0b8731dd88440ebc26807a"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "c9f7f0bff3dd60051af5a94040e1353ac205dabd41bde48b1b1aaab7a7ac573b"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "54a1e8d5ec7daeb992880fe23ea7348f186a9c634ea669a71998b6ecf1f92d98"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "38dfb6a1b1226abb54ff0689b8e1f881cc1880ebd55b03c92c40cb32ba3822f8"
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "e8797d340f7306b106b5cec4a82042c5aa367bd5c1a16ce661901733d1c12ead"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "eccf1517014f4222afacc9e655d39774456b428a42f493064cb628a867c54ce7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "13b16c4858d90daff618266fed68166b00187b601842900577c1e251f18a9693"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "2966abb133dad6272a65c8892d5682561b4dec7a17007e7bc754096c84d9492f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "18119dd1e11e2029efe049f0a8487247e28ec5c2f7abd78fcc72751d6d6f356a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/core/project-transaction-v1.cjs",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "8651ce6c8cbe19c9060bb3dcb43525b2fa75aadadbf5c7847eb272ad2c9f9f72"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/core/project-tree-cohort-v1.mjs",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "03117bc9c472b24d41883d33b9b35368cfa5ff345bba040e33ef8d4a4508653e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "9bcd6382148f2ca9194c65f0d1286774a768ed96f4546bdd1d5da7efab3cd2c5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T13:36:29.150018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Owner-authorized original macOS large-novel Word feature: bounded complete local schema5/retained6 manuscript envelope correction; all numerical limits, semantics, authentication, Kernel/lease/CAS/recovery, old tests and historical successors remain. Mechanical current inventory/DATA/successor exact-byte bindings only. Source original50 whole maintained files execute1488/1488, all seven mandatory TAP evaluations accept, with no bad statuses/bound termination. Normal delivery, exact merged proof and native role/round matrix remain pending. No R2.4 cell acceptance or release PASS.",
+      "sha256": "2ae3c2aba7d07d2f1d15d99fda3447e405a84871a431e99bbebc9089cf9f0f3a"
     }
   ],
   "evidenceStampIds": [

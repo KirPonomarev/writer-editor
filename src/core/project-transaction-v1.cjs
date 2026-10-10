@@ -2156,6 +2156,29 @@ function isNovelTreePacket(packet) {
 }
 function isNovelWordReturnPacket(packet) {
   const input=packet?.plan?.input,origin=input?.novelOrigin;
+  // Match the pure planner's complete local-manuscript size category. Neither
+  // this predicate nor a retained packet replaces semantic/receipt/CAS checks.
+  const localBook=(candidate,proof)=>candidate?.novelOrigin===undefined&&candidate.history===undefined
+    &&proof?.schemaVersion===5&&proof.projectId===candidate.projectId
+    &&proof.baseline?.projectId===candidate.projectId&&proof.exportMap?.scope==='full-manuscript'
+    &&proof.noteContext?.schemaVersion===2&&proof.noteContext.baseline?.projectId===candidate.projectId
+    &&proof.noteContext.baseline.policy==='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+    &&Array.isArray(candidate.scenes)&&candidate.scenes.length>0&&candidate.scenes.length<=512
+    &&Array.isArray(proof.exportMap.scenes)&&candidate.scenes.length===proof.exportMap.scenes.length
+    &&candidate.scenes.every((scene,i)=>typeof scene?.sceneId==='string'&&scene.sceneId===proof.exportMap.scenes[i]?.sceneId);
+  if(packet?.plan?.kind==='word-mixed-return'&&origin===undefined&&typeof input?.returnProofJson==='string'
+    &&Buffer.byteLength(input.returnProofJson)<=MAX_ARTIFACT_BYTES) {
+    let proof;try{proof=JSON.parse(input.returnProofJson);}catch{return false;}
+    if(localBook(input,proof))return true;
+    const apply=input.history?.applyPacket?.plan;
+    if(proof?.schemaVersion===6&&['undo','redo'].includes(proof.action)&&apply?.kind==='word-mixed-return'
+      &&apply.input?.projectId===input.projectId&&typeof apply.input.returnProofJson==='string'
+      &&Buffer.byteLength(apply.input.returnProofJson)<=MAX_ARTIFACT_BYTES
+      &&Array.isArray(input.scenes)&&Array.isArray(apply.input.scenes)
+      &&input.scenes.length===apply.input.scenes.length&&input.scenes.every((scene,i)=>scene?.sceneId===apply.input.scenes[i]?.sceneId)) {
+      try{if(localBook(apply.input,JSON.parse(apply.input.returnProofJson)))return true;}catch{/* Strict planner refuses below. */}
+    }
+  }
   if(packet?.plan?.kind!=='word-mixed-return'||!origin||Object.keys(origin).sort().join(',')!=='bytes,digest,path'
     ||typeof origin.path!=='string'||!path.isAbsolute(origin.path)||!isDigest(origin.digest)
     ||!Number.isSafeInteger(origin.bytes)||origin.bytes<0||origin.bytes>MAX_NOVEL_ORIGIN_BYTES

@@ -23,6 +23,30 @@ const NOVEL_WORD_RETURN_BYTES=256*1024*1024;
 // proof and Core independently verifies this exact retained import origin.
 function mixedWordInputLimit(input) {
   const origin=input?.novelOrigin;
+  // Size classification is not admission. The full planner below still
+  // regenerates every canonical member; a local manuscript has no import
+  // resource to fabricate merely to receive the same bounded envelope.
+  const localBook=(candidate,proof)=>candidate?.novelOrigin===undefined&&candidate.history===undefined
+    &&proof?.schemaVersion===5&&proof.projectId===candidate.projectId
+    &&proof.baseline?.projectId===candidate.projectId&&proof.exportMap?.scope==='full-manuscript'
+    &&proof.noteContext?.schemaVersion===2&&proof.noteContext.baseline?.projectId===candidate.projectId
+    &&proof.noteContext.baseline.policy==='MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
+    &&Array.isArray(candidate.scenes)&&candidate.scenes.length>0&&candidate.scenes.length<=TREE_COHORT_LIMITS.scenes
+    &&Array.isArray(proof.exportMap.scenes)&&candidate.scenes.length===proof.exportMap.scenes.length
+    &&candidate.scenes.every((scene,i)=>typeof scene?.sceneId==='string'&&scene.sceneId===proof.exportMap.scenes[i]?.sceneId);
+  if(origin===undefined&&typeof input?.returnProofJson==='string'
+    &&Buffer.byteLength(input.returnProofJson)<=TREE_COHORT_LIMITS.bytes) {
+    let proof;try{proof=JSON.parse(input.returnProofJson);}catch{return TREE_COHORT_LIMITS.bytes;}
+    if(localBook(input,proof))return NOVEL_WORD_RETURN_BYTES;
+    const apply=input.history?.applyPacket?.plan;
+    if(proof?.schemaVersion===6&&['undo','redo'].includes(proof.action)&&apply?.kind==='word-mixed-return'
+      &&apply.input?.projectId===input.projectId&&typeof apply.input.returnProofJson==='string'
+      &&Buffer.byteLength(apply.input.returnProofJson)<=TREE_COHORT_LIMITS.bytes
+      &&Array.isArray(input.scenes)&&Array.isArray(apply.input.scenes)
+      &&input.scenes.length===apply.input.scenes.length&&input.scenes.every((scene,i)=>scene?.sceneId===apply.input.scenes[i]?.sceneId)) {
+      try{if(localBook(apply.input,JSON.parse(apply.input.returnProofJson)))return NOVEL_WORD_RETURN_BYTES;}catch{/* Strict planner refuses below. */}
+    }
+  }
   if(!origin||Object.keys(origin).sort().join(',')!=='bytes,digest,path'
     ||typeof origin.path!=='string'||!path.isAbsolute(origin.path)||!/^[a-f0-9]{64}$/u.test(origin.digest)
     ||!Number.isSafeInteger(origin.bytes)||origin.bytes<0||origin.bytes>48*1024*1024
