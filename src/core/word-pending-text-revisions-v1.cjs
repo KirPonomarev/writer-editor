@@ -615,11 +615,20 @@ function preserveReturnedIdentities(before, proposed, paragraphBindings) {
   }
 }
 function asRoundLedger(doc) {
+  inspectLedgerData(doc);
   const existing = readLedger(doc);
   if (existing) return { ...clone(existing), schemaVersion: [3,5].includes(existing.schemaVersion) ? existing.schemaVersion : 2,
     roundUndo: clone(existing.roundUndo || []), roundRedo: clone(existing.roundRedo || []), returnReceipts: clone(existing.returnReceipts || []) };
+  assert(exact(doc, ['type', 'content', 'attrs']) && doc.type === 'doc'
+    && (!Object.hasOwn(doc, 'attrs') || exact(doc.attrs, [KEY, 'wordUserBookmarks', 'wordDefaultTabStop', 'wordSections'])), 'PENDING_RETURN_SOURCE_UNSUPPORTED');
+  if (Object.hasOwn(doc.attrs || {}, KEY)) assert(doc.attrs[KEY] === null, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
+  if (Object.hasOwn(doc.attrs || {}, 'wordUserBookmarks')) assert(doc.attrs.wordUserBookmarks === null, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
+  for (const key of ['wordDefaultTabStop', 'wordSections']) if (Object.hasOwn(doc.attrs || {}, key))
+    assert(doc.attrs[key] !== null && doc.attrs[key] !== undefined, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
+  const root = { ...doc, ...(doc.attrs ? { attrs: { ...doc.attrs } } : {}) };
+  if (root.attrs) { delete root.attrs[KEY]; delete root.attrs.wordUserBookmarks; if (!Object.keys(root.attrs).length) delete root.attrs; }
+  paragraphs(root); // Only the validated editor sentinel is removed before checking the raw recipe.
   const source = normalizeNode(doc);
-  assert(source?.type === 'doc' && !source.attrs, 'PENDING_RETURN_SOURCE_UNSUPPORTED');
   paragraphs(source).forEach(p => { p.content ||= []; });
   return validateLedger({ schemaVersion: 2, source, revisions: [], undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] });
 }
@@ -1150,4 +1159,4 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
 function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
   return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
 }
-module.exports = { formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, readNoteProjectionPair, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { asRoundLedger, formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, readNoteProjectionPair, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

@@ -11119,7 +11119,7 @@ function docxNoteBreakFormat(metadata, run, catalog) {
     ...(properties.font_hint!==undefined?{fontHint:properties.font_hint}:{}),
     ...(color?{color}:{}),...(highlight?{highlight}:{}),...(properties.wordLanguage?{wordLanguage:properties.wordLanguage}:{}),...(metadata.currentHref?{href:metadata.currentHref}:{})};
 }
-function parseDocumentNoteRichBody(bytes, source, note, hyperlinks, includeBreakProjection = false) {
+function parseDocumentNoteRichBody(bytes, source, note, hyperlinks, includeBreakProjection = false, preserveBreakMarks = false) {
   const inlineStyles = docxInlineStyleCatalog(bytes,includeBreakProjection),breaks=includeBreakProjection?[]:null;
   const styles = { ...inlineStyles, hyperlinks };
   const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes),breaks);
@@ -11148,8 +11148,10 @@ function parseDocumentNoteRichBody(bytes, source, note, hyperlinks, includeBreak
   const text = body.contentPreview.paragraphs.map(p => p.text).join('\n');
   if (text !== note.paragraphs.join('\n')) throw Error('DOCX_GENERIC_NOTE_BODY_BINDING');
   if(includeBreakProjection)for(const paragraph of body.contentPreview.paragraphs)docxNoteBreakFormat(paragraph,null,styles);
-  const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs, { allowLegacyAlpha:true });
-  const document=manuscriptNoteModel.validateNoteBody(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(text)).body;
+  const preserveBodyBreakMarks = includeBreakProjection || preserveBreakMarks;
+  const rich = docxInlineCanonicalContent(body.contentPreview.paragraphs, { allowLegacyAlpha:true,
+    preserveCommentBreakMarks:preserveBodyBreakMarks,asDocument:preserveBodyBreakMarks });
+  const document=manuscriptNoteModel.validateNoteBody(rich ? (preserveBodyBreakMarks?rich:parseObservablePayload(rich).doc) : buildParagraphDocumentFromText(text)).body;
   return includeBreakProjection?{body:document,breakProjection:{schemaVersion:1,paragraphCount:body.contentPreview.paragraphs.length,textSha256:sha256Hex(text),breaks}}:document;
 }
 
@@ -11231,8 +11233,8 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
   return includeParts ? {registry, validatedParts, storyMediaParts} : registry;
 }
 
-export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProjection = false } = {}) {
-  if(typeof includeBreakProjection!=='boolean')throw Error('NOTE_BREAK_PROJECTION_INVALID');
+export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProjection = false, preserveBreakMarks = false } = {}) {
+  if(typeof includeBreakProjection!=='boolean'||typeof preserveBreakMarks!=='boolean')throw Error('NOTE_BREAK_PROJECTION_INVALID');
   if (notes == null) return [];
   if (notes.inventoryStatus !== 'COMPLETE' || !Array.isArray(notes.notes) || notes.notes.length > 256
     || notes.notes.length !== notes.references?.length || notes.notes.length !== notes.bodySources?.length) throw Error('NOTE_RETURN_GRAPH_INCOMPLETE');
@@ -11244,7 +11246,7 @@ export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProject
     if (source.transportIdentity && seen.has(source.transportIdentity)) throw Error('NOTE_RETURN_IDENTITY_COLLISION');
     if (source.transportIdentity) seen.add(source.transportIdentity);
     if (!linksByPart.has(source.relationshipPart)) linksByPart.set(source.relationshipPart, docxHyperlinkCatalog(bytes, source.relationshipPart));
-    const parsed=parseDocumentNoteRichBody(bytes,source,note,linksByPart.get(source.relationshipPart),includeBreakProjection);
+    const parsed=parseDocumentNoteRichBody(bytes,source,note,linksByPart.get(source.relationshipPart),includeBreakProjection,preserveBreakMarks);
     return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
       transportIdentity: source.transportIdentity || null, paragraphs: note.paragraphs,
       ...(includeBreakProjection?parsed:{body:parsed}) };
@@ -11382,7 +11384,8 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budget
       // pending wrappers. Admit that representation only for an exact signed
       // zero-span expectation; a missing outstanding revision still refuses.
       const bindings=exportMap.scenes.filter(scene=>scene.pendingCommentBinding).map(scene=>scene.pendingCommentBinding);
-      if(!bindings.length || bindings.some(binding=>!Array.isArray(binding.revisionSpans)||binding.revisionSpans.length))
+      if(!bindings.length&&!baselineDocumentNotes?.sourceBindings?.length
+        || bindings.some(binding=>!Array.isArray(binding.revisionSpans)||binding.revisionSpans.length))
         throw Error('PENDING_COMMENT_LEDGER_REQUIRED');
       const plan=buildDocxImportPreviewPlanFromContentPreview(preview);
       if(!plan.ok || plan.candidateCreatePlan?.entries?.length!==1)throw Error('PENDING_COMMENT_CLEAN_DOCUMENT_INVALID');
@@ -11432,14 +11435,23 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budget
         const children=(node.content||[]).map(slice),present=children.filter(Boolean);
         if(!present.length)return null;
         if(node.type!=='doc'&&present.length!==children.length)throw Error('PENDING_COMMENT_SCENE_OWNER');
-        return {...JSON.parse(JSON.stringify(node)),content:present};
+        return {...JSON.parse(JSON.stringify({...node,content:present})),content:present};
       };
       const source=slice(ledger.source);
       if(sectionsVerified&&bodyProfile?.schemaVersion===bodyTypography.V2) {
         // These exact source blocks passed raw IR and actual effective code
         // style/readback above. DOCX carries no programming-language field.
         const baseline=baselineDocuments.find(item=>item.sceneId===scene.sceneId).document;
-        const before=pendingTextRevisions.paragraphs(pendingTextRevisions.readLedger(baseline)?.source||baseline),actual=pendingTextRevisions.paragraphs(source);
+        let basis=pendingTextRevisions.readLedger(baseline)?.source;
+        if(!basis){
+          basis={...baseline,...(baseline.attrs?{attrs:{...baseline.attrs}}:{})};
+          for(const key of ['wordPendingRevisions','wordUserBookmarks'])if(basis.attrs?.[key]===null)delete basis.attrs[key];
+          for(const key of ['wordDefaultTabStop','wordSections'])if(Object.hasOwn(basis.attrs||{},key)&&basis.attrs[key]==null)throw Error('PENDING_REVISIONS_INVALID');
+          if(Object.hasOwn(basis.attrs||{},'wordDefaultTabStop'))paragraphLayout.normalizeWordDefaultTabStop(basis.attrs.wordDefaultTabStop);
+          if(Object.hasOwn(basis.attrs||{},'wordSections'))wordSections.read(basis);
+          if(basis.attrs&&!Object.keys(basis.attrs).length)delete basis.attrs;
+        }
+        const before=pendingTextRevisions.paragraphs(basis),actual=pendingTextRevisions.paragraphs(source);
         for(const [i,block] of scene.blocks.entries())if(block.formatIr?.paragraph?.nodeType==='codeBlock') {
           if(before[i]?.type!=='codeBlock'||actual[i]?.type!=='codeBlock'||actual[i].attrs?.language!=='')throw Error('WORD_BODY_CODE_SOURCE_BINDING');
           actual[i].attrs={...actual[i].attrs};delete actual[i].attrs.language;
@@ -11468,7 +11480,7 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budget
         ...(!revisions.length||revisions.some(r=>r.parentRevisionId!==undefined)?{roundUndo:[],roundRedo:[],returnReceipts:[]}:{})}):source});
     }
     if(seen.size!==leaves.length)throw Error('PENDING_COMMENT_EXPORT_MAP');
-    return {ok:true,scenes};
+    return {ok:true,scenes,...(baselineDocumentNotes?.sourceBindings?.length?{contentPreview:preview.contentPreview}:{})};
   }catch(error){return {ok:false,code:error.message||'PENDING_COMMENT_RETURN_INVALID'};}
 }
 
@@ -11751,7 +11763,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           || analysis.reasons?.some(item => /NOTES.*BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || ''))
           || !parsed.contentPreview.pendingRevisionDocument && ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length
           || notes.notes.length !== notes.references.length || notes.notes.length !== notes.bodySources.length) throw Error('DOCX_GENERIC_NOTES_INCOMPLETE');
-        const richNotes = parseDocumentNotesRichReturn(bytes, notes);
+        const richNotes = parseDocumentNotesRichReturn(bytes, notes, { preserveBreakMarks: true });
         parsed.contentPreview.noteMediaParts = [...new Set(notes.bodySources.flatMap(source => extractDocumentMediaReferencesV1(source.documentXml, {
           relationshipsXml: Buffer.from(auxiliary(source.relationshipPart) || []).toString('utf8'),
           contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),

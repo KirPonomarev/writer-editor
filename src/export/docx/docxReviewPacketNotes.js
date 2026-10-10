@@ -196,8 +196,9 @@ function notePackageParts(projection, { firstNumId = 1 } = {}) {
       const numPr = list ? `<w:numPr><w:ilvl w:val="${list.level}"/><w:numId w:val="${ids.get(list.numId)}"/></w:numPr>` : '';
       const runs = paragraph ? (paragraph.content || []).map(node => {
         if (node.type === 'image') return media.drawing(node.attrs);
-        if (node.type === 'hardBreak') return '<w:r><w:br/></w:r>';
-        const xml = require('./docxMinBuilder.js').buildDocxMarkedRunXml(node, true, true);
+        const xml = node.type === 'hardBreak' && node.attrs===undefined && node.marks===undefined
+          ? '<w:r><w:br/></w:r>' : require('./docxMinBuilder.js').buildDocxMarkedRunXml(node.type === 'hardBreak'
+            ? { text: '\n', marks: node.marks, wordBreakType: node.attrs?.wordBreakType } : node, true, true);
         const href = node.marks?.find(mark => mark.type === 'link')?.attrs?.href;
         if (!href) return xml;
         if (!links.has(href)) links.set(href, `noteLink${links.size + 1}`);

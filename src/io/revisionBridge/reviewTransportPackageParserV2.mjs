@@ -6550,20 +6550,29 @@ export function extractTransportParagraphOwnershipV1(documentXml, names, options
   const declared = starts.filter(t => /^YRTK_/u.test(attr(t, 'name', W_NS)));
   if (declared.length !== names.length || new Set(names).size !== names.length
     || declared.some((t, i) => attr(t, 'name', W_NS) !== names[i])) throw Error('PENDING_RETURN_BOOKMARK_ORDER');
+  const startsById=new Map(),endsById=new Map(),paragraphsByDepth=new Map();
+  for(const token of starts){const id=attr(token,'id',W_NS);startsById.set(id,(startsById.get(id)||0)+1);}
+  for(const token of ends){const id=attr(token,'id',W_NS),group=endsById.get(id)||[];group.push(token);endsById.set(id,group);}
+  paragraphs.forEach((token,index)=>{const group=paragraphsByDepth.get(token.depth)||[];group.push({token,index});paragraphsByDepth.set(token.depth,group);});
+  const owner=token=>{
+    const group=paragraphsByDepth.get(token.depth-1)||[];let low=0,high=group.length;
+    while(low<high){const mid=(low+high)>>>1;if(group[mid].token.openEnd<=token.openStart)low=mid+1;else high=mid;}
+    const row=group[low-1];return row&&token.closeEnd<=row.token.closeStart?row.index:-1;
+  };
   const ranges = declared.map((start, ordinal) => {
-    const id = attr(start, 'id', W_NS), paired = ends.filter(t => attr(t, 'id', W_NS) === id);
-    if (!start.selfClosing || !id || starts.filter(t => attr(t, 'id', W_NS) === id).length !== 1
+    const id = attr(start, 'id', W_NS), paired = endsById.get(id)||[];
+    if (!start.selfClosing || !id || startsById.get(id) !== 1
       || paired.length !== 1 || !paired[0].selfClosing || paired[0].openStart < start.closeEnd)
       throw Error('PENDING_RETURN_BOOKMARK_PAIR');
     const end = paired[0];
-    const first = paragraphs.findIndex(p => start.openStart >= p.openEnd && start.closeEnd <= p.closeStart && start.depth === p.depth + 1);
-    const last = paragraphs.findIndex(p => end.openStart >= p.openEnd && end.closeEnd <= p.closeStart && end.depth === p.depth + 1);
+    const first = owner(start), last = owner(end);
     if (first < 0 || last < first) throw Error('PENDING_RETURN_BOOKMARK_OWNER');
     return { ordinal, first, last, start: start.openStart, end: end.closeEnd };
   });
   if (ranges.some((r, i) => i && r.start < ranges[i - 1].end)) throw Error('PENDING_RETURN_BOOKMARK_OVERLAP');
-  return paragraphs.map((p, i) => {
-    const owners = ranges.filter(r => r.first <= i && r.last >= i).map(r => r.ordinal);
+  const ownership=paragraphs.map(()=>[]);
+  for(const range of ranges)for(let i=range.first;i<=range.last;i++)ownership[i].push(range.ordinal);
+  return ownership.map(owners => {
     if (!owners.length && options.allowUnownedParagraphs !== true) throw Error('PENDING_RETURN_BOOKMARK_UNOWNED');
     return owners;
   });

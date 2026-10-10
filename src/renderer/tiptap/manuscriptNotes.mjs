@@ -14,6 +14,8 @@ import { DocumentTextStyle } from './documentTextStyle.mjs';
 import { DocumentParagraphAlignment } from './documentParagraphAlignment.mjs';
 import { DocumentMedia } from './documentMedia.mjs';
 import { DocumentTables } from './documentTables.mjs';
+import { DocumentBreaks } from './documentBreaks.mjs';
+import richBody from '../../core/word-rich-body-projection-v1.cjs';
 import { sha256Hex } from '../../core/browser-safe-hash.mjs';
 import { openLinkDialog } from '../linkDialog.mjs';
 
@@ -61,9 +63,9 @@ export function getFocusedManuscriptBodyEditor(doc = globalThis.document) {
 export function manuscriptBodyExtensions({ profile = 'manuscript' } = {}) {
   const comment = profile === 'comment';
   return [StarterKit.configure({ heading: false,
-      ...(comment ? { bulletList: false, orderedList: false, listItem: false } : {}),
+      ...(comment ? { bulletList: false, orderedList: false, listItem: false } : {hardBreak:false}),
       blockquote: false, codeBlock: false, code: false, horizontalRule: false, trailingNode: false, link: false, underline: false }),
-    ...(!comment ? [DocumentListNumbering] : []), DocumentTextStyle, DocumentParagraphAlignment, Color,
+    ...(!comment ? [DocumentListNumbering,DocumentBreaks] : []), DocumentTextStyle, DocumentParagraphAlignment, Color,
     ...(!comment ? [DocumentMedia, DocumentTables.configure({ cellContent: '(paragraph | bulletList | orderedList | table)+' })] : []),
     Highlight.configure({ multicolor: true }), Underline,
     Link.configure({ openOnClick: false, autolink: false, linkOnPaste: false })];
@@ -80,6 +82,28 @@ export function renderCommentBodyHtml(message) {
 
 export function readManuscriptBodyDocument(editor, profile = 'manuscript') {
   const raw = editor.getJSON();
+  if(profile==='manuscript') {
+    const breaks=[];
+    const project=(node,at=[])=>{
+      if(node.type==='hardBreak') {
+        if(Object.keys(node).some(key=>!['type','attrs','marks'].includes(key))
+          ||node.attrs!==undefined&&(node.attrs===null||typeof node.attrs!=='object'||Array.isArray(node.attrs)
+            ||Object.keys(node.attrs).some(key=>key!=='wordBreakType')||![null,'line','page','column'].includes(node.attrs.wordBreakType)))throw Error('NOTE_BODY_BREAK');
+        breaks.push({at,attrs:node.attrs,marks:node.marks});
+        return {type:'text',text:'\n',...(node.marks!==undefined?{marks:node.marks}:{})};
+      }
+      return {...node,...(node.content?{content:node.content.map((child,i)=>project(child,[...at,i]))}:{})};
+    };
+    let doc=canonicalizeDocumentJson(project(raw));if(doc.attrs&&!Object.keys(doc.attrs).length)delete doc.attrs;
+    doc=richBody.validateRichBody(doc).body;
+    for(const {at,attrs}of breaks) {
+      let owner=doc;for(const i of at.slice(0,-1))owner=owner.content[i];const run=owner.content[at.at(-1)];
+      if(run.type!=='text'||run.text!=='\n')throw Error('NOTE_BODY_BREAK');
+      owner.content[at.at(-1)]={type:'hardBreak',...(attrs?.wordBreakType!=null?{attrs:{wordBreakType:attrs.wordBreakType}}:{}) ,...(run.marks?{marks:run.marks}:{})};
+    }
+    if(new TextEncoder().encode(JSON.stringify(doc)).length>richBody.LIMITS.bytes)throw Error('NOTE_BODY_BUDGET');
+    return doc;
+  }
   // The comment profile admits formatted line breaks. The shared envelope
   // validates language only on text runs, so validate each break's exact marks
   // on a temporary newline run and restore its structural node afterwards.

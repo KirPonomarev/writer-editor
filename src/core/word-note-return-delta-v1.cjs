@@ -15,7 +15,7 @@ function effectiveBody(paragraphs, defaults) {
   return paragraphs.map(({ paragraph, list }) => {
     const runs = [];
     for (const node of paragraph.content || []) {
-      if (node.type === 'hardBreak') { runs.push({ type: 'hardBreak' }); continue; }
+      if (node.type === 'hardBreak' && node.marks===undefined && node.attrs===undefined) { runs.push({ type: 'hardBreak' }); continue; }
       if (node.type === 'image') { runs.push({ type: 'image', attrs: node.attrs }); continue; }
       const marks = [], style = { ...(defaults?.fontSize ? { fontSize: defaults.fontSize } : {}) };
       for (const mark of node.marks || []) {
@@ -27,7 +27,8 @@ function effectiveBody(paragraphs, defaults) {
       if (Object.keys(style).length) marks.push({ type: 'textStyle', attrs: style });
       marks.sort((a, b) => a.type.localeCompare(b.type));
       const previous = runs.at(-1);
-      if (previous?.type === 'text' && stable(previous.marks) === stable(marks)) previous.text += node.text;
+      if(node.type==='hardBreak')runs.push({type:'hardBreak',...(node.attrs?{attrs:node.attrs}:{}),marks});
+      else if (previous?.type === 'text' && stable(previous.marks) === stable(marks)) previous.text += node.text;
       else runs.push({ type: 'text', text: node.text, marks });
     }
     return { align: paragraph.attrs?.textAlign || 'left', runs, list };
@@ -103,7 +104,7 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     const sceneBlocks = blocks.filter(b => b.sceneId === block.sceneId);
     const blockIndex = sceneBlocks.indexOf(block), sceneContent = sceneBlocks.map(b => b.text).join('\n');
     const offsetUtf16 = sceneBlocks.slice(0, blockIndex).reduce((n, b) => n + b.text.length + 1, 0) + note.offsetUtf16;
-    if (emission) need(stable(note.breakProjection) === stable(localBookNoteBreakProjection(note.body, emission)), 'NOTE_RETURN_BREAK_CHANGED');
+    if (emission) need(stable(note.breakProjection) === stable(cleanNoteBreakProjection(note.body, emission, binding?.richBody)), 'NOTE_RETURN_BREAK_CHANGED');
     const body = binding && (emission
       ? equivalentCompleteCleanBody(binding.richBody, note.body, exportMap.exportTypography, emission)
       : equivalentBody(binding.richBody, note.body, exportMap.exportTypography)) ? binding.richBody : note.body;
@@ -162,16 +163,17 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
 }
 // An authenticated caller supplies local canonical identities. Word contributes
 // only validated source occurrences and bodies, never note IDs or write paths.
-function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exportMap,
-  beforeDoc, returnedDoc, returnedNotes, unionReferences, closedBookEmission }) {
+function bindPendingNotePoints({ document, projectId, sceneId, baseline, exportMap,
+  beforeDoc, returnedDoc, returnedNotes, unionReferences, closedBookEmission }, bodyLaw) {
   require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
   const pending = require('./word-pending-text-revisions-v1.cjs');
   model.validateManuscriptDocument(document, projectId);
   need(baseline?.projectId === projectId && baseline.policy === 'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'
     && baseline.stateDigest === notesStateDigest(document), 'PENDING_NOTE_BASELINE_CONFLICT');
-  if (closedBookEmission !== undefined) need(exportMap?.scenes?.length > 1
-    && stable(baseline.breakEmission) === stable(closedBookEmission)
-    && requireBookNoteEmission(closedBookEmission), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+  if (closedBookEmission !== undefined) {
+    need(exportMap?.scenes?.length > 1 && stable(baseline.breakEmission) === stable(closedBookEmission), 'PENDING_NOTE_BREAK_BASELINE_REQUIRED');
+    requireBookNoteEmission(closedBookEmission);
+  }
   if (closedBookEmission === undefined) {
     closedBookEmission = singleSceneNoteEmission(baseline, exportMap, sceneId);
     if (closedBookEmission) validateSingleSceneNoteRoster(document, baseline, exportMap);
@@ -202,12 +204,12 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
     const { n, i } = matches[0]; used.add(i);
     if (closedBookEmission !== undefined) {
       need(stable(binding.richBody) === stable(model.validateNoteBody(note.manuscript.body).body), 'PENDING_NOTE_BASELINE_MISMATCH');
-      if (exportMap.scenes.length > 1) need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
+      if (!bodyLaw && exportMap.scenes.length > 1) need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
     }
-    need(n.kind === binding.kind && (closedBookEmission !== undefined
+    need(n.kind === binding.kind && (bodyLaw ? bodyLaw(note,n,baseline,exportMap) : closedBookEmission !== undefined
       ? equivalentCompleteBody(note.manuscript.body, n.body, exportMap.exportTypography, closedBookEmission)
       : equivalentBody(note.manuscript.body, n.body, exportMap.exportTypography)), 'PENDING_NOTE_BODY_CHANGED');
-    if (closedBookEmission !== undefined && exportMap.scenes.length === 1) need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
+    if (!bodyLaw && closedBookEmission !== undefined && exportMap.scenes.length === 1) need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
     const ref = note.manuscript.reference;
     need(ref.sourceTextSha256 === model.sha(currentText), 'PENDING_NOTE_REFERENCE_STALE');
     let beforePoint = old?.noteSourcePoints?.find(p => p.noteId === note.id);
@@ -239,6 +241,7 @@ function bindUnchangedPendingNotes({ document, projectId, sceneId, baseline, exp
   return { beforeDoc: pending.bindNoteSourcePoints(beforeDoc, beforePoints),
     returnedDoc: pending.bindNoteSourcePoints(returnedDoc, returnedPoints) };
 }
+function bindUnchangedPendingNotes(input) {return bindPendingNotePoints(input);}
 // Complete typed body law for the composed book lane. Legacy emission owns
 // 12pt; v2 owns the exact finite note-style profile below. Source-authored
 // properties, paragraph meaning and every effective break must still match.
@@ -350,9 +353,13 @@ function completeBodyMeaning(body, defaults, emission, source = false) {
     const content = [];
     for (const node of paragraph.content || []) {
       const value = clone(node);
-      if (value.type === 'text') {
+      if (value.type === 'text' || value.type==='hardBreak') {
         const marks = (value.marks || []).map(clone);
         let style = marks.find(mark => mark.type === 'textStyle');
+        if (source && value.type === 'hardBreak' && emission?.schemaVersion === 1) {
+          if (!style) { style = { type: 'textStyle', attrs: {} }; marks.push(style); }
+          style.attrs = { fontSize: emission.fontSize, ...style.attrs };
+        }
         if (defaults?.fontSize) {
           if (!style) { style = { type: 'textStyle', attrs: {} }; marks.push(style); }
           style.attrs = { fontSize: defaults.fontSize, ...style.attrs };
@@ -365,7 +372,7 @@ function completeBodyMeaning(body, defaults, emission, source = false) {
         marks.sort((a, b) => a.type.localeCompare(b.type));
         value.marks = marks;
         const previous = content.at(-1);
-        if (previous?.type === 'text' && stable(previous.marks) === stable(marks)) { previous.text += value.text; continue; }
+        if (value.type==='text' && previous?.type === 'text' && stable(previous.marks) === stable(marks)) { previous.text += value.text; continue; }
       }
       content.push(value);
     }
@@ -404,23 +411,34 @@ function localBookNoteBreakProjection(body, emission) {
     for(const node of paragraph.content||[]) {
       if(node.type==='image')continue;
       const text=node.type==='hardBreak'?'\n':node.text;
-      const marks=node.type==='text'?(node.marks||[]):[],style=marks.find(mark=>mark.type==='textStyle')?.attrs||{};
+      const marks=node.type==='text'||node.type==='hardBreak'?(node.marks||[]):[],style=marks.find(mark=>mark.type==='textStyle')?.attrs||{};
       const enabled=marks.filter(mark=>['bold','italic','underline','strike'].includes(mark.type)).map(mark=>mark.type).sort();
       const size=style.fontSize||emission.fontSize,format={marks:enabled,boldCs:enabled.includes('bold'),italicCs:enabled.includes('italic'),forceCs:false,rtl:false,
         fontSize:size,fontSizeCs:size,...(style.fontFamily||pinned?{fontSlots:Object.fromEntries(['ascii','hAnsi','eastAsia','cs'].map(slot=>[slot,style.fontFamily||emission.fontFamily]))}:{}),
         ...(style.color?{color:style.color.toLowerCase()}:{}),...(pinned?{wordLanguage:{...emission.wordLanguage,...style.wordLanguage}}:style.wordLanguage?{wordLanguage:clone(style.wordLanguage)}:{}),
         ...(marks.some(mark=>mark.type==='highlight')?{highlight:marks.find(mark=>mark.type==='highlight').attrs.color.toLowerCase()}:{}),
         ...(marks.some(mark=>mark.type==='link')?{href:marks.find(mark=>mark.type==='link').attrs.href}: {})};
-      for(let at=text.indexOf('\n');at!==-1;at=text.indexOf('\n',at+1))breaks.push({paragraphIndex,offsetUtf16:offset+at,kind:'line',format:clone(format)});
+      for(let at=text.indexOf('\n');at!==-1;at=text.indexOf('\n',at+1))breaks.push({paragraphIndex,offsetUtf16:offset+at,kind:node.attrs?.wordBreakType||'line',format:clone(format)});
       offset+=text.length;
     }
   });
   return {schemaVersion:1,paragraphCount:rows.length,textSha256:model.sha(rows.map(({paragraph})=>(paragraph.content||[]).map(node=>node.type==='hardBreak'?'\n':node.type==='image'?'':node.text).join('')).join('\n')),breaks};
 }
 
+// Clean note edits may shift, add or remove break occurrences. Their effective
+// run recipe comes from canonical authored breaks or the closed local emitter,
+// never the same returned marks that the observed projection describes.
+function cleanNoteBreakProjection(body, emission, canonicalBody) {
+  const incoming = localBookNoteBreakProjection(body, emission);
+  const authored = canonicalBody ? localBookNoteBreakProjection(canonicalBody, emission).breaks : [];
+  const fresh = localBookNoteBreakProjection({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'hardBreak' }] }] }, emission).breaks[0];
+  return { ...incoming, breaks: incoming.breaks.map((point, index) => ({ ...point,
+    kind: authored[index]?.kind || fresh.kind, format: clone(authored[index]?.format || fresh.format) })) };
+}
+
 // Full signed-map occurrence bijection precedes any scene-local binding. The
 // two arrays retain parser occurrence order, including colocated references.
-function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMap, scenes, returnedNotes, returnedReferences, unionReferences }) {
+function bindBookPendingNotes({ document, projectId, baseline, exportMap, scenes, returnedNotes, returnedReferences, unionReferences }, bodyLaw) {
   require('./word-review-typography-v1.cjs').validate(exportMap?.exportTypography,{allowUndefined:true});
   const pending = require('./word-pending-text-revisions-v1.cjs');
   model.validateManuscriptDocument(document, projectId);
@@ -467,8 +485,8 @@ function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMa
     const matches = returnedNotes.map((note, index) => ({ note, index })).filter(item => item.note.transportIdentity === binding.transportIdentity);
     need(matches.length === 1 && !used.has(matches[0].index), 'PENDING_NOTE_IDENTITY_MISMATCH');
     const { note: returned, index } = matches[0]; used.add(index);
-    need(stable(returned.breakProjection)===stable(localBookNoteBreakProjection(note.manuscript.body,baseline.breakEmission)), 'PENDING_NOTE_BREAK_CHANGED');
-    need(returned.kind === binding.kind && equivalentCompleteBody(binding.richBody, returned.body, exportMap.exportTypography, baseline.breakEmission), 'PENDING_NOTE_BODY_CHANGED');
+    if(!bodyLaw)need(stable(returned.breakProjection)===stable(localBookNoteBreakProjection(note.manuscript.body,baseline.breakEmission)), 'PENDING_NOTE_BREAK_CHANGED');
+    need(returned.kind === binding.kind && (bodyLaw?bodyLaw(note,returned,baseline,exportMap):equivalentCompleteBody(binding.richBody, returned.body, exportMap.exportTypography, baseline.breakEmission)), 'PENDING_NOTE_BODY_CHANGED');
     need(blocks[returned.paragraphIndex]?.sceneId === binding.sceneId
       && unionReferences[index]?.kind === returned.kind
       && unionReferences[index]?.paragraphIndex === returned.paragraphIndex, 'PENDING_NOTE_UNION_BINDING');
@@ -482,10 +500,10 @@ function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMa
     if (!owned.length) return { sceneId: scene.sceneId, beforeDoc: scene.document, returnedDoc: scene.returnedDocument, ...bodyEmission };
     const indices = returnedNotes.map((note, index) => ({ note, index })).filter(item => blocks[item.note.paragraphIndex]?.sceneId === scene.sceneId);
     const local = note => ({ ...note, paragraphIndex: blocks[note.paragraphIndex].local });
-    const bound = bindUnchangedPendingNotes({ document, projectId, sceneId: scene.sceneId,
+    const bound = bindPendingNotePoints({ document, projectId, sceneId: scene.sceneId,
       baseline: { ...baseline, sourceBindings: owned }, exportMap, beforeDoc: scene.document, returnedDoc: scene.returnedDocument,
-      ...(scenes.length>1&&[2, 3].includes(baseline.breakEmission?.schemaVersion) ? { closedBookEmission: baseline.breakEmission } : {}),
-      returnedNotes: indices.map(item => local(item.note)), unionReferences: indices.map(item => local(unionReferences[item.index])) });
+      ...(scenes.length>1&&[1, 2, 3].includes(baseline.breakEmission?.schemaVersion) ? { closedBookEmission: baseline.breakEmission } : {}),
+      returnedNotes: indices.map(item => local(item.note)), unionReferences: indices.map(item => local(unionReferences[item.index])) },bodyLaw);
     return { sceneId: scene.sceneId, ...bound, ...bodyEmission };
   });
   const ordered=baseline.sourceBindings.map((binding,index)=>{
@@ -496,4 +514,41 @@ function bindUnchangedBookPendingNotes({ document, projectId, baseline, exportMa
   need(returnedNotes.every((note,index)=>note.transportIdentity===ordered[index].identity),'PENDING_NOTE_NATIVE_ROSTER_MISMATCH');
   return bound;
 }
-module.exports = { planNoteReturnDelta, bindUnchangedPendingNotes, equivalentBody, equivalentCompleteBody, bindUnchangedBookPendingNotes };
+function bindUnchangedBookPendingNotes(input) {return bindBookPendingNotes(input);}
+function changedBodyLaw(_note,returned,baseline) {
+  model.validateNoteBody(returned.body);
+  need(stable(returned.breakProjection)===stable(localBookNoteBreakProjection(returned.body,baseline.breakEmission)),'PENDING_NOTE_BREAK_CHANGED');
+  return true;
+}
+// New typed atomic book proof uses the same complete identity/occurrence law.
+// This is an explicit body transition, never an "unchanged" body comparison
+// or a caller-selected bypass of the clean manuscript/Original check.
+function bindChangedBookPendingNotes(input) {return bindBookPendingNotes(input,changedBodyLaw);}
+function planChangedBookNoteBodies({document,projectId,baseline,exportMap,returnedNotes,scenes,roundId,artifactSha256,now}) {
+  model.validateManuscriptDocument(document,projectId);
+  need(notesStateDigest(document)===baseline.stateDigest&&typeof now==='string'&&Number.isFinite(Date.parse(now)),'NOTE_RETURN_BASELINE_CONFLICT');
+  const after=clone(document),changes=[];
+  for(const binding of baseline.sourceBindings) {
+    const note=after.notes.find(n=>n.id===binding.noteId),returned=returnedNotes.find(n=>n.transportIdentity===binding.transportIdentity);
+    need(note?.manuscript&&!note.deleted&&returned,'NOTE_RETURN_TARGET_INVALID');
+    const scene=scenes.find(s=>s.sceneId===binding.sceneId),doc=require('./document-content-envelope-v1.cjs').parseObservablePayload(scene.content).doc;
+    const pending=require('./word-pending-text-revisions-v1.cjs'),point=pending.noteProjection(doc)?.find(p=>p.noteId===note.id);
+    const body=equivalentCompleteBody(binding.richBody,returned.body,exportMap.exportTypography,baseline.breakEmission)?binding.richBody:model.validateNoteBody(returned.body).body;
+    const reference=point?{...note.manuscript.reference,offsetUtf16:point.globalOffsetUtf16,sourceTextSha256:model.sha(model.sceneText(scene.content))}:note.manuscript.reference;
+    const manuscript=model.validateManuscriptPayload({...note.manuscript,body,reference});
+    if(stable(note.manuscript)!==stable(manuscript)) {
+      changes.push({noteId:note.id,operation:'update',before:clone(note.manuscript),after:manuscript});
+      note.manuscript=manuscript;note.body=model.validateNoteBody(body).text;note.updatedAtUtc=now;
+    }
+  }
+  if(!changes.length)return {document,changes,afterText:JSON.stringify(document)};
+  need(typeof roundId==='string'&&roundId.length>0&&/^(?:sha256:)?[a-f0-9]{64}$/u.test(artifactSha256),'NOTE_RETURN_IDENTITY_INVALID');
+  const operationId='word-note-return-'+model.sha(roundId+'\n'+artifactSha256),receipts=document.wordNoteReturnReceipts||[];
+  need(Array.isArray(receipts)&&receipts.length<128&&!receipts.some(r=>r.operationId===operationId),'NOTE_RETURN_REPLAY_CONFLICT');
+  after.wordNoteReturnReceipts=[...receipts,{operationId,inputDigest:model.sha(stable({projectId,roundId,artifactSha256,baseline:baseline.stateDigest,returnedNotes})),
+    resultDigest:notesStateDigest({...after,wordNoteReturnReceipts:[]}),roundId,artifactSha256,changes}];
+  model.validateManuscriptDocument(after,projectId);need(Buffer.byteLength(JSON.stringify(after))<=4*model.LIMITS.bytes,'NOTE_RETURN_STATE_BUDGET');
+  return {document:after,changes,afterText:JSON.stringify(after)};
+}
+module.exports = { planNoteReturnDelta, bindUnchangedPendingNotes, equivalentBody, equivalentCompleteBody, bindUnchangedBookPendingNotes,
+  bindChangedBookPendingNotes,planChangedBookNoteBodies };
