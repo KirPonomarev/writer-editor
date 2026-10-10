@@ -22,7 +22,7 @@ const production=(()=>{
  const extensions=source.slice(source.indexOf('    extensions: [')+'    extensions: '.length,source.indexOf("    content: '<p></p>'")).trim().replace(/,$/,'');
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'recording-schema-')),output=path.join(directory,'schema.cjs');
  const readers=source.slice(source.indexOf('function readEditorText('),source.indexOf('function normalizeFormattingColor('));
- require('esbuild').buildSync({stdin:{contents:imports+'\nimport {getSchema} from "@tiptap/core";\n'+readers+'\nconst extensions='+extensions+';const schema=getSchema(extensions);export {Editor,extensions,schema,readEditorDocument};',
+ require('esbuild').buildSync({stdin:{contents:imports+'\nimport {getSchema} from "@tiptap/core";\n'+readers+'\nconst extensions='+extensions+';const schema=getSchema(extensions);export {Editor,extensions,schema,readEditorDocument,getCommentEditIntentsJson};',
   resolveDir:path.join(__dirname,'../../src/renderer/tiptap')},bundle:true,platform:'node',format:'cjs',outfile:output,logLevel:'silent'});
  try{return require(output);}finally{fs.rmSync(directory,{recursive:true,force:true});}
 })();
@@ -30,6 +30,25 @@ const installed=text=>{const parsed=envelope.parseObservablePayload(text),node=p
  node.check();const doc=production.readEditorDocument({getJSON:()=>node.toJSON()});
  return envelope.composeObservablePayload({...parsed,metaEnabled:parsed.hasMetaBlock,doc});};
 const doc = text => ({ type: 'doc', content: [{ type: 'paragraph', content: text ? [{ type: 'text', text }] : [] }] });
+for (const action of ['split', 'join']) test(`real production Tiptap ${action}, typing and Undo restore exact recording occurrences`, () => {
+ const content = { type: 'doc', content: [doc('Café').content[0], doc('Привет мир.').content[0]] };
+ const editor = new production.Editor({ element: null, extensions: production.extensions, content });
+ editor.view.updateState(editor.state.reconfigure({ plugins: editor.extensionManager.plugins }));
+ Object.defineProperty(editor, 'isDestroyed', { get: () => false });
+ const texts = () => editor.state.doc.content.content.map(node => node.textContent);
+ const intents = () => production.getCommentEditIntentsJson(editor);
+ const derive = require('../../src/core/word-pending-recording-intents-v1.cjs').deriveChanges;
+ try {
+  const before = texts(), original = production.readEditorDocument(editor);
+  if (action === 'split') { editor.commands.setTextSelection(3); assert.equal(editor.commands.splitBlock(), true); }
+  else { editor.commands.setTextSelection(editor.state.doc.child(0).nodeSize + 1); assert.equal(editor.commands.joinBackward(), true); }
+  editor.commands.insertContent({ type: 'text', text: 'X' });
+  assert.throws(() => derive(before, texts(), intents()), /RECORDING_INTENT_STRUCTURE_UNSUPPORTED/);
+  assert.equal(editor.commands.undo(), true);
+  assert.deepEqual(texts(), before); assert.deepEqual(production.readEditorDocument(editor), original);
+  assert.deepEqual(derive(before, texts(), intents()).changes, [[], []]);
+ } finally { editor.destroy(); }
+});
 async function harness(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'recording-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const file = path.join(root, 'roman/a.txt'), manifest = path.join(root, 'project.json');
@@ -309,6 +328,47 @@ function addBoundNotes(h, withComments = true, schemaVersion = 3) {
 const protectedNoteMeaning=document=>({...document,notes:document.notes.map(note=>!note.manuscript?note:{...note,
  manuscript:{...note.manuscript,reference:{...note.manuscript.reference,offsetUtf16:0,sourceTextSha256:''}}})});
 const business=h=>[h.file,h.manifest,h.notePath,h.commentPath].map(file=>fs.existsSync(file)?fs.readFileSync(file,'utf8'):null);
+for (const schemaVersion of [3, 5]) test(`actual Main schema${schemaVersion} stops recording after checked structural Undo and permits later durable editing`, async t => {
+ const h = await harness(t), seed = addBoundNotes(h, true, schemaVersion), before = business(h);
+ await h.start();
+ const split = { id: 'enter', historyId: 'enter', direction: 'forward', fromParagraphIndex: 0,
+  toParagraphIndex: 0, fromUtf16: 3, toUtf16: 3, removedParagraphs: [''], insertedParagraphs: ['', ''] };
+ h.type('generation');
+ h.editor = envelope.composeObservablePayload({ doc: { type: 'doc', content: [doc('AB ').content[0], doc('tail').content[0]] } });
+ h.intents = intents('AB tail', split);
+ await assert.rejects(h.save(), /RECORDING_INTENT_STRUCTURE_UNSUPPORTED/);
+ assert.deepEqual(business(h), before); assert.equal(h.writes, 0);
+ assert.equal((await h.c.readPendingRevisionProjection()).recording, true);
+ h.type('AB tail');
+ h.intents = intents('AB tail', split, { ...split, id: 'undo-enter', direction: 'undo',
+  toParagraphIndex: 1, toUtf16: 0, removedParagraphs: ['', ''], insertedParagraphs: [''] });
+ const stopped = await h.command('stop'); assert.equal(stopped.ok, true, JSON.stringify(stopped));
+ assert.deepEqual(business(h).slice(0, 3), before.slice(0, 3)); assert.equal(h.writes, 1);
+ // A cancelled authoring action still retains its exact comment Undo cursor.
+ // Only that declared journal and its schema/revision change are permitted.
+ const expectedComments = JSON.parse(seed.comments);
+ expectedComments.schemaVersion = 'yalken.rtk.word.non-text-return-state.v5'; expectedComments.revision++;
+ expectedComments.threads[0].anchorEditHistory = [{ schemaVersion: 2, historyId: 'enter', sessionId: h.sessionId,
+  before: { sceneParagraphIndex: 0, startUtf16: 3, length: 4, status: 'open', blockTextSha256: hash('AB tail') },
+  after: { sceneParagraphIndex: 1, startUtf16: 0, length: 4, status: 'open', blockTextSha256: hash('tail') },
+  beforeTextSha256: hash('AB tail'), afterTextSha256: hash('tail'), undone: true }];
+ assert.deepEqual(h.readComments().state, expectedComments);
+ const afterStop = business(h);
+ assert.equal(Object.hasOwn(await h.c.readPendingRevisionProjection(), 'recording'), false);
+ assert.equal((await h.command('stop')).ok, false);
+ assert.deepEqual(business(h), afterStop); assert.equal(h.writes, 1);
+ assert.deepEqual(model.readLedger(h.context().parsed.doc), model.readLedger(seed.doc));
+ h.intents = null; await h.start(); h.type('AB tail!'); h.intents = intents('AB tail', typed('later', 7, '', '!'));
+ assert.equal((await h.save()).success, true); h.intents = intents('AB tail!');
+ assert.equal((await h.command('stop')).ok, true); assert.equal(h.writes, 2);
+ const reopened = envelope.parseObservablePayload(fs.readFileSync(h.file, 'utf8')).doc;
+ assert.equal(model.projection(reopened).original, 'AxxB tail');
+ assert.equal(model.projection(reopened).current, 'AB tail!');
+ assert.deepEqual(model.readLedger(reopened).noteSourcePoints, model.readLedger(seed.doc).noteSourcePoints);
+ assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath, 'utf8'))), protectedNoteMeaning(seed.document));
+ assert.deepEqual(h.readComments().state.threads[0].messages, JSON.parse(seed.comments).threads[0].messages);
+ assert.equal(model.readLedger(reopened).roundUndo.length, 1);
+});
 test('recording save independently replays complete proof four times with exact durable output',async t=>{
  const h=await harness(t),seed=addBoundNotes(h,true,5);
  h.c.Date=class extends Date{constructor(...args){super(...(args.length?args:['2026-10-05T12:00:07.000Z']));}};

@@ -116,3 +116,62 @@ test('notes retain strict provenance, consumed-reference, formatting and structu
   assert.throws(()=>recording.prepare(review.bindLedger(forged)),/PENDING_NOTE_POINT_BOUNDARY/);
   assert.equal(JSON.stringify({base,working}),frozen);
 });
+
+const structural = (id, historyId, direction, fromParagraphIndex, fromUtf16,
+  toParagraphIndex, toUtf16, removedParagraphs, insertedParagraphs) => ({
+  id, historyId, direction, fromParagraphIndex, fromUtf16, toParagraphIndex, toUtf16,
+  removedParagraphs, insertedParagraphs });
+const multiPlan = (texts, ...edits) => ({ schemaVersion: 2, baselineTextSha256: textDigest(texts), edits });
+
+test('empty documents and legacy single-paragraph history retain their existing interpretation', () => {
+  assert.deepEqual(deriveChanges([], [], multiPlan([])).changes, []);
+  const input = { schemaVersion: 1, baselineTextSha256: textDigest(['aaa']), edits: [
+    { id: 'remove', historyId: 'remove', direction: 'forward', paragraphIndex: 0, fromUtf16: 1, toUtf16: 2, removedText: 'a', insertText: '' },
+    { id: 'undo', historyId: 'remove', direction: 'undo', paragraphIndex: 0, fromUtf16: 1, toUtf16: 1, removedText: '', insertText: 'a' },
+  ] };
+  assert.deepEqual(deriveChanges(['aaa'], ['aaa'], input).changes, [[]]);
+});
+
+test('checked authoring Undo of paragraph split restores pending ledger, hidden notes and full history', () => {
+  const base = bound('AxxB', [1, 3], [deletion], 5), frozen = JSON.stringify(base);
+  const input = multiPlan(['AB'],
+    structural('split', 'enter', 'forward', 0, 1, 0, 1, [''], ['', '']),
+    structural('join-back', 'enter', 'undo', 0, 1, 1, 0, ['', ''], ['']));
+  assert.deepEqual(deriveChanges(['AB'], ['AB'], input).changes, [[]]);
+  assert.deepEqual(recording.derive(base, doc('AB'), meta, input), { changed: false, doc: base });
+  assert.equal(JSON.stringify(base), frozen);
+});
+test('coalesced Undo of a join and typing restores source boundaries before later recording', () => {
+  const original = ['Café', 'Привет мир.'];
+  const edits = [
+    structural('join', 'typing', 'forward', 0, 4, 1, 0, ['', ''], ['']),
+    structural('type', 'typing', 'forward', 0, 2, 0, 10, ['féПривет'], ['fix']),
+    structural('undo-both', 'typing', 'undo', 0, 2, 0, 5, ['fix'], ['fé', 'Привет']),
+  ];
+  assert.deepEqual(deriveChanges(original, original, multiPlan(original, ...edits)).changes, [[], []]);
+  const later = structural('later', 'later', 'forward', 1, 10, 1, 10, [''], ['!']);
+  assert.deepEqual(deriveChanges(original, ['Café', 'Привет мир!.'], multiPlan(original, ...edits, later)).changes,
+    [[], [change(10, 10, 10, 11)]]);
+});
+test('Undo at another identical empty paragraph boundary is refused without input mutation', () => {
+  const original = ['', '', ''];
+  const join = structural('join', 'join', 'forward', 0, 0, 1, 0, ['', ''], ['']);
+  const correct = structural('undo', 'join', 'undo', 0, 0, 0, 0, [''], ['', '']);
+  assert.deepEqual(deriveChanges(original, original, multiPlan(original, join, correct)).changes, [[], [], []]);
+  const forged = multiPlan(original, join, { ...correct, fromParagraphIndex: 1, toParagraphIndex: 1 });
+  const frozen = JSON.stringify({ original, forged });
+  assert.throws(() => deriveChanges(original, original, forged), /RECORDING_INTENT_HISTORY_MISMATCH/);
+  assert.equal(JSON.stringify({ original, forged }), frozen);
+});
+test('surviving structure, manual recreation and structural Redo keep their no-loss refusal', () => {
+  const original = ['Left', 'Right'];
+  const join = structural('join', 'join', 'forward', 0, 4, 1, 0, ['', ''], ['']);
+  const inverse = structural('undo', 'join', 'undo', 0, 4, 0, 4, [''], ['', '']);
+  for (const edits of [[join], [join, { ...inverse, direction: 'forward', historyId: 'manual' }],
+    [join, inverse, { ...join, id: 'redo', direction: 'redo' }]]) {
+    const final = edits.length === 2 ? original : ['LeftRight'];
+    assert.throws(() => deriveChanges(original, final, multiPlan(original, ...edits)), /RECORDING_INTENT_STRUCTURE_UNSUPPORTED/);
+  }
+  assert.deepEqual(deriveChanges(original, original, multiPlan(original, join, inverse,
+    { ...join, id: 'redo', direction: 'redo' }, { ...inverse, id: 'undo-again' })).changes, [[], []]);
+});
