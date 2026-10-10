@@ -15,6 +15,48 @@ const pending = require('../../src/core/word-pending-text-revisions-v1.cjs');
 const modelPromise = import('../../src/core/project-tree-cohort-v1.mjs');
 const sha = x => crypto.createHash('sha256').update(x).digest('hex');
 const now = '2026-10-02T12:00:00.000Z';
+test('complete local manuscript size category never admits malformed semantic proof or broadens ordinary envelopes',async t=>{
+ const f=fixture(t),m=await modelPromise,projectId='project-test',sceneId='roman/01 Alpha.txt';
+ const proof={schemaVersion:5,projectId,baseline:{projectId},exportMap:{scope:'full-manuscript',scenes:[{sceneId}]},
+  noteContext:{schemaVersion:2,baseline:{projectId,policy:'MANUSCRIPT_NOTES_EXPLICIT_RETURN_V1'}}};
+ const input={operation:'word-mixed-return',operationId:'large-category',projectId,manifestPath:f.manifestPath,
+  beforeManifestText:text(f.manifestPath),expectedTreeRevision:0,notesText:null,commentsText:null,
+  scenes:[{sceneId,beforeContent:'x'.repeat(32*1024*1024+1),commitText:null}],returnProofJson:JSON.stringify(proof)};
+ let revalidations=0;
+ const coreRefusal=async(source,code)=>assert.rejects(tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,
+  treeCohort:{mode:m.TREE_COHORT_MODE,kind:'word-mixed-return',projectId,input:source},publishManifest:f.publishManifest,
+  revalidate:async()=>{revalidations++;}}),{code});
+ assert.throws(()=>m.planProjectMixedWordReturnCohort(input),error=>error.code&&error.code!=='E_TREE_COHORT_BUDGET',
+  'qualified size category still refuses incomplete semantic proof');
+ await coreRefusal(input,'MIXED_RETURN_PROOF_INVALID');
+ for(const mutate of [
+  p=>{p.schemaVersion=3;},p=>{p.schemaVersion=4;},p=>{p.schemaVersion=6;},p=>{p.projectId='foreign';},
+  p=>{p.baseline.projectId='foreign';},p=>{p.exportMap.scope='scene';},p=>{p.exportMap.scenes=[];},
+  p=>{p.exportMap.scenes[0].sceneId='roman/02 Beta.txt';},p=>{p.noteContext.schemaVersion=1;},
+  p=>{p.noteContext.baseline.projectId='foreign';},p=>{p.noteContext.baseline.policy='other';},
+ ]){const changed=structuredClone(proof);mutate(changed);
+  assert.throws(()=>m.planProjectMixedWordReturnCohort({...input,returnProofJson:JSON.stringify(changed)}),{code:'E_TREE_COHORT_BUDGET'});
+  await coreRefusal({...input,returnProofJson:JSON.stringify(changed)},'E_TREE_COHORT_BUDGET');
+ }
+ for(const extra of [{novelOrigin:null},{novelOrigin:{}},{history:{}},{returnProofJson:'{'},
+  {returnProofJson:JSON.stringify({...proof,padding:'x'.repeat(32*1024*1024)})}]){
+  assert.throws(()=>m.planProjectMixedWordReturnCohort({...input,...extra}),{code:'E_TREE_COHORT_BUDGET'});
+  await coreRefusal({...input,...extra},'E_TREE_COHORT_BUDGET');
+ }
+ const history={schemaVersion:6,action:'undo'},apply={kind:'word-mixed-return',input:{...input,scenes:[{...input.scenes[0],beforeContent:'small'}]}};
+ const inverse={...input,returnProofJson:JSON.stringify(history),history:{applyPacket:{plan:apply}}};
+ assert.throws(()=>m.planProjectMixedWordReturnCohort(inverse),{code:'E_WORD_BOOK_HISTORY_PROOF'},'retained category never supplies missing receipt authority');
+ await coreRefusal(inverse,'E_WORD_BOOK_HISTORY_PROOF');
+ for(const change of [value=>{value.action='acceptAll';},value=>{value.action=null;}]){
+  const changed=structuredClone(history);change(changed);assert.throws(()=>m.planProjectMixedWordReturnCohort({...inverse,returnProofJson:JSON.stringify(changed)}),{code:'E_TREE_COHORT_BUDGET'});
+ }
+ const foreign=structuredClone(inverse);foreign.history.applyPacket.plan.input.projectId='foreign';
+ assert.throws(()=>m.planProjectMixedWordReturnCohort(foreign),{code:'E_TREE_COHORT_BUDGET'});
+ const reordered=structuredClone(inverse);reordered.history.applyPacket.plan.input.scenes[0].sceneId='roman/02 Beta.txt';
+ assert.throws(()=>m.planProjectMixedWordReturnCohort(reordered),{code:'E_TREE_COHORT_BUDGET'});
+ assert.equal(text(path.join(f.root,sceneId)),f.raw);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+ assert.equal(revalidations,0,'all refusals precede effect admission and filesystem publication');
+});
 const text = p => fs.readFileSync(p, 'utf8');
 function inventory(root) {
   const out=[];

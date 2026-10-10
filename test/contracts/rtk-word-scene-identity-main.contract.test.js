@@ -2592,7 +2592,7 @@ async function pendingCommentMainFixture(t,{scope='full',tamper=null,combined=fa
   assert.equal(split,true,'Word-shaped fragment split is actually exercised');
   if(tamper)tamper(parts,{f,third,commentPath,projection,source});
   const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
-  const diagnostic=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:{sha256Text:x=>`sha256:${sha(x)}`,sha256Json:x=>`sha256:${sha(JSON.stringify(x))}`,byteLength:x=>Buffer.byteLength(x)}});
+  const diagnostic=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:f.probe.intakeBudgets()},{cryptoPort:{sha256Text:x=>`sha256:${sha(x)}`,sha256Json:x=>`sha256:${sha(JSON.stringify(x))}`,byteLength:x=>Buffer.byteLength(x)}});
   assert.equal(diagnostic.reviewIr?.commentBodyGrammar?.status,'SUPPORTED',JSON.stringify(diagnostic.reviewIr?.commentBodyGrammar||diagnostic));
   const before=f.capture();let prepared;
   const activated=await f.probe.reviewActivate({requestId:'pending-reply',bufferSource:bytes.toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true,onCommentDeltaPrepared:value=>{prepared=value;},onPendingReturnPrepared:value=>{prepared=value;}});
@@ -2908,11 +2908,26 @@ function predecessorFullSourceFactory() {
  const predecessor=new Module(file,module);predecessor.filename=file;predecessor.paths=Module._nodeModulePaths(path.dirname(file));predecessor._compile(old,file);
  return predecessor.exports.buildFullManuscriptDocxReviewPacketSource;
 }
-async function composedNotesMainFixture(t,{authored=false,plainSibling=false,inactiveTab=false,bodyParagraphAttrs=null,wordBodyDefaults=false,sourceFactory=null}={}) {
+async function composedNotesMainFixture(t,{authored=false,plainSibling=false,inactiveTab=false,bodyParagraphAttrs=null,wordBodyDefaults=false,sourceFactory=null,largeVolume=false}={}) {
  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');let originalNotes,notePath;
  const x=await pendingCommentMainFixture(t,{sourceFactory,beforeExport:async({f,paths,sceneIds})=>{
   if(plainSibling)fs.writeFileSync(paths[1],bookmarks.paragraphs(envelope.parseObservablePayload(read(paths[1])).doc).map(p=>bookmarks.textOf(p)).join('\n'));
   fs.writeFileSync(paths[0],envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'AxxB first owner'}]}]}}));
+  if(largeVolume){
+   const {WORD_VOLUME_TEXT_PROBES}=await import('../../scripts/ops/rtk-interop-word-volume-fixtures.mjs');
+   // This capacity counterexample needs >32MiB of complete meaning, not a
+   // second full corpus stress run. Keep 500k words, distinct boundaries and
+   // all literal Unicode/empty/whitespace probes; native8391 remains separate.
+   const words=Array(1000).fill('novelist').join(' '),paragraphs=[...WORD_VOLUME_TEXT_PROBES,
+    ...Array.from({length:500},(_,i)=>`[capacity-paragraph-${i}] ${words}`)];
+   for(const [i,file] of paths.entries()){
+    const doc=envelope.parseObservablePayload(read(file)).doc,ledger=pending.readLedger(doc),value=structuredClone(ledger||doc);
+    const body=ledger?value.source:value;
+    for(const text of paragraphs.filter((_,index)=>index%paths.length===i))
+     body.content.push({type:'paragraph',content:text?[{type:'text',text}]:[]});
+    fs.writeFileSync(file,envelope.composeObservablePayload({doc:ledger?pending.bindLedger(value):value}));
+   }
+  }
   if(authored){
    const prior=pending.readLedger(envelope.parseObservablePayload(read(paths[2])).doc),value=structuredClone(prior);
    const marks=[{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}];
@@ -2967,6 +2982,56 @@ async function composedNotesMainFixture(t,{authored=false,plainSibling=false,ina
  }});
  return {x,originalNotes,notePath};
 }
+for(const largeVolume of [false,true])test('Yalken-origin '+(largeVolume?'500k complete manuscript crosses ordinary envelope with durable Apply reopen':'small complete manuscript has durable Apply reopen Undo Redo'),async t=>{
+ const {x,originalNotes,notePath}=await composedNotesMainFixture(t,{largeVolume});
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs'),tx=require('../../src/core/project-transaction-v1.cjs');
+ assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+ const beforeDocs=x.paths.map(read),beforeNotes=read(notePath),beforeComments=read(x.commentPath),before=x.f.capture();
+ const view=raw=>{const doc=envelope.parseObservablePayload(raw).doc,projection=pending.projection(doc);
+  const literal=bookmarks.paragraphs(doc).map(p=>bookmarks.textOf(p)).join('\n');return projection||{current:literal,original:literal};};
+ const beforeCurrent=beforeDocs.map(raw=>view(raw).current),beforeOriginal=beforeDocs.map(raw=>view(raw).original);
+ if(largeVolume)assert.ok(beforeCurrent.join('\n').split(/\s+/u).filter(Boolean).length>=500000);
+ assert.deepEqual(before,x.before,'authenticated preview never publishes product files');
+ const kernel=x.f.probe.observeKernelResults();t.after(()=>kernel.restore());
+ await x.prepared.apply();assert.equal(kernel.results.length,1);assert.equal(kernel.results[0].ok,true,JSON.stringify(kernel.results));assert.deepEqual(kernel.failures,[]);
+ const appliedDocs=x.paths.map(read),appliedNotes=read(notePath),appliedComments=read(x.commentPath);
+ const actual=appliedDocs.map(view);
+ const expectedCurrent=[beforeCurrent[0].replace('AxxB','AB')+' 😀BOOK',beforeCurrent[1],beforeCurrent[2]+' 😀BOOK'];
+ // The first insertion belongs to the first paragraph, not the end of Alpha.
+ expectedCurrent[0]=beforeCurrent[0].replace('AxxB first owner','AB first owner 😀BOOK');
+ assert.deepEqual(actual.map(p=>p.current),expectedCurrent,'every literal paragraph including all Unicode and empty probes');
+ assert.deepEqual(actual.map(p=>p.original),beforeOriginal,'entire Original view retains previous pending revisions');
+ assert.equal(appliedDocs[1],beforeDocs[1],'large unchanged owner remains byte exact');
+ assert.deepEqual(JSON.parse(appliedNotes).notes.map(n=>n.manuscript.body),originalNotes.notes.map(n=>n.manuscript.body));
+ const graph=JSON.parse(appliedComments);for(const thread of JSON.parse(beforeComments).threads)
+  assert.deepEqual(graph.threads.find(row=>row.threadId===thread.threadId).messages.slice(0,thread.messages.length),thread.messages);
+ assert.equal(graph.threads.find(row=>row.threadId==='protected-sibling').messages.at(-1).body,'Foreign Beta reply retained');
+ const tree=await tx.readVerifiedProjectTreeMutation({manifestPath:x.f.manifestPath,projectId:x.f.query.projectId});
+ if(largeVolume)assert.ok(Buffer.byteLength(JSON.stringify(tree.retainedPacket.plan))>32*1024*1024,'exercise the former final-plan refusal');
+ assert.equal(tree.retainedPacket.plan.input.novelOrigin,undefined,'no invented imported Word resource');
+ assert.equal(JSON.parse(tree.retainedPacket.plan.input.returnProofJson).schemaVersion,5);
+ assert.ok(Buffer.byteLength(tree.retainedPacket.plan.input.returnProofJson)<=32*1024*1024);
+ assert.deepEqual(tree.retainedPacket.plan.input.scenes.map(s=>s.sceneId),x.source.localAuthorityCapsule.exportMap.scenes.map(s=>s.sceneId));
+ assert.equal(tree.retainedPacket.entries.filter(e=>e.role==='scene').length,x.paths.length);
+ const reopened=await fixture(t,false,'01_Alpha.txt',false,x.f.temp);
+ assert.deepEqual(x.paths.map(read),appliedDocs,'complete durable manuscript survives actual Main reopen');
+ assert.equal(read(notePath),appliedNotes);assert.equal(read(x.commentPath),appliedComments);
+ // The 500k case proves the changed size admission and complete durable Apply.
+ // Retained local schema6 is exercised below on the small case; full genuine
+ // 500k native history remains a separate release obligation.
+ if(largeVolume)return;
+ for(const action of ['undo','redo']){
+  const node=find((await reopened.main.handleWorkspaceProjectTreeQuery({tab:'roman'})).root,'Gamma');let working=read(x.third);
+  mountRenderer(reopened,()=>working,0,null,()=>({projectId:x.f.query.projectId,documentId:node.nodeId}),payload=>{working=payload.content;});
+  reopened.probe.state({filePath:x.third,projectName:'Роман'});const c=await reopened.probe.pendingContext();
+  const result=await reopened.probe.pendingDecision({projectId:c.projectId,sceneId:c.sceneId,subjectId:c.subjectId,expectedSceneSha256:c.sceneSha256,action});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(x.paths.map(read),action==='undo'?beforeDocs:appliedDocs);
+  assert.equal(read(notePath),action==='undo'?beforeNotes:appliedNotes);assert.equal(read(x.commentPath),action==='undo'?beforeComments:appliedComments);
+  const saved=await tx.readVerifiedProjectTreeMutation({manifestPath:x.f.manifestPath,projectId:x.f.query.projectId});
+  assert.equal(JSON.parse(saved.retainedPacket.plan.input.returnProofJson).schemaVersion,6);
+  assert.equal(saved.retainedPacket.plan.input.novelOrigin,undefined);assert.equal(fs.existsSync(tx.journalPathFor(x.f.manifestPath)),false);
+ }
+});
 for(const plainSibling of [false,true])test('book notes actual Main commits both pending owners and full discussions with exact protected '+(plainSibling?'plain ':'')+'sibling',async t=>{
  const {x,originalNotes,notePath}=await composedNotesMainFixture(t,{plainSibling}),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
  assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
