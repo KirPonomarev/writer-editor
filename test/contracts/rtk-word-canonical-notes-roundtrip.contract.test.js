@@ -64,6 +64,41 @@ test('selected canonical notes emit real footnotes and endnotes with literal bod
   assert.equal(source.localAuthorityCapsule.documentNotes.stateDigest, source.documentNotes.stateDigest);
 });
 
+test('canonical note export retains imported marked line breaks and typed linked run properties',async()=>{
+ const model=require('../../src/core/word-manuscript-notes-v1.cjs'),value=input(),scene=value.scenes[0];
+ const imported=[{type:'textStyle',attrs:{fontFamily:'Times New Roman',fontSize:'12pt',wordLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'}}}];
+ const typed=[{type:'bold'},{type:'italic'},{type:'underline'},{type:'strike'},
+  {type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'ar-SA'}}},
+  {type:'link',attrs:{href:'https://example.invalid/typed-break'}}];
+ const body={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'A'},
+  {type:'hardBreak',marks:imported},{type:'text',text:'B'},{type:'hardBreak',marks:imported},{type:'text',text:'C'},
+  {type:'hardBreak',attrs:{wordBreakType:'page'},marks:typed},{type:'text',text:'D'},
+  {type:'hardBreak',attrs:{wordBreakType:'column'},marks:typed},{type:'text',text:'E'},
+  {type:'hardBreak'},{type:'text',text:'F'}]}]};
+ for(const [i,kind] of ['footnote','endnote'].entries())value.notesDocument.notes[i]={...value.notesDocument.notes[i],title:'',scope:'manuscript',
+  attachment:{scope:'manuscript'},body:model.validateNoteBody(body).text,
+  manuscript:model.bindManuscriptPayload({kind,body,sceneId:scene.sceneId,offsetUtf16:0,sceneContent:scene.text})};
+ const {source,parts,parse,bytes}=await fixture(value),typedParsed=parse(bytes);
+ assert.equal(typedParsed.ok,false,'the existing native-note parser still refuses page/column notes');
+ assert.ok(typedParsed.reasons.some(reason=>reason.code==='RTK_WORD_NOTES_MALFORMED_BLOCKED'&&reason.detail==='NOTE_BREAK_KIND'));
+ for(const name of ['footnotes','endnotes']) {
+  const xml=parts[`word/${name}.xml`];assert.equal((xml.match(/<w:br(?:\s[^>]*)?\/>/g)||[]).length,5);
+  assert.equal((xml.match(/<w:br w:type="page"\/>/g)||[]).length,1);assert.equal((xml.match(/<w:br w:type="column"\/>/g)||[]).length,1);
+  assert.ok(xml.includes('<w:r><w:br/></w:r>'),'legacy plain line-break XML stays exact');
+  for(const atom of ['<w:sz w:val="24"/>','<w:sz w:val="28"/>','w:ascii="Times New Roman"','w:ascii="Georgia"',
+   '<w:b w:val="1"/>','<w:i w:val="1"/>','<w:strike w:val="1"/>','<w:u w:val="single"/>',
+   '<w:lang w:val="ru-RU" w:eastAsia="ja-JP" w:bidi="ar-SA"/>'])assert.ok(xml.includes(atom),atom);
+  assert.equal((xml.match(/<w:hyperlink r:id="noteLink1">/g)||[]).length,2);
+  assert.ok(parts[`word/_rels/${name}.xml.rels`].includes('Target="https://example.invalid/typed-break"'));
+ }
+ assert.deepEqual(source.documentNotes.sourceBindings.map(binding=>binding.richBody),[body,body]);
+ const lineValue=structuredClone(value);for(const note of lineValue.notesDocument.notes.slice(0,2))
+  for(const node of note.manuscript.body.content[0].content)if(node.type==='hardBreak')delete node.attrs;
+ const line=await fixture(lineValue),parsed=line.parse(line.bytes);
+ assert.equal(parsed.ok,true,JSON.stringify(parsed.reasons));assert.equal(line.verify(parsed).ok,true);
+ assert.deepEqual(parsed.reviewIr.documentNotes.notes.map(note=>note.paragraphs),[ ['A\nB\nC\nD\nE\nF'],['A\nB\nC\nD\nE\nF'] ]);
+});
+
 test('default export does not include private notes and selectors never accept bodies or paths', async () => {
   const value = input(); delete value.documentNoteSelections;
   const { source, parts } = await fixture(value);

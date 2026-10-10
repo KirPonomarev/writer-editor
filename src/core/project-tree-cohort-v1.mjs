@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { sha256Hex } from './browser-safe-hash.mjs';
+import hash from './browser-safe-hash.cjs';
 import { planProjectTreeIdentityCohort, normalizeProjectTreeIdentity, createDeterministicTreeNodeId } from './projectTreeIdentity.mjs';
 import envelope from './document-content-envelope-v1.cjs';
 import bookmarks from './word-user-bookmarks-v1.cjs';
@@ -18,10 +18,29 @@ import sections from './word-sections-v1.cjs';
 
 export const TREE_COHORT_MODE = 'PROJECT_TREE_COHORT_V1';
 export const TREE_COHORT_LIMITS = Object.freeze({ files: 2048, bytes: 32 * 1024 * 1024, scenes: 512 });
+const NOVEL_WORD_RETURN_BYTES=256*1024*1024;
+// A larger bounded envelope is not admission: the normal planner rederives the
+// proof and Core independently verifies this exact retained import origin.
+function mixedWordInputLimit(input) {
+  const origin=input?.novelOrigin;
+  if(!origin||Object.keys(origin).sort().join(',')!=='bytes,digest,path'
+    ||typeof origin.path!=='string'||!path.isAbsolute(origin.path)||!/^[a-f0-9]{64}$/u.test(origin.digest)
+    ||!Number.isSafeInteger(origin.bytes)||origin.bytes<0||origin.bytes>48*1024*1024
+    ||typeof input.returnProofJson!=='string'||Buffer.byteLength(input.returnProofJson)>TREE_COHORT_LIMITS.bytes)return TREE_COHORT_LIMITS.bytes;
+  let proof;try{proof=JSON.parse(input.returnProofJson);}catch{return TREE_COHORT_LIMITS.bytes;}
+  if(proof?.schemaVersion===5&&input.history===undefined)return NOVEL_WORD_RETURN_BYTES;
+  const apply=input.history?.applyPacket;
+  if(proof?.schemaVersion===6&&apply?.plan?.kind==='word-mixed-return'&&same(apply.plan.input?.novelOrigin,origin)
+    &&apply.plan.input.history===undefined&&typeof apply.plan.input.returnProofJson==='string'
+    &&Buffer.byteLength(apply.plan.input.returnProofJson)<=TREE_COHORT_LIMITS.bytes) {
+    try{if(JSON.parse(apply.plan.input.returnProofJson).schemaVersion===5)return NOVEL_WORD_RETURN_BYTES;}catch{/* Strict planner refuses below. */}
+  }
+  return TREE_COHORT_LIMITS.bytes;
+}
 const clone = x => JSON.parse(JSON.stringify(x));
 const stable = x => Array.isArray(x) ? `[${x.map(stable).join(',')}]` : x && typeof x === 'object'
   ? `{${Object.keys(x).sort().map(k => JSON.stringify(k) + ':' + stable(x[k])).join(',')}}` : JSON.stringify(x);
-const sha = x => sha256Hex(x);
+const sha = x => hash.sha256Hex(String(x));
 const fail = code => { throw Object.assign(Error(code), { code }); };
 const need = (ok, code = 'E_TREE_COHORT_INVALID') => { if (!ok) fail(code); };
 const text = x => x === null ? null : Buffer.from(x, 'base64').toString('utf8');
@@ -745,7 +764,7 @@ export function planProjectStoryBodyCohort(input) {
 // Fixed-topology book return: semantic output is regenerated from the signed
 // source and one complete discussion proof, never accepted as caller-written bytes.
 export function planProjectMixedWordReturnCohort(input) {
-  need(input && Object.keys(input).every(key => ['operation','operationId','projectId','manifestPath','beforeManifestText','expectedTreeRevision','scenes','notesText','commentsText','returnProofJson'].includes(key))
+  need(input && Object.keys(input).every(key => ['operation','operationId','projectId','manifestPath','beforeManifestText','expectedTreeRevision','scenes','notesText','commentsText','returnProofJson','novelOrigin','history'].includes(key))
     && input.operation === 'word-mixed-return', 'E_WORD_BOOK_COHORT_OPERATION');
   need(typeof input.projectId === 'string' && input.projectId.length > 0 && input.projectId.length <= 128
     && typeof input.operationId === 'string' && /^[A-Za-z0-9._:-]{1,128}$/u.test(input.operationId), 'E_TREE_COHORT_IDENTITY');
@@ -753,8 +772,8 @@ export function planProjectMixedWordReturnCohort(input) {
     && typeof input.beforeManifestText === 'string' && JSON.parse(input.beforeManifestText).projectId === input.projectId, 'E_TREE_COHORT_PROJECT');
   need(Number.isSafeInteger(input.expectedTreeRevision) && input.expectedTreeRevision >= 0, 'E_TREE_REVISION_CAS');
   need(Array.isArray(input.scenes) && input.scenes.length > 0 && input.scenes.length <= TREE_COHORT_LIMITS.scenes, 'E_WORD_BOOK_COHORT_BUDGET');
-  let inputBytes=0;
-  const count=value=>{need(value===null||typeof value==='string','E_WORD_BOOK_COHORT_SOURCE');if(value!==null)inputBytes+=Buffer.byteLength(value);need(inputBytes<=TREE_COHORT_LIMITS.bytes,'E_TREE_COHORT_BUDGET');};
+  let inputBytes=0;const byteLimit=mixedWordInputLimit(input);
+  const count=value=>{need(value===null||typeof value==='string','E_WORD_BOOK_COHORT_SOURCE');if(value!==null)inputBytes+=Buffer.byteLength(value);need(inputBytes<=byteLimit,'E_TREE_COHORT_BUDGET');};
   [input.beforeManifestText,input.notesText,input.commentsText,input.returnProofJson].forEach(count);
   const seen = new Set();
   for (const scene of input.scenes) {
@@ -764,24 +783,36 @@ export function planProjectMixedWordReturnCohort(input) {
     need(relative.startsWith('roman/') && /\.(?:txt|md)$/iu.test(relative) && !seen.has(relative), 'E_WORD_BOOK_COHORT_SOURCE'); seen.add(relative);
     need(typeof scene.beforeContent === 'string' && (scene.commitText === null || typeof scene.commitText === 'string'), 'E_WORD_BOOK_COHORT_SOURCE');
   }
-  const semantic = mixedReturn.planMixedBookReturn({beforeText:input.commentsText,projectId:input.projectId,
+  const proof=JSON.parse(input.returnProofJson);
+  const semantic = proof.schemaVersion===6?planMixedWordHistory(input,proof):mixedReturn.planMixedBookReturn({beforeText:input.commentsText,projectId:input.projectId,
     scenes:input.scenes.map(({sceneId,beforeContent})=>({sceneId,beforeContent})),returnProofJson:input.returnProofJson,notesText:input.notesText});
-  const entries = [], affectedScenes = [];let notesAfter=input.notesText;
+  need(proof.schemaVersion===6||input.history===undefined,'E_WORD_BOOK_HISTORY_PROOF');
+  if(input.novelOrigin!==undefined)need([5,6].includes(proof.schemaVersion)
+    &&input.novelOrigin&&Object.keys(input.novelOrigin).sort().join(',')==='bytes,digest,path'
+    &&typeof input.novelOrigin.path==='string'&&path.isAbsolute(input.novelOrigin.path)
+    &&/^[a-f0-9]{64}$/u.test(input.novelOrigin.digest)&&Number.isSafeInteger(input.novelOrigin.bytes)&&input.novelOrigin.bytes>=0,'E_WORD_BOOK_COHORT_ORIGIN');
+  const entries = [], affectedScenes = [];let notesAfter=semantic.notesAfterText??input.notesText;
   for (const change of semantic.scenes) {
     const scene = input.scenes.find(item=>item.sceneId===change.sceneId);
     entries.push({relativePath:scene.sceneId,role:'scene',beforeBase64:b64(scene.beforeContent),afterBase64:b64(change.content)},
       {relativePath:scene.sceneId+'.wp201-commit.json',role:'sceneCommit',beforeBase64:b64(scene.commitText),afterBase64:b64(scene.commitText)});
     if(change.changed) {
       affectedScenes.push({from:scene.sceneId,to:scene.sceneId,copy:false});
-      if(notesAfter!==null) {
+      if(notesAfter!==null && semantic.notesAfterText===undefined) {
         const active=notesModel.validateManuscriptDocument(JSON.parse(notesAfter),input.projectId).notes
           .some(note=>!note.deleted&&note.manuscript?.reference.sceneId===scene.sceneId);
-        need(!active||JSON.parse(input.returnProofJson).schemaVersion===4,'PENDING_NOTE_BOOK_CONTEXT_REQUIRED');
+        need(!active||proof.schemaVersion===4,'PENDING_NOTE_BOOK_CONTEXT_REQUIRED');
         notesAfter=notesModel.planManuscriptNoteAnchorSave({beforeText:notesAfter,projectId:input.projectId,sceneId:scene.sceneId,
           beforeContent:scene.beforeContent,afterContent:change.content})?.afterText||notesAfter;
       }
     }
   }
+  for(const change of semantic.noteChanges||[]) {
+    const owner=change.after?.reference.sceneId||change.before?.reference.sceneId;
+    if(owner&&!affectedScenes.some(s=>s.to===owner))affectedScenes.push({from:owner,to:owner,copy:false});
+  }
+  if(proof.schemaVersion===6)for(const scene of input.history.applyPacket.plan.affectedScenes)
+    if(!affectedScenes.some(item=>item.to===scene.to))affectedScenes.push(clone(scene));
   need(affectedScenes.length > 0, 'E_WORD_BOOK_COHORT_NO_CHANGE');
   need(input.notesText === null || typeof input.notesText === 'string', 'E_WORD_BOOK_COHORT_ANNOTATIONS');
   if(input.notesText !== null) notesModel.validateManuscriptDocument(JSON.parse(input.notesText),input.projectId);
@@ -791,8 +822,33 @@ export function planProjectMixedWordReturnCohort(input) {
     expectedTreeRevision:input.expectedTreeRevision,kind:'word-mixed-return',changed:true,code:'TREE_COHORT_READY',
     beforeManifestText:input.beforeManifestText,manifestText:input.beforeManifestText,entries,directories:[],
     affectedScenes,pathBindings:[],identityMap:{nodes:{},scenes:{},notes:{},bookmarks:{},threads:{},messages:{}},input:clone(input)};
-  plan.planDigest=sha(stable(plan));need(Buffer.byteLength(stable(plan))<=TREE_COHORT_LIMITS.bytes,'E_TREE_COHORT_BUDGET');
+  plan.planDigest=sha(stable(plan));need(Buffer.byteLength(stable(plan))<=byteLimit,'E_TREE_COHORT_BUDGET');
   return frozen(plan);
+}
+
+// A Word Apply inverse is separate from generic structural Undo. Its complete
+// targets come only from a rederived, retained typed Apply, never caller text.
+function planMixedWordHistory(input,proof) {
+  need(Object.keys(proof).sort().join(',')==='action,applyPacketDigest,applyTransactionId,schemaVersion'
+    &&['undo','redo'].includes(proof.action)&&input.history
+    &&Object.keys(input.history).sort().join(',')==='applyPacket,receipt','E_WORD_BOOK_HISTORY_PROOF');
+  const packet=input.history.applyPacket,receipt=input.history.receipt;
+  need(packet?.projectId===input.projectId&&packet.manifestPath===input.manifestPath
+    &&packet.plan?.kind==='word-mixed-return'&&JSON.parse(packet.plan.input.returnProofJson).schemaVersion===5
+    &&packet.transactionId===proof.applyTransactionId&&sha(stable(packet))===proof.applyPacketDigest
+    &&receipt?.projectId===input.projectId&&receipt.treeRevision===input.expectedTreeRevision,'E_WORD_BOOK_HISTORY_BINDING');
+  const original=validateProjectTreeCohort(packet.plan);
+  need(same(original.input.novelOrigin,input.novelOrigin)&&input.beforeManifestText===original.manifestText
+    &&original.manifestText===original.beforeManifestText,'E_WORD_BOOK_HISTORY_BINDING');
+  const current=proof.action==='undo'?'afterBase64':'beforeBase64',target=proof.action==='undo'?'beforeBase64':'afterBase64';
+  const source=original.entries.filter(entry=>entry.role==='scene');
+  need(input.scenes.length===source.length&&input.scenes.every((scene,i)=>scene.sceneId===source[i].relativePath
+    &&scene.beforeContent===text(source[i][current])),'E_WORD_BOOK_HISTORY_CAS');
+  const annotation=role=>original.entries.find(entry=>entry.role===role);
+  need(input.notesText===text(annotation('notes')[current])&&input.commentsText===text(annotation('comments')[current]),'E_WORD_BOOK_HISTORY_CAS');
+  return {scenes:input.scenes.map((scene,i)=>({sceneId:scene.sceneId,beforeContent:scene.beforeContent,
+    content:text(source[i][target]),changed:source[i][current]!==source[i][target]})),
+    notesAfterText:text(annotation('notes')[target]),afterText:text(annotation('comments')[target]),changes:[]};
 }
 
 export function validateDocxNovelCandidate(candidate, artifactSha256) {

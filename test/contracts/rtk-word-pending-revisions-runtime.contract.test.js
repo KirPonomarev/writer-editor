@@ -17,10 +17,12 @@ function document() {
 async function harness(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const file = path.join(root, 'scene.txt'); fs.writeFileSync(file, envelope.composeObservablePayload({ doc: document() }));
+  fs.writeFileSync(path.join(root, 'project.craftsman.json'), JSON.stringify({ schemaVersion: 1, projectId: 'p' }));
   const h = { writes: 0, opens: 0, snapshot: null, race: null };
-  const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectId: 'p', sceneId: 'roman/a.txt',
+  const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
     subjectId: 'life:session', sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
-  const c = { notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
+  const c = { path, readVerifiedProjectTreeMutation: require('../../src/core/project-transaction-v1.cjs').readVerifiedProjectTreeMutation,
+    notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
     queueDiskOperation: fn => fn(), readCommentAuthoringContext: async () => context(), requestEditorSnapshot: async () => {
       const value = h.snapshot || { generation: 0, content: fs.readFileSync(file, 'utf8') }; if (h.afterSnapshot) h.afterSnapshot(); return value;
     }, loadDocumentContentEnvelopeModule: async () => envelope, fs: fs.promises,
@@ -55,8 +57,8 @@ test('actual main bus and Kernel persist decisions, reopen, undo redo and no-op 
   let r = await h.command('reject', { revisionId: 'revision-2' }); assert.equal(r.ok, true, JSON.stringify(r)); assert.equal(h.writes, 1);
   assert.equal(model.projection(h.context().parsed.doc).current, 'old');
   r = await h.command('reject', { revisionId: 'revision-1' }); assert.equal(r.ok, true); assert.equal(h.writes, 1);
-  assert.equal((await h.command('undo')).ok, true); assert.equal(model.projection(h.context().parsed.doc).current, 'new');
-  assert.equal((await h.command('redo')).ok, true); assert.equal(model.projection(h.context().parsed.doc).current, 'old');
+  r = await h.command('undo'); assert.equal(r.ok, true, JSON.stringify(r)); assert.equal(model.projection(h.context().parsed.doc).current, 'new');
+  r = await h.command('redo'); assert.equal(r.ok, true, JSON.stringify(r)); assert.equal(model.projection(h.context().parsed.doc).current, 'old');
   assert.equal(h.writes, 3); assert.equal(h.opens, 3);
 });
 test('async publication does not replace editor after navigation or new authoring', async t => {

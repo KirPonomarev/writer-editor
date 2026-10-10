@@ -38,6 +38,7 @@ const PROJECT_COMMIT_REPAIR_CAPABILITY_ID = 'CAP_R24_PROJECT_COMMIT_REPAIR';
 const MAX_ARTIFACT_BYTES = 32 * 1024 * 1024;
 // One regenerated immutable novel origin is separate from ordinary media.
 const MAX_NOVEL_ORIGIN_BYTES = 48 * 1024 * 1024;
+const MAX_NOVEL_WORD_RETURN_BYTES = 256 * 1024 * 1024;
 
 const TRANSACTION_PHASES = Object.freeze({
   ADMIT: 'ADMIT',
@@ -878,7 +879,7 @@ async function publishSceneExact({ scenePath, expectedText, nextText, revision, 
 }
 
 async function recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, treeCohort, revalidate, fsAdapter = fsp }) {
-  const treeSource = await readOptionalText(journalPathFor(manifestPath), fsAdapter);
+  const treeSource = await readTreeEnvelopeSource(journalPathFor(manifestPath), manifestPath, fsAdapter);
   // A tree admission may fail before staging its journal. Its caller still
   // discharges recovery under the lease; no scene path exists for this mode.
   if (treeSource === null && treeCohort !== undefined) {
@@ -1637,16 +1638,39 @@ async function readNovelSceneBaseline(record, scenePath, manifestPath, verifyMan
     novelNeed(proof?.ok === true && proof.manifestPath === manifestPath && proof.fromDigest === origin.originalRecord.manifestDigest
       && proof.toDigest === record.manifestDigest, 'E_PROJECT_TRANSACTION_NOVEL_MANIFEST');
   }
-  const packet = await readNovelSuccessPacket(record, scenePath, manifestPath, fsAdapter);
+  if(invocation){invocation.successPaths ||= new Set();invocation.successPaths.add(recoveryPacketPathFor(manifestPath,record.transactionId));}
+  const packet = await readNovelSuccessPacket(record, scenePath, manifestPath, fsAdapter, invocation);
   return {...origin, latestPacket:packet.packet, notesText:packet.journal.noteState?.afterText ?? origin.notesText,
     commentsText:packet.journal.commentState?.afterText ?? origin.commentsText};
 }
-async function readNovelSuccessPacket(record, scenePath, manifestPath, fsAdapter) {
+async function readNovelSuccessPacket(record, scenePath, manifestPath, fsAdapter, invocation = null) {
   const target = recoveryPacketPathFor(manifestPath, record.transactionId);
-  await assertResourceBoundary(target, manifestPath, fsAdapter);
-  let source; try { novelNeed((await fsAdapter.stat(target)).size <= MAX_ARTIFACT_BYTES); source = await fsAdapter.readFile(target,'utf8'); }
-  catch (error) { if (error.code === 'ENOENT') novelNeed(false); throw error; }
-  let packet; try { packet = JSON.parse(source); } catch { novelNeed(false); }
+  const retained=invocation?.successPackets?.get(target);
+  const source=retained?.source ?? await readTreeEnvelopeSource(target,manifestPath,fsAdapter);novelNeed(source!==null);
+  let packet=retained?.packet; if(!packet)try { packet = JSON.parse(source); } catch { novelNeed(false); }
+  if(packet?.schemaVersion===TREE_JOURNAL_SCHEMA_VERSION) {
+    if(!retained) {
+      await validateTreePacket(packet,manifestPath);
+      let proof;try{proof=JSON.parse(packet.plan.input.returnProofJson);}catch{novelNeed(false);}
+      novelNeed(packet.plan.kind==='word-mixed-return'&&[5,6].includes(proof.schemaVersion)
+        &&packet.transactionId===record.transactionId&&source===canonicalBytes(packet));
+      if(invocation) {
+        // Private to this complete query. The observed packet is reread after
+        // all members, while each member still proves its own scene and commit.
+        invocation.successPackets ||= new Map();
+        invocation.successPackets.clear();
+        invocation.successPackets.set(target,freezeTreeValue({packet,source}));
+      }
+    }
+    const relative=path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/');
+    const entry=packet.entries.find(e=>e.relativePath===relative&&e.role==='scene');
+    const committed=packet.entries.find(e=>e.relativePath===relative+'.wp201-commit.json'&&e.role==='sceneCommit');
+    novelNeed(entry&&committed?.afterBase64&&canonicalize(JSON.parse(treeText(committed.afterBase64)))===canonicalize(record)
+      &&entry.afterBase64===await treeRead(scenePath,manifestPath,fsAdapter));
+    const annotation=role=>{const e=packet.entries.find(e=>e.role===role);return e?{beforeText:treeText(e.beforeBase64),afterText:treeText(e.afterBase64)}:undefined;};
+    return {packet,journal:{noteState:annotation('notes'),commentState:annotation('comments')},source};
+  }
+  novelNeed(Buffer.byteLength(source)<=MAX_ARTIFACT_BYTES,'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
   const journalSource = decodePacketRole(packet,'TRANSACTION_JOURNAL'), journal = parseJournal(journalSource,{scenePath,manifestPath});
   const state = await readCommitRecordState({scenePath,manifestPath,expectedJournal:journal,fsAdapter});
   novelNeed(state.status === 'VALID' && state.relation === 'CURRENT' && canonicalize(state.record) === canonicalize(record));
@@ -1755,12 +1779,17 @@ async function selectsNovelReceipt(scenePath,manifestPath,fsAdapter) {
 }
 async function readVerifiedNovelAnnotationLineage({scenePath,manifestPath,verifyManifestContinuation,fsAdapter=fsp}) {
   assertPathPair(scenePath,manifestPath);
-  const state=await readCommitRecordState({scenePath,manifestPath,observedScene:await readOptionalText(scenePath,fsAdapter),
-    observedManifest:await readOptionalText(manifestPath,fsAdapter),verifyManifestContinuation,fsAdapter});
-  const baseline=state.status==='VALID'?await readNovelSceneBaseline(state.record,scenePath,manifestPath,verifyManifestContinuation,fsAdapter):null;
-  if (!baseline) {novelNeed(state.record?.commentState?.mode!==COMMENT_AUTHORING_MODE,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');novelNeed(!await selectsNovelReceipt(scenePath,manifestPath,fsAdapter),'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');return null;}
-  await readVerifiedProjectTransaction({scenePath,manifestPath,verifyManifestContinuation,fsAdapter});
-  return Object.freeze({projectId:baseline.packet.projectId,sceneId:path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/'),transactionId:state.record.transactionId});
+  const {reader,invocation,assertFresh}=createNovelReadInvocation(manifestPath,fsAdapter);
+  const state=await readCommitRecordState({scenePath,manifestPath,observedScene:await readOptionalText(scenePath,reader),
+    observedManifest:await readOptionalText(manifestPath,reader),verifyManifestContinuation,fsAdapter:reader});
+  const baseline=state.status==='VALID'?await readNovelSceneBaseline(state.record,scenePath,manifestPath,verifyManifestContinuation,reader,null,invocation):null;
+  if (!baseline) {novelNeed(state.record?.commentState?.mode!==COMMENT_AUTHORING_MODE,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');novelNeed(!await selectsNovelReceipt(scenePath,manifestPath,reader),'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');await assertFresh();return null;}
+  await readVerifiedProjectTransactionInInvocation({scenePath,manifestPath,verifyManifestContinuation,fsAdapter:reader},invocation);
+  const treeMutation=await readVerifiedProjectTreeMutationInInvocation({manifestPath,projectId:baseline.packet.projectId,fsAdapter:reader},invocation);
+  await assertFresh();
+  return Object.freeze({projectId:baseline.packet.projectId,sceneId:path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/'),transactionId:state.record.transactionId,
+    scenePaths:Object.freeze(baseline.packet.plan.importReceipt.createdScenes.map(scene=>path.join(path.dirname(manifestPath),scene.relativeFile))),
+    treeMutation:freezeTreeValue(treeMutation),originResource:Object.freeze({...baseline.resource})});
 }
 
 // Readback of a committed create transaction is independent of the import
@@ -1811,14 +1840,8 @@ async function readVerifiedProjectTransactionInInvocation({ scenePath, manifestP
   return Object.freeze({ ...state.record });
 }
 
-// Complete read-only query. Its reuse context and observed bytes are created
-// here, never accepted from a caller or retained across invocations.
-async function readVerifiedProjectDocxNovelCohort(options) {
-  novelNeed(options && Object.keys(options).every(key => ['manifestPath','projectId','scenePaths','verifyManifestContinuation','fsAdapter'].includes(key)), 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
-  const {manifestPath,projectId,scenePaths,verifyManifestContinuation,fsAdapter=fsp} = options;
-  novelNeed(typeof manifestPath === 'string' && path.isAbsolute(manifestPath) && typeof projectId === 'string'
-    && Array.isArray(scenePaths) && scenePaths.length >= 1 && scenePaths.length <= 512
-    && new Set(scenePaths).size === scenePaths.length, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+// Owned by one query only. A caller cannot supply this observation context.
+function createNovelReadInvocation(manifestPath, fsAdapter) {
   const observed = new Map(), invocation = {origin:null};
   const capture = (target, bytes) => {
     const binding = bytes === null ? null : {bytes:Buffer.byteLength(bytes),digest:sha256hex(bytes)};
@@ -1827,7 +1850,7 @@ async function readVerifiedProjectDocxNovelCohort(options) {
   };
   const reader = {...fsAdapter,readFile:async(target,...args)=>{
     try {
-      const limit=retainedOriginId(target,manifestPath)?MAX_NOVEL_ORIGIN_BYTES:MAX_ARTIFACT_BYTES;
+      const limit=invocation.successPaths?.has(target)?MAX_NOVEL_WORD_RETURN_BYTES:retainedOriginId(target,manifestPath)?MAX_NOVEL_ORIGIN_BYTES:MAX_ARTIFACT_BYTES;
       const stat=await fsAdapter.stat(target);
       novelNeed(Number.isSafeInteger(stat.size) && stat.size>=0 && typeof stat.isFile==='function' && stat.isFile() && stat.size<=limit,
         'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
@@ -1838,6 +1861,31 @@ async function readVerifiedProjectDocxNovelCohort(options) {
     }
     catch(error) {if(error.code==='ENOENT')capture(target,null);throw error;}
   }};
+  const assertFresh=async()=>{
+  // Every participating read, including absent journal and annotation files,
+  // is checked again after the last member; the result is immutable.
+  for(const [target,binding] of observed) {
+    await assertResourceBoundary(target,manifestPath,fsAdapter);
+    let stat;try {stat=await fsAdapter.stat(target);}catch(error){if(error.code!=='ENOENT')throw error;stat=null;}
+    novelNeed(stat===null ? binding===null : binding!==null && stat.isFile() && stat.size===binding.bytes,
+      'E_PROJECT_TRANSACTION_NOVEL_STALE');
+    let value=null;if(stat!==null)try {value=await fsAdapter.readFile(target);}catch(error){if(error.code!=='ENOENT')throw error;}
+    const actual=value===null?null:{bytes:Buffer.byteLength(value),digest:sha256hex(value)};
+    novelNeed(canonicalize(actual)===canonicalize(binding), 'E_PROJECT_TRANSACTION_NOVEL_STALE');
+  }
+  };
+  return {reader,invocation,assertFresh};
+}
+
+// Complete read-only query. Its reuse context and observed bytes are created
+// here, never accepted from a caller or retained across invocations.
+async function readVerifiedProjectDocxNovelCohort(options) {
+  novelNeed(options && Object.keys(options).every(key => ['manifestPath','projectId','scenePaths','verifyManifestContinuation','fsAdapter'].includes(key)), 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  const {manifestPath,projectId,scenePaths,verifyManifestContinuation,fsAdapter=fsp} = options;
+  novelNeed(typeof manifestPath === 'string' && path.isAbsolute(manifestPath) && typeof projectId === 'string'
+    && Array.isArray(scenePaths) && scenePaths.length >= 1 && scenePaths.length <= 512
+    && new Set(scenePaths).size === scenePaths.length, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
+  const {reader,invocation,assertFresh}=createNovelReadInvocation(manifestPath,fsAdapter);
   const records=[];
   for (const scenePath of scenePaths) {
     novelNeed(typeof scenePath === 'string' && path.isAbsolute(scenePath), 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
@@ -1856,19 +1904,10 @@ async function readVerifiedProjectDocxNovelCohort(options) {
   const attemptPath=treeAbsolute(manifestPath,'.yalken/docx-import/active-attempt.v1.json');
   const attemptBytes=await readResource({path:attemptPath},manifestPath,reader);
   novelNeed(attemptBytes===null || attemptBytes.length<=4096, 'E_PROJECT_TRANSACTION_NOVEL_COHORT');
-  // Every participating read, including absent journal and annotation files,
-  // is checked again after the last member; the result is immutable.
-  await Promise.all([...observed].map(async([target,binding])=>{
-    await assertResourceBoundary(target,manifestPath,fsAdapter);
-    let stat;try {stat=await fsAdapter.stat(target);}catch(error){if(error.code!=='ENOENT')throw error;stat=null;}
-    novelNeed(stat===null ? binding===null : binding!==null && stat.isFile() && stat.size===binding.bytes,
-      'E_PROJECT_TRANSACTION_NOVEL_STALE');
-    let value=null;if(stat!==null)try {value=await fsAdapter.readFile(target);}catch(error){if(error.code!=='ENOENT')throw error;}
-    const actual=value===null?null:{bytes:Buffer.byteLength(value),digest:sha256hex(value)};
-    novelNeed(canonicalize(actual)===canonicalize(binding), 'E_PROJECT_TRANSACTION_NOVEL_STALE');
-  }));
+  const treeMutation=await readVerifiedProjectTreeMutationInInvocation({manifestPath,projectId,fsAdapter:reader},invocation);
+  await assertFresh();
   const freeze=value=>{if(value && typeof value==='object'){for(const child of Object.values(value))freeze(child);Object.freeze(value);}return value;};
-  return freeze({projectId,manifestDigest:sha256hex(manifestText),attemptDigest:attemptBytes===null?'':sha256hex(attemptBytes),records});
+  return freeze({projectId,manifestDigest:sha256hex(manifestText),attemptDigest:attemptBytes===null?'':sha256hex(attemptBytes),records,treeMutation});
 }
 
 function classifyProjectTransactionState({ scenePath, manifestPath }) {
@@ -2004,15 +2043,23 @@ async function consumeRestoredTreeAnnotationResources(resources, scenePath, mani
   for (const [target, entry] of managed) treeNeed(await treeRead(target, manifestPath, fsAdapter) === entry.afterBase64, 'E_TREE_COHORT_ANNOTATION_CAS');
   return resources.filter(entry => !managed.has(entry.path));
 }
-async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = null) {
+async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = null, privateInvocation = null) {
   const managed = treeManagedAnnotationEntries(packet.plan, manifestPath);
+  const novelOrigin=packet.plan.kind==='word-mixed-return'?packet.plan.input.novelOrigin:undefined;
+  const invocation=novelOrigin?(privateInvocation||{origin:null}):null;
   const stagedMedia = new Set(packet.plan.entries.filter(entry=>entry.role==='storyMedia' || packet.plan.kind==='word-generic-import' && ['importReceipt','importMedia'].includes(entry.role)).map(entry=>treeAbsolute(manifestPath,entry.relativePath)));
   for (const entry of packet.entries.filter(e => e.role === 'sceneCommit' && e.relativePath.endsWith('.wp201-commit.json'))) {
     for (const raw of new Set([entry.beforeBase64, entry.afterBase64].filter(Boolean))) {
       let record; try { record = JSON.parse(treeText(raw)); } catch { treeError('E_TREE_COHORT_COMMIT_INVALID'); }
       const resources = record.resources || [];
       if (resources.length) normalizeRetainedResources(resources, record.scenePath, manifestPath);
-      await verifyRetainedResources(resources.filter(resource => !managed.has(resource.path) && !stagedMedia.has(resource.path)), record.scenePath, manifestPath, fsAdapter);
+      const checked=resources.filter(resource => !managed.has(resource.path) && !stagedMedia.has(resource.path));
+      if(novelOrigin&&!checked.some(resource=>retainedOriginId(resource.path,manifestPath)))checked.push(novelOrigin);
+      const origin=await verifyRetainedResources(checked, record.scenePath, manifestPath, fsAdapter,invocation);
+      if(novelOrigin) {
+        treeNeed(origin&&canonicalize(origin.resource)===canonicalize(novelOrigin),'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+        if(raw===entry.beforeBase64&&requireSide==='before')await readNovelSceneBaseline(record,record.scenePath,manifestPath,undefined,fsAdapter,origin,invocation);
+      }
     }
   }
   const observed = [];
@@ -2086,6 +2133,12 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
         resources.set(treeAbsolute(manifestPath,entry.relativePath),{path:treeAbsolute(manifestPath,entry.relativePath),digest:sha256hex(Buffer.from(entry.afterBase64,'base64')),bytes:Buffer.from(entry.afterBase64,'base64').length});
       }
     }
+    if(plan.kind==='word-mixed-return'&&plan.input.novelOrigin) {
+      const origin=plan.input.novelOrigin;
+      treeNeed(!resources.has(origin.path)||canonicalize(resources.get(origin.path))===canonicalize(origin),'E_TREE_COHORT_RESOURCE_CONFLICT');
+      resources.set(origin.path,origin);
+      normalizeRetainedResources([...resources.values()],treeAbsolute(manifestPath,scene.relativePath),manifestPath);
+    }
     const note = entries.find(entry => entry.role === 'notes'), comment = entries.find(entry => entry.role === 'comments');
     const record = { schemaVersion: TREE_COMMIT_SCHEMA_VERSION, transactionId, revision,
       scenePath: treeAbsolute(manifestPath, scene.relativePath), manifestPath,
@@ -2101,6 +2154,36 @@ function buildTreeEntries(plan, manifestPath, revision, transactionId) {
 function isNovelTreePacket(packet) {
   return packet?.plan?.kind === 'word-generic-import' && packet.plan.importReceipt?.sceneStrategy === 'word-novel-root-partitions';
 }
+function isNovelWordReturnPacket(packet) {
+  const input=packet?.plan?.input,origin=input?.novelOrigin;
+  if(packet?.plan?.kind!=='word-mixed-return'||!origin||Object.keys(origin).sort().join(',')!=='bytes,digest,path'
+    ||typeof origin.path!=='string'||!path.isAbsolute(origin.path)||!isDigest(origin.digest)
+    ||!Number.isSafeInteger(origin.bytes)||origin.bytes<0||origin.bytes>MAX_NOVEL_ORIGIN_BYTES
+    ||typeof input.returnProofJson!=='string'||Buffer.byteLength(input.returnProofJson)>MAX_ARTIFACT_BYTES)return false;
+  let proof;try{proof=JSON.parse(input.returnProofJson);}catch{return false;}
+  if(proof?.schemaVersion===5&&input.history===undefined)return true;
+  const apply=input.history?.applyPacket;
+  if(proof?.schemaVersion===6&&apply?.plan?.kind==='word-mixed-return'&&canonicalize(apply.plan.input?.novelOrigin)===canonicalize(origin)
+    &&apply.plan.input.history===undefined&&typeof apply.plan.input.returnProofJson==='string'
+    &&Buffer.byteLength(apply.plan.input.returnProofJson)<=MAX_ARTIFACT_BYTES) {
+    try{return JSON.parse(apply.plan.input.returnProofJson).schemaVersion===5;}catch{return false;}
+  }
+  return false;
+}
+const treeEnvelopeLimit=packet=>isNovelWordReturnPacket(packet)?MAX_NOVEL_WORD_RETURN_BYTES:isNovelTreePacket(packet)?MAX_NOVEL_ORIGIN_BYTES:MAX_ARTIFACT_BYTES;
+// Only owned journal/latest-packet callers use this coarse pre-read envelope.
+// Parsed category, complete semantic regeneration and origin verification still
+// enforce the narrower ordinary32/import48 limits and mutation authority.
+async function readTreeEnvelopeSource(target,manifestPath,fsAdapter) {
+  await assertResourceBoundary(target,manifestPath,fsAdapter);
+  try {
+    const stat=await fsAdapter.stat(target);
+    treeNeed(Number.isSafeInteger(stat.size)&&stat.size>=0&&stat.isFile()&&stat.size<=MAX_NOVEL_WORD_RETURN_BYTES,'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
+    const source=await fsAdapter.readFile(target,'utf8');
+    treeNeed(Buffer.byteLength(source)<=MAX_NOVEL_WORD_RETURN_BYTES,'E_PROJECT_TRANSACTION_RESOURCE_BUDGET');
+    treeNeed(Buffer.byteLength(source)===stat.size,'E_PROJECT_TRANSACTION_NOVEL_STALE');return source;
+  }catch(error){if(error.code==='ENOENT')return null;throw error;}
+}
 function validateTreePacketShape(packet, manifestPath) {
   treeNeed(packet?.schemaVersion === TREE_JOURNAL_SCHEMA_VERSION && packet.manifestPath === manifestPath
     && typeof packet.projectId === 'string' && packet.projectId === packet.plan?.projectId
@@ -2110,14 +2193,20 @@ function validateTreePacketBinding(packet, manifestPath) {
   validateTreePacketShape(packet, manifestPath);
   const id = sha256hex(`${packet.projectId}\n${packet.plan.planDigest}\n${packet.revision}`);
   treeNeed(packet.transactionId === id && canonicalize(packet.entries) === canonicalize(buildTreeEntries(packet.plan, manifestPath, packet.revision, id)), 'E_TREE_COHORT_JOURNAL_BINDING');
-  treeNeed(Buffer.byteLength(isNovelTreePacket(packet) ? canonicalBytes(packet) : canonicalize(packet))
-    <= (isNovelTreePacket(packet) ? MAX_NOVEL_ORIGIN_BYTES : MAX_ARTIFACT_BYTES), 'E_TREE_COHORT_BUDGET');
+  treeNeed(Buffer.byteLength(isNovelTreePacket(packet)||isNovelWordReturnPacket(packet) ? canonicalBytes(packet) : canonicalize(packet))
+    <= treeEnvelopeLimit(packet), 'E_TREE_COHORT_BUDGET');
 }
 async function validateTreePacket(packet, manifestPath) {
   const model = await treeModel();
   validateTreePacketShape(packet, manifestPath);
   model.validateProjectTreeCohort(packet.plan);
   if (packet.plan.kind === 'undo') await validateTreePacket(packet.plan.input.retainedPacket, manifestPath);
+  if(packet.plan.kind==='word-mixed-return'&&packet.plan.input.history) {
+    // Schema 6's independently regenerated meaning already validates this
+    // exact Apply plan. Its complete packet envelope still needs binding.
+    if(JSON.parse(packet.plan.input.returnProofJson).schemaVersion===6)validateTreePacketBinding(packet.plan.input.history.applyPacket,manifestPath);
+    else await validateTreePacket(packet.plan.input.history.applyPacket,manifestPath);
+  }
   if (packet.plan.input.recoveredCopy) await validateTreePacket(packet.plan.input.recoveredCopy.retainedPacket, manifestPath);
   validateTreePacketBinding(packet, manifestPath);
   return packet;
@@ -2130,33 +2219,36 @@ async function buildVerifiedTreePacket(plan, manifestPath, revision) {
   // Own the complete bounded input before any await. A caller cannot change
   // admitted meaning while this invocation later revalidates filesystem state.
   const source=canonicalize(plan);
-  treeNeed(Buffer.byteLength(source)<=MAX_ARTIFACT_BYTES,'E_TREE_COHORT_BUDGET');
+  treeNeed(Buffer.byteLength(source)<=(isNovelWordReturnPacket({plan})?MAX_NOVEL_WORD_RETURN_BYTES:MAX_ARTIFACT_BYTES),'E_TREE_COHORT_BUDGET');
   const privatePlan=JSON.parse(source),model=await treeModel();
   model.validateProjectTreeCohort(privatePlan); // Before extracting any packet paths.
   const transactionId=sha256hex(`${privatePlan.projectId}\n${privatePlan.planDigest}\n${revision}`);
   const packet={schemaVersion:TREE_JOURNAL_SCHEMA_VERSION,projectId:privatePlan.projectId,manifestPath,transactionId,
     revision,plan:privatePlan,entries:buildTreeEntries(privatePlan,manifestPath,revision,transactionId)};
   if(privatePlan.kind==='undo')await validateTreePacket(privatePlan.input.retainedPacket,manifestPath);
+  if(privatePlan.kind==='word-mixed-return'&&privatePlan.input.history) {
+    if(JSON.parse(privatePlan.input.returnProofJson).schemaVersion===6)validateTreePacketBinding(privatePlan.input.history.applyPacket,manifestPath);
+    else await validateTreePacket(privatePlan.input.history.applyPacket,manifestPath);
+  }
   if(privatePlan.input.recoveredCopy)await validateTreePacket(privatePlan.input.recoveredCopy.retainedPacket,manifestPath);
   validateTreePacketBinding(packet,manifestPath);
   return freezeTreeValue(packet);
 }
-function validateTreeJournalEnvelope(journal, source, manifestPath, model) {
-  treeNeed(Buffer.byteLength(source) <= (isNovelTreePacket(journal.packet) ? MAX_NOVEL_ORIGIN_BYTES : MAX_ARTIFACT_BYTES), 'E_TREE_COHORT_BUDGET');
+function validateTreeJournalEnvelope(journal, source, manifestPath) {
+  treeNeed(Buffer.byteLength(source) <= treeEnvelopeLimit(journal.packet), 'E_TREE_COHORT_BUDGET');
   treeNeed(journal.schemaVersion === TREE_JOURNAL_SCHEMA_VERSION && journal.transactionId === journal.packet.transactionId
     && journal.manifestPath === manifestPath && (journal.previousReceiptText === null || typeof journal.previousReceiptText === 'string'), 'E_TREE_COHORT_JOURNAL');
   const receipt = JSON.parse(journal.receiptText);
   treeNeed(receipt.schemaVersion === TREE_RECEIPT_SCHEMA_VERSION && receipt.projectId === journal.packet.projectId
-    && receipt.transactionId === journal.transactionId && receipt.packetDigest === model.projectTreeCohortDigest(journal.packet)
+    && receipt.transactionId === journal.transactionId && receipt.packetDigest === sha256hex(canonicalize(journal.packet))
     && receipt.treeRevision === journal.packet.plan.expectedTreeRevision + 1 && receipt.kind === journal.packet.plan.kind, 'E_TREE_COHORT_RECEIPT');
   return journal;
 }
 async function parseTreeJournal(source, manifestPath) {
-  treeNeed(typeof source === 'string' && Buffer.byteLength(source) <= MAX_NOVEL_ORIGIN_BYTES, 'E_TREE_COHORT_BUDGET');
+  treeNeed(typeof source === 'string' && Buffer.byteLength(source) <= MAX_NOVEL_WORD_RETURN_BYTES, 'E_TREE_COHORT_BUDGET');
   let journal; try { journal = JSON.parse(source); } catch { treeError('E_TREE_COHORT_JOURNAL'); }
   await validateTreePacket(journal.packet, manifestPath);
-  const model = await treeModel();
-  return validateTreeJournalEnvelope(journal,source,manifestPath,model);
+  return validateTreeJournalEnvelope(journal,source,manifestPath);
 }
 async function publishTreeSide(packet, side, { manifestPath, publishManifest, revalidate, fsAdapter }) {
   await revalidate();
@@ -2226,7 +2318,10 @@ async function recoverTreeCohort({ manifestPath, publishManifest, revalidate, fs
     return { recovered: true, outcome: committed ? 'COMMITTED_ROLLED_FORWARD' : 'UNCOMMITTED_ROLLED_BACK', transactionId: journal.transactionId, mode: 'tree' };
   } catch (error) { return preserveTreeConflict(journal, error, fsAdapter); }
 }
-async function readVerifiedProjectTreeMutation({ manifestPath, projectId, fsAdapter = fsp }) {
+async function readVerifiedProjectTreeMutation(options) {
+  return readVerifiedProjectTreeMutationInInvocation(options);
+}
+async function readVerifiedProjectTreeMutationInInvocation({ manifestPath, projectId, fsAdapter = fsp }, invocation = null) {
   treeNeed(typeof manifestPath === 'string' && path.isAbsolute(manifestPath), 'E_TREE_COHORT_PATH');
   await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
   const manifest = await readOptionalText(manifestPath, fsAdapter);
@@ -2238,51 +2333,83 @@ async function readVerifiedProjectTreeMutation({ manifestPath, projectId, fsAdap
   let receipt; try { receipt = JSON.parse(treeText(source)); } catch { treeError('E_TREE_COHORT_RECEIPT'); }
   treeNeed(receipt.schemaVersion === TREE_RECEIPT_SCHEMA_VERSION && receipt.projectId === parsed.projectId
     && isDigest(receipt.transactionId) && isDigest(receipt.packetDigest) && Number.isSafeInteger(receipt.treeRevision) && receipt.treeRevision > 0, 'E_TREE_COHORT_RECEIPT');
-  const packetSource = await readResource({path:recoveryPacketPathFor(manifestPath, receipt.transactionId)}, manifestPath, fsAdapter);
+  const target=recoveryPacketPathFor(manifestPath,receipt.transactionId);
+  if(invocation){invocation.successPaths ||= new Set();invocation.successPaths.add(target);}
+  const packetSource = await readTreeEnvelopeSource(target, manifestPath, fsAdapter);
   treeNeed(packetSource !== null, 'E_TREE_COHORT_PACKET_MISSING');
-  const packet = await validateTreePacket(JSON.parse(packetSource), manifestPath), model = await treeModel();
+  const owned=invocation?.successPackets?.get(target)?.packet
+    ||(invocation?.origin?.packet.transactionId===receipt.transactionId?invocation.origin.packet:null);
+  const packet = owned || await validateTreePacket(JSON.parse(packetSource), manifestPath);
+  if(owned)treeNeed(packetSource===canonicalBytes(packet),'E_TREE_COHORT_RECEIPT_BINDING');
   treeNeed(packet.projectId === parsed.projectId && packet.transactionId === receipt.transactionId
-    && model.projectTreeCohortDigest(packet) === receipt.packetDigest && packet.plan.expectedTreeRevision + 1 === receipt.treeRevision
+    && sha256hex(canonicalize(packet)) === receipt.packetDigest && packet.plan.expectedTreeRevision + 1 === receipt.treeRevision
     && packet.plan.kind === receipt.kind, 'E_TREE_COHORT_RECEIPT_BINDING');
+  if(invocation && isNovelWordReturnPacket(packet)) {
+    treeNeed(packetSource===canonicalBytes(packet),'E_TREE_COHORT_RECEIPT_BINDING');
+    invocation.successPackets ||= new Map();
+    invocation.successPackets.clear();
+    invocation.successPackets.set(target,freezeTreeValue({packet,source:packetSource}));
+  }
   let canUndo = !['undo','word-mixed-return','word-generic-import'].includes(receipt.kind), unavailableReason = canUndo ? null : receipt.kind === 'word-generic-import' ? 'IMPORT_COHORT_INVERSE_UNPROVEN' : receipt.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : 'TREE_UNDO_CONSUMED';
-  if (canUndo) try { await inspectTreePacket(packet, manifestPath, fsAdapter, 'after'); }
+  let wordReturnHistory=null;
+  if(packet.plan.kind==='word-mixed-return') {
+    const proof=JSON.parse(packet.plan.input.returnProofJson);
+    if([5,6].includes(proof.schemaVersion)) {
+      try {
+        await inspectTreePacket(packet,manifestPath,fsAdapter,'after',invocation);
+        wordReturnHistory={canUndo:proof.schemaVersion===5||proof.action==='redo',canRedo:proof.action==='undo'};
+      }catch(error){wordReturnHistory={canUndo:false,canRedo:false,reason:error.code||error.message};}
+    }
+  }
+  if (canUndo) try { await inspectTreePacket(packet, manifestPath, fsAdapter, 'after',invocation); }
   catch (error) { canUndo = false; unavailableReason = error.code || error.message; }
-  return { treeRevision: receipt.treeRevision, lastMutation: { id: receipt.transactionId, kind: receipt.kind, canUndo, unavailableReason }, receipt, retainedPacket: packet };
+  return { treeRevision: receipt.treeRevision, lastMutation: { id: receipt.transactionId, kind: receipt.kind, canUndo, unavailableReason,
+    ...(wordReturnHistory?{wordReturnHistory}: {}) }, receipt, retainedPacket: packet };
 }
 async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publishManifest, revalidate, afterTreeFilesPublish, fsAdapter }) {
   treeNeed(typeof revalidate === 'function' && typeof publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
   treeNeed(Number.isSafeInteger(revision) && revision >= 0 && plan?.input?.manifestPath === manifestPath ||
     (plan?.kind === 'undo' && plan?.input?.retainedPacket?.manifestPath === manifestPath && Number.isSafeInteger(revision) && revision >= 0), 'E_TREE_COHORT_IDENTITY');
-  const localNovel=isNovelTreePacket({plan});let packet=null;
+  const localNovel=isNovelTreePacket({plan})||isNovelWordReturnPacket({plan});let packet=null;
   if(localNovel) {packet=await buildVerifiedTreePacket(plan,manifestPath,revision);plan=packet.plan;}
   const model = await treeModel();
   if(!localNovel)model.validateProjectTreeCohort(plan);
+  let privateRead=localNovel?createNovelReadInvocation(manifestPath,fsAdapter):null;
   await revalidate();
-  if (await readOptionalText(journalPathFor(manifestPath), fsAdapter) !== null) treeError('E_PROJECT_TRANSACTION_RECOVERY_REQUIRED');
-  const current = await readVerifiedProjectTreeMutation({ manifestPath, projectId: plan.projectId, fsAdapter });
+  if (await readOptionalText(journalPathFor(manifestPath), privateRead?.reader||fsAdapter) !== null) treeError('E_PROJECT_TRANSACTION_RECOVERY_REQUIRED');
+  const current = await readVerifiedProjectTreeMutationInInvocation({ manifestPath, projectId: plan.projectId, fsAdapter:privateRead?.reader||fsAdapter },privateRead?.invocation);
   treeNeed(current.treeRevision === plan.expectedTreeRevision, 'E_TREE_REVISION_CAS');
+  if(plan.kind==='word-mixed-return'&&plan.input.history) {
+    const proof=JSON.parse(plan.input.returnProofJson),apply=current.retainedPacket.plan.input.history?.applyPacket||current.retainedPacket;
+    treeNeed(current.lastMutation?.wordReturnHistory?.[proof.action==='undo'?'canUndo':'canRedo']===true
+      &&canonicalize(current.receipt)===canonicalize(plan.input.history.receipt)
+      &&canonicalize(apply)===canonicalize(plan.input.history.applyPacket),'E_WORD_BOOK_HISTORY_UNAVAILABLE');
+  }
   if (plan.kind === 'undo') treeNeed(current.lastMutation?.canUndo && current.lastMutation.id === plan.input.lastMutation
     && canonicalize(current.retainedPacket) === canonicalize(plan.input.retainedPacket), 'E_TREE_UNDO_UNAVAILABLE');
   if (plan.input.recoveredCopy) treeNeed(['undo', 'copy', 'split', 'merge'].includes(current.receipt?.kind)
     && canonicalize(current.receipt) === canonicalize(plan.input.recoveredCopy.receipt)
     && canonicalize(current.retainedPacket) === canonicalize(plan.input.recoveredCopy.retainedPacket), 'E_TREE_RECOVERY_BINDING');
-  if (!plan.changed) return { success: true, changed: false, code: 'TREE_COHORT_UNCHANGED', treeRevision: current.treeRevision, lastMutation: current.lastMutation };
+  if (!plan.changed) {
+    if(privateRead)await privateRead.assertFresh();
+    return { success: true, changed: false, code: 'TREE_COHORT_UNCHANGED', treeRevision: current.treeRevision, lastMutation: current.lastMutation };
+  }
   const transactionId=sha256hex(`${plan.projectId}\n${plan.planDigest}\n${revision}`);
   if(!packet) {
     packet={schemaVersion:TREE_JOURNAL_SCHEMA_VERSION,projectId:plan.projectId,manifestPath,transactionId,
       revision,plan,entries:buildTreeEntries(plan,manifestPath,revision,transactionId)};
     await validateTreePacket(packet,manifestPath);
   }
-  await inspectTreePacket(packet, manifestPath, fsAdapter, 'before');
-  const previousReceiptText = await readOptionalText(treeCommitPathFor(manifestPath), fsAdapter);
+  await inspectTreePacket(packet, manifestPath, privateRead?.reader||fsAdapter, 'before',privateRead?.invocation);
+  const previousReceiptText = await readOptionalText(treeCommitPathFor(manifestPath), privateRead?.reader||fsAdapter);
   const receipt = { schemaVersion: TREE_RECEIPT_SCHEMA_VERSION, projectId: plan.projectId, transactionId,
-    treeRevision: current.treeRevision + 1, kind: plan.kind, packetDigest: model.projectTreeCohortDigest(packet) };
+    treeRevision: current.treeRevision + 1, kind: plan.kind, packetDigest: sha256hex(canonicalize(packet)) };
   const receiptText = canonicalBytes(receipt), journal = { schemaVersion: TREE_JOURNAL_SCHEMA_VERSION,
     manifestPath, transactionId, previousReceiptText, receiptText, packet };
   const journalText = canonicalBytes(journal);
   // These canonical bytes come from this invocation's frozen, fully verified
   // packet. External and recovery journals still regenerate through the parser.
-  if(localNovel)validateTreeJournalEnvelope(journal,journalText,manifestPath,model);
+  if(localNovel)validateTreeJournalEnvelope(journal,journalText,manifestPath);
   else await parseTreeJournal(journalText,manifestPath);
   if (plan.kind === 'word-generic-import') {
     const packetText = canonicalBytes(packet), origin = {path:recoveryPacketPathFor(manifestPath,transactionId),digest:sha256hex(packetText),bytes:Buffer.byteLength(packetText)};
@@ -2293,6 +2420,8 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
     }
   }
   await revalidate();
+  if(privateRead)await privateRead.assertFresh();
+  privateRead=null; // Reuse ends before the first durable write.
   await durableSaveTransaction({ filePath: journalPathFor(manifestPath), content: journalText, revision, fsAdapter });
   await publishTreeSide(packet, 'after', { manifestPath, publishManifest, revalidate, fsAdapter });
   if (afterTreeFilesPublish !== undefined) {

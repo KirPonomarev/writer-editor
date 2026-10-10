@@ -21,6 +21,8 @@ function document() {
 async function harness(t, { clean = false, savedDefaults = false, mixed = false, links = false, linkTarget, early, firstDiscussion = false, markChange = false, novelDocument, novelState, reopenRoot, commandOnly = false } = {}) {
   const root = reopenRoot || fs.mkdtempSync(path.join(os.tmpdir(), 'pending-runtime-')); if (!reopenRoot) t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'roman'), {recursive:true}); const file = path.join(root, 'roman/a.txt');
+  const manifestPath = path.join(root, 'project.craftsman.json');
+  if (!reopenRoot) fs.writeFileSync(manifestPath, JSON.stringify({ schemaVersion: 1, projectId: 'p' }));
   let initial = mixed&&clean?model.normalizeNode(document()):clean ? structuredClone(document().attrs.wordPendingRevisions.source) : document();
   const linked=(doc,target)=>{const node={type:'paragraph',content:[{type:'text',text:'Unchanged external link',marks:[{type:'link',attrs:{href:target,rel:'noopener noreferrer nofollow',target:'_blank'}}]}]},ledger=model.readLedger(doc);if(ledger){ledger.source.content.push(node);return model.bindLedger(ledger);}doc.content.push(node);return doc;};
   if(early) {const l=model.readLedger(initial);l.source.content.unshift({type:'paragraph',content:[{type:'text',text:'lead'}]});l.revisions.forEach(r=>r.paragraphIndex++);initial=model.bindLedger(l);}
@@ -43,7 +45,8 @@ async function harness(t, { clean = false, savedDefaults = false, mixed = false,
   if(early){const state=JSON.parse(h.commentText);for(const t of state.threads){t.anchor.sceneParagraphIndex=1;t.anchor.paragraphIndex=1;}h.commentText=JSON.stringify(state);}
   const context = () => { const raw = fs.readFileSync(file, 'utf8'); return { filePath: file, projectRoot: root, projectId: 'p', sceneId: 'roman/a.txt',
     subjectId: 'life:session', saved: h.commentText ? {text:h.commentText,state:JSON.parse(h.commentText)} : { state: { threads: h.threads || [] } }, sceneSha256: hash(raw), raw, parsed: envelope.parseObservablePayload(raw) }; };
-  const c = { require: require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
+  const c = { path, require: require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js')), notesStateDigest: require('../../src/export/docx/docxReviewPacketNotes.js').notesStateDigest, pendingTextRevisions: model, isPlainObjectValue: v => v && typeof v === 'object' && !Array.isArray(v),
+    readVerifiedProjectTreeMutation: require('../../src/core/project-transaction-v1.cjs').readVerifiedProjectTreeMutation,
     queueDiskOperation: fn => fn(), readCommentAuthoringContext: async () => context(), requestEditorSnapshot: async () => {
       const value = h.snapshot || { generation: 0, content: fs.readFileSync(file, 'utf8') }; if (h.afterSnapshot) h.afterSnapshot(); return value;
     }, loadDocumentContentEnvelopeModule: async () => envelope, fs: fs.promises,
@@ -202,6 +205,8 @@ async function fullManuscriptRuntimeFixture(t,{tracked=false,withNotes=true,mult
     validateDocumentNotesReturn:require('../../src/export/docx/docxReviewPacketNotes.js').validateDocumentNotesReturn,
     DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID:'preview',makeDocxReviewPreviewSessionTypedError:(_type,code)=>({ok:false,code})});
   const actual=name=>{const found=main.match(new RegExp('(?:async )?function '+name+'\\([^]*?\\n}'));assert.ok(found,name);return found[0];};
+  Object.assign(c,{readVerifiedNovelAnnotationLineage:tx.readVerifiedNovelAnnotationLineage,readVerifiedProjectDocxNovelCohort:tx.readVerifiedProjectDocxNovelCohort});
+  vm.runInContext(['readDocxReviewAuthorityStoreText','createDocxReviewRoundAuthorityGuard'].map(actual).join('\n'),c);
   const comments=main.slice(main.indexOf('const authenticatedCommentDeltaAdmissions ='),main.indexOf('async function applyAuthenticatedDocxCommentProductPath('));
   vm.runInContext(comments+'\n'+['normalizeRtkSignedSha256','userBookmarkCapability','handleRtkCommentLifecycleReturnCommandSurface','dispatchCommandSurfaceKernel'].map(actual).join('\n'),c);
   h.handlerFailures=[];
@@ -622,7 +627,7 @@ test('editorial capacity actual Main disk route completes five 100000 word excha
  }
  for(const action of ['undo','redo'])for(let i=0;i<5;i++){
   const started=performance.now();h=installRealEditorialWriter(await harness(t,{mixed:true,reopenRoot:root,commandOnly:true}));
-  assert.equal((await h.command(action)).ok,true);const expected=action==='undo'?4-i:i+1;
+  const decision=await h.command(action);assert.equal(decision.ok,true,JSON.stringify(decision));const expected=action==='undo'?4-i:i+1;
   assert.equal(model.projection(h.context().parsed.doc).current,states[expected].current);
   assert.deepEqual(model.readLedger(h.context().parsed.doc).revisions,ledgers[expected].revisions);
   const graph=checkEntities();assert.equal(graph.threads.reduce((n,t)=>n+t.messages.length,0),410);assert.ok(graph.threads.every(t=>t.status==='open'));
@@ -654,7 +659,7 @@ test('Paragraph mark typography: actual Main compound route uses atomic writer, 
  assert.equal((await h.prepared.apply()).ok,true);const current=h.context().parsed.doc;assert.equal(model.projection(current).current,'new added\n');
  assert.deepEqual(model.normalizeNode(current).content.map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:true,fontFamily:'Georgia',fontSize:'14pt'}));
  let live=await harness(t,{mixed:true,reopenRoot:h.context().projectRoot,commandOnly:true});installRealEditorialWriter(live);
- assert.equal((await live.command('undo')).ok,true);assert.equal(model.projection(live.context().parsed.doc).current,'new\n');
+ const undo=await live.command('undo');assert.equal(undo.ok,true,JSON.stringify(undo));assert.equal(model.projection(live.context().parsed.doc).current,'new\n');
  assert.deepEqual(model.normalizeNode(live.context().parsed.doc).content.map(p=>p.attrs.wordParagraphMarkTypography),Array(2).fill({bold:false,fontFamily:'Arial',fontSize:'12pt'}));
  live=await harness(t,{mixed:true,reopenRoot:h.context().projectRoot,commandOnly:true});installRealEditorialWriter(live);assert.equal((await live.command('redo')).ok,true);
  assert.deepEqual(model.normalizeNode(live.context().parsed.doc),model.normalizeNode(current));assert.equal(JSON.parse(live.commentText).threads.reduce((n,t)=>n+t.messages.length,0),5);
@@ -709,9 +714,10 @@ function installConfirmationPort(context,onConfirmation) {
     }});
 }
 function confirmationContext(onConfirmation) {
-  const context=vm.createContext({pendingTextRevisions:model,require:require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js'))});
+  const context=vm.createContext({Object,pendingTextRevisions:model,require:require('node:module').createRequire(path.resolve(__dirname,'../../src/main.js'))});
   installConfirmationPort(context,onConfirmation);
-  vm.runInContext(main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),context);
+  vm.runInContext(main.slice(main.indexOf('function isPlainObjectValue('),main.indexOf('function normalizeStableProjectId('))+'\n'
+    +main.slice(main.indexOf('function describeLocalWordPendingReturn('),main.indexOf('async function confirmLocalWordNoteDelta(')),context);
   return context;
 }
 test('bounded grouped novel confirmation retains all ten scenes, 200 discussions, 400 rich messages and three genuine insertions below 32k',async t=>{

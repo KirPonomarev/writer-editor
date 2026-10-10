@@ -13,6 +13,31 @@ test('rich manuscript note retains paragraphs, exact atoms and marks without fla
   assert.equal(value.text, 'Точная\tсноска 😀\nссылка\n');
   assert.equal(payload().reference.sourceTextSha256, model.sha('До слова'));
 });
+test('typed marked note breaks preserve full run law and hostile traversal refuses before normalization',()=>{
+  const value=body();value.content[0].content[1]={type:'hardBreak',attrs:{wordBreakType:'column'},marks:[{type:'bold'},
+    {type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU'}}},
+    {type:'link',attrs:{href:'https://example.invalid/break'}}]};
+  assert.deepEqual(model.validateNoteBody(value).body,value);assert.deepEqual(model.validateNoteBodyProjection(value).body,value);
+  for(const change of [x=>x.content[0].content[1].attrs.clear='all',x=>x.content[0].content[1].attrs.wordBreakType='section',
+    x=>x.content[0].content[1].marks.push({type:'unknown'}),x=>x.content[0].content[1].marks[2].attrs.href='file:///secret']) {
+    const bad=structuredClone(value);change(bad);assert.throws(()=>model.validateNoteBody(bad),error=>/^NOTE_BODY_|^DOCX_/.test(error.code||error.message));
+  }
+  const cycle=body();cycle.content[0].content.push(cycle);assert.throws(()=>model.validateNoteBody(cycle),/NOTE_BODY_STRUCTURE/);
+  let deep=body();for(let i=0;i<70;i++)deep={type:'doc',content:[deep]};assert.throws(()=>model.validateNoteBody(deep),/NOTE_BODY_STRUCTURE/);
+  const oversized=body();oversized.content[0].content[0].text='x'.repeat(1024*1024+1);assert.throws(()=>model.validateNoteBody(oversized),/NOTE_BODY_BUDGET/);
+  let calls=0;const accessor=body();Object.defineProperty(accessor.content[0].content[0],'text',{enumerable:true,get(){calls++;return 'hidden';}});
+  assert.throws(()=>model.validateNoteBody(accessor),/NOTE_BODY_STRUCTURE/);assert.equal(calls,0);
+});
+test('actual auxiliary manuscript schema and serializer retain typed marked breaks without extending comment attrs',async()=>{
+  const {getSchema}=await import('@tiptap/core'),m=await import('../../src/renderer/tiptap/manuscriptNotes.mjs');
+  const value=body();value.content[0].content[1]={type:'hardBreak',attrs:{wordBreakType:'page'},marks:[{type:'bold'}]};
+  const schema=getSchema(m.manuscriptBodyExtensions()),node=schema.nodeFromJSON(value);node.check();
+  const saved=m.readManuscriptBodyDocument({getJSON:()=>node.toJSON()});assert.equal(saved.content[0].content[1].attrs.wordBreakType,'page');
+  assert.deepEqual(saved.content[0].content[1].marks,[{type:'bold'}]);
+  const comment=getSchema(m.manuscriptBodyExtensions({profile:'comment'}));
+  assert.deepEqual(comment.nodes.hardBreak.spec.attrs,undefined);
+  assert.throws(()=>m.readManuscriptBodyDocument({getJSON:()=>({type:'doc',content:[{type:'paragraph',content:[{type:'hardBreak',attrs:{wordBreakType:null},marks:[{type:'bold'}]}]}]})},'comment'),/COMMENT_RICH_BODY_PROFILE/);
+});
 test('unsupported body content and attributes are rejected before normalization', () => {
   for (const mutate of [
     x => x.content.push({ type: 'table', content: [] }),

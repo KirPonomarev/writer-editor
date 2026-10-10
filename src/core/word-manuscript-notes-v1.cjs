@@ -20,10 +20,61 @@ const keys = (value, allowed) => plain(value) && Object.keys(value).every(key =>
 const boundary = (text, offset) => Number.isSafeInteger(offset) && offset >= 0 && offset <= text.length
   && !(offset > 0 && offset < text.length && /[\uD800-\uDBFF]/u.test(text[offset - 1]) && /[\uDC00-\uDFFF]/u.test(text[offset]));
 
-function validateNoteBody(body) {
-  return richBody.validateRichBody(body, { validateImage: validateImageAttrs, validateMedia: documentMedia });
+// Notes own typed/marked structural breaks. Reuse the unchanged shared run
+// grammar on a temporary newline; never teach the shared comment grammar a
+// different storage recipe or normalize away an unvalidated break field.
+function validateNoteBreakBody(body, options) {
+  const visiting=new WeakSet();let bytes=0;
+  const add=count=>{bytes+=count;need(bytes<=LIMITS.bytes,'NOTE_BODY_BUDGET');};
+  const inspect=(value,depth=0)=>{
+    need(depth<=64,'NOTE_BODY_STRUCTURE');
+    if(value===undefined)return;
+    if(value===null||typeof value!=='object') {
+      need(['string','number','boolean'].includes(typeof value)||value===null,'NOTE_BODY_STRUCTURE');
+      if(typeof value==='string')need(value.length<=LIMITS.bytes,'NOTE_BODY_BUDGET');
+      add(new TextEncoder().encode(JSON.stringify(value)).length);return;
+    }
+    need(!visiting.has(value),'NOTE_BODY_STRUCTURE');visiting.add(value);add(2);
+    if(Array.isArray(value)) {
+      need(value.length<=LIMITS.bytes,'NOTE_BODY_BUDGET');
+      for(let index=0;index<value.length;index++){if(index)add(1);const field=Object.getOwnPropertyDescriptor(value,index);
+        need(!field||Object.hasOwn(field,'value'),'NOTE_BODY_STRUCTURE');inspect(field?.value,depth+1);}
+    } else {
+      let index=0;
+      for(const key in value)if(Object.hasOwn(value,key)) {
+        if(index++)add(1);need(key.length<=LIMITS.bytes,'NOTE_BODY_BUDGET');
+        const field=Object.getOwnPropertyDescriptor(value,key);need(Object.hasOwn(field,'value'),'NOTE_BODY_STRUCTURE');
+        add(new TextEncoder().encode(JSON.stringify(key)).length+1);inspect(field.value,depth+1);
+      }
+    }
+    visiting.delete(value);
+  };inspect(body);
+  const locations=[];
+  const project=(node,at=[])=>{
+    if(node?.type==='hardBreak'&&(node.attrs!==undefined||node.marks!==undefined)) {
+      need(keys(node,['type','attrs','marks'])&&(node.attrs===undefined||keys(node.attrs,['wordBreakType'])
+        &&[null,'line','page','column'].includes(node.attrs.wordBreakType)), 'NOTE_BODY_BREAK');
+      locations.push({at,breakNode:node});return {type:'text',text:'\n',...(node.marks!==undefined?{marks:node.marks}:{})};
+    }
+    return plain(node)?{...node,...(Array.isArray(node.content)?{content:node.content.map((child,i)=>project(child,[...at,i]))}:{})}:node;
+  };
+  const surrogate=project(body),checked=richBody.validateRichBody(surrogate,options);
+  if(!locations.length)return checked;
+  need(new TextEncoder().encode(JSON.stringify(body)).length<=LIMITS.bytes,'NOTE_BODY_BUDGET');
+  for(const {at,breakNode}of locations) {
+    let owner=checked.body;for(const index of at.slice(0,-1))owner=owner.content[index];
+    const value=owner.content[at.at(-1)];need(value.type==='text'&&value.text==='\n','NOTE_BODY_BREAK');
+    owner.content[at.at(-1)]={type:'hardBreak',...(breakNode.attrs?.wordBreakType!=null?{attrs:{wordBreakType:breakNode.attrs.wordBreakType}}:{}),
+      ...(value.marks!==undefined?{marks:value.marks}:{})};
+  }
+  const paragraphs=[];const visit=node=>{if(node.type==='paragraph')paragraphs.push(node);else for(const child of node.content||[])visit(child);};visit(checked.body);
+  need(paragraphs.length===checked.paragraphs.length,'NOTE_BODY_STRUCTURE');
+  return {...checked,paragraphs:checked.paragraphs.map((row,i)=>({...row,paragraph:paragraphs[i]}))};
 }
-const validateNoteBodyProjection = richBody.validateNoteBodyProjection;
+function validateNoteBody(body) {
+  return validateNoteBreakBody(body, { validateImage: validateImageAttrs, validateMedia: documentMedia });
+}
+const validateNoteBodyProjection = body=>validateNoteBreakBody(body,{});
 
 // Read-only comparison projection for the pinned main editor schema. Never
 // erase non-null domain state or use this projection as a persistence writer.

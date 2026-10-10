@@ -135,7 +135,14 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
   need([1,2].includes(cleanTransportSchemaVersion),'MIXED_RETURN_PROOF_INVALID');
   const existing=review.readLedger(document);
   need(!existing||binding,'MIXED_RETURN_SIGNED_BINDING_REQUIRED');
-  const authoredRows=review.paragraphs(existing?.source||document);
+  let authored=existing?.source;
+  if(!authored){
+    review.asRoundLedger(document); // Validate raw data before removing only neutral editor root fields.
+    authored={...document,...(document.attrs?{attrs:{...document.attrs}}:{})};
+    for(const key of [review.KEY,'wordUserBookmarks'])if(authored.attrs?.[key]===null)delete authored.attrs[key];
+    if(authored.attrs&&!Object.keys(authored.attrs).length)delete authored.attrs;
+  }
+  const authoredRows=review.paragraphs(authored);
   document=canonicalPendingBasis(document);
   if(!binding)binding=review.buildCommentExportBinding({document,anchors,exportTypography,exportParagraphs,schemaVersion:cleanTransportSchemaVersion}).binding;
   let oldLedger=review.readLedger(document);let incoming=review.readLedger(returnedDocument);
@@ -179,6 +186,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       &&exportParagraphs[index].codeLanguage===(paragraph.attrs?.language||''),'MIXED_RETURN_CODE_STYLE_EMISSION_UNPROVEN');
   });
   const bodyEmission=noteBinding?.bodyParagraphEmission;
+  const returnedParagraphs=review.paragraphs(basis.returned.union);
   if(bodyEmission!==undefined)need(equal(bodyEmission,{
     wordParagraphSpacing:{before:0,after:0,line:240,lineRule:'auto'},
     wordParagraphMarkLanguage:{val:'en-US',eastAsia:'en-US',bidi:'en-US'}}),'MIXED_RETURN_NOTE_BODY_EMISSION_INVALID');
@@ -187,7 +195,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===p&&review.isParagraphFormat(r));
     const returnedFormat=basis.returned.paragraphFormats.find(r=>r.paragraphIndex===p);
     let styleChanged=false;
-    if(allowUntrackedRichFormatting){const actual=review.paragraphs(basis.returned.union)[p];
+    if(allowUntrackedRichFormatting){const actual=returnedParagraphs[p];
       for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage']){
         const value=!oldFormat&&returnedFormat&&!equal(returnedFormat.format.before.attrs?.[key],returnedFormat.format.after.attrs?.[key])
           ?returnedFormat.format.before.attrs?.[key]:actual.attrs?.[key];
@@ -234,7 +242,16 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       if(after.attrs)sourceParagraphs[p].attrs=clone(after.attrs);else delete sourceParagraphs[p].attrs;
       revisions.push({...clone(returnedFormat),id:'revision-'+nextId++,format:{kind:'paragraph',before,after}});changes++;
     }
-    if(!allowUntrackedRichFormatting && equal(oldComparison[p],newComparison[p])&&equal(partitionMeaning(basis.before.segments[p]),partitionMeaning(segments))) {
+    const exactCleanRich=allowUntrackedRichFormatting&&!styleChanged&&!oldFormat&&!returnedFormat
+      &&basis.before.segments[p].every(s=>!s.revision&&!s.formatRevision)&&segments.every(s=>!s.revision&&!s.formatRevision)
+      &&equal(basis.before.segments[p].map(s=>s.node),segments.map(s=>s.node))
+      &&canonical[p].length===segments.length&&canonical[p].every((item,index)=>{
+        const actual=segments[index].node,expected=basis.before.segments[p][index].node;
+        return item.node.type===actual.type&&text(item.node)===text(actual)
+          &&equal(importRunStyle(item.node,actual.marks,expected.marks,sourceParagraphs[p].type,sourceParagraphs[p].attrs,bodyEmission),item.node);
+      });
+    if((!allowUntrackedRichFormatting||exactCleanRich) && equal(oldComparison[p],newComparison[p])&&equal(partitionMeaning(basis.before.segments[p]),partitionMeaning(segments))) {
+      if(exactCleanRich&&incomingPoints)mappedPoints.push(...incomingPoints.filter(point=>point.paragraphIndex===p).map(clone));
       revisions.push(...oldLedger.revisions.filter(r=>r.paragraphIndex===p).map(clone));return;
     }
     // Bound allocation before creating atoms/backpointers. Whole-book size is
@@ -345,6 +362,18 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
       need(sourceLeaves.length===candidateLeaves.length&&sourceLeaves.every((leaf,i)=>leaf.type===candidateLeaves[i].type),'MIXED_RETURN_UNCHANGED_STATE_CHANGED');
       for(let i=0;i<sourceLeaves.length;i++)if(Array.isArray(sourceLeaves[i].content)&&!sourceLeaves[i].content.length
         &&!Object.hasOwn(candidateLeaves[i],'content'))candidateLeaves[i].content=[];
+      const runRecipe=value=>{
+        const checked=clone(value);
+        for(const leaf of review.paragraphs(checked))if(Array.isArray(leaf.content)){
+          const merged=[];
+          for(const node of leaf.content){const previous=merged.at(-1);
+            if(previous?.type==='text'&&node.type==='text'&&equal({...previous,text:''},{...node,text:''}))previous.text+=node.text;
+            else merged.push(node);}
+          leaf.content=merged;
+        }
+        return checked;
+      };
+      if(equal(runRecipe(candidate.source),runRecipe(original.source)))candidate.source=clone(original.source);
       candidate.schemaVersion=original.schemaVersion;
       for(const key of historyKeys) {
         if(Object.hasOwn(original,key))candidate[key]=clone(original[key]);else delete candidate[key];
@@ -387,11 +416,14 @@ function planMixedPendingReturn({beforeText,projectId,sceneId,beforeContent,afte
 function planMixedBookReturn({beforeText,projectId,scenes,returnProofJson,notesText=null}) {
   need(typeof returnProofJson==='string'&&Buffer.byteLength(returnProofJson)<=32*1024*1024,'MIXED_RETURN_PROOF_BUDGET');
   let proof;try{proof=JSON.parse(returnProofJson);}catch{fail('MIXED_RETURN_PROOF_INVALID');}
-  need([3,4].includes(proof?.schemaVersion)&&Object.keys(proof).sort().join(',')===
-    (proof.schemaVersion===4?'artifactSha256,baseline,commentReturnInventory,exportMap,noteContext,projectId,returnedParagraphs,returnedScenes,returnedThreads,roundId,schemaVersion'
+  need([3,4,5].includes(proof?.schemaVersion)&&Object.keys(proof).sort().join(',')===
+    (proof.schemaVersion===5?'artifactSha256,baseline,commentReturnInventory,exportMap,noteContext,now,projectId,returnedParagraphs,returnedScenes,returnedThreads,roundId,schemaVersion'
+    :proof.schemaVersion===4?'artifactSha256,baseline,commentReturnInventory,exportMap,noteContext,projectId,returnedParagraphs,returnedScenes,returnedThreads,roundId,schemaVersion'
     :'artifactSha256,baseline,commentReturnInventory,exportMap,projectId,returnedParagraphs,returnedScenes,returnedThreads,roundId,schemaVersion')
     &&proof.projectId===projectId&&!Object.hasOwn(proof.exportMap||{},'commentExport'),'MIXED_RETURN_PROOF_INVALID');
   need(typeof proof.roundId==='string'&&proof.roundId.length>0&&typeof proof.artifactSha256==='string'&&/^sha256:[a-f0-9]{64}$/u.test(proof.artifactSha256),'MIXED_RETURN_PROOF_INVALID');
+  if(proof.schemaVersion===4)need(Object.keys(proof.noteContext||{}).sort().join(',')==='baseline,returnedNotes,returnedReferences,unionReferences','MIXED_RETURN_PROOF_INVALID');
+  if(proof.schemaVersion===5)need(proof.noteContext?.schemaVersion===2&&typeof proof.now==='string'&&Number.isFinite(Date.parse(proof.now)),'MIXED_RETURN_PROOF_INVALID');
   const mapped=proof.exportMap?.scenes;
   need(Array.isArray(mapped)&&mapped.length>0&&mapped.length<=512&&Array.isArray(scenes)&&scenes.length===mapped.length
     &&Array.isArray(proof.returnedScenes)&&proof.returnedScenes.length===mapped.length
@@ -408,7 +440,7 @@ function planMixedBookReturn({beforeText,projectId,scenes,returnProofJson,notesT
     need(!parsed.issue&&(parsed.doc||parsed.version===1),'MIXED_RETURN_DOCUMENT_REQUIRED');
     parsed.doc ||= envelope.buildParagraphDocumentFromText(parsed.text);return parsed;
   });
-  const noteScenes=proof.schemaVersion===4?bookNoteBindings({notesText,projectId,exportMap:proof.exportMap,noteContext:proof.noteContext,
+  const noteScenes=proof.schemaVersion>=4?bookNoteBindings({notesText,projectId,exportMap:proof.exportMap,noteContext:proof.noteContext,
     scenes:scenes.map((scene,i)=>({sceneId:scene.sceneId,document:parsedScenes[i].doc,
       returnedDocument:review.bindLedger(proof.returnedScenes[i].ledger)}))}):null;
   const mixed=[],results=[];
@@ -427,12 +459,16 @@ function planMixedBookReturn({beforeText,projectId,scenes,returnProofJson,notesT
     results.push({sceneId:scene.sceneId,beforeContent:scene.beforeContent,content,changed:content!==scene.beforeContent});
   }
   const delta=require('./word-comment-return-delta-v1.cjs').planCommentReturnDelta({...proof,beforeText,notesText,mixedPendingScenes:mixed});
-  return {scenes:results,beforeText,afterText:delta.afterText,changes:delta.changes,replay:delta.replay===true};
+  const notes=proof.schemaVersion===5?require('./word-note-return-delta-v1.cjs').planChangedBookNoteBodies({document:JSON.parse(notesText),projectId,
+    ...proof.noteContext,exportMap:proof.exportMap,scenes:results,roundId:proof.roundId,artifactSha256:proof.artifactSha256,now:proof.now}):null;
+  return {scenes:results,beforeText,afterText:delta.afterText,changes:delta.changes,replay:delta.replay===true,
+    ...(notes?{notesAfterText:notes.changes.length?notes.afterText:notesText,noteChanges:notes.changes}: {})};
 }
 function bookNoteBindings({notesText,projectId,exportMap,noteContext,scenes}) {
   need(typeof notesText==='string'&&Buffer.byteLength(notesText)<=4*1024*1024
-    &&noteContext&&Object.keys(noteContext).sort().join(',')==='baseline,returnedNotes,returnedReferences,unionReferences'
+    &&noteContext&&Object.keys(noteContext).sort().join(',')===(noteContext.schemaVersion===2?'baseline,returnedNotes,returnedReferences,schemaVersion,unionReferences':'baseline,returnedNotes,returnedReferences,unionReferences')
     &&Array.isArray(noteContext.returnedNotes)&&Array.isArray(noteContext.returnedReferences)&&Array.isArray(noteContext.unionReferences),'PENDING_NOTE_BOOK_CONTEXT_INVALID');
-  return require('./word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:JSON.parse(notesText),projectId,exportMap,scenes,...noteContext});
+  const model=require('./word-note-return-delta-v1.cjs');
+  return (noteContext.schemaVersion===2?model.bindChangedBookPendingNotes:model.bindUnchangedBookPendingNotes)({document:JSON.parse(notesText),projectId,exportMap,scenes,...noteContext});
 }
 module.exports={deriveMixedPendingDocument,planMixedPendingReturn,planMixedBookReturn,bookNoteBindings};

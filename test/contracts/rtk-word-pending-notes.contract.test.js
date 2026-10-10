@@ -185,6 +185,47 @@ test('complete book note law retains typed spacing/language/breaks and rejects e
     x=>{for(const key of ['returnedNotes','returnedReferences','unionReferences'])[x[key][0],x[key][1]]=[x[key][1],x[key][0]];}]) {
     const bad=plain(input);mutate(bad);assert.throws(()=>delta.bindUnchangedBookPendingNotes(bad),/PENDING_NOTE_|NOTE_/u,String(mutate));
   }
+  const markedBody=d({type:'paragraph',content:[{type:'text',text:'A'},{type:'hardBreak',marks:[{type:'bold'},
+    {type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},{type:'text',text:'Z'}]}),marked=await composedBookFixture(markedBody);
+  const markedInput={document:marked.document,projectId,baseline:marked.proof.noteContext.baseline,exportMap:marked.proof.exportMap,
+    scenes:marked.scenes.map((s,i)=>({sceneId:s.sceneId,document:marked.beforeDocs[i],returnedDocument:pending.bindLedger(marked.proof.returnedScenes[i].ledger)})),
+    returnedNotes:marked.proof.noteContext.returnedNotes,returnedReferences:marked.proof.noteContext.returnedReferences,unionReferences:marked.proof.noteContext.unionReferences};
+  assert.deepEqual(markedInput.baseline.sourceBindings.map(binding=>binding.richBody),Array(4).fill(markedBody));
+  for(const note of markedInput.returnedNotes)assert.equal(delta.equivalentCompleteBody(markedBody,note.body,markedInput.exportMap.exportTypography,markedInput.baseline.breakEmission),true);
+  delta.bindUnchangedBookPendingNotes(markedInput);delta.bindChangedBookPendingNotes(markedInput);
+  const parts=marked.bridge.extractDocxReviewTransportPackagePartsFromZipBytes(marked.bytes).parts;
+  assert.equal((parts['word/footnotes.xml'].match(/<w:br\/>/gu)||[]).length,2);
+  for(const atom of ['<w:b w:val="1"/>','<w:bCs w:val="1"/>','<w:sz w:val="28"/>','<w:szCs w:val="28"/>',
+    '<w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Georgia"/>','<w:lang w:val="ru-RU" w:eastAsia="ja-JP" w:bidi="he-IL"/>'])assert.ok(parts['word/footnotes.xml'].includes(atom),atom);
+  parts['word/footnotes.xml']=parts['word/footnotes.xml'].replaceAll('Georgia','Arial');
+  const bytes=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data}))),analysis=marked.bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},
+    {cryptoPort:{sha256Text:hash,sha256Json:value=>'sha256:'+hash(JSON.stringify(value)),byteLength:value=>Buffer.byteLength(value)}});
+  assert.equal(analysis.ok,true,JSON.stringify(analysis));const changed={...markedInput,returnedNotes:marked.bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true})};
+  assert.throws(()=>delta.bindUnchangedBookPendingNotes(changed),/PENDING_NOTE_BREAK_CHANGED/u);delta.bindChangedBookPendingNotes(changed);
+});
+test('pending notes: round binding preserves admitted raw document roots and refuses invalid roots before normalization', () => {
+  const registry = { schemaVersion: 1, boundaries: [], final: { type: 'nextPage',
+    pageSize: { widthTwips: 11906, heightTwips: 16838, orientation: 'portrait' } } };
+  for (const attrs of [undefined, { wordDefaultTabStop: 720 }, { wordSections: registry }, { wordDefaultTabStop: 720, wordSections: registry }]) {
+    const source = { ...d(p('Actual root text')), ...(attrs ? { attrs: plain(attrs) } : {}) }, before = plain(source);
+    const bound = pending.bindNoteSourcePoints(source, [{ noteId: 'note-root', paragraphIndex: 0, offsetUtf16: 1 }]);
+    assert.deepEqual(pending.readLedger(bound).source, before);
+    assert.deepEqual(source, before);
+    assert.equal(pending.noteProjection(bound)[0].globalOffsetUtf16, 1);
+  }
+  const emptyLedger = { ...d(p('Actual root text')), attrs: { wordPendingRevisions: null } }, prior = plain(emptyLedger);
+  assert.deepEqual(pending.readLedger(pending.bindNoteSourcePoints(emptyLedger,
+    [{ noteId: 'note-root', paragraphIndex: 0, offsetUtf16: 1 }])).source, d(p('Actual root text')));
+  assert.deepEqual(emptyLedger, prior);
+  for (const attrs of [{ wordPendingRevisions: undefined }, { wordPendingRevisions: {} }, { unknown: null }, { wordDefaultTabStop: null }, { wordDefaultTabStop: undefined },
+    { wordDefaultTabStop: -1 }, { wordDefaultTabStop: 720.5 }, { wordSections: null }, { wordSections: {} },
+    { wordSections: { ...registry, extra: null } }]) {
+    assert.throws(() => pending.bindNoteSourcePoints({ ...d(p('Protected')), attrs }, []));
+  }
+  let reads = 0;
+  const hostile = d(p('Protected')); Object.defineProperty(hostile, 'attrs', { enumerable: true, get() { reads++; return {}; } });
+  assert.throws(() => pending.bindNoteSourcePoints(hostile, []), /PENDING_REVISIONS_DATA_INVALID/);
+  assert.equal(reads, 0);
 });
 test('inactive 720-to-708 tab emission requires complete local book-note bodies and returned identities',async()=>{
   // Execute the exact predecessor producer, which selects its own V1 law.
@@ -276,6 +317,10 @@ test('actual ZIP book note break formatting is retained and every altered or for
   const format={marks:[],boldCs:false,italicCs:false,forceCs:false,rtl:false,fontSize:'12pt',fontSizeCs:'12pt'};
   const expected={schemaVersion:1,paragraphCount:2,textSha256:hash('😀X\n😀X\nlast\nkept\n'),breaks:[{paragraphIndex:0,offsetUtf16:3,kind:'line',format},
     {paragraphIndex:0,offsetUtf16:7,kind:'line',format},{paragraphIndex:1,offsetUtf16:4,kind:'line',format}]};
+  const size12=[{type:'textStyle',attrs:{fontSize:'12pt'}}],text=value=>({type:'text',text:value,marks:plain(size12)});
+  const materializedBody=d({type:'paragraph',content:[text('😀X'),{type:'hardBreak',marks:plain(size12)},text('😀X'),{type:'hardBreak',marks:plain(size12)},text('last')]},
+    {type:'paragraph',content:[text('kept'),{type:'hardBreak',marks:plain(size12)}]});
+  assert.deepEqual(input.returnedNotes.map(note=>note.body),Array(4).fill(materializedBody),'complete V1 emitted body atoms');
   assert.deepEqual(input.returnedNotes.map(note=>note.breakProjection),Array(4).fill(expected));delta.bindUnchangedBookPendingNotes(input);
   const original=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
   const readParts=parts=>{
@@ -285,18 +330,33 @@ test('actual ZIP book note break formatting is retained and every altered or for
     return f.bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true});
   };
   const readback=properties=>{
-    const parts={...original};parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace('<w:r><w:br/></w:r>',`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`);
+    const parts={...original},atom=`<w:r><w:rPr>${properties}</w:rPr><w:br/></w:r>`;parts['word/footnotes.xml']=parts['word/footnotes.xml'].replace('<w:r><w:br/></w:r>',atom);
+    assert.equal(parts['word/footnotes.xml'].split(atom).length-1,1,'one exact raw XML mutation');
     assert.notEqual(parts['word/footnotes.xml'],original['word/footnotes.xml'],'actual ZIP corruption target');return readParts(parts);
   };
   const legacy=f.bridge.parseDocumentNotesRichReturn(f.bytes,f.analysis.reviewIr.documentNotes);
-  assert.equal(Object.hasOwn(legacy[0],'breakProjection'),false);assert.deepEqual(legacy[0].body,input.returnedNotes[0].body);
+  const legacyBody=d({type:'paragraph',content:[text('😀X'),{type:'hardBreak'},text('😀X'),{type:'hardBreak'},text('last')]},
+    {type:'paragraph',content:[text('kept'),{type:'hardBreak'}]});
+  assert.equal(Object.hasOwn(legacy[0],'breakProjection'),false);assert.deepEqual(legacy.map(note=>note.body),Array(4).fill(legacyBody));
   const materialized=readback('<w:sz w:val="24"/><w:szCs w:val="24"/>');
-  assert.deepEqual(materialized[0].breakProjection,expected);delta.bindUnchangedBookPendingNotes({...input,returnedNotes:materialized});
-  for(const properties of ['<w:b w:val="1"/>','<w:bCs w:val="1"/>','<w:iCs w:val="1"/>','<w:color w:val="FF0000"/>','<w:highlight w:val="yellow"/>',
-    '<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>','<w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Arial" w:cs="Georgia"/>',
-    '<w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Arial"/>','<w:szCs w:val="28"/>',
-    ...['val','eastAsia','bidi'].map(field=>`<w:lang w:${field}="en-GB"/>`),'<w:rtl w:val="1"/>']) {
-    const returnedNotes=readback(properties);assert.deepEqual(returnedNotes[0].body,input.returnedNotes[0].body,'old lossy body is unchanged');
+  assert.deepEqual(materialized.map(note=>note.body),Array(4).fill(materializedBody));assert.deepEqual(materialized[0].breakProjection,expected);delta.bindUnchangedBookPendingNotes({...input,returnedNotes:materialized});
+  const style=attrs=>[{type:'textStyle',attrs:{fontSize:'12pt',...attrs}}],fonts=(ascii,eastAsia=ascii,cs=ascii)=>({ascii,hAnsi:ascii,eastAsia,cs});
+  for(const [properties,marks,changedFormat] of [
+    ['<w:b w:val="1"/>',[{type:'bold'},...plain(size12)],{marks:['bold']}],
+    ['<w:bCs w:val="1"/>',size12,{boldCs:true}],['<w:iCs w:val="1"/>',size12,{italicCs:true}],
+    ['<w:color w:val="FF0000"/>',style({color:'#ff0000'}),{color:'#ff0000'}],
+    ['<w:highlight w:val="yellow"/>',[...plain(size12),{type:'highlight',attrs:{color:'#ffff00'}}],{highlight:'#ffff00'}],
+    ['<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/>',style({fontFamily:'Arial'}),{fontSlots:fonts('Arial')}],
+    ['<w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Arial" w:cs="Georgia"/>',style({fontFamily:'Georgia'}),{fontSlots:fonts('Georgia','Arial')}],
+    ['<w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:eastAsia="Georgia" w:cs="Arial"/>',style({fontFamily:'Georgia'}),{fontSlots:fonts('Georgia','Georgia','Arial')}],
+    ['<w:szCs w:val="28"/>',size12,{fontSizeCs:'14pt'}],
+    ...['val','eastAsia','bidi'].map(field=>[`<w:lang w:${field}="en-GB"/>`,style({wordLanguage:{[field]:'en-GB'}}),{wordLanguage:{[field]:'en-GB'}}]),
+    ['<w:rtl w:val="1"/>',size12,{rtl:true}]
+  ]) {
+    const returnedNotes=readback(properties),wantedBody=plain(materializedBody),wantedProjection=plain(expected);
+    wantedBody.content[0].content[1].marks=plain(marks);Object.assign(wantedProjection.breaks[0].format,changedFormat);
+    assert.deepEqual(returnedNotes.map(note=>note.body),[wantedBody,...Array(3).fill(materializedBody)],properties+' complete body atoms');
+    assert.deepEqual(returnedNotes[0].breakProjection,wantedProjection,properties+' complete raw effective format');
     assert.notDeepEqual(returnedNotes[0].breakProjection,expected,properties);assert.throws(()=>delta.bindUnchangedBookPendingNotes({...input,returnedNotes}),/PENDING_NOTE_BREAK_CHANGED/u);
   }
   for(const properties of ['<w:vertAlign w:val="superscript"/>','<w:b w:val="0"/><w:b w:val="0"/>','<w:color w:val="auto" w:unknown="1"/>'])
@@ -1080,6 +1140,17 @@ test('fresh book V2 complete defaults retain original notes and real edits remai
   }
   const renumbered=f.read(renamed),renumberInput={...f.input,artifactSha256:hash(renumbered.bytes),returnedNotes:renumbered.returnedNotes},renumberPlan=delta.planNoteReturnDelta(renumberInput);
   retainBookNoteDefaults('core-native-renumber',{input:renumberInput,parts:renamed,bytes:renumbered.bytes,actual:renumberPlan});assert.equal(renumberPlan.unchanged,true);assert.equal(renumberPlan.document,f.document);
+  for(const [name,replace,expectedText] of [
+    ['text-shift',xml=>xml.replace('Язык ','Before Язык '),'\nBefore Язык 😀\nkept tail\n\n\n'],
+    ['break-add',xml=>xml.replace('<w:r><w:br/></w:r>','<w:r><w:br/></w:r><w:r><w:br/></w:r>'),'\n\nЯзык 😀\nkept tail\n\n\n'],
+    ['break-delete',xml=>xml.replace('<w:r><w:br/></w:r>',''),'Язык 😀\nkept tail\n\n\n']
+  ]) {
+    const parts={...f.parts,'word/footnotes.xml':replace(f.parts['word/footnotes.xml'])};assert.notEqual(parts['word/footnotes.xml'],f.parts['word/footnotes.xml'],name);
+    const observed=f.read(parts),input={...f.input,artifactSha256:hash(observed.bytes),returnedNotes:observed.returnedNotes},before=JSON.stringify(input),plan=delta.planNoteReturnDelta(input);
+    assert.equal(plan.changes.length,1,name);assert.equal(plan.changes[0].operation,'update');assert.equal(plan.document.notes[0].body,expectedText,name);
+    for(const old of f.document.notes.slice(1))assert.deepEqual(plan.document.notes.find(note=>note.id===old.id),old,name+' protected complete note');
+    assert.equal(JSON.stringify(input),before,name+' input bytes');retainBookNoteDefaults('core-'+name,{input,parts,bytes:observed.bytes,actual:plan});
+  }
 });
 test('fresh book V2 closed local roster and complete break facts refuse corruption without mutation',async()=>{
  const f=await bookNoteDefaultsFixture(),faults=[['profile',x=>x.baseline.breakEmission.fontFamily='Arial'],['partial',x=>delete x.baseline.breakEmission.wordLanguage],
