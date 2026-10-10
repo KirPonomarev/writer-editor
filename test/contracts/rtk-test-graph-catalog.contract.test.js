@@ -227,36 +227,51 @@ test('C4 RTK runner streams explicit TAP immediately and emits monotonic progres
   assert.deepEqual(events.map((event) => event.sequence), events.map((_, index) => index + 1));
 });
 
-test('C4 RTK runner holds two complete file workers and queues the third without dropping evidence', async (t) => {
+test('C4 complete graph survives30min of advancing progress and still terminates at finite35min', async (t) => {
   const runner = await import(RUNNER_PATH);
-  const dir = makeTempParent(t);
-  const started = path.join(dir, 'started'); fs.mkdirSync(started);
-  const release = path.join(dir, 'release');
-  const files = [0, 1, 2].map((id) => writeFakeContract(dir, [
-    "const test = require('node:test'), fs = require('node:fs'), path = require('node:path');",
-    'const root = ' + JSON.stringify(dir) + ', id = ' + id + ';',
-    "test('complete worker ' + id, async () => {",
-    "fs.writeFileSync(path.join(root, 'started', String(id)), String(process.pid));",
-    "while (!fs.existsSync(path.join(root, 'release'))) await new Promise(r => setTimeout(r, 10));",
-    '});',
-  ].join('\n')));
-  const stdout = makeWriter(), stderr = makeWriter();
-  const runPromise = runner.runRtkTestGraph({ plan: { testFiles: files }, tmpParent: dir, stdout, stderr,
-    wallTimeoutMs: 5000, noProgressTimeoutMs: 2000, heartbeatIntervalMs: 40, termGraceMs: 100, killGraceMs: 100 });
+  const child = new EventEmitter();
+  child.pid = 424249; child.stdout = new PassThrough(); child.stderr = new PassThrough();
+  const identity = { pid: child.pid, pgid: child.pid, startIdentity: 'bounded35', executable: process.execPath };
+  const signals = [], stderr = makeWriter();
+  let clock = 0, closed = false;
+  const close = (status, signal) => {
+    if (closed) return;
+    closed = true; child.stdout.end(); child.stderr.end(); child.emit('close', status, signal);
+  };
+  const pending = runner.runRtkTestGraph({
+    plan: { testFiles: ['complete-graph-default-bound.test.js'] }, tmpParent: makeTempParent(t),
+    stdout: makeWriter(), stderr, spawnImpl: () => child, monotonicNow: () => clock,
+    readProcessIdentity: () => ({ ok: true, complete: true, status: 'AVAILABLE', identity }),
+    inspectProcessGroup: () => ({ ok: true, complete: true, status: 'AVAILABLE', rows: [] }),
+    signalProcessGroup: (_pgid, signal) => {
+      signals.push(signal); queueMicrotask(() => close(null, signal));
+      return { ok: true, code: 'TEST_VERIFIED_SIGNAL' };
+    },
+    heartbeatIntervalMs: 20, termGraceMs: 30, killGraceMs: 30,
+  });
   try {
-    await waitFor(() => fs.readdirSync(started).length >= 2);
-    await new Promise(r => setTimeout(r, 120));
-    assert.equal(fs.readdirSync(started).length, 2, 'third file stays queued while two real workers hold the barrier');
-    fs.writeFileSync(release, 'release');
-    const run = await runPromise;
-    assert.equal(run.exitCode, 0, stdout.value() + '\n' + stderr.value());
-    assert.equal(run.spawnArgs[2], '--test-concurrency=2');
-    assert.deepEqual(run.spawnArgs.slice(3), files, 'complete original file set and order');
-    assert.equal(fs.readdirSync(started).length, 3, 'queued file also really executes');
-    assert.equal(runner.evaluateMandatoryTapOutput(stdout.value(), '', { expectedFileCount: 3 }).ok, true);
+    for (const minute of [5, 10, 15, 20, 25, 30]) {
+      clock = minute * 60 * 1000;
+      child.stdout.write('# actual advancing child progress\n');
+      await new Promise(resolve => setTimeout(resolve, 25));
+      assert.deepEqual(signals, [], 'progress survives minute ' + minute);
+    }
+    clock = 35 * 60 * 1000 - 1;
+    child.stdout.write('# boundary progress\n');
+    await new Promise(resolve => setTimeout(resolve, 25));
+    assert.deepEqual(signals, []);
+    clock += 1;
+    const run = await pending;
+    assert.equal(run.exitCode, 1);
+    assert.equal(run.timeout.code, 'RTK_GRAPH_WALL_TIMEOUT');
+    assert.equal(run.timeout.elapsedMs, 35 * 60 * 1000);
+    assert.deepEqual(signals, ['SIGTERM']);
+    assert.deepEqual(run.spawnArgs, ['--test', '--test-reporter=tap', 'complete-graph-default-bound.test.js']);
+    assert.equal(run.cleanup.ok, true);
+    assert.equal(runner.RTK_RUNNER_DEFAULTS.noProgressTimeoutMs, 10 * 60 * 1000);
+    assert.equal(runner.RTK_RUNNER_DEFAULTS.retainedOutputBytes, 32 * 1024 * 1024);
   } finally {
-    fs.writeFileSync(release, 'release');
-    await runPromise;
+    close(null, 'SIGTERM'); await pending;
   }
 });
 

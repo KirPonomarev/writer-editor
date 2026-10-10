@@ -2568,15 +2568,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "23e87bdc7d10d0c6f970ccc425c6113b0f04780576eb007b7184ca5235021e04"
+        "sha256": "e482c8a420109732a0366ed05a1ca53651c0749e840b35e65b528e31efa9f9f0"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f50d741774fdd246c3d8f2a04ab2c70ea15024f9aea693dc6e9fe0c4ca77a2b0"
+        "sha256": "cfd6ecd3a1d4fde2c92c66a89149e44ffa972a95c9af4d76dca7af5101ad818d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "1e1e276360475b791b8ea9a49df8925eb3b086f0fc42c719c4c0d1e859540223"
+        "sha256": "0deb684e199132ae4a1384ca0f49968e357aebb906c8a24402276000f09cd7a4"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2856,15 +2856,15 @@
       },
       {
         "path": "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md",
-        "sha256": "e38ede2395e6be1b92f6811409bb31595cdbbc2b9e98f37b341c120f077b3c05"
+        "sha256": "13ac1c42b561c2830bf3bef7eea243125c3a22253833ba1c7ea7a02bec15bc45"
       },
       {
         "path": "scripts/run-rtk-tests.mjs",
-        "sha256": "036b7d9450996b903d6b47d685d505e19df9d6d0105f68b7186527d89d35a5d9"
+        "sha256": "1fb5acf128bdc3fe1ff100c7b760dd0c391ab0610ad52b4c6093c3367fe829d8"
       },
       {
         "path": "test/contracts/rtk-test-graph-catalog.contract.test.js",
-        "sha256": "770fc64d597af0ebc4e60a55065211cc4ecc03c969cbd541164a7debb5a530a3"
+        "sha256": "3cd8cf48c56fdd350f189b426c13338276315c96210fbcc535ed4dfb77876d3f"
       }
     ],
     "followupRepair": {
