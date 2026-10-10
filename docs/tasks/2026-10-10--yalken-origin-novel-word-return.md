@@ -30,7 +30,7 @@ Read-only actual-input rederivation10a4cf/9c9906 retains50,908,970B V8 input SHA
 
 ## ARTIFACT
 
-One Core category correction, existing maintained tests, necessary factual and mechanical companions, one normal rollback and delivery chain. Runtime added/deleted lines <=180; tests <=500; at most15 paths. No new product port, runtime helper registry, dependency, runner, tracker, command, schema or data migration. Original full50 maintained-file regression denominator remains required.
+One Core category correction, existing maintained tests, necessary factual and mechanical companions, one normal rollback and delivery chain. Runtime added/deleted lines <=180; tests <=500; at most17 paths. No new product port, runtime helper registry, dependency, runner, tracker, command, schema or data migration. Original full50 maintained-file regression denominator remains required.
 
 ## ALLOWLIST
 
@@ -49,6 +49,8 @@ One Core category correction, existing maintained tests, necessary factual and m
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- scripts/run-rtk-tests.mjs
+- test/contracts/rtk-test-graph-catalog.contract.test.js
 
 ## DENYLIST
 
@@ -110,7 +112,7 @@ This is owner-directed bounded Tier B correction within the original explicitly 
 CHECK_01_PRE_IDENTITY_AUTHORITY: BEFORE any edit; exact clean4ae/remote/mount/protected checkouts, actual Root preflight and closed prior delivery.
 CHECK_02_POST_CAUSAL: actual44MB plan becomes supported only for existing complete typed category; ordinary/foreign/partial/reordered/schema/history/defined-origin counterexamples remain refused.
 CHECK_03_POST_DURABLE_NO_LOSS: full actual Core packet/readback, retained history5/6, stale sources, malformed/recomputed semantic proof, no-write refusals and existing imported-origin resource/recovery controls.
-CHECK_04_POST_SCOPE_AND_GATES: exact15 path allowlist/diff budget, E0/guardrails, all50 maintained files, unchanged mandatory raw TAP, repository/builder/data/governance/OSS/audit gates without skips/todo/zero-test success.
+CHECK_04_POST_SCOPE_AND_GATES: exact17 path allowlist/diff budget, E0/guardrails, all50 maintained files, unchanged mandatory raw TAP, repository/builder/data/governance/OSS/audit gates without skips/todo/zero-test success.
 CHECK_05_POST_DELIVERY: normal commit/push/PR/officialCI/merge/fetch/clean exact-merged affected proof; original native matrix remains separately open.
 
 ## STOP_CONDITION
@@ -150,3 +152,11 @@ Whole current Main ROOT_YALKEN_ORIGIN_MAIN_WHOLE02.log actually completes349/349
 ### COMPLETE_SOURCE_REGRESSION_20261010
 
 All original50 unique maintained files actually execute in disjoint1+1+27+1+15+3+2 groups:87+349+532+47+341+100+32=1488/1488. All seven unchanged mandatory TAP evaluations accept complete raw terminal summaries, with zero failure/cancel/skip/todo and no900s/40GB bound termination. The single Core file uses its actual original --test argv; the other groups use --test-concurrency=1. The original whole Main900s failure stays RED. This proves the bounded source correction and complete regression; genuine Word positive Apply/Cancel,500k native history, original role/origin/scale/profile/five-changed-cycle matrix and shipping performance remain OPEN. Delivery and exact-merged verification are pending; no R2.4 cell or whole-feature PASS.
+
+### OFFICIAL_CI_WALL_BLOCKER_20261010
+
+PR2105 candidateee8340dffd294d898c01c82ffa67e13c676500a0 has actual official run38058678806 RED. All15 independent non-RTK jobs succeed. Both full RTK graphs hit the unchanged30-minute wall; their merge aggregators correctly refuse. Required graph observes3551 completed test statuses and zero failed subtests before termination; both new local small/500k cases actually pass3489/3490. No complete graph PASS is claimed. The preceding official PR2104 RTK jobs already took27-28 minutes. Existing host-derived Node worker width is now a measured delivery bottleneck, not a reason to increase a deadline or remove tests.
+
+Same current delivery amendment: Root declaration ROOT_YALKEN_ORIGIN_CI_REPAIR_ARCHITECTURE_DECLARATION01.json binds the clean currentee8340 head, extends this original one-outcome/one-rollback slice to17 declared paths, and actual284f23 preflight exits0 before edits. Only the existing Node test-file worker flag is bounded to2, with an actual barrier/complete-file contract. Catalog membership/order, every parser/oracle function, all tests,30min/10min/no-progress/cleanup/output budgets and product runtime remain. Source full50 evidence retains its original runtime/test identities; changed CLI execution is proved separately. Native acceptance stays0 complete cycles and OPEN.
+
+Actual local complete runner contract ROOT_YALKEN_ORIGIN_CI_RUNNER_WHOLE01.log executes20/20 in4.066s, raw SHA6cab5940d90c89d740de42f53f4e4e12f0d678b77e6dff4ea9f57dc0dd41f9f4. Two real complete-file workers hold a barrier while the third stays queued; releasing it executes all three and the unchanged mandatory TAP evaluator accepts. The existing runner changes only one spawn flag; all previous contracts remain. This is local runner proof, not complete official CI or native acceptance.

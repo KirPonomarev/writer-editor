@@ -597,7 +597,7 @@ export async function runRtkTestGraph({
   let killTimer = null;
   let terminalTimer = null;
   let terminalUnproven = false;
-  const spawnArgs = ['--test', '--test-reporter=tap', ...plan.testFiles];
+  const spawnArgs = ['--test', '--test-reporter=tap', '--test-concurrency=2', ...plan.testFiles];
   const writeEvidence = (target, chunk) => {
     try {
       return target.write(chunk);

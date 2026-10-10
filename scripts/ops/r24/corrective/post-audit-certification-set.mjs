@@ -16888,17 +16888,19 @@ export const R24_INTEROP_WORD_YALKEN_ORIGIN_NOVEL_RETURN_SUCCESSOR=Object.freeze
   successorBaseSha:"4ae2ac5b9b6a1e4848ba3c034f69ae6a9ea1afaa",
   successorBaseTree:"f26ca025a61d7144d221b56494033eeb3f2cef1f",
   bindings:[
-    ...R24_INTEROP_WORD_MAC_NORMAL_QUIT_SUCCESSOR.bindings.filter(binding=>!["src/core/project-transaction-v1.cjs","src/core/project-tree-cohort-v1.mjs","test/contracts/rtk-word-scene-identity-main.contract.test.js","docs/CONTEXT.md","docs/HANDOFF.md","docs/WORKLOG.md"].includes(binding.path)),
+    ...R24_INTEROP_WORD_MAC_NORMAL_QUIT_SUCCESSOR.bindings.filter(binding=>!["src/core/project-transaction-v1.cjs","src/core/project-tree-cohort-v1.mjs","test/contracts/rtk-word-scene-identity-main.contract.test.js","docs/CONTEXT.md","docs/HANDOFF.md","docs/WORKLOG.md","test/contracts/rtk-word-project-tree-cohort.contract.test.js","docs/tasks/2026-10-10--yalken-origin-novel-word-return.md","scripts/run-rtk-tests.mjs","test/contracts/rtk-test-graph-catalog.contract.test.js"].includes(binding.path)),
     {"path":"src/core/project-transaction-v1.cjs","sha256":"8651ce6c8cbe19c9060bb3dcb43525b2fa75aadadbf5c7847eb272ad2c9f9f72"},
     {"path":"src/core/project-tree-cohort-v1.mjs","sha256":"03117bc9c472b24d41883d33b9b35368cfa5ff345bba040e33ef8d4a4508653e"},
     {"path":"test/contracts/rtk-word-scene-identity-main.contract.test.js","sha256":"2ae3c2aba7d07d2f1d15d99fda3447e405a84871a431e99bbebc9089cf9f0f3a"},
-    {"path":"docs/CONTEXT.md","sha256":"26f9a1155f9c5e50c23d92b6fb2a74b750fadc1eadaf33dac409f1cc2f21fb78"},
-    {"path":"docs/HANDOFF.md","sha256":"b60f2649e440f3e8adc37cb9125e721ea726f9835e7920e477ac85a12f6911c3"},
-    {"path":"docs/WORKLOG.md","sha256":"13b16c4858d90daff618266fed68166b00187b601842900577c1e251f18a9693"},
+    {"path":"docs/CONTEXT.md","sha256":"23e87bdc7d10d0c6f970ccc425c6113b0f04780576eb007b7184ca5235021e04"},
+    {"path":"docs/HANDOFF.md","sha256":"f50d741774fdd246c3d8f2a04ab2c70ea15024f9aea693dc6e9fe0c4ca77a2b0"},
+    {"path":"docs/WORKLOG.md","sha256":"1e1e276360475b791b8ea9a49df8925eb3b086f0fc42c719c4c0d1e859540223"},
     {"path":"test/contracts/rtk-word-project-tree-cohort.contract.test.js","sha256":"9bcd6382148f2ca9194c65f0d1286774a768ed96f4546bdd1d5da7efab3cd2c5"},
-    {"path":"docs/tasks/2026-10-10--yalken-origin-novel-word-return.md","sha256":"593848711fff4fcae33022eab858cd22a2ba8661250276fe17a3b3e1b8076fd5"},
+    {"path":"docs/tasks/2026-10-10--yalken-origin-novel-word-return.md","sha256":"e38ede2395e6be1b92f6811409bb31595cdbbc2b9e98f37b341c120f077b3c05"},
+    {"path":"scripts/run-rtk-tests.mjs","sha256":"036b7d9450996b903d6b47d685d505e19df9d6d0105f68b7186527d89d35a5d9"},
+    {"path":"test/contracts/rtk-test-graph-catalog.contract.test.js","sha256":"770fc64d597af0ebc4e60a55065211cc4ecc03c969cbd541164a7debb5a530a3"},
   ],
-  guards:[{"path":"docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json","sha256":"eccf1517014f4222afacc9e655d39774456b428a42f493064cb628a867c54ce7"}]
+  guards:[{"path":"docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json","sha256":"b84a69c99623143efab82d796c893155f0db12864ca0924259931398cffa9911"}]
 });
 
 

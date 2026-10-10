@@ -3651,3 +3651,5 @@ Seven mechanical bindings and mandatory gates/full delivery follow; native
 UndoRedo and measured release performance remain OPEN. No historical failed
 native-heavy route or machine crash was reproduced. NEXT: close normal delivery,
 then fresh bounded native full export; read-only composed profiling may overlap CI.
+
+CI delivery continuation for YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010: candidateee8340 official run38058678806 remains RED at the30-minute full-graph wall, despite both new small/500k source cases passing. Same delivery scope17 bounds the existing Node complete-file worker width to2, preserving every catalog member/order, all TAP/oracle logic, deadlines, cleanup and product runtime. Actual whole runner contract20/20 proves two concurrent workers and eventual execution of the third. Original full50 source1488/1488 keeps its original exact source/test identities; delivery, exact merged proof and original native matrix remain open. No R2.4 cell acceptance or feature release claim.

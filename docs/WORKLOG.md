@@ -3300,3 +3300,5 @@ synthetic test materials go to Yandex Disk folder Yalken — тестовые м
 with hashes and upload verification before keeping completed runs cloud-only.
 NEXT: close this delivery, then one fresh shared SOURCE/PACKAGED build and the
 actual full-novel Word return. No new implementation contour before closure.
+
+CI delivery continuation for YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010: candidateee8340 official run38058678806 remains RED at the30-minute full-graph wall, despite both new small/500k source cases passing. Same delivery scope17 bounds the existing Node complete-file worker width to2, preserving every catalog member/order, all TAP/oracle logic, deadlines, cleanup and product runtime. Actual whole runner contract20/20 proves two concurrent workers and eventual execution of the third. Original full50 source1488/1488 keeps its original exact source/test identities; delivery, exact merged proof and original native matrix remain open. No R2.4 cell acceptance or feature release claim.

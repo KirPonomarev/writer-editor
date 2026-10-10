@@ -227,6 +227,39 @@ test('C4 RTK runner streams explicit TAP immediately and emits monotonic progres
   assert.deepEqual(events.map((event) => event.sequence), events.map((_, index) => index + 1));
 });
 
+test('C4 RTK runner holds two complete file workers and queues the third without dropping evidence', async (t) => {
+  const runner = await import(RUNNER_PATH);
+  const dir = makeTempParent(t);
+  const started = path.join(dir, 'started'); fs.mkdirSync(started);
+  const release = path.join(dir, 'release');
+  const files = [0, 1, 2].map((id) => writeFakeContract(dir, [
+    "const test = require('node:test'), fs = require('node:fs'), path = require('node:path');",
+    'const root = ' + JSON.stringify(dir) + ', id = ' + id + ';',
+    "test('complete worker ' + id, async () => {",
+    "fs.writeFileSync(path.join(root, 'started', String(id)), String(process.pid));",
+    "while (!fs.existsSync(path.join(root, 'release'))) await new Promise(r => setTimeout(r, 10));",
+    '});',
+  ].join('\n')));
+  const stdout = makeWriter(), stderr = makeWriter();
+  const runPromise = runner.runRtkTestGraph({ plan: { testFiles: files }, tmpParent: dir, stdout, stderr,
+    wallTimeoutMs: 5000, noProgressTimeoutMs: 2000, heartbeatIntervalMs: 40, termGraceMs: 100, killGraceMs: 100 });
+  try {
+    await waitFor(() => fs.readdirSync(started).length >= 2);
+    await new Promise(r => setTimeout(r, 120));
+    assert.equal(fs.readdirSync(started).length, 2, 'third file stays queued while two real workers hold the barrier');
+    fs.writeFileSync(release, 'release');
+    const run = await runPromise;
+    assert.equal(run.exitCode, 0, stdout.value() + '\n' + stderr.value());
+    assert.equal(run.spawnArgs[2], '--test-concurrency=2');
+    assert.deepEqual(run.spawnArgs.slice(3), files, 'complete original file set and order');
+    assert.equal(fs.readdirSync(started).length, 3, 'queued file also really executes');
+    assert.equal(runner.evaluateMandatoryTapOutput(stdout.value(), '', { expectedFileCount: 3 }).ok, true);
+  } finally {
+    fs.writeFileSync(release, 'release');
+    await runPromise;
+  }
+});
+
 test('C4 RTK runner treats queued writer backpressure as flow control rather than evidence failure', async (t) => {
   const runner = await import(RUNNER_PATH);
   const tmpParent = makeTempParent(t);
