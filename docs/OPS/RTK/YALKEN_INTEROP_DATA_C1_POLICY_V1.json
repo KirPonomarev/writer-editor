@@ -642,7 +642,9 @@
     "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
     "test/contracts/rtk-word-novel-import-partition.contract.test.js",
     "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
-    "docs/tasks/2026-10-09--word-novel-atomic-note-return-mac.md"
+    "docs/tasks/2026-10-09--word-novel-atomic-note-return-mac.md",
+    "test/contracts/menu-presentation-modes.contract.test.js",
+    "docs/tasks/2026-10-10--mac-normal-quit-novel.md"
   ],
   "protectedFiles": [
     {
@@ -871,7 +873,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f4dc328871ab2abe9832abe0dad389845ecdc8340e98ecc3cbd8d476f84a31d1"
+        "sha256": "93c4045bf1eee5f3a9f82ef3f3d300fe3e7a9ff6dc1c13ecc8c7b787b25c5dae"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2563,15 +2565,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "01a83641bb5bb862f28f016e2d5678b53f61fc92e568fc645d8c8e54626f5681"
+        "sha256": "eaacd953ba3998dd295d83a81194aa1e2583e6b57990e260550e3b35eac4b515"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "a299dbcf4d8b7830430e817eb7822a008cc8df266175ee0d90b991a1277d37d2"
+        "sha256": "e8feadae29e22fff54057e605976dd6c51c24f1be6b0e172b95eeb196fab14a1"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5907893554b579ed255c9e41fdb39603d1c007c9e659a09cd414e0e0d4b0a998"
+        "sha256": "b8ce3875f785f5ba9a6e12293f07ec9dbe7e16a84454fcf537ad37e6c791bcdd"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2840,6 +2842,14 @@
       {
         "path": "docs/tasks/2026-10-09--word-novel-atomic-note-return-mac.md",
         "sha256": "6cae839c46166d92eaee010599d227c1bacacdea1589cfb9ebc420cf91fb9eb9"
+      },
+      {
+        "path": "test/contracts/menu-presentation-modes.contract.test.js",
+        "sha256": "f4ac7bf36c878f44dab9915762b4746f678393e6ebede2788fbf80732349f546"
+      },
+      {
+        "path": "docs/tasks/2026-10-10--mac-normal-quit-novel.md",
+        "sha256": "7d22a56d7b1bc28c333ebe76106ddb5ffff5cba2107799302c910b96e2c80c76"
       }
     ],
     "followupRepair": {

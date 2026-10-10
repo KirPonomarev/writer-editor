@@ -38617,10 +38617,14 @@ function buildCompactMenuTemplate(template) {
 }
 
 function applyMenuPresentation(template) {
-  if (currentMenuPresentationMode !== MENU_PRESENTATION_MODE_COMPACT) {
-    return template;
+  const projectedTemplate = currentMenuPresentationMode === MENU_PRESENTATION_MODE_COMPACT
+    ? buildCompactMenuTemplate(template)
+    : template;
+  if (process.platform === 'darwin'
+    && !projectedTemplate.some((item) => item && item.role === 'appMenu')) {
+    return [{ role: 'appMenu' }, ...projectedTemplate];
   }
-  return buildCompactMenuTemplate(template);
+  return projectedTemplate;
 }
 
 function resolveLocalizedMenuLabel(localeCatalog, labelKey, fallbackLabel) {
@@ -38877,7 +38881,7 @@ function buildSafeFallbackMenuTemplate() {
 }
 
 function applySafeFallbackMenu() {
-  const fallbackMenu = Menu.buildFromTemplate(buildSafeFallbackMenuTemplate());
+  const fallbackMenu = Menu.buildFromTemplate(applyMenuPresentation(buildSafeFallbackMenuTemplate()));
   Menu.setApplicationMenu(fallbackMenu);
 }
 
