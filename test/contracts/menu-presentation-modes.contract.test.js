@@ -232,3 +232,117 @@ test('menu presentation modes: compact projection hoists the switch container ab
     'nested view group must keep adjacent view controls and must not duplicate the hoisted presentation switch',
   );
 });
+
+function normalQuitMenuContext(platform, mode) {
+  const source = fs.readFileSync(MAIN_PATH, 'utf8');
+  const context = vm.createContext({
+    process: { platform }, currentMenuPresentationMode: mode,
+    MENU_PRESENTATION_MODE_COMPACT: 'COMPACT', MENU_PRESENTATION_COMPACT_ROOT_ID: 'compact-root',
+  });
+  for (const name of ['cloneMenuTemplateItem', 'mergeCompactDuplicateMenuItem',
+    'dedupeCompactRootSubmenu', 'extractCompactRootPinnedItems', 'buildCompactMenuTemplate',
+    'applyMenuPresentation']) {
+    vm.runInContext(extractFunctionSource(source, name), context);
+  }
+  return context;
+}
+
+test('macOS normal Quit: all presentation modes and early fallback retain exactly one appMenu', () => {
+  const full = [{ id: 'file', label: 'File', submenu: [{ id: 'save', label: 'Save' }] },
+    { id: 'view', label: 'View', submenu: [{ id: 'settings', label: 'Settings' }] }];
+  for (const platform of ['darwin', 'win32', 'linux']) {
+    for (const mode of ['CLASSIC', 'COMPACT']) {
+      for (const template of [full, full.slice(1), [], [{ role: 'appMenu' }, ...full]]) {
+        const before = JSON.stringify(template), context = normalQuitMenuContext(platform, mode);
+        const result = context.applyMenuPresentation(template);
+        const plain = JSON.parse(JSON.stringify(result));
+        if (platform === 'darwin') {
+          assert.equal(plain.filter(item => item.role === 'appMenu').length, 1, `${platform}/${mode}/${before}`);
+          assert.equal(plain[0].role, 'appMenu');
+          assert.deepEqual(JSON.parse(JSON.stringify(context.applyMenuPresentation(result))), plain,
+            'repeated projection must not duplicate or nest the app menu');
+          if (mode === 'CLASSIC') {
+            assert.deepEqual(plain.filter(item => item.role !== 'appMenu'), template.filter(item => item.role !== 'appMenu'));
+          }
+        } else {
+          const expected = mode === 'COMPACT' ? context.buildCompactMenuTemplate(template) : template;
+          assert.deepEqual(plain, JSON.parse(JSON.stringify(expected)), 'other platforms retain their exact projection');
+        }
+        assert.equal(JSON.stringify(template), before, 'projection must not mutate its input');
+      }
+    }
+  }
+});
+
+test('macOS normal Quit: installed safe fallback uses the same adapter and existing command bus', () => {
+  const source = fs.readFileSync(MAIN_PATH, 'utf8');
+  for (const platform of ['darwin', 'win32', 'linux']) {
+    for (const mode of ['CLASSIC', 'COMPACT']) {
+      const context = normalQuitMenuContext(platform, mode), calls = [];
+      Object.assign(context, {
+        MENU_ACCELERATOR_TOKENS: { platformQuit: 'CmdOrCtrl+Q' }, COMMAND_BUS_ROUTE: 'command.bus',
+        dispatchMenuCommand: (...args) => { calls.push(args); return { ok: true }; },
+        logDevError: (...args) => { throw new Error(JSON.stringify(args)); },
+        Menu: { buildFromTemplate: template => template, setApplicationMenu: menu => { context.installed = menu; } },
+      });
+      const handlerStart = source.indexOf('function buildCommandClickHandler(');
+      const handlerEnd = source.indexOf('function normalizeUiBridgeMenuResult(', handlerStart);
+      assert.ok(handlerStart >= 0 && handlerEnd > handlerStart);
+      vm.runInContext(source.slice(handlerStart, handlerEnd), context);
+      for (const name of ['buildSafeFallbackMenuTemplate', 'applySafeFallbackMenu']) {
+        vm.runInContext(extractFunctionSource(source, name), context);
+      }
+      context.applySafeFallbackMenu();
+      assert.equal(context.installed.filter(item => item.role === 'appMenu').length, platform === 'darwin' ? 1 : 0);
+      const quit = context.installed.find(item => item.id === 'safe-file').submenu[0];
+      assert.equal(quit.id, 'safe-quit'); assert.equal(quit.accelerator, 'CmdOrCtrl+Q'); quit.click();
+      assert.deepEqual(JSON.parse(JSON.stringify(calls)), [['cmd.app.quit', {}, { route: 'command.bus' }]]);
+    }
+  }
+});
+
+test('macOS normal Quit: actual before-quit and lifecycle barrier preserve no-loss vetoes', async () => {
+  const source = fs.readFileSync(MAIN_PATH, 'utf8');
+  const lifecycle = require('../../src/core/lifecycle-conflict-v1.cjs');
+  const start = source.indexOf("app.on('before-quit', (event) => {");
+  const end = source.indexOf("app.on('window-all-closed'", start);
+  assert.ok(start >= 0 && end > start);
+  const draft = { content: 'unsaved Cyrillic Ж', comment: 'reply draft', private: { card: 'held' } };
+  for (const failure of ['none', 'pending-comment', 'save-failed', 'at-risk', 'protected',
+    'stale-generation', 'save-subject-switch', 'snapshot-subject-switch', 'pending-outbox', 'persist-failed']) {
+    let subject = 'project:p/document:s', prevented = 0, quits = 0, listener;
+    const before = JSON.stringify(draft);
+    const context = vm.createContext({
+      ...lifecycle, isQuitting: false, mainWindow: { getBounds: () => ({ x: 1, y: 2, width: 800, height: 600 }) },
+      lastSignaledEditGeneration: 2, lastAcknowledgedEditGeneration: failure === 'stale-generation' ? 1 : 2,
+      currentLifecycleSubjectId: () => subject, updateStatus: () => {},
+      persistWindowState: async () => { if (failure === 'persist-failed') throw new Error('owned failure'); },
+      autoSave: async () => {
+        const subjectId = subject;
+        if (failure === 'save-subject-switch') subject = 'project:other/document:s';
+        const kind = failure === 'at-risk' ? 'AT_RISK' : failure === 'protected' ? 'PROTECTED' : 'SAVED';
+        return { ok: failure !== 'save-failed', subjectId,
+          ack: { kind, reason: kind === 'SAVED' ? '' : 'WRITE_FAILED', savedGeneration: 2, latestEditGeneration: 2 } };
+      },
+      requestEditorSnapshot: async () => {
+        if (failure === 'snapshot-subject-switch') subject = 'project:other/document:s';
+        return { ...draft, commentAuthoringPending: failure === 'pending-comment' };
+      },
+      app: { on: (event, handler) => { assert.equal(event, 'before-quit'); listener = handler; },
+        quit: () => { quits++; listener({ preventDefault: () => { prevented++; } }); } },
+    });
+    if (failure === 'pending-outbox') {
+      context.createDetachedOutboxObservation = input => lifecycle.createFreshOutboxObservation({ ...input,
+        inboxOutbox: { replay: () => ({ schemaVersion: 'yalken.transactionalInboxOutbox.v1', outboxDigest: 'a'.repeat(64),
+          effects: [{ effectId: 'e', intentId: 'i', status: 'PENDING' }] }),
+        pendingEffects: () => [{ effectId: 'e', intentId: 'i', status: 'PENDING' }] } });
+    }
+    vm.runInContext('async ' + extractFunctionSource(source, 'confirmDiscardChanges'), context);
+    vm.runInContext(source.slice(start, end), context);
+    listener({ preventDefault: () => { prevented++; } });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(prevented, 1, failure); assert.equal(quits, failure === 'none' ? 1 : 0, failure);
+    assert.equal(context.isQuitting, failure === 'none', failure);
+    assert.equal(JSON.stringify(draft), before, 'ordinary Quit must never discard authoring data');
+  }
+});
