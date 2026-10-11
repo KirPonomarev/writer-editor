@@ -18742,7 +18742,7 @@ export function verifyR24InteropC4LabCodePinSuccessor({candidateSha='HEAD',git=d
     ]),'E_INTEROP_C4_SUCCESSOR_LAB_CODE_BINDING');
   return{status:'PASS',baseSha:expectation.baseSha,candidateSha:candidate,admittedPaths:bindings.map(binding=>binding.path),bindings,cellAcceptanceAuthority:false};
 }
-const R24_INTEROP_WORD_COMMENT_TRANSIENT_HISTORY_SUCCESSOR=Object.freeze({
+export const R24_INTEROP_WORD_COMMENT_TRANSIENT_HISTORY_SUCCESSOR=Object.freeze({
   "id": "WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
   "baseSha": "a0e4b2572e063d44943f4eb0b1fe29beb7b4a67d",
   "baseTree": "5220359a9bfa5b948a54c68ae7f408b026cb4108",
