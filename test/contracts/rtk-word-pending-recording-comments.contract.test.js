@@ -163,3 +163,62 @@ for (const insert of ['', 'XX']) test(`Word language round with ${insert ? 'text
  const forged=review.readLedger(returned);forged.revisions.find(r=>r.operation==='format').format.before=[{type:'bold'}];
  assert.throws(()=>decide(review.bindLedger(forged),state,'undo'),/RECORDING_COMMENT_ROUND_SOURCE_MISMATCH/);
 });
+
+function ordinaryNoteProofFixture(changed=true) {
+ const notes=require('../../src/core/word-manuscript-notes-v1.cjs'),source=doc('Alpha beta');
+ source.attrs={wordPendingRevisions:null,wordUserBookmarks:null};
+ source.content[0].attrs={wordParagraphSpacing:null,wordParagraphMarkLanguage:null};
+ source.content[0].content[0].marks=[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:null,wordLanguage:null}}];
+ const state={schemaVersion:1,projectId,privateMetadata:{keep:true},notes:[{id:'private',scope:'project',body:'Private planning',privateMetadata:{keep:true}},
+  {id:'ordinary-note',scope:'manuscript',body:'Note',manuscript:notes.bindManuscriptPayload({kind:'footnote',body:doc('Note'),sceneId,offsetUtf16:1,sceneContent:encode(source)})}]};
+ const ordinaryNoteBaseline={projectId,sceneId,noteText:JSON.stringify(state)},bound=notes.bindOrdinaryRecordingNotes(encode(source),ordinaryNoteBaseline);
+ const previous=plan('Alpha beta'),next=changed?plan('Alpha beta',edit('ordinary-first',0,'','!')):previous,working=review.normalizeNode(source);
+ if(changed)working.content[0].content.unshift({type:'text',text:'!'});
+ const after=recording.derive(bound,working,meta,next).doc;
+ const proof={schemaVersion:1,baselineContent:encode(source),metadata:meta,previousIntents:previous,nextIntents:next,sessionId:'ordinary-proof',ordinaryNoteBaseline};
+ return {source,bound,after,state,proof,input:{beforeContent:encode(source),afterContent:encode(after),recordingProofJson:JSON.stringify(proof)}};
+}
+test('pristine-to-bound first recording proof replays edited and zero-edit saves without changing full inputs',()=>{
+ const validate=require('../../src/core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof;
+ for(const changed of [false,true]){
+  const f=ordinaryNoteProofFixture(changed),bytes=JSON.stringify(f);
+  assert.deepEqual(validate(f.input).baseline.doc,f.bound);assert.equal(JSON.stringify(f),bytes);
+  const comment=add(f.source,null,6,'beta'),saved=planRecordingCommentSave({...f.input,beforeText:comment,projectId,sceneId});
+  assert.deepEqual(JSON.parse(saved.afterText).threads[0].messages,JSON.parse(comment).threads[0].messages);
+  const note=require('../../src/core/word-manuscript-notes-v1.cjs').planManuscriptNoteAnchorSave({...f.input,beforeText:JSON.stringify(f.state),projectId,sceneId});
+  assert.equal(JSON.parse(note.afterText).notes[1].manuscript.reference.offsetUtf16,changed?2:1);
+ }
+});
+test('ordinary first recording proof rejects forged rich baseline, prior prefix, pending history and point geometry',()=>{
+ const validate=require('../../src/core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof;
+ for(const field of ['root-null','paragraph-attrs','mark-null','marks','opaque','existing-ledger','history','receipt','previous','point','extra','missing','null']){
+  const f=ordinaryNoteProofFixture(),proof=structuredClone(f.proof),baseline=structuredClone(f.source),input={...f.input};
+  if(field==='root-null')delete baseline.attrs.wordUserBookmarks;
+  if(field==='paragraph-attrs')delete baseline.content[0].attrs;
+  if(field==='mark-null')delete baseline.content[0].content[0].marks[1].attrs.fontSize;
+  if(field==='marks')baseline.content[0].content[0].marks.reverse();
+  if(field==='opaque')baseline.attrs.wordDefaultTabStop=360;
+  if(['existing-ledger','history','receipt'].includes(field)){
+   const ledger=structuredClone(review.readLedger(f.bound));
+   if(field==='history')ledger.roundUndo.push(review.roundFrame(ledger));
+   if(field==='receipt')ledger.returnReceipts.push({roundId:'forged',artifactSha256:'f'.repeat(64)});
+   proof.baselineContent=encode(review.bindLedger(ledger));
+  }else proof.baselineContent=encode(baseline);
+  if(field==='previous')proof.previousIntents=plan('Alpha beta',edit('prior',0,'',''),edit('prior-undo',0,'','','undo','prior'));
+  if(field==='point'){const ledger=structuredClone(review.readLedger(f.after));ledger.noteSourcePoints[0].offsetUtf16=0;input.afterContent=encode(review.bindLedger(ledger));}
+  if(field==='extra')proof.ordinaryNoteBaseline.points=[];
+  if(field==='missing')delete proof.ordinaryNoteBaseline.sceneId;
+  if(field==='null')proof.ordinaryNoteBaseline=null;
+  input.recordingProofJson=JSON.stringify(proof);assert.throws(()=>validate(input),undefined,field);
+ }
+});
+
+test('ordinary recording proof cannot replace malformed before with a plain fallback or change envelope metadata',()=>{
+ const validate=require('../../src/core/word-pending-recording-comments-v1.cjs').validateRecordingSaveProof,f=ordinaryNoteProofFixture();
+ for(const beforeContent of ['[doc-v2 length=1]\n{\n[/doc-v2]','[meta]\nstatus: forged\n[/meta]\n\n'+f.input.beforeContent])
+  assert.throws(()=>validate({...f.input,beforeContent}),/RECORDING_COMMENT_DOCUMENT_INVALID|RECORDING_COMMENT_LEDGER_MISMATCH/);
+ const proof={...f.proof,baselineContent:encode(f.bound)};delete proof.ordinaryNoteBaseline;
+ assert.throws(()=>validate({...f.input,recordingProofJson:JSON.stringify(proof)}),/RECORDING_COMMENT_LEDGER_MISMATCH/);
+ const ordinary={...f.proof};delete ordinary.ordinaryNoteBaseline;
+ assert.throws(()=>validate({...f.input,beforeContent:'Alpha beta',recordingProofJson:JSON.stringify(ordinary)}),/RECORDING_COMMENT_DOCUMENT_INVALID/);
+});

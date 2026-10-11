@@ -290,3 +290,30 @@ test('note observations preserve full recording proof and before/after/proof err
   const input=h.freeze({...plain,...extra}),snapshot=JSON.stringify(input);assert.throws(()=>h.core.planManuscriptNoteAnchorSave(input),e=>e.name==='Error'&&e.code===code&&e.message===code);assert.equal(JSON.stringify(input),snapshot);
  }
 });
+
+test('ordinary recording points follow exact Unicode leaf occurrences, hard breaks and empty paragraph boundaries',()=>{
+ const pending=require('../../src/core/word-pending-text-revisions-v1.cjs'),envelope=require('../../src/core/document-content-envelope-v1.cjs');
+ const text='Cafe\u0301 👩‍💻 😀',doc={type:'doc',attrs:{wordPendingRevisions:null,wordUserBookmarks:null},content:[
+  {type:'paragraph',content:[]},{type:'paragraph',content:[{type:'text',text},{type:'hardBreak'},{type:'text',text:'R'}]},
+  {type:'paragraph',content:[{type:'text',text:'R'}]},{type:'paragraph',content:[]}]};
+ const content=envelope.composeObservablePayload({doc}),source=model.sceneText(content),rowLength=text.length+2,third=1+rowLength+1,last=third+2;
+ const expected=[[0,0,0],[1,0,1],[1,text.length,1+text.length],[1,text.length+1,2+text.length],[1,rowLength,1+rowLength],[2,0,third],[3,0,last]];
+ const state={schemaVersion:1,projectId:'ordinary-geometry',privateMetadata:{keep:true},notes:[
+  {id:'private',scope:'project',body:'Private opaque data',privateMetadata:{keep:true}},
+  ...expected.map(([, ,offsetUtf16],i)=>({id:'point-'+i,scope:'manuscript',body:model.validateNoteBody(body()).text,
+   manuscript:model.bindManuscriptPayload({kind:i%2?'endnote':'footnote',body:body(),sceneId:'roman/a.txt',offsetUtf16,sceneContent:content})}))]};
+ const descriptor={projectId:state.projectId,sceneId:'roman/a.txt',noteText:JSON.stringify(state)},bytes=JSON.stringify({content,descriptor});
+ const bound=model.bindOrdinaryRecordingNotes(content,descriptor);
+ assert.deepEqual(pending.noteProjection(bound).map(p=>[p.paragraphIndex,p.offsetUtf16,p.globalOffsetUtf16]),expected);
+ assert.equal(model.sceneText(envelope.composeObservablePayload({doc:bound})),source);assert.equal(JSON.stringify({content,descriptor}),bytes);
+ assert.equal(pending.readLedger(bound).revisions.length,0);assert.equal(pending.readLedger(bound).roundUndo.length,0);
+ for(const mutate of [d=>{d.extra=[];},d=>{delete d.sceneId;},d=>{d.projectId='foreign';},d=>{d.sceneId='roman/foreign.txt';},
+  d=>{const v=JSON.parse(d.noteText);v.notes[1].manuscript.reference.sourceTextSha256='f'.repeat(64);d.noteText=JSON.stringify(v);},
+  d=>{const v=JSON.parse(d.noteText);v.notes[1].manuscript.reference.offsetUtf16=source.indexOf('😀')+1;d.noteText=JSON.stringify(v);},
+  d=>{const v=JSON.parse(d.noteText);v.notes[1].manuscript.reference.offsetUtf16=source.length+1;d.noteText=JSON.stringify(v);},
+  d=>{const v=JSON.parse(d.noteText);v.notes[1].manuscript.reference.offsetUtf16=0.5;d.noteText=JSON.stringify(v);},
+  d=>{const v=JSON.parse(d.noteText);v.notes[2].id=v.notes[1].id;d.noteText=JSON.stringify(v);}]) {
+  const forged=structuredClone(descriptor);mutate(forged);assert.throws(()=>model.bindOrdinaryRecordingNotes(content,forged));
+ }
+ assert.throws(()=>model.bindOrdinaryRecordingNotes(envelope.composeObservablePayload({doc:bound}),descriptor),/RECORDING_NOTE_BINDINGS_UNSUPPORTED/);
+});

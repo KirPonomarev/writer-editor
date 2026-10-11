@@ -501,9 +501,9 @@ for(const mode of ['missingIntents','notesBeforeCapture','notesAfterCapture','ot
   assert.equal(result.success,false,JSON.stringify(result));assert.equal(h.writes,0);assert.equal(h.editor,working);assert.equal(h.c.isDirty,true);
  });
 test('first admission of an unbound note roster remains typed refused with exact bytes',async t=>{
- const h=await harness(t);addBoundNotes(h,false);h.editor=envelope.composeObservablePayload({doc:doc('AB tail')});fs.writeFileSync(h.file,h.editor);
+ const h=await harness(t);addBoundNotes(h,false);h.editor=envelope.composeObservablePayload({doc:model.bindLedger({schemaVersion:2,source:doc('AB tail'),revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]})});fs.writeFileSync(h.file,h.editor);
  const before=business(h),projection=await h.c.readPendingRevisionProjection();
- assert.equal(projection,null);const refused=await h.command('start');assert.equal(refused.ok,false);assert.match(JSON.stringify(refused),/RECORDING_NOTE_BINDINGS_UNSUPPORTED/);
+ assert.equal(projection.recordingAvailable,false);assert.equal(projection.recordingReason,'RECORDING_NOTE_BINDINGS_UNSUPPORTED');const refused=await h.command('start');assert.equal(refused.ok,false);assert.match(JSON.stringify(refused),/RECORDING_NOTE_BINDINGS_UNSUPPORTED/);
  assert.deepEqual(business(h),before);assert.equal(h.writes,0);
 });
 test('real PM gestures and SAVED prefix ACKs persist exact note occurrences through typing Undo and Redo',async t=>{
@@ -784,4 +784,160 @@ test('idempotent receipt with changed annotation plan cannot advance full record
  h.intents=intents('Alpha beta!',typed('forward',10,'','?'),typed('undo',10,'?','','undo','forward'));
  const result=await h.save();assert.equal(result.success,false);assert.match(JSON.stringify(result),/RECORDING_SAVE_READBACK_CHANGED/);
  assert.deepEqual(business(h),before);assert.equal(vm.runInContext('JSON.stringify({raw:activePendingRecording.raw,provenance:activePendingRecording.provenance,checkpoint:activePendingRecording.checkpoint})',h.c),old);
+});
+
+// Ordinary native authoring owns canonical references, not a preinstalled ledger.
+async function createOrdinaryNativeNotes(h,t) {
+ const storage=await import('../../src/core/notesStorage.mjs');let creations=0;
+ const anchorRoot=fs.mkdtempSync(path.join(os.tmpdir(),'ordinary-note-authority-'));t.after(()=>fs.rmSync(anchorRoot,{recursive:true,force:true}));
+ const {createMainProjectManifestAuthority}=await import('../../src/product/mainProjectManifestAuthority.mjs');
+ const authority=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false});h.c.getMainProjectManifestAuthority=async()=>authority;
+ h.c.loadMarkdownIoModule=()=>import('../../src/io/markdown/index.mjs');
+ const readCommentsModule=h.c.loadRtkNonTextReturnModule;
+ h.c.loadRtkNonTextReturnModule=async()=>({...await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs'),...await readCommentsModule()});
+ const read=()=>{const sourceText=fs.existsSync(h.notePath)?fs.readFileSync(h.notePath,'utf8'):null;
+  const document=sourceText?JSON.parse(sourceText):storage.buildEmptyNotesDocument('recording-project');
+  return {ok:true,current:{document,sourceText,hash:storage.buildNotesReadModel(document,{projectId:'recording-project'}).documentHash}};};
+ h.c.readProjectNotesDocument=async()=>read();
+ h.c.writeProjectNotesDocument=async(_context,_previous,next,_command,options)=>{
+  await options.beforeWrite();fs.writeFileSync(h.notePath,JSON.stringify(next,null,2)+'\n');creations++;return {ok:true};};
+ h.c.makeNotesCommandError=(_command,code,reason)=>({ok:false,code,reason});h.c.buildNotesMutationReceipt=()=>({});
+ vm.runInContext(main.slice(main.indexOf('async function runManuscriptNotesMutation('),main.indexOf('async function handleWorkspaceProjectNotesQuery(')),h.c);
+ const privateNote={id:'ordinary-private',scope:'inbox',title:'Private',body:'Keep planning data',privateMetadata:{keep:true}};
+ fs.writeFileSync(h.notePath,JSON.stringify(storage.normalizeNotesDocument({...storage.buildEmptyNotesDocument('recording-project'),notes:[privateNote]},
+  {projectId:'recording-project',now:()=> '2026-10-11T00:00:00.000Z'}).value));
+ const body={type:'doc',content:[{type:'paragraph',attrs:{wordParagraphSpacing:{before:0,after:120},wordParagraphMarkLanguage:{val:'ru-RU'}},
+  content:[{type:'text',text:'Rich 😀',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},
+   {type:'hardBreak'},{type:'text',text:'body'}]},{type:'paragraph',content:[]}]};
+ for(const [kind,offsetUtf16]of [['footnote',1],['endnote',6]]) {
+  const source=h.context(),payload={projectId:source.projectId,subjectId:source.subjectId,expectedSceneSha256:source.sceneSha256,expectedDocumentHash:read().current.hash};
+  const result=await h.c.runManuscriptNotesMutation('cmd.project.notes.create',payload,
+   {op:'create',manuscriptRequest:{kind,bodyJson:JSON.stringify(body),offsetUtf16}}, {projectId:source.projectId,projectRoot:h.root,notesStorage:storage});
+  assert.equal(result.ok,true,JSON.stringify(result));
+ }
+ assert.equal(creations,2);assert.equal(model.readLedger(h.context().parsed.doc),null);
+ const complete=read().current.document,foreign=structuredClone(complete.notes[1]),deleted=structuredClone(complete.notes[2]);
+ foreign.id='ordinary-foreign';foreign.manuscript.reference.sceneId='roman/foreign.txt';deleted.id='ordinary-deleted';deleted.deleted=true;
+ complete.privateMetadata={keep:'root metadata'};complete.notes.push(foreign,deleted);fs.writeFileSync(h.notePath,JSON.stringify(complete,null,2)+'\n');
+ return read().current.document;
+}
+test('ordinary native note-create Start first Save Stop and reopened continuation preserve complete annotations',async t=>{
+ const h=await harness(t),notes=await createOrdinaryNativeNotes(h,t),comments=JSON.parse(addComment(h));
+ comments.threads[0].messages.push({commentId:'ordinary-reply',kind:'reply',body:'Complete reply 😀',provenance:{author:'Editor'}});
+ fs.writeFileSync(h.commentPath,JSON.stringify(comments));const before=business(h);h.intents=intents('Alpha beta');
+ await h.start();assert.deepEqual(business(h),before);assert.equal(h.writes,0);
+ h.type('!Alpha beta');h.intents=intents('Alpha beta',typed('ordinary-first',0,'','!'));
+ let saved=await h.save();assert.equal(saved.success,true,JSON.stringify(saved));
+ assert.deepEqual(model.noteProjection(h.context().parsed.doc).map(p=>p.globalOffsetUtf16),[2,7]);
+ assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath,'utf8'))),protectedNoteMeaning(notes));
+ assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')).notes.slice(-2),notes.notes.slice(-2));
+ assert.deepEqual(h.readComments().state.threads[0].messages,comments.threads[0].messages);
+ h.intents=intents('!Alpha beta');assert.equal((await h.command('stop')).ok,true);
+ const stopped=business(h);assert.equal((await h.command('stop')).ok,false);assert.deepEqual(business(h),stopped);
+ const reopened=h.context().raw;h.editor=reopened;await h.start();
+ h.type('!Alpha beta!');h.intents=intents('!Alpha beta',typed('ordinary-next',11,'','!'));
+ saved=await h.save();assert.equal(saved.success,true,JSON.stringify(saved));h.intents=intents('!Alpha beta!');assert.equal((await h.command('stop')).ok,true);
+ assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath,'utf8'))),protectedNoteMeaning(notes));
+ assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')).notes.slice(-2),notes.notes.slice(-2));
+ assert.deepEqual(h.readComments().state.threads[0].messages,comments.threads[0].messages);
+});
+test('ordinary native note-create explicit zero-edit Save binds notes while no-edit Start Stop retains exact bytes',async t=>{
+ const h=await harness(t),notes=await createOrdinaryNativeNotes(h,t),before=business(h);h.intents=intents('Alpha beta');
+ await h.start();assert.equal((await h.command('stop')).ok,true);assert.deepEqual(business(h),before);assert.equal(h.writes,0);
+ await h.start();const result=await h.save();assert.equal(result.success,true,JSON.stringify(result));
+ assert.deepEqual(model.noteProjection(h.context().parsed.doc).map(p=>p.globalOffsetUtf16),[1,6]);
+ assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')),notes);assert.equal((await h.command('stop')).ok,true);
+});
+
+function ordinaryRecordingInventory(root) {
+ const entries=[];const visit=relative=>{for(const entry of fs.readdirSync(path.join(root,relative),{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+  const name=path.join(relative,entry.name);assert.equal(entry.isSymbolicLink(),false);
+  if(entry.isDirectory()){entries.push([name,'directory']);visit(name);}else entries.push([name,hash(fs.readFileSync(path.join(root,name)))]);
+ }};visit('');return entries;
+}
+for(const field of ['private','body','foreign','deleted','project','scene','extra'])test(`ordinary first Save rejects ${field} descriptor forgery before any durable write`,async t=>{
+ const h=await harness(t);await createOrdinaryNativeNotes(h,t);addComment(h);h.intents=intents('Alpha beta');await h.start();
+ h.type('!Alpha beta');h.intents=intents('Alpha beta',typed('ordinary-forged',0,'','!'));
+ const descriptor=JSON.parse(vm.runInContext('JSON.stringify(activePendingRecording.ordinaryNoteBaseline)',h.c)),state=JSON.parse(descriptor.noteText);
+ if(field==='private')state.notes[0].body='Forged private data';
+ if(['body','deleted'].includes(field)){const note=state.notes[field==='body'?1:state.notes.length-1];note.manuscript.body=doc('Forged rich body');note.body='Forged rich body';}
+ if(field==='foreign')state.notes[state.notes.length-2].manuscript.reference.offsetUtf16=2;
+ if(field==='project'){state.projectId='foreign';descriptor.projectId='foreign';}
+ if(field==='scene')descriptor.sceneId='roman/foreign.txt';
+ if(field==='extra')descriptor.points=[];
+ descriptor.noteText=JSON.stringify(state);h.c.forgedOrdinaryDescriptor=descriptor;vm.runInContext('activePendingRecording.ordinaryNoteBaseline=forgedOrdinaryDescriptor',h.c);
+ const before=ordinaryRecordingInventory(h.root),buffer=h.editor,result=await h.save();
+ assert.equal(result.success,false,JSON.stringify(result));assert.match(JSON.stringify(result),/RECORDING_|COMMENT_/);
+ assert.deepEqual(ordinaryRecordingInventory(h.root),before);assert.equal(h.writes,0);assert.equal(h.editor,buffer);
+});
+for(const field of ['private','foreign','deleted','body'])test(`ordinary recording rereads complete ${field} notes before Start publication and first Save`,async t=>{
+ const h=await harness(t);await createOrdinaryNativeNotes(h,t);h.intents=intents('Alpha beta');await h.start();
+ h.type('!Alpha beta');h.intents=intents('Alpha beta',typed('ordinary-race',0,'','!'));
+ const snapshot=await h.capture(),state=JSON.parse(fs.readFileSync(h.notePath,'utf8'));
+ if(field==='private')state.notes[0].body='Concurrent private note';
+ if(field==='foreign')state.notes[state.notes.length-2].manuscript.reference.offsetUtf16=2;
+ if(field==='deleted')state.notes[state.notes.length-1].title='Concurrent deleted note';
+ if(field==='body'){state.notes[1].manuscript.body=doc('Concurrent note');state.notes[1].body='Concurrent note';}
+ fs.writeFileSync(h.notePath,JSON.stringify(state));const before=ordinaryRecordingInventory(h.root);
+ const result=await h.commit(snapshot);assert.equal(result.success,false,JSON.stringify(result));assert.match(JSON.stringify(result),/RECORDING_NOTES_CHANGED/);
+ assert.deepEqual(ordinaryRecordingInventory(h.root),before);assert.equal(h.writes,0);
+});
+
+test('ordinary native note-create on a plain Unicode scene records its first Save through the actual Main writer',async t=>{
+ const h=await harness(t),source='Alpha beta Cafe\u0301 👩‍💻 😀';h.editor=source;fs.writeFileSync(h.file,source);
+ const notes=await createOrdinaryNativeNotes(h,t),before=ordinaryRecordingInventory(h.root);h.intents=intents(source);
+ h.editor=envelope.composeObservablePayload({doc:doc(source)}); // Open installs the existing plain scene in the recording editor schema.
+ await h.start();assert.deepEqual(ordinaryRecordingInventory(h.root),before);assert.equal(h.writes,0);
+ h.type('!'+source);h.intents=intents(source,typed('ordinary-plain',0,'','!'));
+ const saved=await h.save();assert.equal(saved.success,true,JSON.stringify(saved));
+ assert.equal(model.projection(h.context().parsed.doc).current,'!'+source);
+ assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath,'utf8'))),protectedNoteMeaning(notes));
+ assert.deepEqual(JSON.parse(fs.readFileSync(h.notePath,'utf8')).notes.slice(-2),notes.notes.slice(-2));
+ const record=await tx.readVerifiedProjectTransaction({scenePath:h.file,manifestPath:h.manifest});assert.ok(record.noteState);
+ assert.equal(record.noteState.afterDigest,hash(fs.readFileSync(h.notePath,'utf8')));
+ h.intents=intents('!'+source);assert.equal((await h.command('stop')).ok,true);
+});
+test('ordinary recording Start rereads complete note bytes at the publication boundary',async t=>{
+ const h=await harness(t);await createOrdinaryNativeNotes(h,t);h.intents=intents('Alpha beta');let afterRace;
+ h.publicationRace=()=>{h.publicationRace=null;const state=JSON.parse(fs.readFileSync(h.notePath,'utf8'));state.notes[0].body='Concurrent private note';
+  fs.writeFileSync(h.notePath,JSON.stringify(state));afterRace=ordinaryRecordingInventory(h.root);};
+ const result=await h.command('start');assert.equal(result.ok,false);assert.match(JSON.stringify(result),/RECORDING_NOTES_CHANGED|RECORDING_CHECKPOINT_STALE/);
+ assert.deepEqual(ordinaryRecordingInventory(h.root),afterRace);assert.equal(h.writes,0);
+});
+for(const boundary of ['JOURNAL','COMMIT'])test(`ordinary first Save ${boundary} bytes replay through current journal recovery and committed readback`,async t=>{
+ const h=await harness(t);await createOrdinaryNativeNotes(h,t);addComment(h);h.intents=intents('Alpha beta');await h.start();
+ h.type('!Alpha beta');h.intents=intents('Alpha beta',typed('ordinary-recovery',0,'','!'));const before=business(h);
+ let request,injected=false;h.c.commitProjectTransaction=async args=>{request=args;return tx.commitProjectTransaction({...args,fsAdapter:{...fs.promises,
+  rename:async(from,to)=>{await fs.promises.rename(from,to);const target=boundary==='JOURNAL'?tx.journalPathFor(h.manifest):tx.commitPathFor(h.file);
+   if(to===target&&!injected){injected=true;throw Error('ORDINARY_RECOVERY_BOUNDARY');}}}});};
+ const result=await h.save();assert.equal(result.success,false);assert.equal(injected,true);assert.ok(request.noteState);assert.ok(request.commentState);
+ const journal=JSON.parse(fs.readFileSync(tx.journalPathFor(h.manifest),'utf8'));
+ assert.deepEqual(JSON.parse(journal.noteState.recordingProofJson).ordinaryNoteBaseline,
+  JSON.parse(journal.commentState.recordingProofJson).ordinaryNoteBaseline);
+ assert.equal(JSON.parse(journal.noteState.recordingProofJson).ordinaryNoteBaseline.noteText,before[2]);
+ const publishManifest=async({manifestPath,expectedText,nextText,revision})=>{assert.equal(fs.readFileSync(manifestPath,'utf8'),expectedText);
+  await durableSaveTransaction({filePath:manifestPath,content:nextText,revision});};
+ await tx.recoverProjectTransaction({scenePath:h.file,manifestPath:h.manifest,publishManifest});
+ assert.equal(fs.existsSync(tx.journalPathFor(h.manifest)),false);
+ if(boundary==='JOURNAL')assert.deepEqual(business(h),before);
+ else {
+  assert.deepEqual(business(h),[request.sceneContent,request.manifestContent,request.noteState.afterText,request.commentState.afterText]);
+  const record=await tx.readVerifiedProjectTransaction({scenePath:h.file,manifestPath:h.manifest});assert.equal(record.noteState.afterDigest,hash(request.noteState.afterText));
+ }
+ assert.equal((await tx.recoverProjectTransaction({scenePath:h.file,manifestPath:h.manifest,publishManifest})).outcome,'NO_JOURNAL');
+});
+
+for(const field of ['private','scene','extra'])test(`ordinary interrupted first Save refuses ${field} persisted descriptor tampering without recovery writes`,async t=>{
+ const h=await harness(t);await createOrdinaryNativeNotes(h,t);h.intents=intents('Alpha beta');await h.start();
+ h.type('!Alpha beta');h.intents=intents('Alpha beta',typed('ordinary-tampered-journal',0,'','!'));let injected=false;
+ h.c.commitProjectTransaction=async args=>tx.commitProjectTransaction({...args,fsAdapter:{...fs.promises,
+  rename:async(from,to)=>{await fs.promises.rename(from,to);if(to===tx.journalPathFor(h.manifest)&&!injected){injected=true;throw Error('ORDINARY_TAMPER_BOUNDARY');}}}});
+ assert.equal((await h.save()).success,false);assert.equal(injected,true);
+ const target=tx.journalPathFor(h.manifest),journal=JSON.parse(fs.readFileSync(target,'utf8')),proof=JSON.parse(journal.noteState.recordingProofJson);
+ if(field==='private'){const state=JSON.parse(proof.ordinaryNoteBaseline.noteText);state.notes[0].body='Forged private recovery';proof.ordinaryNoteBaseline.noteText=JSON.stringify(state);}
+ if(field==='scene')proof.ordinaryNoteBaseline.sceneId='roman/foreign.txt';
+ if(field==='extra')proof.ordinaryNoteBaseline.points=[];
+ journal.noteState.recordingProofJson=JSON.stringify(proof);fs.writeFileSync(target,JSON.stringify(journal));const before=ordinaryRecordingInventory(h.root);
+ await assert.rejects(tx.recoverProjectTransaction({scenePath:h.file,manifestPath:h.manifest,publishManifest:()=>{throw Error('UNEXPECTED_RECOVERY_WRITE');}}),/NOTE_STATE/);
+ assert.deepEqual(ordinaryRecordingInventory(h.root),before);
 });
