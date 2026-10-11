@@ -209,3 +209,10 @@ source regressions precede normal delivery; no acceptance from component
 count, exit0, fixture, screenshot or self-authored receipt. Rollback is one
 normal PR revert of this complete contour. Full V3.1 native acceptance stays
 open until the original finite role/round/profile requirements are observed.
+
+The existing schema1 recording proof gains a strictly checked optional
+ordinaryNoteBaseline field. Current journal.v5 recovery validates and retains
+it; committed transaction records retain cohort digests. Before a rollback,
+recover any retained new proof-bearing journal with the current delivered
+code. A downgrade with an unrecovered new journal is unqualified; no
+cross-version recovery or migration capability is claimed by this correction.
