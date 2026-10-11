@@ -649,7 +649,8 @@
     "scripts/run-rtk-tests.mjs",
     "test/contracts/rtk-test-graph-catalog.contract.test.js",
     "docs/tasks/2026-10-10--word-recording-structural-undo-mac.md",
-    "docs/tasks/2026-10-11--word-recording-native-notes-mac.md"
+    "docs/tasks/2026-10-11--word-recording-native-notes-mac.md",
+    "docs/tasks/2026-10-11--word-comment-transient-history-return-mac.md"
   ],
   "protectedFiles": [
     {
@@ -1602,11 +1603,11 @@
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
-        "sha256": "96305e592e9e589b31931d96a2807c56772a88ea8b9cb923e8e0e9689c29cf4e"
+        "sha256": "1cac6c296fa5206759efa114f20ffbaece9d475b86808534c53df526545906ba"
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "b6e764966b76872870d53a63bddff744e410f74ab707951259a888749bf34981"
+        "sha256": "f15ebf9d6dd811a17f9a3003cbca802b8d54ccef40234bda99dce46e5c1aacf6"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -2066,7 +2067,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "2ae3c2aba7d07d2f1d15d99fda3447e405a84871a431e99bbebc9089cf9f0f3a"
+        "sha256": "f496bfb635875150d3a6d96a641c5468f33c506aa8ef188e652996c1dc826e1c"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2570,15 +2571,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "49305f8e26071c57e36c905406ef27cc32ccd9141250e33fb28b9b75fee92168"
+        "sha256": "6e5db2017e6c47d73ae07c096cf2324fcc8b2e6da3df631f04e7d519f2e28ef2"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e51cdf3ef1ffd7ddd460c7fdf844a7c983b7b81e252184468d46f6832d921241"
+        "sha256": "89a12b699b69d7a50a4c195d9c644a8839cadc3bff3a2dd85e8b6bfcbc7463d6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "da17f9037e0671bc188220be959714012e089a93478553f3138a79babca9751e"
+        "sha256": "73dfbc9a7fcc7cd7094ac88c0153584add9b21e7242ca1e38a553806377cc216"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",

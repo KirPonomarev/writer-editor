@@ -2451,24 +2451,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "src/core/word-comment-return-delta-v1.cjs",
-      "sha256": "96305e592e9e589b31931d96a2807c56772a88ea8b9cb923e8e0e9689c29cf4e",
-      "approvedAtUtc": "2026-10-08T03:17:47.443043Z",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
-      "rationale": "Owner-authorized same unfinished original42b PR2093 amendment33 at clean1d83115, unchanged88 paths/runtime1800/behavior3600. SOURCE34 genuine unchanged Word SaveAs exposed inherited comment-marker typography/implicit-zero-spacing false delta; official exact1d CI3959of3962 independently exposed ordinary-export V2 profile handoff and standalone mirrored-script-alias consumer gaps. Four released runtime paths retain direct legacy body grammar, validate explicit complete SOURCE-owned V2 mode, independently rederive stored SOURCE transport, and select separately bounded actual-only effective comment evidence through existing worker digests/budgets. Missing old mode/partial facts typed-refuse; real edits and all authority remain governed. The same within88-path ownership supplement preserves the established direct-content error before effective selection; its core-hash-parity companion retains both stale-observation refusals and reparses real changed comment XML for independent crypto parity, preserving all original assertions and exact parsed/canonical Unicode text. Two further already-declared apply/delta contracts have exact root-released fixture-only corrections after actual19 failures: ordinary Main inputs edit literal comments.xml before ZIP/parser/hash, synthetic Core observations agree explicitly, historical absent-rich clear alone remains case-specificV1, and an additional actualV2 root/reply ON/OFF clear preserves complete messages/thread/anchor/status/provenance/replay. All original authority/race/recovery/negative assertions retained; four admitted test files only. Completed16 actual682 carries only pinned shared3437/compiler136/16test closure and fresh whole6 is a distinct executed snapshot; no all76/all88 equality across test-only snapshots and final ZIP01 scope operand is rechecked after docs/OPS. No unknown-field dropping, HMAC repair, profile fill, dependency/network/UI/cap/cache/writer expansion, native or release acceptance. Preserve228 historical tuples,622 admitted paths,480 policy bindings and1597 inventory, append one nonrecursive exact-byte successor. Original full native novel/roles/origins/scopes/five-exchange/performance/merged proof remains open. Mechanical bindings never create authority.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-      "sha256": "b6e764966b76872870d53a63bddff744e410f74ab707951259a888749bf34981",
-      "approvedAtUtc": "2026-10-08T03:17:47.443043Z",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
-      "rationale": "Owner-authorized same unfinished original42b PR2093 amendment33 at clean1d83115, unchanged88 paths/runtime1800/behavior3600. SOURCE34 genuine unchanged Word SaveAs exposed inherited comment-marker typography/implicit-zero-spacing false delta; official exact1d CI3959of3962 independently exposed ordinary-export V2 profile handoff and standalone mirrored-script-alias consumer gaps. Four released runtime paths retain direct legacy body grammar, validate explicit complete SOURCE-owned V2 mode, independently rederive stored SOURCE transport, and select separately bounded actual-only effective comment evidence through existing worker digests/budgets. Missing old mode/partial facts typed-refuse; real edits and all authority remain governed. The same within88-path ownership supplement preserves the established direct-content error before effective selection; its core-hash-parity companion retains both stale-observation refusals and reparses real changed comment XML for independent crypto parity, preserving all original assertions and exact parsed/canonical Unicode text. Two further already-declared apply/delta contracts have exact root-released fixture-only corrections after actual19 failures: ordinary Main inputs edit literal comments.xml before ZIP/parser/hash, synthetic Core observations agree explicitly, historical absent-rich clear alone remains case-specificV1, and an additional actualV2 root/reply ON/OFF clear preserves complete messages/thread/anchor/status/provenance/replay. All original authority/race/recovery/negative assertions retained; four admitted test files only. Completed16 actual682 carries only pinned shared3437/compiler136/16test closure and fresh whole6 is a distinct executed snapshot; no all76/all88 equality across test-only snapshots and final ZIP01 scope operand is rechecked after docs/OPS. No unknown-field dropping, HMAC repair, profile fill, dependency/network/UI/cap/cache/writer expansion, native or release acceptance. Preserve228 historical tuples,622 admitted paths,480 policy bindings and1597 inventory, append one nonrecursive exact-byte successor. Original full native novel/roles/origins/scopes/five-exchange/performance/merged proof remains open. Mechanical bindings never create authority.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/tasks/2026-09-27--word-comment-return-apply.md",
       "sha256": "68a7e2c6bac31d35a9b315a8df2b3458ad1b60de0d63d53e116da541bfa97f8a",
       "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
@@ -5349,15 +5331,6 @@
       "sha256": "9bcd6382148f2ca9194c65f0d1286774a768ed96f4546bdd1d5da7efab3cd2c5"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "2ae3c2aba7d07d2f1d15d99fda3447e405a84871a431e99bbebc9089cf9f0f3a"
-    },
-    {
       "filePath": "src/core/word-pending-recording-intents-v1.cjs",
       "sha256": "87822c87eadc3a0bc376956bf0afe994dd2b2bfc27db85ec46a6b274065ba124",
       "approvedAtUtc": "2026-10-10T20:05:31.684Z",
@@ -5448,85 +5421,121 @@
       "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "75e1ad17bc3a2e212e6797b056d0ad3348907cd524da54f08c460f0370f43e01",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
       "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "filePath": "src/core/word-comment-return-delta-v1.cjs",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "1cac6c296fa5206759efa114f20ffbaece9d475b86808534c53df526545906ba"
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "fdd90a4478abe23d13c37e74dafb1a16ad886a14f68478e9b513259c7f90ca3a",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
       "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "f15ebf9d6dd811a17f9a3003cbca802b8d54ccef40234bda99dce46e5c1aacf6"
     },
     {
-      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "5ed9c38b57e66f8ff076cfcee0f8e1be85441c67bf6db5f854c2ad4d8c77b14b",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
       "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "f496bfb635875150d3a6d96a641c5468f33c506aa8ef188e652996c1dc826e1c"
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "69396a46f75e5300962bf708e226a29b11c225bd873d9285e9a2e92ca971d208",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
       "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "filePath": "docs/tasks/2026-10-11--word-comment-transient-history-return-mac.md",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "5a1da42d7e64c0e5fdaa1d73392de0d232be8f1a7ee73e882d011a83d8ac124c"
     },
     {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "sha256": "49305f8e26071c57e36c905406ef27cc32ccd9141250e33fb28b9b75fee92168",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "6e5db2017e6c47d73ae07c096cf2324fcc8b2e6da3df631f04e7d519f2e28ef2"
     },
     {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "sha256": "e51cdf3ef1ffd7ddd460c7fdf844a7c983b7b81e252184468d46f6832d921241",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "89a12b699b69d7a50a4c195d9c644a8839cadc3bff3a2dd85e8b6bfcbc7463d6"
     },
     {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "sha256": "da17f9037e0671bc188220be959714012e089a93478553f3138a79babca9751e",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "73dfbc9a7fcc7cd7094ac88c0153584add9b21e7242ca1e38a553806377cc216"
     },
     {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "9be993d7d3c9f36ba643968255c083bcb03b7179f227bc20a5be3eeaa41ec139"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2f083cbdd5e8abaa8de83936734ccecfe8de3c39f20fbe6a1064f9f09c36f35b",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "1fa43ce586db55a58f50b44e21d8d3600b20f6171d7bf592180632cd28eb3490"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "7aa6584c5455cd7f65070af75f796806aa431c85732746e337e9843468c42d30",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
       "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "8d47b762e5a165d80e67be2a86ae44afbfc5cf69563d1160a1b350c4bb4eb482"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "8f903304734a76882bfbd06e189e4133ade9c176192cae6538be31b2eb07eef9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T18:17:02.737Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same PR2108 original14-path delivery at original basea0e. Preserved official CI run38160560239 and actual unchanged local whole contract RED18of19 prove that the new119-binding literal lacks export. Add only export; preserve its complete object, checkpointc27, old constants, verifier and unchanged test/oracle/limits. Append exact PK tuple and refresh only certificate/PK Interop current pins while retaining prior full tuples. New committed whole contract, required new-run CI, normal merge and exact merged proof remain mandatory. No native, whole M04, recovery or shipping claim.",
+      "sha256": "9cbdfa8c0849756e49506662831ac66ceb66a2cded049589ebb3e86007508bd1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T18:17:02.737Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same PR2108 original14-path delivery at original basea0e. Preserved official CI run38160560239 and actual unchanged local whole contract RED18of19 prove that the new119-binding literal lacks export. Add only export; preserve its complete object, checkpointc27, old constants, verifier and unchanged test/oracle/limits. Append exact PK tuple and refresh only certificate/PK Interop current pins while retaining prior full tuples. New committed whole contract, required new-run CI, normal merge and exact merged proof remain mandatory. No native, whole M04, recovery or shipping claim.",
+      "sha256": "9e6ded22d14a4243a78838d11db7d16d7235cbb488d68f310a8fdb2f0dfe0c8f"
     }
   ],
   "evidenceStampIds": [
@@ -41437,6 +41446,132 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required. Complete current secondary witness for the existing primary approval file; historical primary entries remain unchanged. No new authority or exception.",
       "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "src/core/word-comment-return-delta-v1.cjs",
+      "sha256": "96305e592e9e589b31931d96a2807c56772a88ea8b9cb923e8e0e9689c29cf4e",
+      "approvedAtUtc": "2026-10-08T03:17:47.443043Z",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
+      "rationale": "Owner-authorized same unfinished original42b PR2093 amendment33 at clean1d83115, unchanged88 paths/runtime1800/behavior3600. SOURCE34 genuine unchanged Word SaveAs exposed inherited comment-marker typography/implicit-zero-spacing false delta; official exact1d CI3959of3962 independently exposed ordinary-export V2 profile handoff and standalone mirrored-script-alias consumer gaps. Four released runtime paths retain direct legacy body grammar, validate explicit complete SOURCE-owned V2 mode, independently rederive stored SOURCE transport, and select separately bounded actual-only effective comment evidence through existing worker digests/budgets. Missing old mode/partial facts typed-refuse; real edits and all authority remain governed. The same within88-path ownership supplement preserves the established direct-content error before effective selection; its core-hash-parity companion retains both stale-observation refusals and reparses real changed comment XML for independent crypto parity, preserving all original assertions and exact parsed/canonical Unicode text. Two further already-declared apply/delta contracts have exact root-released fixture-only corrections after actual19 failures: ordinary Main inputs edit literal comments.xml before ZIP/parser/hash, synthetic Core observations agree explicitly, historical absent-rich clear alone remains case-specificV1, and an additional actualV2 root/reply ON/OFF clear preserves complete messages/thread/anchor/status/provenance/replay. All original authority/race/recovery/negative assertions retained; four admitted test files only. Completed16 actual682 carries only pinned shared3437/compiler136/16test closure and fresh whole6 is a distinct executed snapshot; no all76/all88 equality across test-only snapshots and final ZIP01 scope operand is rechecked after docs/OPS. No unknown-field dropping, HMAC repair, profile fill, dependency/network/UI/cap/cache/writer expansion, native or release acceptance. Preserve228 historical tuples,622 admitted paths,480 policy bindings and1597 inventory, append one nonrecursive exact-byte successor. Original full native novel/roles/origins/scopes/five-exchange/performance/merged proof remains open. Mechanical bindings never create authority.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+      "sha256": "b6e764966b76872870d53a63bddff744e410f74ab707951259a888749bf34981",
+      "approvedAtUtc": "2026-10-08T03:17:47.443043Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
+      "rationale": "Owner-authorized same unfinished original42b PR2093 amendment33 at clean1d83115, unchanged88 paths/runtime1800/behavior3600. SOURCE34 genuine unchanged Word SaveAs exposed inherited comment-marker typography/implicit-zero-spacing false delta; official exact1d CI3959of3962 independently exposed ordinary-export V2 profile handoff and standalone mirrored-script-alias consumer gaps. Four released runtime paths retain direct legacy body grammar, validate explicit complete SOURCE-owned V2 mode, independently rederive stored SOURCE transport, and select separately bounded actual-only effective comment evidence through existing worker digests/budgets. Missing old mode/partial facts typed-refuse; real edits and all authority remain governed. The same within88-path ownership supplement preserves the established direct-content error before effective selection; its core-hash-parity companion retains both stale-observation refusals and reparses real changed comment XML for independent crypto parity, preserving all original assertions and exact parsed/canonical Unicode text. Two further already-declared apply/delta contracts have exact root-released fixture-only corrections after actual19 failures: ordinary Main inputs edit literal comments.xml before ZIP/parser/hash, synthetic Core observations agree explicitly, historical absent-rich clear alone remains case-specificV1, and an additional actualV2 root/reply ON/OFF clear preserves complete messages/thread/anchor/status/provenance/replay. All original authority/race/recovery/negative assertions retained; four admitted test files only. Completed16 actual682 carries only pinned shared3437/compiler136/16test closure and fresh whole6 is a distinct executed snapshot; no all76/all88 equality across test-only snapshots and final ZIP01 scope operand is rechecked after docs/OPS. No unknown-field dropping, HMAC repair, profile fill, dependency/network/UI/cap/cache/writer expansion, native or release acceptance. Preserve228 historical tuples,622 admitted paths,480 policy bindings and1597 inventory, append one nonrecursive exact-byte successor. Original full native novel/roles/origins/scopes/five-exchange/performance/merged proof remains open. Mechanical bindings never create authority.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "2ae3c2aba7d07d2f1d15d99fda3447e405a84871a431e99bbebc9089cf9f0f3a"
+    },
+    {
+      "filePath": "docs/CONTEXT.md",
+      "sha256": "49305f8e26071c57e36c905406ef27cc32ccd9141250e33fb28b9b75fee92168",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "docs/HANDOFF.md",
+      "sha256": "e51cdf3ef1ffd7ddd460c7fdf844a7c983b7b81e252184468d46f6832d921241",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "docs/WORKLOG.md",
+      "sha256": "da17f9037e0671bc188220be959714012e089a93478553f3138a79babca9751e",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "75e1ad17bc3a2e212e6797b056d0ad3348907cd524da54f08c460f0370f43e01",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "2f083cbdd5e8abaa8de83936734ccecfe8de3c39f20fbe6a1064f9f09c36f35b",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "7aa6584c5455cd7f65070af75f796806aa431c85732746e337e9843468c42d30",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "fdd90a4478abe23d13c37e74dafb1a16ad886a14f68478e9b513259c7f90ca3a",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "5ed9c38b57e66f8ff076cfcee0f8e1be85441c67bf6db5f854c2ad4d8c77b14b",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "69396a46f75e5300962bf708e226a29b11c225bd873d9285e9a2e92ca971d208",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "2113f74935806a6f07e393a3cef468f987e88ee99f836826681d65e709d9d277"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "86fd73c5b6570f16a8ddb0a55287c672c44fd847933c885d45908e2d2f1b1042"
     }
   ]
 }
