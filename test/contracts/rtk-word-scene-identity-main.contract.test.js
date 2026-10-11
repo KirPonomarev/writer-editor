@@ -3980,3 +3980,157 @@ test('fresh book V2 actual Main Cancel stale guards and one explicit real note A
  for(const file of x.paths)assert.equal(read(file),Buffer.from(before.files[path.relative(x.f.root,file).split(path.sep).join('/')],'base64').toString());
  let failure;try{await prepared.apply();}catch(error){failure=error.code||error.message;}assert.equal(failure,'NOTE_RETURN_PREPARED_CONSUMED');
 });
+
+
+async function nativeUndoneCursorSeed(projectId,sceneId,siblingId) {
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const recording=require('../../src/core/word-pending-recording-v1.cjs');
+  const recordingComments=require('../../src/core/word-pending-recording-comments-v1.cjs');
+  const anchors=require('../../src/core/word-comment-anchor-save-v1.cjs');
+  const {textDigest}=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]}),base={type:'doc',content:['Alpha','Other','Tail'].map(paragraph)};
+  const encode=doc=>envelope.composeObservablePayload({doc});
+  let beforeText=JSON.stringify({schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:
+    ['Alpha','Other'].map((selectedText,paragraphIndex)=>({threadId:'cursor-'+paragraphIndex,rootCommentId:'root-'+paragraphIndex,sceneId,status:'open',
+      anchor:require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({paragraphIndex,startUtf16:0,selectedText},sceneId,['Alpha','Other','Tail']),
+      messages:[{commentId:'root-'+paragraphIndex,kind:'root',body:'Keep '+selectedText,provenance:{author:'Local author'}}]}))});
+  for(const paragraphIndex of [0,1]) {
+    const changed=structuredClone(base),text=changed.content[paragraphIndex].content[0].text;
+    changed.content[paragraphIndex].content[0].text=text.slice(0,2)+'X'+text.slice(2);
+    for(const direction of ['forward','undo']) {
+      const before=direction==='forward'?base:changed,after=direction==='forward'?changed:base;
+      const input={beforeText,projectId,sceneId,beforeContent:encode(before),afterContent:encode(after),sessionId:'local-pm',
+        editIntents:{schemaVersion:2,baselineTextSha256:textDigest(pending.paragraphs(before).map(p=>p.content[0].text)),edits:[{
+          id:'pm-'+paragraphIndex+'-'+direction,historyId:'pm-'+paragraphIndex,direction,fromParagraphIndex:paragraphIndex,toParagraphIndex:paragraphIndex,
+          fromUtf16:2,toUtf16:direction==='forward'?2:3,removedParagraphs:[direction==='forward'?'':'X'],insertedParagraphs:[direction==='forward'?'X':'']}]}};
+      beforeText=anchors.planCommentAnchorSave(input).afterText;
+    }
+  }
+  let document=pending.bindLedger({schemaVersion:2,source:base,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+  for(const [i,insertText] of [' ONE',' TWO'].entries()) {
+    const working=pending.normalizeNode(document),rows=pending.paragraphs(working).map(p=>(p.content||[]).map(n=>n.text).join(''));
+    working.content[2].content.push({type:'text',text:insertText});
+    const previousIntents={schemaVersion:2,baselineTextSha256:textDigest(rows),edits:[]};
+    const nextIntents={...previousIntents,edits:[{id:'record-'+i,historyId:'record-'+i,direction:'forward',fromParagraphIndex:2,toParagraphIndex:2,
+      fromUtf16:rows[2].length,toUtf16:rows[2].length,removedParagraphs:[''],insertedParagraphs:[insertText]}]};
+    const metadata={author:'Local writer',date:'2026-10-11T10:00:0'+i+'.000Z'},after=recording.derive(document,working,metadata,nextIntents).doc;
+    beforeText=recordingComments.planRecordingCommentSave({beforeText,projectId,sceneId,beforeContent:encode(document),afterContent:encode(after),
+      recordingProofJson:JSON.stringify({schemaVersion:1,baselineContent:encode(document),metadata,previousIntents,nextIntents,sessionId:'local-record-'+i})}).afterText;
+    document=after;
+  }
+  const state=JSON.parse(beforeText);
+  for(const thread of state.threads) {
+    assert.equal(thread.anchorEditHistory.length,3);assert.equal(thread.anchorEditHistory[0].undone,true);
+    assert.equal(thread.anchorEditHistory[0].sessionId,'local-pm');
+    assert.ok(thread.anchorEditHistory.slice(1).every(h=>h.sessionId.startsWith('recording-round:')));
+  }
+  const manuscriptNotes=require('../../src/core/word-manuscript-notes-v1.cjs'),body={type:'doc',content:[paragraph('Keep footnote')]};
+  const siblingContent=encode({type:'doc',content:[paragraph('Beta protected')]});
+  const manuscript=manuscriptNotes.bindManuscriptPayload({kind:'footnote',body,sceneId:siblingId,offsetUtf16:1,sceneContent:siblingContent});
+  const storage=await import('../../src/core/notesStorage.mjs');
+  const notesDocument=storage.normalizeNotesDocument({schemaVersion:1,projectId,notes:[{id:'cursor-note',scope:'manuscript',body:'Keep footnote',manuscript},
+    {id:'private-note',scope:'project',body:'Private text stays exact'}]},{projectId,now:()=> '2026-10-11T10:00:00Z'}).value;
+  return {document,commentsText:beforeText,state,notesDocument,siblingContent};
+}
+
+
+async function nativeUndoneCursorMainReturn(t) {
+  const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const sceneId=path.relative(f.root,f.alpha).split(path.sep).join('/'),siblingId=path.relative(f.root,f.beta).split(path.sep).join('/');
+  const seed=await nativeUndoneCursorSeed(f.query.projectId,sceneId,siblingId);fs.writeFileSync(f.beta,seed.siblingContent);
+  fs.writeFileSync(f.alpha,envelope.composeObservablePayload({doc:seed.document}));
+  const commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json'),notePath=path.join(f.root,'notes.craftsman.json');
+  fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(commentPath,seed.commentsText);fs.writeFileSync(notePath,JSON.stringify(seed.notesDocument));
+  let working=read(f.alpha);mountRenderer(f,()=>working,0,null,()=>({projectId:f.query.projectId,documentId:f.a.nodeId}),payload=>{working=payload.content;});
+  f.probe.state({filePath:f.alpha,projectName:'Роман'});
+  const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));await f.probe.activate(source.pendingAuthorityStore);
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+  parts['word/document.xml']=parts['word/document.xml'].replace('</w:p>',
+    '<w:ins w:id="970" w:author="Word writer" w:date="2026-10-11T11:00:00Z"><w:r><w:t> WORD</w:t></w:r></w:ins></w:p>');
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const complete=()=>{
+    const entries=[];const walk=(relative)=>{const file=path.join(f.root,relative),stat=fs.lstatSync(file);
+      if(stat.isDirectory()){entries.push({relative,type:'directory'});for(const name of fs.readdirSync(file).sort())walk(path.join(relative,name));}
+      else {assert.equal(stat.isFile(),true,'no symlink or unsupported fixture entry');entries.push({relative,type:'file',bytes:fs.readFileSync(file).toString('base64')});}};
+    walk('');return entries;
+  };
+  const before=f.capture(),inventory=complete();let prepared;
+  const activated=await f.probe.reviewActivate({requestId:'undone-cursor-preview',bufferSource:bytes.toString('base64')},
+    {allowInlineDocxReturnIntakeParserForTests:true,onPendingReturnPrepared:value=>{prepared=value;}});
+  assert.deepEqual(f.capture(),before);assert.deepEqual(complete(),inventory,'preview is a complete project no-write');
+  return {f,seed,source,bytes,activated,prepared,commentPath,notePath,sceneId,before,inventory,complete};
+}
+
+test('actual Main mixed book after native Undo cursor preserves two rounds through Cancel Apply whole Undo Redo reopen and reexport',async t=>{
+  const x=await nativeUndoneCursorMainReturn(t),{f}=x,pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+  const beforeAlpha=read(f.alpha),beforeBeta=read(f.beta),beforeNotes=read(x.notePath),beforeComments=read(x.commentPath);
+  const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:path.join(f.temp,'undone-cursor-return.docx'),size:x.bytes.length}),readLocalFileBytes:async()=>x.bytes};
+  const cancelled=await f.probe.reviewLocalFile({requestId:'undone-cursor-cancel'},options);
+  assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify(cancelled));assert.deepEqual(x.complete(),x.inventory);
+  f.chooseMessageResponse(1);const kernel=f.probe.observeKernelResults();t.after(()=>kernel.restore());
+  const applied=await f.probe.reviewLocalFile({requestId:'undone-cursor-apply'},options);
+  assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));assert.equal(applied.pendingProductPath.writerCalled,true);
+  assert.ok(kernel.results.some(r=>r.ok===true));assert.deepEqual(kernel.failures,[]);
+  const afterAlpha=read(f.alpha),afterNotes=read(x.notePath),afterComments=read(x.commentPath),afterDoc=envelope.parseObservablePayload(afterAlpha).doc;
+  assert.equal(pending.projection(afterDoc).original,'Alpha\nOther\nTail');assert.equal(pending.projection(afterDoc).current,'Alpha WORD\nOther\nTail ONE TWO');
+  assert.equal(read(f.beta),beforeBeta);assert.equal(pending.readLedger(afterDoc).revisions.length,3);
+  const graph=JSON.parse(afterComments);assert.deepEqual(graph.threads.map(t=>t.messages),x.seed.state.threads.map(t=>t.messages));
+  assert.deepEqual(graph.threads[0].anchorEditHistory.slice(0,2),x.seed.state.threads[0].anchorEditHistory.slice(1));
+  assert.deepEqual(graph.threads[1],x.seed.state.threads[1]);
+  assert.deepEqual(JSON.parse(afterNotes).notes.find(n=>n.id==='private-note'),x.seed.notesDocument.notes.find(n=>n.id==='private-note'));
+  const tx=require('../../src/core/project-transaction-v1.cjs');
+  const saved=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath,projectId:f.query.projectId});
+  assert.equal(JSON.parse(saved.retainedPacket.plan.input.returnProofJson).schemaVersion,5);
+  assert.equal(saved.retainedPacket.entries.filter(e=>e.role==='scene').length,2);
+  const reopened=await fixture(t,false,'01_Alpha.txt',false,f.temp);
+  assert.equal(read(f.alpha),afterAlpha);assert.equal(read(f.beta),beforeBeta);assert.equal(read(x.notePath),afterNotes);assert.equal(read(x.commentPath),afterComments);
+  let working=read(f.alpha);mountRenderer(reopened,()=>working,0,null,()=>({projectId:f.query.projectId,documentId:reopened.a.nodeId}),payload=>{working=payload.content;});
+  reopened.probe.state({filePath:f.alpha,projectName:'Роман'});
+  for(const action of ['undo','redo']) {
+    const c=await reopened.probe.pendingContext(),result=await reopened.probe.pendingDecision({projectId:c.projectId,sceneId:c.sceneId,subjectId:c.subjectId,expectedSceneSha256:c.sceneSha256,action});
+    assert.equal(result.ok,true,JSON.stringify(result));assert.equal(read(f.alpha),action==='undo'?beforeAlpha:afterAlpha);
+    assert.equal(read(f.beta),beforeBeta);assert.equal(read(x.notePath),action==='undo'?beforeNotes:afterNotes);assert.equal(read(x.commentPath),action==='undo'?beforeComments:afterComments);
+    const packet=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath,projectId:f.query.projectId});
+    assert.equal(JSON.parse(packet.retainedPacket.plan.input.returnProofJson).schemaVersion,6);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+  }
+  const source=await reopened.probe.fullSource(),built=await reopened.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true,JSON.stringify(built.publicationGate));
+  assert.deepEqual(source.commentExport.threads.map(t=>t.messages.map(m=>m.canonicalCommentId)),x.source.commentExport.threads.map(t=>t.messages.map(m=>m.canonicalCommentId)));
+  assert.equal(read(f.alpha),afterAlpha);assert.equal(read(f.beta),beforeBeta);assert.equal(read(x.notePath),afterNotes);assert.equal(read(x.commentPath),afterComments);
+});
+
+for(const boundary of ['scene','sibling','notes','comments','generation'])
+test('actual Main undone cursor book refuses stale '+boundary+' with complete project no-write',async t=>{
+  const x=await nativeUndoneCursorMainReturn(t),{f}=x;
+  assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+  if(boundary==='scene'||boundary==='sibling')fs.appendFileSync(boundary==='scene'?f.alpha:f.beta,' OWNER_EDIT');
+  if(boundary==='notes'){const notes=JSON.parse(read(x.notePath));notes.notes.find(n=>n.id==='private-note').body+=' OWNER_EDIT';fs.writeFileSync(x.notePath,JSON.stringify(notes));}
+  if(boundary==='comments'){const comments=JSON.parse(read(x.commentPath));comments.threads[0].messages[0].body+=' OWNER_EDIT';fs.writeFileSync(x.commentPath,JSON.stringify(comments));}
+  if(boundary==='generation')f.probe.state({generation:1});
+  const inventory=x.complete(),kernel=f.probe.observeKernelResults();t.after(()=>kernel.restore());
+  await assert.rejects(x.prepared.apply(),boundary==='generation'?/WORD_BOOK_RETURN_CONTEXT_STALE/u:
+    ['notes','comments'].includes(boundary)?/E_TREE_COHORT_UNKNOWN_BYTES/u:/E_COMMAND_FAILED/u);
+  assert.deepEqual(kernel.failures,boundary==='generation'?[]:
+    [['scene','sibling'].includes(boundary)?'WORD_BOOK_RETURN_SOURCE_STALE':'E_TREE_COHORT_UNKNOWN_BYTES']);
+  assert.deepEqual(x.complete(),inventory,'fresh foreign bytes plus every other file, directory and absent journal remain exact');
+  assert.ok(kernel.results.every(result=>result.ok!==true));
+});
+
+for(const fault of ['signed-source','comment-after-bytes'])
+test('actual Main undone cursor book rejects forged '+fault+' at existing atomic boundary without writes',async t=>{
+  const x=await nativeUndoneCursorMainReturn(t),{f}=x;
+  assert.equal(x.activated.pendingProductPath?.status,'preview-ready',JSON.stringify(x.activated));assert.ok(x.prepared);
+  const inventory=x.complete(),kernel=f.probe.observeKernelResults();t.after(()=>kernel.restore());let reached=0;
+  f.probe.beforeNextBookTransaction(request=>{
+    reached++;const plan=structuredClone(request.treeCohort);request.treeCohort=plan;
+    assert.equal(JSON.parse(plan.input.returnProofJson).schemaVersion,5);
+    if(fault==='signed-source'){const proof=JSON.parse(plan.input.returnProofJson);proof.exportMap.scenes[0].rawSha256='sha256:'+'0'.repeat(64);plan.input.returnProofJson=JSON.stringify(proof);}
+    else plan.entries.find(entry=>entry.role==='comments').afterBase64=Buffer.from(plan.input.commentsText).toString('base64');
+  });
+  const code=fault==='signed-source'?'MIXED_RETURN_BASELINE_STALE':'E_TREE_COHORT_PLAN_MISMATCH';
+  await assert.rejects(x.prepared.apply(),{message:code});assert.equal(reached,1);assert.deepEqual(kernel.failures,[code]);
+  assert.deepEqual(x.complete(),inventory,'no preview graph, manifest, backup, receipt, commit or recovery packet is persisted');
+  assert.ok(kernel.results.every(result=>result.ok!==true));
+});

@@ -969,3 +969,157 @@ test('V2 actual ZIP root/reply mark clearing retains observed defaults and repla
    fs.writeFileSync(path.join(dir,name),Buffer.isBuffer(value)?value:JSON.stringify(value,null,2)+'\n',{flag:'wx'});
  }
 });
+
+
+async function undoneCursorBookReturnFixture() {
+  const envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const recording=require('../../src/core/word-pending-recording-v1.cjs');
+  const recordingComments=require('../../src/core/word-pending-recording-comments-v1.cjs');
+  const anchors=require('../../src/core/word-comment-anchor-save-v1.cjs');
+  const {textDigest}=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const projectId='undone-cursor-book',sceneId='roman/a.md',siblingId='roman/b.md';
+  const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]}),base={type:'doc',content:['Alpha','Other','Tail'].map(paragraph)};
+  const encode=doc=>envelope.composeObservablePayload({doc});
+  let beforeText=JSON.stringify({schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:
+    ['Alpha','Other'].map((selectedText,paragraphIndex)=>({threadId:'cursor-'+paragraphIndex,rootCommentId:'root-'+paragraphIndex,sceneId,status:'open',
+      anchor:exactAnchor({paragraphIndex,startUtf16:0,selectedText},sceneId,['Alpha','Other','Tail']),
+      messages:[{commentId:'root-'+paragraphIndex,kind:'root',body:'Keep '+selectedText,provenance:{author:'Local author'}}]}))});
+  for(const paragraphIndex of [0,1]) {
+    const changed=structuredClone(base),text=changed.content[paragraphIndex].content[0].text;
+    changed.content[paragraphIndex].content[0].text=text.slice(0,2)+'X'+text.slice(2);
+    for(const direction of ['forward','undo']) {
+      const before=direction==='forward'?base:changed,after=direction==='forward'?changed:base;
+      const input={beforeText,projectId,sceneId,beforeContent:encode(before),afterContent:encode(after),sessionId:'local-pm',
+        editIntents:{schemaVersion:2,baselineTextSha256:textDigest(pending.paragraphs(before).map(p=>p.content[0].text)),edits:[{
+          id:'pm-'+paragraphIndex+'-'+direction,historyId:'pm-'+paragraphIndex,direction,fromParagraphIndex:paragraphIndex,toParagraphIndex:paragraphIndex,
+          fromUtf16:2,toUtf16:direction==='forward'?2:3,removedParagraphs:[direction==='forward'?'':'X'],insertedParagraphs:[direction==='forward'?'X':'']}]}};
+      beforeText=anchors.planCommentAnchorSave(input).afterText;
+    }
+  }
+  let document=pending.bindLedger({schemaVersion:2,source:base,revisions:[],undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]});
+  for(const [i,insertText] of [' ONE',' TWO'].entries()) {
+    const working=pending.normalizeNode(document),rows=pending.paragraphs(working).map(p=>(p.content||[]).map(n=>n.text).join(''));
+    working.content[2].content.push({type:'text',text:insertText});
+    const previousIntents={schemaVersion:2,baselineTextSha256:textDigest(rows),edits:[]};
+    const nextIntents={...previousIntents,edits:[{id:'record-'+i,historyId:'record-'+i,direction:'forward',fromParagraphIndex:2,toParagraphIndex:2,
+      fromUtf16:rows[2].length,toUtf16:rows[2].length,removedParagraphs:[''],insertedParagraphs:[insertText]}]};
+    const metadata={author:'Local writer',date:'2026-10-11T10:00:0'+i+'.000Z'},after=recording.derive(document,working,metadata,nextIntents).doc;
+    beforeText=recordingComments.planRecordingCommentSave({beforeText,projectId,sceneId,beforeContent:encode(document),afterContent:encode(after),
+      recordingProofJson:JSON.stringify({schemaVersion:1,baselineContent:encode(document),metadata,previousIntents,nextIntents,sessionId:'local-record-'+i})}).afterText;
+    document=after;
+  }
+  const state=JSON.parse(beforeText);
+  for(const thread of state.threads) {
+    assert.equal(thread.anchorEditHistory.length,3);assert.equal(thread.anchorEditHistory[0].undone,true);
+    assert.equal(thread.anchorEditHistory[0].sessionId,'local-pm');
+    assert.ok(thread.anchorEditHistory.slice(1).every(h=>h.sessionId.startsWith('recording-round:')));
+  }
+  const manuscriptNotes=require('../../src/core/word-manuscript-notes-v1.cjs'),body={type:'doc',content:[paragraph('Keep footnote')]};
+  const manuscript=manuscriptNotes.bindManuscriptPayload({kind:'footnote',body,sceneId:siblingId,offsetUtf16:1,sceneContent:'Beta protected'});
+  const storage=await import('../../src/core/notesStorage.mjs');
+  const notesDocument=storage.normalizeNotesDocument({schemaVersion:1,projectId,notes:[{id:'cursor-note',scope:'manuscript',body:'Keep footnote',manuscript},
+    {id:'private-note',scope:'project',body:'Private text stays exact'}]},{projectId,now:()=> '2026-10-11T10:00:00Z'}).value;
+  const sibling={type:'doc',content:[paragraph('Beta protected')]};
+  const cryptoPort={sha256Text:v=>hash(v),sha256Json:v=>'sha256:'+hash(stable(v)),
+    hmacSha256Json:(v,key)=>'hmac-sha256:'+crypto.createHmac('sha256',String(key||'')).update(stable(v)).digest('hex'),byteLength:v=>Buffer.byteLength(v)};
+  const source=makeSource({projectId,projectRoot:'/project',nonTextReturnState:state,notesDocument,scenes:[
+    {sceneId,scenePath:'/project/'+sceneId,order:0,text:pending.projection(document).current,observableContent:encode(document),doc:document},
+    {sceneId:siblingId,scenePath:'/project/'+siblingId,order:1,text:'Beta protected',observableContent:'Beta protected',doc:sibling}]},{cryptoPort});
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),original=buildDocxReviewPacketBuffer(source);
+  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts;
+  parts['word/document.xml']=parts['word/document.xml'].replace('</w:p>',
+    '<w:ins w:id="970" w:author="Word writer" w:date="2026-10-11T11:00:00Z"><w:r><w:t> WORD</w:t></w:r></w:ins></w:p>');
+  const bytes=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true);
+  const parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:source.localAuthorityCapsule.exportMap,
+    baselineDocuments:[{sceneId,document},{sceneId:siblingId,document:sibling}],baselineDocumentNotes:source.documentNotes,
+    retainPendingScenes:true,documentSections:source.documentSections,signedSectionsDigest:source.documentSections.protectedDigest,
+    allowInactiveDefaultTabEmission:true,cryptoPort});assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  const exportMap=structuredClone(source.localAuthorityCapsule.exportMap);delete exportMap.commentExport;
+  return {state,document,source,input:{beforeText,projectId,roundId:source.localAuthorityCapsule.roundId,artifactSha256:'sha256:'+hash(bytes),
+    baseline:source.commentExport,exportMap,returnedThreads:analysis.reviewIr.commentThreads,returnedParagraphs:analysis.reviewIr.formattingParagraphs,
+    commentReturnInventory:analysis.reviewIr.commentReturnInventory,notesText:JSON.stringify(notesDocument),
+    noteContext:{schemaVersion:2,baseline:source.documentNotes,returnedNotes:bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true}),
+      returnedReferences:analysis.reviewIr.documentNotes.references,unionReferences:parsed.contentPreview.pendingNoteReferences},
+    mixedPendingScenes:parsed.scenes.map(s=>({sceneId:s.sceneId,document:s.sceneId===sceneId?document:sibling,returnedDocument:s.returnedDocument}))}};
+}
+
+test('mixed book return supersedes only an undone PM cursor before two durable recording rounds',async()=>{
+  const f=await undoneCursorBookReturnFixture(),frozen=JSON.stringify(f.input);let result;
+  try {result=plan(f.input);} finally {assert.equal(JSON.stringify(f.input),frozen,'pure rejection or success preserves all supplied source bytes');}
+  const after=JSON.parse(result.afterText),changed=after.threads[0],unaffected=after.threads[1];
+  assert.deepEqual(changed.messages,f.state.threads[0].messages);
+  assert.equal(changed.anchor.selectedText,'Alpha');assert.equal(changed.anchor.blockTextSha256,hash('Alpha WORD'));
+  assert.deepEqual(changed.anchorEditHistory.slice(0,2),f.state.threads[0].anchorEditHistory.slice(1));
+  assert.equal(changed.anchorEditHistory.length,3);assert.equal(changed.anchorEditHistory.at(-1).undone,false);
+  assert.ok(changed.anchorEditHistory.at(-1).sessionId.startsWith('recording-round:'));
+  assert.deepEqual(unaffected,f.state.threads[1],'unchanged thread retains its complete old undone cursor and both durable rounds');
+});
+
+function cursorHistoryInput(f,mutate) {
+  const input=structuredClone(f.input),state=JSON.parse(input.beforeText);mutate(state.threads[0].anchorEditHistory);
+  input.beforeText=JSON.stringify(state);input.baseline.stateDigest=hash(stable(state));
+  return input; // Pure Core graph qualification; Main separately authenticates the unchanged real export.
+}
+
+test('mixed book history retains an undone durable round and rejects a dropped active PM cursor',async()=>{
+  const f=await undoneCursorBookReturnFixture(),durable=cursorHistoryInput(f,history=>{history[1].undone=true;}),frozen=JSON.stringify(durable);
+  const after=JSON.parse(plan(durable).afterText);
+  assert.deepEqual(after.threads[0].anchorEditHistory.slice(0,2),JSON.parse(durable.beforeText).threads[0].anchorEditHistory.slice(1));
+  assert.equal(after.threads[0].anchorEditHistory[0].undone,true);assert.equal(JSON.stringify(durable),frozen);
+  const active=cursorHistoryInput(f,history=>{history[0].undone=false;}),before=JSON.stringify(active);
+  assert.throws(()=>plan(active),{code:'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT'});assert.equal(JSON.stringify(active),before);
+});
+
+for(const field of ['undone','sessionId'])test('mixed book cursor must validate before supersession: '+field,async()=>{
+  const f=await undoneCursorBookReturnFixture(),input=cursorHistoryInput(f,history=>{history[0][field]=field==='undone'?'true':null;}),before=JSON.stringify(input);
+  assert.throws(()=>plan(input),{code:'COMMENT_HISTORY_INVALID'});assert.equal(JSON.stringify(input),before);
+});
+
+for(const fault of ['durable-drop','durable-reorder','durable-mutate','active-drop','active-reorder','active-mutate',
+  'cursor-relocated','cursor-replaces-new-round','round-identity-forged','round-undone'])
+test('mixed book checked planner corrupted history fails closed: '+fault,async()=>{
+  const f=await undoneCursorBookReturnFixture(),input=cursorHistoryInput(f,history=>{if(fault.startsWith('active-'))history[0].undone=false;}),before=JSON.stringify(input);
+  const module=require('../../src/core/word-pending-recording-comments-v1.cjs'),original=module.planRecordingRoundDecision;
+  let intercepted=0;
+  // Fault injection happens after the real independent round/source/geometry plan.
+  // A valid replacement and readState-valid graph must still satisfy the exact preservation law.
+  module.planRecordingRoundDecision=(...args)=>{
+    const result=original(...args),state=JSON.parse(result.afterText),history=state.threads[0].anchorEditHistory;
+    const cursor=structuredClone(JSON.parse(input.beforeText).threads[0].anchorEditHistory[0]);intercepted++;
+    if(fault.startsWith('active-'))history.unshift(cursor);
+    if(fault==='durable-drop')history.splice(0,1);
+    if(fault==='durable-reorder')[history[0],history[1]]=[history[1],history[0]];
+    if(fault==='durable-mutate')history[0].historyId+=':foreign';
+    if(fault==='active-drop')history.splice(0,1);
+    if(fault==='active-reorder')[history[0],history[1]]=[history[1],history[0]];
+    if(fault==='active-mutate')history[0].historyId+=':foreign';
+    if(fault==='cursor-relocated')history.push(cursor);
+    if(fault==='cursor-replaces-new-round')history[history.length-1]=cursor;
+    if(fault==='round-identity-forged')history.at(-1).historyId+=':foreign';
+    if(fault==='round-undone')history.at(-1).undone=true;
+    require('../../src/core/word-comment-authoring-v1.cjs').readState(JSON.stringify(state),input.projectId);
+    return {...result,afterText:JSON.stringify(state)};
+  };
+  try {assert.throws(()=>plan(input),{code:'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT'});assert.equal(intercepted,1);}
+  finally {module.planRecordingRoundDecision=original;}
+  assert.equal(module.planRecordingRoundDecision,original);assert.equal(JSON.stringify(input),before);
+});
+
+for(const change of ['status','delete','anchor','forged-round-source'])test('mixed book supersession grants no remote '+change+' authority',async()=>{
+  const f=await undoneCursorBookReturnFixture(),input=structuredClone(f.input);
+  if(change==='status')input.returnedThreads[0].status='RESOLVED';
+  if(change==='delete'){input.returnedThreads=[];input.commentReturnInventory={schemaVersion:'yalken.rtk.comment-return-inventory.v1',status:'COMPLETE',deletionAuthority:false,packageState:'ABSENT',rootDurableIds:[],messageDurableIds:[]};}
+  if(change==='anchor'){const root=input.returnedThreads[0];root.paragraphIndex=1;root.quotedAnchorText='Other';root.anchorRange=root.finalTextAnchorRange={startUtf16:0,endUtf16:5,selectedText:'Other',blockTextSha256:hash('Other')};}
+  if(change==='forged-round-source'){
+    const retained=input.mixedPendingScenes[0].returnedDocument.attrs.wordPendingRevisions.revisions.find(r=>r.nativeId==='1');
+    assert.ok(retained,'the returned graph contains the first existing local recording revision');
+    assert.deepEqual({operation:retained.operation,paragraphIndex:retained.paragraphIndex,from:retained.from,to:retained.to,author:retained.author},
+      {operation:'insert',paragraphIndex:2,from:4,to:8,author:'Local writer'});
+    retained.author='Forged source';
+  }
+  const before=JSON.stringify(input);
+  assert.throws(()=>plan(input),change==='forged-round-source'?/MIXED_RETURN_|PENDING_COMMENT_/u:{code:'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT'});
+  assert.equal(JSON.stringify(input),before);
+});

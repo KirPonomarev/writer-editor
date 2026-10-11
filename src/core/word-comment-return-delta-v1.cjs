@@ -130,12 +130,21 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       const envelope=require('./document-content-envelope-v1.cjs'),oldLedger=pendingModel.readLedger(item.document);
       demand(oldLedger,'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
       const replacement=pendingModel.replaceFromReturn(checked.beforeDocument||item.document,checked.document,{roundId,artifactSha256:artifactSha256.replace(/^sha256:/u,'')});
-      const planned=require('./word-pending-recording-comments-v1.cjs').planRecordingRoundDecision({beforeText,projectId,sceneId:item.sceneId,
-        beforeContent:envelope.composeObservablePayload({doc:item.document}),afterContent:envelope.composeObservablePayload({doc:replacement.doc}),decision:{action:'redo'}},oldLedger,pendingModel.readLedger(replacement.doc));
+      const recordingComments=require('./word-pending-recording-comments-v1.cjs'),newLedger=pendingModel.readLedger(replacement.doc);
+      const planned=recordingComments.planRecordingRoundDecision({beforeText,projectId,sceneId:item.sceneId,
+        beforeContent:envelope.composeObservablePayload({doc:item.document}),afterContent:envelope.composeObservablePayload({doc:replacement.doc}),decision:{action:'redo'}},oldLedger,newLedger);
+      const nextRound=recordingComments.roundIdentity(newLedger);
       const projected=readState(planned?.afterText||beforeText,projectId);
       for(const thread of projected.threads.filter(t=>t.sceneId===item.sceneId)) {
         const prior=before.threads.find(t=>t.threadId===thread.threadId);
-        demand(stable((thread.anchorEditHistory||[]).slice(0,prior.anchorEditHistory?.length||0))===stable(prior.anchorEditHistory||[]),'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
+        const priorHistory=prior.anchorEditHistory||[],projectedHistory=thread.anchorEditHistory||[];
+        // A checked new round can supersede only an undone working cursor.
+        // Every durable round and active cursor retains its exact object/order.
+        const retainedHistory=priorHistory.filter(h=>h.sessionId.startsWith('recording-round:')||h.undone!==true),appended=projectedHistory.at(-1);
+        demand(stable(projectedHistory.slice(0,priorHistory.length))===stable(priorHistory)
+          || stable(projectedHistory.slice(0,retainedHistory.length))===stable(retainedHistory)
+            && projectedHistory.length===retainedHistory.length+1 && appended?.schemaVersion===2 && appended.undone===false
+            && appended.sessionId===nextRound?.sessionId && appended.historyId===nextRound?.historyId,'COMMENT_RETURN_PROTECTED_HISTORY_CONFLICT');
         protectedMixedRoundThreads.set(thread.threadId,thread);
       }
     }
