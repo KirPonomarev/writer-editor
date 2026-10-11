@@ -2946,15 +2946,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-      "sha256": "7fcf1b5fd7a3206272c20d8f099f90a4073e231fc25d41b8d040c905f3309a1e",
-      "approvedAtUtc": "2026-10-07T17:17:27.681664Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
-      "rationale": "Owner-authorized same unfinished original42b novel contour amendment28 at clean3f0b9:86 existing paths and original1800runtime2600behavior budgets. Remove only the standalone recording-proof replay call inside existing Main revalidator; retain both callers and every full fresh source/project/session/generation/comments/notes check. Existing independent public comment/note planners and leased canonical transaction proof regeneration remain byte exact, without validation flag/cache/API/Core/renderer/schema/limit change. Actual dynamic call evidence, complete business equality, forged/stale/race controls and bounded500k observations remain separately pinned; no native Word/resource/release readiness claim. Preserve223 historical tuples/622 admitted paths/480 source bindings/1597 inventory. These mechanical exact byte bindings create no acceptance or authority; full delivery and original release proof remain open.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/tasks/2026-09-29--word-table-cell-lists.md",
       "sha256": "fab08d17199f51ec9c03864af7ab7fa80823e4589bf9b37e1296656f8c6d6ae3",
       "approvedAtUtc": "2026-09-29T00:38:09.630045Z",
@@ -4917,29 +4908,11 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "src/core/word-pending-recording-intents-v1.cjs",
-      "sha256": "b6d9882a3d923269f369f7a1d19be21f84e58adcd5c8ad61fefaf27811a3b161",
-      "approvedAtUtc": "2026-10-05T07:57:17.526339Z",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005",
-      "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: exact tracked text recording with canonical comments, position provenance, source-changing round history, unchanged payload preservation and existing atomic project publication. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "src/core/word-pending-recording-comments-v1.cjs",
       "sha256": "0e15f201862a42ab3de9e5b33c3517178748c5f416032ff0eb620f31b41130dc",
       "approvedAtUtc": "2026-10-07T21:33:59.621349Z",
       "approvedBy": "owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
       "rationale": "Owner-authorized same unfinished original42b novel contour amendment30 at clean5fe:87 paths, original1800runtime2600behavior. Only local fresh canonical recording-proof operands use literal serialization equality; global stable/equal, all raw/domain/ledger validation,2 independent replay derives/2 derived canonicalizations and public/Main/atomic/lease/CAS guards unchanged. Actual causal tracked functional4-to0/plain4 with full canonical-return/result/input/history/corpus parity and whole14 serial tests are retained. Other73of75 pins and generated bundles exact. Owner40GB copied500108-word diagnostics and independent complete durable readback remain qualified; no native/production-resource/full release acceptance. Preserve225 historical tuples/622 admitted paths/480 bindings/1597 inventory and append226th nonrecursive81-pin successor. Mechanical exact byte pins never create authority or semantic closure.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
-      "sha256": "2b3da3e18586b9a82ae534054b2db20143432fa47fc6866713ffbd6e5b1c8a51",
-      "approvedAtUtc": "2026-10-06T19:41:54.278913Z",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006",
-      "rationale": "Direct owner-authorized existing macOS Word novel contour: source-bound inline author recording with full manuscript notes and discussions, exact edit-intent regeneration, full source/note/comment CAS and existing leased atomic writer. Exact scope and governance bytes only; historical tuples preserved. Native, full gates, CI and delivery are separately executed evidence. This binding never certifies the full novel or permits unbound/structural/move/format notes, new dependencies, UI or runtime network.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -5380,87 +5353,6 @@
       "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/CONTEXT.md",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "e482c8a420109732a0366ed05a1ca53651c0749e840b35e65b528e31efa9f9f0"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/HANDOFF.md",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "cfd6ecd3a1d4fde2c92c66a89149e44ffa972a95c9af4d76dca7af5101ad818d"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "38b19c28d0002b4fb999e585fb3da9fd5581c7cafcbae76ad1140c3af8b87861"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "432af86352c530becb3997b559bddbfa24e1cb8d90177259de1686afb1536181"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "3f7ccf740a1b1a1aadbc36d4f38f1a66901736676d0e5810d32764be3859b11c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "31af8e4923f4c05506b3b251e2710378e7ed52cb3992f37aed85742fd7730624"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/WORKLOG.md",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "0deb684e199132ae4a1384ca0f49968e357aebb906c8a24402276000f09cd7a4"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "92088032cbcc362f3888bc413f5e2a34ff3ddad7b6e0c53d52a3b0b97815470f"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "ecf3479574dcbaa44841b823c26f3549ed060831ba656cbf794e8d06a7974fb0"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/run-rtk-tests.mjs",
       "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
       "sha256": "1fb5acf128bdc3fe1ff100c7b760dd0c391ab0610ad52b4c6093c3367fe829d8"
@@ -5509,6 +5401,123 @@
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
       "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
       "sha256": "2ae3c2aba7d07d2f1d15d99fda3447e405a84871a431e99bbebc9089cf9f0f3a"
+    },
+    {
+      "filePath": "src/core/word-pending-recording-intents-v1.cjs",
+      "sha256": "87822c87eadc3a0bc376956bf0afe994dd2b2bfc27db85ec46a6b274065ba124",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
+      "sha256": "4be4a6bdf125b5a2276af5883bfa2e175e185e6ae5586a34c04b151e00d02777",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "sha256": "d0b70f8ebe70a5913f2130f5f0e6ab4529ee045327dd3c1735a8d55ea78de05d",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-10--word-recording-structural-undo-mac.md",
+      "sha256": "e91e56ee91455ca047231a52b7b85ec70ebd7a3ae061123099f88c5cc5144439",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "4048fb387d5938f63a69a3f9d718696bbafb58798153bf0ad056a9fd060852eb",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c5622cbb138dac84bf52b75c82b1b976c9f996b1a79a8b77228353b06a5ad427",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "13357c715f10ac7ccad5ecc08510f50a81ec1689b1cb3ff4849f60f1781f4c47",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "4f44f5bb21e6caeac41c40fc0a6c53c226643ef0efe66d541d94fa821e6c6cf5",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/CONTEXT.md",
+      "sha256": "963e61af0e25524016e3c5f55e21a7b5fd76b476c5b61fac5e03b3f9b15dcbfe",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/HANDOFF.md",
+      "sha256": "8e1ce34966296953124e90d76b3eab76cfe31cae1d89139a7f52128b06d88777",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/WORKLOG.md",
+      "sha256": "9b72e67f198dcb05fd33dc68ba9dd7e20471192e70d95e9e8151dac033adc8fc",
+      "approvedAtUtc": "2026-10-10T20:05:31.684Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a34b989f67ca5804bc61bd376ca67a0eb6efb17c33d225dd458161ec999bef8f",
+      "approvedAtUtc": "2026-10-10T20:16:24.894Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required. Existing C2A compiler-generated inventory witness bytes refreshed; compiler contract and standing owner authority unchanged.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "766de3f7c569f6e0027616c97a5cb4bfcc85af4082a52abbcf14cd3ecb1fdfbd",
+      "approvedAtUtc": "2026-10-10T20:17:03.143Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized narrow checked structural Undo correction in existing PR2106. Actual old-Core reproducer4of4fails and affected-chain178of178; surviving structure and forged occurrence history still refuse. Existing exact-byte inventory/policy/certificate companions only; every prior tuple and historical failure preserved. No native role/round/cell or whole-feature credit; SOURCE77 timeout remains UNKNOWN, accepted complete native cycles0, fresh native admission and full original matrix remain required. Complete current secondary witness for the existing primary approval file; historical primary entries remain unchanged. No new authority or exception.",
+      "approvedBy": "owner-delegated-codex:YALKEN_WORD_FINISH_AND_PROOF_GLUE_V2_STRUCTURAL_AUTHORING_UNDO"
     }
   ],
   "evidenceStampIds": [
@@ -41176,6 +41185,114 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Same existing PR2101 actual500k Main reference capacity correction: measured content10901820B plus plan20977790B already fits32MiB aggregate; only old16MiB per-snapshot fails. Main finite32MiB/48MiB deliberately retains headroom for prior16MiB content plus existing32MiB Core candidate. Actual complete28 source proof and full canonical paragraph attributes/marks/literal preserved, finite exact/+1/count/TTL/context controls. Existing source/generator/oracles/defaults/IPC/DOCX/parser/Core/resource bounds remain. Full native three-role/five-changed-exchange novel release remains OPEN. Exact bindings only, no new product acceptance authority. Same existing PR2101 candidate03 official4052of4053 causal obsolete boundary correction only: existing interop contract now proves exact32MiB snapshot acceptance and plus-one refusal, both24MiB full operands retained at exact48MiB aggregate, with prior500k literal/IPC/reader/context/eviction assertions unchanged. Actual unfiltered29-file source proof with unchanged mandatory TAP is separately pinned; runtime, compiler and generated artifacts remain exact4ad. Existing1598 inventory,633 admitted paths,491 identities,239 historical tuples and current240th tuple103 identities are preserved. No new runtime, acceptance authority or original full-novel release claim. Owner-authorized complete supported macOS Word-origin500k local import, finite semantic48MiB origin with ordinary20/32 ceilings and TOTAL129 unchanged, invocation-private fresh whole-cohort verification, real atomic filesystem and lease readback/replay/reopen plus six chapter Saves. Separate frozen whole29 source proof and independent complete operands bind this bounded delivery; native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,634 admitted paths,492 source identities,240 byte-identical historical tuples plus one coherent241st set; predicates, runner, catalog, dependencies and generated artifacts unchanged. Same-contour CI correction: owned outside-project optional-env fallback only; unchanged production and predicates, fresh default-env whole3 55of55. Factual docs and exact metadata refreshed; native release OPEN. Owner-authorized same PR2102 large-novel import correction: immutable invocation-owned validation snapshot, complete guarded media bindings, selected chapter deep-cloning with byte-identical canonical outputs. Fresh genuine500108 public Main/fs/lease/replay/reopen/sixSaves and independent complete raw Word/body/annotation/sixSave oracles;645of645 whole29 source tests. Existing120s/20/48/32/129 limits, bothfreshCorequeries and all authority/race/recovery guards unchanged. SafeCreate90.398s/full618.599s are single source observations, not CI/native/shipping SLO. Scope18, inventory1598, admitted634/source492 and same241st108-binding tuple; prior240 tuples byte-exact. Three-role/five-changed-round native feature remains OPEN; no dependency/runner/catalog/compiler/generated changes. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs. Owner-authorized same PR2103 source correction binds ordinary routing, auxiliary root preservation, complete bounded note confirmation and actual isolated VM dependencies. Full50 source proof1485/1485 keeps original seal01/02/03 qualifications; every prior RED, native release and genuine120s failure remains open. Exact1598 inventory/635 admitted paths/493 source bindings and112 current bindings preserve all241 historical tuples. No new product scope, UI composition, dependency, runtime network, driver chain, optimization or limit.",
       "approvedBy": "owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_SCENE_PENDING_EXPORT_PERFORMANCE_MAC_20261008|owner-delegated-codex:WORD_SCENE_SAVE_OBSERVATION_PERFORMANCE_MAC_20261008|owner-delegated-codex:WORD_FULL_EXPORT_PROFILE_PROPAGATION_MAC_20261008|owner-delegated-codex:WORD_PARSER_QUERY_PERFORMANCE_MAC_20261008|owner-delegated-codex:WORD_RETURN_WORKER_SINGLE_PROJECTION_MAC_20261008|owner-delegated-codex:WORD_PREVIEW_NATIVE_WAIT_MAC_20261008|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009"
+    },
+    {
+      "filePath": "src/core/word-pending-recording-intents-v1.cjs",
+      "sha256": "b6d9882a3d923269f369f7a1d19be21f84e58adcd5c8ad61fefaf27811a3b161",
+      "approvedAtUtc": "2026-10-05T07:57:17.526339Z",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005",
+      "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: exact tracked text recording with canonical comments, position provenance, source-changing round history, unchanged payload preservation and existing atomic project publication. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
+      "sha256": "2b3da3e18586b9a82ae534054b2db20143432fa47fc6866713ffbd6e5b1c8a51",
+      "approvedAtUtc": "2026-10-06T19:41:54.278913Z",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006",
+      "rationale": "Direct owner-authorized existing macOS Word novel contour: source-bound inline author recording with full manuscript notes and discussions, exact edit-intent regeneration, full source/note/comment CAS and existing leased atomic writer. Exact scope and governance bytes only; historical tuples preserved. Native, full gates, CI and delivery are separately executed evidence. This binding never certifies the full novel or permits unbound/structural/move/format notes, new dependencies, UI or runtime network.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "sha256": "7fcf1b5fd7a3206272c20d8f099f90a4073e231fc25d41b8d040c905f3309a1e",
+      "approvedAtUtc": "2026-10-07T17:17:27.681664Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
+      "rationale": "Owner-authorized same unfinished original42b novel contour amendment28 at clean3f0b9:86 existing paths and original1800runtime2600behavior budgets. Remove only the standalone recording-proof replay call inside existing Main revalidator; retain both callers and every full fresh source/project/session/generation/comments/notes check. Existing independent public comment/note planners and leased canonical transaction proof regeneration remain byte exact, without validation flag/cache/API/Core/renderer/schema/limit change. Actual dynamic call evidence, complete business equality, forged/stale/race controls and bounded500k observations remain separately pinned; no native Word/resource/release readiness claim. Preserve223 historical tuples/622 admitted paths/480 source bindings/1597 inventory. These mechanical exact byte bindings create no acceptance or authority; full delivery and original release proof remain open.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "38b19c28d0002b4fb999e585fb3da9fd5581c7cafcbae76ad1140c3af8b87861"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "31af8e4923f4c05506b3b251e2710378e7ed52cb3992f37aed85742fd7730624"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "ecf3479574dcbaa44841b823c26f3549ed060831ba656cbf794e8d06a7974fb0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "92088032cbcc362f3888bc413f5e2a34ff3ddad7b6e0c53d52a3b0b97815470f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "e482c8a420109732a0366ed05a1ca53651c0749e840b35e65b528e31efa9f9f0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "cfd6ecd3a1d4fde2c92c66a89149e44ffa972a95c9af4d76dca7af5101ad818d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "0deb684e199132ae4a1384ca0f49968e357aebb906c8a24402276000f09cd7a4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "432af86352c530becb3997b559bddbfa24e1cb8d90177259de1686afb1536181"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "3f7ccf740a1b1a1aadbc36d4f38f1a66901736676d0e5810d32764be3859b11c"
     }
   ]
 }

@@ -647,7 +647,8 @@
     "docs/tasks/2026-10-10--mac-normal-quit-novel.md",
     "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md",
     "scripts/run-rtk-tests.mjs",
-    "test/contracts/rtk-test-graph-catalog.contract.test.js"
+    "test/contracts/rtk-test-graph-catalog.contract.test.js",
+    "docs/tasks/2026-10-10--word-recording-structural-undo-mac.md"
   ],
   "protectedFiles": [
     {
@@ -1788,7 +1789,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "7fcf1b5fd7a3206272c20d8f099f90a4073e231fc25d41b8d040c905f3309a1e"
+        "sha256": "d0b70f8ebe70a5913f2130f5f0e6ab4529ee045327dd3c1735a8d55ea78de05d"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2568,15 +2569,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "e482c8a420109732a0366ed05a1ca53651c0749e840b35e65b528e31efa9f9f0"
+        "sha256": "963e61af0e25524016e3c5f55e21a7b5fd76b476c5b61fac5e03b3f9b15dcbfe"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "cfd6ecd3a1d4fde2c92c66a89149e44ffa972a95c9af4d76dca7af5101ad818d"
+        "sha256": "8e1ce34966296953124e90d76b3eab76cfe31cae1d89139a7f52128b06d88777"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "0deb684e199132ae4a1384ca0f49968e357aebb906c8a24402276000f09cd7a4"
+        "sha256": "9b72e67f198dcb05fd33dc68ba9dd7e20471192e70d95e9e8151dac033adc8fc"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2660,7 +2661,7 @@
       },
       {
         "path": "src/core/word-pending-recording-intents-v1.cjs",
-        "sha256": "b6d9882a3d923269f369f7a1d19be21f84e58adcd5c8ad61fefaf27811a3b161"
+        "sha256": "87822c87eadc3a0bc376956bf0afe994dd2b2bfc27db85ec46a6b274065ba124"
       },
       {
         "path": "src/core/word-pending-recording-comments-v1.cjs",
@@ -2668,7 +2669,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
-        "sha256": "2b3da3e18586b9a82ae534054b2db20143432fa47fc6866713ffbd6e5b1c8a51"
+        "sha256": "4be4a6bdf125b5a2276af5883bfa2e175e185e6ae5586a34c04b151e00d02777"
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",

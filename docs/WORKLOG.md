@@ -1,3 +1,11 @@
+## 2026-10-10 — Verified authoring structural Undo correction; native matrix open
+
+V2 continuation at original delivery basea468 preserves SOURCE77 and its unresolved snapshot timeout. SOURCE80 exposed a distinct recording defect: native Undo restored text, but Core rejected the preceding join before checking its inverse, blocking Save, Stop and Quit. PR2106 product checkpoint65a995 now validates a known inverse with exact source and paragraph-boundary occurrences. Surviving structure, forged Undo and manual recreation still refuse; all command, session, atomic persistence and numerical guards remain.
+
+Four actual production-editor/Main regressions fail against the retained old Core; the corrected affected six-file chain passes178of178 without skips/todo. Complete pending Word revisions, three-role discussion meanings, rich notes and private state are checked; one legitimate comment-Undo cursor is explicitly retained. Separate pure411-paragraph SOURCE80 comparison preserves the full document but is not native acceptance. Original CI38081297014 rejects stale byte pins; existing inventory, policy, approvals and one append-only certificate successor are mechanically refreshed without changing predicates or acceptance denominators.
+
+Owner-authorized SIGTERM ended only checked SOURCE80 PID44692 after ordinary Quit refused. All67 original files and both new recovery backups remain byte-exact; profile, Word return and failures are preserved. Controller EOF failed and no normal-exit credit is claimed. Full accepted native cycles remain0. Both origins/scales, SOURCE/ordinary PACKAGED, three roles, five genuinely changed Word rounds, conflicts/recovery and shipping SLO remain OPEN. Next: complete PR2106 CI/merge/exact merged proof, fresh native admission, and continue the preserved project through UndoRedo, normal Quit/reopen and further editing. Task detail:2026-10-10--word-recording-structural-undo-mac.md.
+
 ## 2026-10-10 — Actual Yalken-origin Word return blocker; bounded Core correction in progress
 
 PR2104 is closed: candidate97e54bd0ca058be77f51d14f34dbac48aaa2ca5c merged as4ae2ac5b9b6a1e4848ba3c034f69ae6a9ea1afaa. All19 official checks and exact-merged affected11 source files85/85 passed. Actual SOURCE73 normal CUA Quit and SOURCE74 Quit observe exit0/signalnull; this closes the native Quit check for those exact SOURCE instances.
