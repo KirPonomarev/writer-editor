@@ -24181,6 +24181,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
               beforeContent: expectedSceneContent, afterContent: content,
               ...(options.pendingNoteReturnProofJson !== undefined ? { pendingNoteReturnProofJson: options.pendingNoteReturnProofJson } : {}),
               ...(recordingAdmission?.session.noteRecording ? { recordingProofJson: recordingAdmission.recordingProofJson } : {}) });
+            if (recordingAdmission?.session.ordinaryNoteBaseline && !noteState) throw Error('RECORDING_NOTE_COHORT_REQUIRED');
           }
           if(options.commentTextReturnPlan) {
             if(options.authenticatedCleanBlockText!==true) throw Error('COMMENT_TEXT_RETURN_AUTHORITY_REQUIRED');
@@ -26084,7 +26085,12 @@ async function assertPendingRecordingAnnotations(session) {
     ? notes.document : JSON.parse(noteText), session.projectId);
   const activeNotes = document.notes.filter(n => !n.deleted && n.manuscript?.reference?.sceneId === session.sceneId);
   const doc = (await loadDocumentContentEnvelopeModule()).parseObservablePayload(session.raw).doc;
-  const points = pendingTextRevisions.noteProjection(doc);
+  let points = pendingTextRevisions.noteProjection(doc), ordinaryNoteBaseline, baselineDoc;
+  if (activeNotes.length && !points && pendingTextRevisions.readLedger(doc) === null) {
+    ordinaryNoteBaseline = { projectId: session.projectId, sceneId: session.sceneId, noteText };
+    baselineDoc = manuscriptNoteModel.bindOrdinaryRecordingNotes(session.raw, ordinaryNoteBaseline);
+    points = pendingTextRevisions.noteProjection(baselineDoc);
+  }
   if (activeNotes.length || points) {
     if (!points) throw Error('RECORDING_NOTE_BINDINGS_UNSUPPORTED');
     if (points.length !== activeNotes.length || !activeNotes.every(n => points.some(p => p.noteId === n.id))) throw Error('RECORDING_NOTE_ROSTER_STALE');
@@ -26096,7 +26102,7 @@ async function assertPendingRecordingAnnotations(session) {
         || points.find(p => p.noteId === note.id).globalOffsetUtf16 !== ref.offsetUtf16) throw Error('RECORDING_NOTE_REFERENCE_STALE');
     }
   }
-  return { saved, activeComments, activeNotes: activeNotes.length > 0, noteText };
+  return { saved, activeComments, activeNotes: activeNotes.length > 0, noteText, ordinaryNoteBaseline, baselineDoc };
 }
 async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
   if (!capturedSession && !activePendingRecording) return snapshot;
@@ -26121,7 +26127,8 @@ async function preparePendingRecordingSnapshot(snapshot, capturedSession) {
     else if (incoming.baselineTextSha256 !== savedDigest) throw Error('RECORDING_COMMENT_PREFIX_STALE');
     nextIntents = model.validateEditIntents(JSON.stringify({ ...session.provenance, edits: [...session.provenance.edits, ...suffix] }));
     recordingProofJson = JSON.stringify({ schemaVersion: 1, baselineContent: session.baselineContent,
-      metadata: session.metadata, previousIntents: session.provenance, nextIntents, sessionId: session.id });
+      metadata: session.metadata, previousIntents: session.provenance, nextIntents, sessionId: session.id,
+      ...(session.ordinaryNoteBaseline ? { ordinaryNoteBaseline: session.ordinaryNoteBaseline } : {}) });
   }
   const result = pendingRecordingModel.derive(session.baseline, working.doc, session.metadata, nextIntents);
   const content = envelope.composeObservablePayload({ ...working, metaEnabled: working.hasMetaBlock, doc: result.doc });
@@ -26341,9 +26348,7 @@ async function handlePendingRecordingCommand(payload = {}) {
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content);
       const original = context.parsed.doc || { type: 'doc', content: context.parsed.text.split('\n').map(text => ({ type: 'paragraph', content: text ? [{ type: 'text', text }] : [] })) };
-      const prepared = pendingRecordingModel.prepare(original);
       const metadata = { author: typeof payload.author === 'string' ? payload.author.trim() : '', date: new Date().toISOString() };
-      pendingRecordingModel.derive(original, prepared.working, metadata);
       if (live.issue || !live.doc || JSON.stringify(envelope.canonicalizeDocumentJson(pendingTextRevisions.normalizeNode(live.doc)))
         !== JSON.stringify(envelope.canonicalizeDocumentJson(pendingTextRevisions.normalizeNode(original)))
         || JSON.stringify(envelope.canonicalizeDocumentJson(live.doc).attrs?.wordPendingRevisions || null) !== JSON.stringify(envelope.canonicalizeDocumentJson(original).attrs?.wordPendingRevisions || null)
@@ -26351,6 +26356,12 @@ async function handlePendingRecordingCommand(payload = {}) {
       const session = { ...context, id: crypto.randomUUID(), baseline: cloneJsonSafe(original), metadata,
         owner: activeStage10ApplicationBootstrap, savedGeneration: snapshot.generation };
       const annotations = await assertPendingRecordingAnnotations(session);
+      if (annotations.ordinaryNoteBaseline) {
+        session.ordinaryNoteBaseline = annotations.ordinaryNoteBaseline;
+        session.baseline = annotations.baselineDoc;
+      }
+      const prepared = pendingRecordingModel.prepare(session.baseline);
+      pendingRecordingModel.derive(session.baseline, prepared.working, metadata);
       session.commentRecording = annotations.activeComments;
       session.noteRecording = annotations.activeNotes;
       session.expectedNotes = annotations.noteText;

@@ -167,6 +167,35 @@ function validateManuscriptDocument(document, projectId) {
   return document;
 }
 
+// Recording binds pristine native notes from the complete canonical document;
+// the wire never supplies source points or a pending ledger.
+function bindOrdinaryRecordingNotes(content, descriptor) {
+  need(keys(descriptor, ['projectId', 'sceneId', 'noteText']) && Object.keys(descriptor).length === 3
+    && typeof descriptor.projectId === 'string' && descriptor.projectId.length > 0
+    && typeof descriptor.sceneId === 'string' && descriptor.sceneId.length > 0
+    && typeof descriptor.noteText === 'string' && Buffer.byteLength(descriptor.noteText) <= 4 * LIMITS.bytes,
+  'RECORDING_NOTE_BASELINE_INVALID');
+  let document; try { document = JSON.parse(descriptor.noteText); } catch { fail('RECORDING_NOTE_BASELINE_INVALID'); }
+  validateManuscriptDocument(document, descriptor.projectId);
+  const observation = observeNoteScene(content), pending = require('./word-pending-text-revisions-v1.cjs');
+  const doc = observation.doc || require('./document-content-envelope-v1.cjs').buildParagraphDocumentFromText(observation.text);
+  need(pending.readLedger(doc) === null, 'RECORDING_NOTE_BINDINGS_UNSUPPORTED');
+  const active = document.notes.filter(n => !n.deleted && n.manuscript?.reference.sceneId === descriptor.sceneId);
+  need(active.length > 0, 'RECORDING_NOTE_ROSTER_STALE');
+  const rows = pending.paragraphs(pending.normalizeNode(doc)).map(p => (p.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text).join(''));
+  need(rows.join('\n') === observation.text, 'RECORDING_NOTE_REFERENCE_STALE');
+  const digest = sha(observation.text), points = []; let paragraphIndex = 0, start = 0;
+  for (const note of active.slice().sort((a, b) => a.manuscript.reference.offsetUtf16 - b.manuscript.reference.offsetUtf16)) {
+    const ref = note.manuscript.reference;
+    need(ref.sourceTextSha256 === digest && boundary(observation.text, ref.offsetUtf16), 'RECORDING_NOTE_REFERENCE_STALE');
+    while (paragraphIndex < rows.length - 1 && ref.offsetUtf16 > start + rows[paragraphIndex].length)
+      start += rows[paragraphIndex++].length + 1;
+    points.push({ noteId: note.id, paragraphIndex, offsetUtf16: ref.offsetUtf16 - start });
+  }
+  const byId = new Map(points.map(point => [point.noteId, point]));
+  return pending.bindNoteSourcePoints(doc, active.map(note => byId.get(note.id)));
+}
+
 function mapPoint(oldText, nextText, point) {
   need(boundary(oldText, point), 'NOTE_REFERENCE_BOUNDARY');
   if (oldText === nextText) return point;
@@ -223,7 +252,7 @@ function validatePendingNoteTransition({ beforeText, projectId, sceneId, beforeC
 }
 
 function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeContent, afterContent, recordingProofJson, pendingNoteReturnProofJson, includeUnchanged = false }) {
-  if (recordingProofJson !== undefined) require('./word-pending-recording-comments-v1.cjs')
+  const recordingProof = recordingProofJson === undefined ? null : require('./word-pending-recording-comments-v1.cjs')
     .validateRecordingSaveProof({ beforeContent, afterContent, recordingProofJson });
   if (beforeText === null) return null;
   need(typeof beforeText === 'string' && Buffer.byteLength(beforeText) <= 4 * LIMITS.bytes, 'NOTE_DOCUMENT_BUDGET');
@@ -234,6 +263,14 @@ function planManuscriptNoteAnchorSave({ beforeText, projectId, sceneId, beforeCo
   const before = beforeObservation.text, after = afterObservation.text;
   const pending = require('./word-pending-text-revisions-v1.cjs');
   let { beforeLedger, afterLedger, beforePoints, afterPoints } = pending.readNoteProjectionPair(beforeObservation.doc, afterObservation.doc);
+  if (recordingProof?.proof.ordinaryNoteBaseline) {
+    const descriptor = recordingProof.proof.ordinaryNoteBaseline;
+    need(descriptor.projectId === projectId && descriptor.sceneId === sceneId, 'RECORDING_NOTE_BASELINE_BINDING');
+    if (!beforeLedger) {
+      need(descriptor.noteText === beforeText, 'RECORDING_NOTE_BASELINE_CONFLICT');
+      beforePoints = pending.noteProjection(recordingProof.baseline.doc);
+    }
+  }
   if (beforePoints || afterPoints) {
     // First admission includes the exact previous baseline frame. It is checked
     // against the saved canonical reference below, not trusted as an offset hint.
@@ -354,5 +391,5 @@ function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId
 }
 
 module.exports = { MODE, LIMITS, sha, boundary, validateNoteBody, validateNoteBodyProjection, sceneText, noteSceneSchemaDefaults,
-  validateManuscriptPayload, bindManuscriptPayload, validateManuscriptDocument,
+  validateManuscriptPayload, bindManuscriptPayload, validateManuscriptDocument, bindOrdinaryRecordingNotes,
   mapPoint, planManuscriptNoteAnchorSave, validateNoteCohort, materializeImportedNotes };

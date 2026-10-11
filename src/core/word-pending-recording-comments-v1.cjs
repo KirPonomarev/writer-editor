@@ -130,16 +130,28 @@ function validateRecordingSaveProof({ beforeContent, afterContent, recordingProo
   if (typeof recordingProofJson !== 'string' || Buffer.byteLength(recordingProofJson) > 32 * 1024 * 1024)
     fail('RECORDING_COMMENT_PROOF_BUDGET');
   let proof; try { proof = JSON.parse(recordingProofJson); } catch { fail('RECORDING_COMMENT_PROOF_INVALID'); }
-  if (Object.keys(proof).sort().join(',') !== 'baselineContent,metadata,nextIntents,previousIntents,schemaVersion,sessionId'
+  if (!proof || typeof proof !== 'object' || Array.isArray(proof)) fail('RECORDING_COMMENT_PROOF_INVALID');
+  const ordinary = Object.hasOwn(proof, 'ordinaryNoteBaseline');
+  if (Object.keys(proof).sort().join(',') !== (ordinary
+    ? 'baselineContent,metadata,nextIntents,ordinaryNoteBaseline,previousIntents,schemaVersion,sessionId'
+    : 'baselineContent,metadata,nextIntents,previousIntents,schemaVersion,sessionId')
     || proof.schemaVersion !== 1 || typeof proof.baselineContent !== 'string'
     || typeof proof.sessionId !== 'string' || !/^[A-Za-z0-9_.:-]{1,160}$/u.test(proof.sessionId)) fail('RECORDING_COMMENT_PROOF_INVALID');
   const baseline = envelope.parseObservablePayload(proof.baselineContent), before = envelope.parseObservablePayload(beforeContent), after = envelope.parseObservablePayload(afterContent);
-  if ([baseline, before, after].some(p => p.issue || !p.doc)) fail('RECORDING_COMMENT_DOCUMENT_INVALID');
+  if (baseline.issue || !baseline.doc || before.issue || (!before.doc && !ordinary) || after.issue || !after.doc)
+    fail('RECORDING_COMMENT_DOCUMENT_INVALID');
+  if (!before.doc) before.doc = envelope.canonicalizeDocumentJson(envelope.buildParagraphDocumentFromText(before.text));
   const previous = validateEditIntents(proof.previousIntents), next = validateEditIntents(proof.nextIntents);
   if (previous.schemaVersion !== 2 || next.schemaVersion !== 2 || previous.baselineTextSha256 !== next.baselineTextSha256
     || !equal(next.edits.slice(0, previous.edits.length), previous.edits)) fail('RECORDING_COMMENT_PREFIX_STALE');
+  const pristine = baseline.doc;
+  if (ordinary) baseline.doc = require('./word-manuscript-notes-v1.cjs').bindOrdinaryRecordingNotes(proof.baselineContent, proof.ordinaryNoteBaseline);
   for (const [parsed, plan] of [[before, previous], [after, next]]) {
-    const derived = recording.derive(baseline.doc, review.normalizeNode(parsed.doc), proof.metadata, plan);
+    const first = ordinary && parsed === before && review.readLedger(before.doc) === null;
+    if (first && previous.edits.length) fail('RECORDING_COMMENT_PREFIX_STALE');
+    if (first && !['meta', 'cards', 'hasMetaBlock', 'hasCardsBlock'].every(key => equal(baseline[key], before[key])))
+      fail('RECORDING_COMMENT_LEDGER_MISMATCH');
+    const derived = recording.derive(first ? pristine : baseline.doc, review.normalizeNode(parsed.doc), proof.metadata, plan);
     if (JSON.stringify(envelope.canonicalizeDocumentJson(derived.doc)) !== JSON.stringify(parsed.doc))
       fail('RECORDING_COMMENT_LEDGER_MISMATCH');
   }
