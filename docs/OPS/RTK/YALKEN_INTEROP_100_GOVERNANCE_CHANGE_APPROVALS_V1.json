@@ -2242,10 +2242,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "a934499dec4b0ae505033d8771704b3451fac968548ca3a65d08e44f7085a975",
-      "approvedAtUtc": "2026-10-08T19:57:17.266872Z",
-      "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008",
-      "rationale": "Owner-authorized macOS novel Word rich-note correction at exact merged1fc42de after full PR2099 closure. Existing finite fresh-book V2 and preserved pending-comment V3, complete body/break/local-map/roster comparison and both-phase publication checks; authored semantics, explicit Kernel authority and legacy controls remain. Exact-byte companions only; preserve630 ordered admissions,488 source identities,1597 inventory paths and238 historical certificate tuples. Append this HARD task to631/489 and one nonrecursive96-binding successor. Full native three-role novel release remains OPEN.",
+      "sha256": "c7033cf438b924ec2df990a5a5ebf85fe82a95079bf1f901e6587b0f0fd8a594",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -5347,12 +5347,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "c7ec2225025e43c63e65b97ea642887a131e0af92692af23afe9532c6d6f00e8",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "sha256": "d3723cad6c70045c9b2305181ee7ed80b6f0c814bb0666d90344e92ef66fd6fc",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013"
     },
     {
       "filePath": "src/core/word-pending-recording-comments-v1.cjs",
@@ -5428,12 +5428,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "f496bfb635875150d3a6d96a641c5468f33c506aa8ef188e652996c1dc826e1c"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "4f5dc69eb5cb4e2206218e32b0775f19bdd77b13031acb3c7530caf2236ccece"
     },
     {
       "approved": true,
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "5e387e46dd44bbd501864d99031ed292ed1839e68599900d9901b9dfdf6d4083"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "d5e4f54a7eedc1bd7043adcdbbe087b097e16868235aa6ebcc404e2df94c85ed"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "8d9ee831d2e52dc9a52d37defb956c59434e3a1dc8b8ee955fc80c846f506444"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "5d5088ebd0884e3e5a1a0ce6b0b2c69af31221192c613701811853af0eadbcfe"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "d1f580221162e714c495710303e6e13128df36e897cf735806e4baa76399d396"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "1421daa1f02356d0e438edb608a8d37a3019810559d9895feae3b28d07f7e5a5"
     },
     {
       "approved": true,
@@ -5500,39 +5500,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "README.md",
-      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
-      "sha256": "151a63d38e880c82b4b01cff45f500ba79041b0d687955086db11dd9abbdc75c"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "977a456d23bbfa0f0b40737170938b7fead2ed2ffb6886b1fc0ad74aee64aa6c"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
-      "sha256": "58c7bf4bdb5771cc4c6c9412580cefc56d259cad33baf860ad9dd34ec21ea636"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "1a70778a7e4a517259a38daa5e66eab826b35a0719c50700e8ff1fc317d69e2b"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
-      "sha256": "7f12b09a0fd38ec00f0133d81e38191ada9ef07beabdb8405e937d28a9573ea4"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "700418ebbb83a52215c9b0c22bec943b8c6b93a03cde7f3d5cd45971ebf3854a"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:59:24.129941+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Same owner-approved storage documentation delivery: refresh exactly one test digest in existing inventory after additive README successor validation. Preserve every inventory entry, total, classification, required flag and skip policy; no runtime change.",
-      "sha256": "3bae07dbdb37b67aaedab08afb60b992bd4a92e664b4be71530a3dd84d45e2d9"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "288442303ecd6e72d319102b623dfe192b89326413b02b89027db890c8688866"
     },
     {
       "approved": true,
@@ -5545,30 +5545,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
-      "sha256": "bc70fe14a0f010be1f15f77588b3e13233cc6ab083ba6f1b6ac0c0a0ea2e8c34"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "9cce3b771f10d899a9ae41a4da6d9a80f040a3ce2eb6c7c735782c4bb7a077c7"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
-      "sha256": "ca6dcde65e1d59cb061fb5438688c0d09cc8f2bacc6e491836f106d57fa10d67"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "7c0fdddf49f7acae5caea7bed458133621fcc07002117fc312ae31cf5f3ecd28"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
-      "sha256": "c89b34c1d3be61de42396ce10ff39e5b7767002cce0eda9d4a1a8599fff8f08b"
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "08632f686705230bf93f9f553f817c02f57b537723aaf6cd046529c44f7a325c"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
+      "sha256": "447d984d71e3ce3c73846f8fae88c92d69011a05b3017720902858369df80dd2",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "approvedBy": "owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013"
     }
   ],
   "evidenceStampIds": [
@@ -41851,6 +41860,123 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Same owner-approved storage documentation delivery: refresh exactly one test digest in existing inventory after additive README successor validation. Preserve every inventory entry, total, classification, required flag and skip policy; no runtime change.",
       "sha256": "521ed3ae057958c959604b5152401b39ff0638d4e1e5d9cae8ebf6588866e065"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "README.md",
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "151a63d38e880c82b4b01cff45f500ba79041b0d687955086db11dd9abbdc75c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "5e387e46dd44bbd501864d99031ed292ed1839e68599900d9901b9dfdf6d4083"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "8d9ee831d2e52dc9a52d37defb956c59434e3a1dc8b8ee955fc80c846f506444"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:59:24.129941+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-approved storage documentation delivery: refresh exactly one test digest in existing inventory after additive README successor validation. Preserve every inventory entry, total, classification, required flag and skip policy; no runtime change.",
+      "sha256": "3bae07dbdb37b67aaedab08afb60b992bd4a92e664b4be71530a3dd84d45e2d9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
+      "sha256": "bc70fe14a0f010be1f15f77588b3e13233cc6ab083ba6f1b6ac0c0a0ea2e8c34"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
+      "sha256": "c89b34c1d3be61de42396ce10ff39e5b7767002cce0eda9d4a1a8599fff8f08b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "58c7bf4bdb5771cc4c6c9412580cefc56d259cad33baf860ad9dd34ec21ea636"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "d1f580221162e714c495710303e6e13128df36e897cf735806e4baa76399d396"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
+      "sha256": "ca6dcde65e1d59cb061fb5438688c0d09cc8f2bacc6e491836f106d57fa10d67"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "7f12b09a0fd38ec00f0133d81e38191ada9ef07beabdb8405e937d28a9573ea4"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "c7ec2225025e43c63e65b97ea642887a131e0af92692af23afe9532c6d6f00e8",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "a934499dec4b0ae505033d8771704b3451fac968548ca3a65d08e44f7085a975",
+      "approvedAtUtc": "2026-10-08T19:57:17.266872Z",
+      "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008",
+      "rationale": "Owner-authorized macOS novel Word rich-note correction at exact merged1fc42de after full PR2099 closure. Existing finite fresh-book V2 and preserved pending-comment V3, complete body/break/local-map/roster comparison and both-phase publication checks; authored semantics, explicit Kernel authority and legacy controls remain. Exact-byte companions only; preserve630 ordered admissions,488 source identities,1597 inventory paths and238 historical certificate tuples. Append this HARD task to631/489 and one nonrecursive96-binding successor. Full native three-role novel release remains OPEN.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "f496bfb635875150d3a6d96a641c5468f33c506aa8ef188e652996c1dc826e1c"
     }
   ]
 }
