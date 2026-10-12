@@ -114,8 +114,31 @@ npm run agent:guardrails
 - `npm run build:mac`
 
 ## Где хранятся данные
-- Основная папка: `~/Documents/craftsman/`
-- Дополнительные настройки: `app.getPath('userData')`
+
+Полная [карта хранения Ялкена](docs/STORAGE_MAP.md) проверена 12 октября 2026:
+точные пути, роли носителей, восстановление архивов и устаревшие ссылки.
+
+| Что | Текущее место |
+|---|---|
+| Рабочий Git | `/Volumes/T7-Secure/storage/yalken/canonical/writer-editor-codex` |
+| Worktrees | `/Volumes/T7-Secure/worktrees/yalken` |
+| Исследования, runtime и evidence | `/Volumes/T7-Secure/storage/yalken` |
+| Архивы, перенесённые из iCloud | `/Volumes/T777/Yalken/Из iCloud 2026-10-12` |
+| Новые архивные материалы | `/Volumes/T777/Yalken/Новые материалы` |
+| Исторический дизайн и исследования | `/Volumes/T7/YALKEN_MASTER_VAULT_2026-07-17` |
+| Тестовые материалы на Яндексе | `/Users/kirillponomarev/Yandex.Disk.localized/Yalken — тестовые материалы` |
+
+На T777 перенесена только прежняя коллекция iCloud: 193 файла / 15,68 ГБ,
+включая 72 архива. Яндекс и остальные источники этим переносом не менялись.
+iCloud больше не используется как основное место новых архивов. Карта отдельно
+перечисляет оставшиеся на Mac материалы, raw-истории Codex и контрольные журналы.
+
+Данные самого редактора: по умолчанию `~/Documents/craftsman/`, служебное
+состояние macOS — `~/Library/Application Support/craftsman/`.
+Legacy `WriterEditor`, выбранные project roots и изолированные тестовые профили
+могут иметь другие пути; см. карту и код `src/utils/fileManager.js`, `src/main.js`.
+Эти папки не являются полной картой материалов разработки. Word/native-задача
+остаётся на паузе; автоматическое перемещение данных не настроено.
 
 ## Лицензия
 - AGPL-3.0-or-later

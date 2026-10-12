@@ -503,6 +503,7 @@ Runtime остаётся на паузе. PR 2078 ещё требует полн
 Исходный полный план и его незакрытые требования сохраняются.
 
 ## Start Here
+- Storage after iCloud → T777: [STORAGE_MAP.md](STORAGE_MAP.md), observed 2026-10-12. Word/native remains PAUSED by the later owner instruction; historical continuation entries do not resume it.
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
 - Active canonical execution document: `docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md`
 - Repo canon: `CANON.md`

@@ -769,3 +769,11 @@ Frozen40F legal paragraph-mark export now survives a genuine third Word save. SO
   tests and6of6 hidden real Electron keyboard cases pass; complete display and
  760x640 fixed bounds independently checked. Mandatory frozen whole gates and
   full delivery pending; no whole-novel PASS recorded.
+
+
+## 2026-10-12 — storage navigation after iCloud to T777
+
+- Added STORAGE_MAP.md and README/CONTEXT/HANDOFF navigation from observed filesystem paths and immutable migration receipts; runtime and payloads unchanged.
+- Distinguished T777 archive destination, T7-Secure canonical Git/worktrees/evidence, historical T7 vault, Mac application/raw-history data and untouched Yandex source.
+- Recorded 21 broken Downloads links and same-name vault alternatives as presence-only observations. Preserved historical catalogs and proof bytes; no link repair or cleanup.
+- Delivery and exact merged verification follow the storage-map task contract; this log is not a CI or cloud-completeness claim.

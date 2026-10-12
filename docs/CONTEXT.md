@@ -600,6 +600,7 @@ CLAIM_BOUNDARY: порядок дальнейшей работы; не ново�
 и merge ещё не завершены; разработка остаётся на паузе.
 
 ## Как читать репозиторий
+- Фактические пути хранения после переноса iCloud → T777: [STORAGE_MAP.md](STORAGE_MAP.md) (2026-10-12); текущая пауза Word/native сохраняется.
 - Active execution canon: `docs/OPS/STATUS/CANON_STATUS.json`
 - Верхний repo entrypoint: `CANON.md`
 - Target architecture resolver: `docs/corex/COREX.md`; current: `docs/corex/COREX.v2.md`
