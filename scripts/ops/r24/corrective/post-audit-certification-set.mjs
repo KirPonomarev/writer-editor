@@ -19731,7 +19731,7 @@ export const R24_INTEROP_WORD_STORAGE_DOCUMENTATION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-12--yalken-storage-map.md",
-      "sha256": "7ceae1430df721decc7dd4a2fec45742bec882a35f4ac6ea8d4db4f5607f99b3"
+      "sha256": "6a681d7903b178d42acd3de43e8945b4f61ebaaa52ff719b7e5c442f7e9cadcb"
     }
   ],
   "guards": [
