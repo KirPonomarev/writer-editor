@@ -5571,7 +5571,7 @@
       "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "4f5444a2bae4efd6ab939275210788ab1c99eef628cea3e0767f60b95d68f591"
+      "sha256": "ee6a690d4d6df91d197237efb4cb9b3b8255821d7d6dbd3a3b6be5cb87ab3265"
     }
   ],
   "evidenceStampIds": [
@@ -41671,6 +41671,15 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Same PR2108 original14-path delivery at original basea0e. Preserved official CI run38160560239 and actual unchanged local whole contract RED18of19 prove that the new119-binding literal lacks export. Add only export; preserve its complete object, checkpointc27, old constants, verifier and unchanged test/oracle/limits. Append exact PK tuple and refresh only certificate/PK Interop current pins while retaining prior full tuples. New committed whole contract, required new-run CI, normal merge and exact merged proof remain mandatory. No native, whole M04, recovery or shipping claim.",
       "sha256": "9e6ded22d14a4243a78838d11db7d16d7235cbb488d68f310a8fdb2f0dfe0c8f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "4f5444a2bae4efd6ab939275210788ab1c99eef628cea3e0767f60b95d68f591"
     }
   ]
 }
