@@ -30,6 +30,8 @@ README navigation, docs/STORAGE_MAP.md and aligned external T777 README. New aud
 
 - test/contracts/rtk-release01-terminal-claims.contract.test.js
 
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+
 ## DENYLIST
 - src/**
 - all tests except the declared RELEASE01 current-wording adapter and additive negative coverage
@@ -59,6 +61,7 @@ COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true.
 ## CHECKS
 The first official run rejected three changed documentation hashes with DATA_RUNTIME_REPAIR_PIN. Same-contour repair permits only exact hash/path data in the five listed governance companions: retain runtime verifier predicates, prior tuples, guards and runtime bytes. Add one complete exported literal successor for the current documentation bindings. No native authority or feature acceptance is created.
 The second official run exposed a README successor omission and a literal name outside the established WORD successor selector. Preserve the frozen claim registry; extend only the test-local current wording adapter with a C1-pinned storage README successor, preserving all original assertions and adding forgery rejection cases. Rename the new certificate literal to the established WORD prefix. No product behavior, native acceptance or original denominator changes.
+The test inventory is updated only for this changed test digest; all entries, totals, classifications, required flags and skip policies remain unchanged.
 CHECK_01_PRE_IDENTITY: clean Git, registered canonical identity, volume UUID/encryption/unlocked/writable, bootstrap and architecture preflight; performed before edits.
 CHECK_02_POST_PATHS: every current absolute locator resolves to its documented target; absent legacy paths explicitly classified; Unicode normalization and symlink targets observed; archive restore source inspected without executing recovery.
 CHECK_03_POST_PRESERVATION: all 193 archived target SHA-256, sizes and identities equal previous verification, source iCloud root absent locally; no data mutation from this task; diff is exactly the declared docs scope; local Markdown links resolve.
