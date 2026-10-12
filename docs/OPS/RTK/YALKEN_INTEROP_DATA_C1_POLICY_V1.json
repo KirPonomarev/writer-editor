@@ -1075,7 +1075,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "a4779ef7b6a5ea399016fe400776a7b36eeb3da045b23764f6fd17537882462a"
+        "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -3057,6 +3057,16 @@
           "claimDigest": "sha256:fd94e910f407e69cfd0b22fea237ce9335dbf8101d219302011142aedec2f020"
         }
       ]
+    },
+    "storageDocumentationWording": {
+      "schemaVersion": 1,
+      "taskId": "YALKEN_STORAGE_MAP_20261012",
+      "bindingBaseSha": "3408f3616c8871728a32cacdd70fda70a019c741",
+      "scope": "Storage navigation only; product wording, claims, profiles and terminal acceptance unchanged.",
+      "surfaceId": "surface-readme",
+      "path": "README.md",
+      "predecessorSha256": "sha256:fe2afbd2a004a025f8a61a6b437285e8a9d0c48d47b6a69f89ea5f7d1c24aa49",
+      "sha256": "sha256:151a63d38e880c82b4b01cff45f500ba79041b0d687955086db11dd9abbdc75c"
     }
   },
   "wordTextOrderBatch": {

@@ -449,6 +449,24 @@ async function compileRelease01CurrentWordingRegistry({
     failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.SECURITY_SUCCESSOR_INVALID, 'one admitted package binding required');
   }
   applySurfaceOverrides(registry, [{ ...packageSurface, sha256: `sha256:${packageDigest}` }], RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
+
+  // Storage navigation changes no product claim. Bind its current README
+  // through the exact C1 carrier while preserving the frozen registry bytes.
+  const storage = repair.storageDocumentationWording;
+  const readmeSurface = registry.wordingSurfaces.find(surface => surface.path === 'README.md');
+  if (!exactKeys(storage, ['schemaVersion', 'taskId', 'bindingBaseSha', 'scope', 'surfaceId', 'path', 'predecessorSha256', 'sha256'])
+    || storage.schemaVersion !== 1 || storage.taskId !== 'YALKEN_STORAGE_MAP_20261012'
+    || storage.bindingBaseSha !== '3408f3616c8871728a32cacdd70fda70a019c741'
+    || storage.scope !== 'Storage navigation only; product wording, claims, profiles and terminal acceptance unchanged.'
+    || storage.surfaceId !== 'surface-readme' || storage.path !== 'README.md'
+    || !readmeSurface || readmeSurface.surfaceId !== storage.surfaceId
+    || storage.predecessorSha256 !== 'sha256:fe2afbd2a004a025f8a61a6b437285e8a9d0c48d47b6a69f89ea5f7d1c24aa49'
+    || storage.predecessorSha256 !== readmeSurface.sha256
+    || !/^sha256:[a-f0-9]{64}$/u.test(storage.sha256)
+    || storage.sha256 !== sha256File(path.join(REPO_ROOT, 'README.md'))) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'exact storage documentation README successor required');
+  }
+  applySurfaceOverrides(registry, [{ ...readmeSurface, sha256: storage.sha256 }], RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
   return registry;
 }
 
@@ -2105,6 +2123,39 @@ test('RELEASE01-S13-real-registry-word-16-112-typed-adverse-schedules-still-fail
 
 // Keep stableJson referenced for fixture symmetry with sibling contracts.
 void stableJson;
+
+test('RELEASE01 storage README successor preserves historical claims and rejects forged metadata', async () => {
+  const module = await loadModule(), loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  const historicalBytes = fs.readFileSync(REGISTRY_PATH), historical = clone(loaded.registry);
+  const compiled = await compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry });
+  assert.deepEqual(loaded.registry, historical);
+  assert.deepEqual(fs.readFileSync(REGISTRY_PATH), historicalBytes);
+  assert.equal(compiled.wordingSurfaces.find(s => s.path === 'README.md').sha256, sha256File(path.join(REPO_ROOT, 'README.md')));
+  for (const claim of historical.claims) assert.deepEqual(compiled.claims.find(c => c.claimId === claim.claimId), claim);
+  assert.deepEqual(compiled.terminalRollup, historical.terminalRollup);
+  for (const mutate of [
+    r => { delete r.storageDocumentationWording; },
+    r => { r.storageDocumentationWording = null; },
+    r => { r.storageDocumentationWording.schemaVersion = 2; },
+    r => { r.storageDocumentationWording.taskId = 'untrusted'; },
+    r => { r.storageDocumentationWording.bindingBaseSha = '0'.repeat(40); },
+    r => { r.storageDocumentationWording.scope = 'Word support promotion'; },
+    r => { r.storageDocumentationWording.path = '../README.md'; },
+    r => { r.storageDocumentationWording.surfaceId = 'surface-editor-js'; },
+    r => { r.storageDocumentationWording.predecessorSha256 = 'sha256:' + '0'.repeat(64); },
+    r => { r.storageDocumentationWording.sha256 = r.storageDocumentationWording.predecessorSha256; },
+    r => { r.storageDocumentationWording.sha256 = 'sha256:' + '0'.repeat(64); },
+    r => { r.storageDocumentationWording.extra = true; },
+  ]) {
+    const value = loadJsonWithBytes(C1_DATA_POLICY_PATH).value;
+    mutate(value.qualifiedRuntimeRepair);
+    // Inner metadata must fail even if the attacker recomputes the outer pin.
+    const bytes = Buffer.from(JSON.stringify(value)), digest = sha256RawBytes(bytes);
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
+      currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }),
+    error => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+  }
+});
 
 
 test('RELEASE01 security wording successor rejects missing changed and forged current package bindings',async()=>{

@@ -259,18 +259,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
-      ],
-      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "sha256": "a4779ef7b6a5ea399016fe400776a7b36eeb3da045b23764f6fd17537882462a"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-14T15:45:00.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
@@ -5488,27 +5476,9 @@
       "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
       "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "README.md",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "144f2bcf0110f742accc9d01b3993a3371f63072c8be6277aec7ee1b93d678df"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/STORAGE_MAP.md",
       "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
       "sha256": "6bbfa15f187354b14e8cf8226d26bfb0edee11f0717981b1d4a544326a4deb46"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/tasks/2026-10-12--yalken-storage-map.md",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "dda43d310a66dbd21800c6f7fa8eb575528a2c6d07b0ff26b9a78688b268c062"
     },
     {
       "approved": true,
@@ -5539,39 +5509,66 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/tasks/2026-10-12--yalken-storage-map.md",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "f319f8dbe468dbfee9d1929495d04cfb179393071712bea4a3bf430e55de04df"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "README.md",
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "151a63d38e880c82b4b01cff45f500ba79041b0d687955086db11dd9abbdc75c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
       "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "0d85e9be09ddf15418108d569341b08e335108ef2d499f2c953402110b223765"
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "58c7bf4bdb5771cc4c6c9412580cefc56d259cad33baf860ad9dd34ec21ea636"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
       "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "573aa719efd1096f7baa2fa10dfc366c7ad6d5bf9ad2d87a0443c999cbefd6eb"
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "7f12b09a0fd38ec00f0133d81e38191ada9ef07beabdb8405e937d28a9573ea4"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
       "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "bd2917e664b7ca632c5b82cf62e80155147d2ebd70009445976005b65cf343fa"
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "75c587ad10c9479691f99e310d8a3c6a372402d966045fe445b67681e88faf53"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
       "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
-      "sha256": "ee6a690d4d6df91d197237efb4cb9b3b8255821d7d6dbd3a3b6be5cb87ab3265"
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "fc38ab469e4092573b7701c037bef93be8c19f210b995c3be13a5d1c122c2201"
     }
   ],
   "evidenceStampIds": [
@@ -41680,6 +41677,108 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
       "sha256": "4f5444a2bae4efd6ab939275210788ab1c99eef628cea3e0767f60b95d68f591"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/tasks/2026-10-12--yalken-storage-map.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "dda43d310a66dbd21800c6f7fa8eb575528a2c6d07b0ff26b9a78688b268c062"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
+      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
+      ],
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "a4779ef7b6a5ea399016fe400776a7b36eeb3da045b23764f6fd17537882462a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "0d85e9be09ddf15418108d569341b08e335108ef2d499f2c953402110b223765"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "573aa719efd1096f7baa2fa10dfc366c7ad6d5bf9ad2d87a0443c999cbefd6eb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "bd2917e664b7ca632c5b82cf62e80155147d2ebd70009445976005b65cf343fa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "ee6a690d4d6df91d197237efb4cb9b3b8255821d7d6dbd3a3b6be5cb87ab3265"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "README.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "144f2bcf0110f742accc9d01b3993a3371f63072c8be6277aec7ee1b93d678df"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "434aef19d9c2c8a65ef11dfa35bc59b0ed4ac2c77a9cba00dc558eae4a1185e8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "2276b72edb594a43aa9bd0eb976dc5017670fda56dcfbf63a9f24d5dd3a909ed"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "f73d37820f6dbb898248854d71f65ab5a4b88a646e922550f571243464e641bc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "0e889a7f865f040b56b1fc70bf24e50fe8a9b306070b1d825647e8fdb79b2f58"
     }
   ]
 }
