@@ -141,6 +141,14 @@ byte-exact. The strict dateUtc+1second refusal is covered in both phases.
 Npm audit actual0 reports zero vulnerabilities. Official required CI, final
 companion verification and exact merged proof remain separate required gates.
 
+First complete maintained RTK attempt at426223942 executed4169 tests:4155
+passed and14 failed, with zero cancel/skip/todo. One failure was the operational
+README note entering the strict provider-wording scanner; thirteen failed before
+scenario execution because the task-local Electron package lacked its binary.
+Both causes and original logs remain on T777. The note keeps all baseline
+product wording; existing installed Electron41.10.6 files complete the declared
+APFS test runtime without a dependency or network change. Final rerun is required.
+
 ### STORAGE
 
 All new materials and DOCX: T777 dated2026-10-13--mac-word-finish-v4-1 materials

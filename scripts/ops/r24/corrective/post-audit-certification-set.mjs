@@ -20230,7 +20230,7 @@ export const R24_INTEROP_WORD_NOTES_TRANSPORT_PRECISION_SUCCESSOR=Object.freeze(
     },
     {
       "path": "README.md",
-      "sha256": "977a456d23bbfa0f0b40737170938b7fead2ed2ffb6886b1fc0ad74aee64aa6c"
+      "sha256": "adb972685c09e9aba2205891b3a509f8414535c0c8fa689beae7c49b1b227e36"
     },
     {
       "path": "docs/STORAGE_MAP.md",
@@ -20242,13 +20242,13 @@ export const R24_INTEROP_WORD_NOTES_TRANSPORT_PRECISION_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
-      "sha256": "447d984d71e3ce3c73846f8fae88c92d69011a05b3017720902858369df80dd2"
+      "sha256": "c7831b1f808a40223b2da6eac51e254a91b6062c56b7eddf1c14521eb193189d"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "1a70778a7e4a517259a38daa5e66eab826b35a0719c50700e8ff1fc317d69e2b"
+      "sha256": "1e06b083c764e807b8a9486b91c002671c139a9c8ac2c2198ff6a74cad7ee688"
     }
   ]
 });
