@@ -1307,6 +1307,15 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
               for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
                 ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
             });
+            // The pinned pending/comment producer emits UTC seconds and legacy
+            // date minutes. Project that law only in this validated source clone;
+            // BODY_V2 run and formatting emission keeps its own typography law.
+            if(bodyProfile?.schemaVersion===bodyTypography.V2&&mapScene.pendingCommentBinding?.schemaVersion===2)
+              for(const revision of emitted.revisions)if(revision.dateUtc&&Number.isFinite(Date.parse(revision.dateUtc))) {
+                revision.dateUtc=new Date(revision.dateUtc).toISOString().replace(/\.\d{3}Z$/u,'Z');
+                if(revision.date&&Number.isFinite(Date.parse(revision.date)))
+                  revision.date=new Date(revision.date).toISOString().replace(/:\d{2}\.\d{3}Z$/u,':00Z');
+              }
             const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
             if(bodyProfile?.schemaVersion===bodyTypography.V2||scene.bodyParagraphEmission) {
               // Ordinary Word replacement groups are inferred on readback, not

@@ -1,3 +1,35 @@
+## 2026-10-13 — Mac Word V4.1 resumed; fractional note-export blocker reproduced
+
+Owner directly resumed only the existing Mac Word finish assignment and again
+required all new materials, reports and logs on T777. Dated task folders are
+2026-10-13--mac-word-finish-v4-1 under the respective materials/reports roots;
+README and the T777 storage README record the exact paths. Existing profiles,
+raw histories, databases and authority remain protected in place.
+
+At clean base6decd9159 (source treeea27cdb, unchanged since delivered PR2108),
+Root reexecuted the tiny actual public Main export with pinned Node22.12.0.
+Fractional revisions refuse at WORD_BOOK_NOTES_PUBLICATION_SOURCE; the exact
+existing second/minute transport-precision control publishes and passes both
+self-parses. Independent full before/after capture comparison preserves source
+scenes, notes, comments and manifest. Source authoring graphs differ only in
+four declared revision date/dateUtc fields; separately allocated project/round
+identities remain bound to their own runs. Nondefault Georgia14pt, languages,
+marks, breaks, empty paragraph, both note kinds and private state are retained.
+
+WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013 is the bounded Main expectation
+correction. Pinned complete affected files execute598/598 (168 typography,
+72 pending notes,358 Main), zero fail/cancel/skip/todo; three unchanged
+mandatory TAP evaluations accept the logs and all585 inputs remain exact.
+Root reviewed the9-line runtime delta and105 appended test lines, preserving
+both old test prefixes. This source checkpoint requires normal delivery. It changes no raw
+source, Core schema, numerical budget, dependency, network or UI contract.
+This is causal SOURCE evidence only. Genuine changed Word exchanges remain0;
+full origins/scales/runtime/roles/five-round/recovery/performance acceptance
+remains OPEN. Historical M03 and PR2106–2108 retain their original scope.
+Next: finish this one correction's delivery/exact merged proof, freshly admit
+runtime, and return to the genuine YALKEN_ORIGIN SOURCE whole-book500k journey.
+Task:2026-10-13--word-notes-transport-precision-mac.md.
+
 ## 2026-10-12 — Текущее хранение Ялкена: новые материалы и отчёты на T777
 
 Прямое решение владельца: все новые данные/материалы нашей работы —

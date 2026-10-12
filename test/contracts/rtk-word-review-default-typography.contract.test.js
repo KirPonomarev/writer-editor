@@ -1439,3 +1439,55 @@ test('fresh book V2 publication refuses body break empty paragraph profile and s
   f.retainBookNoteDefaults('publication-refuse-'+fault,{candidate,bytes:f.originalBytes,actual});assert.equal(actual.ok,false,fault);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',fault);
  }
 });
+
+// Fractional canonical dates are preserved locally; only the existing pending
+// comment producer's date precision belongs in the publication expectation.
+async function fractionalPendingNotePublicationFixture() {
+ const f=await nativeReplacementNotePublicationFixture(),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const ledger=structuredClone(pending.readLedger(f.doc));
+ for(const revision of ledger.revisions) {
+  revision.date='2026-10-08T06:46:12.345Z';revision.dateUtc='2026-10-08T03:46:12.345Z';
+ }
+ ledger.source.attrs={...ledger.source.attrs,wordDefaultTabStop:720};
+ for(const paragraph of pending.paragraphs(ledger.source)) {
+  paragraph.attrs={...paragraph.attrs,wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}};
+  for(const node of paragraph.content||[])node.marks=[{type:'bold'},{type:'italic'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}];
+ }
+ const doc=pending.bindLedger(ledger),raw=require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({doc});
+ const document=structuredClone(f.document),notes=require('../../src/core/word-manuscript-notes-v1.cjs');
+ for(const note of document.notes.filter(note=>note.manuscript?.reference.sceneId===f.sceneId))
+  note.manuscript=notes.bindManuscriptPayload({kind:note.manuscript.kind,body:note.manuscript.body,sceneId:f.sceneId,
+   offsetUtf16:note.manuscript.reference.offsetUtf16,sceneContent:raw});
+ const publication=actualBodyPublication(doc,f.bridge,{notesDocument:document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});
+ return {...f,...publication,doc,document,raw};
+}
+test('fractional BODY_V2 pending notes publish both phases without changing complete raw source or authored typography',async()=>{
+ const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
+ const result=await f.publish(f.bytes);assert.equal(result.publishAllowed,true,JSON.stringify(result));
+ assert.deepEqual(JSON.parse(JSON.stringify(result.documentNotesBinding.noteProofs)),[
+  {phase:'provisional',rosterCount:3,completeBodies:true,sourceOccurrences:true},{phase:'final',rosterCount:3,completeBodies:true,sourceOccurrences:true}]);
+ const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
+ assert.match(parts['word/document.xml'],/w16du:dateUtc="2026-10-08T03:46:12Z"/u);
+ for(const atom of ['w:ascii="Georgia"','w:sz w:val="28"','w:lang w:val="ru-RU" w:eastAsia="ja-JP" w:bidi="he-IL"','<w:b/>','<w:i/>'])assert.ok(parts['word/document.xml'].includes(atom),atom);
+ assert.equal(require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw}).equals(before),true);
+ assert.equal(require('../../src/core/word-pending-text-revisions-v1.cjs').readLedger(f.doc).revisions[0].dateUtc,'2026-10-08T03:46:12.345Z');
+});
+for(const phase of ['provisional','final'])for(const fault of ['author','date','dateUtc','font','language','mark','corrupt'])
+ test('fractional BODY_V2 pending note publication refuses '+fault+' '+phase+' without changing source',async()=>{
+  const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
+  const original=phase==='provisional'?f.source.provisionalSelfParseArtifact.bytes:f.bytes;
+  const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts,old=parts['word/document.xml'];
+  if(fault==='author'||fault==='date')parts['word/document.xml']=old.replace(/<w:(?:ins|del)\b[^>]*>/u,tag=>tag.replace(fault==='author'?/w:author="[^"]*"/u:/w:date="[^"]*"/u,fault==='author'?'w:author="Foreign editor"':'w:date="2026-10-08T03:46:13Z"'));
+  if(fault==='dateUtc')parts['word/document.xml']=old.replace('w16du:dateUtc="2026-10-08T03:46:12Z"','w16du:dateUtc="2026-10-08T03:46:13Z"');
+  if(fault==='font')parts['word/document.xml']=old.replace('w:ascii="Georgia"','w:ascii="Arial"');
+  if(fault==='language')parts['word/document.xml']=old.replace('w:val="ru-RU"','w:val="fr-FR"');
+  if(fault==='mark')parts['word/document.xml']=old.replace('<w:b/>','<w:b w:val="0"/>');
+  if(fault!=='corrupt')assert.notEqual(parts['word/document.xml'],old);
+  const bytes=fault==='corrupt'?Buffer.from('corrupt DOCX'):require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  const candidate=phase==='final'?f.source:{...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes},advisoryManifest:{...f.source.advisoryManifest,coreManifest:{...f.source.advisoryManifest.coreManifest,artifactIdentities:{...f.source.advisoryManifest.coreManifest.artifactIdentities,provisionalDocxSha256:'sha256:'+hash(bytes)}}}};
+  const result=await f.publish(phase==='final'?bytes:f.bytes,candidate);assert.equal(result.ok,false,JSON.stringify(result));assert.equal(result.publishAllowed,false);
+  if(fault==='author'||fault==='date'||fault==='dateUtc'){assert.equal(result.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(result.reason,'WORD_BOOK_NOTES_PUBLICATION_SOURCE');}
+  else if(fault==='corrupt')assert.equal(result.code,'STAGE02_PACKAGE_MALFORMED');
+  else assert.match(result.code,/^(?:RTK_V4_PUBLICATION_|RTK_RETURN_INTAKE_|RTK_WORD_)/u);
+  assert.equal(require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw}).equals(before),true);
+ });
