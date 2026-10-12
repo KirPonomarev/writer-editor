@@ -650,7 +650,11 @@
     "test/contracts/rtk-test-graph-catalog.contract.test.js",
     "docs/tasks/2026-10-10--word-recording-structural-undo-mac.md",
     "docs/tasks/2026-10-11--word-recording-native-notes-mac.md",
-    "docs/tasks/2026-10-11--word-comment-transient-history-return-mac.md"
+    "docs/tasks/2026-10-11--word-comment-transient-history-return-mac.md",
+    "AGENTS.md",
+    "README.md",
+    "docs/STORAGE_MAP.md",
+    "docs/tasks/2026-10-12--yalken-storage-map.md"
   ],
   "protectedFiles": [
     {
@@ -1071,7 +1075,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "a4779ef7b6a5ea399016fe400776a7b36eeb3da045b23764f6fd17537882462a"
+        "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -2571,15 +2575,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6e5db2017e6c47d73ae07c096cf2324fcc8b2e6da3df631f04e7d519f2e28ef2"
+        "sha256": "5e387e46dd44bbd501864d99031ed292ed1839e68599900d9901b9dfdf6d4083"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "89a12b699b69d7a50a4c195d9c644a8839cadc3bff3a2dd85e8b6bfcbc7463d6"
+        "sha256": "8d9ee831d2e52dc9a52d37defb956c59434e3a1dc8b8ee955fc80c846f506444"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "73dfbc9a7fcc7cd7094ac88c0153584add9b21e7242ca1e38a553806377cc216"
+        "sha256": "d1f580221162e714c495710303e6e13128df36e897cf735806e4baa76399d396"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3053,6 +3057,16 @@
           "claimDigest": "sha256:fd94e910f407e69cfd0b22fea237ce9335dbf8101d219302011142aedec2f020"
         }
       ]
+    },
+    "storageDocumentationWording": {
+      "schemaVersion": 1,
+      "taskId": "YALKEN_STORAGE_MAP_20261012",
+      "bindingBaseSha": "3408f3616c8871728a32cacdd70fda70a019c741",
+      "scope": "Storage navigation only; product wording, claims, profiles and terminal acceptance unchanged.",
+      "surfaceId": "surface-readme",
+      "path": "README.md",
+      "predecessorSha256": "sha256:fe2afbd2a004a025f8a61a6b437285e8a9d0c48d47b6a69f89ea5f7d1c24aa49",
+      "sha256": "sha256:151a63d38e880c82b4b01cff45f500ba79041b0d687955086db11dd9abbdc75c"
     }
   },
   "wordTextOrderBatch": {

@@ -259,18 +259,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
-      ],
-      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "sha256": "a4779ef7b6a5ea399016fe400776a7b36eeb3da045b23764f6fd17537882462a"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-14T15:45:00.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
@@ -5458,84 +5446,129 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "AGENTS.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "cf1bb1a8f4dd265867661b239626b91aed8ec28af202e66b842914fb50c57524"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/STORAGE_MAP.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "6bbfa15f187354b14e8cf8226d26bfb0edee11f0717981b1d4a544326a4deb46"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "6e5db2017e6c47d73ae07c096cf2324fcc8b2e6da3df631f04e7d519f2e28ef2"
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "5e387e46dd44bbd501864d99031ed292ed1839e68599900d9901b9dfdf6d4083"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "89a12b699b69d7a50a4c195d9c644a8839cadc3bff3a2dd85e8b6bfcbc7463d6"
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "8d9ee831d2e52dc9a52d37defb956c59434e3a1dc8b8ee955fc80c846f506444"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "73dfbc9a7fcc7cd7094ac88c0153584add9b21e7242ca1e38a553806377cc216"
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "d1f580221162e714c495710303e6e13128df36e897cf735806e4baa76399d396"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "9be993d7d3c9f36ba643968255c083bcb03b7179f227bc20a5be3eeaa41ec139"
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "1fa43ce586db55a58f50b44e21d8d3600b20f6171d7bf592180632cd28eb3490"
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "README.md",
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "151a63d38e880c82b4b01cff45f500ba79041b0d687955086db11dd9abbdc75c"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "8d47b762e5a165d80e67be2a86ae44afbfc5cf69563d1160a1b350c4bb4eb482"
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "58c7bf4bdb5771cc4c6c9412580cefc56d259cad33baf860ad9dd34ec21ea636"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
-      "sha256": "8f903304734a76882bfbd06e189e4133ade9c176192cae6538be31b2eb07eef9"
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "7f12b09a0fd38ec00f0133d81e38191ada9ef07beabdb8405e937d28a9573ea4"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T18:17:02.737Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T17:59:24.129941+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-approved storage documentation delivery: refresh exactly one test digest in existing inventory after additive README successor validation. Preserve every inventory entry, total, classification, required flag and skip policy; no runtime change.",
+      "sha256": "3bae07dbdb37b67aaedab08afb60b992bd4a92e664b4be71530a3dd84d45e2d9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/tasks/2026-10-12--yalken-storage-map.md",
+      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
+      "sha256": "6a681d7903b178d42acd3de43e8945b4f61ebaaa52ff719b7e5c442f7e9cadcb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
+      "sha256": "bc70fe14a0f010be1f15f77588b3e13233cc6ab083ba6f1b6ac0c0a0ea2e8c34"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Same PR2108 original14-path delivery at original basea0e. Preserved official CI run38160560239 and actual unchanged local whole contract RED18of19 prove that the new119-binding literal lacks export. Add only export; preserve its complete object, checkpointc27, old constants, verifier and unchanged test/oracle/limits. Append exact PK tuple and refresh only certificate/PK Interop current pins while retaining prior full tuples. New committed whole contract, required new-run CI, normal merge and exact merged proof remain mandatory. No native, whole M04, recovery or shipping claim.",
-      "sha256": "9cbdfa8c0849756e49506662831ac66ceb66a2cded049589ebb3e86007508bd1"
+      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
+      "sha256": "ca6dcde65e1d59cb061fb5438688c0d09cc8f2bacc6e491836f106d57fa10d67"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-11T18:17:02.737Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "approvedAtUtc": "2026-10-12T18:15:53.962155+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same PR2108 original14-path delivery at original basea0e. Preserved official CI run38160560239 and actual unchanged local whole contract RED18of19 prove that the new119-binding literal lacks export. Add only export; preserve its complete object, checkpointc27, old constants, verifier and unchanged test/oracle/limits. Append exact PK tuple and refresh only certificate/PK Interop current pins while retaining prior full tuples. New committed whole contract, required new-run CI, normal merge and exact merged proof remain mandatory. No native, whole M04, recovery or shipping claim.",
-      "sha256": "9e6ded22d14a4243a78838d11db7d16d7235cbb488d68f310a8fdb2f0dfe0c8f"
+      "rationale": "Same storage documentation delivery: synchronize the single C2A generated inventory digest under unchanged deterministic compiler and original assertions. No new historical acceptance, runtime or authority. Prior bytes remain in Git and audit.",
+      "sha256": "c89b34c1d3be61de42396ce10ff39e5b7767002cce0eda9d4a1a8599fff8f08b"
     }
   ],
   "evidenceStampIds": [
@@ -41572,6 +41605,252 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
       "sha256": "86fd73c5b6570f16a8ddb0a55287c672c44fd847933c885d45908e2d2f1b1042"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "6e5db2017e6c47d73ae07c096cf2324fcc8b2e6da3df631f04e7d519f2e28ef2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "89a12b699b69d7a50a4c195d9c644a8839cadc3bff3a2dd85e8b6bfcbc7463d6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "73dfbc9a7fcc7cd7094ac88c0153584add9b21e7242ca1e38a553806377cc216"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "8d47b762e5a165d80e67be2a86ae44afbfc5cf69563d1160a1b350c4bb4eb482"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "8f903304734a76882bfbd06e189e4133ade9c176192cae6538be31b2eb07eef9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T18:17:02.737Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same PR2108 original14-path delivery at original basea0e. Preserved official CI run38160560239 and actual unchanged local whole contract RED18of19 prove that the new119-binding literal lacks export. Add only export; preserve its complete object, checkpointc27, old constants, verifier and unchanged test/oracle/limits. Append exact PK tuple and refresh only certificate/PK Interop current pins while retaining prior full tuples. New committed whole contract, required new-run CI, normal merge and exact merged proof remain mandatory. No native, whole M04, recovery or shipping claim.",
+      "sha256": "9cbdfa8c0849756e49506662831ac66ceb66a2cded049589ebb3e86007508bd1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T18:17:02.737Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same PR2108 original14-path delivery at original basea0e. Preserved official CI run38160560239 and actual unchanged local whole contract RED18of19 prove that the new119-binding literal lacks export. Add only export; preserve its complete object, checkpointc27, old constants, verifier and unchanged test/oracle/limits. Append exact PK tuple and refresh only certificate/PK Interop current pins while retaining prior full tuples. New committed whole contract, required new-run CI, normal merge and exact merged proof remain mandatory. No native, whole M04, recovery or shipping claim.",
+      "sha256": "9e6ded22d14a4243a78838d11db7d16d7235cbb488d68f310a8fdb2f0dfe0c8f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "4f5444a2bae4efd6ab939275210788ab1c99eef628cea3e0767f60b95d68f591"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/tasks/2026-10-12--yalken-storage-map.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "dda43d310a66dbd21800c6f7fa8eb575528a2c6d07b0ff26b9a78688b268c062"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
+      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
+      ],
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "a4779ef7b6a5ea399016fe400776a7b36eeb3da045b23764f6fd17537882462a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "0d85e9be09ddf15418108d569341b08e335108ef2d499f2c953402110b223765"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "573aa719efd1096f7baa2fa10dfc366c7ad6d5bf9ad2d87a0443c999cbefd6eb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "bd2917e664b7ca632c5b82cf62e80155147d2ebd70009445976005b65cf343fa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "ee6a690d4d6df91d197237efb4cb9b3b8255821d7d6dbd3a3b6be5cb87ab3265"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:20:18.776789+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "README.md",
+      "rationale": "Owner requested complete storage documentation, explicitly approved base 3408f361 and all new Yalken materials/reports on T777. Same documentation contour mechanically rebinds only three factual-doc hashes, four exact new doc paths and one literal certificate successor. Every prior tuple and verifier predicate is preserved; no runtime, test, native admission, acceptance denominator or security behavior change.",
+      "sha256": "144f2bcf0110f742accc9d01b3993a3371f63072c8be6277aec7ee1b93d678df"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "434aef19d9c2c8a65ef11dfa35bc59b0ed4ac2c77a9cba00dc558eae4a1185e8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "2276b72edb594a43aa9bd0eb976dc5017670fda56dcfbf63a9f24d5dd3a909ed"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "f73d37820f6dbb898248854d71f65ab5a4b88a646e922550f571243464e641bc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "0e889a7f865f040b56b1fc70bf24e50fe8a9b306070b1d825647e8fdb79b2f58"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/tasks/2026-10-12--yalken-storage-map.md",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "f319f8dbe468dbfee9d1929495d04cfb179393071712bea4a3bf430e55de04df"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "9be993d7d3c9f36ba643968255c083bcb03b7179f227bc20a5be3eeaa41ec139"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "75c587ad10c9479691f99e310d8a3c6a372402d966045fe445b67681e88faf53"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:54:48.713210+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Exact storage documentation successor. README describes native work as paused without adding a product wording claim; preserve all prior claims, approvals and archive data. No runtime or authority changes.",
+      "sha256": "fc38ab469e4092573b7701c037bef93be8c19f210b995c3be13a5d1c122c2201"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:59:24.129941+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/tasks/2026-10-12--yalken-storage-map.md",
+      "rationale": "Same owner-approved storage documentation delivery: refresh exactly one test digest in existing inventory after additive README successor validation. Preserve every inventory entry, total, classification, required flag and skip policy; no runtime change.",
+      "sha256": "7ceae1430df721decc7dd4a2fec45742bec882a35f4ac6ea8d4db4f5607f99b3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-11T17:23:35.724Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner V3.1 authorizes this bounded Core history correction and exact-byte companions. Preserve complete durable/active history, all source/confirmation/Kernel/lease/atomic guards, prior test assertions, certificate and approval history, numerical caps and zero native credit. Original primary420/420 is byte-bound; original affected18 remains FAIL663/664 at the ambient untracked-task ZIP check. Clean-candidate whole ZIP, full official RTK/baseline, required CI and exact merged verification remain mandatory. No whole M04, recovery or shipping claim.",
+      "sha256": "1fa43ce586db55a58f50b44e21d8d3600b20f6171d7bf592180632cd28eb3490"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:59:24.129941+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-approved storage documentation delivery: refresh exactly one test digest in existing inventory after additive README successor validation. Preserve every inventory entry, total, classification, required flag and skip policy; no runtime change.",
+      "sha256": "cd3c86bd43e29c1e23f341886783db63fdcf78eba44cbb679b5c98a1e49bba7b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:59:24.129941+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-approved storage documentation delivery: refresh exactly one test digest in existing inventory after additive README successor validation. Preserve every inventory entry, total, classification, required flag and skip policy; no runtime change.",
+      "sha256": "521ed3ae057958c959604b5152401b39ff0638d4e1e5d9cae8ebf6588866e065"
     }
   ]
 }
