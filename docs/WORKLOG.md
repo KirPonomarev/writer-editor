@@ -1,3 +1,14 @@
+## 2026-10-12 — Текущее хранение Ялкена: новые материалы и отчёты на T777
+
+Прямое решение владельца: все новые данные/материалы нашей работы —
+`/Volumes/T777/Yalken/Новые материалы`, отчёты/логи/evidence —
+`/Volumes/T777/Yalken/Отчёты о работе`, в отдельных датированных папках задач.
+Полная [карта хранения](STORAGE_MAP.md) содержит точные пути и границы проверки.
+Прежние указания ниже складывать новое на Яндекс или iCloud исторические;
+существующие источники сохраняются. Git и обязательные отслеживаемые docs
+остаются на T7-Secure; активные БД/authority/профили не перемещаются.
+Word/native остаётся PAUSED. При недоступном T777 нет молчаливого fallback.
+
 ## 2026-10-11 — Mixed Word return after ordinary Undo; delivery and native workflow open
 
 PR2107 is normally merged at a0e4b2572e063d44943f4eb0b1fe29beb7b4a67d; its candidate and merged tree match, all19 official checks succeeded, and exact merged10 files executed339of339. The later coherent SOURCE99/SOURCE00 authoring case closes21 protected scenes with five complete actual0 independent readers and an independent review, only at that head and build10. Genuine Word exchanges and whole M04 acceptance remain0.
