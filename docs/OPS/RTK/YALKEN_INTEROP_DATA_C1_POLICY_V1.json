@@ -650,7 +650,11 @@
     "test/contracts/rtk-test-graph-catalog.contract.test.js",
     "docs/tasks/2026-10-10--word-recording-structural-undo-mac.md",
     "docs/tasks/2026-10-11--word-recording-native-notes-mac.md",
-    "docs/tasks/2026-10-11--word-comment-transient-history-return-mac.md"
+    "docs/tasks/2026-10-11--word-comment-transient-history-return-mac.md",
+    "AGENTS.md",
+    "README.md",
+    "docs/STORAGE_MAP.md",
+    "docs/tasks/2026-10-12--yalken-storage-map.md"
   ],
   "protectedFiles": [
     {
@@ -2571,15 +2575,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6e5db2017e6c47d73ae07c096cf2324fcc8b2e6da3df631f04e7d519f2e28ef2"
+        "sha256": "5e387e46dd44bbd501864d99031ed292ed1839e68599900d9901b9dfdf6d4083"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "89a12b699b69d7a50a4c195d9c644a8839cadc3bff3a2dd85e8b6bfcbc7463d6"
+        "sha256": "8d9ee831d2e52dc9a52d37defb956c59434e3a1dc8b8ee955fc80c846f506444"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "73dfbc9a7fcc7cd7094ac88c0153584add9b21e7242ca1e38a553806377cc216"
+        "sha256": "d1f580221162e714c495710303e6e13128df36e897cf735806e4baa76399d396"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",

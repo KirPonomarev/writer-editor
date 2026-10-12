@@ -22,10 +22,16 @@ README navigation, docs/STORAGE_MAP.md and aligned external T777 README. New aud
 - docs/WORKLOG.md
 - docs/tasks/2026-10-12--yalken-storage-map.md
 
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json
+
 ## DENYLIST
 - src/**
 - test/**
-- docs/OPS/**
+- all other docs/OPS and scripts paths
 - .github/**
 - package.json
 - package-lock.json
@@ -49,6 +55,7 @@ COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true.
 4. Review diff, validate paths/links/scope, commit, push, PR, required CI, merge and exact merged verification.
 
 ## CHECKS
+The first official run rejected three changed documentation hashes with DATA_RUNTIME_REPAIR_PIN. Same-contour repair permits only exact hash/path data in the five listed governance companions: retain every verifier predicate, prior tuple, guard and runtime byte. Add one complete exported literal successor for the current documentation bindings. No native authority or feature acceptance is created.
 CHECK_01_PRE_IDENTITY: clean Git, registered canonical identity, volume UUID/encryption/unlocked/writable, bootstrap and architecture preflight; performed before edits.
 CHECK_02_POST_PATHS: every current absolute locator resolves to its documented target; absent legacy paths explicitly classified; Unicode normalization and symlink targets observed; archive restore source inspected without executing recovery.
 CHECK_03_POST_PRESERVATION: all 193 archived target SHA-256, sizes and identities equal previous verification, source iCloud root absent locally; no data mutation from this task; diff is exactly the declared docs scope; local Markdown links resolve.
