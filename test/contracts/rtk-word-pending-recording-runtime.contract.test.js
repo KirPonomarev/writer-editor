@@ -22,7 +22,7 @@ const production=(()=>{
  const extensions=source.slice(source.indexOf('    extensions: [')+'    extensions: '.length,source.indexOf("    content: '<p></p>'")).trim().replace(/,$/,'');
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'recording-schema-')),output=path.join(directory,'schema.cjs');
  const readers=source.slice(source.indexOf('function readEditorText('),source.indexOf('function normalizeFormattingColor('));
- require('esbuild').buildSync({stdin:{contents:imports+'\nimport {getSchema} from "@tiptap/core";\n'+readers+'\nconst extensions='+extensions+';const schema=getSchema(extensions);export {Editor,extensions,schema,readEditorDocument,getCommentEditIntentsJson};',
+ require('esbuild').buildSync({stdin:{contents:imports+'\nimport {getSchema} from "@tiptap/core";\nimport {DOMParser} from "@tiptap/pm/model";\n'+readers+'\nconst extensions='+extensions+';const schema=getSchema(extensions);export {Editor,extensions,schema,DOMParser,readEditorDocument,getCommentEditIntentsJson};',
   resolveDir:path.join(__dirname,'../../src/renderer/tiptap')},bundle:true,platform:'node',format:'cjs',outfile:output,logLevel:'silent'});
  try{return require(output);}finally{fs.rmSync(directory,{recursive:true,force:true});}
 })();
@@ -941,4 +941,82 @@ for(const field of ['private','scene','extra'])test(`ordinary interrupted first 
  journal.noteState.recordingProofJson=JSON.stringify(proof);fs.writeFileSync(target,JSON.stringify(journal));const before=ordinaryRecordingInventory(h.root);
  await assert.rejects(tx.recoverProjectTransaction({scenePath:h.file,manifestPath:h.manifest,publishManifest:()=>{throw Error('UNEXPECTED_RECOVERY_WRITE');}}),/NOTE_STATE/);
  assert.deepEqual(ordinaryRecordingInventory(h.root),before);
+});
+
+// The existing XML DOM compatibility fixture supplies browser Element APIs to
+// the real production PM parser; it does not prove native clipboard delivery.
+function opaqueColorClipboard(html) {
+ const {DOMParser}=require('@xmldom/xmldom');
+ const root=new DOMParser().parseFromString('<div>'+html+'</div>','application/xhtml+xml').documentElement;
+ const decorate=node=>{
+  if(node.nodeType===1){
+   const styles=()=>Object.fromEntries((node.getAttribute('style')||'').split(';').filter(Boolean).map(item=>{
+    const i=item.indexOf(':');return [item.slice(0,i).trim(),item.slice(i+1).trim()];}));
+   Object.defineProperty(node,'children',{get:()=>Array.from(node.childNodes).filter(n=>n.nodeType===1)});
+   Object.defineProperty(node,'style',{get:()=>({getPropertyValue:key=>styles()[key]||'',
+    get color(){return styles().color||'';},get fontFamily(){return styles()['font-family']||'';},
+    get fontSize(){return styles()['font-size']||'';},get whiteSpace(){return styles()['white-space']||'';}})});
+   node.matches=selector=>{const m=/^([a-z][a-z0-9]*)(?:\[([\w-]+)(?:="([^"]*)")?\])?$/iu.exec(selector);
+    assert.ok(m,'Unsupported fixture selector: '+selector);
+    return node.tagName.toLowerCase()===m[1].toLowerCase()&&(!m[2]||node.hasAttribute(m[2])&&(m[3]===undefined||node.getAttribute(m[2])===m[3]));};
+  }
+  for(const child of Array.from(node.childNodes||[]))decorate(child);
+ };decorate(root);return root;
+}
+
+test('opaque color serialization: real PM colored paste records exact rich notes and Original',async t=>{
+ const {DOMParser}=production;
+ for(const [css,color] of [['rgb(17, 34, 255)','#1122ff'],['#AABBCC','#aabbcc']]){
+  const h=await harness(t),seed=addBoundNotes(h,true,5),original=structuredClone(seed.doc);
+  await h.start();const editor=new production.Editor({element:null,extensions:production.extensions,content:recording.prepare(seed.doc).working});
+  editor.view.updateState(editor.state.reconfigure({plugins:editor.extensionManager.plugins}));
+  Object.defineProperty(editor,'isDestroyed',{get:()=>false});
+  try{
+   const parsed=DOMParser.fromSchema(production.schema).parse(opaqueColorClipboard('<p><span style="color:'+css+';font-family:Georgia;font-size:14pt"><strong>!</strong></span></p>'));
+   editor.commands.setTextSelection(2);editor.commands.insertContent(parsed.child(0).content.toJSON());
+   const raw=editor.getJSON(),working=production.readEditorDocument(editor),inserted=working.content[0].content.find(n=>n.text==='!');
+   assert.equal(inserted.marks.find(m=>m.type==='textStyle').attrs.color,color);
+   assert.deepEqual(inserted.marks.map(m=>m.type).sort(),['bold','textStyle']);
+   assert.deepEqual(inserted.marks.find(m=>m.type==='textStyle').attrs,{color,fontFamily:'Georgia',fontSize:'14pt'});
+   assert.equal(raw.content[0].content.find(n=>n.text==='!').marks.find(m=>m.type==='textStyle').attrs.color,css);
+   h.type('A!B tail');h.editor=envelope.composeObservablePayload({doc:working});h.intents=JSON.parse(production.getCommentEditIntentsJson(editor));
+   assert.equal((await h.save()).success,true);const saved=h.context().parsed.doc,ledger=model.readLedger(saved);
+   assert.equal(model.projection(saved).current,'A!B tail');assert.equal(model.projection(saved).original,'AxxB tail');
+   assert.deepEqual(ledger.noteSourcePoints.map(p=>p.offsetUtf16),[2,4]);
+   assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath,'utf8'))),protectedNoteMeaning(seed.document));
+   const commentsBefore=JSON.parse(seed.comments),commentsAfter=h.readComments().state;
+   assert.deepEqual(commentsAfter.threads[0].messages,commentsBefore.threads[0].messages);
+   assert.deepEqual(commentsAfter.events,commentsBefore.events);
+   assert.equal(commentsAfter.threads[0].anchor.startUtf16,4);
+   assert.equal(commentsAfter.threads[0].status,commentsBefore.threads[0].status);
+   const savedNotes=JSON.parse(fs.readFileSync(h.notePath,'utf8'));
+   assert.deepEqual(savedNotes.notes.filter(n=>n.manuscript).map(n=>n.manuscript.reference.offsetUtf16),[2,2]);
+   const frame=value=>({schemaVersion:value.schemaVersion,source:value.source,revisions:value.revisions,undo:value.undo,redo:value.redo,noteSourcePoints:value.noteSourcePoints});
+   const undone=model.decide(saved,{action:'undo'}).doc;
+   assert.deepEqual(undone,model.bindLedger({...model.readLedger(seed.doc),roundRedo:[frame(ledger)]}));
+   const redone=model.decide(undone,{action:'redo'}).doc;
+   assert.deepEqual(redone,saved);
+   const noteUndo=notesModel.planManuscriptNoteAnchorSave({beforeText:fs.readFileSync(h.notePath,'utf8'),projectId:'recording-project',sceneId:'roman/a.txt',beforeContent:fs.readFileSync(h.file,'utf8'),afterContent:envelope.composeObservablePayload({doc:undone})});
+   assert.deepEqual(JSON.parse(noteUndo.afterText),seed.document);
+   assert.deepEqual(seed.doc,original);assert.equal((await h.command('stop')).ok,true);
+  }finally{editor.destroy();}
+ }
+});
+
+test('opaque color serialization keeps unsupported rich PM colors without plain-text fallback',()=>{
+ for(const color of ['rgba(1,2,3,0.5)','red','rgb(256,0,0)']){
+  const parsed=production.DOMParser.fromSchema(production.schema).parse(opaqueColorClipboard('<p><span style="color:'+color+'"><strong>Rich</strong></span></p>'));
+  const raw=parsed.toJSON(),actual=production.readEditorDocument({getJSON:()=>raw,getText:()=>{throw Error('LOSSY_FALLBACK');}});
+  const run=actual.content[0].content[0];assert.equal(run.text,'Rich');assert.deepEqual(run.marks.map(m=>m.type).sort(),['bold','textStyle']);
+  assert.equal(run.marks.find(m=>m.type==='textStyle').attrs.color,color);
+  const baseline=doc('');assert.throws(()=>recording.derive(baseline,actual,{author:'Writer',date:'2026-10-13T00:00:00.000Z'}),{code:'PENDING_REVISIONS_INVALID'});
+ }
+});
+
+test('opaque color serialization retains overbudget raw colors before strict recording refusal',()=>{
+ for(const color of [' '.repeat(129)+'#abc','rgb('+' '.repeat(129)+'1,2,3)']){
+  const raw={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Rich',marks:[{type:'bold'},{type:'textStyle',attrs:{color}}]}]}]};
+  const actual=production.readEditorDocument({getJSON:()=>raw,getText:()=>{throw Error('LOSSY_FALLBACK');}});
+  assert.deepEqual(actual,raw);assert.throws(()=>recording.derive(doc(''),actual,{author:'Writer',date:'2026-10-13T00:00:00.000Z'}),{code:'PENDING_REVISIONS_INVALID'});
+ }
 });

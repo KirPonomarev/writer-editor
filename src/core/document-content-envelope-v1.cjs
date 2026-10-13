@@ -301,6 +301,21 @@ function documentHasParagraphMarkTypography(doc) {
   return false;
 }
 
+// CSS parsing may emit opaque RGB or shorthand/uppercase hex. Convert only
+// lossless representations; retain unsupported values for strict validators.
+function canonicalOpaqueTextColor(value) {
+  if (typeof value !== 'string' || value.length > 128) return value;
+  const text = value.trim();
+  const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text);
+  if (hex) return '#' + (hex[1].length === 3
+    ? [...hex[1]].map(c => c + c).join('') : hex[1]).toLowerCase();
+  const rgb = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i.exec(text);
+  if (!rgb) return value;
+  const channels = rgb.slice(1).map(Number);
+  if (channels.some(channel => channel > 255)) return value;
+  return '#' + channels.map(channel => channel.toString(16).padStart(2, '0')).join('');
+}
+
 function canonicalizeDocumentJson(doc) {
   if (!isPlainObject(doc)) {
     return buildParagraphDocumentFromText('');
@@ -347,7 +362,12 @@ function canonicalizeDocumentJson(doc) {
     if (node?.attrs?.wordParagraphMarkLanguage === null) delete node.attrs.wordParagraphMarkLanguage;
     for (const key of ['wordParagraphIndent','wordParagraphTabs','wordDefaultTabStop']) if (node?.attrs?.[key] === null) delete node.attrs[key];
     if (node?.attrs?.wordParagraphSpacing === null) delete node.attrs.wordParagraphSpacing;
-    for (const mark of node?.marks || []) if (mark?.attrs?.wordLanguage === null) delete mark.attrs.wordLanguage;
+    for (const mark of node?.marks || []) {
+      if (mark?.attrs?.wordLanguage === null) delete mark.attrs.wordLanguage;
+      if (mark?.type === 'textStyle' && mark.attrs && Object.hasOwn(mark.attrs, 'color')) {
+        mark.attrs.color = canonicalOpaqueTextColor(mark.attrs.color);
+      }
+    }
     if (node?.type === 'orderedList' && node.attrs?.type === null) delete node.attrs.type;
     if (node?.attrs?.wordListId === null) delete node.attrs.wordListId;
     if (node?.attrs?.wordListStart === null) delete node.attrs.wordListStart;

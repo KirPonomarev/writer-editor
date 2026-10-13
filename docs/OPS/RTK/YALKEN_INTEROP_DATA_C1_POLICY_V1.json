@@ -656,7 +656,8 @@
     "docs/STORAGE_MAP.md",
     "docs/tasks/2026-10-12--yalken-storage-map.md",
     "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
-    "docs/tasks/2026-10-13--word-note-free-language-return-mac.md"
+    "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
+    "docs/tasks/2026-10-13--word-opaque-color-canonicalization-mac.md"
   ],
   "protectedFiles": [
     {
@@ -897,7 +898,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "04ca3c3749483994db0921e07994e0f45388a1346c15dc8c6f29c727e994a3be"
+        "sha256": "a3267dad3b88c25c0e8e096e33cb51bf97499a6a139b2992b5b040dad3b414ca"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1529,7 +1530,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "c7033cf438b924ec2df990a5a5ebf85fe82a95079bf1f901e6587b0f0fd8a594"
+        "sha256": "1aa3dbfdb95d03b345de83a0b9a2bdba08eee3307173da683cf84e75004a0a76"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -1589,7 +1590,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "969a4ecc9390bee238c9191f6c091a39f65d2c387be5d9c0287ea17513d69eb3"
+        "sha256": "1734c1904c9dc4b2b8e02c549b9ff68bd2e1c7c2820ea937ad6962f3a7750911"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -1797,7 +1798,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "679bc0f0101f9794798835726adb7f677054983edd36586911438ff0f63ecdc5"
+        "sha256": "fa57675e5f4c2ff8bf44c7739ac756da9e8c72fd5316950a06472e7bb6095858"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2577,15 +2578,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b8ad4dbb30f4785ab9d10d671ead6395dc57c94f2fc07132e3f302304e3072c9"
+        "sha256": "1d6777b2b9319e959abd0fe023746cc9c1040a2598596d1ad4d9e4d5f712e0d1"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8fc9dfa51a01a9e0b87a4a7e49549c698d7a7fc37009a7c51069924bca994ab9"
+        "sha256": "19c0ea1c3a54f1047c0ea8ca018e0a55399b41745220af3c7667732881ae7b9d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "0f15ddb3457cf51a976e645ad4566394e82819f2e04b79d24b0cfaa0cbcdf03f"
+        "sha256": "4489f3af1f17b34f0e4c4bb0679f477b7edb5a1eeb298ff4b8ee8f620fd9d2fc"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2882,6 +2883,10 @@
       {
         "path": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
         "sha256": "07e10862c68cf69f204f2159d41006786c99079a4b547f1353f5a670af4c51be"
+      },
+      {
+        "path": "docs/tasks/2026-10-13--word-opaque-color-canonicalization-mac.md",
+        "sha256": "b1699867e0ca7876e35790c7b586e66e93c610153ab817b92555d79171ce416a"
       }
     ],
     "followupRepair": {

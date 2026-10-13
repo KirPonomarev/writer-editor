@@ -1,3 +1,33 @@
+## 2026-10-13 — Lossless opaque text color serialization
+
+PR2112 is normally merged at e78264f8d59e8d50dbd717a6bd14357d61483acf.
+The bounded WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013 correction follows
+an isolated production PM parser/serializer diagnosis: CSS RGB and uppercase
+hex remain raw while strict pending source validation requires lowercase
+six-digit hex. A maintained regression on the unchanged serializer reproduces
+that representation mismatch. The correction normalizes only lossless opaque
+three/six-digit hex or comma-form integer RGB0..255 within the existing128-character
+limit. Unsupported colors remain literal; raw ledger validation precedes cloning,
+and opaque source/history, other marks, note/comment/private data and save authority
+remain protected. No new dependency, schema, fallback or clipboard routing.
+
+Six complete affected/source-risk contracts pass337/337, zero fail/cancel/skip/todo,
+with all tested input bytes stable. The same real production PM fixture exercises
+Main Save, full rich note meaning, Current/Original, round Undo/Redo and unsupported
+retained/refused cases. Both normal compiler runs succeed and are byte-idempotent;
+the renderer bundle changes, preload stays exact. Independent Root source review
+is conditional on mandatory gates and normal delivery; final aggregate, CI and
+merged verification are recorded separately by exact receipts.
+
+SOURCE25 remains FAILED. Its unintended clipboard content and actual native color
+are not attributed by this regression. Its rejected source and post-Undo complete
+raw state are retained; no complete native exchange is accepted. Owner currently
+permits code and terminal proofs only. Native apps remain stopped; low APFS free
+space and remaining Word-plan qualification gaps stay open. The changed renderer
+invalidates affected prior native build proof. New evidence stays in dated T777
+folders; existing profiles, authority and failed observations are preserved.
+Task:2026-10-13--word-opaque-color-canonicalization-mac.md.
+
 ## 2026-10-13 — Word return: proofing language outside note paragraphs
 
 F1 PR2111 is normally merged at bf6af25406813b570fa32066e5298e478f5d1b70;
