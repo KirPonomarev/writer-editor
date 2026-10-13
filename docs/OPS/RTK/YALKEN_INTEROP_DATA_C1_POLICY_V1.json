@@ -654,7 +654,8 @@
     "AGENTS.md",
     "README.md",
     "docs/STORAGE_MAP.md",
-    "docs/tasks/2026-10-12--yalken-storage-map.md"
+    "docs/tasks/2026-10-12--yalken-storage-map.md",
+    "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md"
   ],
   "protectedFiles": [
     {
@@ -883,7 +884,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c7ec2225025e43c63e65b97ea642887a131e0af92692af23afe9532c6d6f00e8"
+        "sha256": "d3723cad6c70045c9b2305181ee7ed80b6f0c814bb0666d90344e92ef66fd6fc"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1527,7 +1528,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "a934499dec4b0ae505033d8771704b3451fac968548ca3a65d08e44f7085a975"
+        "sha256": "c7033cf438b924ec2df990a5a5ebf85fe82a95079bf1f901e6587b0f0fd8a594"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2071,7 +2072,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "f496bfb635875150d3a6d96a641c5468f33c506aa8ef188e652996c1dc826e1c"
+        "sha256": "4f5dc69eb5cb4e2206218e32b0775f19bdd77b13031acb3c7530caf2236ccece"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2575,15 +2576,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5e387e46dd44bbd501864d99031ed292ed1839e68599900d9901b9dfdf6d4083"
+        "sha256": "d5e4f54a7eedc1bd7043adcdbbe087b097e16868235aa6ebcc404e2df94c85ed"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8d9ee831d2e52dc9a52d37defb956c59434e3a1dc8b8ee955fc80c846f506444"
+        "sha256": "5d5088ebd0884e3e5a1a0ce6b0b2c69af31221192c613701811853af0eadbcfe"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "d1f580221162e714c495710303e6e13128df36e897cf735806e4baa76399d396"
+        "sha256": "1421daa1f02356d0e438edb608a8d37a3019810559d9895feae3b28d07f7e5a5"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2872,6 +2873,10 @@
       {
         "path": "test/contracts/rtk-test-graph-catalog.contract.test.js",
         "sha256": "3cd8cf48c56fdd350f189b426c13338276315c96210fbcc535ed4dfb77876d3f"
+      },
+      {
+        "path": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
+        "sha256": "c7831b1f808a40223b2da6eac51e254a91b6062c56b7eddf1c14521eb193189d"
       }
     ],
     "followupRepair": {
@@ -3066,7 +3071,7 @@
       "surfaceId": "surface-readme",
       "path": "README.md",
       "predecessorSha256": "sha256:fe2afbd2a004a025f8a61a6b437285e8a9d0c48d47b6a69f89ea5f7d1c24aa49",
-      "sha256": "sha256:151a63d38e880c82b4b01cff45f500ba79041b0d687955086db11dd9abbdc75c"
+      "sha256": "sha256:adb972685c09e9aba2205891b3a509f8414535c0c8fa689beae7c49b1b227e36"
     }
   },
   "wordTextOrderBatch": {
