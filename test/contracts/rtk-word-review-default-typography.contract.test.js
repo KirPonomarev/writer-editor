@@ -1491,3 +1491,41 @@ for(const phase of ['provisional','final'])for(const fault of ['author','date','
   else assert.match(result.code,/^(?:RTK_V4_PUBLICATION_|RTK_RETURN_INTAKE_|RTK_WORD_)/u);
   assert.equal(require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw}).equals(before),true);
  });
+
+test('opaque color serialization canonicalizes only lossless visible textStyle values',()=>{
+ const e=require('../../src/core/document-content-envelope-v1.cjs');
+ for(const [input,expected] of [['#ABC','#aabbcc'],[' #A0B1C2 ','#a0b1c2'],['RGB(0, 255, 17)','#00ff11'],['rgb(255,255,255)','#ffffff'],['#112233','#112233']]){
+  const source={type:'doc',content:[{type:'paragraph',attrs:{align:'center'},content:[{type:'text',text:'Rich 😀',marks:[{type:'italic'},{type:'textStyle',attrs:{color:input,fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU'}}}]}]}]};
+  const before=structuredClone(source),expectedDoc=structuredClone(source);expectedDoc.content[0].content[0].marks[1].attrs.color=expected;
+  const actual=e.canonicalizeDocumentJson(source);assert.deepEqual(actual,expectedDoc);assert.deepEqual(source,before);
+  assert.deepEqual(e.canonicalizeDocumentJson(actual),actual);
+  assert.deepEqual(e.parseObservablePayload(e.composeObservablePayload({doc:source})).doc,expectedDoc);
+ }
+});
+test('opaque color serialization preserves unsupported values and non-color fields without coercion',()=>{
+ const e=require('../../src/core/document-content-envelope-v1.cjs');
+ for(const color of ['rgba(1,2,3,0.5)','rgb(256,0,0)','rgb(-1,2,3)','rgb(1.5,2,3)','rgb(10%,0%,0%)','red','transparent','var(--color)','#abcd','#12345678','rgb(1 2 3)',' '.repeat(129)+'#abc','rgb('+' '.repeat(129)+'1,2,3)',null,42,{unsupported:true}]){
+  const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Unchanged',marks:[{type:'bold'},{type:'textStyle',attrs:{color,fontFamily:'Menlo',fontSize:'10pt'}}]}]}]};
+  const before=structuredClone(source);assert.deepEqual(e.canonicalizeDocumentJson(source),before);assert.deepEqual(source,before);
+ }
+ const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Foreign owner',marks:[{type:'link',attrs:{href:'https://example.invalid',color:'#ABC'}}]}]}]};
+ assert.deepEqual(e.canonicalizeDocumentJson(source),source);
+});
+test('opaque color serialization leaves validated pending source and round histories exact',()=>{
+ const e=require('../../src/core/document-content-envelope-v1.cjs'),m=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const source={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Base!',marks:[{type:'textStyle',attrs:{color:'#aabbcc',fontFamily:'Georgia'}}]}]}]};
+ const revision={id:'revision-1',nativeId:'native-1',operation:'insert',author:'Writer',date:'',dateUtc:'',groupId:null,state:'pending',paragraphIndex:0,from:4,to:5};
+ const frame={schemaVersion:2,source:structuredClone(source),revisions:[],undo:[],redo:[]};
+ const ledger={schemaVersion:2,source,revisions:[revision],undo:[['pending']],redo:[],roundUndo:[frame],roundRedo:[],returnReceipts:[]};
+ const doc=m.bindLedger(ledger),before=structuredClone(doc),frozen=JSON.stringify(doc.attrs.wordPendingRevisions);
+ // A validated ledger is an opaque source contract, not a color-repair target.
+ const actual=e.canonicalizeDocumentJson(doc);assert.equal(actual.content[0].content[0].marks[0].attrs.color,'#aabbcc');
+ assert.deepEqual(actual.attrs.wordPendingRevisions,before.attrs.wordPendingRevisions);
+ assert.equal(JSON.stringify(doc.attrs.wordPendingRevisions),frozen);assert.deepEqual(m.readLedger(actual),m.readLedger(before));
+ const projectionMismatch=structuredClone(doc);projectionMismatch.content[0].content[0].marks[0].attrs.color='#ABC';
+ assert.throws(()=>e.canonicalizeDocumentJson(projectionMismatch),{code:'PENDING_REVISIONS_PROJECTION_MISMATCH'});
+ const malformed=structuredClone(before);malformed.attrs.wordPendingRevisions.source.content[0].content[0].marks[0].attrs.color='rgb(170,187,204)';
+ assert.throws(()=>e.canonicalizeDocumentJson(malformed),{code:'PENDING_REVISIONS_INVALID'});
+ let accessed=0;const accessor=structuredClone(before);Object.defineProperty(accessor.attrs.wordPendingRevisions.source.content[0].content[0].marks[0].attrs,'color',{enumerable:true,get(){accessed++;return '#aabbcc';}});
+ assert.throws(()=>e.canonicalizeDocumentJson(accessor),{code:'PENDING_REVISIONS_DATA_INVALID'});assert.equal(accessed,0);
+});
