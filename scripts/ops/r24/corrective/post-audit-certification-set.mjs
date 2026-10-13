@@ -20358,7 +20358,7 @@ export const R24_INTEROP_WORD_NOTE_FREE_LANGUAGE_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-      "sha256": "9d79b1bab551c685e4b3f680f89fbe6704386dc1dd1b2e274d6f5fe6842c669d"
+      "sha256": "679bc0f0101f9794798835726adb7f677054983edd36586911438ff0f63ecdc5"
     },
     {
       "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
@@ -20706,15 +20706,15 @@ export const R24_INTEROP_WORD_NOTE_FREE_LANGUAGE_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "3e890022346a04b2ed79d8e09ca0ecdfb1207edb0ef6dd27717d0bc9555905d1"
+      "sha256": "b8ad4dbb30f4785ab9d10d671ead6395dc57c94f2fc07132e3f302304e3072c9"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "2ae307e4b4a471fc5e3e231c20e2375e21230419542bea84b459dbd812f611f6"
+      "sha256": "8fc9dfa51a01a9e0b87a4a7e49549c698d7a7fc37009a7c51069924bca994ab9"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "47ae775465376aa7c70691c0ba4d132413802622319472ab863527eb033d3dfc"
+      "sha256": "0f15ddb3457cf51a976e645ad4566394e82819f2e04b79d24b0cfaa0cbcdf03f"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -20758,13 +20758,13 @@ export const R24_INTEROP_WORD_NOTE_FREE_LANGUAGE_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
-      "sha256": "938d595d6249f38b34f1ea90ce4f7cd40c0a0637e498515827a0bcef55f5dca1"
+      "sha256": "07e10862c68cf69f204f2159d41006786c99079a4b547f1353f5a670af4c51be"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3431411248be69a59c5c7827e26e404f5f77a3bf9f6fcd9184d1278d995202ca"
+      "sha256": "dad30c6f4fe41c57aea0912dbeedf9e0bef23e5be88aa895c759b93d0cd57d1f"
     }
   ]
 });

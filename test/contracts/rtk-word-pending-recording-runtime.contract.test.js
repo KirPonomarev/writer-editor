@@ -523,8 +523,9 @@ test('real PM gestures and SAVED prefix ACKs persist exact note occurrences thro
    assert.deepEqual(protectedNoteMeaning(JSON.parse(fs.readFileSync(h.notePath,'utf8'))),protectedNoteMeaning(seed.document));
    assert.deepEqual(h.readComments().state.threads[0].messages,JSON.parse(seed.comments).threads[0].messages);
   };
-  editor.commands.setTextSelection(2);editor.commands.insertContent({type:'text',text:'!'});await persist('A!B tail',[2,4]);
-  editor.commands.insertContent({type:'text',text:'?'});await persist('A!?B tail',[3,5]);
+  // Keep both typing gestures in one Undo group across awaited persistence.
+  editor.commands.setTextSelection(2);editor.chain().insertContent({type:'text',text:'!'}).command(({tr})=>{tr.setTime(1000);return true;}).run();await persist('A!B tail',[2,4]);
+  editor.chain().insertContent({type:'text',text:'?'}).command(({tr})=>{tr.setTime(1100);return true;}).run();await persist('A!?B tail',[3,5]);
   assert.equal(editor.commands.undo(),true);await persist('AB tail',[1,3]);
   assert.deepEqual(model.roundFrame(model.readLedger(h.context().parsed.doc)),model.roundFrame(model.readLedger(seed.doc)));
   assert.equal(editor.commands.redo(),true);await persist('A!?B tail',[3,5]);

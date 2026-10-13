@@ -26,9 +26,15 @@ scene/note/comment Undo/Redo. Complete affected files pass471/471:76 pending
 notes,36 mixed return and359 Main; zero fail/cancel/skip/todo. All583 frozen
 input bindings remain unchanged, and unchanged mandatory TAP readers accept
 all three logs. Build preserves both bundles; OSS/audit report no violations
-and zero vulnerabilities. Required aggregate gates and normal delivery remain
-pending at this source checkpoint, recorded separately by exact candidate and
-merged receipts. Then return to F2 with fresh admission and a qualified reader.
+and zero vulnerabilities. The first complete RTK run failed4173/4174 in an
+unchanged grouped Undo test: awaited persistence crossed the existing500ms
+history grouping delay. A causal delayed control reproduced the same failure;
+supported transaction times1000/1100 preserve every assertion. Only these test
+times and a comment change, with fresh clean-checkpoint preflight; production
+history configuration and all test bounds remain exact. Original FAIL is retained.
+Required final aggregate, official CI and delivery results are recorded separately
+by exact candidate and merged receipts. Owner now requests finishing this stage
+and then pausing for discussion; no fresh native journey starts before resumption.
 Both origins/scales/runtime/roles/five-round/recovery/performance gaps stay open.
 Word has no open document; original author settings restored. Final materials
 and evidence remain the dated T777 folders; existing profiles/authority preserved.

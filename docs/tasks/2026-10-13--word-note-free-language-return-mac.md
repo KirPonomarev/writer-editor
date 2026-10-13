@@ -62,6 +62,7 @@ test budget600. No old test assertion removal, skip/todo or oracle weakening.
 - test/contracts/rtk-word-pending-notes.contract.test.js
 - test/contracts/rtk-word-mixed-return.contract.test.js
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
+- test/contracts/rtk-word-pending-recording-runtime.contract.test.js
 - docs/tasks/2026-10-13--word-note-free-language-return-mac.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -75,7 +76,7 @@ test budget600. No old test assertion removal, skip/todo or oracle weakening.
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 
-The existing delegated code agent owns only Core and the three contract paths.
+The existing delegated code agent owns only Core and the four contract paths.
 Root owns docs, mechanical bindings, independent review and delivery.
 
 ## DENYLIST
@@ -167,3 +168,29 @@ Missing proof is UNKNOWN; a failed process remains FAIL. No native credit.
 
 Normal coherent revert of this single Core/test/docs/companion delivery.
 Never rewrite earlier evidence or claim complete Word fidelity from rejection.
+
+### Same-delivery timing amendment at e364eb383fb79d309f2b695ad68628a154405ffb
+
+The first complete RTK run failed4173/4174, with zero cancel/skip/todo.
+The sole failure was the existing two-gesture grouped Undo contract: after
+awaited persistence, Undo returned A!B tail instead of AB tail. Its source and
+relevant production history sources are byte-identical to the original base.
+ProseMirror starts a new group when adjacent transactions exceed its existing
+500ms delay. A causal650ms delay reproduced the exact failure with890ms between
+the gestures; setting supported transaction times1000 and1100 preserved every
+original assertion and passed the selected scenario. Neither diagnostic earns
+complete-suite credit. The original aggregate failure is retained on T777.
+
+The clean checkpoint received fresh bootstrap and preflight, with exactly one
+additional existing test path. Change only those two transaction times and a
+comment, retaining real gestures, persistence ACKs, note/comment checks and
+Undo/Redo assertions. Production history configuration, sleeps, test bounds,
+evaluator predicates and acceptance denominator remain unchanged. This is the
+qualification repair for the same unfinished Core delivery, not a new feature.
+Run the whole recording contract, final mechanical verification and complete
+aggregate again on the committed candidate; preserve each actual result.
+Declaration: F2_LANGUAGE_TIMING_ARCHITECTURE01.json.
+
+Owner's latest instruction: finish this current delivery stage, then pause for
+discussion. No new native Word journey may start after this stage until resumed.
+The overall Mac Word task remains incomplete with accepted exchanges0.

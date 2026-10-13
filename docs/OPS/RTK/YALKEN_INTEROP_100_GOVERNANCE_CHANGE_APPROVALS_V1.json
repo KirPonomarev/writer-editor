@@ -5374,12 +5374,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-      "sha256": "9d79b1bab551c685e4b3f680f89fbe6704386dc1dd1b2e274d6f5fe6842c669d",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "sha256": "679bc0f0101f9794798835726adb7f677054983edd36586911438ff0f63ecdc5",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013"
     },
     {
       "filePath": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "3e890022346a04b2ed79d8e09ca0ecdfb1207edb0ef6dd27717d0bc9555905d1"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "b8ad4dbb30f4785ab9d10d671ead6395dc57c94f2fc07132e3f302304e3072c9"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "2ae307e4b4a471fc5e3e231c20e2375e21230419542bea84b459dbd812f611f6"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "8fc9dfa51a01a9e0b87a4a7e49549c698d7a7fc37009a7c51069924bca994ab9"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "47ae775465376aa7c70691c0ba4d132413802622319472ab863527eb033d3dfc"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "0f15ddb3457cf51a976e645ad4566394e82819f2e04b79d24b0cfaa0cbcdf03f"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "3431411248be69a59c5c7827e26e404f5f77a3bf9f6fcd9184d1278d995202ca"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "dad30c6f4fe41c57aea0912dbeedf9e0bef23e5be88aa895c759b93d0cd57d1f"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "5f97cda8932375eae129224744c2e54f1c445d23243187320c6582505b2c2b22"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "df78633d3f6bd6038cf30478d1911e71ef34e3aadd3a342d61f368b7c3b4557e"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "ac37852e4a6701ced7df687f4d9533d78f4f1ea1907c54128e6b5b1be7456061"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "7adc4ff520e5a1a15f32b2d08e1d2cd6ec6c174d3cc42a2f0d82ca093545d860"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "1dcae607892ac19b19a351d31acda0486b9a506537baf9ec6d4d859d33bc2ec1"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "85d5717b8ce27d610de97fe227f311b707ae4204e0aef65f8126d8a23bee0f57"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "1bb7029ea8cc5c691fe89353adb8801600d653513a49111efdcae9931799fae0"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "bc9e988cf3dfce876e2adb2abac2ec9e6776773d8c37e24bf0662ff54bedcf18"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "72196073f06feb15d5d2955ea0431386e3dac86f343a8983b6f4e37f75e7f2bf"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "4b51c87001400aaa59d583b21537f6da1d6edaeb3b69af182c84ae0545ef20df"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5581,12 +5581,12 @@
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
-      "sha256": "938d595d6249f38b34f1ea90ce4f7cd40c0a0637e498515827a0bcef55f5dca1",
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "sha256": "07e10862c68cf69f204f2159d41006786c99079a4b547f1353f5a670af4c51be",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged."
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged."
     }
   ],
   "evidenceStampIds": [
@@ -42148,6 +42148,105 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
       "sha256": "2d37b81705537240e1961e735411a15f8358a221b91c0405564e8239b137e21b"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "sha256": "9d79b1bab551c685e4b3f680f89fbe6704386dc1dd1b2e274d6f5fe6842c669d",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "3e890022346a04b2ed79d8e09ca0ecdfb1207edb0ef6dd27717d0bc9555905d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "2ae307e4b4a471fc5e3e231c20e2375e21230419542bea84b459dbd812f611f6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "47ae775465376aa7c70691c0ba4d132413802622319472ab863527eb033d3dfc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "3431411248be69a59c5c7827e26e404f5f77a3bf9f6fcd9184d1278d995202ca"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "5f97cda8932375eae129224744c2e54f1c445d23243187320c6582505b2c2b22"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "ac37852e4a6701ced7df687f4d9533d78f4f1ea1907c54128e6b5b1be7456061"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "1dcae607892ac19b19a351d31acda0486b9a506537baf9ec6d4d859d33bc2ec1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "1bb7029ea8cc5c691fe89353adb8801600d653513a49111efdcae9931799fae0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "72196073f06feb15d5d2955ea0431386e3dac86f343a8983b6f4e37f75e7f2bf"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
+      "sha256": "938d595d6249f38b34f1ea90ce4f7cd40c0a0637e498515827a0bcef55f5dca1",
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged."
     }
   ]
 }
