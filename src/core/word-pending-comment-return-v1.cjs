@@ -63,6 +63,15 @@ function importRunStyle(node, returnedMarks, expectedMarks, paragraphType, parag
   if(index>=0)marks.splice(index,1);if(Object.keys(attrs).length)marks.push({type:'textStyle',attrs});
   if(marks.length)result.marks=marks;else delete result.marks;return review.normalizeNode(result);
 }
+function withoutRunLanguage(node) {
+  const value=clone(node);
+  if(value.marks){value.marks=value.marks.map(mark=>{
+    if(mark.type!=='textStyle')return mark;
+    const next=clone(mark);delete next.attrs.wordLanguage;return next;
+  }).filter(mark=>mark.type!=='textStyle'||Object.keys(mark.attrs).length);
+    if(!value.marks.length)delete value.marks;}
+  return value;
+}
 function rebaseRetainedRunFormat(retained,incoming,node,sourceParagraph,exportTypography) {
   const typography=require('./word-review-typography-v1.cjs');
   const profile=typography.validate(exportTypography,{allowUndefined:true});
@@ -195,6 +204,13 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
     const oldFormat=oldLedger.revisions.find(r=>r.paragraphIndex===p&&review.isParagraphFormat(r));
     const returnedFormat=basis.returned.paragraphFormats.find(r=>r.paragraphIndex===p);
     let styleChanged=false;
+    // Complete book note binding authenticates both point arrays before this
+    // paragraph-specific permit. Language is a real source edit, not noise.
+    const noteFreeLanguage=noteBinding&&bodyProfile?.schemaVersion===bodyTypography.V2
+      &&['paragraph','heading'].includes(sourceParagraphs[p].type)
+      &&!oldFormat&&!returnedFormat
+      &&!(oldLedger.noteSourcePoints||[]).some(point=>point.paragraphIndex===p)
+      &&!(incomingPoints||[]).some(point=>point.paragraphIndex===p);
     if(allowUntrackedRichFormatting){const actual=returnedParagraphs[p];
       for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage']){
         const value=!oldFormat&&returnedFormat&&!equal(returnedFormat.format.before.attrs?.[key],returnedFormat.format.after.attrs?.[key])
@@ -203,7 +219,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
           const expected=bodyTypography.paragraph({nodeType:sourceParagraphs[p].type,...sourceParagraphs[p].attrs},bodyProfile)[key];
           const effective=key==='wordParagraphSpacing'&&value?{before:0,after:0,...value}:value;
           if(equal(expected,effective))continue;
-          need(!noteBinding,'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
+          need(!noteBinding||key==='wordParagraphMarkLanguage'&&noteFreeLanguage,'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
         }else if(bodyEmission&&sourceParagraphs[p].type!=='codeBlock'){
           const expected={...bodyEmission[key],...sourceParagraphs[p].attrs?.[key]};
           const effective=key==='wordParagraphSpacing'?{before:0,after:0,...value}:value;
@@ -214,7 +230,7 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
         sourceParagraphs[p].attrs={...sourceParagraphs[p].attrs};
         if(value===undefined)delete sourceParagraphs[p].attrs[key];else sourceParagraphs[p].attrs[key]=clone(value);
         if(!Object.keys(sourceParagraphs[p].attrs).length)delete sourceParagraphs[p].attrs;}
-      need(!noteBinding||!styleChanged,'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
+      need(!noteBinding||!styleChanged||noteFreeLanguage,'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
       if(styleChanged)changes++;
     }
     if(!oldFormat&&returnedFormat){
@@ -278,7 +294,8 @@ function deriveMixedPendingDocument({document,returnedDocument,binding,anchors,e
         const incomingMarks=token.revision?.operation==='format'
           ?token.revision.format[retainedCurrent?'after':'before']:token.node.marks;
         const imported=importRunStyle(canonicalNode,incomingMarks,expectedMarks,ownedParagraph.type,ownedParagraph.attrs,bodyEmission);
-        need(!noteBinding||equal(imported,canonicalNode),'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
+        need(!noteBinding||equal(imported,canonicalNode)||noteFreeLanguage
+          &&equal(withoutRunLanguage(imported),withoutRunLanguage(canonicalNode)),'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');
         if(!equal(imported,canonicalNode))changes++;canonicalNode=imported;
       }
       const incomingFormat=token.formatRevision;

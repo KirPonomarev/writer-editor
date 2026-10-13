@@ -1170,3 +1170,111 @@ test('fresh book V2 closed local roster and complete break facts refuse corrupti
   try{delta.planNoteReturnDelta(input);}catch(error){failure={code:error.code||error.message};}retainBookNoteDefaults('core-break-'+hash(properties),{input,parts,bytes:observed.bytes,failure});assert.equal(failure?.code,'NOTE_RETURN_BREAK_CHANGED',properties);
  }
 });
+
+
+// Actual ZIP/parser causal operand: language is a real edit, not provider noise.
+async function noteFreeLanguageZipFixture(paragraphIndex=2, extraXml='') {
+ const f=await singleFullManuscriptFixture(),bridge=f.bridge;
+ const parts={...bridge.extractDocxReviewTransportPackagePartsFromZipBytes(f.bytes).parts};
+ let index=0;
+ parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p\b[^>]*>[^]*?<\/w:p>/gu,xml=>{
+  if(index++!==paragraphIndex)return xml;
+  let changed=xml.replaceAll('w:val="en-US"','w:val="ru-RU"');
+  if(extraXml)changed=changed.replace('<w:pPr>','<w:pPr>'+extraXml);
+  return changed;
+ });
+ const bytes=buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const cp={sha256Text:hash,sha256Json:x=>'sha256:'+hash(JSON.stringify(x)),byteLength:x=>Buffer.byteLength(x)};
+ const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort:cp});assert.equal(analysis.ok,true,analysis.code);
+ const parsed=bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,exportMap:f.source.localAuthorityCapsule.exportMap,
+  baselineDocuments:f.beforeDocs.map((document,i)=>({sceneId:f.ids[i],document})),retainPendingScenes:true,
+  baselineDocumentNotes:f.source.documentNotes,documentSections:f.source.documentSections,signedSectionsDigest:f.source.documentSections.protectedDigest,cryptoPort:cp});
+ assert.equal(parsed.ok,true,parsed.code);
+ const proof=plain(f.proof);proof.artifactSha256='sha256:'+hash(bytes);
+ proof.returnedScenes=parsed.scenes.map(scene=>({sceneId:scene.sceneId,ledger:pending.readLedger(scene.returnedDocument)}));
+ proof.returnedThreads=analysis.reviewIr.commentThreads;
+ proof.returnedParagraphs=analysis.reviewIr.formattingParagraphs.map(({paragraphIndex,paragraphText,trackedRevision})=>({paragraphIndex,paragraphText,trackedRevision}));
+ proof.commentReturnInventory=analysis.reviewIr.commentReturnInventory;
+ proof.noteContext.returnedNotes=bridge.parseDocumentNotesRichReturn(bytes,analysis.reviewIr.documentNotes,{includeBreakProjection:true});
+ proof.noteContext.returnedReferences=analysis.reviewIr.documentNotes.references;
+ proof.noteContext.unionReferences=parsed.contentPreview.pendingNoteReferences;
+ return {...f,proof,bytes,analysis,parsed};
+}
+test('note-free BODY_V2 parsed ZIP language change preserves complete notes and round inverse',async()=>{
+ const f=await noteFreeLanguageZipFixture(),beforeProof=JSON.stringify(f.proof),mixed=require('../../src/core/word-pending-comment-return-v1.cjs');
+ const result=mixed.planMixedBookReturn({beforeText:f.beforeText,projectId,scenes:f.scenes,notesText:f.notesText,returnProofJson:beforeProof});
+ const doc=envelope.parseObservablePayload(result.scenes[0].content).doc;
+ assert.equal(pending.projection(doc).current,f.current[0]);
+ assert.equal(pending.projection(doc).original,'AxxB tail\n\nAfter empty paragraph');
+ assert.equal(pending.readLedger(doc).source.content[2].attrs.wordParagraphMarkLanguage.val,'ru-RU');
+ assert.equal(pending.readLedger(doc).source.content[2].content[0].marks.find(m=>m.type==='textStyle').attrs.wordLanguage.val,'ru-RU');
+ const control=await singleFullManuscriptFixture();control.proof.roundId=f.proof.roundId;control.proof.artifactSha256=f.proof.artifactSha256;
+ const stablePlan=mixed.planMixedBookReturn({beforeText:control.beforeText,projectId,scenes:control.scenes,notesText:control.notesText,returnProofJson:JSON.stringify(control.proof)});
+ assert.deepEqual(JSON.parse(result.afterText),JSON.parse(stablePlan.afterText));
+ assert.deepEqual(JSON.parse(result.afterText).threads.find(t=>t.threadId==='foreign-thread'),f.state.threads[1]);
+ assert.deepEqual(pending.readLedger(doc).noteSourcePoints.map(p=>[p.noteId,p.paragraphIndex,p.offsetUtf16]),[['note-left',0,2],['note-colocated',0,2],['note-right',0,4]]);
+ assert.equal(JSON.stringify(f.proof),beforeProof);assert.deepEqual(JSON.parse(f.notesText),f.document);
+ const undone=pending.decide(doc,{action:'undo'}).doc;
+ assert.deepEqual(pending.readLedger(undone).source,pending.asRoundLedger(f.beforeDocs[0]).source);
+ const redone=pending.decide(undone,{action:'redo'}).doc;
+ assert.deepEqual(pending.readLedger(redone).source,pending.readLedger(doc).source);
+});
+
+
+test('note-free BODY_V2 language real schema5 cohort preserves rich private and foreign graph',async()=>{
+ const f=await noteFreeLanguageZipFixture(),proof=plain(f.proof);proof.schemaVersion=5;proof.now='2026-10-13T00:00:00.000Z';proof.noteContext.schemaVersion=2;
+ const input={beforeText:f.beforeText,projectId,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(proof)};
+ const semantic=require('../../src/core/word-pending-comment-return-v1.cjs').planMixedBookReturn(input);
+ assert.equal(semantic.noteChanges.length,3);
+ for(const change of semantic.noteChanges){assert.equal(change.operation,'update');
+  assert.deepEqual(change.before,f.document.notes.find(n=>n.id===change.noteId).manuscript);
+  assert.deepEqual(change.after,f.afterNotes.notes.find(n=>n.id===change.noteId).manuscript);}
+ const notesAfter=JSON.parse(semantic.notesAfterText),wantedNotes=plain(f.afterNotes);
+ for(const note of wantedNotes.notes)if(semantic.noteChanges.some(c=>c.noteId===note.id))note.updatedAtUtc=proof.now;
+ assert.deepEqual(notesAfter.notes,wantedNotes.notes);
+ assert.equal(notesAfter.wordNoteReturnReceipts.length,1);assert.deepEqual(notesAfter.wordNoteReturnReceipts[0].changes,semantic.noteChanges);
+ assert.equal(notesAfter.wordNoteReturnReceipts[0].roundId,proof.roundId);assert.equal(notesAfter.wordNoteReturnReceipts[0].artifactSha256,proof.artifactSha256);
+ const model=await import('../../src/core/project-tree-cohort-v1.mjs');
+ const plan=model.planProjectMixedWordReturnCohort({operation:'word-mixed-return',operationId:'note-free-language',projectId,manifestPath:'/project/project.craftsman.json',
+  beforeManifestText:JSON.stringify({projectId}),expectedTreeRevision:0,scenes:f.scenes.map(s=>({...s,commitText:null})),notesText:f.notesText,commentsText:f.beforeText,returnProofJson:JSON.stringify(proof)});
+ model.validateProjectTreeCohort(plan);
+ const after=JSON.parse(Buffer.from(plan.entries.find(e=>e.role==='notes').afterBase64,'base64').toString('utf8'));
+ for(const note of f.document.notes){const actual=after.notes.find(n=>n.id===note.id);assert.deepEqual(actual.manuscript?.body,note.manuscript?.body);
+  if(!note.manuscript||note.manuscript.reference.sceneId!==sceneId)assert.deepEqual(actual,note);
+  else assert.deepEqual({...actual,updatedAtUtc:undefined,manuscript:{...actual.manuscript,reference:note.manuscript.reference}},{...note,updatedAtUtc:undefined});}
+ const doc=envelope.parseObservablePayload(semantic.scenes[0].content).doc;
+ const before={...plain(pending.roundFrame(pending.asRoundLedger(f.beforeDocs[0]))),schemaVersion:3,noteSourcePoints:[{noteId:'note-left',paragraphIndex:0,offsetUtf16:1},{noteId:'note-right',paragraphIndex:0,offsetUtf16:3},{noteId:'note-colocated',paragraphIndex:0,offsetUtf16:1}]},afterFrame=plain(pending.roundFrame(pending.readLedger(doc)));
+ const undo=pending.decide(doc,{action:'undo'}).doc;assert.deepEqual(pending.roundFrame(pending.readLedger(undo)),before);
+ const redo=pending.decide(undo,{action:'redo'}).doc;assert.deepEqual(pending.roundFrame(pending.readLedger(redo)),afterFrame);
+});
+
+test('note-free BODY_V2 language refuses note paragraph and font size spacing cochanges',async()=>{
+ const mixed=require('../../src/core/word-pending-comment-return-v1.cjs');
+ const note=await noteFreeLanguageZipFixture(0);
+ assert.throws(()=>mixed.planMixedBookReturn({beforeText:note.beforeText,projectId,scenes:note.scenes,notesText:note.notesText,returnProofJson:JSON.stringify(note.proof)}),/MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED/);
+ for(const fault of ['font','size','spacing','tracked-format','code']){
+  const f=await noteFreeLanguageZipFixture(),proof=plain(f.proof),l=proof.returnedScenes[0].ledger;
+  if(fault==='spacing')l.source.content[2].attrs.wordParagraphSpacing.after=120;
+  else if(fault==='code')l.source.content[2].type='codeBlock';
+  else if(fault==='tracked-format')l.revisions.push({id:'revision-99',nativeId:'99',operation:'format',author:'Unexpected',date:'',dateUtc:'',paragraphIndex:2,from:0,to:1,state:'pending',groupId:null,
+   format:{kind:'run',before:[],after:[{type:'bold'}]}});
+  else l.source.content[2].content[0].marks.find(m=>m.type==='textStyle').attrs[fault==='font'?'fontFamily':'fontSize']=fault==='font'?'Georgia':'14pt';
+  assert.notEqual(JSON.stringify(proof),JSON.stringify(f.proof),fault+' mutation missing');
+  assert.throws(()=>mixed.planMixedBookReturn({beforeText:f.beforeText,projectId,scenes:f.scenes,notesText:f.notesText,returnProofJson:JSON.stringify(proof)}),error=>error.code===({font:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED',size:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED',spacing:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED','tracked-format':'PENDING_FORMAT_SOURCE_MISMATCH',code:'WORD_PARAGRAPH_SPACING_INVALID','source-drift':'MIXED_RETURN_BASELINE_STALE','baseline-point':'PENDING_NOTE_BASELINE_MISMATCH','returned-point':'PENDING_NOTE_UNION_BINDING','note-body':'PENDING_NOTE_BASELINE_MISMATCH','note-id':'PENDING_NOTE_BASELINE_MISMATCH','incoming-points':'PENDING_REVISIONS_INVALID'})[fault],fault);
+ }
+});
+
+test('note-free BODY_V2 language refuses stale forged before and returned note bindings',async()=>{
+ const f=await noteFreeLanguageZipFixture(),mixed=require('../../src/core/word-pending-comment-return-v1.cjs');
+ for(const fault of ['source-drift','baseline-point','returned-point','note-body','note-id','incoming-points']){
+  const proof=plain(f.proof),scenes=plain(f.scenes);
+  if(fault==='source-drift')scenes[0].beforeContent+=' ';
+  else if(fault==='baseline-point')proof.noteContext.baseline.sourceBindings[0].documentParagraphIndex=2;
+  else if(fault==='returned-point')proof.noteContext.unionReferences[0].paragraphIndex=2;
+  else if(fault==='note-body')proof.noteContext.baseline.sourceBindings[0].richBody.content[0].content[0].text+='forged';
+  else if(fault==='note-id')proof.noteContext.baseline.sourceBindings[0].noteId='foreign-manuscript-note';
+  else proof.returnedScenes[0].ledger.noteSourcePoints=[{noteId:'forged',paragraphIndex:2,offsetUtf16:1}];
+  assert.notEqual(JSON.stringify([proof,scenes]),JSON.stringify([f.proof,f.scenes]),fault+' mutation missing');
+  assert.throws(()=>mixed.planMixedBookReturn({beforeText:f.beforeText,projectId,scenes,notesText:f.notesText,returnProofJson:JSON.stringify(proof)}),error=>error.code===({font:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED',size:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED',spacing:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED','tracked-format':'PENDING_FORMAT_SOURCE_MISMATCH',code:'WORD_PARAGRAPH_SPACING_INVALID','source-drift':'MIXED_RETURN_BASELINE_STALE','baseline-point':'PENDING_NOTE_BASELINE_MISMATCH','returned-point':'PENDING_NOTE_UNION_BINDING','note-body':'PENDING_NOTE_BASELINE_MISMATCH','note-id':'PENDING_NOTE_BASELINE_MISMATCH','incoming-points':'PENDING_REVISIONS_INVALID'})[fault],fault);
+ }
+});
