@@ -4187,3 +4187,49 @@ test('actual public Main fractional pending book notes export preserves complete
  assert.equal(Object.values(after.roundsById).filter(round=>round.lifecycleState==='PUBLISHED_ACTIVE').length,1);
  assert.deepEqual(JSON.parse(read(path.join(f.root,'notes.craftsman.json'))),document);assert.deepEqual(JSON.parse(read(statePath)),state);
 });
+
+
+test('actual public Main note-free BODY_V2 language Cancel Apply and round undo retain note graph',async t=>{
+ const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const sceneId=path.relative(f.root,f.alpha).split(path.sep).join('/'),projectId=f.query.projectId;
+ const paragraph=text=>({type:'paragraph',content:[{type:'text',text}]}),doc={type:'doc',content:[paragraph('Alpha'),paragraph('Language tail')]};
+ const raw=envelope.composeObservablePayload({doc});fs.writeFileSync(f.alpha,raw);
+ const body={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Rich kept',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},{type:'hardBreak'},{type:'text',text:'tail'}]}]};
+ const storage=await import('../../src/core/notesStorage.mjs');
+ const notesDocument=storage.normalizeNotesDocument({schemaVersion:1,projectId,notes:[{id:'owned-language-note',scope:'manuscript',body:notes.validateNoteBody(body).text,
+  manuscript:notes.bindManuscriptPayload({kind:'footnote',body,sceneId,offsetUtf16:1,sceneContent:raw}),privateMetadata:{keep:'note'}},
+  {id:'private-language-note',scope:'project',body:'Private unchanged'}]},{projectId,now:()=> '2026-10-13T00:00:00Z'}).value;
+ const commentModel=require('../../src/core/word-comment-authoring-v1.cjs');
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{threadId:'language-thread',rootCommentId:'language-root',sceneId,status:'open',
+  anchor:commentModel.exactAnchor({paragraphIndex:0,startUtf16:0,selectedText:'Alpha'},sceneId,['Alpha','Language tail']),messages:[{commentId:'language-root',kind:'root',body:'Keep discussion',provenance:{author:'Writer'}}]}]};
+ const notePath=path.join(f.root,'notes.craftsman.json'),commentPath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');
+ fs.mkdirSync(path.dirname(commentPath),{recursive:true});fs.writeFileSync(notePath,JSON.stringify(notesDocument));fs.writeFileSync(commentPath,JSON.stringify(state));
+ let working=raw;mountRenderer(f,()=>working,0,null,()=>({projectId,documentId:f.a.nodeId}),payload=>{working=payload.content;});f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const source=await f.probe.fullSource(),built=await f.probe.reviewBuild(source);assert.equal(built.publicationGate.publishAllowed,true);await f.probe.activate(source.pendingAuthorityStore);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),original=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:built.documentBuffer}).parts;
+ const pack=parts=>require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+ const mutate=noteParagraph=>{const parts={...original};let index=0;
+  parts['word/document.xml']=parts['word/document.xml'].replace(/<w:p\b[^>]*>[^]*?<\/w:p>/gu,xml=>{
+   const i=index++;if(i===(noteParagraph?0:1))xml=xml.replaceAll('w:val="en-US"','w:val="ru-RU"');
+   if(i===0)xml=xml.replace('</w:p>','<w:ins w:id="903" w:author="Language writer" w:date="2026-10-13T00:00:00Z"><w:r><w:t> WORD</w:t></w:r></w:ins></w:p>');return xml;});
+  return pack(parts);};
+ const before=f.capture(),beforeNotes=read(notePath),beforeComments=read(commentPath),beforeBeta=read(f.beta);
+ const refused=await f.probe.reviewActivate({requestId:'note-paragraph-language-refuse',bufferSource:mutate(true).toString('base64')},{allowInlineDocxReturnIntakeParserForTests:true});
+ assert.equal(refused.pendingProductPath?.status,'blocked',JSON.stringify(refused));assert.equal(refused.pendingProductPath?.code,'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED');assert.deepEqual(f.capture(),before);
+ const bytes=mutate(false),target=path.join(f.temp,'note-free-language-return.docx');fs.writeFileSync(target,bytes);
+ const options={allowInlineDocxReturnIntakeParserForTests:true,pickLocalFile:async()=>({path:target,size:bytes.length}),readLocalFileBytes:async()=>bytes};
+ f.chooseMessageResponse(0);const cancelled=await f.probe.reviewLocalFile({requestId:'note-free-language-cancel'},options);
+ assert.equal(cancelled.pendingProductPath?.status,'cancelled',JSON.stringify(cancelled));assert.equal(cancelled.pendingProductPath.writerCalled,false);assert.deepEqual(f.capture(),before);
+ f.chooseMessageResponse(1);const observed=f.probe.observeKernelResults();t.after(()=>observed.restore());
+ const applied=await f.probe.reviewLocalFile({requestId:'note-free-language-apply'},options);
+ assert.equal(applied.pendingProductPath?.status,'applied',JSON.stringify(applied));assert.equal(applied.pendingProductPath.writerCalled,true);assert.deepEqual(observed.failures,[]);
+ const afterRaw=read(f.alpha),afterNotes=read(notePath),afterComments=read(commentPath),afterDoc=envelope.parseObservablePayload(afterRaw).doc,l=pending.readLedger(afterDoc);
+ assert.equal(pending.projection(afterDoc).current,'Alpha WORD\nLanguage tail');assert.equal(pending.projection(afterDoc).original,'Alpha\nLanguage tail');
+ assert.equal(l.source.content[1].attrs.wordParagraphMarkLanguage.val,'ru-RU');assert.equal(l.source.content[1].content[0].marks.find(m=>m.type==='textStyle').attrs.wordLanguage.val,'ru-RU');
+ assert.deepEqual(l.noteSourcePoints,[{noteId:'owned-language-note',paragraphIndex:0,offsetUtf16:1}]);assert.equal(l.revisions.length,1);assert.equal(l.revisions[0].author,'Language writer');
+ const actualNotes=JSON.parse(afterNotes);assert.deepEqual(actualNotes.notes.find(n=>n.id==='owned-language-note').manuscript.body,body);
+ assert.deepEqual(actualNotes.notes.find(n=>n.id==='private-language-note'),notesDocument.notes.find(n=>n.id==='private-language-note'));
+ assert.deepEqual(JSON.parse(afterComments).threads[0].messages,state.threads[0].messages);assert.equal(read(f.beta),beforeBeta);
+ for(const action of ['undo','redo']){const c=await f.probe.pendingContext(),result=await f.probe.pendingDecision({projectId:c.projectId,sceneId:c.sceneId,subjectId:c.subjectId,expectedSceneSha256:c.sceneSha256,action});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(read(f.alpha),action==='undo'?raw:afterRaw);assert.equal(read(notePath),action==='undo'?beforeNotes:afterNotes);assert.equal(read(commentPath),action==='undo'?beforeComments:afterComments);assert.equal(read(f.beta),beforeBeta);}
+});

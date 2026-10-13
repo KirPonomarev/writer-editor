@@ -1,3 +1,45 @@
+## 2026-10-13 — Word return: proofing language outside note paragraphs
+
+F1 PR2111 is normally merged at bf6af25406813b570fa32066e5298e478f5d1b70;
+its exact merged proof and19 official checks are closed. The current bounded
+WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013 contour follows an actual Word
+Save. The owned SOURCE11 file contains the declared tracked insertion and
+Word's untracked proofing-language changes in two paragraphs without notes.
+The old Core rejects that real artifact at MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED
+because a truthy book note binding covers every scene and paragraph.
+
+The correction carries only untracked BODY_V2 language changes in ordinary
+paragraphs/headings with no authenticated baseline or returned note points.
+Every other mark/node field remains exact. Spacing, font/size, tracked-format
+and note-bearing paragraph guards remain. Existing Main confirmation, Kernel
+revalidation, atomic persistence, source/round/lease and full note/comment
+binding paths are unchanged; no dependency, network, schema or UI change.
+
+A minimal parsed-ZIP regression reproduces the old exact refusal. Root's
+source-bound component probe of the frozen real Word file now completes all
+21 scenes,8391 paragraphs,200 discussions and3 notes, changing only the first
+scene. This is component diagnosis; it did not authenticate a current native
+Main session, Apply or prove the independent full Word graph. SOURCE11's failed
+watchdog cycle remains FAILED. Complete accepted Word exchanges remain0.
+The public Main regression proves refusal/no-write, Cancel, Apply and exact
+scene/note/comment Undo/Redo. Complete affected files pass471/471:76 pending
+notes,36 mixed return and359 Main; zero fail/cancel/skip/todo. All583 frozen
+input bindings remain unchanged, and unchanged mandatory TAP readers accept
+all three logs. Build preserves both bundles; OSS/audit report no violations
+and zero vulnerabilities. The first complete RTK run failed4173/4174 in an
+unchanged grouped Undo test: awaited persistence crossed the existing500ms
+history grouping delay. A causal delayed control reproduced the same failure;
+supported transaction times1000/1100 preserve every assertion. Only these test
+times and a comment change, with fresh clean-checkpoint preflight; production
+history configuration and all test bounds remain exact. Original FAIL is retained.
+Required final aggregate, official CI and delivery results are recorded separately
+by exact candidate and merged receipts. Owner now requests finishing this stage
+and then pausing for discussion; no fresh native journey starts before resumption.
+Both origins/scales/runtime/roles/five-round/recovery/performance gaps stay open.
+Word has no open document; original author settings restored. Final materials
+and evidence remain the dated T777 folders; existing profiles/authority preserved.
+Task:2026-10-13--word-note-free-language-return-mac.md.
+
 ## 2026-10-13 — Mac Word V4.1 resumed; fractional note-export blocker reproduced
 
 Owner directly resumed only the existing Mac Word finish assignment and again

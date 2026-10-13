@@ -655,7 +655,8 @@
     "README.md",
     "docs/STORAGE_MAP.md",
     "docs/tasks/2026-10-12--yalken-storage-map.md",
-    "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md"
+    "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
+    "docs/tasks/2026-10-13--word-note-free-language-return-mac.md"
   ],
   "protectedFiles": [
     {
@@ -1796,7 +1797,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "9d79b1bab551c685e4b3f680f89fbe6704386dc1dd1b2e274d6f5fe6842c669d"
+        "sha256": "679bc0f0101f9794798835726adb7f677054983edd36586911438ff0f63ecdc5"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2044,7 +2045,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-        "sha256": "540b9bfa039ccefb32936959d1cbbbccf7ad95ac9dac3de689d5939a47a7a709"
+        "sha256": "245e16a1552dab5dd4647c8e0aa3f710ba2bd8cb8a16ca122384cdd7cd521f04"
       },
       {
         "path": "docs/tasks/2026-10-01--word-pending-notes-mac.md",
@@ -2072,7 +2073,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "4f5dc69eb5cb4e2206218e32b0775f19bdd77b13031acb3c7530caf2236ccece"
+        "sha256": "cd6767b8eb0770e17ad6bdbba40b93b364cec5f95a6c2291126cb6f129a63bab"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2576,15 +2577,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "d5e4f54a7eedc1bd7043adcdbbe087b097e16868235aa6ebcc404e2df94c85ed"
+        "sha256": "b8ad4dbb30f4785ab9d10d671ead6395dc57c94f2fc07132e3f302304e3072c9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5d5088ebd0884e3e5a1a0ce6b0b2c69af31221192c613701811853af0eadbcfe"
+        "sha256": "8fc9dfa51a01a9e0b87a4a7e49549c698d7a7fc37009a7c51069924bca994ab9"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "1421daa1f02356d0e438edb608a8d37a3019810559d9895feae3b28d07f7e5a5"
+        "sha256": "0f15ddb3457cf51a976e645ad4566394e82819f2e04b79d24b0cfaa0cbcdf03f"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2692,7 +2693,7 @@
       },
       {
         "path": "src/core/word-pending-comment-return-v1.cjs",
-        "sha256": "6db6a2922a8c3c411f1c314f55c223c591b30b075f9de4e54bff6786dfe17936"
+        "sha256": "11ae91f2900e3f531d8ccd8b5b8f4a0dd9c8cdf0b63bfa218ac80eaf93a400cb"
       },
       {
         "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -2877,6 +2878,10 @@
       {
         "path": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
         "sha256": "c7831b1f808a40223b2da6eac51e254a91b6062c56b7eddf1c14521eb193189d"
+      },
+      {
+        "path": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
+        "sha256": "07e10862c68cf69f204f2159d41006786c99079a4b547f1353f5a670af4c51be"
       }
     ],
     "followupRepair": {

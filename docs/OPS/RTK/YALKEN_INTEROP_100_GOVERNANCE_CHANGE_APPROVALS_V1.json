@@ -3529,10 +3529,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-pending-notes.contract.test.js",
-      "sha256": "540b9bfa039ccefb32936959d1cbbbccf7ad95ac9dac3de689d5939a47a7a709",
-      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_SCENE_SAVE_OBSERVATION_PERFORMANCE_MAC_20261008|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
-      "rationale": "Owner-authorized macOS novel Word rich-note correction at exact merged1fc42de after full PR2099 closure. Existing finite fresh-book V2 and preserved pending-comment V3, complete body/break/local-map/roster comparison and both-phase publication checks; authored semantics, explicit Kernel authority and legacy controls remain. Exact-byte companions only; preserve630 ordered admissions,488 source identities,1597 inventory paths and238 historical certificate tuples. Append this HARD task to631/489 and one nonrecursive96-binding successor. Full native three-role novel release remains OPEN. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs.",
+      "sha256": "245e16a1552dab5dd4647c8e0aa3f710ba2bd8cb8a16ca122384cdd7cd521f04",
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_SCENE_SAVE_OBSERVATION_PERFORMANCE_MAC_20261008|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -4879,10 +4879,10 @@
     },
     {
       "filePath": "src/core/word-pending-comment-return-v1.cjs",
-      "sha256": "6db6a2922a8c3c411f1c314f55c223c591b30b075f9de4e54bff6786dfe17936",
-      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
-      "approvedBy": "owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
-      "rationale": "Owner-authorized same unfinished original42b PR2093 amendment31 at clean d945, explicit88 paths/runtime1800/behavior3600. Fresh source-owned one-scene full-manuscript complete schema3/4 return and independent single V2 note/roster law; existing public pending-review capability enforced in normal book check. Original signed fixture carriers, actual parser/Main/private Kernel/normallease/atomic/readback/reopen/reexport finite proofs and all retained controls independently reviewed at writer HOLD. No new schema/cap/dependency/command/port/writer/cache/UI/network/native claim. Preserve226 historical tuples,622 admitted paths,480 bindings,1597 inventory; append one nonrecursive successor with exact current pins. Original whole novel native/role/origin/scope/five/performance/merged acceptance remains open. Byte bindings do not create authority. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs.",
+      "sha256": "11ae91f2900e3f531d8ccd8b5b8f4a0dd9c8cdf0b63bfa218ac80eaf93a400cb",
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -5374,12 +5374,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-      "sha256": "9d79b1bab551c685e4b3f680f89fbe6704386dc1dd1b2e274d6f5fe6842c669d",
-      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "sha256": "679bc0f0101f9794798835726adb7f677054983edd36586911438ff0f63ecdc5",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013"
     },
     {
       "filePath": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
@@ -5428,12 +5428,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
-      "sha256": "4f5dc69eb5cb4e2206218e32b0775f19bdd77b13031acb3c7530caf2236ccece"
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "cd6767b8eb0770e17ad6bdbba40b93b364cec5f95a6c2291126cb6f129a63bab"
     },
     {
       "approved": true,
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
-      "sha256": "d5e4f54a7eedc1bd7043adcdbbe087b097e16868235aa6ebcc404e2df94c85ed"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "b8ad4dbb30f4785ab9d10d671ead6395dc57c94f2fc07132e3f302304e3072c9"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
-      "sha256": "5d5088ebd0884e3e5a1a0ce6b0b2c69af31221192c613701811853af0eadbcfe"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "8fc9dfa51a01a9e0b87a4a7e49549c698d7a7fc37009a7c51069924bca994ab9"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
-      "sha256": "1421daa1f02356d0e438edb608a8d37a3019810559d9895feae3b28d07f7e5a5"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "0f15ddb3457cf51a976e645ad4566394e82819f2e04b79d24b0cfaa0cbcdf03f"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
-      "sha256": "1e06b083c764e807b8a9486b91c002671c139a9c8ac2c2198ff6a74cad7ee688"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "dad30c6f4fe41c57aea0912dbeedf9e0bef23e5be88aa895c759b93d0cd57d1f"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
-      "sha256": "bd2a0a6d116b81ad87caa912d81acb00ca40b5cc2caf6dff6c39f01eacc8855e"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "df78633d3f6bd6038cf30478d1911e71ef34e3aadd3a342d61f368b7c3b4557e"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
-      "sha256": "288442303ecd6e72d319102b623dfe192b89326413b02b89027db890c8688866"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "7adc4ff520e5a1a15f32b2d08e1d2cd6ec6c174d3cc42a2f0d82ca093545d860"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
-      "sha256": "9cce3b771f10d899a9ae41a4da6d9a80f040a3ce2eb6c7c735782c4bb7a077c7"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "85d5717b8ce27d610de97fe227f311b707ae4204e0aef65f8126d8a23bee0f57"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
-      "sha256": "bf8d4282f681fa5d6827de93ac62f1d71f38199338839fcbc64e73761da481dd"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "bc9e988cf3dfce876e2adb2abac2ec9e6776773d8c37e24bf0662ff54bedcf18"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
-      "sha256": "2d37b81705537240e1961e735411a15f8358a221b91c0405564e8239b137e21b"
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "4b51c87001400aaa59d583b21537f6da1d6edaeb3b69af182c84ae0545ef20df"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5578,6 +5578,15 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
       "approvedBy": "owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
+      "sha256": "07e10862c68cf69f204f2159d41006786c99079a4b547f1353f5a670af4c51be",
+      "approvedAtUtc": "2026-10-13T10:02:41.365088Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged."
     }
   ],
   "evidenceStampIds": [
@@ -42031,6 +42040,213 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
       "approvedBy": "owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-notes.contract.test.js",
+      "sha256": "540b9bfa039ccefb32936959d1cbbbccf7ad95ac9dac3de689d5939a47a7a709",
+      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_RECORDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_SCENE_SAVE_OBSERVATION_PERFORMANCE_MAC_20261008|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
+      "rationale": "Owner-authorized macOS novel Word rich-note correction at exact merged1fc42de after full PR2099 closure. Existing finite fresh-book V2 and preserved pending-comment V3, complete body/break/local-map/roster comparison and both-phase publication checks; authored semantics, explicit Kernel authority and legacy controls remain. Exact-byte companions only; preserve630 ordered admissions,488 source identities,1597 inventory paths and238 historical certificate tuples. Append this HARD task to631/489 and one nonrecursive96-binding successor. Full native three-role novel release remains OPEN. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/core/word-pending-comment-return-v1.cjs",
+      "sha256": "6db6a2922a8c3c411f1c314f55c223c591b30b075f9de4e54bff6786dfe17936",
+      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
+      "approvedBy": "owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
+      "rationale": "Owner-authorized same unfinished original42b PR2093 amendment31 at clean d945, explicit88 paths/runtime1800/behavior3600. Fresh source-owned one-scene full-manuscript complete schema3/4 return and independent single V2 note/roster law; existing public pending-review capability enforced in normal book check. Original signed fixture carriers, actual parser/Main/private Kernel/normallease/atomic/readback/reopen/reexport finite proofs and all retained controls independently reviewed at writer HOLD. No new schema/cap/dependency/command/port/writer/cache/UI/network/native claim. Preserve226 historical tuples,622 admitted paths,480 bindings,1597 inventory; append one nonrecursive successor with exact current pins. Original whole novel native/role/origin/scope/five/performance/merged acceptance remains open. Byte bindings do not create authority. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "4f5dc69eb5cb4e2206218e32b0775f19bdd77b13031acb3c7530caf2236ccece"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "d5e4f54a7eedc1bd7043adcdbbe087b097e16868235aa6ebcc404e2df94c85ed"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "5d5088ebd0884e3e5a1a0ce6b0b2c69af31221192c613701811853af0eadbcfe"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "1421daa1f02356d0e438edb608a8d37a3019810559d9895feae3b28d07f7e5a5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
+      "sha256": "1e06b083c764e807b8a9486b91c002671c139a9c8ac2c2198ff6a74cad7ee688"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
+      "sha256": "bd2a0a6d116b81ad87caa912d81acb00ca40b5cc2caf6dff6c39f01eacc8855e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "288442303ecd6e72d319102b623dfe192b89326413b02b89027db890c8688866"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "sha256": "9cce3b771f10d899a9ae41a4da6d9a80f040a3ce2eb6c7c735782c4bb7a077c7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
+      "sha256": "bf8d4282f681fa5d6827de93ac62f1d71f38199338839fcbc64e73761da481dd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T23:14:22.729934Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same directly authorized V4.1 fix delivery: preserve every baseline provider product wording while recording resumed operational status and T777 destinations. Retain failed first RTK4169 attempt and repair missing pre-existing Electron41.10.6 binary locally; no assertion, scanner, denominator, runtime source, dependency or budget change. Rebind final documentation and existing mechanical bytes only; no native acceptance.",
+      "sha256": "2d37b81705537240e1961e735411a15f8358a221b91c0405564e8239b137e21b"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "sha256": "9d79b1bab551c685e4b3f680f89fbe6704386dc1dd1b2e274d6f5fe6842c669d",
+      "approvedAtUtc": "2026-10-11T10:15:13.731Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner V3.1 authorized ordinary native-note recording and first-Save correction. Retained old Main/Core reproducer2of2 fails; actual affected whole-file source chain339of339 with unchanged mandatory TAP oracle. Initial binding uses canonical complete notes and exact original source; required note cohort, authority, rich/private conservation and recovery validation remain. Existing digest companions and one append-only certificate successor only; prior tuples and failures remain. No native cycle/role/round/cell credit; accepted native cycles0 and full original matrix remains open.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "3e890022346a04b2ed79d8e09ca0ecdfb1207edb0ef6dd27717d0bc9555905d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "2ae307e4b4a471fc5e3e231c20e2375e21230419542bea84b459dbd812f611f6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "47ae775465376aa7c70691c0ba4d132413802622319472ab863527eb033d3dfc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "3431411248be69a59c5c7827e26e404f5f77a3bf9f6fcd9184d1278d995202ca"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "5f97cda8932375eae129224744c2e54f1c445d23243187320c6582505b2c2b22"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "ac37852e4a6701ced7df687f4d9533d78f4f1ea1907c54128e6b5b1be7456061"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "1dcae607892ac19b19a351d31acda0486b9a506537baf9ec6d4d859d33bc2ec1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "1bb7029ea8cc5c691fe89353adb8801600d653513a49111efdcae9931799fae0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "72196073f06feb15d5d2955ea0431386e3dac86f343a8983b6f4e37f75e7f2bf"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
+      "sha256": "938d595d6249f38b34f1ea90ce4f7cd40c0a0637e498515827a0bcef55f5dca1",
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged."
     }
   ]
 }
