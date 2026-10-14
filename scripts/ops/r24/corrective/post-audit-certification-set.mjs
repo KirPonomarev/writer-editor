@@ -21754,7 +21754,7 @@ export const R24_INTEROP_MAIN_TREE_READ_WORKER_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-      "sha256": "8416d87af0faa9a68dd938cf63e5f75c39a323f39bb701bac1ecca85e6ee48cb"
+      "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
     },
     {
       "path": "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md",
@@ -21816,7 +21816,7 @@ export const R24_INTEROP_MAIN_TREE_READ_WORKER_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e1db55ecbe68e13b9e31201f797e3377842f38bc542cb5df2cd5f64482cf45cb"
+      "sha256": "66d63176724c473f1b3457ee55255fa2b2cb21afc9182f00a102c86b78d06efa"
     }
   ]
 });

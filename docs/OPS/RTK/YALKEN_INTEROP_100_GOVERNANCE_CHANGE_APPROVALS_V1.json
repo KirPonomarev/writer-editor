@@ -5311,12 +5311,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
       "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "8416d87af0faa9a68dd938cf63e5f75c39a323f39bb701bac1ecca85e6ee48cb"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
     },
     {
       "filePath": "src/core/word-pending-recording-intents-v1.cjs",
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "e1db55ecbe68e13b9e31201f797e3377842f38bc542cb5df2cd5f64482cf45cb"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "66d63176724c473f1b3457ee55255fa2b2cb21afc9182f00a102c86b78d06efa"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "fa3dd80fe8a88e717688024106694354ede082b85a2fc8aad8d7a1b7d880ca89"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "90a9915a33ab73b26d177400ddf2e53fdf6de0a082e24b200437a37eb821b1f6"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "1bd50a3fe1b76e10f58da27a141cf63eadbc42435314a7c6a7fbef72597d06b8"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "858f54b2581ec1f71b341c505fd4d8b27421474d3ea72c5caa1258d23b37a6da"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "7e9e983df23b520ca4702d60f386f3aadff445c334976d6b1a37869d88a8a7c4"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "5a03e40a4486dd6202824c691c040acf9593e6703b3440a73db44ca4a08eb7f6"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "20afb3070f2e73d30060c605b158b5e2b296a8d6cbdf74991ef37b32d4e16220"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "16f11600953826ed2b0e9ae2e6e4b3f54d9a37374022ae160aaa2f19a11db790"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
       "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "ca64751d09e246eab50eddad64aee6576bbb1788cd0fef5623bae2489c76b194"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "f04521d7cadcdc7e1d9d627d9e4831b2578aac5fe2ead7b628ad069e64ec8eed"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -42508,6 +42508,69 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
       "sha256": "a5604856676e8b11aef11b0acc7eb0037a27fe39ef8648e5ae8b13b5ea79cf0c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "8416d87af0faa9a68dd938cf63e5f75c39a323f39bb701bac1ecca85e6ee48cb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "e1db55ecbe68e13b9e31201f797e3377842f38bc542cb5df2cd5f64482cf45cb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "fa3dd80fe8a88e717688024106694354ede082b85a2fc8aad8d7a1b7d880ca89"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "1bd50a3fe1b76e10f58da27a141cf63eadbc42435314a7c6a7fbef72597d06b8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "7e9e983df23b520ca4702d60f386f3aadff445c334976d6b1a37869d88a8a7c4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "20afb3070f2e73d30060c605b158b5e2b296a8d6cbdf74991ef37b32d4e16220"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "ca64751d09e246eab50eddad64aee6576bbb1788cd0fef5623bae2489c76b194"
     }
   ]
 }

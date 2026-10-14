@@ -948,10 +948,18 @@ test('tree read Worker stale/late/missing/failing delivery never falls back to b
     constructor(_file,{workerData}) {super();starts++;this.data=workerData;setImmediate(()=>{if(this.deliver)this.deliver();});}
     terminate(){terminations++;return Promise.resolve(0);}
   }
-  class Healthy extends Controlled {deliver(){setTimeout(()=>this.emit('message',{ok:true,fence:this.data.fence,value:{...value}}),20);}}
+  const healthy=[];
+  class Healthy extends Controlled {constructor(...args){super(...args);healthy.push(this);}deliver(){}release(){this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}}
   const read=p.createProjectTreeReadPort({WorkerClass:Healthy});
-  assert.deepEqual(await Promise.all([read(input),read(input)]),[value,value]);assert.equal(starts,1);
-  await read(input);assert.equal(starts,2,'completed projections are never persistently cached');
+  const originalRead=fsp.readFile;let manifestReads=0,secondRead;
+  const fenced=new Promise(resolve=>{secondRead=resolve;});
+  fsp.readFile=async function(file,...args){const result=await originalRead.call(this,file,...args);if(file===f.manifestPath&&++manifestReads===2)secondRead();return result;};
+  try {
+    const jobs=[read(input),read(input)];await fenced;await new Promise(resolve=>setImmediate(resolve));healthy[0].release();
+    assert.deepEqual(await Promise.all(jobs),[value,value]);assert.equal(starts,1);
+  } finally {fsp.readFile=originalRead;}
+  const next=read(input);while(healthy.length<2)await new Promise(resolve=>setImmediate(resolve));healthy[1].release();
+  await next;assert.equal(starts,2,'completed projections are never persistently cached');
   class Stale extends Controlled {deliver(){fs.appendFileSync(f.manifestPath,' ');this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}}
   await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Stale})(input),{code:'E_TREE_READ_STALE'});
   class WrongFence extends Controlled {deliver(){this.emit('message',{ok:true,fence:[],value:{...value}});}}
@@ -975,8 +983,11 @@ test('tree read Worker bounds distinct in-flight work and still coalesces exact 
  const jobs=Array.from({length:8},(_,i)=>read({...base,sceneId:`roman/${i}.txt`}));
  while(starts<8)await new Promise(resolve=>setImmediate(resolve));
  await assert.rejects(read({...base,sceneId:'roman/overflow.txt'}),{code:'E_TREE_READ_BUSY'});
- const joined=read({...base,sceneId:'roman/0.txt'});
- await new Promise(resolve=>setTimeout(resolve,10));assert.equal(starts,8);
- for(const w of workers)w.emit('message',{ok:true,fence:w.data.fence,value:{treeRevision:0,lastMutation:null,original:null,structuralSeed:null}});
- await Promise.all([...jobs,joined]);assert.equal(starts,8);
+ const originalRead=fsp.readFile;let joinedRead;const fenced=new Promise(resolve=>{joinedRead=resolve;});
+ fsp.readFile=async function(file,...args){const result=await originalRead.call(this,file,...args);if(file===f.manifestPath)joinedRead();return result;};
+ try {
+  const joined=read({...base,sceneId:'roman/0.txt'});await fenced;await new Promise(resolve=>setImmediate(resolve));assert.equal(starts,8);
+  for(const w of workers)w.emit('message',{ok:true,fence:w.data.fence,value:{treeRevision:0,lastMutation:null,original:null,structuralSeed:null}});
+  await Promise.all([...jobs,joined]);assert.equal(starts,8);
+ } finally {fsp.readFile=originalRead;}
 });

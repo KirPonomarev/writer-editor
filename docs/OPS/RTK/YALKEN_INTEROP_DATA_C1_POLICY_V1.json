@@ -2073,7 +2073,7 @@
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-        "sha256": "8416d87af0faa9a68dd938cf63e5f75c39a323f39bb701bac1ecca85e6ee48cb"
+        "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
