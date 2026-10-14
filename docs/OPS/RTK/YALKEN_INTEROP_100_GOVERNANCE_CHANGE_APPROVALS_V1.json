@@ -5559,7 +5559,7 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
-      "sha256": "16f11600953826ed2b0e9ae2e6e4b3f54d9a37374022ae160aaa2f19a11db790"
+      "sha256": "bc852da8c0a28d5a61a41e77ca6ef74f0c83afd9ee777e55332192c5a5d7b95a"
     },
     {
       "approved": true,
@@ -5568,7 +5568,7 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
-      "sha256": "f04521d7cadcdc7e1d9d627d9e4831b2578aac5fe2ead7b628ad069e64ec8eed"
+      "sha256": "d7ca9bc5a7957980177981e1c37516f5e288b262cf3c457cda9453d5745540e4"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -42571,6 +42571,24 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
       "sha256": "ca64751d09e246eab50eddad64aee6576bbb1788cd0fef5623bae2489c76b194"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "16f11600953826ed2b0e9ae2e6e4b3f54d9a37374022ae160aaa2f19a11db790"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "f04521d7cadcdc7e1d9d627d9e4831b2578aac5fe2ead7b628ad069e64ec8eed"
     }
   ]
 }
