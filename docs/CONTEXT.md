@@ -1,3 +1,35 @@
+## 2026-10-14 — Pending book export reuses exact phase observations
+
+WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 starts at delivered324e08a3.
+SOURCE58's genuine final DOCX appears141.7s after dispatch, after the unchanged
+120s observer deadline; its interrupted authority temp and FAILED lifecycle remain.
+One frozen actual-source diagnostic records repeated outer preview costs36.24s
+and35.87s plus8.19s redundant provisional analysis. It ends process1 because its
+own CPU evidence output hits the write-refusing guard; gate outcome is UNKNOWN,
+not PASS. All581 sources and24 immutable business inputs rehash exact afterward.
+
+The Main-only correction reuses existing call-local provisionalCompleteAnalysis
+and the exact preview already produced by the unchanged pending parser through
+its existing baselineDocumentNotes return route. Missing or invalid internal
+preview refuses; no reparse fallback, cross-call cache or validation removal.
+All final actual body/note/comment/source/authority, lease/CAS and publication
+checks remain; Core, bridge, renderer, schemas, dependencies and limits are exact.
+Maintained causal RED records3 analysis/2 pending/2 outer preview calls; GREEN
+records2/2/0. Initial WHOLE01 failed1/542 on valid resolved history: its internal
+preview has no pending references. The surgical guard retains mandatory preview,
+allows that optional field only for a nonempty signed binding roster with every
+revisionSpans an exact empty array, and rejects missing refs for outstanding spans.
+FOCUSED03 passes8/8 with all prior assertions intact. After-fix actual stopped-input
+profile passes the gate with exact581/24 byte barriers in134.15s versus215.59s
+previously measured; CPU/result evidence is retained. This still exceeds120s and
+does not prove native timeout closure. Whole affected/risk, compiler and required
+committed certificate/fullRTK/officialCI/delivery remain IN_PROGRESS. Accepted
+native cycles0;
+all original V4.1 origins/scales/roles/five-round/performance requirements stay open.
+Navigator adoption/refetch is separate and unchanged. New reports/materials stay
+on T777; no native app/profile ran. One normal PR/revert and exact merged proof
+are required. Task:2026-10-14--word-pending-book-export-phase-reuse-mac.md.
+
 ## 2026-10-14 — Project-scoped tree query across document replacement
 
 WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014 starts at clean cf03bcf0a340dfd93f8e02c69fc7d708361db74d

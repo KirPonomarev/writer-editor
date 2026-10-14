@@ -4307,3 +4307,59 @@ test('project-scoped Main tree query preserves changed receipt refusal during de
   assert.deepEqual(f.capture(),before);assert.equal(read(receipt),bytes);
  } finally {release();port.readVerifiedProjectTreeProjection=original;}
 });
+
+
+test('actual public Main pending book phase reuse preserves full publication and stale source refusal',async t=>{
+ const f=await fixture(t),pending=require('../../src/core/word-pending-text-revisions-v1.cjs');
+ const sceneId='roman/Imported/01_Alpha.txt',projectId=f.query.projectId;
+ const paragraph=text=>({type:'paragraph',content:text?[{type:'text',text}]:[]});
+ const source={type:'doc',attrs:{wordDefaultTabStop:720},content:[paragraph('Anchor editorwriter keeps sentence.'),paragraph(''),
+  {type:'paragraph',content:[{type:'text',text:'After empty.'},{type:'hardBreak'},{type:'text',text:'Final control.'}]}]};
+ for(const p of source.content){
+  p.attrs={wordParagraphMarkLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}};
+  for(const node of p.content||[])node.marks=[{type:'bold'},{type:'italic'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}];
+ }
+ const revisions=[['insert',7,13],['delete',13,19]].map(([operation,from,to],i)=>({id:'revision-'+(i+1),nativeId:String(i+1),operation,
+  paragraphIndex:0,from,to,state:'pending',groupId:null,author:'Word editor',date:'2026-10-08T06:46:12.345Z',dateUtc:'2026-10-08T03:46:12.345Z'}));
+ const doc=pending.bindNoteSourcePoints(pending.bindLedger({schemaVersion:2,source,revisions,undo:[],redo:[],roundUndo:[],roundRedo:[],returnReceipts:[]}),
+  [{noteId:'note-foot',paragraphIndex:0,offsetUtf16:7},{noteId:'note-end',paragraphIndex:0,offsetUtf16:7}]);
+ const raw=envelope.composeObservablePayload({doc,metaEnabled:true,meta:{status:'черновик',synopsis:'preserve raw',tags:{}},cards:[]});fs.writeFileSync(f.alpha,raw);
+ const body={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Rich body',marks:[{type:'bold'},{type:'textStyle',attrs:{fontFamily:'Georgia',fontSize:'14pt',wordLanguage:{val:'ru-RU',eastAsia:'ja-JP',bidi:'he-IL'}}}]},
+  {type:'hardBreak'},{type:'text',text:'kept tail'}]},paragraph('')]};
+ const notesStorage=await import('../../src/core/notesStorage.mjs');
+ const document=notesStorage.normalizeNotesDocument({schemaVersion:1,projectId,notes:[...['footnote','endnote'].map((kind,i)=>({id:i?'note-end':'note-foot',scope:'manuscript',title:'',
+  body:notes.validateNoteBody(body).text,manuscript:notes.bindManuscriptPayload({kind,body,sceneId,offsetUtf16:7,sceneContent:raw})})),
+  {id:'private-kept',scope:'project',title:'Private',body:'Private preserved'}]},{projectId,now:()=> '2026-10-13T09:00:00.000Z'}).value;
+ fs.writeFileSync(path.join(f.root,'notes.craftsman.json'),JSON.stringify(document));
+ const state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{threadId:'root-thread',rootCommentId:'root-comment',sceneId,status:'open',
+  anchor:require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({paragraphIndex:2,startUtf16:13,selectedText:'Final'},sceneId,['Anchor editor keeps sentence.','','After empty.\nFinal control.']),
+  messages:[{commentId:'root-comment',kind:'root',body:'Writer asks to verify.',provenance:{author:'Writer'}}]}]};
+ const statePath=path.join(f.root,'.yalken/word-review/non-text-return-state.v1.json');fs.mkdirSync(path.dirname(statePath),{recursive:true});fs.writeFileSync(statePath,JSON.stringify(state));
+ mountRenderer(f,()=>raw,0,null,()=>({projectId,documentId:f.a.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ const realBridge=await import('../../src/io/revisionBridge/index.mjs'),calls={analysis:0,pending:0,preview:0},ownedBridge={...realBridge};
+ for(const [name,key] of [['buildDocxReviewTransportAnalysisFromZipBytes','analysis'],['buildDocxPendingCommentReturnDocumentsFromZipBytes','pending'],['buildDocxContentPreviewFromZipBytes','preview']])ownedBridge[name]=(...args)=>{calls[key]++;return realBridge[name](...args);};
+ f.probe.useOwnedBridge(ownedBridge);
+ const before=f.capture(),outPath=path.join(f.temp,'fractional-public.docx');f.chooseSavePath(outPath);
+ const result=await f.probe.exportFullReview({requestId:'fractional-public-main',options:{officeModeTransport:true}});
+ assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.exported,true);assert.equal(result.publicationGate.publishAllowed,true);
+ assert.equal(result.publicationGate.provisionalSelfParseVerified,true);assert.equal(result.publicationGate.finalSelfParseSemanticEquivalent,true);
+ assert.deepEqual(calls,{analysis:2,pending:2,preview:0});
+ assert.deepEqual(f.capture(),before);assert.equal(read(f.alpha),raw);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs'),bytes=fs.readFileSync(outPath),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
+ assert.match(parts['word/document.xml'],/w16du:dateUtc="2026-10-08T03:46:12Z"/u);
+ for(const atom of ['w:ascii="Georgia"','w:sz w:val="28"','w:lang w:val="ru-RU" w:eastAsia="ja-JP" w:bidi="he-IL"','<w:b/>','<w:i/>'])assert.ok(parts['word/document.xml'].includes(atom),atom);
+ const active=f.probe.strict(f.root).record;assert.equal(active.roundsById[active.lastRoundId].lifecycleState,'PUBLISHED_ACTIVE');
+ // Existing public source revalidation must still reject a stale scene before
+ // output or authority activation, even though valid dates now publish.
+ const stalePath=path.join(f.temp,'stale-fractional.docx');
+ f.chooseSavePath(stalePath);
+ const stale=await f.probe.exportFullReview({requestId:'stale-fractional-public',options:{officeModeTransport:true}},{
+  readDocxReviewPacketExportSource:async payload=>{const value=await f.probe.fullSource(payload);fs.writeFileSync(f.beta,'Changed sibling');return value;}
+ });
+ assert.equal(stale.ok,false,JSON.stringify(stale));assert.equal(stale.exported,undefined);assert.equal(fs.existsSync(stalePath),false);
+ assert.match(stale.error.code,/^E_REVIEW_DOCX_EXPORT_/u);assert.equal(read(f.alpha),raw);
+ // Allocation may persist an inactive round, but no new round becomes active.
+ const after=f.probe.strict(f.root).record;assert.equal(after.roundsById[active.lastRoundId].lifecycleState,'PUBLISHED_ACTIVE');
+ assert.equal(Object.values(after.roundsById).filter(round=>round.lifecycleState==='PUBLISHED_ACTIVE').length,1);
+ assert.deepEqual(JSON.parse(read(path.join(f.root,'notes.craftsman.json'))),document);assert.deepEqual(JSON.parse(read(statePath)),state);
+});

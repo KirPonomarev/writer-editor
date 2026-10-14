@@ -662,7 +662,8 @@
     "src/main/projectTreeReadWorker.cjs",
     "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
     "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md",
-    "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md"
+    "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
+    "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md"
   ],
   "protectedFiles": [
     {
@@ -891,7 +892,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "18f578f6e16f161b3626ab3abfa79335b3d5d26888f1a8ee45b2470bee92df08"
+        "sha256": "8727c1f3cb54e4a260d48af2469ecfb6ea7ad8b760c58e1bb0ecb52dd50bb10e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1535,7 +1536,7 @@
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-        "sha256": "1aa3dbfdb95d03b345de83a0b9a2bdba08eee3307173da683cf84e75004a0a76"
+        "sha256": "dbc44d66e06eec163591449b0aa0ef072d18729bd5aba0f8b8662c5fc5487541"
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
@@ -2079,7 +2080,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "9a93aed697d8fab993e198572f82f1da8b4e0f36a75a050b9f2aca7ade295130"
+        "sha256": "46bba443e51fe068a47dde17e6c32ec6a696d177c1d6f96cc12bc6235f9cb675"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2583,15 +2584,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "ef5f798cc72ede8383783b001061cb3aada0cfcf2a7f33521c9d46fb917bb4da"
+        "sha256": "36fd2cb0012f753b7747aac001dfa24ea431b01e424bcd6f7efb00c143e554fb"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ead71f62eb67e51e7e18c2dd3a829487cc4fd776566c44398711074ef2cd7c36"
+        "sha256": "9cff571946b4a6a89e3302371520ca528b4b46aeae35e0e638c6a6e2fb685483"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "721438d477484ecf1f0f6f30b0c6cc560483fc2a315b1d61f1dd6e3cabea7390"
+        "sha256": "1181cc859b802872cbb200831a6fb61afbe5d70453f481d4a780757a1ecae75b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2912,6 +2913,10 @@
       {
         "path": "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
         "sha256": "c50542e916be2e1e13ae3ed6254520e50fa60c634aa295f330ffbbb7ab2bc2a6"
+      },
+      {
+        "path": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+        "sha256": "1313ac6c28d7db298f70910427a0935e945da2ca36bb81f61460436e9f1ecc13"
       }
     ],
     "followupRepair": {
