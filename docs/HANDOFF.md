@@ -1,3 +1,24 @@
+## 2026-10-14 — RTK observed process retirement
+
+PR2114 is closed at84190f2bf79ac8771091680f51bd866fc06b3c45:19 official
+checks, exact candidate/merged tree equality and clean merged91 whole cases,
+six selected cases with overlap and six repository gates. A fresh unchanged
+full graph replay atcaac passes4186 and runner0. Original RTK04 runner1 remains
+failed with its unexposed historical cause UNKNOWN; no retrospective attribution.
+
+RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014 corrects a separately reproduced
+runner defect: the old map retained a nonleader birth after a complete observed
+absence and refused a later reused numeric PID despite child0/TAPgreen/cleanup.
+Only successful complete absence retires nonleader entries. The leader binding,
+continuous replacement refusal, all signal/cleanup and numerical guards remain.
+Existing cleanup events now expose processInspectionFailure, streamFailure and
+terminalUnproven. Full maintained runner contract passes23of23 without exclusions.
+Source checkpoint on84190f2b: runner9f3a5c9adfd61e0156afeb4af6b03c6cfeeaf0c4e7e7743fbc49a5a162596b2b, testd2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e.
+All581 product/package sources are unchanged. Required aggregate/certification,
+normal Git/CI/merge/exact-merged delivery remain pending. This is OPS evidence;
+accepted native Word cycles remain0 and the original V4.1 denominator stays open.
+Task:2026-10-14--rtk-retired-member-identity-mac.md. New logs/evidence stay on T777.
+
 ## 2026-10-14 — Verified tree reads without blocking Main
 
 PR2113 is normally merged at6e41ce966b99a186649bcae51a541229e20a4282.

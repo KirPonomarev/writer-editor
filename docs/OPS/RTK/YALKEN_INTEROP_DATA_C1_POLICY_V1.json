@@ -660,7 +660,8 @@
     "docs/tasks/2026-10-13--word-opaque-color-canonicalization-mac.md",
     "src/main/projectTreeReadPort.cjs",
     "src/main/projectTreeReadWorker.cjs",
-    "docs/tasks/2026-10-14--main-tree-read-worker-mac.md"
+    "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
+    "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md"
   ],
   "protectedFiles": [
     {
@@ -2581,15 +2582,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f8226112702bc70bb441c8ca713ad5f6af00dd4dc02690e5f6dcc61df82a365d"
+        "sha256": "810ac34cb961d9157751600d8f6c264ac702c7cbab817ce28fd924d19329f4e7"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e2e0b9e7038eaeff31219c117955c121e41145661ca6cd77388b94baf3e50403"
+        "sha256": "57cf095281dd5a3d118f3050d5a48d2b186f1d00c9b06cf657be4f1c7e602148"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "e3f6478e71d0b0548e1f632fe60ff4a150f5215402499bc5ae0fd1ca8379702b"
+        "sha256": "689afea9b684c75ffccfcd95f6e21053392c0e1306c9d692b9cb7b319d767393"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2873,11 +2874,11 @@
       },
       {
         "path": "scripts/run-rtk-tests.mjs",
-        "sha256": "1fb5acf128bdc3fe1ff100c7b760dd0c391ab0610ad52b4c6093c3367fe829d8"
+        "sha256": "9f3a5c9adfd61e0156afeb4af6b03c6cfeeaf0c4e7e7743fbc49a5a162596b2b"
       },
       {
         "path": "test/contracts/rtk-test-graph-catalog.contract.test.js",
-        "sha256": "3cd8cf48c56fdd350f189b426c13338276315c96210fbcc535ed4dfb77876d3f"
+        "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
       },
       {
         "path": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -2902,6 +2903,10 @@
       {
         "path": "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
         "sha256": "d913e1b881f19cff18bdf17630b7d386113e50789d428b51455f1e51824273ee"
+      },
+      {
+        "path": "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md",
+        "sha256": "be20c755143f8af4b36aa1c3f72e9c933583642e9c0bec0b928a8d92be491e7d"
       }
     ],
     "followupRepair": {

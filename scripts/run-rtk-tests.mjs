@@ -622,6 +622,12 @@ export async function runRtkTestGraph({
       processInspectionFailure ||= new Error(observation?.code || 'RTK_PROCESS_GROUP_INSPECTION_INDETERMINATE');
       return;
     }
+    // A complete absence retires a nonleader birth, so later PID reuse is new.
+    // Keep the leader binding even when absent: it fences signals and PGID reuse.
+    const livePids = new Set((observation.rows || []).map((row) => row.pid));
+    for (const pid of knownMemberIdentities.keys()) {
+      if (pid !== child.pid && !livePids.has(pid)) knownMemberIdentities.delete(pid);
+    }
     for (const row of observation.rows || []) {
       if (!row?.startIdentity || !row?.executable) continue;
       const existing = knownMemberIdentities.get(row.pid);
@@ -903,6 +909,9 @@ export async function runRtkTestGraph({
   emitEvent('RTK_GRAPH_CLEANUP', {
     processGroupCleanup: processGroupCleanup.code,
     leaseCleanupOk: cleanup.ok,
+    processInspectionFailure: processInspectionFailure?.message || '',
+    streamFailure: streamFailure?.message || '',
+    terminalUnproven,
   });
   await new Promise((resolve) => setImmediate(resolve));
   for (const { target, onError } of writerErrorBindings) {
