@@ -4293,6 +4293,14 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
       result.analysisDigest = `sha256:${hashCanonicalValue({ previous: result.analysisDigest, supportedSemanticDigest: result.supportedSemanticDigest })}`;
     }
   }
+  // Publication-only immutable observation from this already validated parse.
+  // Default worker/intake results and all semantic/authority checks stay exact.
+  if (result.ok && options.includePublicationPhaseIdentity === true) {
+    const phaseBytes = docxZipInventoryInputToBytes(isPlainObject(input) && input.bytes !== undefined ? input.bytes : input);
+    result.publicationPhaseIdentity = `sha256:${hashCanonicalValue(extracted.zipInventory.entries.map(({ dataStart, dataEnd, ...entry }) =>
+      ['docProps/custom.xml', 'customXml/item1.xml'].includes(entry.name) ? { name: entry.name, method: entry.method, flags: entry.flags }
+        : { ...entry, payloadSha256: sha256BytesHex(phaseBytes.subarray(dataStart, dataEnd)) }).sort((a, b) => a.name.localeCompare(b.name)))}`;
+  }
   return result;
 }
 

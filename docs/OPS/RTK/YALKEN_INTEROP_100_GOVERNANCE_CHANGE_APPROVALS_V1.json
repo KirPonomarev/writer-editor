@@ -1612,12 +1612,12 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "efd9e4d024ecc9eb554e0fa1dda07e04bbe7da2b656737805ca5cdd0f7d252ca",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_FULL_EXPORT_PROFILE_PROPAGATION_MAC_20261008|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
-      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
+      "sha256": "a704e2b64b0d8d556cb04a1fd6842d08017c22f2c3ef2bfc9c651eed683a75b4",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs."
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -2242,10 +2242,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "1aa3dbfdb95d03b345de83a0b9a2bdba08eee3307173da683cf84e75004a0a76",
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "949a82c69af6b406b98cfff47948b25700e2382a40ce4a6f1215be63e6be5e48",
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2314,10 +2314,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-      "sha256": "ad9e7d236b84420c4ff36231d6bb40239397cd379b61a1ad20cd17dd05f90858",
-      "approvedAtUtc": "2026-10-09T04:50:23.117914Z",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority.",
+      "sha256": "de11ca9010369372b8d0c0489bf99bc443b6d7985e89a970e87b50089132c0a6",
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -5257,12 +5257,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
-      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/menu-presentation-modes.contract.test.js",
-      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
-      "sha256": "f4ac7bf36c878f44dab9915762b4746f678393e6ebede2788fbf80732349f546"
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "724dd6915283ee7fc04088294948a2e9adb8a846191765837779be91cb5bd235"
     },
     {
       "approved": true,
@@ -5347,12 +5347,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "18f578f6e16f161b3626ab3abfa79335b3d5d26888f1a8ee45b2470bee92df08",
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "sha256": "0c96d57f02036b2c6f3cd0a72e12afc8a166381f686cbdec53a8724ff7f5cc99",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014"
     },
     {
       "filePath": "src/core/word-pending-recording-comments-v1.cjs",
@@ -5428,12 +5428,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "9a93aed697d8fab993e198572f82f1da8b4e0f36a75a050b9f2aca7ade295130"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "ccce0cd962555d9ff8bec725d9e3a17058dec71ce72fa453e3f8c600a7cf75e1"
     },
     {
       "approved": true,
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "ef5f798cc72ede8383783b001061cb3aada0cfcf2a7f33521c9d46fb917bb4da"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "911419910a339e300a7d638c640367e0a9166b883a14f84abba97d25bffd32f9"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "ead71f62eb67e51e7e18c2dd3a829487cc4fd776566c44398711074ef2cd7c36"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "0d6f56f28fdde38c439a56fa585c71ea52cc8e56329ce4af02aa60a88c181f05"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "721438d477484ecf1f0f6f30b0c6cc560483fc2a315b1d61f1dd6e3cabea7390"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "4fb52e0c6573f7a34d51520780574e0d1724c29773d5a2aa2456dd4538073ca4"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "de656c4aa1deff600ce2a38be1755415cfcb48e9c7cbf202fa5bde2888d564ff"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "58cbef614ce3eabaca12a29919588737fbe5e28d3cdab82f924d94e6ba8bc0fa"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "67174fb980e4184c0576b4cb4a652a04b99800881c46e2d7ddb2f21be2b82676"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "0fb848388122da7b8e8a9e349b1edc9be6634d62bec31e6959899428509e79c3"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "6e8c9f0c1e0dd196084602af7d7b0ac801711ac79bb655e271a1836d43e8e6a3"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "7a2f1acc306c4bc073531cc03979233f0bb684c0bcab8e6d2c446da370d7d62f"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "249aa9db88360b5c55789ccddb3beb9f22184a28387293010b981d2ae99fe52e"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "57293d80ba5a7c03d76fef989a9790aadaa28b88ae256da3d755b76a97c2fc11"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "95352dc0317932d6d483c0bbaee2021f782efe0fbbb97f022a21b2397663b13e"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "ca6a8eacb7d3e2749ac5586b99ee81d8bb567dfa97e96bcd66938b165b11aa49"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
-      "sha256": "aeae02f7d2745f3e73b6e1129361116bcc1c3b156c78b679ed553b6ac64f27f6"
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0.",
+      "sha256": "5727eaa22f8f59ea540a4c3d62f85ed144d93a43811da59db99113115ac8d177"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5641,6 +5641,15 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved."
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "408fc301ffb78db555cf90182bad765288c89d87746e432f248bfc1d7a1216e3",
+      "approvedAtUtc": "2026-10-14T22:26:28.606678+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same unfinished export PR2117, final actual caller microtask RED then14selectedGREEN. Two closing conditions revalidate pending exports immediately before the effect. Runtime60/behavior301; all semantic validators and prior assertions retained. Old572RTK4210/cert318 remain historical. Final committed gates and CI required; native0."
     }
   ],
   "evidenceStampIds": [
@@ -42805,6 +42814,681 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
       "sha256": "83edee16747d2fd1ca981b9aed2c23a65a8a6666f0586c40931451e606cbd10f"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "1aa3dbfdb95d03b345de83a0b9a2bdba08eee3307173da683cf84e75004a0a76",
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "18f578f6e16f161b3626ab3abfa79335b3d5d26888f1a8ee45b2470bee92df08",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "9a93aed697d8fab993e198572f82f1da8b4e0f36a75a050b9f2aca7ade295130"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "ef5f798cc72ede8383783b001061cb3aada0cfcf2a7f33521c9d46fb917bb4da"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "ead71f62eb67e51e7e18c2dd3a829487cc4fd776566c44398711074ef2cd7c36"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "721438d477484ecf1f0f6f30b0c6cc560483fc2a315b1d61f1dd6e3cabea7390"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "de656c4aa1deff600ce2a38be1755415cfcb48e9c7cbf202fa5bde2888d564ff"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "67174fb980e4184c0576b4cb4a652a04b99800881c46e2d7ddb2f21be2b82676"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "6e8c9f0c1e0dd196084602af7d7b0ac801711ac79bb655e271a1836d43e8e6a3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "249aa9db88360b5c55789ccddb3beb9f22184a28387293010b981d2ae99fe52e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "95352dc0317932d6d483c0bbaee2021f782efe0fbbb97f022a21b2397663b13e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "aeae02f7d2745f3e73b6e1129361116bcc1c3b156c78b679ed553b6ac64f27f6"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "edd1194767740c848a594c6302778d239f18e4beb34973ebed572dea4ba495bc",
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_BOOK_NOTE_DEFAULTS_MAC_20261008|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "1138fbe3e9366c3d3b692482cf2c0b87e296783dc86db405a8dfcc9b18c9f55b",
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "c22c83977b5d089abd714225c748b14cb20229009dfa6f529bbb5bdcc245b6f4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "8dd0d245b71e1d7216a5c3764c337084bf98864936f0ce4cb3c337d72eebc22c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "f956134709f527cbbdd871d2967e3127f5dccad0b153e04eeace7824e8fb4799"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "0ceab2712f2f177e1da65dfa999c852cb148a1d0a47db8b36d1fb76e3c4c142c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "a2480a9d65678531342d3cc0ab31f426b30c9b40b4161f19289fad05112e4441"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "a0e56ea0ec17e8ff43b88245ad36f32a37e1e84ebe0be186996c5e71991517ef"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "98a18289cecb5f3dcc15f222bc9b09db140cd24fbe2634287594fe6a713cf592"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "843c0d81a69cb6ff20324c486557bbb630511cd9fab4a5fb067042a83938348e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "4343cd51879b5f6a6daa86b6844978f7c5cc9768a40df584133a07a0f9c62e13"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "4186d033e09b4e8f3ddabee3b94257cd4914c26842a6c9bfd53442c85ce5baf2",
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "dbc44d66e06eec163591449b0aa0ef072d18729bd5aba0f8b8662c5fc5487541",
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "8727c1f3cb54e4a260d48af2469ecfb6ea7ad8b760c58e1bb0ecb52dd50bb10e",
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "46bba443e51fe068a47dde17e6c32ec6a696d177c1d6f96cc12bc6235f9cb675"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "36fd2cb0012f753b7747aac001dfa24ea431b01e424bcd6f7efb00c143e554fb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "9cff571946b4a6a89e3302371520ca528b4b46aeae35e0e638c6a6e2fb685483"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "1181cc859b802872cbb200831a6fb61afbe5d70453f481d4a780757a1ecae75b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "e0befbb9c3d6ac1c273363d856d939fbe73648c92514c8a553a222d84f7ab950"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "e71534559061b561dc888b71dd79478ac9c8b169fee6d9ec080c61b06b6abcbf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "0bc7730cd31e80e0686ba776c51e95dccc38493e9ed03bd4661676a21ab42798"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "e3d4ebf48a1522f0977419de9b35cfe9cdfe45f358ea655e29296a4991c4fe17"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "598d40129cd11465fbaa77753103176f5351b8964afa4788aa66cf6479902e45"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "f5fb69d42fb2690d1417d12b5098369affc72ec580a6591cfd720bb5985c7c5b"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "1313ac6c28d7db298f70910427a0935e945da2ca36bb81f61460436e9f1ecc13",
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure."
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "efd9e4d024ecc9eb554e0fa1dda07e04bbe7da2b656737805ca5cdd0f7d252ca",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_FULL_MANUSCRIPT_LINK_RETURN_20260928|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_BREAK_FORMATTING_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_PENDING_NOTES_MAC_20261006|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_FULL_EXPORT_PROFILE_PROPAGATION_MAC_20261008|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_ATOMIC_NOTE_RETURN_MAC_20261009",
+      "approvedAtUtc": "2026-10-10T04:39:26.109Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized atomic macOS novel note/body/discussion return and synchronized history through existing Main, Kernel, Core and real lease/persistence paths. Finite256MiB qualified rederived novel5/6 envelopes preserve ordinary32/import48/resource20/MAX_RESOURCES129 and public120s limits. Frozen whole47 source proof and independent complete physical/XML observations bind this bounded delivery; fresh native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,635 admitted paths,493 source identities,241 byte-identical historical tuples plus one coherent242nd set. Catalog, mandatory evaluator, dependencies and runtime network remain unchanged; generated artifacts use audited compiler inputs."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "1c2578e21c4fc047aac7c38710e3d4595e69538afd22b85df14123d352d1e9d7",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "ecec80a29f58e8852d3b034df58511e807c69931045c86bfde42ff927e9545ea",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "7ffce66494a28beaf2601210972e16d4e343bb5633d4e17f4b30f8033c291c3f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "65615a437d8da73e78594e01b37cd0c6814c013e78d95bff105c1df83cc54fe7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "057d711bb1df3cd006c43c659ea0b72e098fd30ed94b18ab74eb790d119fbd5c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "073f362dc52773d1d2580e87b2b7c0a4e3785cbf644a999fd119dcf9467491dd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "d07223587e04ef6b08fded0ddf2ac94730c2a6ac42d22ee5edb5b051de4c3c72"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "9bd861f3b75fc2876470c668fe5f64330d9b65b11aac12094b6bc2e37e1c6721"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "50f9ff8850a79d6878680c12d9864de7ab7a16ec18e7fe734d5cb7ce48748714"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "a3493b214e4e83141418f34a9cfb391b487438b31075dbd0d550a980afa16a99"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "2dbb9ef5d997632d7192062327e9d384329e49e7879e73926cc3a103a7138e5a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "daf7401b2b0e8975933283e51d5125a8cf43f54dbf65ac40ff278533627341ba"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "383fd3567c2fdbd2a4b132ea7d1fe11fd30a3830f0f781a9976574f7efcaab50",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "ad9e7d236b84420c4ff36231d6bb40239397cd379b61a1ad20cd17dd05f90858",
+      "approvedAtUtc": "2026-10-09T04:50:23.117914Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009",
+      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T10:31:46.501Z",
+      "approvedBy": "owner-delegated-codex:MAC_NORMAL_QUIT_NOVEL_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/menu-presentation-modes.contract.test.js",
+      "rationale": "Owner-resumed large-novel Word task: bounded correction of the existing Darwin native appMenu projection and safe fallback, preserving canonical cmd.app.quit and all before-quit Save/ACK, lifecycle identity and no-loss vetoes. Complete affected11 source files executed85/85 with no bad statuses; original test prefix, runtime guards and all historical successor bytes are preserved. Mechanical inventory/DATA/current-successor exact-byte refresh only; no changed catalog, oracle, dependency, runtime network, UI composition, limits or R2.4 authority. Normal Git delivery pending; native Quit/reopen, original novel role/round matrix and shipping SLO remain OPEN.",
+      "sha256": "f4ac7bf36c878f44dab9915762b4746f678393e6ebede2788fbf80732349f546"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "c802d9d6b45f3e541910a6f92682b936ebe533b3097ed8f036006dc86359e4d5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "e17fd88396efbda473251fa2d08c73537dc0976b5d9434e162756645bfdfcbd6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "13f48d921518f8b66ccc842976c5c868c90dc7b295f712f9719ba41df7976c84"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "073b6b2ec9f783affd7c19e6174104dd775bbc4fef006b51a9f33bfd3eff4f2d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "4d82b1caa9c859450896c32ae8b381b63e922f23b20055a41469ab7016662c7f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "e5c6321ca03f5f46c07800f7e5a2d4ca3d89105b5d3e0254f8a01fe5e7559081"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "5adb95c788d164923442150c389eb2e1363774984b60da6529f0f6d6a6fd2532"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "4ae437b5b87432bfb7a8e9ccf1927feac76224ee4c4559ef5eac530975d9aa2c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "b1a1e963d9563f3cf94ccb21fb9117e20a71efe4e5d6968971a14a00b0a55671"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "880283b6a4879ce4f7b5633b2a4849d98c816b8b15554e7d332e5b9aff1e1177",
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "bd3bc4564060cf6d07b560d127ccff5e3483a56d105858cb06066d52311a68af",
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "sha256": "7663c40cd436df92c8d480fcf71e937e87a132d8c97b2f192936d91ca5c4d531"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "933a34029ac7d8e52ab041f1f1c5b86015c724819b404013fa2c86a1b839e697"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "1af13c497ed224e4bcaa1b5b203ea780bc44ead373cc68760758865af792a3de"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "6aa8ec700989efeafee740d89215aeb95d4bd68f755cffaebb14fb70a4ad107c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "0b8f1d6b5be5e76e7764a4e4bffe9a24efed5afd166e49be22cac4f6489d2e9a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "f904efcf874ea3d9e74f61ec69865cbafb150e28fe405cf1e447e035d4450ae5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "bba91dae6b43e9df4441bd1b2af545d7c98e785da81cc63ed112b9747e46d344"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "e017dc7881b21fabde410e0f1ba7eeac610f5b5a4311a3528b133b2eb58405d9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "a414c32a956d8ff9403b9c0c305a2cb08c6815eb31ac58094cae4073ce13ee1f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit.",
+      "sha256": "015b01222c4775a0759f03739f8d51c6aa2f71aafb9e7183d404d1936556584a"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "188770fa113e9f8cfbe76ab601ca052c262cbd1f98c850f42fe1e298517e7c14",
+      "approvedAtUtc": "2026-10-14T21:44:40.455657+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same unfinished export contour, two isolated harness contexts now supply actual Main pending-export state. All assertions and581 product bytes unchanged; full4210 sole missing-mock failure retained. Whole comments25/menu8/physics6 pass. Final committed gates/delivery pending, no native/SLO credit."
     }
   ]
 }

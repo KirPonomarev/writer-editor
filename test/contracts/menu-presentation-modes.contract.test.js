@@ -313,7 +313,7 @@ test('macOS normal Quit: actual before-quit and lifecycle barrier preserve no-lo
     let subject = 'project:p/document:s', prevented = 0, quits = 0, listener;
     const before = JSON.stringify(draft);
     const context = vm.createContext({
-      ...lifecycle, isQuitting: false, mainWindow: { getBounds: () => ({ x: 1, y: 2, width: 800, height: 600 }) },
+      ...lifecycle, isQuitting: false, pendingReviewDocxExports: new Set(), mainWindow: { getBounds: () => ({ x: 1, y: 2, width: 800, height: 600 }) },
       lastSignaledEditGeneration: 2, lastAcknowledgedEditGeneration: failure === 'stale-generation' ? 1 : 2,
       currentLifecycleSubjectId: () => subject, updateStatus: () => {},
       persistWindowState: async () => { if (failure === 'persist-failed') throw new Error('owned failure'); },

@@ -1,3 +1,68 @@
+## 2026-10-15 — Final lifecycle effect revalidation
+
+Same unfinished WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 delivery/PR2117.
+Clean572f4d4c passed full RTK4210/4210, certification318/318, menu8/8 and8cheap;
+those exact results remain historical after this correction. A final actual Main
+microtask scheduling diagnostic exposes one ordering where a new export begins
+after successful confirmation but before its caller performs Quit. Held readback
+has pendingSet1, activation0 and premature Quit1; this prevents merge.
+Fresh ARCHITECTURE04/preflight/E0 precede edits. Two existing caller conditions now
+revalidate the same Set immediately before ordinary Quit/window close, with no
+await between check and closing flag/effect. Both actual handlers and both export
+scopes retain retry after terminal activation. Causal new control fails before
+and passes after; selected14/14, mandatory TAP0, no exclusions, includes8 existing
+Word-start cases,5 prior lifecycle cases and1 new four-branch microtask control.
+Runtime delta60 and behavior301 stay within declared60/350. No new predicate,
+semantic parser, dependency, UI composition or timeout. Previous500k83.426s builder
+measurement remains source-bound; only unused closing callbacks differ in Main.
+Final docs/tuples refresh once, then stable committed local gates and official CI
+may execute concurrently without source edits; merge requires both. Native still0.
+
+## 2026-10-15 — Complete pending-book export and safe lifecycle
+
+WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 continues the same unfinished
+export contour: delivery base324e08a3, reachable local446b6d and c8187b04.
+At direct owner «доведи это сам», Root is sole executor in an isolated worktree;
+the interrupted agent's four WIP files and original native artifacts stay exact.
+Owner supplied an audit; its findings were independently checked, not treated as
+an authority override. One coherent export outcome and rollback remain the scope.
+
+Main reuses provisional analysis, internally produced preview and a same-call
+pending result only for matching complete validated package identity. Final actual
+body/notes/comments/source/provenance, lease/CAS and publication checks remain.
+Full RTK on c818 completed4202/4203, one unchanged EVID01-V3 failure, no exclusions:
+Main directly re-extracted ZIP parts. The correction computes an opt-in immutable
+identity inside the bridge's already executed validated analysis. Main receives
+only the digest; default worker/intake results remain exact. No cross-call cache,
+low-level Main ZIP extraction or validation removal. All failures stay retained.
+
+A full Main/settings/atomic-gateway/export-handler control-flow diagnostic shows
+settings already waits existing queued writes, but held DOCX readback can allow
+Quit before subsequent authority activation. SOURCE58 causality is still UNKNOWN.
+Main now tracks each complete scene/book export promise through final activation.
+Existing lifecycle confirmation refuses while any export is pending, rechecks
+after its await, and new exports refuse after Quit/window close begins. Normal
+close/Quit can be retried after terminal completion; cancel/failure releases only
+its own operation. No global shutdown framework or new UI composition.
+
+Fresh selected16/16 and unchanged whole EVID18/18 pass with mandatory TAP oracle,
+no skipped/todo/cancelled. Causal Quit RED02 fails4/5 before the fix; GREEN5/5 covers
+held readback/activation, overlap, cancellation/failure, async admission and retry.
+Compiler passes twice with identical artifacts and no generated Git diff.
+Actual frozen500k Main diagnostic83425.659ms (process86.369s), gate publishAllowed,
+parser1, analyses2, sources581/business inputs24 exact, product writes0.
+This is one component measurement, not native authority activation or shipping SLO.
+Earlier546/546,155/155 and318/318 belong to their preserved earlier source bytes.
+Final committed certification/fullRTK must cover complete affected files on the
+stable candidate, then official CI/normal merge/clean exact-merged verification.
+Accepted native cycles0; both origins/scales/runtime, roles, five genuine rounds
+and required recovery remain open. Runtime delta56 lines, tests279 appended lines plus two isolated context inputs.
+Full RTK on fba1 completes4209/4210: one missing mock of the new Main pending-export
+state. Only the two isolated lifecycle harness inputs are supplied; old assertions
+and all581 product bytes stay exact. Whole comments25/menu8/physics6 pass. Final
+certification and full RTK remain required on the completed immutable candidate.
+T777 retains new materials/reports. Task:2026-10-14--word-pending-book-export-phase-reuse-mac.md.
+
 ## 2026-10-14 — Project-scoped tree query across document replacement
 
 WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014 starts at clean cf03bcf0a340dfd93f8e02c69fc7d708361db74d

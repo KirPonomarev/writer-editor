@@ -226,7 +226,7 @@ test('actual lifecycle confirmation vetoes pending comment authoring before docu
   const a = main.indexOf('async function confirmDiscardChanges() {');
   const b = main.indexOf('async function ensureCleanAction', a);
   let pending = true, subject = 'scene1', barrierCalls = 0;
-  const ctx = vm.createContext({ mainWindow: {}, currentLifecycleSubjectId: () => subject,
+  const ctx = vm.createContext({ mainWindow: {}, pendingReviewDocxExports: new Set(), currentLifecycleSubjectId: () => subject,
     autoSave: async () => ({ok:true, ack:{kind:'SAVED'}, subjectId:subject}),
     requestEditorSnapshot: async () => ({commentAuthoringPending:pending}), updateStatus: () => {},
     evaluateLifecycleBarrier: () => { barrierCalls++;return {allowed:true}; }, LIFECYCLE_EVENTS:{QUIT:'QUIT'},
