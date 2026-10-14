@@ -4372,16 +4372,17 @@ function wordExportQuitFixture() {
  const pieces=['queueDiskOperation','runAutoSave','autoSave','confirmDiscardChanges','writeNotesOrSettingsThroughAtomicGateway','saveSettings','persistWindowState','loadSettings','handleReviewDocxExportPacketCommandSurface','handleFullManuscriptReviewDocxExportPacketCommandSurface'].map(take);
  if(source.includes('async function runLifecycleBoundReviewDocxExport('))pieces.push(take('runLifecycleBoundReviewDocxExport'));
  pieces.push(source.slice(source.indexOf("app.on('before-quit',"),source.indexOf("app.on('window-all-closed',")));
- let hook,quitCalls=0,settingsWrites=0,docxWrites=0,activations=0;const statuses=[],events=[];let snapshot=async()=>({generation:1,commentAuthoringPending:false});
+ pieces.push(source.slice(source.indexOf("mainWindow.on('close',"),source.indexOf("mainWindow.webContents.on('will-prevent-unload',")));
+ let hook,closeHook,quitCalls=0,closeCalls=0,settingsWrites=0,docxWrites=0,activations=0;const statuses=[],events=[];let snapshot=async()=>({generation:1,commentAuthoringPending:false});
  const typed=(code,reason,details)=>({ok:false,error:{code,reason,details}});
  const c=vm.createContext({...require('../../src/core/lifecycle-conflict-v1.cjs'),...require('../../src/core/dirty-admission-v1.cjs'),...require('../../src/core/autosave-generation-v1.cjs'),...legacy,SAVE_AUTHORITY_OBSERVER_IDS:legacy.OBSERVER_IDS,
-  mainWindow:{getBounds:()=>({width:800,height:600,x:1,y:1})},currentFilePath:'/owned/project/scene.txt',commentAuthoringSessionId:null,getProjectRootPath:()=>'/owned/project',currentLifecycleSubjectId:()=> 'document:owned-scene',isDirty:false,treeEditorReplacementFence:null,lastSignaledEditGeneration:1,lastAcknowledgedEditGeneration:1,activeAutoSavePromise:null,autoSaveInProgress:false,isQuitting:false,isWindowClosing:false,diskQueue:Promise.resolve(),pendingReviewDocxExports:new Set(),requestEditorSnapshot:()=>snapshot(),getSettingsPath:()=>'/owned/profile/settings.json',fs:{readFile:async()=> '{}'},fileManager:{writeFileAtomic:async()=>{settingsWrites++;events.push('settings');return {success:true};}},logDevError:()=>{},updateStatus:x=>statuses.push(x),app:{on:(name,cb)=>{assert.equal(name,'before-quit');hook=cb;},quit:()=>{quitCalls++;events.push('quit');}},
+  mainWindow:{getBounds:()=>({width:800,height:600,x:1,y:1}),on:(name,cb)=>{assert.equal(name,'close');closeHook=cb;},close:()=>{closeCalls++;events.push('close');}},currentFilePath:'/owned/project/scene.txt',commentAuthoringSessionId:null,getProjectRootPath:()=>'/owned/project',currentLifecycleSubjectId:()=> 'document:owned-scene',isDirty:false,treeEditorReplacementFence:null,lastSignaledEditGeneration:1,lastAcknowledgedEditGeneration:1,activeAutoSavePromise:null,autoSaveInProgress:false,isQuitting:false,isWindowClosing:false,diskQueue:Promise.resolve(),pendingReviewDocxExports:new Set(),requestEditorSnapshot:()=>snapshot(),getSettingsPath:()=>'/owned/profile/settings.json',fs:{readFile:async()=> '{}'},fileManager:{writeFileAtomic:async()=>{settingsWrites++;events.push('settings');return {success:true};}},logDevError:()=>{},updateStatus:x=>statuses.push(x),app:{on:(name,cb)=>{assert.equal(name,'before-quit');hook=cb;},quit:()=>{quitCalls++;events.push('quit');}},
   normalizeExportPayload:x=>x,makeTypedReviewDocxExportError:typed,makeTypedFullManuscriptReviewDocxExportError:typed,buildPathBoundaryDetails:x=>x,REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID:'cmd.project.review.exportDocxReviewPacket',REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID:'cmd.project.review.exportFullManuscriptDocxReviewPacket',runDocxReviewPacketExport:require('../../src/export/docx/docxReviewPacketExportHandler.js').runDocxReviewPacketExport});
  vm.runInContext(pieces.join('\n'),c);
  const bytes=Buffer.from('owned-synthetic-control-flow-buffer');
  function options(extra={}) {return {resolveDocxReviewPacketExportPath:async()=>'/owned/result.docx',validateDocxExportTarget:async()=>({ok:true}),readDocxReviewPacketExportSource:async()=>({pendingAuthorityStore:{roundId:'owned-round'},exportCapsule:{fullManuscript:true}}),buildDocxReviewPacketBuffer:async()=>({documentBuffer:bytes,exportCapsule:{fullManuscript:true},publicationGate:{ok:true,publishAllowed:true,provisionalSelfParse:{verified:true},finalSelfParse:{semanticEquivalent:true},yrtk2Verification:{code:'RTK_RETURN_INTAKE_YRTK2_VERIFIED'}}}),revalidateDocxReviewPacketExportSource:async()=>{},queueDiskOperation:c.queueDiskOperation,writeBufferAtomic:async()=>{docxWrites++;events.push('docx');return {success:true};},readWrittenBuffer:async()=>bytes,activateReviewDocxExportAuthority:async()=>c.queueDiskOperation(async()=>{activations++;events.push('activated');return {activated:true};}),updateStatus:x=>statuses.push(x),...extra};}
- const observe=()=>({quitCalls,settingsWrites,docxWrites,activations});
- return {c,bytes,events,statuses,observe,quit:()=>hook({preventDefault(){}}),setSnapshot:fn=>{snapshot=fn;},start:(scope='book',extra={})=>c[scope==='book'?'handleFullManuscriptReviewDocxExportPacketCommandSurface':'handleReviewDocxExportPacketCommandSurface']({requestId:'owned-request'},options(extra))};
+ const observe=()=>({quitCalls,closeCalls,settingsWrites,docxWrites,activations});
+ return {c,bytes,events,statuses,observe,quit:()=>hook({preventDefault(){}}),closeWindow:()=>closeHook({preventDefault(){}}),setSnapshot:fn=>{snapshot=fn;},start:(scope='book',extra={})=>c[scope==='book'?'handleFullManuscriptReviewDocxExportPacketCommandSurface':'handleReviewDocxExportPacketCommandSurface']({requestId:'owned-request'},options(extra))};
 }
 const exportQuitTick=()=>new Promise(resolve=>setImmediate(resolve));
 function exportQuitHold(){let release;const promise=new Promise(resolve=>{release=resolve;});return {promise,release};}
@@ -4423,5 +4424,22 @@ test('actual Main Word export refuses admission after Quit or window close begin
  for(const flag of ['isQuitting','isWindowClosing'])for(const scope of ['scene','book']){
   const f=wordExportQuitFixture();f.c[flag]=true;const before=f.observe(),result=await f.start(scope);
   assert.equal(result.ok,false);assert.equal(result.error.code,'E_REVIEW_DOCX_EXPORT_CLOSING');assert.deepEqual(f.observe(),before);
+ }
+});
+
+
+test('actual Main Word final caller revalidation closes the successful confirmation microtask gap',async()=>{
+ for(const effect of ['quit','closeWindow'])for(const scope of ['scene','book']){
+  const f=wordExportQuitFixture(),held=exportQuitHold();let scheduled=false,op,entered=false;
+  f.setSnapshot(async()=>{if(!scheduled){scheduled=true;Promise.resolve().then(()=>{}).then(()=>{}).then(()=>{}).then(()=>{
+   op=f.start(scope,{readWrittenBuffer:async()=>{entered=true;await held.promise;return f.bytes;}});
+  });}return {generation:1,commentAuthoringPending:false};});
+  f[effect]();await exportQuitTick();await exportQuitTick();
+  assert.equal(entered,true);assert.equal(f.c.pendingReviewDocxExports.size,1);assert.equal(f.observe().activations,0);
+  assert.equal(f.observe().quitCalls,0);assert.equal(f.observe().closeCalls,0);
+  held.release();assert.equal((await op).ok,true);assert.equal(f.c.pendingReviewDocxExports.size,0);
+  f[effect]();await exportQuitTick();await exportQuitTick();
+  assert.equal(f.observe()[effect==='quit'?'quitCalls':'closeCalls'],1);
+  assert.ok(f.events.indexOf('activated')<f.events.indexOf(effect==='quit'?'quit':'close'));
  }
 });

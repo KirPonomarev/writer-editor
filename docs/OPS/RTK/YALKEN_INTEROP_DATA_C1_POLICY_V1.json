@@ -892,7 +892,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "bd3bc4564060cf6d07b560d127ccff5e3483a56d105858cb06066d52311a68af"
+        "sha256": "0c96d57f02036b2c6f3cd0a72e12afc8a166381f686cbdec53a8724ff7f5cc99"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2080,7 +2080,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "7663c40cd436df92c8d480fcf71e937e87a132d8c97b2f192936d91ca5c4d531"
+        "sha256": "ccce0cd962555d9ff8bec725d9e3a17058dec71ce72fa453e3f8c600a7cf75e1"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2584,15 +2584,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "933a34029ac7d8e52ab041f1f1c5b86015c724819b404013fa2c86a1b839e697"
+        "sha256": "911419910a339e300a7d638c640367e0a9166b883a14f84abba97d25bffd32f9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "1af13c497ed224e4bcaa1b5b203ea780bc44ead373cc68760758865af792a3de"
+        "sha256": "0d6f56f28fdde38c439a56fa585c71ea52cc8e56329ce4af02aa60a88c181f05"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "6aa8ec700989efeafee740d89215aeb95d4bd68f755cffaebb14fb70a4ad107c"
+        "sha256": "4fb52e0c6573f7a34d51520780574e0d1724c29773d5a2aa2456dd4538073ca4"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2916,7 +2916,7 @@
       },
       {
         "path": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
-        "sha256": "188770fa113e9f8cfbe76ab601ca052c262cbd1f98c850f42fe1e298517e7c14"
+        "sha256": "408fc301ffb78db555cf90182bad765288c89d87746e432f248bfc1d7a1216e3"
       }
     ],
     "followupRepair": {

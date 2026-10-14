@@ -1,3 +1,23 @@
+## 2026-10-15 — Final lifecycle effect revalidation
+
+Same unfinished WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 delivery/PR2117.
+Clean572f4d4c passed full RTK4210/4210, certification318/318, menu8/8 and8cheap;
+those exact results remain historical after this correction. A final actual Main
+microtask scheduling diagnostic exposes one ordering where a new export begins
+after successful confirmation but before its caller performs Quit. Held readback
+has pendingSet1, activation0 and premature Quit1; this prevents merge.
+Fresh ARCHITECTURE04/preflight/E0 precede edits. Two existing caller conditions now
+revalidate the same Set immediately before ordinary Quit/window close, with no
+await between check and closing flag/effect. Both actual handlers and both export
+scopes retain retry after terminal activation. Causal new control fails before
+and passes after; selected14/14, mandatory TAP0, no exclusions, includes8 existing
+Word-start cases,5 prior lifecycle cases and1 new four-branch microtask control.
+Runtime delta60 and behavior301 stay within declared60/350. No new predicate,
+semantic parser, dependency, UI composition or timeout. Previous500k83.426s builder
+measurement remains source-bound; only unused closing callbacks differ in Main.
+Final docs/tuples refresh once, then stable committed local gates and official CI
+may execute concurrently without source edits; merge requires both. Native still0.
+
 ## 2026-10-15 — Complete pending-book export and safe lifecycle
 
 WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 continues the same unfinished

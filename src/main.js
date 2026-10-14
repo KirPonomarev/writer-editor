@@ -35553,7 +35553,7 @@ function createWindow() {
       }
 
       const canClose = await confirmDiscardChanges();
-      if (!canClose) return;
+      if (!canClose || pendingReviewDocxExports.size > 0) return;
 
       isWindowClosing = true;
       mainWindow.close();
@@ -39105,7 +39105,7 @@ app.on('before-quit', (event) => {
     }
 
     const canQuit = await confirmDiscardChanges();
-    if (!canQuit) return;
+    if (!canQuit || pendingReviewDocxExports.size > 0) return;
 
     isQuitting = true;
     app.quit();

@@ -43,7 +43,7 @@ materials/reports; declared owner-takeover disposable contract TMPDIR only.
 Main publication/lifecycle changes, opt-in observation on the existing bridge port,
 appended controls in two maintained contract files, two isolated lifecycle-context inputs, factual/mechanical companions.
 Runtime budget60 changed lines; behavior350 changed lines versus delivery base.
-At this freeze actual runtime56 and behavior283 (279 appended plus two changed fixture lines). No general shutdown framework.
+At final-caller freeze actual runtime60 and behavior301 (297 appended plus two changed fixture lines). No general shutdown framework.
 
 ## ALLOWLIST
 
@@ -185,6 +185,28 @@ owned disposable TMPDIR subdirectories on the same clean immutable candidate;
 required gates, actual exits, complete file denominators and byte barriers remain.
 This changes scheduling only. Final docs/tuples follow the minimal harness fix;
 no extra compiler/500k rerun is justified by an unchanged product tree.
+
+### Final effect race and proof scheduling
+
+Clean572f4d4c actual full RTK4210/4210, cert318/318, menu8/8 and8cheap pass.
+Before merge, a final actual Main/settings/export microtask diagnostic probes24
+schedules. Exactly one starts export after confirmation resolves but before its
+caller continuation: held readback1, pendingSet1, activation0, premature Quit1.
+These source-bound prior results stay valid for572, but cannot certify new bytes.
+Fresh ARCHITECTURE04/preflight/E0 precede causal test edit. The new actual-handler
+control is RED before the two caller conditions gain direct pendingSet checks.
+Same control then passes for Quit/window close and scene/book, including ordinary
+retry after activation. Selected14/14 passes with mandatory TAP0 and zero exclusions;
+it overlaps8 retained Word-start and5 earlier lifecycle cases plus the new control.
+All original assertions and origin test prefixes remain exact. Whole menu/physics
+and final unchanged RTK/certification remain required. No closure framework added.
+Only those two existing effect-adjacent conditions change product source from572;
+Main export construction/validation functions and all other580 product/package
+files are exact. Existing83.426s diagnostic is retained on its original source,
+not relabelled to the final head and not an end-to-end/native/SLO measurement.
+Final local full checks and official CI may run concurrently on one clean committed
+immutable candidate after focused/cheap/source review; normal merge waits for both.
+This changes scheduling only, preserving every required gate and actual identity.
 
 ## STOP_CONDITION
 
