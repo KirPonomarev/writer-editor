@@ -1,3 +1,24 @@
+## 2026-10-14 — Project-scoped tree query across document replacement
+
+WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014 starts at clean cf03bcf0a340dfd93f8e02c69fc7d708361db74d
+in its own registered worktree. SOURCE52/53 navigator showed an empty tree while
+Core retained21 scenes; E_TREE_QUERY_STALE was logged. A deterministic held real
+Worker read reproduces the same false refusal when Main replaces a document
+baseline and rotates commentAuthoringSessionId within the unchanged project.
+The correction removes only that scene/session comparison from projectTree query.
+Project name/root/bootstrap owner, exact raw manifest and unchanged Worker
+manifest/receipt/journal fences remain. Scene-specific writer/session guards,
+Core, renderer, dependencies, timeout/resource limits and prior assertions stay.
+Causal RED01 records the intended stale refusal plus an appended fixture's wrong
+receipt-code expectation; the latter is corrected to E_TREE_COHORT_RECEIPT.
+Focused01 passes6of6 selected cases, zero exclusions, including same-project
+positive and project/owner/manifest/receipt refusals with exact no-write state.
+Full affected/risk and mandatory delivery gates are IN_PROGRESS; selected evidence
+is not whole-file coverage. Accepted native cycles remain0; SOURCE53 FAILED and
+all old artifacts remain preserved. No native app or profile ran in this code task.
+One ordinary PR/revert and exact merged proof are required before native reuse.
+Task:2026-10-14--word-tree-project-query-scope-mac.md. New evidence stays on T777.
+
 ## 2026-10-14 — RTK observed process retirement
 
 PR2114 is closed at84190f2bf79ac8771091680f51bd866fc06b3c45:19 official
