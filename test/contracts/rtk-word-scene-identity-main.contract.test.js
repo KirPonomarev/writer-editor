@@ -4343,7 +4343,7 @@ test('actual public Main pending book phase reuse preserves full publication and
  const result=await f.probe.exportFullReview({requestId:'fractional-public-main',options:{officeModeTransport:true}});
  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.exported,true);assert.equal(result.publicationGate.publishAllowed,true);
  assert.equal(result.publicationGate.provisionalSelfParseVerified,true);assert.equal(result.publicationGate.finalSelfParseSemanticEquivalent,true);
- assert.deepEqual(calls,{analysis:2,pending:2,preview:0});
+ assert.deepEqual(calls,{analysis:2,pending:1,preview:0});
  assert.deepEqual(f.capture(),before);assert.equal(read(f.alpha),raw);
  const bridge=await import('../../src/io/revisionBridge/index.mjs'),bytes=fs.readFileSync(outPath),parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts;
  assert.match(parts['word/document.xml'],/w16du:dateUtc="2026-10-08T03:46:12Z"/u);

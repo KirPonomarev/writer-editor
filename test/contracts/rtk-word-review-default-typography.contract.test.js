@@ -1531,6 +1531,12 @@ test('opaque color serialization leaves validated pending source and round histo
 });
 
 
+function phaseReuseFinalReadbackBytes(f,phase) {
+ if(phase!=='final')return f.bytes;
+ const extracted=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}),parts={...extracted.parts,...extracted.binaryParts};
+ parts['word/styles.xml']+='\n';
+ return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+}
 test('pending book publication reuses exact same-call phase analysis and internal preview',async()=>{
  const f=await fractionalPendingNotePublicationFixture(),calls={analysis:0,pending:0,preview:0},seen=[];
  const bridge={...f.bridge};
@@ -1542,8 +1548,8 @@ test('pending book publication reuses exact same-call phase analysis and interna
  Object.keys(calls).forEach(key=>calls[key]=0);seen.length=0;
  const result=await gateway.publish(f.bytes,f.source);
  assert.equal(result.publishAllowed,true,JSON.stringify(result));
- assert.deepEqual(calls,{analysis:2,pending:2,preview:0});
- assert.deepEqual(seen.map(input=>input.bytes),[f.source.provisionalSelfParseArtifact.bytes,f.bytes]);
+ assert.deepEqual(calls,{analysis:2,pending:1,preview:0});
+ assert.deepEqual(seen.map(input=>input.bytes),[f.source.provisionalSelfParseArtifact.bytes]);
  assert.ok(seen.every(input=>input.baselineDocumentNotes===f.source.documentNotes));
  for(const bytes of [f.source.provisionalSelfParseArtifact.bytes,f.bytes]){
   const observed=observeReplacementPublication(f,bytes);
@@ -1566,7 +1572,7 @@ for(const phase of ['provisional','final'])test('pending book phase reuse refuse
    }return result;
   }};
   const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});
-  calls=0;const actual=await gateway.publish(f.bytes,f.source);
+  calls=0;const actual=await gateway.publish(phaseReuseFinalReadbackBytes(f,phase),f.source);
   assert.equal(actual.publishAllowed,false,fault);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');
   assert.equal(actual.reason,'WORD_BOOK_NOTES_PUBLICATION_PARSE');assert.equal(calls,phase==='provisional'?1:2);
   assert.equal(require('node:v8').serialize(f.source).equals(before),true);
@@ -1588,7 +1594,7 @@ test('pending book phase reuse keeps missing pending wrappers and forged note so
 
 test('pending book phase reuse retains resolved zero-span note proof without pending references',async()=>{
  const f=await freshBookNotePublication('resolved'),before=require('node:v8').serialize(f.source),actual=await f.publish(f.originalBytes);
- assert.equal(actual.publishAllowed,true,JSON.stringify(actual));assert.deepEqual(f.calls,{analysis:2,pending:2,preview:0});
+ assert.equal(actual.publishAllowed,true,JSON.stringify(actual));assert.deepEqual(f.calls,{analysis:2,pending:1,preview:0});
  assert.equal(require('node:util').isDeepStrictEqual(JSON.parse(JSON.stringify(actual.documentNotesBinding.noteProofs)),[{phase:'provisional',rosterCount:3,completeBodies:true,sourceOccurrences:true},{phase:'final',rosterCount:3,completeBodies:true,sourceOccurrences:true}]),true);
  assert.equal(require('node:v8').serialize(f.source).equals(before),true);
 });
@@ -1604,8 +1610,61 @@ test('pending book phase reuse refuses absent pending references with outstandin
    }return result;
   }};
   const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});calls=0;
-  const actual=await gateway.publish(f.bytes,f.source);assert.equal(actual.publishAllowed,false);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');
+  const actual=await gateway.publish(phaseReuseFinalReadbackBytes(f,phase),f.source);assert.equal(actual.publishAllowed,false);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');
   assert.equal(actual.reason,'WORD_BOOK_NOTES_PUBLICATION_PARSE');assert.equal(calls,phase==='provisional'?1:2);
   assert.equal(require('node:v8').serialize(f.source).equals(before),true);
+ }
+});
+
+test('pending book phase memo uses one exact semantic parse per invocation without mutating results',async()=>{
+ const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize(f.source);let calls=0,observed=[];
+ const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){calls++;const result=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);observed.push({result,raw:require('node:v8').serialize(result)});return result;}};
+ const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});
+ for(let invocation=0;invocation<2;invocation++){
+  calls=0;observed=[];const result=await gateway.publish(f.bytes,f.source);
+  assert.equal(result.publishAllowed,true,JSON.stringify(result));
+  assert.deepEqual(JSON.parse(JSON.stringify(result.documentNotesBinding.noteProofs)).map(row=>row.phase),['provisional','final']);
+  assert.ok(observed.every(row=>require('node:v8').serialize(row.result).equals(row.raw)),'phase binder mutated memo operand');
+  assert.equal(require('node:v8').serialize(f.source).equals(before),true);assert.equal(calls,1,'exact semantic package parsed twice');
+ }
+});
+
+function phaseMemoRepack(f,bytes,change) {
+ const e=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes});assert.equal(e.ok,true);
+ const parts={...e.parts,...e.binaryParts};change(parts);
+ return require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+}
+function phaseMemoUtf8Flag(f,bytes,name) {
+ const copy=Buffer.from(bytes),e=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}),row=e.zipInventory.entries.find(row=>row.name===name);assert.ok(row);
+ const local=row.dataStart-30-Buffer.byteLength(name);assert.equal(copy.readUInt32LE(local),0x04034b50);copy.writeUInt16LE(row.flags|0x800,local+6);
+ let at=copy.readUInt32LE(copy.length-22+16),changed=false;
+ while(copy.readUInt32LE(at)===0x02014b50){const n=copy.readUInt16LE(at+28),extra=copy.readUInt16LE(at+30),comment=copy.readUInt16LE(at+32);
+  if(copy.subarray(at+46,at+46+n).toString('utf8')===name){copy.writeUInt16LE(row.flags|0x800,at+8);changed=true;break;}at+=46+n+extra+comment;
+ }assert.equal(changed,true);return copy;
+}
+test('pending book phase memo misses every changed semantic part roster raw payload and flags',async()=>{
+ const f=await fractionalPendingNotePublicationFixture();
+ for(const kind of ['word/document.xml','word/styles.xml','word/footnotes.xml','word/endnotes.xml','word/comments.xml','word/_rels/document.xml.rels','crc-collision','unknown-roster','flags','carrier-flags']){
+  let before=f.source.provisionalSelfParseArtifact.bytes,after=f.bytes;
+  if(kind.startsWith('word/'))after=phaseMemoRepack(f,after,parts=>{assert.equal(typeof parts[kind],'string');parts[kind]+='\n';});
+  if(kind==='crc-collision'){
+   before=phaseMemoRepack(f,before,parts=>{assert.equal(typeof parts['word/settings.xml'],'string');parts['word/settings.xml']+='<!--plumless-->';});
+   after=phaseMemoRepack(f,after,parts=>{assert.equal(typeof parts['word/settings.xml'],'string');parts['word/settings.xml']+='<!--buckeroo-->';});
+  }
+  if(kind==='unknown-roster')after=phaseMemoRepack(f,after,parts=>{parts['extra.xml']=Buffer.from('plumless');});
+  if(kind==='flags'||kind==='carrier-flags')after=phaseMemoUtf8Flag(f,after,kind==='flags'?'word/document.xml':'docProps/custom.xml');
+  assert.notEqual(hash(before),hash(after));
+  if(kind==='crc-collision'){
+   const rows=[before,after].map(bytes=>(()=>{const e=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes});assert.equal(e.ok,true,JSON.stringify(e));const row=e.zipInventory.entries.find(row=>row.name==='word/settings.xml');assert.ok(row);return row;})());
+   assert.equal(rows[0].centralCrc32,rows[1].centralCrc32);assert.equal(rows[0].byteSize,rows[1].byteSize);assert.equal(rows[0].compressedSize,rows[1].compressedSize);
+  }
+  const candidate={...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes:before},advisoryManifest:{...f.source.advisoryManifest,coreManifest:{...f.source.advisoryManifest.coreManifest,artifactIdentities:{...f.source.advisoryManifest.coreManifest.artifactIdentities,provisionalDocxSha256:'sha256:'+hash(before)}}}};
+  const raw=require('node:v8').serialize(candidate);let calls=0;const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){calls++;return f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);}};
+  const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});calls=0;
+  const result=await gateway.publish(after,candidate);
+  if(kind==='unknown-roster'){
+   assert.equal(result.publishAllowed,false,JSON.stringify(result));assert.equal(result.code,'STAGE02_PACKAGE_QUARANTINED');assert.equal(calls,0);
+  }else{assert.equal(result.publishAllowed,true,JSON.stringify({kind,result}));assert.equal(calls,2,kind);}
+  assert.equal(require('node:v8').serialize(candidate).equals(raw),true,kind);
  }
 });

@@ -1,34 +1,34 @@
 ## 2026-10-14 — Pending book export reuses exact phase observations
 
-WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 starts at delivered324e08a3.
-SOURCE58's genuine final DOCX appears141.7s after dispatch, after the unchanged
-120s observer deadline; its interrupted authority temp and FAILED lifecycle remain.
-One frozen actual-source diagnostic records repeated outer preview costs36.24s
-and35.87s plus8.19s redundant provisional analysis. It ends process1 because its
-own CPU evidence output hits the write-refusing guard; gate outcome is UNKNOWN,
-not PASS. All581 sources and24 immutable business inputs rehash exact afterward.
+WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 continues the same unfinished
+contour from local446b6d, delivery base324e08a3. Owner explicitly requested
+«доведи это сам»: Root is sole executor in an isolated registered worktree.
+The interrupted agent's four WIP files are preserved byte-exact in their original
+worktree and backed up on T777; no original profile or authority was changed.
 
-The Main-only correction reuses existing call-local provisionalCompleteAnalysis
-and the exact preview already produced by the unchanged pending parser through
-its existing baselineDocumentNotes return route. Missing or invalid internal
-preview refuses; no reparse fallback, cross-call cache or validation removal.
-All final actual body/note/comment/source/authority, lease/CAS and publication
-checks remain; Core, bridge, renderer, schemas, dependencies and limits are exact.
-Maintained causal RED records3 analysis/2 pending/2 outer preview calls; GREEN
-records2/2/0. Initial WHOLE01 failed1/542 on valid resolved history: its internal
-preview has no pending references. The surgical guard retains mandatory preview,
-allows that optional field only for a nonempty signed binding roster with every
-revisionSpans an exact empty array, and rejects missing refs for outstanding spans.
-FOCUSED03 passes8/8 with all prior assertions intact. After-fix actual stopped-input
-profile passes the gate with exact581/24 byte barriers in134.15s versus215.59s
-previously measured; CPU/result evidence is retained. This still exceeds120s and
-does not prove native timeout closure. Whole affected/risk, compiler and required
-committed certificate/fullRTK/officialCI/delivery remain IN_PROGRESS. Accepted
-native cycles0;
-all original V4.1 origins/scales/roles/five-round/performance requirements stay open.
-Navigator adoption/refetch is separate and unchanged. New reports/materials stay
-on T777; no native app/profile ran. One normal PR/revert and exact merged proof
-are required. Task:2026-10-14--word-pending-book-export-phase-reuse-mac.md.
+Main reuses this invocation's provisional analysis and internally produced preview.
+The second pending parse is reused only after independent hostile ZIP validation
+and an exact full-entry metadata/compressed-payload SHA comparison; only the two
+separately validated carrier payloads/sizes are excluded. Every phase still runs
+actual body/note/comment/source validation and the note binder; final artifact,
+lease/CAS, writer/readback/activation remain unchanged. No cross-call cache.
+Missing preview/outstanding references refuse; signed resolved zero-span history
+remains valid. Old failures are retained. A newly added collision fixture initially
+failed because an unknown ZIP part was correctly quarantined; equal-CRC distinct
+payloads now use admitted settings XML, with unknown parts separately refusing.
+
+Fresh focused9/9, whole affected546/546 and whole risk155/155 pass with mandatory
+TAP oracle, no skipped/todo/cancelled tests and exact source/input barriers.
+Compiler passes twice with identical generated artifacts and no generated Git diff.
+Actual frozen SOURCE58 500k diagnostic passes the unchanged publication gate:
+Main97159.732ms versus153123.624ms, pending parser1 instead of2; process100.928s,
+581 source/package and24 business inputs exact, product write attempts0.
+This is component evidence, not native acceptance, percentiles or shipping SLO.
+Normal committed certificate/fullRTK/official CI/merge/exact merged proof remains
+pending at this factual freeze. Accepted native cycles0; all V4.1 origins/scales,
+roles, recovery and five genuine rounds remain open. Core/bridge/renderer,
+dependencies, schemas and limits are unchanged. Runtime delta23 lines, tests195.
+Reports/materials remain on T777. Task:2026-10-14--word-pending-book-export-phase-reuse-mac.md.
 
 ## 2026-10-14 — Project-scoped tree query across document replacement
 

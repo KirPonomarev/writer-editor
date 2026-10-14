@@ -1259,7 +1259,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     || localAuthority.exportMap?.scenes?.length===1&&localAuthority.scope==='full-manuscript')
     && localAuthority.exportMap.scenes.some(scene=>scene.pendingCommentBinding?.schemaVersion===2)) {
     try {
-      const noteProofs=[];
+      const noteProofs=[];let notePhaseMemo;
       for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
         const readback=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
         if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
@@ -1268,7 +1268,12 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
           if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
           const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
           if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
-        const parsed=revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
+        const packageParts=revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()});
+        if(!packageParts.ok)throw Error(packageParts.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
+        const identity=stableRtkReviewTransportJson(packageParts.zipInventory.entries.map(({dataStart,dataEnd,...entry})=>
+          ['docProps/custom.xml','customXml/item1.xml'].includes(entry.name)?{name:entry.name,method:entry.method,flags:entry.flags}
+            :{...entry,payloadSha256:sha256DocxReviewPreviewSessionBytes(bytes.subarray(dataStart,dataEnd))}).sort((a,b)=>a.name.localeCompare(b.name)));
+        const parsed=notePhaseMemo?.identity===identity?notePhaseMemo.parsed:revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
           baselineDocuments:noteScenes,baselineDocumentNotes:source.documentNotes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
           signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
         if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
@@ -1277,6 +1282,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
         const resolved=bindings.length>0&&bindings.every(binding=>Array.isArray(binding.revisionSpans)&&binding.revisionSpans.length===0);
         if(!isPlainObjectValue(preview)||!Array.isArray(preview.pendingNoteReferences)
           &&!(preview.pendingNoteReferences===undefined&&resolved))throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+        notePhaseMemo={identity,parsed};
         const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
           projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
           scenes:noteScenes.map((scene,i)=>({...scene,returnedDocument:parsed.scenes[i].returnedDocument})),

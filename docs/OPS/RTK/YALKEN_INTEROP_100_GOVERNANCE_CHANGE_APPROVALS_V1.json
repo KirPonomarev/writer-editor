@@ -2242,10 +2242,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "dbc44d66e06eec163591449b0aa0ef072d18729bd5aba0f8b8662c5fc5487541",
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "sha256": "1c2578e21c4fc047aac7c38710e3d4595e69538afd22b85df14123d352d1e9d7",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -5347,11 +5347,11 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "8727c1f3cb54e4a260d48af2469ecfb6ea7ad8b760c58e1bb0ecb52dd50bb10e",
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "sha256": "ecec80a29f58e8852d3b034df58511e807c69931045c86bfde42ff927e9545ea",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014"
     },
     {
@@ -5428,12 +5428,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
-      "sha256": "46bba443e51fe068a47dde17e6c32ec6a696d177c1d6f96cc12bc6235f9cb675"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "7ffce66494a28beaf2601210972e16d4e343bb5633d4e17f4b30f8033c291c3f"
     },
     {
       "approved": true,
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "36fd2cb0012f753b7747aac001dfa24ea431b01e424bcd6f7efb00c143e554fb"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "65615a437d8da73e78594e01b37cd0c6814c013e78d95bff105c1df83cc54fe7"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "9cff571946b4a6a89e3302371520ca528b4b46aeae35e0e638c6a6e2fb685483"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "057d711bb1df3cd006c43c659ea0b72e098fd30ed94b18ab74eb790d119fbd5c"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "1181cc859b802872cbb200831a6fb61afbe5d70453f481d4a780757a1ecae75b"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "073f362dc52773d1d2580e87b2b7c0a4e3785cbf644a999fd119dcf9467491dd"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "e0befbb9c3d6ac1c273363d856d939fbe73648c92514c8a553a222d84f7ab950"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "d07223587e04ef6b08fded0ddf2ac94730c2a6ac42d22ee5edb5b051de4c3c72"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "e71534559061b561dc888b71dd79478ac9c8b169fee6d9ec080c61b06b6abcbf"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "9bd861f3b75fc2876470c668fe5f64330d9b65b11aac12094b6bc2e37e1c6721"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "0bc7730cd31e80e0686ba776c51e95dccc38493e9ed03bd4661676a21ab42798"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "50f9ff8850a79d6878680c12d9864de7ab7a16ec18e7fe734d5cb7ce48748714"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "e3d4ebf48a1522f0977419de9b35cfe9cdfe45f358ea655e29296a4991c4fe17"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "a3493b214e4e83141418f34a9cfb391b487438b31075dbd0d550a980afa16a99"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "598d40129cd11465fbaa77753103176f5351b8964afa4788aa66cf6479902e45"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "2dbb9ef5d997632d7192062327e9d384329e49e7879e73926cc3a103a7138e5a"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
-      "sha256": "f5fb69d42fb2690d1417d12b5098369affc72ec580a6591cfd720bb5985c7c5b"
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit.",
+      "sha256": "daf7401b2b0e8975933283e51d5125a8cf43f54dbf65ac40ff278533627341ba"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5644,12 +5644,12 @@
     },
     {
       "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
-      "sha256": "1313ac6c28d7db298f70910427a0935e945da2ca36bb81f61460436e9f1ecc13",
-      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "sha256": "383fd3567c2fdbd2a4b132ea7d1fe11fd30a3830f0f781a9976574f7efcaab50",
+      "approvedAtUtc": "2026-10-14T15:53:37.727795+00:00",
       "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure."
+      "rationale": "Owner-directed same-contour takeover; exact validated phase memo, retained causal failures, focused9/whole546/risk155 and actual frozen500k Main97.16s. Required committed delivery IN_PROGRESS; no native cycle or shipping SLO credit."
     }
   ],
   "evidenceStampIds": [
@@ -43030,6 +43030,123 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "dbc44d66e06eec163591449b0aa0ef072d18729bd5aba0f8b8662c5fc5487541",
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "8727c1f3cb54e4a260d48af2469ecfb6ea7ad8b760c58e1bb0ecb52dd50bb10e",
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:12:47.167350Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014|owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Owner-authorized Main-only exact same-call pending-book phase reuse; source/Core/bridge/authority and final validation preserved. Causal RED and5 selected semantic/refusal cases actual; whole/profile/delivery IN_PROGRESS. No native credit or acceptance predicate change.",
+      "sha256": "46bba443e51fe068a47dde17e6c32ec6a696d177c1d6f96cc12bc6235f9cb675"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "36fd2cb0012f753b7747aac001dfa24ea431b01e424bcd6f7efb00c143e554fb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "9cff571946b4a6a89e3302371520ca528b4b46aeae35e0e638c6a6e2fb685483"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "1181cc859b802872cbb200831a6fb61afbe5d70453f481d4a780757a1ecae75b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "e0befbb9c3d6ac1c273363d856d939fbe73648c92514c8a553a222d84f7ab950"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "e71534559061b561dc888b71dd79478ac9c8b169fee6d9ec080c61b06b6abcbf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "0bc7730cd31e80e0686ba776c51e95dccc38493e9ed03bd4661676a21ab42798"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "e3d4ebf48a1522f0977419de9b35cfe9cdfe45f358ea655e29296a4991c4fe17"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "598d40129cd11465fbaa77753103176f5351b8964afa4788aa66cf6479902e45"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure.",
+      "sha256": "f5fb69d42fb2690d1417d12b5098369affc72ec580a6591cfd720bb5985c7c5b"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "1313ac6c28d7db298f70910427a0935e945da2ca36bb81f61460436e9f1ecc13",
+      "approvedAtUtc": "2026-10-14T13:30:02.252810+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same contour resolved zero-span preview guard; retained WHOLE01 failure, focused8 and actual immutable profile gate. Full execution/delivery IN_PROGRESS; no native or timeout closure."
     }
   ]
 }
