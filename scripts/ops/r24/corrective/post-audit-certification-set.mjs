@@ -22922,7 +22922,7 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "src/main.js",
-      "sha256": "ecec80a29f58e8852d3b034df58511e807c69931045c86bfde42ff927e9545ea"
+      "sha256": "bd3bc4564060cf6d07b560d127ccff5e3483a56d105858cb06066d52311a68af"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -22950,7 +22950,7 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "efd9e4d024ecc9eb554e0fa1dda07e04bbe7da2b656737805ca5cdd0f7d252ca"
+      "sha256": "a704e2b64b0d8d556cb04a1fd6842d08017c22f2c3ef2bfc9c651eed683a75b4"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
@@ -23058,7 +23058,7 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "1c2578e21c4fc047aac7c38710e3d4595e69538afd22b85df14123d352d1e9d7"
+      "sha256": "949a82c69af6b406b98cfff47948b25700e2382a40ce4a6f1215be63e6be5e48"
     },
     {
       "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -23346,19 +23346,19 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "sha256": "7ffce66494a28beaf2601210972e16d4e343bb5633d4e17f4b30f8033c291c3f"
+      "sha256": "7663c40cd436df92c8d480fcf71e937e87a132d8c97b2f192936d91ca5c4d531"
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "65615a437d8da73e78594e01b37cd0c6814c013e78d95bff105c1df83cc54fe7"
+      "sha256": "c802d9d6b45f3e541910a6f92682b936ebe533b3097ed8f036006dc86359e4d5"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "057d711bb1df3cd006c43c659ea0b72e098fd30ed94b18ab74eb790d119fbd5c"
+      "sha256": "e17fd88396efbda473251fa2d08c73537dc0976b5d9434e162756645bfdfcbd6"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "073f362dc52773d1d2580e87b2b7c0a4e3785cbf644a999fd119dcf9467491dd"
+      "sha256": "13f48d921518f8b66ccc842976c5c868c90dc7b295f712f9719ba41df7976c84"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -23430,13 +23430,13 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
-      "sha256": "383fd3567c2fdbd2a4b132ea7d1fe11fd30a3830f0f781a9976574f7efcaab50"
+      "sha256": "880283b6a4879ce4f7b5633b2a4849d98c816b8b15554e7d332e5b9aff1e1177"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d07223587e04ef6b08fded0ddf2ac94730c2a6ac42d22ee5edb5b051de4c3c72"
+      "sha256": "073b6b2ec9f783affd7c19e6174104dd775bbc4fef006b51a9f33bfd3eff4f2d"
     }
   ]
 });

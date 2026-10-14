@@ -1,34 +1,43 @@
-## 2026-10-14 — Pending book export reuses exact phase observations
+## 2026-10-15 — Complete pending-book export and safe lifecycle
 
 WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 continues the same unfinished
-contour from local446b6d, delivery base324e08a3. Owner explicitly requested
-«доведи это сам»: Root is sole executor in an isolated registered worktree.
-The interrupted agent's four WIP files are preserved byte-exact in their original
-worktree and backed up on T777; no original profile or authority was changed.
+export contour: delivery base324e08a3, reachable local446b6d and c8187b04.
+At direct owner «доведи это сам», Root is sole executor in an isolated worktree;
+the interrupted agent's four WIP files and original native artifacts stay exact.
+Owner supplied an audit; its findings were independently checked, not treated as
+an authority override. One coherent export outcome and rollback remain the scope.
 
-Main reuses this invocation's provisional analysis and internally produced preview.
-The second pending parse is reused only after independent hostile ZIP validation
-and an exact full-entry metadata/compressed-payload SHA comparison; only the two
-separately validated carrier payloads/sizes are excluded. Every phase still runs
-actual body/note/comment/source validation and the note binder; final artifact,
-lease/CAS, writer/readback/activation remain unchanged. No cross-call cache.
-Missing preview/outstanding references refuse; signed resolved zero-span history
-remains valid. Old failures are retained. A newly added collision fixture initially
-failed because an unknown ZIP part was correctly quarantined; equal-CRC distinct
-payloads now use admitted settings XML, with unknown parts separately refusing.
+Main reuses provisional analysis, internally produced preview and a same-call
+pending result only for matching complete validated package identity. Final actual
+body/notes/comments/source/provenance, lease/CAS and publication checks remain.
+Full RTK on c818 completed4202/4203, one unchanged EVID01-V3 failure, no exclusions:
+Main directly re-extracted ZIP parts. The correction computes an opt-in immutable
+identity inside the bridge's already executed validated analysis. Main receives
+only the digest; default worker/intake results remain exact. No cross-call cache,
+low-level Main ZIP extraction or validation removal. All failures stay retained.
 
-Fresh focused9/9, whole affected546/546 and whole risk155/155 pass with mandatory
-TAP oracle, no skipped/todo/cancelled tests and exact source/input barriers.
-Compiler passes twice with identical generated artifacts and no generated Git diff.
-Actual frozen SOURCE58 500k diagnostic passes the unchanged publication gate:
-Main97159.732ms versus153123.624ms, pending parser1 instead of2; process100.928s,
-581 source/package and24 business inputs exact, product write attempts0.
-This is component evidence, not native acceptance, percentiles or shipping SLO.
-Normal committed certificate/fullRTK/official CI/merge/exact merged proof remains
-pending at this factual freeze. Accepted native cycles0; all V4.1 origins/scales,
-roles, recovery and five genuine rounds remain open. Core/bridge/renderer,
-dependencies, schemas and limits are unchanged. Runtime delta23 lines, tests195.
-Reports/materials remain on T777. Task:2026-10-14--word-pending-book-export-phase-reuse-mac.md.
+A full Main/settings/atomic-gateway/export-handler control-flow diagnostic shows
+settings already waits existing queued writes, but held DOCX readback can allow
+Quit before subsequent authority activation. SOURCE58 causality is still UNKNOWN.
+Main now tracks each complete scene/book export promise through final activation.
+Existing lifecycle confirmation refuses while any export is pending, rechecks
+after its await, and new exports refuse after Quit/window close begins. Normal
+close/Quit can be retried after terminal completion; cancel/failure releases only
+its own operation. No global shutdown framework or new UI composition.
+
+Fresh selected16/16 and unchanged whole EVID18/18 pass with mandatory TAP oracle,
+no skipped/todo/cancelled. Causal Quit RED02 fails4/5 before the fix; GREEN5/5 covers
+held readback/activation, overlap, cancellation/failure, async admission and retry.
+Compiler passes twice with identical artifacts and no generated Git diff.
+Actual frozen500k Main diagnostic83425.659ms (process86.369s), gate publishAllowed,
+parser1, analyses2, sources581/business inputs24 exact, product writes0.
+This is one component measurement, not native authority activation or shipping SLO.
+Earlier546/546,155/155 and318/318 belong to their preserved earlier source bytes.
+Final committed certification/fullRTK must cover complete affected files on the
+stable candidate, then official CI/normal merge/clean exact-merged verification.
+Accepted native cycles0; both origins/scales/runtime, roles, five genuine rounds
+and required recovery remain open. Runtime delta56 lines, tests279 added lines.
+T777 retains new materials/reports. Task:2026-10-14--word-pending-book-export-phase-reuse-mac.md.
 
 ## 2026-10-14 — Project-scoped tree query across document replacement
 

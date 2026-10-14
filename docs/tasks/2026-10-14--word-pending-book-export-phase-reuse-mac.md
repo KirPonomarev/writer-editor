@@ -1,47 +1,54 @@
-# Pending book export same-call phase reuse
+# Complete pending-book export with validated phase reuse and safe Quit
 
 TASK_ID: WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014
 PARENT_TASK_ID: YALKEN_MAC_WORD_FINISH_V4_1_20261013
-STATUS: COMPONENT_VERIFIED_DELIVERY_OPEN
+STATUS: QUALIFIED_COMPONENT_CANDIDATE_DELIVERY_PENDING_AT_FACTUAL_FREEZE
 DOCUMENT_CLASS: PROCESS
-CLAIM_BOUNDARY: Export computation correction; no native cycle acceptance.
+CLAIM_BOUNDARY: Export computation and lifecycle code; no native cycle acceptance.
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 MODE: HARD_TZ
 BINDING_BASE_SHA: 324e08a3df9b97df0b270ded9a94fcf3091fa078
-OWNER_AUTHORITY: Owner V4.1 autonomous finish; direct owner takeover «доведи это сам», Root SOLE_EXECUTOR.
-DESIGN_TOOL_ROUTER: INACTIVE_BACKEND_CORRECTION; architecture declaration records backend-only router.
+OWNER_AUTHORITY: Direct owner autonomous finish «доведи это сам»; subsequent owner audit steering. Root SOLE_EXECUTOR.
+DESIGN_TOOL_ROUTER: INACTIVE_BACKEND_CORRECTION; existing status only, no design contract change.
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_VERIFICATION_REQUIRED=true
 
 ## MICRO_GOAL
 
-Avoid reparsing an exact phase artifact when this same publication invocation
-already owns its independently validated analysis or internally produced preview.
+The same complete Word-book export avoids duplicate parsing and cannot be
+interrupted by ordinary lifecycle exit before its readback/authority activation.
+One coherent outcome, branch, rollback and normal delivery chain.
 
 ### MAP
 
-O: Maintained actual gate proves fewer duplicate calls with full unchanged physical
-Current/Original, rich notes/comments/source provenance and strict refusals.
-T: Source-bound export -> existing builder -> actual provisional/final parsers ->
-unchanged publication validation -> existing leased atomic writer/readback/activation.
-H: Pending book-note gate repeats provisionalCompleteAnalysis and builds an outer
-contentPreview after pending parsing already generated that exact phase preview.
-B: All source/body/note/comment/authority checks, immutable bytes, lease/CAS and
-final actual artifact validation; Core/bridge/renderer/schema/dependencies/timeouts.
-P: Causal callcounter RED/GREEN, meaningful missing/forged/corrupt negatives, whole
-affected/risk files, compiler idempotence, cheap gates/cert/fullRTK/CI/normal merge.
-I: Exact base above; continuation branch codex/word-pending-book-export-finish-mac-20261014;
-pinned Node22.12.0; T777 final evidence, declared owner-takeover disposable contract TMPDIR only; native admission separate.
+O: Actual publication proves complete physical semantics with fewer duplicate calls;
+actual Main lifecycle prevents clean Quit/close while export remains unfinished.
+T: Canonical source -> existing builder -> independent phase parsers -> publication
+validation -> existing leased atomic writer -> readback -> activation -> terminal.
+H: Reuse existing provisional analysis/internal preview and the exact same-call
+pending package result; derive identity inside its existing bridge extraction.
+Track the whole async export, since queue emptiness/editor ACK alone cannot prove
+completion between output-file write and subsequent authority activation.
+B: Core semantics, raw source/body/notes/comments/provenance, immutable inputs,
+lease/CAS, final actual validation, atomic writers, schemas, dependencies and caps.
+P: Causal RED/GREEN and meaningful negatives first; whole affected coverage through
+one unchanged final RTK graph, complete certification, cheap gates/compiler/CI.
+I: Initial base above; reachable local446b6d/c8187b04; branch
+codex/word-pending-book-export-finish-mac-20261014; pinned Node22.12.0. T777 final
+materials/reports; declared owner-takeover disposable contract TMPDIR only.
 
 ## ARTIFACT
 
-Main-only same-call reuse plus appended two existing contract tests and required
-factual/mechanical companions. Runtime budget30 changed lines; behavior250.
+Main publication/lifecycle changes, opt-in observation on the existing bridge port,
+append-only two maintained contract files, factual/mechanical companions.
+Runtime budget60 changed lines; behavior350 added lines versus delivery base.
+At this freeze actual runtime56 and behavior279. No general shutdown framework.
 
 ## ALLOWLIST
 
 - src/main.js
+- src/io/revisionBridge/index.mjs
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
 - test/contracts/rtk-word-review-default-typography.contract.test.js
 - docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md
@@ -58,95 +65,110 @@ factual/mechanical companions. Runtime budget30 changed lines; behavior250.
 
 ## DENYLIST
 
-All other paths; Core/bridge/renderer/UI/generated/dependencies/schema/timeouts;
-navigator repair; cross-call cache; reparsing fallback; skipped/weakened assertions;
+All other paths; Core semantic validators, renderer/UI/generated/dependencies,
+schemas/timeouts; navigator; cross-call cache; weakened/skipped assertions;
 native/profile/authority writes; reset/stash/clean/rebase/force/amend.
 
 ## CONTRACT / SHAPES
 
-EXISTING_SEAM: buildFullManuscriptPublicationGate uses the existing
-baselineDocumentNotes argument and internal contentPreview return route. Only
-source.documentNotes is supplied; an absent or invalid preview refuses. Existing
-provisionalCompleteAnalysis remains local to the same phase/call. No new API,
-feature, port, surface, persistent/cross-call cache or authority flag. Product Core/bridge owns semantic
-truth, Command Kernel owns export meaning and publication authority, Main owns
-call-local DERIVED_STATE. PROJECT_STATE and AUTHORING_WORKING_STATE are read-only
-until the unchanged existing leased writer. All final validation remains exact.
-No new migration; one ordinary PR revert. Failure and raw native artifacts retained.
+EXISTING_SEAM: buildFullManuscriptPublicationGate consumes existing parser-produced
+contentPreview through baselineDocumentNotes, existing provisionalCompleteAnalysis
+and optional includePublicationPhaseIdentity=true on the existing analysis port.
+Only successful validated analysis attaches publicationPhaseIdentity: sha256 string.
+The digest covers ALL sorted ZIP entry metadata and raw compressed payload SHA;
+only two separately validated carrier payloads/sizes/CRC are excluded, while
+name/method/flags remain. Offsets do not change package meaning. No extra extraction.
+Default worker/intake output is byte-equivalent; observation creates no authority.
+Missing/malformed identity or preview refuses. Missing pending references is
+allowed only for a nonempty signed binding roster with every revisionSpans exactly
+empty; outstanding wrappers/source changes still refuse. Identity misses execute
+the ordinary parser; there is no persistent/cross-call cache or reparse fallback.
+Every final actual body/note/comment/source/authority check and binder remains.
+
+Complete runDocxReviewPacketExport promises from both existing Main surfaces enter
+one transient operational Set and leave in finally, including typed cancel/failure.
+Existing confirmDiscardChanges checks it before awaiting and again after lifecycle
+verification; pending export refuses the lifecycle action with existing status.
+New export refuses when isQuitting/isWindowClosing is already true. Closing after
+terminal can be retried. No authority, canonical content or authoring text lives
+in the Set. Platform effects remain on their existing ports/adapters.
+
+Core owns product truth; Kernel owns export capability/meaning and revalidation;
+bridge owns bounded package observation; Main owns only call-local DERIVED_STATE
+and pending-operation TRANSIENT_STATE. PROJECT_STATE/AUTHORING_WORKING_STATE stay
+read-only until existing authorized writers. No migration/dependency/network/UI
+composition change. One ordinary coherent PR revert; all old failures remain.
 
 ## IMPLEMENTATION_STEPS
 
 CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
-Full ordered current-head startup, registry/mount/clean remote and architecture
-preflight precede this task edit. E0 and Root task review precede runtime edits.
-Append causal regression, retain RED, minimal Main fix, meaningful complete proof.
+Initial startup and clean preflight/E0 preceded WIP adoption. Original four files
+remain exact and backed up. Scope continuation from clean c8187b04 received fresh
+ARCHITECTURE02/preflight/E0 before new edit: the same unfinished export outcome
+adds only existing bridge projection and complete export lifecycle protection.
+This is one bounded vertical slice under MAP/MOVE; no canon waiver/new contour.
+Meaningful causal tests precede fixes; factual docs and mechanical tuples refresh
+once after the stable component GREEN, before final committed graph/delivery.
 
 ## CHECKS
 
-CHECK_01_PRE_IDENTITY: bootstrap, ordered reads, clean exact base/remote/mounts,
-architecture preflight actual0 before first repository edit.
-CHECK_02_POST_E0: canonical task OPS-GATE and Root review before runtime edit.
-CHECK_03_POST_CAUSAL: callcounter RED/GREEN; missing pending revision, forged source,
-missing/invalid preview and phase corruption; full physical semantics/input equality.
-### Actual causal evidence
+CHECK_01_PRE_IDENTITY: bootstrap, ordered current authority/source reads, registry,
+mount/clean exact reachable base/remote and fresh architecture preflight actual0.
+CHECK_02_POST_E0: task OPS-GATE actual0 before runtime edits; no source edits during
+held verification jobs; preserve all original WIP/source/native evidence.
+CHECK_03_POST_CAUSAL: exact memo callcounts/physical Current/Original, rich notes,
+comments and immutable inputs; missing preview/identity/outstanding references,
+forged source, every semantic part/flags and equal-CRC distinct bytes refuse/miss.
+Default analysis remains exact without opt-in. Actual Main/settings/atomic gateway/
+handler tests hold readback/activation, overlap, cancel/failure, lifecycle async
+race, retry and new post-closing admission. External I/O is stubbed, not native.
+CHECK_04_POST_CHAIN: compiler twice/idempotence; focused and unchanged EVID whole;
+final unchanged full RTK plan must include both complete affected contract files,
+bridge/notes/return risk and lifecycle coverage, mandatory TAP/file inventory with
+no skip/todo/cancelled/zero-test; complete certification and required cheap/CI gates.
+An extra duplicate whole run is unnecessary only when this same exact final graph
+really executes those complete files. Selected coverage never substitutes for it.
+CHECK_05_POST_PROFILE: same immutable SOURCE58 business inputs, actual production
+builder/Main gate under declared240s diagnostic, sources581/inputs24 pins and
+write-refusing adapters. Measurement is not target/readback/activation or native SLO.
+CHECK_06_POST_MERGE: normal push/PR/required CI/merge; exact source/tree identity,
+clean merged-head relevant complete/refusal coverage and required guardrails.
 
-Same unfinished contour continues from reachable local446b6d; initial delivery
-base remains324e. No push/PR occurred. Root held the first candidate because
-unprofiled actual gate153.12s still exceeds120s. The next bounded Main-only step
-compares every validated ZIPentry name and noncarrier metadata/raw compressed
-payload SHA, excluding only two independently validated carrier payloads/sizes.
-A matching same-call result may be reused; every phase still validates actual
-artifact/notes/comments/source and binds its own notes. No cross-call cache.
+### Actual causal evidence at factual freeze
 
-RED01 actual1: successful gate performs3analysis/2pending/2outerpreview calls.
-FOCUSED02 actual5/5 exit0:2analysis/2pending/0outerpreview, complete physical
-Current/Original/rich notes/comments and same-source/stale/malformed refusals.
-FOCUSED01 ran before the guarded patch was written because the external edit
-script refused a nonunique replacement; its failures remain retained.
-WHOLE01 actual1 retained:541/542, resolved history has no pending references.
-FOCUSED03 actual8/8 after a narrow zero-span optional-field guard; original
-assertions remain exact. PROFILE03 actual0, gate publishAllowed true,134.15s
-versus prior215.59s;581 sources and24 inputs exact. Remaining120s observer
-latency is OPEN, no native timeout closure. Required whole/delivery IN_PROGRESS.
+Historical initial RED:3 analyses/2 pending/2 outer previews. The first correction
+retains2/2/0. Historical whole541/542 exposed resolved zero-span optional references;
+that narrow guard and original failures remain retained. Local446b6d was unpublished.
+Takeover corrected only a new CRC fixture: unknown extra.xml was correctly
+quarantined; equal-CRC distinct XML comments use admitted word/settings.xml, and
+unknown roster still refuses before pending parsing. Earlier selected9/9,
+whole546/546,risk155/155 and certification318/318 bind their old source bytes.
+Frozen Main then measured97159.732ms versus153123.624ms, not native acceptance.
 
-### Owner takeover qualification, 14 October
+First final RTK was interrupted without terminal evidence: UNKNOWN, logs retained.
+Resumed unchanged graph actual1:4202/4203, one EVID01-V3 direct-Main ZIP extraction
+failure, no exclusions. Isolated unchanged EVID RED01 actual1 confirms the cause.
+Moving the identity into existing validated bridge analysis yields whole EVID18/18.
+Original audit stub hid real settings queue waiting; full actual control-flow
+reproduction confirms the separate export readback gap instead. SOURCE58 attribution
+remains UNKNOWN. New Quit harness initially lacked one owned revalidation adapter;
+that fixture failure stays retained. Corrected causal RED02 fails4/5 with premature
+Quit/stale confirmation/admission; same five assertions pass after the bounded fix.
 
-Direct owner «доведи это сам» continues this same contour at local446b6d in a
-fresh registered isolated worktree; initial delivery base324e is unchanged.
-Clean preflight/E0 passed before adopting the preserved four WIP files. Original
-agent checkout and four original hashes remain exact. Root is SOLE_EXECUTOR.
-
-Phase-memo causal RED01 is retained:2 pending parses where1 is required.
-Takeover FOCUSED01 failed8/9 because the new unknown-part CRC fixture was rejected
-by the unchanged package quarantine; corrected only that new fixture to distinct
-same-CRC XML comments in admitted word/settings.xml. Unknown roster explicitly
-refuses STAGE02_PACKAGE_QUARANTINED before pending parsing. Six semantic parts,
-flags, independent invocations and physical/source/result immutability are covered.
-FOCUSED02 passes9/9; WHOLE01 passes546/546; RISK01 passes155/155, all actual0 and
-mandatory TAP0, no skip/todo/cancelled, source/input barriers intact. Compiler
-passes twice with identical artifacts and no generated Git diff. Total runtime
-23 changed lines, behavior195 added lines versus delivery base, within budgets.
-
-Unprofiled actual production Main builder on frozen SOURCE58 500k inputs records
-97159.732ms versus153123.624ms, pending parse1/56718.663ms and analyses2/19973.125ms;
-actual publication RTK_V4_DOUBLE_SELF_PARSE_PASS. Full process100.928s, bytes9646240,
-581 source/package and24 business input pins held; product write attempts0.
-No native terminal, authority activation, shipping SLO or cycle credit follows.
-All old failed evidence stays failed. Full committed certificate/RTK/officialCI,
-normal delivery and fresh clean exact-merged verification remain required.
-
-CHECK_04_POST_CHAIN: whole affected2 and relevant bridge/notes risk contracts,
-compiler twice/idempotence, required cheap gates, cert/fullRTK/official CI.
-CHECK_05_POST_PROFILE: same immutable SOURCE58 inputs, actual unchanged Main gate
-outcome and240s bound, corrected external evidence guard, after input/source pins.
-First218s diagnostic process1 remains failed; retained timing is not PASS.
-CHECK_06_POST_MERGE: normal delivery, exact merged tree/source identity, relevant
-phase reuse/refusal checks and required governance/guardrails.
+Current selected16/16 actual0/mandatory TAP0, no exclusions, byte barriers intact.
+It includes all phase controls and actual public Main export plus five lifecycle
+cases. Separate EVID18/18, phase10/10 and Quit5/5 overlap the selected graph; do not
+sum them as unique coverage. Compiler2 is identical, no generated Git diff.
+Current frozen500k Main83425.659ms, process86.369s, pending1/49087.899ms and
+analyses2/16861.451ms; gate RTK_V4_DOUBLE_SELF_PARSE_PASS, DOCX9646240 bytes,
+581 sources/24 business inputs exact, product write attempts0. This is one diagnostic
+measurement, not causal attribution of every timing difference or shipping SLO.
+Full final committed certification/RTK/officialCI/delivery remains required.
 
 ## STOP_CONDITION
 
-Wider semantic/authority change, foreign WIP or third identical failure: STOP.
-No native exchange, release performance or full V4.1 acceptance from component proof.
+Wider semantic/authority change, foreign WIP, broken identity or third identical
+failure: STOP. Component proof cannot supply full native/Word-cycle credit.
 
 ## REPORT_FORMAT
 
@@ -154,5 +176,6 @@ One text KEY:VALUE block; basenames only, exact actual counts/identity/delivery.
 
 ## FAIL_PROTOCOL
 
-Preserve failures and all raw inputs/log hashes; no stale/count-only proof, no
-false cycle credit. Full normal Git/CI/merge/exact-head chain required.
+Keep original failures/raw artifacts and hashes; no stale/count-only PASS or false
+cycle credit. All V4.1 origins/scales/roles/five-round/recovery requirements remain.
+Full normal delivery and exact merged proof precede fresh native admission/build.

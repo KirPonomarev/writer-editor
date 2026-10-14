@@ -1668,3 +1668,25 @@ test('pending book phase memo misses every changed semantic part roster raw payl
   assert.equal(require('node:v8').serialize(candidate).equals(raw),true,kind);
  }
 });
+
+test('pending book phase identity is opt-in and preserves complete default analysis without authority',async()=>{
+ const f=await fractionalPendingNotePublicationFixture(),input={bytes:f.bytes},before=require('node:v8').serialize(input);
+ const ordinary=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes(input,{cryptoPort});
+ const observed=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes(input,{cryptoPort,includePublicationPhaseIdentity:true});
+ assert.equal(ordinary.ok,true);assert.equal(Object.hasOwn(ordinary,'publicationPhaseIdentity'),false);
+ const {publicationPhaseIdentity,...same}=observed;assert.match(publicationPhaseIdentity,/^sha256:[a-f0-9]{64}$/u);assert.deepEqual(same,ordinary);
+ assert.equal(require('node:v8').serialize(input).equals(before),true);assert.equal(observed.canWriteManuscript,false);assert.equal(observed.canApply,false);
+});
+test('pending book phase reuse refuses absent or malformed independently computed package identity',async()=>{
+ const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize(f.source);
+ for(const phase of ['provisional','final'])for(const bad of [undefined,null,'sha256:'+'x'.repeat(64)]){
+  const bridge={...f.bridge,buildDocxReviewTransportAnalysisFromZipBytes(input,options){const result=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes(input,options);
+   if(options?.includePublicationPhaseIdentity===true&&(phase==='final'?input.bytes===f.bytes:input.bytes===f.source.provisionalSelfParseArtifact.bytes)){
+    if(bad===undefined)delete result.publicationPhaseIdentity;else result.publicationPhaseIdentity=bad;
+   }return result;
+  }};
+  const gate=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});
+  const actual=await gate.publish(f.bytes,f.source);assert.equal(actual.publishAllowed,false);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(actual.reason,'WORD_BOOK_NOTES_PUBLICATION_PARSE');
+  assert.equal(require('node:v8').serialize(f.source).equals(before),true);
+ }
+});

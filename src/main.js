@@ -327,6 +327,7 @@ let lastSignaledEditGeneration = 0;
 let lastAcknowledgedEditGeneration = 0;
 let isQuitting = false;
 let isWindowClosing = false;
+const pendingReviewDocxExports = new Set();
 let lastAutosaveHash = null;
 let lastReplaceMassReceipt = null;
 let lastHistoryRestoreReceipt = null;
@@ -1101,7 +1102,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     const provisionalComments = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
       bytes: source.provisionalSelfParseArtifact.bytes,
       budgets: docxReviewReturnIntakeProductBudgets(),
-    }, { cryptoPort });
+    }, { cryptoPort, includePublicationPhaseIdentity: true });
     provisionalCompleteAnalysis = provisionalComments;
     const readback = compareCommentExportReadback(source.commentExport, provisionalComments?.reviewIr?.commentThreads);
     if (provisionalComments?.ok !== true || !readback.ok
@@ -1119,7 +1120,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     expectedAuthority,
     returnedArtifactSha256: finalArtifactSha256,
     baselineFinalText: typeof source?.sceneText === 'string' ? source.sceneText : '',
-  }, { cryptoPort });
+  }, { cryptoPort, includePublicationPhaseIdentity: true });
   if (!finalParse || finalParse.ok !== true) {
     return {
       ok: false,
@@ -1203,7 +1204,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       const reconstructed=require('./export/docx/docxReviewPacketComments.js').bindPendingCommentExport({commentExport:source.commentExport,scenes:canonicalScenes,blocks:source.blocks,exportTypography:bodyProfile});
       for(const scene of localAuthority.exportMap.scenes)if(stableRtkReviewTransportJson(scene.pendingCommentBinding??null)!==stableRtkReviewTransportJson(reconstructed.pendingCommentBindings.find(item=>item.sceneId===scene.sceneId)?.binding??null))throw Error('WORD_BODY_PENDING_BINDING');
       for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
-        const read=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
+        const read=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort,includePublicationPhaseIdentity:true});
         if(phase==='provisional')provisionalCompleteAnalysis=read;
         let rows=read.reviewIr?.formattingParagraphs;
         if(rows?.some(row=>row.formattedRuns?.some(run=>run.unsupportedNames?.includes('rPrChange')))) {
@@ -1261,18 +1262,15 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     try {
       const noteProofs=[];let notePhaseMemo;
       for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
-        const readback=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort});
+        const readback=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort,includePublicationPhaseIdentity:true});
         if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
         const noteScenes=localAuthority.exportMap.scenes.map(scene=>{
           const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
           if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
           const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
           if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
-        const packageParts=revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()});
-        if(!packageParts.ok)throw Error(packageParts.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const identity=stableRtkReviewTransportJson(packageParts.zipInventory.entries.map(({dataStart,dataEnd,...entry})=>
-          ['docProps/custom.xml','customXml/item1.xml'].includes(entry.name)?{name:entry.name,method:entry.method,flags:entry.flags}
-            :{...entry,payloadSha256:sha256DocxReviewPreviewSessionBytes(bytes.subarray(dataStart,dataEnd))}).sort((a,b)=>a.name.localeCompare(b.name)));
+        const identity=normalizeRtkSignedSha256(readback.publicationPhaseIdentity);
+        if(!identity)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
         const parsed=notePhaseMemo?.identity===identity?notePhaseMemo.parsed:revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
           baselineDocuments:noteScenes,baselineDocumentNotes:source.documentNotes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
           signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
@@ -5648,8 +5646,17 @@ async function transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorit
   return { ...pendingAuthorityStore, roundsById };
 }
 
+async function runLifecycleBoundReviewDocxExport(payload, dependencies) {
+  if (isQuitting || isWindowClosing) return dependencies.makeTypedReviewDocxExportError(
+    'E_REVIEW_DOCX_EXPORT_CLOSING', 'REVIEW_DOCX_EXPORT_CLOSING');
+  const operation = runDocxReviewPacketExport(payload, dependencies);
+  pendingReviewDocxExports.add(operation);
+  try { return await operation; }
+  finally { pendingReviewDocxExports.delete(operation); }
+}
+
 async function handleReviewDocxExportPacketCommandSurface(payload = {}, options = {}) {
-  const result = await runDocxReviewPacketExport(payload, {
+  const result = await runLifecycleBoundReviewDocxExport(payload, {
     commandId: REVIEW_EXPORT_DOCX_PACKET_COMMAND_ID,
     normalizeExportPayload,
     makeTypedReviewDocxExportError,
@@ -5699,7 +5706,7 @@ async function handleReviewDocxExportPacketCommandSurface(payload = {}, options 
 }
 
 async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload = {}, options = {}) {
-  const result = await runDocxReviewPacketExport(payload, {
+  const result = await runLifecycleBoundReviewDocxExport(payload, {
     commandId: REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET_COMMAND_ID,
     normalizeExportPayload,
     makeTypedReviewDocxExportError: makeTypedFullManuscriptReviewDocxExportError,
@@ -36416,6 +36423,10 @@ async function handleSaveAs() {
 }
 
 async function confirmDiscardChanges() {
+  if (pendingReviewDocxExports.size > 0) {
+    updateStatus('Дождитесь завершения экспорта DOCX перед закрытием.');
+    return false;
+  }
   if (!mainWindow) return true;
 
   // Join the one active save. Evidence stays bound to the subject captured before I/O.
@@ -36443,6 +36454,10 @@ async function confirmDiscardChanges() {
       observationGeneration: lastSignaledEditGeneration,
     }),
   });
+  if (pendingReviewDocxExports.size > 0) {
+    updateStatus('Дождитесь завершения экспорта DOCX перед закрытием.');
+    return false;
+  }
   return decision.allowed === true;
 }
 
