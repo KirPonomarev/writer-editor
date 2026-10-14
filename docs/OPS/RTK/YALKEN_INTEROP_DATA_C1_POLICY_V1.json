@@ -661,7 +661,8 @@
     "src/main/projectTreeReadPort.cjs",
     "src/main/projectTreeReadWorker.cjs",
     "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
-    "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md"
+    "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md",
+    "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md"
   ],
   "protectedFiles": [
     {
@@ -890,7 +891,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "5677d330cad6e13cb99a9d31f70202193ca1550ea33a7ee3280e8dc5eeed3976"
+        "sha256": "18f578f6e16f161b3626ab3abfa79335b3d5d26888f1a8ee45b2470bee92df08"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2078,7 +2079,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "6dff05ad53be715f22f0ed08ba1203608947c12c845841019373ceafad6b7536"
+        "sha256": "9a93aed697d8fab993e198572f82f1da8b4e0f36a75a050b9f2aca7ade295130"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2582,15 +2583,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "810ac34cb961d9157751600d8f6c264ac702c7cbab817ce28fd924d19329f4e7"
+        "sha256": "ef5f798cc72ede8383783b001061cb3aada0cfcf2a7f33521c9d46fb917bb4da"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "57cf095281dd5a3d118f3050d5a48d2b186f1d00c9b06cf657be4f1c7e602148"
+        "sha256": "ead71f62eb67e51e7e18c2dd3a829487cc4fd776566c44398711074ef2cd7c36"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "689afea9b684c75ffccfcd95f6e21053392c0e1306c9d692b9cb7b319d767393"
+        "sha256": "721438d477484ecf1f0f6f30b0c6cc560483fc2a315b1d61f1dd6e3cabea7390"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2907,6 +2908,10 @@
       {
         "path": "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md",
         "sha256": "be20c755143f8af4b36aa1c3f72e9c933583642e9c0bec0b928a8d92be491e7d"
+      },
+      {
+        "path": "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
+        "sha256": "c50542e916be2e1e13ae3ed6254520e50fa60c634aa295f330ffbbb7ab2bc2a6"
       }
     ],
     "followupRepair": {

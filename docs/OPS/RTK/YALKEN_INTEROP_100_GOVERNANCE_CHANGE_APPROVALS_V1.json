@@ -5347,12 +5347,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "5677d330cad6e13cb99a9d31f70202193ca1550ea33a7ee3280e8dc5eeed3976",
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "sha256": "18f578f6e16f161b3626ab3abfa79335b3d5d26888f1a8ee45b2470bee92df08",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014"
     },
     {
       "filePath": "src/core/word-pending-recording-comments-v1.cjs",
@@ -5428,12 +5428,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
-      "sha256": "6dff05ad53be715f22f0ed08ba1203608947c12c845841019373ceafad6b7536"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "9a93aed697d8fab993e198572f82f1da8b4e0f36a75a050b9f2aca7ade295130"
     },
     {
       "approved": true,
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "810ac34cb961d9157751600d8f6c264ac702c7cbab817ce28fd924d19329f4e7"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "ef5f798cc72ede8383783b001061cb3aada0cfcf2a7f33521c9d46fb917bb4da"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "57cf095281dd5a3d118f3050d5a48d2b186f1d00c9b06cf657be4f1c7e602148"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "ead71f62eb67e51e7e18c2dd3a829487cc4fd776566c44398711074ef2cd7c36"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "689afea9b684c75ffccfcd95f6e21053392c0e1306c9d692b9cb7b319d767393"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "721438d477484ecf1f0f6f30b0c6cc560483fc2a315b1d61f1dd6e3cabea7390"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "192ab4d7b0e3df094d8369c301aa04b8a2b873ec4528668d7616aa4f9b3ed692"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "de656c4aa1deff600ce2a38be1755415cfcb48e9c7cbf202fa5bde2888d564ff"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "c0f424d08431b740000b78a9607c5d333234a7dea33cbf60823c46fdec771fff"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "67174fb980e4184c0576b4cb4a652a04b99800881c46e2d7ddb2f21be2b82676"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "bb7d41a32a0bc168a810d1e7632e80aaf3d8f9462e84616d2bd61eeb013a5812"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "6e8c9f0c1e0dd196084602af7d7b0ac801711ac79bb655e271a1836d43e8e6a3"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "381652b8cd8d7c21589e4559cb7e413dfb6f28483a4208ee70fe99970700a78a"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "249aa9db88360b5c55789ccddb3beb9f22184a28387293010b981d2ae99fe52e"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "6f6675217eebbca44d40480746e5f888a430073b320f90c1fb8c5ab8856c848e"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "95352dc0317932d6d483c0bbaee2021f782efe0fbbb97f022a21b2397663b13e"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014|owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "83edee16747d2fd1ca981b9aed2c23a65a8a6666f0586c40931451e606cbd10f"
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved.",
+      "sha256": "aeae02f7d2745f3e73b6e1129361116bcc1c3b156c78b679ed553b6ac64f27f6"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5632,6 +5632,15 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit."
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
+      "sha256": "c50542e916be2e1e13ae3ed6254520e50fa60c634aa295f330ffbbb7ab2bc2a6",
+      "approvedAtUtc": "2026-10-14T11:03:06.939548Z",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_PROJECT_QUERY_SCOPE_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized project tree query scope correction: permit same-project document/session replacement while preserving project/root/bootstrap owner/raw manifest and unchanged Worker revision fences; deterministic held Main causal RED and6 selected positives/negative refusals, required whole/delivery remains IN_PROGRESS. No native credit, all prior tuples/history/membership/predicates preserved."
     }
   ],
   "evidenceStampIds": [
@@ -42697,6 +42706,105 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
       "sha256": "d7ca9bc5a7957980177981e1c37516f5e288b262cf3c457cda9453d5745540e4"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "5677d330cad6e13cb99a9d31f70202193ca1550ea33a7ee3280e8dc5eeed3976",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "6dff05ad53be715f22f0ed08ba1203608947c12c845841019373ceafad6b7536"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "810ac34cb961d9157751600d8f6c264ac702c7cbab817ce28fd924d19329f4e7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "57cf095281dd5a3d118f3050d5a48d2b186f1d00c9b06cf657be4f1c7e602148"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "689afea9b684c75ffccfcd95f6e21053392c0e1306c9d692b9cb7b319d767393"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "192ab4d7b0e3df094d8369c301aa04b8a2b873ec4528668d7616aa4f9b3ed692"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "c0f424d08431b740000b78a9607c5d333234a7dea33cbf60823c46fdec771fff"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "bb7d41a32a0bc168a810d1e7632e80aaf3d8f9462e84616d2bd61eeb013a5812"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "381652b8cd8d7c21589e4559cb7e413dfb6f28483a4208ee70fe99970700a78a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "6f6675217eebbca44d40480746e5f888a430073b320f90c1fb8c5ab8856c848e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "83edee16747d2fd1ca981b9aed2c23a65a8a6666f0586c40931451e606cbd10f"
     }
   ]
 }

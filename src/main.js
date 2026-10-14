@@ -33723,12 +33723,13 @@ async function handleWorkspaceProjectTreeQuery(payload) {
   }
   try {
     const projectRoot = getProjectRootPath(), projectName = currentProjectName || DEFAULT_PROJECT_NAME;
-    const owner = activeStage10ApplicationBootstrap, sessionId = commentAuthoringSessionId;
+    // Project-wide tree reads survive same-project document/session replacement.
+    const owner = activeStage10ApplicationBootstrap;
     const projectTree = await buildProjectTreeRootsWithIdentitiesReadOnly();
     const { projectId, roots } = projectTree;
     const mutation = await require('./main/projectTreeReadPort.cjs').readVerifiedProjectTreeProjection({ manifestPath: projectTree.manifestPath, projectId });
     if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
-      || owner !== activeStage10ApplicationBootstrap || sessionId !== commentAuthoringSessionId
+      || owner !== activeStage10ApplicationBootstrap
       || fsSync.readFileSync(projectTree.manifestPath, 'utf8') !== projectTree.manifestRaw) throw treeCohortError('E_TREE_QUERY_STALE');
     return {
       ok: true,

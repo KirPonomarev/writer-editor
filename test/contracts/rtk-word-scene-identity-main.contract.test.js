@@ -104,6 +104,8 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
         finally{if(admission)authenticatedCommentDeltaAdmissions.set(payload,admission);} };
       return {results,failures,restore(){dispatchCommandSurfaceKernel=original;}}; },
     changeSession() { commentAuthoringSessionId += 1; },
+    replaceDocument(filePath) { currentFilePath=filePath; setDirtyState(false,null); },
+    replaceTreeQueryOwner() { activeStage10ApplicationBootstrap={}; },
     queue: queueDiskOperation,
     session: () => commentAuthoringSessionId,
     clearBackupCaches() { backupHashes.clear(); treeBackupSeeds.clear(); },
@@ -4261,4 +4263,47 @@ test('guarded unchanged Main backup skips a repeated retained-packet read withou
    finally {fsp.readFile=readFile;}
    assert.equal(calls,1);assert.deepEqual(f.capture(),before);
  } finally {port.readVerifiedProjectTreeProjection=original;}
+});
+
+
+test('project-scoped Main tree query survives deferred same-project document baseline replacement',async t=>{
+ const f=await fixture(t),before=f.capture(),session=f.probe.session();
+ const port=require('../../src/main/projectTreeReadPort.cjs'),original=port.readVerifiedProjectTreeProjection;
+ let entered,release;const started=new Promise(r=>entered=r),held=new Promise(r=>release=r);
+ port.readVerifiedProjectTreeProjection=async input=>{const value=await original(input);entered();await held;return value;};
+ try {
+  const pending=f.main.handleWorkspaceProjectTreeQuery({tab:'roman'});await started;
+  f.probe.replaceDocument(f.beta);assert.notEqual(f.probe.session(),session);
+  release();const result=await pending;
+  assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(result,f.query);
+  assert.equal(f.probe.state().filePath,f.beta);assert.deepEqual(f.capture(),before);
+ } finally {release();port.readVerifiedProjectTreeProjection=original;}
+});
+
+for(const fault of ['project','owner','manifest'])test(`project-scoped Main deferred tree query still refuses ${fault} replacement`,async t=>{
+ const f=await fixture(t),port=require('../../src/main/projectTreeReadPort.cjs'),original=port.readVerifiedProjectTreeProjection;
+ let entered,release;const started=new Promise(r=>entered=r),held=new Promise(r=>release=r);
+ port.readVerifiedProjectTreeProjection=async input=>{const value=await original(input);entered();await held;return value;};
+ try {
+  const pending=f.main.handleWorkspaceProjectTreeQuery({tab:'roman'});await started;
+  f.probe.replaceDocument(f.beta);
+  if(fault==='project')f.probe.state({projectName:'Other project'});
+  if(fault==='owner')f.probe.replaceTreeQueryOwner();
+  if(fault==='manifest')fs.appendFileSync(f.manifestPath,' ');
+  const expected=f.capture();release();const result=await pending;
+  assert.deepEqual(result,{ok:false,error:'E_TREE_QUERY_STALE'});assert.deepEqual(f.capture(),expected);
+ } finally {release();port.readVerifiedProjectTreeProjection=original;}
+});
+
+test('project-scoped Main tree query preserves changed receipt refusal during deferred Worker read',async t=>{
+ const f=await fixture(t),port=require('../../src/main/projectTreeReadPort.cjs'),original=port.readVerifiedProjectTreeProjection;
+ const receipt=require('../../src/core/project-transaction-v1.cjs').treeCommitPathFor(f.manifestPath);
+ let entered,release;const started=new Promise(r=>entered=r),held=new Promise(r=>release=r);
+ port.readVerifiedProjectTreeProjection=async input=>{entered();await held;return original(input);};
+ try {
+  const pending=f.main.handleWorkspaceProjectTreeQuery({tab:'roman'});await started;
+  f.probe.replaceDocument(f.beta);fs.writeFileSync(receipt,'{}');const before=f.capture(),bytes=read(receipt);
+  release();const result=await pending;assert.equal(result.ok,false);assert.equal(result.error,'E_TREE_COHORT_RECEIPT');
+  assert.deepEqual(f.capture(),before);assert.equal(read(receipt),bytes);
+ } finally {release();port.readVerifiedProjectTreeProjection=original;}
 });
