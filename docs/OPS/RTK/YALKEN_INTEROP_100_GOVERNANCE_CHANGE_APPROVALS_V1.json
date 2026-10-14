@@ -5311,12 +5311,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
-      "sha256": "9bcd6382148f2ca9194c65f0d1286774a768ed96f4546bdd1d5da7efab3cd2c5"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
     },
     {
       "filePath": "src/core/word-pending-recording-intents-v1.cjs",
@@ -5347,12 +5347,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "d3723cad6c70045c9b2305181ee7ed80b6f0c814bb0666d90344e92ef66fd6fc",
-      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "sha256": "5677d330cad6e13cb99a9d31f70202193ca1550ea33a7ee3280e8dc5eeed3976",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
-      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013"
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014"
     },
     {
       "filePath": "src/core/word-pending-recording-comments-v1.cjs",
@@ -5428,12 +5428,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
-      "sha256": "cd6767b8eb0770e17ad6bdbba40b93b364cec5f95a6c2291126cb6f129a63bab"
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "6dff05ad53be715f22f0ed08ba1203608947c12c845841019373ceafad6b7536"
     },
     {
       "approved": true,
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "1d6777b2b9319e959abd0fe023746cc9c1040a2598596d1ad4d9e4d5f712e0d1"
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "f8226112702bc70bb441c8ca713ad5f6af00dd4dc02690e5f6dcc61df82a365d"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "19c0ea1c3a54f1047c0ea8ca018e0a55399b41745220af3c7667732881ae7b9d"
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "e2e0b9e7038eaeff31219c117955c121e41145661ca6cd77388b94baf3e50403"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "4489f3af1f17b34f0e4c4bb0679f477b7edb5a1eeb298ff4b8ee8f620fd9d2fc"
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "e3f6478e71d0b0548e1f632fe60ff4a150f5215402499bc5ae0fd1ca8379702b"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "c9c3840cc752a493ca6e324fe4f8f96452d05f3746da13e8ff227d4adc3cd88f"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "66d63176724c473f1b3457ee55255fa2b2cb21afc9182f00a102c86b78d06efa"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "c0cb7d5d30293caccbfde1fcd9994e39d37ff1528e85ec8567c6ce0d992ff257"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "90a9915a33ab73b26d177400ddf2e53fdf6de0a082e24b200437a37eb821b1f6"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "35c6ca38c0ebdb02d99a30175ee9633b10ae7d4714085c224fab754b30cf28b7"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "858f54b2581ec1f71b341c505fd4d8b27421474d3ea72c5caa1258d23b37a6da"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "894ea0c7ab10ca8b008d2c16adb576000d7072416ef626cdb6c1b3b6c9d773a0"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "5a03e40a4486dd6202824c691c040acf9593e6703b3440a73db44ca4a08eb7f6"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "cd58c73e36f132b576b67b6a1b149cb71be0fdbf0e3d0bc7568dd0e5a3a2a12b"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "bc852da8c0a28d5a61a41e77ca6ef74f0c83afd9ee777e55332192c5a5d7b95a"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
-      "sha256": "a5604856676e8b11aef11b0acc7eb0037a27fe39ef8648e5ae8b13b5ea79cf0c"
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "d7ca9bc5a7957980177981e1c37516f5e288b262cf3c457cda9453d5745540e4"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5596,6 +5596,33 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved."
+    },
+    {
+      "filePath": "src/main/projectTreeReadPort.cjs",
+      "sha256": "95f4b8b2ce450cd6897612ed0ef4d20a6ea4af765d01c7370f0b733460dbe3c7",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved."
+    },
+    {
+      "filePath": "src/main/projectTreeReadWorker.cjs",
+      "sha256": "1797117b0fceb07fa279d33247c27c278fa69949eba3634f586a4955f5cea1e8",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved."
+    },
+    {
+      "filePath": "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
+      "sha256": "d913e1b881f19cff18bdf17630b7d386113e50789d428b51455f1e51824273ee",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved."
     }
   ],
   "evidenceStampIds": [
@@ -42373,6 +42400,195 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Same unfinished delivery qualification amendment: deterministic100ms timestamps for two existing PM gestures preserve every assertion across awaited persistence; no production history, budget, evaluator or denominator change; original4173-of4174 FAIL and causal delayed RED retained. Owner requests stage delivery then pause. Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
       "sha256": "4b51c87001400aaa59d583b21537f6da1d6edaeb3b69af182c84ae0545ef20df"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-10T15:50:17.442561+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
+      "rationale": "Same owner-authorized novel delivery: independent current successor materialized as literal JSON, corrupted/mixed/ancestry assertions and all closed predecessors retained. Both CI failures and corrected Root diagnosis preserved; worker2 disproven and original scheduling restored. Finite CLI35min wall justified by complete prior27-28min plus224s mandatory new capacity case, within unchanged40min job;10min no-progress, output/cleanup, product/app/SLO limits unchanged. Source original50 whole1488/1488 keeps exact identities. Full current admission consumer and runner proof, fresh CI, merge and native matrix remain required; no R2.4/release acceptance.",
+      "sha256": "9bcd6382148f2ca9194c65f0d1286774a768ed96f4546bdd1d5da7efab3cd2c5"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "d3723cad6c70045c9b2305181ee7ed80b6f0c814bb0666d90344e92ef66fd6fc",
+      "approvedAtUtc": "2026-10-12T22:49:58.424157Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner Mac Word V4.1 sections5/6/12 authorized one observed BODY_V2 pending-note export defect and normal delivery. Root pinned Node22.12 actual public Main fractional RED versus exact transport-precision control, with complete raw source conservation. Only nine Main expectation-clone lines project the existing dateUtc seconds/date minute law; authored font/language/marks, raw revisions, notes/private state and every source/capability/lease/publication guard remain. Maintained appended regressions preserve original prefixes. Complete three affected files execute598/598 with zero fail/cancel/skip/todo under unchanged mandatory TAP oracle; all585 inputs remain exact. This refreshes existing mechanical byte companions and appends one nonrecursive certificate successor only; historical tuples, approvals, acceptance predicates and denominators remain. README records directly resumed task and T777 destinations. No new dependency, runtime network, UI, schema, command, writer, budget or native/Word/recovery acceptance.",
+      "approvedBy": "owner-delegated-codex:WORD_RECORDING_NATIVE_NOTES_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T09:15:17.939113Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_TRANSIENT_HISTORY_RETURN_MAC_20261011|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Direct owner Mac Word V4.1 observed blocker correction: carry only untracked BODY_V2 proofing language in ordinary note-free paragraphs with both authenticated note-point arrays empty. Preserve all other formatting, binding, Kernel, persistence and source guards. Minimal causal RED, complete affected contracts and public Main Cancel Apply Undo Redo; component real Word readback grants no native exchange credit. Existing mechanical byte bindings only; acceptance denominator, raw oracles, historical evidence, dependencies, runtime budgets and UI unchanged.",
+      "sha256": "cd6767b8eb0770e17ad6bdbba40b93b364cec5f95a6c2291126cb6f129a63bab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "1d6777b2b9319e959abd0fe023746cc9c1040a2598596d1ad4d9e4d5f712e0d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "19c0ea1c3a54f1047c0ea8ca018e0a55399b41745220af3c7667732881ae7b9d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "4489f3af1f17b34f0e4c4bb0679f477b7edb5a1eeb298ff4b8ee8f620fd9d2fc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "c9c3840cc752a493ca6e324fe4f8f96452d05f3746da13e8ff227d4adc3cd88f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "c0cb7d5d30293caccbfde1fcd9994e39d37ff1528e85ec8567c6ce0d992ff257"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "35c6ca38c0ebdb02d99a30175ee9633b10ae7d4714085c224fab754b30cf28b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "894ea0c7ab10ca8b008d2c16adb576000d7072416ef626cdb6c1b3b6c9d773a0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "cd58c73e36f132b576b67b6a1b149cb71be0fdbf0e3d0bc7568dd0e5a3a2a12b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-13T17:58:44.428184Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized bounded Mac V4.1 opaque color correction: only lossless opaque RGB/hex spellings within128 characters become lowercase six-digit hex at the existing document serializer. Unsupported raw marks and strict pre-clone ledger/source/history validation preserved. Maintained production PM RED and337 whole affected/source-risk tests; no native clipboard attribution or exchange credit. Mechanical byte bindings only; all prior tuples/history/test membership/acceptance denominators and predicates preserved.",
+      "sha256": "a5604856676e8b11aef11b0acc7eb0037a27fe39ef8648e5ae8b13b5ea79cf0c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "8416d87af0faa9a68dd938cf63e5f75c39a323f39bb701bac1ecca85e6ee48cb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "e1db55ecbe68e13b9e31201f797e3377842f38bc542cb5df2cd5f64482cf45cb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "fa3dd80fe8a88e717688024106694354ede082b85a2fc8aad8d7a1b7d880ca89"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "1bd50a3fe1b76e10f58da27a141cf63eadbc42435314a7c6a7fbef72597d06b8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "7e9e983df23b520ca4702d60f386f3aadff445c334976d6b1a37869d88a8a7c4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "20afb3070f2e73d30060c605b158b5e2b296a8d6cbdf74991ef37b32d4e16220"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved.",
+      "sha256": "ca64751d09e246eab50eddad64aee6576bbb1788cd0fef5623bae2489c76b194"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "16f11600953826ed2b0e9ae2e6e4b3f54d9a37374022ae160aaa2f19a11db790"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012|owner-delegated-codex:WORD_NOTES_TRANSPORT_PRECISION_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_NOTE_FREE_LANGUAGE_RETURN_MAC_20261013|owner-delegated-codex:WORD_OPAQUE_COLOR_CANONICALIZATION_MAC_20261013|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "f04521d7cadcdc7e1d9d627d9e4831b2578aac5fe2ead7b628ad069e64ec8eed"
     }
   ]
 }

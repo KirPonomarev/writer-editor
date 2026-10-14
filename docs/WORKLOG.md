@@ -1,3 +1,38 @@
+## 2026-10-14 — Verified tree reads without blocking Main
+
+PR2113 is normally merged at6e41ce966b99a186649bcae51a541229e20a4282.
+MAIN_TREE_READ_WORKER_MAC_20261014 follows SOURCE47's retained editor snapshot
+timeout. Unchanged Core verification of its57,981,171-byte retained packet
+blocks Main20.44s; installed real PM snapshot constituents take118ms. A fixed
+trusted read-only Worker now executes that same public Core verifier, returning
+only a finite immutable tree summary and selected scene history/structural seed.
+Exact raw manifest/receipt/journal and Main project/owner/session/source guards
+reject stale publication. Eight concurrent distinct jobs and existing120s
+deadline bound the adapter; no blocking fallback or persistent truth cache.
+Existing unchanged backup hash returns only after fresh backup/context/
+generation guards, before redundant retained-packet lookup. Core validation,
+Command Kernel, leased atomic writers, renderer, schemas and resource caps stay.
+
+Independent actual SOURCE47 Core/Worker selected fields match completely;
+all59 captured files remain byte-exact. Worker Main lag16.29ms and a50ms marker
+arriving50.51ms contrast with the synchronous20.44s stall under unchanged2500ms
+snapshot budget. This is component evidence, not a new native snapshot or
+completed Word cycle. Root source review finds no blocking source issue,
+conditional on required execution/delivery. Six selected maintained regressions
+pass6/6; original focused4/6 fixture failures are retained. Complete affected
+files, source-risk contracts, compiler and mandatory aggregate/CI gates are
+IN_PROGRESS at this factual freeze; terminal receipts bind their exact SHA.
+Normal commit/push/PR/merge/exact-merged proof remain required before native.
+
+SOURCE47 remains FAILED and SOURCE48 never launched. Prior profiles, histories,
+authority and failed observations are preserved. Accepted native exchanges
+remain0; both origins/scales/runtimes, roles, five cumulative Word rounds,
+recovery and shipping-performance denominator remain OPEN. No new dependency,
+runtime network, UI, timeout increase or data normalization. New artifacts/logs
+stay in dated T777 task folders; declared APFS runtime stays separate. Next:
+close full delivery, then freshly bind the responsive build and observe the
+genuine exchange under existing bounds. Task:2026-10-14--main-tree-read-worker-mac.md.
+
 ## 2026-10-13 — Lossless opaque text color serialization
 
 PR2112 is normally merged at e78264f8d59e8d50dbd717a6bd14357d61483acf.

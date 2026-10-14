@@ -4233,3 +4233,32 @@ test('actual public Main note-free BODY_V2 language Cancel Apply and round undo 
  for(const action of ['undo','redo']){const c=await f.probe.pendingContext(),result=await f.probe.pendingDecision({projectId:c.projectId,sceneId:c.sceneId,subjectId:c.subjectId,expectedSceneSha256:c.sceneSha256,action});
   assert.equal(result.ok,true,JSON.stringify(result));assert.equal(read(f.alpha),action==='undo'?raw:afterRaw);assert.equal(read(notePath),action==='undo'?beforeNotes:afterNotes);assert.equal(read(commentPath),action==='undo'?beforeComments:afterComments);assert.equal(read(f.beta),beforeBeta);}
 });
+
+
+test('public Main tree query refuses a late Worker projection after project ownership changes',async t=>{
+ const f=await fixture(t),port=require('../../src/main/projectTreeReadPort.cjs'),original=port.readVerifiedProjectTreeProjection;
+ const before=f.capture();let calls=0;
+ port.readVerifiedProjectTreeProjection=async input=>{calls++;const result=await original(input);f.probe.state({projectName:'Foreign'});return result;};
+ try {const result=await f.main.handleWorkspaceProjectTreeQuery({tab:'roman'});assert.equal(result.ok,false);assert.equal(result.error,'E_TREE_QUERY_STALE');}
+ finally {port.readVerifiedProjectTreeProjection=original;f.probe.state({projectName:'Роман'});}
+ assert.equal(calls,1);assert.deepEqual(f.capture(),before);
+});
+
+test('guarded unchanged Main backup skips a repeated retained-packet read without losing stale refusal',async t=>{
+ const f=await fixture(t),copy=await f.main.handleUiCopyNodeCommand({projectId:f.query.projectId,nodeId:f.a.nodeId,name:'Fork',expectedTreeRevision:0});
+ assert.equal(copy.ok,true,JSON.stringify(copy));
+ const port=require('../../src/main/projectTreeReadPort.cjs'),original=port.readVerifiedProjectTreeProjection;let calls=0;
+ const node=find((await f.main.handleWorkspaceProjectTreeQuery({tab:'roman'})).root,'Alpha');assert.ok(node);
+ mountRenderer(f,()=>read(f.alpha),0,null,()=>({projectId:f.query.projectId,documentId:node.nodeId}));f.probe.state({filePath:f.alpha,projectName:'Роман'});
+ port.readVerifiedProjectTreeProjection=async input=>{calls++;return original(input);};
+ try {
+   const first=await f.probe.backup();assert.equal(first.success,true,JSON.stringify(first));assert.equal(calls,1);
+   const before=f.capture(),second=await f.probe.backup();assert.deepEqual(second,{success:true,unchanged:true});assert.equal(calls,1);
+   assert.deepEqual(f.capture(),before);
+   const readFile=fsp.readFile;let raced=false,receiptReads=0;const receiptPath=require('../../src/core/project-transaction-v1.cjs').treeCommitPathFor(f.manifestPath);
+   fsp.readFile=async function(file,...args){const result=await readFile.call(this,file,...args);if(file===receiptPath&&++receiptReads===2){raced=true;f.probe.changeSession();}return result;};
+   try {const stale=await f.probe.backup();assert.notEqual(stale?.success,true);assert.equal(raced,true);}
+   finally {fsp.readFile=readFile;}
+   assert.equal(calls,1);assert.deepEqual(f.capture(),before);
+ } finally {port.readVerifiedProjectTreeProjection=original;}
+});

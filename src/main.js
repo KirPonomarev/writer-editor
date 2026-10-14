@@ -26427,11 +26427,12 @@ async function readPendingRevisionProjection() {
     const projection = pendingTextRevisions.projection(context.parsed.doc);
     const treeBinding=context.manifestPath?context:await readReviewExactTextApplyProjectBinding(context.filePath);
     if(!treeBinding.ok&&treeBinding!==context||treeBinding.projectId!==context.projectId)throw Error('PENDING_REVISION_PROJECT_BINDING');
-    const tree=await require('./core/project-transaction-v1.cjs').readVerifiedProjectTreeMutation({manifestPath:treeBinding.manifestPath,projectId:context.projectId});
+    const readPort=require('./main/projectTreeReadPort.cjs'), queryFence=await readPort.readFence(treeBinding.manifestPath);
+    const tree=await readPort.readVerifiedProjectTreeProjection({manifestPath:treeBinding.manifestPath,projectId:context.projectId,sceneId:context.sceneId});
+    if(context.filePath!==currentFilePath || context.subjectId!==currentLifecycleSubjectId()+':'+commentAuthoringSessionId
+      || isDirty || autoSaveInProgress || await fs.readFile(context.filePath,'utf8')!==context.raw) throw Error('PENDING_REVISION_QUERY_STALE');
     const history=tree.lastMutation?.wordReturnHistory;
-    const apply=tree.retainedPacket?.plan.input.history?.applyPacket||tree.retainedPacket;
-    const owned=history&&(history.canUndo===true||history.canRedo===true)
-      &&apply.plan.entries.some(entry=>entry.role==='scene'&&entry.relativePath===context.sceneId);
+    const owned=history&&(history.canUndo===true||history.canRedo===true)&&tree.original!==null;
     let recordingAvailable = true, recordingReason = '';
     try {
       pendingRecordingCapability();
@@ -26439,10 +26440,14 @@ async function readPendingRevisionProjection() {
       await assertPendingRecordingAnnotations(context);
     } catch (error) { recordingAvailable = false; recordingReason = error.code || error.message; }
     if (!projection && !recordingAvailable&&!owned) return null;
-    const original=owned?Buffer.from(apply.plan.entries.find(entry=>entry.role==='scene'&&entry.relativePath===context.sceneId).beforeBase64,'base64').toString('utf8'):null;
+    const original=owned?tree.original:null;
     const wordHistory=owned?{canUndo:history.canUndo,canRedo:history.canRedo,
       original:(await loadDocumentContentEnvelopeModule()).parseObservablePayload(original).text,
       current:context.parsed.text,revisions:projection?.revisions||[]}:{};
+    if (!readPort.sameFence(queryFence,await readPort.readFence(treeBinding.manifestPath))
+      || await fs.readFile(context.filePath,'utf8')!==context.raw
+      || context.filePath!==currentFilePath || context.subjectId!==currentLifecycleSubjectId()+':'+commentAuthoringSessionId
+      || isDirty || autoSaveInProgress) throw Error('PENDING_REVISION_QUERY_STALE');
     return { ...projection,...wordHistory, available: true, hasHistory: Boolean(projection)||Boolean(owned), recordingAvailable, recordingReason,
       projectId: context.projectId, sceneId: context.sceneId, subjectId: context.subjectId, expectedSceneSha256: context.sceneSha256 };
   } catch (error) { return { available: false, reason: error.code || error.message }; }
@@ -33718,10 +33723,12 @@ async function handleWorkspaceProjectTreeQuery(payload) {
   }
   try {
     const projectRoot = getProjectRootPath(), projectName = currentProjectName || DEFAULT_PROJECT_NAME;
+    const owner = activeStage10ApplicationBootstrap, sessionId = commentAuthoringSessionId;
     const projectTree = await buildProjectTreeRootsWithIdentitiesReadOnly();
     const { projectId, roots } = projectTree;
-    const mutation = await readVerifiedProjectTreeMutation({ manifestPath: projectTree.manifestPath, projectId });
+    const mutation = await require('./main/projectTreeReadPort.cjs').readVerifiedProjectTreeProjection({ manifestPath: projectTree.manifestPath, projectId });
     if (projectRoot !== getProjectRootPath() || projectName !== (currentProjectName || DEFAULT_PROJECT_NAME)
+      || owner !== activeStage10ApplicationBootstrap || sessionId !== commentAuthoringSessionId
       || fsSync.readFileSync(projectTree.manifestPath, 'utf8') !== projectTree.manifestRaw) throw treeCohortError('E_TREE_QUERY_STALE');
     return {
       ok: true,
@@ -35900,17 +35907,21 @@ async function runCreateBackup() {
       const backup = await prepareUserBookmarkBackup(filePath, snapshot);
       const content = backup.content;
       const hash = computeHash(content);
+      if (backupHashes.get(filePath) === hash) {
+        await backup.guard(); await guard();
+        if (lastSignaledEditGeneration > snapshot.generation) throw treeCohortError('E_BACKUP_AUTHORING_TARGET_STALE');
+        return { success: true, unchanged: true };
+      }
       let seeded = treeBackupSeeds.get(filePath);
       if (seeded === undefined && treeFence !== null) {
         // Restarted processes recover deduplication only from the verified
         // durable structural packet, never a filename or renderer assertion.
-        const state = await readVerifiedProjectTreeMutation({ manifestPath: path.join(capturedRoot, 'project.craftsman.json') });
+        const manifestPath = path.join(capturedRoot, 'project.craftsman.json');
+        const projectId = JSON.parse(await fs.readFile(manifestPath, 'utf8')).projectId;
+        const state = await require('./main/projectTreeReadPort.cjs').readVerifiedProjectTreeProjection({ manifestPath, projectId,
+          sceneId: path.relative(capturedRoot, filePath).split(path.sep).join('/') });
         await guard();
-        const packet = state.retainedPacket;
-        const relative = path.relative(capturedRoot, filePath).split(path.sep).join('/');
-        const entry = Array.isArray(packet?.plan?.scenePartitions)
-          ? packet.entries.find(value => value.role === 'scene' && value.relativePath === relative && value.afterBase64 !== null) : null;
-        if (entry) seeded = Buffer.from(entry.afterBase64, 'base64').toString('utf8');
+        if (state.structuralSeed !== null) seeded = state.structuralSeed;
       }
       if (seeded !== undefined) {
         const raw = await fs.readFile(filePath, 'utf8');
@@ -35923,7 +35934,6 @@ async function runCreateBackup() {
         }
         treeBackupSeeds.delete(filePath);
       }
-      if (backupHashes.get(filePath) === hash) return { success: true, unchanged: true };
 
       const result = await queueDiskOperation(
         async () => { await backup.guard(); await guard();

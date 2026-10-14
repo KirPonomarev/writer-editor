@@ -657,7 +657,10 @@
     "docs/tasks/2026-10-12--yalken-storage-map.md",
     "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
     "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
-    "docs/tasks/2026-10-13--word-opaque-color-canonicalization-mac.md"
+    "docs/tasks/2026-10-13--word-opaque-color-canonicalization-mac.md",
+    "src/main/projectTreeReadPort.cjs",
+    "src/main/projectTreeReadWorker.cjs",
+    "docs/tasks/2026-10-14--main-tree-read-worker-mac.md"
   ],
   "protectedFiles": [
     {
@@ -886,7 +889,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "d3723cad6c70045c9b2305181ee7ed80b6f0c814bb0666d90344e92ef66fd6fc"
+        "sha256": "5677d330cad6e13cb99a9d31f70202193ca1550ea33a7ee3280e8dc5eeed3976"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2070,11 +2073,11 @@
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-        "sha256": "9bcd6382148f2ca9194c65f0d1286774a768ed96f4546bdd1d5da7efab3cd2c5"
+        "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "cd6767b8eb0770e17ad6bdbba40b93b364cec5f95a6c2291126cb6f129a63bab"
+        "sha256": "6dff05ad53be715f22f0ed08ba1203608947c12c845841019373ceafad6b7536"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2578,15 +2581,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1d6777b2b9319e959abd0fe023746cc9c1040a2598596d1ad4d9e4d5f712e0d1"
+        "sha256": "f8226112702bc70bb441c8ca713ad5f6af00dd4dc02690e5f6dcc61df82a365d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "19c0ea1c3a54f1047c0ea8ca018e0a55399b41745220af3c7667732881ae7b9d"
+        "sha256": "e2e0b9e7038eaeff31219c117955c121e41145661ca6cd77388b94baf3e50403"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4489f3af1f17b34f0e4c4bb0679f477b7edb5a1eeb298ff4b8ee8f620fd9d2fc"
+        "sha256": "e3f6478e71d0b0548e1f632fe60ff4a150f5215402499bc5ae0fd1ca8379702b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2887,6 +2890,18 @@
       {
         "path": "docs/tasks/2026-10-13--word-opaque-color-canonicalization-mac.md",
         "sha256": "b1699867e0ca7876e35790c7b586e66e93c610153ab817b92555d79171ce416a"
+      },
+      {
+        "path": "src/main/projectTreeReadPort.cjs",
+        "sha256": "95f4b8b2ce450cd6897612ed0ef4d20a6ea4af765d01c7370f0b733460dbe3c7"
+      },
+      {
+        "path": "src/main/projectTreeReadWorker.cjs",
+        "sha256": "1797117b0fceb07fa279d33247c27c278fa69949eba3634f586a4955f5cea1e8"
+      },
+      {
+        "path": "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
+        "sha256": "d913e1b881f19cff18bdf17630b7d386113e50789d428b51455f1e51824273ee"
       }
     ],
     "followupRepair": {

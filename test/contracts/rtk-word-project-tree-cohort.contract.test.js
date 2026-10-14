@@ -904,3 +904,90 @@ for(const operation of ['move','leftmerge','split','rightmerge'])test(`V5 struct
  const result=authoring.readState(text(commentPath),'project-test'),original=JSON.parse(saved.afterText).threads[0];assert.equal(result.schemaVersion,'yalken.rtk.word.non-text-return-state.v5');assert.deepEqual(result.threads[0].anchorEditHistory,original.anchorEditHistory);assert.deepEqual(result.threads[0].messages,original.messages);
  assert.deepEqual({...result.threads[0],sceneId:original.sceneId,anchor:{...result.threads[0].anchor,sceneId:original.sceneId}},original);
 });
+
+
+// The read-only Worker runs the unchanged public Core verifier, not a second tree model.
+test('tree read Worker returns exact finite Core summaries without retained packets or writes', async t => {
+  const port = require('../../src/main/projectTreeReadPort.cjs'), f = fixture(t), m = await modelPromise;
+  for (const committed of [false, true]) {
+    if (committed) await tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:1,
+      treeCohort:m.planProjectTreeCohort(f.capture()),publishManifest:f.publishManifest,revalidate:async()=>{}});
+    const before=inventory(f.root), manifest=text(f.manifestPath);
+    const expected=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath,projectId:'project-test'});
+    const actual=await port.readVerifiedProjectTreeProjection({manifestPath:f.manifestPath,projectId:'project-test',sceneId:'roman/03 Alpha.txt'});
+    assert.deepEqual(actual,{treeRevision:expected.treeRevision,lastMutation:expected.lastMutation,original:null,structuralSeed:null});
+    assert.equal(Object.isFrozen(actual),true);if(actual.lastMutation)assert.equal(Object.isFrozen(actual.lastMutation),true);
+    assert.equal(Object.hasOwn(actual,'retainedPacket'),false);assert.deepEqual(inventory(f.root),before);assert.equal(text(f.manifestPath),manifest);
+  }
+  await assert.rejects(port.readVerifiedProjectTreeProjection({manifestPath:f.manifestPath,projectId:'foreign'}),{code:'E_TREE_COHORT_PROJECT'});
+  const receipt=JSON.parse(text(tx.treeCommitPathFor(f.manifestPath))),packet=tx.recoveryPacketPathFor(f.manifestPath,receipt.transactionId);
+  const before=fs.readFileSync(packet);fs.writeFileSync(packet,'{}');
+  const corrupt=await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath}).catch(e=>e.code);
+  assert.equal(typeof corrupt,'string');await assert.rejects(port.readVerifiedProjectTreeProjection({manifestPath:f.manifestPath,projectId:'project-test'}),{code:corrupt});
+  assert.equal(text(packet),'{}');fs.writeFileSync(packet,before);
+  const adapter=port.createReadOnlyFileAdapter();
+  for(const key of ['writeFile','rename','unlink','mkdir','open','link','symlink','rm'])assert.throws(()=>adapter[key],{code:'E_TREE_READ_WRITE_REFUSED'});
+});
+
+test('tree read Worker rejects malformed requests and projections without running accessors', async t => {
+  const p=require('../../src/main/projectTreeReadPort.cjs'),f=fixture(t),good={manifestPath:f.manifestPath,projectId:'project-test'};
+  let called=0;const accessor={...good};Object.defineProperty(accessor,'sceneId',{get(){called++;throw Error('ACCESSOR');},enumerable:true});
+  for(const bad of [accessor,{...good,sceneId:'../outside'},{...good,sceneId:'/outside'},{...good,projectId:''},{...good,extra:true},Object.assign(Object.create({inherited:true}),good)])
+    await assert.rejects(p.readVerifiedProjectTreeProjection(bad),{code:'E_TREE_READ_INPUT'});
+  assert.equal(called,0);
+  const value={treeRevision:0,lastMutation:null,original:null,structuralSeed:null};
+  for(const bad of [{...value,retainedPacket:{}},{...value,treeRevision:-1},{...value,original:{}},{...value,lastMutation:{id:'f'.repeat(64),kind:'undo',canUndo:false,unavailableReason:null,wordReturnHistory:{canUndo:false,canRedo:false,reason:{}}}}])
+    assert.throws(()=>p.validateProjection(bad),{code:'E_TREE_READ_RESULT'});
+  assert.throws(()=>p.createProjectTreeReadPort({timeoutMs:120001}),{code:'E_TREE_READ_DEADLINE'});
+});
+
+test('tree read Worker stale/late/missing/failing delivery never falls back to blocking Core', async t => {
+  const {EventEmitter}=require('node:events'),p=require('../../src/main/projectTreeReadPort.cjs'),f=fixture(t),input={manifestPath:f.manifestPath,projectId:'project-test'};
+  const value={treeRevision:0,lastMutation:null,original:null,structuralSeed:null};let starts=0,terminations=0;
+  class Controlled extends EventEmitter {
+    constructor(_file,{workerData}) {super();starts++;this.data=workerData;setImmediate(()=>{if(this.deliver)this.deliver();});}
+    terminate(){terminations++;return Promise.resolve(0);}
+  }
+  const healthy=[];
+  class Healthy extends Controlled {constructor(...args){super(...args);healthy.push(this);}deliver(){}release(){this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}}
+  const read=p.createProjectTreeReadPort({WorkerClass:Healthy});
+  const originalRead=fsp.readFile;let manifestReads=0,secondRead;
+  const fenced=new Promise(resolve=>{secondRead=resolve;});
+  fsp.readFile=async function(file,...args){const result=await originalRead.call(this,file,...args);if(file===f.manifestPath&&++manifestReads===2)secondRead();return result;};
+  try {
+    const jobs=[read(input),read(input)];await fenced;await new Promise(resolve=>setImmediate(resolve));healthy[0].release();
+    assert.deepEqual(await Promise.all(jobs),[value,value]);assert.equal(starts,1);
+  } finally {fsp.readFile=originalRead;}
+  const next=read(input);while(healthy.length<2)await new Promise(resolve=>setImmediate(resolve));healthy[1].release();
+  await next;assert.equal(starts,2,'completed projections are never persistently cached');
+  class Stale extends Controlled {deliver(){fs.appendFileSync(f.manifestPath,' ');this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}}
+  await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Stale})(input),{code:'E_TREE_READ_STALE'});
+  class WrongFence extends Controlled {deliver(){this.emit('message',{ok:true,fence:[],value:{...value}});}}
+  await assert.rejects(p.createProjectTreeReadPort({WorkerClass:WrongFence})(input),{code:'E_TREE_READ_STALE'});
+  class Invalid extends Controlled {deliver(){this.emit('message',{ok:true,fence:this.data.fence,value:{...value,retainedPacket:{}}});}}
+  await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Invalid})(input),{code:'E_TREE_READ_RESULT'});
+  class Failed extends Controlled {deliver(){this.emit('error',Error('worker failure'));}}
+  await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Failed})(input),{code:'E_TREE_READ_WORKER'});
+  class Exited extends Controlled {deliver(){this.emit('exit',0);}}
+  await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Exited})(input),{code:'E_TREE_READ_WORKER_EXIT'});
+  await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Controlled,timeoutMs:5})(input),{code:'E_TREE_READ_TIMEOUT'});
+  await assert.rejects(p.createProjectTreeReadPort({workerPath:path.join(f.root,'missing-worker.cjs')})(input),{code:'E_TREE_READ_WORKER'});
+  assert.equal(terminations,8);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+});
+
+
+test('tree read Worker bounds distinct in-flight work and still coalesces exact identities',async t=>{
+ const {EventEmitter}=require('node:events'),p=require('../../src/main/projectTreeReadPort.cjs'),f=fixture(t);let starts=0;const workers=[];
+ class Held extends EventEmitter {constructor(_file,{workerData}){super();starts++;this.data=workerData;workers.push(this);}terminate(){return Promise.resolve();}}
+ const read=p.createProjectTreeReadPort({WorkerClass:Held,timeoutMs:1000}),base={manifestPath:f.manifestPath,projectId:'project-test'};
+ const jobs=Array.from({length:8},(_,i)=>read({...base,sceneId:`roman/${i}.txt`}));
+ while(starts<8)await new Promise(resolve=>setImmediate(resolve));
+ await assert.rejects(read({...base,sceneId:'roman/overflow.txt'}),{code:'E_TREE_READ_BUSY'});
+ const originalRead=fsp.readFile;let joinedRead;const fenced=new Promise(resolve=>{joinedRead=resolve;});
+ fsp.readFile=async function(file,...args){const result=await originalRead.call(this,file,...args);if(file===f.manifestPath)joinedRead();return result;};
+ try {
+  const joined=read({...base,sceneId:'roman/0.txt'});await fenced;await new Promise(resolve=>setImmediate(resolve));assert.equal(starts,8);
+  for(const w of workers)w.emit('message',{ok:true,fence:w.data.fence,value:{treeRevision:0,lastMutation:null,original:null,structuralSeed:null}});
+  await Promise.all([...jobs,joined]);assert.equal(starts,8);
+ } finally {fsp.readFile=originalRead;}
+});
