@@ -968,3 +968,74 @@ test('C4 RTK runner reports unreadable cleanup residue without throwing', async 
     runner.removeNoFollow(lease.root);
   }
 });
+
+
+async function runObservedMemberBirths(t, makeSnapshots) {
+  const runner = await import(RUNNER_PATH);
+  const child = new EventEmitter();
+  child.pid = 424250;
+  child.stdout = new PassThrough(); child.stderr = new PassThrough();
+  const leader = { pid: child.pid, pgid: child.pid, startIdentity: 'stable-leader-birth', executable: process.execPath };
+  const member = { pid: 424251, pgid: child.pid, startIdentity: 'first-member-birth', executable: process.execPath };
+  const snapshots = makeSnapshots(leader, member);
+  const observations = [], signals = [], stderr = makeWriter();
+  let closed = false, next = 0;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    child.stdout.end(['TAP version 13', 'ok 1 - complete process graph', '1..1', '# tests 1', '# pass 1', '# fail 0', '# cancelled 0', '# skipped 0', '# todo 0', ''].join(String.fromCharCode(10)));
+    child.stderr.end(); child.emit('close', 0, null);
+  };
+  const pending = runner.runRtkTestGraph({
+    plan: { testFiles: ['observed-member-births.test.js'] }, tmpParent: makeTempParent(t),
+    stdout: makeWriter(), stderr, spawnImpl: () => child,
+    readProcessIdentity: () => ({ ok: true, status: 'AVAILABLE', identity: closed ? null : leader }),
+    inspectProcessGroup: () => {
+      if (closed) return { ok: true, complete: true, status: 'AVAILABLE', rows: [] };
+      const rows = snapshots[Math.min(next, snapshots.length - 1)];
+      observations.push(rows); next += 1;
+      if (next >= snapshots.length) queueMicrotask(close);
+      return { ok: true, complete: true, status: 'AVAILABLE', rows };
+    },
+    signalProcessGroup: (_pgid, signal) => { signals.push(signal); return { ok: true }; },
+    heartbeatIntervalMs: 20, wallTimeoutMs: 1000, noProgressTimeoutMs: 1000,
+    termGraceMs: 30, killGraceMs: 30,
+  });
+  let run;
+  try { run = await pending; } finally { close(); }
+  assert.deepEqual(observations, snapshots, 'all independently supplied complete snapshots executed');
+  assert.equal(run.result.status, 0); assert.equal(run.result.signal, null);
+  assert.equal(run.tap.ok, true); assert.equal(run.cleanup.ok, true);
+  assert.equal(run.processGroupCleanup.ok, true); assert.deepEqual(signals, []);
+  assert.equal(fs.existsSync(run.lease.root), false);
+  const cleanup = stderr.value().split(String.fromCharCode(10)).filter(line => line.startsWith('RTK_GRAPH_EVENT=')).map(line => JSON.parse(line.slice('RTK_GRAPH_EVENT='.length))).find(event => event.type === 'RTK_GRAPH_CLEANUP');
+  return { run, cleanup };
+}
+
+test('C4 RTK runner retires an absent nonleader birth before a later observed PID reuse', async t => {
+  const { run, cleanup } = await runObservedMemberBirths(t, (leader, member) => [
+    [leader, member], [leader], [leader, { ...member, startIdentity: 'later-member-birth' }],
+  ]);
+  assert.equal(run.exitCode, 0, JSON.stringify(run));
+  assert.equal(run.processInspectionFailure, null);
+  assert.equal(cleanup.processInspectionFailure, '');
+  assert.equal(cleanup.streamFailure, ''); assert.equal(cleanup.terminalUnproven, false);
+});
+
+test('C4 RTK runner still refuses a member birth replacement without observed absence', async t => {
+  const { run, cleanup } = await runObservedMemberBirths(t, (leader, member) => [
+    [leader, member], [leader, { ...member, startIdentity: 'unproven-replacement-birth' }],
+  ]);
+  assert.equal(run.exitCode, 1);
+  assert.equal(run.processInspectionFailure.message, 'RTK_PROCESS_GROUP_MEMBER_IDENTITY_CHANGED:424251');
+  assert.equal(cleanup.processInspectionFailure, run.processInspectionFailure.message);
+});
+
+test('C4 RTK runner preserves leader birth fencing across a complete absence observation', async t => {
+  const { run, cleanup } = await runObservedMemberBirths(t, (leader, member) => [
+    [leader, member], [], [{ ...leader, startIdentity: 'foreign-leader-birth' }],
+  ]);
+  assert.equal(run.exitCode, 1);
+  assert.equal(run.processInspectionFailure.message, 'RTK_PROCESS_GROUP_MEMBER_IDENTITY_CHANGED:424250');
+  assert.equal(cleanup.processInspectionFailure, run.processInspectionFailure.message);
+});
