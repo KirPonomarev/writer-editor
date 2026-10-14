@@ -36,7 +36,11 @@ Earlier546/546,155/155 and318/318 belong to their preserved earlier source bytes
 Final committed certification/fullRTK must cover complete affected files on the
 stable candidate, then official CI/normal merge/clean exact-merged verification.
 Accepted native cycles0; both origins/scales/runtime, roles, five genuine rounds
-and required recovery remain open. Runtime delta56 lines, tests279 added lines.
+and required recovery remain open. Runtime delta56 lines, tests279 appended lines plus two isolated context inputs.
+Full RTK on fba1 completes4209/4210: one missing mock of the new Main pending-export
+state. Only the two isolated lifecycle harness inputs are supplied; old assertions
+and all581 product bytes stay exact. Whole comments25/menu8/physics6 pass. Final
+certification and full RTK remain required on the completed immutable candidate.
 T777 retains new materials/reports. Task:2026-10-14--word-pending-book-export-phase-reuse-mac.md.
 
 ## 2026-10-14 — Project-scoped tree query across document replacement

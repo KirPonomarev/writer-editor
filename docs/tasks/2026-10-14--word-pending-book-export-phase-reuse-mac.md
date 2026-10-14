@@ -41,9 +41,9 @@ materials/reports; declared owner-takeover disposable contract TMPDIR only.
 ## ARTIFACT
 
 Main publication/lifecycle changes, opt-in observation on the existing bridge port,
-append-only two maintained contract files, factual/mechanical companions.
-Runtime budget60 changed lines; behavior350 added lines versus delivery base.
-At this freeze actual runtime56 and behavior279. No general shutdown framework.
+appended controls in two maintained contract files, two isolated lifecycle-context inputs, factual/mechanical companions.
+Runtime budget60 changed lines; behavior350 changed lines versus delivery base.
+At this freeze actual runtime56 and behavior283 (279 appended plus two changed fixture lines). No general shutdown framework.
 
 ## ALLOWLIST
 
@@ -51,6 +51,8 @@ At this freeze actual runtime56 and behavior279. No general shutdown framework.
 - src/io/revisionBridge/index.mjs
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
 - test/contracts/rtk-word-review-default-typography.contract.test.js
+- test/contracts/rtk-word-comment-authoring.contract.test.js
+- test/contracts/menu-presentation-modes.contract.test.js
 - docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -124,7 +126,7 @@ handler tests hold readback/activation, overlap, cancel/failure, lifecycle async
 race, retry and new post-closing admission. External I/O is stubbed, not native.
 CHECK_04_POST_CHAIN: compiler twice/idempotence; focused and unchanged EVID whole;
 final unchanged full RTK plan must include both complete affected contract files,
-bridge/notes/return risk and lifecycle coverage, mandatory TAP/file inventory with
+bridge/notes/return risk and lifecycle coverage, plus complete menu-presentation contract outside RTK, mandatory TAP/file inventory with
 no skip/todo/cancelled/zero-test; complete certification and required cheap/CI gates.
 An extra duplicate whole run is unnecessary only when this same exact final graph
 really executes those complete files. Selected coverage never substitutes for it.
@@ -164,6 +166,25 @@ analyses2/16861.451ms; gate RTK_V4_DOUBLE_SELF_PARSE_PASS, DOCX9646240 bytes,
 581 sources/24 business inputs exact, product write attempts0. This is one diagnostic
 measurement, not causal attribution of every timing difference or shipping SLO.
 Full final committed certification/RTK/officialCI/delivery remains required.
+
+### Isolated lifecycle harness completion
+
+Final full RTK on fba1bf39 completes4209/4210, actual1, no exclusions. Its sole
+failure is a ReferenceError in the maintained isolated comment-authoring context:
+that test extracts confirmDiscardChanges without supplying the newly declared
+pendingReviewDocxExports state. A complete consumer search finds the same omitted
+mock in the menu lifecycle harness outside RTK. Fresh clean ARCHITECTURE03/preflight/
+E0 passed before edits; only these two empty context inputs are added. Removing
+the additions reconstructs both exact old files; every assertion and all581 product
+source/package bytes remain unchanged. Whole comment-authoring25/25, menu8/8 and
+lifecycle physics6/6 pass, mandatory TAP0, no exclusions. The unchanged product
+component evidence retains its original source bindings and is not reassigned.
+
+Independent final certification and full RTK may run concurrently only in separate
+owned disposable TMPDIR subdirectories on the same clean immutable candidate;
+required gates, actual exits, complete file denominators and byte barriers remain.
+This changes scheduling only. Final docs/tuples follow the minimal harness fix;
+no extra compiler/500k rerun is justified by an unchanged product tree.
 
 ## STOP_CONDITION
 

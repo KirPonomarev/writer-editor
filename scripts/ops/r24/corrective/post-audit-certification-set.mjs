@@ -23294,7 +23294,7 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-      "sha256": "ad9e7d236b84420c4ff36231d6bb40239397cd379b61a1ad20cd17dd05f90858"
+      "sha256": "de11ca9010369372b8d0c0489bf99bc443b6d7985e89a970e87b50089132c0a6"
     },
     {
       "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
@@ -23330,7 +23330,7 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "test/contracts/menu-presentation-modes.contract.test.js",
-      "sha256": "f4ac7bf36c878f44dab9915762b4746f678393e6ebede2788fbf80732349f546"
+      "sha256": "724dd6915283ee7fc04088294948a2e9adb8a846191765837779be91cb5bd235"
     },
     {
       "path": "docs/tasks/2026-10-10--mac-normal-quit-novel.md",
@@ -23350,15 +23350,15 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "c802d9d6b45f3e541910a6f92682b936ebe533b3097ed8f036006dc86359e4d5"
+      "sha256": "933a34029ac7d8e52ab041f1f1c5b86015c724819b404013fa2c86a1b839e697"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "e17fd88396efbda473251fa2d08c73537dc0976b5d9434e162756645bfdfcbd6"
+      "sha256": "1af13c497ed224e4bcaa1b5b203ea780bc44ead373cc68760758865af792a3de"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "13f48d921518f8b66ccc842976c5c868c90dc7b295f712f9719ba41df7976c84"
+      "sha256": "6aa8ec700989efeafee740d89215aeb95d4bd68f755cffaebb14fb70a4ad107c"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -23430,13 +23430,13 @@ export const R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR=Object.f
     },
     {
       "path": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
-      "sha256": "880283b6a4879ce4f7b5633b2a4849d98c816b8b15554e7d332e5b9aff1e1177"
+      "sha256": "188770fa113e9f8cfbe76ab601ca052c262cbd1f98c850f42fe1e298517e7c14"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "073b6b2ec9f783affd7c19e6174104dd775bbc4fef006b51a9f33bfd3eff4f2d"
+      "sha256": "0b8f1d6b5be5e76e7764a4e4bffe9a24efed5afd166e49be22cac4f6489d2e9a"
     }
   ]
 });
