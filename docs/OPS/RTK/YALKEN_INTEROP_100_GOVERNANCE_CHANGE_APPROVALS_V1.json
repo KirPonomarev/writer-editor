@@ -5410,30 +5410,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T17:41:12.041902+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
-      "sha256": "94f4f13d4b02e86be107af8f4128f2d87647053cd3ea03abd9010a745557100a"
+      "rationale": "Current bytes of the three handoffs authored in the same directly authorized indexed Word authority correction. Preserve all prior approval tuples and full acceptance oracles; source581 package inputs and existing native profiles unchanged. This binds documentation bytes only and grants no native or feature acceptance.",
+      "sha256": "dcd48aa63b510372a54b00480e52f7c2c36d2edba35a8fcfd963d1c5d61173fb"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T17:41:12.042284+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
-      "sha256": "d9f6ed74e7c44c11e45026f478974bda682b26146354e22945bef36681affb20"
+      "rationale": "Current bytes of the three handoffs authored in the same directly authorized indexed Word authority correction. Preserve all prior approval tuples and full acceptance oracles; source581 package inputs and existing native profiles unchanged. This binds documentation bytes only and grants no native or feature acceptance.",
+      "sha256": "16f85d42a5234ba4c8739aced51fcaf96c4ad0c0e9f8f93eea866a1ebe4a31a2"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T17:41:12.042465+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
-      "sha256": "1ff2be26319401d5c5715473f1646d6c355655bead16ddb750c48f12691c30d1"
+      "rationale": "Current bytes of the three handoffs authored in the same directly authorized indexed Word authority correction. Preserve all prior approval tuples and full acceptance oracles; source581 package inputs and existing native profiles unchanged. This binds documentation bytes only and grants no native or feature acceptance.",
+      "sha256": "23e5a50e5f4a39a961dcbc2bbac0b2b37e0202976ba2dbeab629feca040b742e"
     },
     {
       "approved": true,
@@ -44689,6 +44689,33 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
       "sha256": "10c65fc14410bfd54d65296051a84f0700b002014b1ee42e01a554372c3af2fa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "94f4f13d4b02e86be107af8f4128f2d87647053cd3ea03abd9010a745557100a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "d9f6ed74e7c44c11e45026f478974bda682b26146354e22945bef36681affb20"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "1ff2be26319401d5c5715473f1646d6c355655bead16ddb750c48f12691c30d1"
     }
   ]
 }
