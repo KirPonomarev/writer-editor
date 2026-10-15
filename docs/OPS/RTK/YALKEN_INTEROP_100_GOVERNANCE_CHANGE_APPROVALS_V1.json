@@ -5509,21 +5509,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
-      "sha256": "a0f5531ca4153ff3d6b001f7fd5e974970c778d992aa74d54615cbc8eac4900b"
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "e2b447d07a97623f531d28e3093f655388f3beb036cfb528b0641826094b5e6c"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:02:37.610946+00:00",
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Correct DATA_DELIVERY_SCOPE refusal: mirror the one exact new task document already admitted by the policy in its legacy executable literal list. Strict equality, protected files, full semantic/physical oracles and all224 historical tuples remain. Runtime/tests and all581 product/package source bytes are unchanged; no native acceptance.",
-      "sha256": "be03761782d1ed651f21a183843e07e5c94249ec9924a349f174e4f3d20c2b20"
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "69fead8d0ce55d79cf6057067ae2ffbb0db51afd512880f82d83f95cc2a582c8"
     },
     {
       "approved": true,
@@ -5554,21 +5554,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
-      "sha256": "523ba25ca28f08ac3b83844955f514bb32e6c3d46669123df5c242294e3f1458"
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "f4037ae1f50c964c1a17fd24e6f3419e1281ba2938ee41dc2cae7af20644715f"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:02:37.610946+00:00",
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Correct DATA_DELIVERY_SCOPE refusal: mirror the one exact new task document already admitted by the policy in its legacy executable literal list. Strict equality, protected files, full semantic/physical oracles and all224 historical tuples remain. Runtime/tests and all581 product/package source bytes are unchanged; no native acceptance.",
-      "sha256": "7963e649fed89b540107e59dbf7dd3a606743cf18bb61b18c5f7985f3e3a1675"
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "52b73294112152e2ed7f23102bcb0d8ca847a40e217d7ceccf09414dfb6d6e0f"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -44347,6 +44347,42 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
       "sha256": "5054131a792275ccc3cbfb44157013cf4d1008238b0e2b1a7bd4d86c99c46ce2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "a0f5531ca4153ff3d6b001f7fd5e974970c778d992aa74d54615cbc8eac4900b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:02:37.610946+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Correct DATA_DELIVERY_SCOPE refusal: mirror the one exact new task document already admitted by the policy in its legacy executable literal list. Strict equality, protected files, full semantic/physical oracles and all224 historical tuples remain. Runtime/tests and all581 product/package source bytes are unchanged; no native acceptance.",
+      "sha256": "be03761782d1ed651f21a183843e07e5c94249ec9924a349f174e4f3d20c2b20"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "523ba25ca28f08ac3b83844955f514bb32e6c3d46669123df5c242294e3f1458"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:02:37.610946+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Correct DATA_DELIVERY_SCOPE refusal: mirror the one exact new task document already admitted by the policy in its legacy executable literal list. Strict equality, protected files, full semantic/physical oracles and all224 historical tuples remain. Runtime/tests and all581 product/package source bytes are unchanged; no native acceptance.",
+      "sha256": "7963e649fed89b540107e59dbf7dd3a606743cf18bb61b18c5f7985f3e3a1675"
     }
   ]
 }
