@@ -131,6 +131,12 @@ Full frozen aggregate/certification, official delivery and native retry remain
 open. The prior40.0s to30.0s full-validation trial is diagnostic, not shipping SLO.
 No command deadline, product quota, semantic regeneration or original test changed.
 
+The first frozen candidate09f2fbc4 completes certification317of318 with one C2A
+approval-metadata drift; RTK is explicitly cancelled with owned graph cleanup.
+All failed/cancelled outputs remain retained. Official C2A generation restores
+only its approval bytes; the other five generated outputs are already exact.
+All581 product/package inputs remain unchanged; new full gates are required.
+
 ### REFERENCES
 
 Current measured native74 operands and CPU profile determine this correction.

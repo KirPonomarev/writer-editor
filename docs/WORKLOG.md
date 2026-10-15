@@ -23,6 +23,11 @@ its result is preserved and replaced by an explicit-TAP run, not called green.
 Old maintained assertions stay byte-exact. The previous40s to30s retained-operand
 trial is diagnostic only. Full frozen RTK/certification, official CI and normal
 commit/push/PR/merge/exact merged proof remain required before native retry.
+The first frozen candidate09f2fbc4 completes certification317of318 with one C2A
+approval-metadata drift; RTK is explicitly cancelled with owned graph cleanup.
+All failed/cancelled outputs remain retained. Official C2A generation restores
+only its approval bytes; the other five generated outputs are already exact.
+All581 product/package inputs remain unchanged; new full gates are required.
 All native profiles, original WIP and old evidence remain preserved. Full feature
 NOT_READY: roles, origins/scales/runtimes/five exchanges, physical note controls
 and old SOURCE80 recovery stay open. Task:2026-10-15--word-novel-native-primitives-mac.md.

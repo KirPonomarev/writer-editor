@@ -24442,15 +24442,15 @@ export const R24_INTEROP_WORD_NOVEL_NATIVE_PRIMITIVES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "0489bbd53b9ca24ab7004a10406e9dcaa3376f58ffdcad710cec22a14b21198e"
+      "sha256": "1679f13a40fb685b4d261c16714dfd5031d4e87acd7fecc51ca9efdb163689a0"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "d938875a7be55cc58adb93efd171cbb20bf71cbb9026ebaf8f75b6fc2d1cf779"
+      "sha256": "cf51855569cbe8659427759ea7b8a2840176f2a973bdc36897c3270b78fbee96"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "5f6c67e4e3aa520084acd7c3e44486790fe983537ce8fa272c67893483f7cafb"
+      "sha256": "d111dd542a7163bbe08524b74f2aed092b3d09d5b4b43087d881050b92d4858a"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -24530,7 +24530,7 @@ export const R24_INTEROP_WORD_NOVEL_NATIVE_PRIMITIVES_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
-      "sha256": "acd766403392ed00f0a431bcd3a11b6e8a38bf357ced2bd4a2a48d9fd20c3f72"
+      "sha256": "a2375ac6fd6987c91a4cc09cc14b7d03d0f379aaaf11d80031d9e97e406046aa"
     },
     {
       "path": "scripts/ops-gate.mjs",
@@ -24548,7 +24548,7 @@ export const R24_INTEROP_WORD_NOVEL_NATIVE_PRIMITIVES_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "a474361183086d5cfa8d3cad4797991d7fa60c3e31f38291cea4f458281d43a2"
+      "sha256": "800f9d12f359929a3bfc8229678ac43731df7bd8b7ffd10bf125dde60bf29706"
     }
   ]
 });
