@@ -666,7 +666,8 @@
     "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
     "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
     "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
-    "docs/tasks/2026-10-15--word-history-private-preparation-mac.md"
+    "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
+    "docs/tasks/2026-10-15--word-export-activation-mac.md"
   ],
   "protectedFiles": [
     {
@@ -895,7 +896,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "035967a62dd718401de4fb38dfd2f0424c6061a4c060fb718a5a2c099649837e"
+        "sha256": "559b7e710029685f881884d0f38f0e86a991cfb36ba9de7052ddd3c48e5ff70d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1203,7 +1204,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
-        "sha256": "bff012975d5c2afcf79e9bbc7787b735a292e2b915937b1634b034926d46e86d"
+        "sha256": "7cd0724e26081319ebd1effd7126ab79dae5f43f23dc31b283bdd81f5354b2ed"
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
@@ -2083,7 +2084,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "ccce0cd962555d9ff8bec725d9e3a17058dec71ce72fa453e3f8c600a7cf75e1"
+        "sha256": "c6d9e3d0cd0cb3498d2c251b43dac462039ef7f402329dddb6389098d374bbfb"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2587,15 +2588,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "94f4f13d4b02e86be107af8f4128f2d87647053cd3ea03abd9010a745557100a"
+        "sha256": "67174c62537feb7e94c05e9f08c439b6c0a3184c3fdbfd9cf8617fe25b72ce2a"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d9f6ed74e7c44c11e45026f478974bda682b26146354e22945bef36681affb20"
+        "sha256": "3c793a65d33e888469f963b0fec6d30cfa017f32337892fc6b8639ff267831b0"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "1ff2be26319401d5c5715473f1646d6c355655bead16ddb750c48f12691c30d1"
+        "sha256": "2c5f5980e5e4cee995b0b6b059fcb608eccbfddc8a35910839b896388770782b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2731,11 +2732,11 @@
       },
       {
         "path": "src/core/word-review-authority-codec-v1.cjs",
-        "sha256": "1db5cffa659fed08fe6a0730fd5666a8a90d24e10683a70343668acf3ab54216"
+        "sha256": "47f5ec36443e02d4b41f192862f76a60c96c40e9cb1f08a8dfbed785ec95781b"
       },
       {
         "path": "test/contracts/rtk-word-review-authority-codec.contract.test.js",
-        "sha256": "92e7c3ebf8c848417cc613be73c93c331cd71a3498ed3c0ea09a1e099513f355"
+        "sha256": "93d4eb15ae6ed2e33e2b9b264d87700b4af6ff6e9297c5214ff9ee1e0513e80a"
       },
       {
         "path": "test/contracts/scene-document-admission.contract.test.js",
@@ -2855,7 +2856,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "f9cbf972d69d1059e73326a95acc5760225c69635064c07af011ed8757b19861"
+        "sha256": "a3dfb7c9bcf6b7ff9733c51f06c23a5f47bc5d3b3c2e25e624b68e1596c17cd2"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -2932,6 +2933,10 @@
       {
         "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
         "sha256": "1191c94dd6d67499f0e4a1f5edcefeeb28293c87a260d32894325e68faef7d99"
+      },
+      {
+        "path": "docs/tasks/2026-10-15--word-export-activation-mac.md",
+        "sha256": "3e3186c60e1b5793db5c0fb60b19884239df1a8602132047011551a4b81cd5d9"
       }
     ],
     "followupRepair": {

@@ -227,7 +227,6 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
       }
       return writeBufferAtomic(outPath, documentBuffer);
     }, 'export review docx packet');
-    updateStatus('Review DOCX экспортирован');
     // EXPORT-01 (P0-09): ACTIVATION phase. The authority store is persisted ONLY
     // after the published file is re-read and its sha256 matches the written
     // buffer byte-for-byte. A gate block, a write failure, or a readback
@@ -258,10 +257,12 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
         return makeTypedReviewDocxExportError(
           'E_REVIEW_DOCX_EXPORT_ACTIVATION_FAILED',
           'REVIEW_DOCX_EXPORT_ACTIVATION_FAILED',
-          { message: getErrorMessage(error), outPath },
+          { message: getErrorMessage(error),
+            ...(/^RTK_ROUND_[A-Z0-9_]{1,120}$/u.test(error?.code || '') ? { code: error.code } : {}), outPath },
         );
       }
     }
+    updateStatus('Review DOCX экспортирован');
     return {
       ok: true,
       commandId: typeof deps.commandId === 'string' ? deps.commandId : 'cmd.project.review.exportDocxReviewPacket',

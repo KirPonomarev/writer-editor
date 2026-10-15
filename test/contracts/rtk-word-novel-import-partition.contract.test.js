@@ -1282,13 +1282,14 @@ test('novel authenticated atomic notes: governed fresh joint preserves three own
     const codec=require('../../src/core/word-review-authority-codec-v1.cjs'),carrier=v8.deserialize(fs.readFileSync(request.priorAuthorityCarrierPath));
     assert.ok(fs.statSync(request.priorAuthorityPath).size<=codec.ENCODED_MAX_BYTES);
     priorAuthorityRecord=codec.decode(textFile(request.priorAuthorityPath));equal(priorAuthorityRecord,carrier.record);equal(priorAuthorityRecord,carrier.decoded);
-    const validation={module:{exports:{}},isPlainObjectValue,cloneJsonSafe,createRtkReviewTransportCryptoPort:actualCryptoPort,
+    const validation={module:{exports:{}},isPlainObjectValue,cloneJsonSafe,createRtkReviewTransportCryptoPort:actualCryptoPort,reviewAuthorityCodec:codec,
       REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA:'yalken.rtk.word.product-review-docx-export.authority-store.v2'};
     vm.runInNewContext(['docxReviewPreviewSessionDetailString','buildDocxReviewReturnAuthorityStoreRecord','validateDocxReviewReturnAuthorityStoreRecord','validateDocxReviewAuthorityRoundBindings']
       .map(n=>namedFunction(readSource(MAIN_PATH),n)).join('\n')+'\nmodule.exports={validateDocxReviewReturnAuthorityStoreRecord,validateDocxReviewAuthorityRoundBindings};',validation);
     equal(validation.module.exports.validateDocxReviewReturnAuthorityStoreRecord(priorAuthorityRecord),priorAuthorityRecord);
     validation.module.exports.validateDocxReviewAuthorityRoundBindings(priorAuthorityRecord,request.projectRoot);
-    for(const row of Object.values(priorAuthorityRecord.roundsById)) {
+    for(const storedRound of Object.values(priorAuthorityRecord.roundsById)) {
+      const row=codec.unpackRound(storedRound);
       assert.equal(row.manifestPath,path.join(request.projectRoot,'project.craftsman.json'));
       assert.equal(row.documentMetadata.protectedProperties.projectId,receipt.projectId);
       assert.equal(row.documentMetadata.coreProperties.identifier,receipt.projectId);

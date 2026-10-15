@@ -1,3 +1,41 @@
+# Word export activation index — 2026-10-15
+
+TASK_ID: WORD_EXPORT_ACTIVATION_MAC_20261015
+DOCUMENT_CLASS: PROCESS
+STATUS: CANDIDATE_VERIFICATION_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: ffd9d0e0d93a7ea6aac6e53dff23138d7449b1ca
+CLAIM_BOUNDARY: bounded store representation only; full native feature remains NOT_READY
+
+Native76/77 completed public Redo, Undo and Redo with full independent graph
+conservation and ordinary Quit. Native78 created a9670932byte full DOCX but
+activation failed; no durable round change occurred. Its failure is retained.
+The actual two-round store has54466989 decoded bytes/758024 values. A copied
+third full capsule reproducibly fails STRUCTURE_BUDGET and also exceeds64MiB;
+this is a causal design counterexample, not a capture of lost pending native78.
+
+The candidate V5 index retains complete capsules inside the same atomic file,
+separately bounded V4 payloads and hot lifecycle/version metadata. Strict reads
+validate every payload sequentially; return intake resolves only the selected
+eligible body. Legacy V2/V4 validation remains; admitted next publication
+migrates via the existing queue/lease/text-CAS/atomic writer and readback.
+Every prior cold payload and terminal state stays protected. Existing encoded,
+per-operation decoded/structure, input, heap and deadline bounds remain. V5
+additionally bounds cumulative cold verification at256MiB/4000000 values;
+fully expanded history is explicitly no longer one legacy64MiB graph.
+
+Actual Main/codec read-only shipped Electron41.10.6 measurement retained2real
+plus5representative cloned capsules, with complete deep equality, validated
+Main digest and unchanged original store:11984015encoded/12774500index bytes,
+13213ms, peak1073856KiB. These are0new genuine exchanges and no native acceptance.
+Raising aggregate legacy limits instead measured2784528KiB in its separate
+7-round experiment and was rejected. Capacity is checked before publishing
+DOCX; final activation still revalidates and cannot reuse preflight authority.
+Typed bounded round refusals are visible, private text stays filtered, and
+success status follows activation. Required normal delivery and fresh ordinary
+macOS export continuation are still pending. Source80missing external anchor,
+21reference font/language fields and complete origins/scales/3roles/5real
+exchanges denominator remain open. Dated task materials/reports stay on T777.
+
 ## 2026-10-15 — Core-owned preparation of complete Word history
 
 TASK_ID: WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015

@@ -13,6 +13,8 @@ const bookmarks = require('../../src/core/word-user-bookmarks-v1.cjs');
 const notes = require('../../src/core/word-manuscript-notes-v1.cjs');
 const sha = x => crypto.createHash('sha256').update(x).digest('hex');
 const read = x => fs.readFileSync(x, 'utf8');
+const authorityCodec = require('../../src/core/word-review-authority-codec-v1.cjs');
+const completeRound = round => authorityCodec.unpackRound(round);
 const find = (root, label) => root?.label === label ? root : (root?.children || []).map(x => find(x, label)).find(Boolean);
 
 // Compile the actual entire Main source with owned local adapters. Private
@@ -2761,11 +2763,16 @@ test('authority V4 actual Main atomic store preserves all rounds across reopen a
   await f.probe.persist(round.store, { expectedText: before });
   const encoded = read(round.target), codec = require('../../src/core/word-review-authority-codec-v1.cjs');
   assert.equal(JSON.parse(encoded).schemaVersion, codec.SCHEMA);
-  assert.deepEqual(f.probe.strict(f.root).record, f.probe.buildAuthority(round.store));
+  assert.deepEqual(completeRound(f.probe.strict(f.root).record.roundsById['round-one']), f.probe.buildAuthority(round.store).roundsById['round-one']);
+  assert.equal(f.probe.strict(f.root).record.schemaVersion, authorityCodec.INDEX_SCHEMA);
   const reopened = await fixture(t, false, '01_Alpha.txt', false, f.temp);
   assert.deepEqual(reopened.probe.strict(f.root).record, f.probe.strict(f.root).record);
   await assert.rejects(reopened.probe.persist(round.store, { expectedText: before }), /CAS_CONFLICT/);
   assert.equal(read(round.target), encoded);
+  await assert.rejects(reopened.probe.persist({ ...round.store, roundsById: {
+    'round-one': { ...round.capsule, recordVersion: 3, unauthorizedColdContent: 'changed' },
+  } }, { expectedText: encoded }), /CAS_CONFLICT/);
+  assert.equal(read(round.target), encoded, 'a retained nonterminal capsule is immutable too');
   const manager = require('../../src/utils/fileManager'), original = manager.writeFileAtomic;
   manager.writeFileAtomic = async () => ({ success: false });
   try { await assert.rejects(reopened.probe.persist(round.store, { expectedText: encoded }), /WRITE_FAILED/); }
@@ -2797,7 +2804,7 @@ test('authority V4 actual Main rejects output budgets before creating directorie
   const invalidBefore = read(target); await assert.rejects(f.probe.migrate(f.root, f.query.projectId, () => {}), /STORE_INVALID/); assert.equal(read(target), invalidBefore);
   fs.writeFileSync(target, legacy);
   await f.probe.migrate(f.root, f.query.projectId, () => {});
-  assert.deepEqual(f.probe.strict(f.root).record, f.probe.buildAuthority(store)); assert.ok(fs.statSync(target).size < codec.ENCODED_MAX_BYTES);
+  assert.deepEqual(completeRound(f.probe.strict(f.root).record.roundsById.one), f.probe.buildAuthority(store).roundsById.one); assert.ok(fs.statSync(target).size < codec.ENCODED_MAX_BYTES);
   const valid = read(target); fs.unlinkSync(target); fs.writeFileSync(path.join(f.temp, 'foreign-store'), valid); fs.symlinkSync(path.join(f.temp, 'foreign-store'), target);
   await assert.rejects(f.probe.migrate(f.root, f.query.projectId, () => {}), /STORE_PATH_UNSAFE/);
   assert.equal(read(path.join(f.temp, 'foreign-store')), valid);
@@ -2830,7 +2837,7 @@ test('authority V4 five fresh signed 100000 word Main exports retain every prior
     const reopened = f.probe.strict(f.root), record = reopened.record;
     assert.equal(Object.keys(record.roundsById).length, i + 1);
     for (const [id, round] of Object.entries(prior)) assert.deepEqual(record.roundsById[id], round);
-    const current = record.roundsById[record.lastRoundId]; assert.equal(current.lifecycleState, 'PUBLISHED_ACTIVE');
+    const current = completeRound(record.roundsById[record.lastRoundId]); assert.equal(current.lifecycleState, 'PUBLISHED_ACTIVE');
     assert.equal(current.baselineFinalTextBySceneId[sceneId].split('\n')[0], 'Draft' + i);
     assert.ok(current.keyRef); assert.ok(current.manifestDigest);
     assert.ok(Buffer.byteLength(reopened.text) < codec.ENCODED_MAX_BYTES); assert.ok(Buffer.byteLength(JSON.stringify(record)) < codec.DECODED_MAX_BYTES);
@@ -2881,7 +2888,7 @@ test('authority legacy migrations serialize with actual tree expiry and preserve
     const after = f.probe.strict(f.root).record;
     assert.deepEqual(Object.keys(after.roundsById).sort(), Object.keys(record.roundsById).sort());
     for (const [id, before] of Object.entries(record.roundsById)) {
-      const actual = after.roundsById[id]; assert.equal(actual.lifecycleState, 'EXPIRED');
+      const actual = completeRound(after.roundsById[id]); assert.equal(actual.lifecycleState, 'EXPIRED');
       assert.equal(actual.recordVersion, before.recordVersion + 1);
       for (const key of Object.keys(before).filter(key => !['lifecycleState','recordVersion'].includes(key))) assert.deepEqual(actual[key], before[key]);
       assert.throws(() => f.probe.fresh(before), /LIFECYCLE_NOT_ELIGIBLE/);
@@ -4411,6 +4418,18 @@ test('actual Main Word cancellation and failed readback activation or build rele
  for(const extra of [{resolveDocxReviewPacketExportPath:async()=>''},{readWrittenBuffer:async()=>Buffer.from('wrong')},{activateReviewDocxExportAuthority:async()=>{throw Error('owned-activation-failure');}},{buildDocxReviewPacketBuffer:async()=>{throw Error('owned-build-failure');}}]){
   const f=wordExportQuitFixture(),result=await f.start('book',extra);assert.equal(result.ok,false);assert.equal(f.observe().activations,0);
   f.quit();await exportQuitTick();await exportQuitTick();assert.equal(f.observe().quitCalls,1);
+ }
+});
+test('actual Main Word exports expose bounded round refusal codes without premature success or private messages',async()=>{
+ for(const scope of ['scene','book'])for(const variant of ['message','code','private']){
+  const f=wordExportQuitFixture(),safe='RTK_ROUND_STORE_STRUCTURE_BUDGET';
+  const error=variant==='message'?Error(safe):variant==='code'?Object.assign(Error('RTK_ROUND_PUBLISH_TRANSITION_FAILED'),{code:safe}):Object.assign(Error('private manuscript and /secret/path'),{code:'/secret/key'});
+  const result=await f.start(scope,{activateReviewDocxExportAuthority:async()=>{throw error;}});
+  assert.equal(result.ok,false);assert.equal(result.error.code,'E_REVIEW_DOCX_EXPORT_ACTIVATION_FAILED');
+  assert.equal(f.statuses.some(status=>status==='Review DOCX экспортирован'),false);
+  const status=f.statuses.at(-1);assert.ok(status.includes('E_REVIEW_DOCX_EXPORT_ACTIVATION_FAILED'));
+  if(variant!=='private')assert.ok(status.includes(safe),status);
+  else assert.equal(/private|secret|manuscript/u.test(status),false);
  }
 });
 test('actual Main Word export admitted during async lifecycle confirmation prevents stale close',async()=>{

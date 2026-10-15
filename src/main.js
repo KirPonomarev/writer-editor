@@ -5534,6 +5534,17 @@ async function buildDocxReviewPacketBuffer(source) {
   const publicationGate = source.sceneNoteBinding
     ? await buildSceneNoteReviewPublicationGate(source, documentBuffer, revisionBridge)
     : await buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge);
+  if (publicationGate?.publishAllowed === true && source.pendingAuthorityStore) {
+    // Capacity is checked before publishing the DOCX. This projected state is
+    // only an encoding probe: the real transition, lease and CAS still happen
+    // after exact file readback and are never replaced by these bytes.
+    const pending = source.pendingAuthorityStore, id = pending.lastRoundId;
+    const round = pending.roundsById?.[id];
+    if (round) reviewAuthorityCodec.encode(buildDocxReviewReturnAuthorityStoreRecord({ ...pending,
+      roundsById: { ...pending.roundsById, [id]: { ...round, lifecycleState: 'PUBLISHED_ACTIVE',
+        recordVersion: round.recordVersion + (round.lifecycleState === 'PUBLISHED_ACTIVE' ? 0 : 1) } },
+    }, { indexed: true }));
+  }
   return {
     documentBuffer,
     exportCapsule: source.exportCapsule,
@@ -5603,7 +5614,7 @@ async function transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorit
   if (!isPlainObjectValue(targetRound)) return pendingAuthorityStore;
   const fromState = docxReviewPreviewSessionDetailString(targetRound.lifecycleState) || 'ALLOCATED';
   // Idempotent: already published rounds are not transitioned again.
-  if (fromState === 'PUBLISHED_ACTIVE') return pendingAuthorityStore;
+  if (fromState === 'PUBLISHED_ACTIVE') return buildDocxReviewReturnAuthorityStoreRecord(pendingAuthorityStore, { indexed: true });
   // Build the bridge-store form { schemaVersion, rounds } for the transition.
   const rounds = {};
   for (const [roundId, round] of Object.entries(roundsById)) {
@@ -5620,7 +5631,7 @@ async function transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorit
     // Fallback: stamp the lifecycle state directly so activation still persists.
     targetRound.lifecycleState = 'PUBLISHED_ACTIVE';
     targetRound.recordVersion = (Number(targetRound.recordVersion) || 1) + 1;
-    return { ...pendingAuthorityStore, roundsById };
+    return buildDocxReviewReturnAuthorityStoreRecord({ ...pendingAuthorityStore, roundsById }, { indexed: true });
   }
   const bridgeStore = {
     schemaVersion: 'yalken.rtk.round-record-v3.store.v1',
@@ -5643,7 +5654,9 @@ async function transitionPendingDocxReviewRoundToPublishedActive(pendingAuthorit
     error.details = isPlainObjectValue(transitionResult?.details) ? cloneJsonSafe(transitionResult.details) : {};
     throw error;
   }
-  return { ...pendingAuthorityStore, roundsById };
+  // Complete cold bodies leave the active store after this transition; the
+  // caller retains only the bounded index that the atomic publisher validates.
+  return buildDocxReviewReturnAuthorityStoreRecord({ ...pendingAuthorityStore, roundsById }, { indexed: true });
 }
 
 async function runLifecycleBoundReviewDocxExport(payload, dependencies) {
@@ -5695,9 +5708,9 @@ async function handleReviewDocxExportPacketCommandSurface(payload = {}, options 
     else {
       const code = /^E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}$/u.test(result.error?.code || '')
         ? result.error.code : 'E_REVIEW_DOCX_EXPORT_FAILED';
-      const refusalCode = [result.error?.details?.message, result.error?.details?.code, result.error?.reason]
+      const refusalCode = [result.error?.details?.code, result.error?.details?.message, result.error?.reason]
         .find(value => typeof value === 'string' && value !== code.slice(2) && value.length <= 160
-          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
+          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_ROUND|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
       status(`Не удалось экспортировать DOCX (${code}${refusalCode ? ': ' + refusalCode : ''}).`);
       logDevError('review-docx-export', { code, ...(refusalCode ? { refusalCode } : {}) });
     }
@@ -5746,9 +5759,9 @@ async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload 
     else {
       const code = /^E_REVIEW_DOCX_EXPORT_[A-Z0-9_]{1,80}$/u.test(result.error?.code || '')
         ? result.error.code : 'E_REVIEW_DOCX_EXPORT_FAILED';
-      const refusalCode = [result.error?.details?.message, result.error?.details?.code, result.error?.reason]
+      const refusalCode = [result.error?.details?.code, result.error?.details?.message, result.error?.reason]
         .find(value => typeof value === 'string' && value !== code.slice(2) && value.length <= 160
-          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
+          && /^(?:REVIEW_FULL_MANUSCRIPT_DOCX|REVIEW_DOCX_EXPORT|FULL_MANUSCRIPT|DOCX_REVIEW_PACKET|DOCX_USER_BOOKMARK|RTK_SECRET_STORE|RTK_ROUND|RTK_V4_PUBLICATION|RTK_WORD|RTK_RETURN_INTAKE|E_TREE_EDITOR|PENDING_REVISIONS_ANNOTATION_EXPORT)_[A-Z0-9_]+$/u.test(value)) || '';
       status(`Не удалось экспортировать DOCX (${code}${refusalCode ? ': ' + refusalCode : ''}).`);
       logDevError('review-docx-export', { code, ...(refusalCode ? { refusalCode } : {}) });
     }
@@ -9654,11 +9667,12 @@ function docxReviewReturnAuthorityStorePath(projectRootRaw) {
   return resolvedTarget;
 }
 
-function buildDocxReviewReturnAuthorityStoreRecord(store = {}) {
+function buildDocxReviewReturnAuthorityStoreRecord(store = {}, options = {}) {
   // ROUND-01 (V3): redact each round before the durable clone so the raw secret
   // never reaches the durable store. Only the opaque keyRef + public
   // correlation material (keyIdHex/roundIdHex) is retained per round.
   const rawRoundsById = isPlainObjectValue(store.roundsById) ? store.roundsById : {};
+  const indexed = options.indexed === true || store.schemaVersion === reviewAuthorityCodec.INDEX_SCHEMA;
   const redactedRoundsById = {};
   for (const [roundId, round] of Object.entries(rawRoundsById)) {
     if (!isPlainObjectValue(round)) continue;
@@ -9671,10 +9685,10 @@ function buildDocxReviewReturnAuthorityStoreRecord(store = {}) {
     if (typeof redactedRound.lifecycleState !== 'string' || !redactedRound.lifecycleState) {
       redactedRound.lifecycleState = 'ALLOCATED';
     }
-    redactedRoundsById[roundId] = redactedRound;
+    redactedRoundsById[roundId] = indexed ? reviewAuthorityCodec.packRound(redactedRound) : redactedRound;
   }
   const unsigned = {
-    schemaVersion: REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA,
+    schemaVersion: indexed ? reviewAuthorityCodec.INDEX_SCHEMA : REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA,
     scope: docxReviewPreviewSessionDetailString(store.scope),
     lastRoundId: docxReviewPreviewSessionDetailString(store.lastRoundId),
     roundsById: redactedRoundsById,
@@ -9693,7 +9707,7 @@ function buildDocxReviewReturnAuthorityStoreRecord(store = {}) {
 function validateDocxReviewReturnAuthorityStoreRecord(record = {}, options = {}) {
   // RTK_ROUND_CAS_CONFLICT is returned (typed) when recordDigest/recordVersion
   // disagree with the recomputed current version.
-  if (!isPlainObjectValue(record) || record.schemaVersion !== REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA) return null;
+  if (!isPlainObjectValue(record) || ![REVIEW_DOCX_RETURN_AUTHORITY_STORE_SCHEMA, reviewAuthorityCodec.INDEX_SCHEMA].includes(record.schemaVersion)) return null;
   if (record.secretExposedToRenderer !== false || record.secretEmbeddedInDocx !== false) return null;
   if (!isPlainObjectValue(record.roundsById) || !docxReviewPreviewSessionDetailString(record.lastRoundId)) return null;
   const expected = buildDocxReviewReturnAuthorityStoreRecord(record);
@@ -9774,19 +9788,19 @@ function createDocxReviewRoundAuthorityGuard(reference) {
   const projectRoot=reference?.projectRoot||getProjectRootPath(),roundId=reference?.roundId,
     keyRef=reference?.keyRef,recordVersion=reference?.recordVersion;
   const original=readStrictDocxReviewAuthorityStore(projectRoot),digest=computeHash(original.text||'');
-  const eligible=record=>{
+  const eligible=(record, resolved)=>{
     if(projectRoot!==getProjectRootPath()||reference?.projectRoot!==projectRoot||reference?.roundId!==roundId
       ||reference?.keyRef!==keyRef||reference?.recordVersion!==recordVersion||typeof roundId!=='string')throw Error('RTK_ROUND_STALE_AUTHORITY');
-    const round=findDocxReviewReturnIntakeRoundAuthority(record,roundId);
+    const round=findDocxReviewReturnIntakeRoundAuthority(record,roundId,{resolvePayload:false});
     if(!round||round.ok===false||round.keyRef!==keyRef||(recordVersion!==undefined&&round.recordVersion!==recordVersion))
       throw Error('RTK_ROUND_LIFECYCLE_NOT_ELIGIBLE');
-    return round;
+    return resolved || reviewAuthorityCodec.unpackRound(round);
   };
-  eligible(original.record);
+  const admitted = eligible(original.record);
   const check=()=>{
     const text=readDocxReviewAuthorityStoreText(projectRoot);
     if(text!==original.text||computeHash(text||'')!==digest)throw Error('RTK_ROUND_STALE_AUTHORITY');
-    return eligible(original.record);
+    return eligible(original.record, admitted);
   };
   const assertFresh=()=>{
     const fresh=readStrictDocxReviewAuthorityStore(projectRoot);
@@ -9816,7 +9830,7 @@ async function persistDocxReviewReturnAuthorityStore(store = {}, options = {}) {
   if (!storePath) {
     throw new Error('DOCX_REVIEW_RETURN_AUTHORITY_STORE_PATH_INVALID');
   }
-  const record = buildDocxReviewReturnAuthorityStoreRecord(store);
+  const record = buildDocxReviewReturnAuthorityStoreRecord(store, { indexed: true });
   validateDocxReviewAuthorityRoundBindings(record, projectRoot);
   const encoded = reviewAuthorityCodec.encode(record);
   const disk = readStrictDocxReviewAuthorityStore(projectRoot, { allowLegacyRecovery: options.allowLegacyRecovery === true });
@@ -9825,8 +9839,10 @@ async function persistDocxReviewReturnAuthorityStore(store = {}, options = {}) {
   for (const [id, before] of Object.entries(disk.record?.roundsById || {})) {
     const after = record.roundsById[id];
     if (!after || after.recordVersion < before.recordVersion
+      || after.payload !== reviewAuthorityCodec.packRound(before).payload
       || (['CONSUMED', 'REVOKED', 'EXPIRED', 'ABORTED'].includes(before.lifecycleState)
-        && JSON.stringify(after) !== JSON.stringify(before))) throw Error('RTK_ROUND_CAS_CONFLICT');
+        && stableRtkReviewTransportJson(reviewAuthorityCodec.unpackRound(after))
+          !== stableRtkReviewTransportJson(reviewAuthorityCodec.unpackRound(before)))) throw Error('RTK_ROUND_CAS_CONFLICT');
   }
   if (typeof options.revalidate === 'function') options.revalidate();
   await fs.mkdir(path.dirname(storePath), { recursive: true });
@@ -10251,7 +10267,7 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
   };
 }
 
-function findDocxReviewReturnIntakeRoundAuthority(store, roundId) {
+function findDocxReviewReturnIntakeRoundAuthority(store, roundId, { resolvePayload = true } = {}) {
   const rounds = isPlainObjectValue(store?.roundsById) ? store.roundsById : {};
   const capsule = rounds[roundId];
   if (!isPlainObjectValue(capsule)) return null;
@@ -10268,7 +10284,7 @@ function findDocxReviewReturnIntakeRoundAuthority(store, roundId) {
       return { ok: false, code: 'RTK_ROUND_NOT_OPEN_FOR_RETURN', lifecycleState };
     }
   }
-  return capsule;
+  return resolvePayload ? reviewAuthorityCodec.unpackRound(capsule) : capsule;
 }
 
 function verifyDocxReviewReturnIntakeLocalBinding({ context, localAuthority, parserResult, captureForComparison = false } = {}) {
