@@ -57,6 +57,7 @@ Original frozen Word input is read-only; no large novel fixture copies.
 - test/contracts/rtk-word-note-return.contract.test.js
 - test/contracts/rtk-word-pending-notes.contract.test.js
 - test/contracts/rtk-word-core-hash-parity.contract.test.js
+- test/unit/r24-wp204-lifecycle-recovery-mutants.test.js
 - docs/tasks/2026-10-15--word-note-reference-typography-mac.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -210,3 +211,18 @@ Final whole9-file Node22 and shipped Electron41.10.6 execute204of204 each; uncha
 ### Final Core bypass and catalog closure
 
 Fresh exact242d preflight and maintained RED22 prove a body-only Core cohort could change or downgrade an existing note reference payload. Core now compares validated prior/current reference typography for every existing manuscript note, while legitimate body edits and new-note import stay admitted. Complete204case chains pass on both engines again. Checkpointb869bb retains that fix before a clean26-path preflight. The first PR candidate CI38791665020 refused before RTK tests because the new test basename was absent from the strict catalog; add exactly that basename, preserve every previous member and all runner predicates, and execute the cheap plan and catalog contract before the next push. No old failed CI is counted as test acceptance.
+
+### Complete isolated mutation-test module graph
+
+Candidate7e58 broad inventory executed2230 cases, with one failure: the WP204
+unmodified-control sandbox copied the manuscript note model but omitted its
+new reference validator and the validator's existing word-language module.
+Actual local RED35 reproduces MODULE_NOT_FOUND before mutant execution.
+Fresh clean27-path preflight admits only those two dependency-list entries;
+all seven named mutants, real unmodified control and kill predicates remain
+unchanged. No fallback, runner change or reduced coverage is permitted.
+
+GREEN36 and SHIPPED37 execute the existing unmodified control and all seven
+mutants (1of1 maintained case on each engine, no skipped/todo), with unchanged
+kill predicates. Read-only copying-source review finds no second selective
+notes-module graph. Full normal CI remains mandatory for the final candidate.

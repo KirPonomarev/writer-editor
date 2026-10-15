@@ -41,6 +41,17 @@ view byte, exact JSON and the entire object-alias graph, with maintained
 negative controls for value, binary, alias and absent-field corruption. Old
 failure remains RED; it is not relabeled product mutation or successful proof.
 
+The broad candidate7e58 CI found one incomplete isolated WP204 module graph,
+not a runtime mutation: the manually copied notes model could not load the new
+reference validator. Local RED35 reproduces this before mutant execution;
+adding the validator and existing word-language dependency lets the unchanged
+unmodified control and all seven named mutants execute on Node22 and shipped
+Electron (GREEN36/SHIPPED37,1of1 each, no skips). Source copying checks found no
+second selective notes-module harness. Full candidate CI remains required.
+Read-only real Word500k preview31 on exact7e58/shipped Electron preserves all
+21of21 values across42 planned scenes; original583541 bytes and source remain
+unchanged. No project write or native credit is claimed.
+
 Earlier schema1 imports have already lost these values and are not repaired
 automatically. Native acceptance requires a fresh original-source import on a
 new frozen build or a separately authorized provenance-bound migration.

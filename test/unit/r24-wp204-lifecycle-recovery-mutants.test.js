@@ -30,6 +30,8 @@ const MODULE_BASENAME = 'lifecycle-recovery-v1.cjs';
 const DEPENDENCIES = [
   'browser-safe-hash.cjs',
   'word-manuscript-notes-v1.cjs',
+  'word-note-reference-typography-v1.cjs',
+  'word-language-v1.cjs',
   'word-rich-body-projection-v1.cjs',
   'word-comment-anchor-save-v1.cjs',
   'word-user-bookmarks-v1.cjs',

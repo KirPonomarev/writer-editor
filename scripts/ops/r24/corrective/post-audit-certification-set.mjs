@@ -26163,15 +26163,15 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "fc8f58cca8b9d68518078178d28867c3ae9ee3cf64d123cc8c9536120577d034"
+      "sha256": "f2b8bc7a5b5a68c27c59f8682a0c420b29a7b06cb2a942e4be04850786626082"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "f9674ec0c0cd246617622230e84496af4a349aabc3b0a56c2d4f06d87ca59be4"
+      "sha256": "ffe20f9e20667d19c7382c16bf62ca5efd1311d7d4d0e1e17b89c5e5787aba66"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "b5d0420b7c468a905f5d166f0a2a970fe27d8e5be8e8ebae450db62b41b5611f"
+      "sha256": "cc5ce67c99933016c5e58b5a2fd467f0f50e2af996c83c2d8ec26189bbf223e1"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26303,13 +26303,17 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
-      "sha256": "2e7d0b210426e58c428a38d11dd22bc69bd291bb4686d0ad992dc51ffa7f766c"
+      "sha256": "8202b5a29957421e0a3e6c6eb92c400d1c56ad4d62d10451ddbe682ea57af17a"
+    },
+    {
+      "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+      "sha256": "2731e0ad429215146403bf971f27f519ba058602f889aa8a3db7ba2ab854c046"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e8a22dc08662482cca38ac846db685a2301de906d606302cdfa52a0edc7748f1"
+      "sha256": "49d80f5cbbd242393982a3b47590d61e5a93dae6cb954f4f68995a612516eea8"
     }
   ]
 });
