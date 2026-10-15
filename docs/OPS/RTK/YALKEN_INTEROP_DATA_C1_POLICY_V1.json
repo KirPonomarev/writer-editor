@@ -670,7 +670,15 @@
     "docs/tasks/2026-10-15--word-export-activation-mac.md",
     "src/core/word-note-reference-typography-v1.cjs",
     "test/contracts/rtk-word-note-reference-typography.contract.test.js",
-    "docs/tasks/2026-10-15--word-note-reference-typography-mac.md"
+    "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
+    "src/product/stage10IntegrityAnchor.mjs",
+    "src/product/stage10ProductWiring.mjs",
+    "src/product/stage10MainPersistenceAdapter.mjs",
+    "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
+    "test/contracts/b2c09-command-surface-kernel.contract.test.js",
+    "scripts/ops/b2c09-command-surface-kernel.mjs",
+    "docs/tasks/2026-10-16--word-missing-anchor-recovery-mac.md",
+    "test/contracts/rtk-evidence-stale-green-guard.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -899,7 +907,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e5b34c4a107401c70891140a69b96ffb043cb6d601a5f53ab8abfc7476c56682"
+        "sha256": "4f91696c20d7b75a2309d83c8d8ab93c43a8c870b86495b79a042bd4531d8724"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1171,7 +1179,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "8211cf29a1a9582663196e5f00272a07fa0bd0fc655f23dd5965e0751c015038"
+        "sha256": "6a12599666c8b2f77c3a9ba9091007e3018f0726544ebaac616399212d41e561"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -1575,7 +1583,7 @@
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
-        "sha256": "ca9d6cef46c5fe4421303a39b89fd653fc601995fadeb9eb028cf7de6d01c44f"
+        "sha256": "01c51a8129147e6567ab6d67bae42b79e7eda17b6b01ba8936f6ae3da1c42f43"
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
@@ -1583,7 +1591,7 @@
       },
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-        "sha256": "e2825b3919069aff3f420fee2883315742cd1e74bb6ed230d5cb3ae4192becc2"
+        "sha256": "6f1b83a4a106ef46d5f39ff8d7d72e4f79ff1b0a27df93a8c49eb7c49a5c2352"
       },
       {
         "path": "test/unit/sector-m-review-surface-ui.test.js",
@@ -1747,7 +1755,7 @@
       },
       {
         "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-        "sha256": "b275455e83146d3b707627e75cb7556572a8b61de32a99c389f5420ebcd753ed"
+        "sha256": "f7acb2065ec6525c285a14eb8721ce51f0d802a435839e72bee9e096b7a20dfd"
       },
       {
         "path": "src/core/word-note-return-delta-v1.cjs",
@@ -2587,19 +2595,19 @@
       },
       {
         "path": "test/unit/r24-wp302-session-continuity.test.mjs",
-        "sha256": "317e9ae773f180372cceecb24c5731c73a8e0c06ecbac2d27ebab655f4f50f61"
+        "sha256": "515d2a0f5a482d6d815cb1b3be4f933c6ee18a25a980edec62fb96f1ce255603"
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "e6eeef3e3727697b1d84272a12d5d104b40ccfc363f2296280f184faf2a91f44"
+        "sha256": "b3f7f018f56aa1bde812f2b7a0eb07fbeb01bf8fda7e48264057194e4795afea"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "490f7b801781bfb052b8409fa7a201f829066ca753dfef7391f7d58509b6dbf8"
+        "sha256": "2a04c5e71bd55af0ad5d1dfe2afb978e6fd2c9189044c8ef2bb19585a7ec23d3"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c3178cb640174bbed661f2a572ff4bfb76925d9b9d3d6e8d47180010ecb9e8c8"
+        "sha256": "06a398b030edded230ae6a9b1e461417259b525baffe130298f98c7afd9899eb"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2952,6 +2960,38 @@
       {
         "path": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
         "sha256": "b0831cfb7221d205aa15ecde28c59bd6f84be00b11bffa159a8bf3f54d8627eb"
+      },
+      {
+        "path": "src/product/stage10IntegrityAnchor.mjs",
+        "sha256": "27aa96598e6a7d9929ce231777976230caff5ce5251a3ad0f560ed381f91ea27"
+      },
+      {
+        "path": "src/product/stage10ProductWiring.mjs",
+        "sha256": "c72402fc77d654500b6dac2c9d940e1ec18c1ab425f37e32e2ab45ccb3148479"
+      },
+      {
+        "path": "src/product/stage10MainPersistenceAdapter.mjs",
+        "sha256": "b0af76913b918c58890016f1d1c565460c0456db135e900675d0969f95ae5f39"
+      },
+      {
+        "path": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
+        "sha256": "aee3bf969d513875827e28f9e45f061001fb644b552eb4d7cb75cb51ee4c2164"
+      },
+      {
+        "path": "test/contracts/b2c09-command-surface-kernel.contract.test.js",
+        "sha256": "8d9adc765359ff9191bd7b3d5d063ad6cf29d731d7839896c05cc88e9ae66768"
+      },
+      {
+        "path": "scripts/ops/b2c09-command-surface-kernel.mjs",
+        "sha256": "c2da0b6bac1b289d4eaa889ebc68181d8e49490a4ace5131204499a7b2d81244"
+      },
+      {
+        "path": "docs/tasks/2026-10-16--word-missing-anchor-recovery-mac.md",
+        "sha256": "f77e8bc8de7c258be70ee1892fdd79eda255b8e495a92999dba08c18fa7dbf59"
+      },
+      {
+        "path": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
+        "sha256": "fa81634c66b7ca65238766fa434a2ac32de3de69f96ce87e2474ebf3573e73fc"
       }
     ],
     "followupRepair": {

@@ -26,7 +26,6 @@ const EXTRA_MAINTAINED = [
 // (4e2db88f), with the exact failing tests. Membership here is not a green
 // claim; it is named pre-existing red debt.
 const KNOWN_RED_LEDGER = Object.freeze([
-  Object.freeze({ contract: 'b2c09-command-surface-kernel.contract.test.js', failing: { any: ['canonical packet is green'] } }),
   Object.freeze({ contract: 'b2c10-command-bypass-negative-matrix.contract.test.js', failing: { any: ['current canonical core remains green and advisory tails are explicit', 'committed status packet matches executable state'] } }),
   Object.freeze({ contract: 'b3c01-command-kernel-scope-lock.contract.test.js', failing: { any: ['committed status equals executable state', 'evidence packets align with executable state'] } }),
   Object.freeze({ contract: 'b3c06-no-network-writing-path.contract.test.js', failing: { any: ['state artifact equals executable state', 'CLI status remains worktree independent outside repo cwd'] } }),
@@ -119,6 +118,8 @@ const FLAKY_REGISTER = Object.freeze([
 // their live evaluations but which no required lane executes. Committed by
 // name so a new entrant or a silent reclassification trips the gate.
 const GREEN_UNMAINTAINED_REGISTRY = Object.freeze([
+  // The guarded IPC detector repair is green in executed CI; keep executing it here.
+  'b2c09-command-surface-kernel.contract.test.js',
   'b2c11-command-effect-model.contract.test.js',
   'b2c12-persist-effects-atomic-write.contract.test.js',
   'b2c13-save-reopen-text-no-loss.contract.test.js',

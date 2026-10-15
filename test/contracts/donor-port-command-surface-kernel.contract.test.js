@@ -10,6 +10,8 @@ test('donor port command surface kernel: allowlist is fixed to minimal non-ui co
     'cmd.project.open',
     'cmd.project.save',
     'cmd.project.saveAs',
+    // Main-only startup route; renderer payloads never grant this capability.
+    'cmd.project.recoverMissingIntegrityAnchor',
     'cmd.project.exportCurrentSceneTxtV1',
     'cmd.project.exportSelectedScenesTxtV1',
     'cmd.project.exportAllScenesTxtV1',

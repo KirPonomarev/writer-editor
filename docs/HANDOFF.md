@@ -1,8 +1,118 @@
+# Explicit missing-anchor recovery — 2026-10-16
+
+TASK_ID: WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SOURCE_VERIFIED_DELIVERY_PENDING
+BINDING_BASE_SHA: 4d477f143b8ed17f896fcd27a3e6065c6eebab60
+PRODUCT_CHECKPOINT_SHA: 23713bc186666e66247a6717fcd774804c2b2d6b
+CLAIM_BOUNDARY: source/CLI recovery only; original SOURCE80 native restore and full feature remain NOT_READY
+
+Main's existing internal Command Surface Kernel owns the missing-only startup
+route. Its private selected-project capability is unavailable to renderer paths
+and approval booleans. Strict owned raw wire/schema, receipt validation, complete
+production replay and complete Core canonical snapshot precede Cancel-default
+native consent. Cancel stops actual initializeApp before project writers. A
+fresh full snapshot after consent runs under the existing shared project lease;
+raw pair, trust absence, selection and current lease are revalidated before an
+exclusive fsynced anchor publication. Original session/history bytes are never
+rewritten by recovery. Present, malformed, symlinked, stale, foreign or incomplete
+trust/state refuses; no legacy trust namespace or pending transaction is migrated.
+
+The v2 anchor explicitly records EXPLICIT_LOCAL_OWNER_REVALIDATION, original
+nonzero authority generation, raw/canonical pair digests, complete project
+snapshot and recovery identity/time. No missing predecessor or old cryptographic
+trust is fabricated. Existing v1 digests/reopen stay unchanged; later normal
+commits and pending-transaction recovery carry the new root provenance forward.
+Lost old Word export keys remain LOST; recovery does not regenerate old keyRefs.
+
+Final complete affected7-file chains pass204of204 on Node22 and shipped
+Electron41.10.6, with0fail/cancel/skip/todo, unchanged mandatory TAP evaluator and
+source-byte barriers. Maintained controls include actual initializeApp Cancel,
+raw schema/replay/duplicate-key attacks, both origins, extra/corrupt scenes,
+retained historical packets, after-consent and during-final-snapshot staleness,
+held/lost/expired lease, exclusive EEXIST race and root provenance corruption.
+Actual owned SIGKILL before/after link is followed by a newly launched child
+process: the before case refuses missing trust, performs an explicit product-port
+retry and ordinarily reopens; the after case ordinarily reopens the committed
+root. Both retain the exact old orphan candidate and complete project bytes.
+Separate exceptions remain labeled interruption simulations. Two ordinary
+commits/reopen and normal pending-transaction rollback retain provenance.
+
+Read-only SOURCE69 proof07 uses the separately frozen original69-file roster
+and original absolute identities over retained bytes. All69 sizes/SHA are checked
+before and after; production Core validates21scenes, all3historical WP201packets,
+252527670bytes and treeRevision3. It takes65.829seconds and returns the same
+snapshot digest as87.104second proof05. Same-query reuse applies only to the
+already checked current immutable packet with exact byte capture; all historical
+packets retain complete independent category/budget/regeneration validation.
+No original profile is restored and no anchor/native acceptance is created.
+AppleDouble93metadata files on T777 stay untouched and are outside the original
+restoration roster; product snapshot code has no blanket filename exclusion.
+
+Independent Python stdlib proof18 verifies the actual tiny shipped-engine
+Main-handler output: original raw pair, complete14-file graph preservation,
+new-root digest and two ordinary commit links; all8corruption controls reject.
+It imports no product code. This is integrity-chain proof, not native consent
+or full feature acceptance. Tiny retained outputs total56528bytes.
+
+The donor expectation now includes the new Main-only command. Pre-existing
+B2C09 failure also reproduced on the M8 source: its detector required legacy
+direct IPC instead of the existing guarded entry. The aligned detector requires
+the actual guarded block, envelope validation before payload interpretation,
+route and command allowlist; remove/reorder controls all reject. Failed RED01,
+GREEN03, SOURCE_CHAIN09 and DONOR_RED10 remain unaccepted and preserved.
+
+The first PR candidate5f057 inventory-baseline CI38810239584 exposed two WP302
+VM initializeApp extractors missing the new startup seam. Whole-file RED42
+reproduces both ReferenceErrors. Test-only integration records integrity recovery
+before every migration/directory/journal/tree/Stage10 writer and explicit refusal
+before writes/window/autosave continuation. All runtime bytes remain exactC3.
+Whole affected nonnested startup4-file chains pass80of80 on Node46 and shipped47;
+the unchanged future-schema suite passes15of15, including its2genuine nested
+cases, through the existing R24 runner-truth on both engines48/49. Initial combined
+44/45 RTK-count rejection93versus95 stays unaccepted; no test is flattened or
+removed and the RTK evaluator is unchanged. The failed first CI is never credited;
+required full jobs complete before one amended delivery push.
+
+
+Final same-contour closure after checkpoint23713:
+The early missing-anchor probe delegates any physical pending transaction to the
+existing ordinary journal recovery. The explicit recovery writer still refuses
+pending authority. Actual full initializeApp proves valid interrupted initial
+creation repairs its original v1 anchor without dialog or new provenance; a
+corrupt pending journal refuses without anchor publication or later startup
+reconciliation. Initial full Node69/shipped70 pass55of55 each. Final complete
+10-file Node74/shipped75 chains pass252of252 each, no fail/cancel/skip/todo,
+unchanged mandatory TAP evaluator and exact source-byte barriers.
+Completed first CI38810239584 remains FAIL: both full RTK jobs executed4280tests
+with4279pass and exactly one stale B2C09 red-to-green ledger failure; inventory
+had the two already corrected WP302 harness omissions. No other RTK failure.
+After clean checkpoint and preflight71, only B2C09 membership moves from the
+existing red ledger to its existing green registry. Every executable flip,
+shape-drift and negative assertion remains unchanged. Full classification
+Node72/shipped73 passes6of6, actually executes35families (4red,6platform-bound,
+24green,1finite flaky), with no drift; no new outcome or retry is admitted.
+Runtime delta349lines and maintained test delta423lines remain within500/450.
+This supersedes the earlier source counts and exactC3 runtime statement above;
+required fresh CI, normal merge and exact merged verification remain pending.
+
+Notes predecessor is fully delivered: PR2122 merged at bindingM8, all19required
+CI checks and both fullRTK4247cases passed; fresh merged410checks passed on both
+engines, independent actual ZIP/XML rejects16controls, and the frozen original
+Word500k preserves21of21 reference properties across42planned scenes. Earlier
+notes candidate narrative below is historical. Existing schema1 imports never
+receive invented backfills. Full origins/scales/3roles/5genuine exchanges and
+actual SOURCE80 GUI consent/Quit/new-process reopen/reexport remain coordinator
+acceptance work after this contour's normal delivery and fresh exact merged proof.
+Task:2026-10-16--word-missing-anchor-recovery-mac.md. Materials/evidence use dated
+2026-10-16--word-missing-anchor-recovery-mac folders on verified T777. Only declared
+tiny APFS CLI fixtures use f8-missing-anchor-recovery; no native build/profile write.
+
 # Word note reference typography — 2026-10-15
 
 TASK_ID: WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015
 DOCUMENT_CLASS: FACTUAL_STATUS
-STATUS: CANDIDATE_SOURCE_VERIFIED_DELIVERY_PENDING
+STATUS: HISTORICAL_PRE_MERGE_NARRATIVE_SUPERSEDED_BY_NOTES_M8_CLOSURE_ABOVE
 BINDING_BASE_SHA: 7b7429d7f0142eb42447f0ab023af4c31c62b4cc
 PRODUCT_CHECKPOINT_SHA: 2ed196bfb039f28025e497b15eb115114e5c6fe3
 CLAIM_BOUNDARY: candidate bytes pinned by dated process receipts; tiny source proof, no native/profile acceptance

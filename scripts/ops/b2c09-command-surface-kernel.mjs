@@ -195,12 +195,19 @@ function verifyRoutingTruth(repoRoot) {
     path.resolve(repoRoot, 'src/renderer/commands/projectCommands.mjs'),
     'utf8',
   );
+  const bridgeStart = mainText.indexOf("guardedProtocolHandle('ui:command-bridge',");
+  const bridgeEnd = mainText.indexOf('\n});', bridgeStart);
+  const bridge = bridgeStart >= 0 && bridgeEnd > bridgeStart ? mainText.slice(bridgeStart, bridgeEnd) : '';
 
   if (!guardText.includes("export const COMMAND_BUS_ROUTE = 'command.bus';")
     || !guardText.includes('resolveCommandId(commandId')
     || !editorText.includes('runCommandThroughBus(runCommand')
     || !editorText.includes('route: COMMAND_BUS_ROUTE')
-    || !mainText.includes("ipcMain.handle('ui:command-bridge'")
+    || !bridge.includes("validateIpcEnvelope(request, 'ui:command-bridge')")
+    || !bridge.includes('if (!envelopeVerdict.ok)')
+    || bridge.indexOf('validateIpcEnvelope(') > bridge.indexOf('const safeRequest =')
+    || !bridge.includes('route !== COMMAND_BUS_ROUTE')
+    || !bridge.includes('!UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS.has(commandId)')
     || !mainText.includes('sendCanonicalRuntimeCommand(')
     || !projectCommandsText.includes("const COMMAND_BRIDGE_ROUTE = 'command.bus'")) {
     throw new Error('COMMAND_ROUTING_TRUTH_DRIFT');

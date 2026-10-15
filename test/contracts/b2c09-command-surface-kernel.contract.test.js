@@ -119,3 +119,23 @@ test('b2c09 command surface kernel: extra command cluster fails', async () => {
   assert.equal(state.ok, false);
   assert.equal(state.code, 'E_B2C09_BOUNDARY_SET');
 });
+
+test('b2c09 command routing truth: actual guarded IPC validates envelope before payload interpretation and rejects removed guards', () => {
+  const source=fs.readFileSync(MODULE_PATH,'utf8'),start=source.indexOf('function verifyRoutingTruth('),end=source.indexOf('\n}',start);
+  assert.ok(start>=0&&end>start);
+  const actual=fs.readFileSync(path.join(REPO_ROOT,'src/main.js'),'utf8');
+  const verify=main=>new Function('fs','path','repoRoot',source.slice(start,end+2)+'\nverifyRoutingTruth(repoRoot);')({
+    readFileSync:file=>path.resolve(file)===path.join(REPO_ROOT,'src/main.js')?main:fs.readFileSync(file,'utf8'),
+  },path,REPO_ROOT);
+  assert.doesNotThrow(()=>verify(actual));
+  for(const [before,after] of [
+    ["guardedProtocolHandle('ui:command-bridge',","ipcMain.handle('ui:command-bridge',"],
+    ["validateIpcEnvelope(request, 'ui:command-bridge')",'fakeEnvelopeVerdict(request)'],
+    ['if (!envelopeVerdict.ok)','if (false)'],
+    ['route !== COMMAND_BUS_ROUTE','false /* route bypass */'],
+    ['!UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS.has(commandId)','false /* ID bypass */'],
+  ]){assert.ok(actual.includes(before));assert.throws(()=>verify(actual.replace(before,after)),/COMMAND_ROUTING_TRUTH_DRIFT/);}
+  const reordered=actual.replace("  const envelopeVerdict = validateIpcEnvelope(request, 'ui:command-bridge');",'')
+    .replace("  const route = typeof safeRequest.route", "  const envelopeVerdict = validateIpcEnvelope(request, 'ui:command-bridge');\n  const route = typeof safeRequest.route");
+  assert.throws(()=>verify(reordered),/COMMAND_ROUTING_TRUTH_DRIFT/);
+});

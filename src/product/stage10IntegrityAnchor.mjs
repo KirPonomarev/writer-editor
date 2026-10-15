@@ -2,6 +2,7 @@ import { hashCanonicalValue } from '../core/browser-safe-hash.mjs';
 
 export const STAGE10_INTEGRITY_ANCHOR_SCHEMA = 'yalken.stage10.mainIntegrityAnchor.v1';
 export const STAGE10_INTEGRITY_ANCHOR_VERSION = 1;
+export const STAGE10_RECOVERED_ANCHOR_SCHEMA = 'yalken.stage10.mainIntegrityAnchor.v2';
 export const STAGE10_LOCAL_INTEGRITY_THREAT_MODEL = Object.freeze({
   schemaVersion: 'yalken.stage10.localIntegrityThreatModel.v1',
   protectsAgainst: Object.freeze([
@@ -66,6 +67,7 @@ export function stage10IntegrityAnchorDigest(anchorCore) {
     authorityStoreDigest: anchorCore.authorityStoreDigest,
     sessionDigest: anchorCore.sessionDigest,
     previousIntegrityAnchorDigest: normalizeString(anchorCore.previousIntegrityAnchorDigest),
+    ...(anchorCore.anchorVersion === 2 ? { recoveryRoot: anchorCore.recoveryRoot } : {}),
   });
 }
 
@@ -74,6 +76,7 @@ export function createStage10IntegrityAnchor({
   session,
   authorityStore,
   previousAnchor = null,
+  recoveryRoot = previousAnchor?.recoveryRoot || null,
 }) {
   const head = authorityStore?.currentHead;
   const normalizedProjectId = normalizeString(projectId);
@@ -82,12 +85,13 @@ export function createStage10IntegrityAnchor({
   }
   const generation = Number(head.authorityGeneration);
   const previousDigest = isPlainObject(previousAnchor) ? normalizeString(previousAnchor.integrityAnchorDigest) : '';
-  if (!Number.isSafeInteger(generation) || generation < 0 || (generation > 0 && !isSha256(previousDigest))) {
+  if (!Number.isSafeInteger(generation) || generation < 0
+    || (generation > 0 && !isSha256(previousDigest) && !recoveryRoot)) {
     throw typedError('E_STAGE10_INTEGRITY_ANCHOR_GENERATION_INVALID', 'INTEGRITY_ANCHOR_MONOTONIC_GENERATION_REQUIRED');
   }
   const core = {
-    schemaVersion: STAGE10_INTEGRITY_ANCHOR_SCHEMA,
-    anchorVersion: STAGE10_INTEGRITY_ANCHOR_VERSION,
+    schemaVersion: recoveryRoot ? STAGE10_RECOVERED_ANCHOR_SCHEMA : STAGE10_INTEGRITY_ANCHOR_SCHEMA,
+    anchorVersion: recoveryRoot ? 2 : STAGE10_INTEGRITY_ANCHOR_VERSION,
     projectId: normalizedProjectId,
     authorityGeneration: generation,
     receiptCount: Number(head.receiptCount),
@@ -97,11 +101,26 @@ export function createStage10IntegrityAnchor({
     authorityStoreDigest: stage10AuthorityStoreDigest(authorityStore),
     sessionDigest: stage10SessionDigest(session),
     previousIntegrityAnchorDigest: previousDigest,
+    ...(recoveryRoot ? { recoveryRoot: cloneJson(recoveryRoot) } : {}),
   };
   return deepFreeze({
     ...core,
     integrityAnchorDigest: stage10IntegrityAnchorDigest(core),
   });
+}
+
+function validRecoveryRoot(root) {
+  const fields = ['schemaVersion','trustBasis','recoveryId','createdAtUtc','authorityGeneration',
+    'authorityHeadDigest','sessionDigest','authorityStoreDigest','rawSessionDigest',
+    'rawAuthorityStoreDigest','projectRootDigest','projectSnapshotDigest'];
+  return isPlainObject(root) && Object.keys(root).length === fields.length
+    && fields.every(key => Object.hasOwn(root,key))
+    && root.schemaVersion === 'yalken.stage10.recoveryRoot.v1'
+    && root.trustBasis === 'EXPLICIT_LOCAL_OWNER_REVALIDATION'
+    && /^[a-f0-9-]{36}$/u.test(root.recoveryId)
+    && typeof root.createdAtUtc === 'string' && Number.isFinite(Date.parse(root.createdAtUtc))
+    && Number.isSafeInteger(root.authorityGeneration) && root.authorityGeneration > 0
+    && fields.filter(key => key.endsWith('Digest')).every(key => isSha256(root[key]));
 }
 
 export function validateStage10IntegrityAnchor(anchorInput, {
@@ -114,11 +133,17 @@ export function validateStage10IntegrityAnchor(anchorInput, {
     return { ok: false, error: typedError('E_STAGE10_INTEGRITY_ANCHOR_MISSING', 'INTEGRITY_ANCHOR_REQUIRED') };
   }
   const anchor = cloneJson(anchorInput);
+  const recovered = anchor.schemaVersion === STAGE10_RECOVERED_ANCHOR_SCHEMA && anchor.anchorVersion === 2;
   if (
-    anchor.schemaVersion !== STAGE10_INTEGRITY_ANCHOR_SCHEMA
-    || anchor.anchorVersion !== STAGE10_INTEGRITY_ANCHOR_VERSION
+    !recovered && (anchor.schemaVersion !== STAGE10_INTEGRITY_ANCHOR_SCHEMA
+    || anchor.anchorVersion !== STAGE10_INTEGRITY_ANCHOR_VERSION)
   ) {
     return { ok: false, error: typedError('E_STAGE10_INTEGRITY_ANCHOR_VERSION_INVALID', 'INTEGRITY_ANCHOR_VERSION_INVALID') };
+  }
+  if ((recovered && (!validRecoveryRoot(anchor.recoveryRoot)
+      || anchor.authorityGeneration < anchor.recoveryRoot.authorityGeneration))
+    || (!recovered && Object.hasOwn(anchor,'recoveryRoot'))) {
+    return { ok: false, error: typedError('E_STAGE10_RECOVERY_ROOT_INVALID', 'RECOVERY_ROOT_PROVENANCE_INVALID') };
   }
   if (normalizeString(anchor.projectId) !== normalizeString(projectId)) {
     return { ok: false, error: typedError('E_STAGE10_INTEGRITY_ANCHOR_PROJECT_MISMATCH', 'INTEGRITY_ANCHOR_PROJECT_MISMATCH') };
@@ -146,7 +171,14 @@ export function validateStage10IntegrityAnchor(anchorInput, {
   if (!isSha256(anchor.integrityAnchorDigest) || normalizeString(anchor.integrityAnchorDigest) !== expectedDigest) {
     return { ok: false, error: typedError('E_STAGE10_INTEGRITY_ANCHOR_DIGEST_INVALID', 'INTEGRITY_ANCHOR_DIGEST_INVALID') };
   }
-  if (anchor.authorityGeneration === 0) {
+  const atRecoveryRoot = recovered && anchor.authorityGeneration === anchor.recoveryRoot.authorityGeneration;
+  if (atRecoveryRoot && (previousAnchor !== null
+    || anchor.sessionDigest !== anchor.recoveryRoot.sessionDigest
+    || anchor.authorityStoreDigest !== anchor.recoveryRoot.authorityStoreDigest
+    || anchor.authorityHeadDigest !== anchor.recoveryRoot.authorityHeadDigest)) {
+    return { ok: false, error: typedError('E_STAGE10_RECOVERY_ROOT_INVALID', 'RECOVERY_ROOT_BINDING_INVALID') };
+  }
+  if (anchor.authorityGeneration === 0 || atRecoveryRoot) {
     if (normalizeString(anchor.previousIntegrityAnchorDigest)) {
       return { ok: false, error: typedError('E_STAGE10_INTEGRITY_ANCHOR_FORKED', 'INTEGRITY_ANCHOR_PREVIOUS_DIGEST_FORKED') };
     }
@@ -155,8 +187,10 @@ export function validateStage10IntegrityAnchor(anchorInput, {
       return { ok: false, error: typedError('E_STAGE10_INTEGRITY_ANCHOR_PREVIOUS_MISSING', 'INTEGRITY_ANCHOR_PREVIOUS_REQUIRED') };
     }
     if (
-      previousAnchor.schemaVersion !== STAGE10_INTEGRITY_ANCHOR_SCHEMA
-      || previousAnchor.anchorVersion !== STAGE10_INTEGRITY_ANCHOR_VERSION
+      previousAnchor.schemaVersion !== anchor.schemaVersion
+      || previousAnchor.anchorVersion !== anchor.anchorVersion
+      || (recovered && (!validRecoveryRoot(previousAnchor.recoveryRoot)
+        || hashCanonicalValue(previousAnchor.recoveryRoot) !== hashCanonicalValue(anchor.recoveryRoot)))
       || normalizeString(previousAnchor.projectId) !== normalizeString(projectId)
       || previousAnchor.authorityGeneration !== anchor.authorityGeneration - 1
       || normalizeString(previousAnchor.integrityAnchorDigest) !== normalizeString(anchor.previousIntegrityAnchorDigest)

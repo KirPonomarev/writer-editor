@@ -3,7 +3,9 @@ import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 
 import { hashCanonicalValue } from '../core/browser-safe-hash.mjs';
-import { validateStage10IntegrityAnchor } from './stage10IntegrityAnchor.mjs';
+import { createStage10IntegrityAnchor, validateStage10IntegrityAnchor, stage10SessionDigest, stage10AuthorityStoreDigest } from './stage10IntegrityAnchor.mjs';
+import { validateStage10MissingAnchorRecoveryPair } from './stage10ProductWiring.mjs';
+import projectTransactions from '../core/project-transaction-v1.cjs';
 import { createMainProjectManifestAuthority } from './mainProjectManifestAuthority.mjs';
 import { stage10ProjectPathIdentity } from './stage10ProjectIdentityKey.mjs';
 import { validateStage10RecoverySnapshot } from './stage10RecoverySnapshot.mjs';
@@ -916,6 +918,66 @@ export function createStage10MainPersistenceAdapter(input = {}) {
     return { session, authorityStore, integrityAnchor, previousIntegrityAnchor };
   }
 
+  async function physicallyPresent(target) {
+    try { await fs.lstat(target); return true; }
+    catch(error) { if(error?.code==='ENOENT')return false;throw error; }
+  }
+
+  async function readMissingAnchorRecoveryPair(projectId) {
+    const paths=pathsFor(projectId);
+    let ancestor=path.parse(paths.anchorRoot).root;
+    for(const part of path.relative(ancestor,paths.anchorRoot).split(path.sep)) {
+      ancestor=path.join(ancestor,part);
+      let stat;try {stat=await fs.lstat(ancestor);}catch(error){if(error?.code==='ENOENT')continue;throw error;}
+      if(!stat.isDirectory() || stat.isSymbolicLink())throw typedError('E_STAGE10_RECOVERY_ROOT_BOUNDARY','RECOVERY_TRUST_ROOT_BOUNDARY');
+    }
+    if(await physicallyPresent(paths.anchor))return null;
+    const sessionPresent=await physicallyPresent(paths.session),authorityPresent=await physicallyPresent(paths.authority);
+    if(!sessionPresent && !authorityPresent)return null;
+    if(!sessionPresent || !authorityPresent)throw typedError('E_STAGE10_RECOVERY_PAIR_INVALID','RECOVERY_RAW_PAIR_REQUIRED');
+    for(const target of [paths.anchorRecovery,paths.transaction,path.join(anchorRoot,paths.legacyProjectKey)]) {
+      if(await physicallyPresent(target))throw typedError('E_STAGE10_RECOVERY_TRUST_PRESENT','RECOVERY_EXISTING_TRUST_OR_TRANSACTION');
+    }
+    const identity=await inspectAnchorRootIdentity(paths.anchorRoot);
+    if(identity.projectId && identity.projectId!==projectId)throw typedError('E_STAGE10_RECOVERY_PROJECT_MISMATCH','RECOVERY_FOREIGN_TRUST_ROOT');
+    if(identity.entries.some(name=>!['fencing-generation.v1.json','project-transaction.lease'].includes(name)
+      && !/^lease-heartbeat\.[a-f0-9]{64}\.v[123]\.json$/u.test(name)
+      && !/^\.recovery-[a-f0-9-]{36}\.tmp$/u.test(name))) {
+      throw typedError('E_STAGE10_RECOVERY_ROOT_BOUNDARY','RECOVERY_UNKNOWN_TRUST_EVIDENCE');
+    }
+    async function rawFile(target) {
+      const parent=await fs.lstat(path.dirname(target)),stat=await fs.lstat(target);
+      if(!parent.isDirectory() || parent.isSymbolicLink() || !stat.isFile() || stat.isSymbolicLink() || stat.nlink!==1
+        || stat.size>32*1024*1024)throw typedError('E_STAGE10_RECOVERY_PAIR_INVALID','RECOVERY_RAW_PAIR_BOUNDARY');
+      const raw=await fs.readFile(target);
+      if(raw.length!==stat.size)throw typedError('E_STAGE10_RECOVERY_STALE','RECOVERY_RAW_PAIR_STALE');
+      let value;try {value=JSON.parse(raw.toString('utf8'));}catch {throw typedError('E_STAGE10_RECOVERY_PAIR_INVALID','RECOVERY_RAW_PAIR_JSON');}
+      if(raw.toString('utf8')!==jsonText(value))throw typedError('E_STAGE10_RECOVERY_PAIR_INVALID','RECOVERY_RAW_PAIR_WIRE_INVALID');
+      return {value,digest:createHash('sha256').update(raw).digest('hex')};
+    }
+    const session=await rawFile(paths.session),authority=await rawFile(paths.authority);
+    validateStage10MissingAnchorRecoveryPair(session.value,authority.value,projectId);
+    return {session:session.value,authorityStore:authority.value,rawSessionDigest:session.digest,rawAuthorityStoreDigest:authority.digest,
+      assertFresh:async()=>{
+        if((await rawFile(paths.session)).digest!==session.digest || (await rawFile(paths.authority)).digest!==authority.digest
+          || await physicallyPresent(paths.anchor) || await physicallyPresent(paths.anchorRecovery) || await physicallyPresent(paths.transaction)) {
+          throw typedError('E_STAGE10_RECOVERY_STALE','RECOVERY_INPUT_CHANGED');
+        }
+      }};
+  }
+
+  async function missingAnchorRecoveryState(projectId) {
+    const pair=await readMissingAnchorRecoveryPair(projectId);if(!pair)return null;
+    const snapshot=await projectTransactions.readVerifiedProjectRecoverySnapshot({
+      manifestPath:path.join(projectRoot,'project.craftsman.json'),projectId,
+      verifyManifestContinuation:proof=>transactionAuthority.verifyManifestContinuation(proof),
+    });
+    await pair.assertFresh();
+    return {session:pair.session,authorityStore:pair.authorityStore,candidate:Object.freeze({
+      schemaVersion:'yalken.stage10.missingAnchorRecovery.v1',projectId,
+      rawSessionDigest:pair.rawSessionDigest,rawAuthorityStoreDigest:pair.rawAuthorityStoreDigest,...snapshot})};
+  }
+
   async function writeBundlePair(projectId, bundle, lease = null) {
     const paths = pathsFor(projectId);
     await writeJson(paths.authority, bundle.authorityStore, 'authority', lease);
@@ -1096,6 +1158,60 @@ export function createStage10MainPersistenceAdapter(input = {}) {
 
   return {
     schemaVersion: STAGE10_MAIN_PERSISTENCE_PORT_SCHEMA,
+    async prepareMissingIntegrityAnchorRecovery(projectId) {
+      // A pending Main-owned transaction belongs to ordinary validated recovery,
+      // including interrupted first persistence before its initial anchor.
+      // Never replace that journal's authority with a new owner trust root.
+      if(await physicallyPresent(pathsFor(projectId).transaction))return null;
+      return (await missingAnchorRecoveryState(projectId))?.candidate || null;
+    },
+    async recoverMissingIntegrityAnchor(projectId, expectedCandidate, revalidateSelection) {
+      if(!isPlainObject(expectedCandidate) || expectedCandidate.projectId!==projectId || typeof revalidateSelection!=='function') {
+        throw typedError('E_STAGE10_RECOVERY_CAPABILITY_REQUIRED','RECOVERY_MAIN_CAPABILITY_REQUIRED');
+      }
+      const expectedDigest=hashCanonicalValue(expectedCandidate);
+      return serializeProjectOperation(projectId,()=>leaseManager.withLease(projectId,async lease=>{
+        await revalidateSelection();await lease.assertOwned();
+        const fresh=await readMissingAnchorRecoveryPair(projectId);
+        if(!fresh || fresh.rawSessionDigest!==expectedCandidate.rawSessionDigest || fresh.rawAuthorityStoreDigest!==expectedCandidate.rawAuthorityStoreDigest)throw typedError('E_STAGE10_RECOVERY_STALE','RECOVERY_CANDIDATE_STALE');
+        const recoveryRoot={schemaVersion:'yalken.stage10.recoveryRoot.v1',trustBasis:'EXPLICIT_LOCAL_OWNER_REVALIDATION',
+          recoveryId:randomUUID(),createdAtUtc:new Date().toISOString(),authorityGeneration:fresh.authorityStore.currentHead.authorityGeneration,
+          authorityHeadDigest:fresh.authorityStore.currentHead.authorityHeadDigest,sessionDigest:stage10SessionDigest(fresh.session),
+          authorityStoreDigest:stage10AuthorityStoreDigest(fresh.authorityStore),rawSessionDigest:fresh.rawSessionDigest,
+          rawAuthorityStoreDigest:fresh.rawAuthorityStoreDigest,projectRootDigest:expectedCandidate.projectRootDigest,
+          projectSnapshotDigest:expectedCandidate.snapshotDigest};
+        const anchor=createStage10IntegrityAnchor({projectId,session:fresh.session,authorityStore:fresh.authorityStore,recoveryRoot});
+        const valid=validateStage10IntegrityAnchor(anchor,{projectId,session:fresh.session,authorityStore:fresh.authorityStore});
+        if(!valid.ok)throw valid.error;
+        const paths=pathsFor(projectId),temporary=path.join(paths.anchorRoot,`.recovery-${recoveryRoot.recoveryId}.tmp`);
+        let handle;
+        try {
+          handle=await fs.open(temporary,'wx',0o600);await handle.writeFile(jsonText(anchor),'utf8');await handle.sync();await handle.close();handle=null;
+          await killpoint('before-recovery-anchor-link');
+          await revalidateSelection();await lease.assertOwned();
+          // Full fresh validation after every consent/preparation await; the
+          // exclusive link also rejects a last-instant competing publication.
+          const final=await missingAnchorRecoveryState(projectId);
+          if(!final || hashCanonicalValue(final.candidate)!==expectedDigest)throw typedError('E_STAGE10_RECOVERY_STALE','RECOVERY_CANDIDATE_STALE');
+          await lease.publish(async()=>{
+            const pair=await readMissingAnchorRecoveryPair(projectId);
+            if(!pair || pair.rawSessionDigest!==expectedCandidate.rawSessionDigest || pair.rawAuthorityStoreDigest!==expectedCandidate.rawAuthorityStoreDigest) {
+              throw typedError('E_STAGE10_RECOVERY_STALE','RECOVERY_CANDIDATE_STALE');
+            }
+            const currentLease=await leaseManager.inspect(projectId);
+            if(!currentLease.exists || currentLease.expired || !currentLease.ownershipBound)throw typedError('E_STAGE10_RECOVERY_LEASE_EXPIRED','RECOVERY_PROJECT_LEASE_NOT_CURRENT');
+            await revalidateSelection();await lease.assertOwned();
+            return linkArtifactExclusive(temporary,paths.anchor,'RECOVERY_ANCHOR_ALREADY_PRESENT');
+          });
+          await killpoint('after-recovery-anchor-link');
+        } finally {
+          await handle?.close();await fs.unlink(temporary).catch(error=>{if(error?.code!=='ENOENT')throw error;});
+        }
+        const bundle=await verifyBundleReadback(projectId,{session:fresh.session,authorityStore:fresh.authorityStore,integrityAnchor:anchor,previousIntegrityAnchor:null},lease);
+        validateBundleIntegrity(projectId,bundle,null);
+        return {ok:true,storageWritten:true,readbackVerified:true,integrityAnchorDigest:anchor.integrityAnchorDigest,recoveryRoot:cloneJson(recoveryRoot)};
+      }));
+    },
     async readStage10State(projectId) {
       await ensureProjectAnchorRootBinding(projectId);
       return serializeProjectOperation(projectId, () => leaseManager.withLease(projectId, async (lease) => {

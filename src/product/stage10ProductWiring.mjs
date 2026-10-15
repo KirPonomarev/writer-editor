@@ -330,11 +330,24 @@ function validatePersistedBundle(bundleInput, projectId) {
     previousAnchor: bundleInput.previousIntegrityAnchor,
   });
   if (!anchor.ok) throw anchor.error;
+  const replay = replayPersistedSession(session, verified.store);
+  return {
+    session,
+    authorityStore: verified.store,
+    integrityAnchor: anchor.anchor,
+    previousIntegrityAnchor: isPlainObject(bundleInput.previousIntegrityAnchor)
+      ? deepFreeze(cloneJson(bundleInput.previousIntegrityAnchor))
+      : null,
+    replay,
+  };
+}
+
+function replayPersistedSession(session, authorityStore) {
   const replay = buildOperationReplayReport({
     projectId: session.projectId,
     eventLog: session.eventLog,
     domainEventPort: createCoreDomainEventProductPort(),
-    commandReceiptAuthorityPort: createCommandKernelReceiptAuthorityPort(verified.store, session),
+    commandReceiptAuthorityPort: createCommandKernelReceiptAuthorityPort(authorityStore, session),
     initialState: createInitialCoreState(),
     initialStateHash: session.eventLog.events[0]?.preStateHash || hashCoreState(createInitialCoreState()),
     expectedFinalStateHash: hashCoreState(session.coreState),
@@ -352,15 +365,33 @@ function validatePersistedBundle(bundleInput, projectId) {
       { replayHash: replay.replayHash },
     );
   }
-  return {
-    session,
-    authorityStore: verified.store,
-    integrityAnchor: anchor.anchor,
-    previousIntegrityAnchor: isPlainObject(bundleInput.previousIntegrityAnchor)
-      ? deepFreeze(cloneJson(bundleInput.previousIntegrityAnchor))
-      : null,
-    replay,
-  };
+  return replay;
+}
+
+// Missing external trust never permits repairing/defaulting the saved pair.
+// Validate its raw shape before using the ordinary complete replay semantics.
+export function validateStage10MissingAnchorRecoveryPair(session, authorityStore, projectId) {
+  const shape = createDefaultSession({ projectId });
+  if (!isPlainObject(session) || session.schemaVersion !== STAGE10_PRODUCT_SESSION_SCHEMA
+    || session.projectId !== projectId || Object.keys(session).length !== Object.keys(shape).length
+    || Object.entries(shape).some(([key,value]) => !Object.hasOwn(session,key)
+      || (Array.isArray(value) ? !Array.isArray(session[key])
+        : isPlainObject(value) ? !isPlainObject(session[key]) : typeof session[key] !== typeof value))
+    || ['lifecycleId','actorId','sessionId'].some(key => !normalizeString(session[key]))
+    || ['shadowOnly','shadowAcceptedAsComplete','programDoneClaim','networkAdapterEnabled'].some(key => session[key] !== false)) {
+    throw typedError('E_STAGE10_RECOVERY_PAIR_INVALID','stage10.recovery','RECOVERY_RAW_SESSION_SCHEMA_INVALID');
+  }
+  const verified = validateCommandReceiptAuthorityStore(authorityStore, {
+    projectId, eventLog: session.eventLog, sessionRef: session.commandReceiptAuthorityHeadRef,
+    requireSessionRef: true, requireReceipts: true,
+  });
+  if (!verified.ok) throw verified.error;
+  if (verified.store.currentHead.authorityGeneration < 1
+    || hashCanonicalValue(verified.store) !== hashCanonicalValue(authorityStore)
+    || hashCanonicalValue(normalizeSession(session,{requireReceiptAuthority:true})) !== hashCanonicalValue(session)) {
+    throw typedError('E_STAGE10_RECOVERY_PAIR_INVALID','stage10.recovery','RECOVERY_RAW_PAIR_NORMALIZATION_FORBIDDEN');
+  }
+  return deepFreeze({ replay: replayPersistedSession(session,authorityStore) });
 }
 
 function prepareCommandReceiptExternal({ session, authorityState, receipt }) {
