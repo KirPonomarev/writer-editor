@@ -1,3 +1,55 @@
+# Word note reference typography — 2026-10-15
+
+TASK_ID: WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SOURCE_VERIFIED_DELIVERY_PENDING
+BINDING_BASE_SHA: 7b7429d7f0142eb42447f0ab023af4c31c62b4cc
+PRODUCT_CHECKPOINT_SHA: 2ed196bfb039f28025e497b15eb115114e5c6fe3
+CLAIM_BOUNDARY: candidate bytes pinned by dated process receipts; tiny source proof, no native/profile acceptance
+
+The bounded parser preserves four effective font slots and three proofing
+languages of main-body footnote/endnote references through the existing strict
+style cascade. Manuscript schema2 stores only validated literal reference
+values; schema1 remains exact and never acquires invented defaults. Existing
+admitted SafeCreate and atomic notes storage retain the values. Export emits
+those slots directly; the minimal exporter now includes its already-produced
+note style definitions. Note-body Ref controls and other typography are unchanged.
+
+Clean and pending/book return guards compare the signed reference binding
+against fresh canonical state and reject protected drift, including body-edit
+returns. Main's ordinary body edit/kind conversion/reanchor carries only fresh
+canonical typography under its existing lease/hash; renderer requests cannot
+supply it. Private state, source revision, note identity, atomic recovery and
+numeric limits remain protected. No dependency, UI or native writer was added.
+
+Maintained two-kind actual-import RED01 and Main body-edit RED06 precede their
+fixes. Final complete affected9-file source chains pass204of204 on Node22
+and shipped Electron41.10.6 without fail/cancel/skip/todo. The unchanged
+mandatory TAP evaluator returns0 and all participating source-byte barriers
+pass. Actual tracked export checks both Original and Current note coordinates
+and rejects reference drift even for a changed-body return. Independent stdlib ZIP/XML observes all14 reference
+font/language values, both literal note bodies/points, and rejects16 controls.
+Tiny outputs total only9686bytes; originals and old RED files stay unchanged.
+
+One shipped run failed the old V8 serialized-byte equality assertion. Retained
+before/after operands decode to equal complete typed values and equal JSON;
+the first difference is the same transportIdentity encoded as one-byte versus
+UTF16,69912versus70024 serialized bytes. Node documents that equal values can
+serialize differently. The corrected oracle checks every typed value and binary
+view byte, exact JSON and the entire object-alias graph, with maintained
+negative controls for value, binary, alias and absent-field corruption. Old
+failure remains RED; it is not relabeled product mutation or successful proof.
+
+Earlier schema1 imports have already lost these values and are not repaired
+automatically. Native acceptance requires a fresh original-source import on a
+new frozen build or a separately authorized provenance-bound migration.
+Existing Native79 and SOURCE80 profiles/anchors remain untouched. PR2121 is
+normally merged at the binding base; this new contour still requires complete
+normal delivery, exact merged verification and separate native acceptance.
+Full feature, original SOURCE recovery and role/exchange matrix remain open.
+Task:2026-10-15--word-note-reference-typography-mac.md. Dated T777 materials and
+reports use2026-10-15--word-note-reference-typography-mac; no large fixture copy.
+
 # Word export activation index — 2026-10-15
 
 TASK_ID: WORD_EXPORT_ACTIVATION_MAC_20261015

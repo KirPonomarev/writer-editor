@@ -44,6 +44,7 @@ Original frozen Word input is read-only; no large novel fixture copies.
 ## ALLOWLIST
 
 - src/core/word-note-reference-typography-v1.cjs
+- src/main.js
 - src/core/word-manuscript-notes-v1.cjs
 - src/core/word-note-return-delta-v1.cjs
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
@@ -51,6 +52,7 @@ Original frozen Word input is read-only; no large novel fixture copies.
 - src/export/docx/docxReviewPacketNotes.js
 - src/export/docx/docxMinBuilder.js
 - test/contracts/rtk-word-note-reference-typography.contract.test.js
+- test/contracts/rtk-word-manuscript-notes.contract.test.js
 - test/contracts/rtk-word-manuscript-notes-import.contract.test.js
 - test/contracts/rtk-word-note-return.contract.test.js
 - test/contracts/rtk-word-pending-notes.contract.test.js
@@ -69,7 +71,7 @@ Original frozen Word input is read-only; no large novel fixture copies.
 
 ## DENYLIST
 
-All other paths; renderer, main, preload, UI design, dependencies, native apps,
+All other paths; renderer, unrelated Main routes, preload, UI design, dependencies, native apps,
 profiles, anchors, historical receipts, global quotas, heap/deadline changes,
 new writers, fixed-font substitution, DOCX postpatching, bypass and weakened
 oracles. Note-body Ref controls and other typography have no actual RED here.
@@ -177,3 +179,29 @@ Initial import is preserved; strict reimport exposed the minimal exporter refere
 ### Literal style compatibility reference
 
 Microsoft OpenXML RunStyle remarks reproduce ISO29500: an absent referenced character style applies no character style. The note-control reader follows this explicit rule without weakening the shared strict resolver: missing styles are inert; malformed references, defined wrong-type styles and broken basedOn chains still refuse. Source: https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.runstyle?view=openxml-3.0.1 .
+
+### Ordinary authoring retention in the same contour
+
+Checkpoint2ed196 executed202of202 affected tests. Fresh clean authoring
+preflight adds only Main's existing manuscript binding and its maintained
+command test. Actual single-case RED06 shows that rebuilding a body-only
+request as schema1 drops new metadata. Main now copies reference typography
+only from the fresh canonical current note under its existing lease/hash;
+renderer requests still cannot supply it. Kind conversion and reanchor retain
+the values, and stale/lifecycle/before-write checks remain unchanged.
+
+### Engine-independent full input conservation oracle
+
+Shipped09 preserved201of202 cases but failed V8-byte equality. Diagnostic11
+retains69912and70024byte serializations: decoded complete typed values and
+exact JSON are equal; the same transportIdentity has one-byte versus UTF16
+encoding. No input or binary artifact changed. The maintained oracle now checks
+all typed values, exact JSON and complete alias graph, including every Buffer
+view byte; four negative mutations prove detection of text, binary, sharing and
+absent-field corruption. No domain assertion, input coverage or required case
+was removed. Source: https://nodejs.org/download/release/latest-jod/docs/api/v8.html#serialization-api . Final shipped9files execute203of203 with mandatory
+TAP0 and no skips/todo; original failed logs remain.
+
+### Final source qualification
+
+Final whole9-file Node22 and shipped Electron41.10.6 execute204of204 each; unchanged mandatory TAP evaluator0, zero fail/cancel/skip/todo and all source byte barriers true. The ninth new reference test covers real tracked DOCX emission, Original3 versus Current4 coordinates and protected body-edit return refusal. Independent XML observes both full seven-property sets and unchanged note body/point, rejects16 controls, and retains only9686bytes of new DOCX outputs. Existing raw RED and failed diagnostics remain unchanged.

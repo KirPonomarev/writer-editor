@@ -17375,7 +17375,8 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
           let body;
           try { body = JSON.parse(request.bodyJson); } catch { throw Error('NOTE_BODY_JSON_INVALID'); }
           mutation.manuscript = manuscriptNoteModel.bindManuscriptPayload({ kind: request.kind, body, offsetUtf16: request.offsetUtf16,
-            sceneId: source.sceneId, sceneContent: source.raw });
+            sceneId: source.sceneId, sceneContent: source.raw,
+            referenceTypography: current?.manuscript?.referenceTypography });
           mutation.scope = 'manuscript';
           mutation.body = manuscriptNoteModel.validateNoteBody(body).text;
         } else if (!current?.manuscript || current.manuscript.reference.sceneId !== source.sceneId) throw Error('NOTE_ACTIVE_SCENE_REQUIRED');

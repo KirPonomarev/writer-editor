@@ -1124,11 +1124,44 @@ async function bookNoteDefaultsFixture(history='none') {
     exportMap:source.localAuthorityCapsule.exportMap,returnedNotes:observed.returnedNotes,returnedParagraphs:observed.analysis.reviewIr.formattingParagraphs,now:'2026-10-08T19:00:00Z'};
   return {...data,bridge,source,originalBytes,original,parts,read,...observed,input};
 }
+function noteInputAliases(value) {
+  const seen=new Map(),rows=[];
+  const visit=(node,at=[])=>{
+    if(!node||typeof node!=='object')return;
+    const where=JSON.stringify(at);rows.push([where,seen.get(node)||where]);
+    if(seen.has(node))return;seen.set(node,where);
+    if(Buffer.isBuffer(node))return; // All view bytes are checked by typed equality below.
+    assert.ok(Array.isArray(node)||[Object.prototype,null].includes(Object.getPrototypeOf(node)),'unexpected input type');
+    for(const key of Reflect.ownKeys(node)){
+      const descriptor=Object.getOwnPropertyDescriptor(node,key);assert.ok(Object.hasOwn(descriptor,'value'),'unexpected accessor');
+      visit(descriptor.value,[...at,key]);
+    }
+  };visit(value);return rows;
+}
+function assertNoteInputUnchanged(value,beforeBytes,beforeJson,beforeAliases) {
+  assert.deepEqual(value,require('node:v8').deserialize(beforeBytes),'complete typed input values changed');
+  assert.equal(JSON.stringify(value),beforeJson,'complete canonical input JSON bytes changed');
+  assert.deepEqual(noteInputAliases(value),beforeAliases,'complete input alias graph changed');
+}
+test('complete note-input oracle rejects changed values, binary bytes and reference sharing',()=>{
+  const shared={text:'Exact',optional:undefined},value={left:shared,right:shared,bytes:Buffer.from([1,2,3])};
+  const bytes=require('node:v8').serialize(value),json=JSON.stringify(value),aliases=noteInputAliases(value);
+  assertNoteInputUnchanged(value,bytes,json,aliases);
+  for(const mutate of [x=>x.left.text='Changed',x=>x.bytes[1]=4,x=>x.right={...x.right},x=>delete x.left.optional]) {
+    const bad=require('node:v8').deserialize(bytes);mutate(bad);
+    assert.throws(()=>assertNoteInputUnchanged(bad,bytes,json,aliases));
+  }
+});
 test('fresh book V2 complete defaults retain original notes and real edits remain explicit',async()=>{
-  const f=await bookNoteDefaultsFixture(),before=plain({document:f.document,source:f.source}),beforeBytes=require('node:v8').serialize({document:f.document,source:f.source}),actual=delta.planNoteReturnDelta(f.input);
+  const f=await bookNoteDefaultsFixture(),value={document:f.document,source:f.source},before=plain(value),beforeBytes=require('node:v8').serialize(value),beforeJson=JSON.stringify(value),beforeAliases=noteInputAliases(value),actual=delta.planNoteReturnDelta(f.input);
+  retainBookNoteDefaults('core-input-representation',{beforeJson,beforeBytes,beforeAliases,afterTyped:value,afterBytes:require('node:v8').serialize(value)});
+  // V8 may encode an unchanged string as one-byte or UTF16 after a read.
+  // Its wire encoding is not canonical; retain complete typed values, every
+  // binary view byte, exact JSON and the entire reference-sharing graph.
+  assertNoteInputUnchanged(value,beforeBytes,beforeJson,beforeAliases);
   retainBookNoteDefaults('core-ordinary',{...before,docs:f.docs,originalBytes:f.originalBytes,parts:f.parts,bytes:f.bytes,analysis:f.analysis,input:f.input,actual});
   assert.equal(actual.unchanged,true);assert.equal(actual.document,f.document);assert.deepEqual(actual.changes,[]);
-  assert.equal(require('node:v8').serialize({document:f.document,source:f.source}).equals(beforeBytes),true,'complete input bytes changed');assert.equal(Object.hasOwn(actual.document,'wordNoteReturnReceipts'),false);
+  assert.equal(Object.hasOwn(actual.document,'wordNoteReturnReceipts'),false);
   const parts={...f.parts,'word/footnotes.xml':f.parts['word/footnotes.xml'].replace('kept tail','kept EDIT')},edited=f.read(parts);
   const input={...f.input,artifactSha256:hash(edited.bytes),returnedNotes:edited.returnedNotes},plan=delta.planNoteReturnDelta(input);
   retainBookNoteDefaults('core-real-edit',{input,parts,bytes:edited.bytes,actual:plan});assert.equal(plan.changes.length,1);assert.equal(plan.changes[0].noteId,'fresh-book-note-0');

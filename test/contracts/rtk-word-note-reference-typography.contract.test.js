@@ -134,13 +134,19 @@ test('real admitted SafeCreate persists and reopens reference values; changed pr
   assert.throws(() => model.validateNoteCohort({ ...cohort, afterText: JSON.stringify(forged) }, args), /NOTE_COHORT_REBASE/);
 });
 
-async function returnFixture({ legacy = false } = {}) {
+async function returnFixture({ legacy = false, tracked = false } = {}) {
   const envelope = require('../../src/core/document-content-envelope-v1.cjs');
   const doc = text => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
-  const sceneId = 'roman/a.txt', projectId = 'tiny', document = { schemaVersion: 1, projectId, notes: [{ id: 'note-a', scope: 'manuscript', title: '', body: 'Note',
-    manuscript: model.bindManuscriptPayload({ kind: 'footnote', body: doc('Note'), sceneId, offsetUtf16: 3, sceneContent: 'До слова', ...(legacy ? {} : { referenceTypography: typography }) }) }] };
-  const scenes = ['До слова', 'Control'].map((text, index) => ({ sceneId: index ? 'roman/b.txt' : sceneId, scenePath: '/project/' + (index ? 'roman/b.txt' : sceneId),
-    order: index, doc: doc(text), text, observableContent: envelope.composeObservablePayload({ doc: doc(text) }) }));
+  const sceneId = 'roman/a.txt', projectId = 'tiny', current = tracked ? '!До слова' : 'До слова';
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const sceneDoc = tracked ? pending.bindNoteSourcePoints(pending.bindLedger({ schemaVersion: 2, source: doc(current),
+    revisions: [{ id: 'revision-1', nativeId: '1', operation: 'insert', author: 'Writer', date: '', dateUtc: '', paragraphIndex: 0, from: 0, to: 1, state: 'pending', groupId: null }],
+    undo: [], redo: [], roundUndo: [], roundRedo: [], returnReceipts: [] }), [{ noteId: 'note-a', paragraphIndex: 0, offsetUtf16: 4 }]) : doc(current);
+  const document = { schemaVersion: 1, projectId, notes: [{ id: 'note-a', scope: 'manuscript', title: '', body: 'Note',
+    manuscript: model.bindManuscriptPayload({ kind: 'footnote', body: doc('Note'), sceneId, offsetUtf16: tracked ? 4 : 3, sceneContent: envelope.composeObservablePayload({ doc: sceneDoc }), ...(legacy ? {} : { referenceTypography: typography }) }) }] };
+  const scenes = [current, 'Control'].map((text, index) => { const document = index ? doc(text) : sceneDoc;
+    return { sceneId: index ? 'roman/b.txt' : sceneId, scenePath: '/project/' + (index ? 'roman/b.txt' : sceneId),
+      order: index, doc: document, text, observableContent: envelope.composeObservablePayload({ doc: document }) }; });
   const source = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js').buildFullManuscriptDocxReviewPacketSource({ projectId, projectRoot: '/project', notesDocument: document, scenes });
   const bytes = require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer(source);
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
@@ -179,4 +185,25 @@ test('pending book guards retain actual reference typography and refuse referenc
     assert.throws(() => bind(bad), /NOTE_RETURN_REFERENCE_TYPOGRAPHY_CHANGED/);
   const stale = structuredClone(input); delete stale.baseline.sourceBindings[0].referenceTypography;
   assert.throws(() => delta.bindUnchangedBookPendingNotes(stale), /NOTE_RETURN_REFERENCE_BASELINE_CONFLICT/);
+});
+
+test('actual tracked Word export keeps reference formatting in both Original and Current coordinate bases', async () => {
+  const f = await returnFixture({ tracked: true }), delta = require('../../src/core/word-note-return-delta-v1.cjs');
+  const preview = f.bridge.buildDocxContentPreviewFromZipBytes(f.bytes);
+  assert.equal(preview.ok, true, JSON.stringify(preview));
+  assert.deepEqual(f.input.returnedNotes[0].referenceTypography, typography);
+  assert.deepEqual(preview.contentPreview.manuscriptNotes[0].referenceTypography, typography);
+  assert.equal(f.input.returnedNotes[0].offsetUtf16, 3);
+  assert.equal(preview.contentPreview.pendingNoteReferences[0].offsetUtf16, 4);
+  const parsed = f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: f.bytes, exportMap: f.input.exportMap,
+    baselineDocuments: f.scenes.map(s => ({ sceneId: s.sceneId, document: s.doc })), retainPendingScenes: true,
+    documentSections: f.source.documentSections, signedSectionsDigest: f.source.documentSections.protectedDigest });
+  assert.equal(parsed.ok, true, JSON.stringify(parsed));
+  const input = { document: f.document, projectId: 'tiny', baseline: f.source.documentNotes, exportMap: f.input.exportMap,
+    scenes: parsed.scenes.map((s, i) => ({ sceneId: s.sceneId, document: f.scenes[i].doc, returnedDocument: s.returnedDocument })),
+    returnedNotes: f.input.returnedNotes, returnedReferences: f.analysis.reviewIr.documentNotes.references,
+    unionReferences: preview.contentPreview.pendingNoteReferences };
+  assert.equal(delta.bindUnchangedBookPendingNotes(input).length, 2);
+  const bad = structuredClone(input); bad.returnedNotes[0].referenceTypography.fontSlots.cs = 'Georgia';
+  assert.throws(() => delta.bindChangedBookPendingNotes(bad), /NOTE_RETURN_REFERENCE_TYPOGRAPHY_CHANGED/);
 });

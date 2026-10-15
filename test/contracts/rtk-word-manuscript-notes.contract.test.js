@@ -155,6 +155,17 @@ test('actual manuscript command revalidates scene, notes, lease and lifecycle be
   assert.equal((await restore()).reason, 'NOTE_REFERENCE_STALE');assert.equal(writes, 1);assert.equal(created.deleted, true);
   created.manuscript.reference.sourceTextSha256 = referenceHash;
   assert.equal((await restore()).ok, true);assert.equal(writes, 2);assert.equal(document.notes[0].deleted, false);
+  const typography = { schemaVersion: 1, fontSlots: { ascii: 'Georgia', hAnsi: 'Georgia', eastAsia: 'Yu Mincho', cs: 'Arial' },
+    wordLanguage: { val: 'ru-RU', eastAsia: 'ja-JP', bidi: 'ar-SA' } };
+  document.notes[0].manuscript = { ...document.notes[0].manuscript, schemaVersion: 2, referenceTypography: typography };
+  const update = { op: 'update', manuscriptRequest: { kind: 'endnote', bodyJson: JSON.stringify(body()), offsetUtf16: 2 } };
+  const updated = await sandbox.runManuscriptNotesMutation('notes.update', { ...input(), noteId: document.notes[0].id }, update, context);
+  assert.equal(updated.ok, true, JSON.stringify(updated)); assert.equal(writes, 3);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'notes.json'))).notes[0].manuscript.referenceTypography, typography);
+  assert.equal(document.notes[0].manuscript.reference.offsetUtf16, 2); assert.equal(document.notes[0].manuscript.kind, 'endnote');
+  const forged = structuredClone(update); forged.manuscriptRequest.referenceTypography = { schemaVersion: 1, fontSlots: { ascii: 'Arial' } };
+  assert.equal((await sandbox.runManuscriptNotesMutation('notes.update', { ...input(), noteId: document.notes[0].id }, forged, context)).reason, 'NOTE_MANUSCRIPT_REQUEST_INVALID');
+  assert.equal(writes, 3); assert.deepEqual(document.notes[0].manuscript.referenceTypography, typography);
 });
 
 test('actual editor offset mapping stops at the matched paragraph and counts hard breaks', async () => {
