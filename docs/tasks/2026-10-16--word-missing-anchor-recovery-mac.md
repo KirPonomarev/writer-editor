@@ -2,7 +2,7 @@
 
 TASK_ID: WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016
 PARENT_TASK_ID: YALKEN_MAC_WORD_FINISH_V4_1_20261013
-STATUS: IMPLEMENTATION_AND_PROOF_PENDING
+STATUS: CANDIDATE_SOURCE_VERIFIED_DELIVERY_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: new local integrity root only; original trust and lost Word export secrets are never reconstructed
 TYPE: CORE
@@ -176,3 +176,12 @@ Recovery performs two complete snapshots: preparation before consent, then fresh
 post-consent validation under the shared lease after candidate temp creation.
 Selection/capability is checked again inside publication immediately after the
 final snapshot. There is no cross-invocation Core cache or skipped verification.
+
+Final source checkpoints:5402 then7a32 within the same contour. Final complete
+Node14 and shipped15 chains pass204of204 each, mandatory0, no fail/cancel/skip/todo
+and stable source bytes. Actual fresh-child SIGKILL retry/reopen preserves old
+orphan candidates and every project byte. SOURCE69_READONLY07 proves exact frozen
+69-file/252527670-byte original roster before/after,21scenes and3retained packets,
+without profile restoration or native credit. Independent stdlib18 checks actual
+shipped tiny raw pair/root and two normal commit links, rejects8corruptions.
+Normal required CI, merge and exact merged verification remain pending.
