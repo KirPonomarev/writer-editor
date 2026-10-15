@@ -1,3 +1,29 @@
+## 2026-10-15 — Imported-novel Word return after ordinary Save
+
+WORD_NOVEL_MANIFEST_CONTINUATION_MAC_20261015 starts at clean e184ab0051f9ae636558e2bf3cbffc762253c5f4 after the delivered PR2117.
+Actual PACKAGED72 Word-origin500108 preview names one genuine Writer insertion;
+Cancel and failed Apply/normal Quit preserve every99 product files byte-exact.
+Apply refuses E_PROJECT_TRANSACTION_NOVEL_MANIFEST. The tiny real leased Save ->
+public Main return reproduces that exact refusal before the correction.
+
+Main now forwards its existing owned manifest-continuation verifier through Core
+atomic tree dispatch and before-side origin validation, including rollback recovery.
+All exact ok/path/from/to, raw source/round/lease/CAS, packet regeneration and
+publication guards remain; no schema, numerical bound, UI, dependency or network
+change. Runtime delta22 lines; original323464-byte maintained test prefix exact.
+Selected GREEN05 executes3/3 with no exclusions: Cancel/Apply/UndoRedo after real
+Save, five malformed/missing proof no-write refusals and interrupted rollback plus
+committed roll-forward. Retained fixture failures concern public error wrapping
+and planner commit placeholders; final assertions use actual typed results and
+complete regenerated durable commits. Component evidence is not native acceptance.
+
+Full frozen RTK/certification/cheap/official CI, commit/push/PR/merge and exact merged
+verification are IN_PROGRESS. Original native72 and all profiles/authority remain
+preserved. Native retry requires fresh admission/build after delivery. Both origins,
+scales, runtimes, three roles/five exchanges, historical recovery and shipping
+performance remain OPEN. T777 task folders retain all new materials/reports; APFS
+runtime exception is explicit. Task:2026-10-15--word-novel-manifest-continuation-mac.md.
+
 ## 2026-10-15 — Final lifecycle effect revalidation
 
 Same unfinished WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 delivery/PR2117.
