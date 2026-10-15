@@ -4,6 +4,20 @@ const fs=require('node:fs');
 const os=require('node:os');
 const path=require('node:path');
 const crypto=require('node:crypto');
+// Reuse the exact complete-input oracle qualified by the pending-notes test.
+// Extract only helper declarations; no test registration enters this module.
+const noteInputOracle=(()=>{
+ const source=fs.readFileSync(path.join(__dirname,'rtk-word-pending-notes.contract.test.js'),'utf8');
+ const start=source.indexOf('\nfunction noteInputAliases'),end=source.indexOf("\ntest('fresh book V2",start);
+ assert.ok(start>0&&end>start);
+ return new Function('require','assert',source.slice(start,end)+'\nreturn {noteInputAliases,assertNoteInputUnchanged};')(require,assert);
+})();
+function typedInputSnapshot(value) {
+ return {bytes:require('node:v8').serialize(value),json:JSON.stringify(value),aliases:noteInputOracle.noteInputAliases(value)};
+}
+function assertTypedInputUnchanged(value,before,detail='complete input changed') {
+ assert.doesNotThrow(()=>noteInputOracle.assertNoteInputUnchanged(value,before.bytes,before.json,before.aliases),detail);
+}
 const {buildFormatIrParagraphs}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
 const modules=Promise.all([import('../../src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs'),import('../../src/io/revisionBridge/index.mjs'),import('../../src/renderer/documentContentEnvelope.mjs'),import('../../src/io/revisionBridge/exactTextMinSafeWrite.mjs')]);
@@ -1417,10 +1431,10 @@ async function freshBookNotePublication(history='none') {
 }
 test('fresh book V2 actual Main proves both note phases for ordinary retained and resolved ledgers',async()=>{
  for(const history of ['none','retained','resolved']) {
-  const f=await freshBookNotePublication(history),before=require('node:v8').serialize(f.source),actual=await f.publish(f.originalBytes);
+  const f=await freshBookNotePublication(history),before=typedInputSnapshot(f.source),actual=await f.publish(f.originalBytes);
   f.retainBookNoteDefaults('publication-'+history,{source:f.source,docs:f.docs,document:f.document,bytes:f.originalBytes,actual,calls:f.calls});
   assert.equal(actual.ok,true,JSON.stringify({history,code:actual.code,reason:actual.reason}));assert.equal(actual.publishAllowed,true);assert.equal(f.source.documentNotes.breakEmission.schemaVersion,2);
-  assert.equal(require('node:v8').serialize(f.source).equals(before),true,'publication mutated source');
+  assertTypedInputUnchanged(f.source,before,'publication mutated source');
   assert.equal(require('node:util').isDeepStrictEqual(JSON.parse(JSON.stringify(actual.documentNotesBinding.noteProofs)),[{phase:'provisional',rosterCount:3,completeBodies:true,sourceOccurrences:true},{phase:'final',rosterCount:3,completeBodies:true,sourceOccurrences:true}]),true,'incomplete phases');
   if(history==='none'){assert.equal(f.calls.analysis,2);assert.equal(f.calls.pending,0);assert.equal(f.calls.preview,0);}
  }
@@ -1462,19 +1476,19 @@ async function fractionalPendingNotePublicationFixture() {
  return {...f,...publication,doc,document,raw};
 }
 test('fractional BODY_V2 pending notes publish both phases without changing complete raw source or authored typography',async()=>{
- const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
+ const f=await fractionalPendingNotePublicationFixture(),before=typedInputSnapshot({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
  const result=await f.publish(f.bytes);assert.equal(result.publishAllowed,true,JSON.stringify(result));
  assert.deepEqual(JSON.parse(JSON.stringify(result.documentNotesBinding.noteProofs)),[
   {phase:'provisional',rosterCount:3,completeBodies:true,sourceOccurrences:true},{phase:'final',rosterCount:3,completeBodies:true,sourceOccurrences:true}]);
  const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:f.bytes}).parts;
  assert.match(parts['word/document.xml'],/w16du:dateUtc="2026-10-08T03:46:12Z"/u);
  for(const atom of ['w:ascii="Georgia"','w:sz w:val="28"','w:lang w:val="ru-RU" w:eastAsia="ja-JP" w:bidi="he-IL"','<w:b/>','<w:i/>'])assert.ok(parts['word/document.xml'].includes(atom),atom);
- assert.equal(require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw}).equals(before),true);
+ assertTypedInputUnchanged({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw},before);
  assert.equal(require('../../src/core/word-pending-text-revisions-v1.cjs').readLedger(f.doc).revisions[0].dateUtc,'2026-10-08T03:46:12.345Z');
 });
 for(const phase of ['provisional','final'])for(const fault of ['author','date','dateUtc','font','language','mark','corrupt'])
  test('fractional BODY_V2 pending note publication refuses '+fault+' '+phase+' without changing source',async()=>{
-  const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
+  const f=await fractionalPendingNotePublicationFixture(),before=typedInputSnapshot({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
   const original=phase==='provisional'?f.source.provisionalSelfParseArtifact.bytes:f.bytes;
   const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original}).parts,old=parts['word/document.xml'];
   if(fault==='author'||fault==='date')parts['word/document.xml']=old.replace(/<w:(?:ins|del)\b[^>]*>/u,tag=>tag.replace(fault==='author'?/w:author="[^"]*"/u:/w:date="[^"]*"/u,fault==='author'?'w:author="Foreign editor"':'w:date="2026-10-08T03:46:13Z"'));
@@ -1489,7 +1503,7 @@ for(const phase of ['provisional','final'])for(const fault of ['author','date','
   if(fault==='author'||fault==='date'||fault==='dateUtc'){assert.equal(result.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(result.reason,'WORD_BOOK_NOTES_PUBLICATION_SOURCE');}
   else if(fault==='corrupt')assert.equal(result.code,'STAGE02_PACKAGE_MALFORMED');
   else assert.match(result.code,/^(?:RTK_V4_PUBLICATION_|RTK_RETURN_INTAKE_|RTK_WORD_)/u);
-  assert.equal(require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw}).equals(before),true);
+  assertTypedInputUnchanged({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw},before);
  });
 
 test('opaque color serialization canonicalizes only lossless visible textStyle values',()=>{
@@ -1544,7 +1558,7 @@ test('pending book publication reuses exact same-call phase analysis and interna
   calls[key]++;if(key==='pending')seen.push(args[0]);return f.bridge[name](...args);
  };
  const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});
- const before=require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
+ const before=typedInputSnapshot({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw});
  Object.keys(calls).forEach(key=>calls[key]=0);seen.length=0;
  const result=await gateway.publish(f.bytes,f.source);
  assert.equal(result.publishAllowed,true,JSON.stringify(result));
@@ -1557,11 +1571,11 @@ test('pending book publication reuses exact same-call phase analysis and interna
   assert.deepEqual(observed.ledger.noteSourcePoints,observed.sourceLedger.noteSourcePoints);
   assert.equal(require('../../src/export/docx/docxReviewPacketComments.js').compareCommentExportReadback(f.source.commentExport,observed.analysis.reviewIr.commentThreads).ok,true);
  }
- assert.equal(require('node:v8').serialize({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw}).equals(before),true);
+ assertTypedInputUnchanged({doc:f.doc,document:f.document,state:f.state,source:f.source,raw:f.raw},before);
 });
 
 for(const phase of ['provisional','final'])test('pending book phase reuse refuses missing or invalid internally produced preview '+phase,async()=>{
- const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize(f.source);
+ const f=await fractionalPendingNotePublicationFixture(),before=typedInputSnapshot(f.source);
  for(const fault of ['missing','null','wrong-references']){
   let calls=0;const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){
    const result=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);assert.equal(result.ok,true,JSON.stringify(result));
@@ -1575,11 +1589,11 @@ for(const phase of ['provisional','final'])test('pending book phase reuse refuse
   calls=0;const actual=await gateway.publish(phaseReuseFinalReadbackBytes(f,phase),f.source);
   assert.equal(actual.publishAllowed,false,fault);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');
   assert.equal(actual.reason,'WORD_BOOK_NOTES_PUBLICATION_PARSE');assert.equal(calls,phase==='provisional'?1:2);
-  assert.equal(require('node:v8').serialize(f.source).equals(before),true);
+  assertTypedInputUnchanged(f.source,before);
  }
 });
 test('pending book phase reuse keeps missing pending wrappers and forged note source fail closed',async()=>{
- const f=await fractionalPendingNotePublicationFixture(),zip=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip,before=require('node:v8').serialize(f.source);
+ const f=await fractionalPendingNotePublicationFixture(),zip=require('../../src/export/docx/docxMinBuilder.js').buildStoredZip,before=typedInputSnapshot(f.source);
  for(const phase of ['provisional','final']){
   const parts=f.bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:phase==='provisional'?f.source.provisionalSelfParseArtifact.bytes:f.bytes}).parts;
   const old=parts['word/document.xml'];parts['word/document.xml']=old.replace(/<w:(?:ins|del)\b[^>]*>/gu,'').replace(/<\/w:(?:ins|del)>/gu,'');assert.notEqual(parts['word/document.xml'],old);
@@ -1589,17 +1603,17 @@ test('pending book phase reuse keeps missing pending wrappers and forged note so
  const baseline=structuredClone(f.source.documentNotes);baseline.sourceBindings[0].blockTextSha256='0'.repeat(64);
  const forged={...f.source,documentNotes:baseline},denied=await f.publish(f.bytes,forged);
  assert.equal(denied.publishAllowed,false);assert.equal(denied.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');
- assert.equal(require('node:v8').serialize(f.source).equals(before),true);
+ assertTypedInputUnchanged(f.source,before);
 });
 
 test('pending book phase reuse retains resolved zero-span note proof without pending references',async()=>{
- const f=await freshBookNotePublication('resolved'),before=require('node:v8').serialize(f.source),actual=await f.publish(f.originalBytes);
+ const f=await freshBookNotePublication('resolved'),before=typedInputSnapshot(f.source),actual=await f.publish(f.originalBytes);
  assert.equal(actual.publishAllowed,true,JSON.stringify(actual));assert.deepEqual(f.calls,{analysis:2,pending:1,preview:0});
  assert.equal(require('node:util').isDeepStrictEqual(JSON.parse(JSON.stringify(actual.documentNotesBinding.noteProofs)),[{phase:'provisional',rosterCount:3,completeBodies:true,sourceOccurrences:true},{phase:'final',rosterCount:3,completeBodies:true,sourceOccurrences:true}]),true);
- assert.equal(require('node:v8').serialize(f.source).equals(before),true);
+ assertTypedInputUnchanged(f.source,before);
 });
 test('pending book phase reuse refuses absent pending references with outstanding signed spans',async()=>{
- const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize(f.source);
+ const f=await fractionalPendingNotePublicationFixture(),before=typedInputSnapshot(f.source);
  for(const phase of ['provisional','final'])for(const fault of ['missing','null']){
   let calls=0;const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){
    const result=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);assert.equal(result.ok,true,JSON.stringify(result));
@@ -1612,20 +1626,20 @@ test('pending book phase reuse refuses absent pending references with outstandin
   const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});calls=0;
   const actual=await gateway.publish(phaseReuseFinalReadbackBytes(f,phase),f.source);assert.equal(actual.publishAllowed,false);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');
   assert.equal(actual.reason,'WORD_BOOK_NOTES_PUBLICATION_PARSE');assert.equal(calls,phase==='provisional'?1:2);
-  assert.equal(require('node:v8').serialize(f.source).equals(before),true);
+  assertTypedInputUnchanged(f.source,before);
  }
 });
 
 test('pending book phase memo uses one exact semantic parse per invocation without mutating results',async()=>{
- const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize(f.source);let calls=0,observed=[];
- const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){calls++;const result=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);observed.push({result,raw:require('node:v8').serialize(result)});return result;}};
+ const f=await fractionalPendingNotePublicationFixture(),before=typedInputSnapshot(f.source);let calls=0,observed=[];
+ const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){calls++;const result=f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);observed.push({result,raw:typedInputSnapshot(result)});return result;}};
  const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});
  for(let invocation=0;invocation<2;invocation++){
   calls=0;observed=[];const result=await gateway.publish(f.bytes,f.source);
   assert.equal(result.publishAllowed,true,JSON.stringify(result));
   assert.deepEqual(JSON.parse(JSON.stringify(result.documentNotesBinding.noteProofs)).map(row=>row.phase),['provisional','final']);
-  assert.ok(observed.every(row=>require('node:v8').serialize(row.result).equals(row.raw)),'phase binder mutated memo operand');
-  assert.equal(require('node:v8').serialize(f.source).equals(before),true);assert.equal(calls,1,'exact semantic package parsed twice');
+  for(const row of observed)assertTypedInputUnchanged(row.result,row.raw,'phase binder mutated memo operand');
+  assertTypedInputUnchanged(f.source,before);assert.equal(calls,1,'exact semantic package parsed twice');
  }
 });
 
@@ -1659,26 +1673,26 @@ test('pending book phase memo misses every changed semantic part roster raw payl
    assert.equal(rows[0].centralCrc32,rows[1].centralCrc32);assert.equal(rows[0].byteSize,rows[1].byteSize);assert.equal(rows[0].compressedSize,rows[1].compressedSize);
   }
   const candidate={...f.source,provisionalSelfParseArtifact:{...f.source.provisionalSelfParseArtifact,bytes:before},advisoryManifest:{...f.source.advisoryManifest,coreManifest:{...f.source.advisoryManifest.coreManifest,artifactIdentities:{...f.source.advisoryManifest.coreManifest.artifactIdentities,provisionalDocxSha256:'sha256:'+hash(before)}}}};
-  const raw=require('node:v8').serialize(candidate);let calls=0;const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){calls++;return f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);}};
+  const raw=typedInputSnapshot(candidate);let calls=0;const bridge={...f.bridge,buildDocxPendingCommentReturnDocumentsFromZipBytes(input){calls++;return f.bridge.buildDocxPendingCommentReturnDocumentsFromZipBytes(input);}};
   const gateway=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});calls=0;
   const result=await gateway.publish(after,candidate);
   if(kind==='unknown-roster'){
    assert.equal(result.publishAllowed,false,JSON.stringify(result));assert.equal(result.code,'STAGE02_PACKAGE_QUARANTINED');assert.equal(calls,0);
   }else{assert.equal(result.publishAllowed,true,JSON.stringify({kind,result}));assert.equal(calls,2,kind);}
-  assert.equal(require('node:v8').serialize(candidate).equals(raw),true,kind);
+  assertTypedInputUnchanged(candidate,raw,kind);
  }
 });
 
 test('pending book phase identity is opt-in and preserves complete default analysis without authority',async()=>{
- const f=await fractionalPendingNotePublicationFixture(),input={bytes:f.bytes},before=require('node:v8').serialize(input);
+ const f=await fractionalPendingNotePublicationFixture(),input={bytes:f.bytes},before=typedInputSnapshot(input);
  const ordinary=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes(input,{cryptoPort});
  const observed=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes(input,{cryptoPort,includePublicationPhaseIdentity:true});
  assert.equal(ordinary.ok,true);assert.equal(Object.hasOwn(ordinary,'publicationPhaseIdentity'),false);
  const {publicationPhaseIdentity,...same}=observed;assert.match(publicationPhaseIdentity,/^sha256:[a-f0-9]{64}$/u);assert.deepEqual(same,ordinary);
- assert.equal(require('node:v8').serialize(input).equals(before),true);assert.equal(observed.canWriteManuscript,false);assert.equal(observed.canApply,false);
+ assertTypedInputUnchanged(input,before);assert.equal(observed.canWriteManuscript,false);assert.equal(observed.canApply,false);
 });
 test('pending book phase reuse refuses absent or malformed independently computed package identity',async()=>{
- const f=await fractionalPendingNotePublicationFixture(),before=require('node:v8').serialize(f.source);
+ const f=await fractionalPendingNotePublicationFixture(),before=typedInputSnapshot(f.source);
  for(const phase of ['provisional','final'])for(const bad of [undefined,null,'sha256:'+'x'.repeat(64)]){
   const bridge={...f.bridge,buildDocxReviewTransportAnalysisFromZipBytes(input,options){const result=f.bridge.buildDocxReviewTransportAnalysisFromZipBytes(input,options);
    if(options?.includePublicationPhaseIdentity===true&&(phase==='final'?input.bytes===f.bytes:input.bytes===f.source.provisionalSelfParseArtifact.bytes)){
@@ -1687,6 +1701,14 @@ test('pending book phase reuse refuses absent or malformed independently compute
   }};
   const gate=actualBodyPublication(f.doc,bridge,{notesDocument:f.document,nonTextReturnState:f.state,projectId:'project-test',ownedSceneId:f.sceneId});
   const actual=await gate.publish(f.bytes,f.source);assert.equal(actual.publishAllowed,false);assert.equal(actual.code,'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH');assert.equal(actual.reason,'WORD_BOOK_NOTES_PUBLICATION_PARSE');
-  assert.equal(require('node:v8').serialize(f.source).equals(before),true);
+  assertTypedInputUnchanged(f.source,before);
+ }
+});
+
+test('Main input conservation oracle rejects text binary alias and absent-field corruption',()=>{
+ const shared={text:'Exact',optional:undefined},value={left:shared,right:shared,bytes:Buffer.from([1,2,3])},before=typedInputSnapshot(value);
+ assertTypedInputUnchanged(value,before);
+ for(const mutate of [x=>x.left.text='Changed',x=>x.bytes[1]=4,x=>x.right={...x.right},x=>delete x.left.optional]){
+  const bad=require('node:v8').deserialize(before.bytes);mutate(bad);assert.throws(()=>assertTypedInputUnchanged(bad,before));
  }
 });

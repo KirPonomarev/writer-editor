@@ -1,3 +1,86 @@
+# Word note reference typography — 2026-10-15
+
+TASK_ID: WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SOURCE_VERIFIED_DELIVERY_PENDING
+BINDING_BASE_SHA: 7b7429d7f0142eb42447f0ab023af4c31c62b4cc
+PRODUCT_CHECKPOINT_SHA: 2ed196bfb039f28025e497b15eb115114e5c6fe3
+CLAIM_BOUNDARY: candidate bytes pinned by dated process receipts; tiny source proof, no native/profile acceptance
+
+The bounded parser preserves four effective font slots and three proofing
+languages of main-body footnote/endnote references through the existing strict
+style cascade. Manuscript schema2 stores only validated literal reference
+values; schema1 remains exact and never acquires invented defaults. Existing
+admitted SafeCreate and atomic notes storage retain the values. Export emits
+those slots directly; the minimal exporter now includes its already-produced
+note style definitions. Note-body Ref controls and other typography are unchanged.
+
+Clean and pending/book return guards compare the signed reference binding
+against fresh canonical state and reject protected drift, including body-edit
+returns. Main's ordinary body edit/kind conversion/reanchor carries only fresh
+canonical typography under its existing lease/hash; renderer requests cannot
+supply it. The generic Core body-update cohort also rejects replacing or
+stripping this protected metadata. Private state, source revision, note identity, atomic recovery and
+numeric limits remain protected. No dependency, UI or native writer was added.
+
+Maintained two-kind actual-import RED01 and Main body-edit RED06 precede their
+fixes. Final complete affected9-file source chains pass204of204 on Node22
+and shipped Electron41.10.6 without fail/cancel/skip/todo. The unchanged
+mandatory TAP evaluator returns0 and all participating source-byte barriers
+pass. Actual tracked export checks both Original and Current note coordinates
+and rejects reference drift even for a changed-body return. Independent stdlib ZIP/XML observes all14 reference
+font/language values, both literal note bodies/points, and rejects16 controls.
+Tiny outputs total only9686bytes; originals and old RED files stay unchanged.
+
+One shipped run failed the old V8 serialized-byte equality assertion. Retained
+before/after operands decode to equal complete typed values and equal JSON;
+the first difference is the same transportIdentity encoded as one-byte versus
+UTF16,69912versus70024 serialized bytes. Node documents that equal values can
+serialize differently. The corrected oracle checks every typed value and binary
+view byte, exact JSON and the entire object-alias graph, with maintained
+negative controls for value, binary, alias and absent-field corruption. Old
+failure remains RED; it is not relabeled product mutation or successful proof.
+
+The broad candidate7e58 CI found one incomplete isolated WP204 module graph,
+not a runtime mutation: the manually copied notes model could not load the new
+reference validator. Local RED35 reproduces this before mutant execution;
+adding the validator and existing word-language dependency lets the unchanged
+unmodified control and all seven named mutants execute on Node22 and shipped
+Electron (GREEN36/SHIPPED37,1of1 each, no skips). Source copying checks found no
+second selective notes-module harness. Full candidate CI remains required.
+Read-only real Word500k preview31 on exact7e58/shipped Electron preserves all
+21of21 values across42 planned scenes; original583541 bytes and source remain
+unchanged. No project write or native credit is claimed.
+
+Candidate d3aba148 CI38795181070 passed all4253 reported RTK results,
+but the unchanged strict inventory rejected seven nested duplicate test
+registrations: existing Main fixtures extract a helper slice from the pending
+notes test, and the new input-oracle qualification had been placed inside it.
+Move that one registration after the extracted slice; retain the exact helper
+functions, all four corruption controls and every domain case. The strict RTK
+runner remains byte-exact. No old failed CI receives acceptance credit.
+
+Shipped auxiliary43 exposed the same noncanonical V8 encoding assertion
+in existing actual Main publication tests. Diagnostic47 retains both operands;
+an independent product-free reader50 confirms complete typed values, exact JSON
+and aliases equal even for65645versus65757 serialized bytes. Reuse the existing
+qualified complete-input helper slice, snapshot every value/Buffer byte/JSON
+and alias before publication, and retain every domain assertion. A direct Main
+wrapper qualification rejects text, binary, alias and absent-field corruption.
+The bounded complete two-file chain passes258of258 on the shipped engine before
+that additional qualification. Full final candidate and merged checks follow;
+interrupted wide auxiliary42/43 and failed CI remain explicitly unaccepted.
+
+Earlier schema1 imports have already lost these values and are not repaired
+automatically. Native acceptance requires a fresh original-source import on a
+new frozen build or a separately authorized provenance-bound migration.
+Existing Native79 and SOURCE80 profiles/anchors remain untouched. PR2121 is
+normally merged at the binding base; this new contour still requires complete
+normal delivery, exact merged verification and separate native acceptance.
+Full feature, original SOURCE recovery and role/exchange matrix remain open.
+Task:2026-10-15--word-note-reference-typography-mac.md. Dated T777 materials and
+reports use2026-10-15--word-note-reference-typography-mac; no large fixture copy.
+
 # Word export activation index — 2026-10-15
 
 TASK_ID: WORD_EXPORT_ACTIVATION_MAC_20261015

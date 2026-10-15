@@ -10,6 +10,7 @@ const { tableParagraphs } = require('../io/documentTables.js');
 
 const MODE = 'MANUSCRIPT_POINT_REBASE_V1';
 const richBody = require('./word-rich-body-projection-v1.cjs');
+const referenceTypography = require('./word-note-reference-typography-v1.cjs');
 const { LIMITS } = richBody;
 const plain = value => value && typeof value === 'object' && !Array.isArray(value);
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -129,8 +130,14 @@ function observeNoteScene(content) {
 }
 
 function validateManuscriptPayload(value) {
-  need(keys(value, ['schemaVersion', 'kind', 'reference', 'body']) && value.schemaVersion === 1
+  need(keys(value, ['schemaVersion', 'kind', 'reference', 'body', ...(value?.schemaVersion === 2 ? ['referenceTypography'] : [])])
+    && [1, 2].includes(value.schemaVersion)
     && ['footnote', 'endnote'].includes(value.kind), 'NOTE_MANUSCRIPT_SCHEMA');
+  if (value.schemaVersion === 2) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, 'referenceTypography');
+    need(descriptor?.enumerable && Object.hasOwn(descriptor, 'value'), 'NOTE_REFERENCE_TYPOGRAPHY_INVALID');
+    referenceTypography.validate(descriptor.value);
+  }
   const ref = value.reference;
   need(keys(ref, ['sceneId', 'offsetUtf16', 'sourceTextSha256', 'affinity'])
     && typeof ref.sceneId === 'string' && ref.sceneId.length > 0 && ref.sceneId.length <= 1024
@@ -142,10 +149,11 @@ function validateManuscriptPayload(value) {
   return clone(value);
 }
 
-function bindManuscriptPayload({ kind, body, sceneId, offsetUtf16, sceneContent }) {
+function bindManuscriptPayload({ kind, body, sceneId, offsetUtf16, sceneContent, referenceTypography: typography }) {
   const text = sceneText(sceneContent);
   need(boundary(text, offsetUtf16), 'NOTE_REFERENCE_BOUNDARY');
-  return validateManuscriptPayload({ schemaVersion: 1, kind, body,
+  return validateManuscriptPayload({ schemaVersion: typography === undefined ? 1 : 2, kind, body,
+    ...(typography === undefined ? {} : { referenceTypography: referenceTypography.validate(typography) }),
     reference: { sceneId, offsetUtf16, sourceTextSha256: sha(text), affinity: 'after' } });
 }
 
@@ -334,6 +342,10 @@ function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterCon
       const old = byId.get(note.id);
       if (JSON.stringify(old) === JSON.stringify(note)) continue;
       need(note.manuscript && (!old || old.manuscript), 'NOTE_COHORT_MANUSCRIPT_ONLY');
+      if (old?.manuscript) {
+        const typography = payload => payload.referenceTypography === undefined ? undefined : referenceTypography.validate(payload.referenceTypography);
+        need(JSON.stringify(typography(old.manuscript)) === JSON.stringify(typography(note.manuscript)), 'NOTE_COHORT_REFERENCE_TYPOGRAPHY');
+      }
       const ref = note.manuscript.reference;
       if (ref.sceneId !== sceneId) need(old && JSON.stringify(old.manuscript.reference) === JSON.stringify(ref), 'NOTE_COHORT_OTHER_SCENE_REFERENCE');
       else need(ref.sourceTextSha256 === sha(text) && boundary(text, ref.offsetUtf16), 'NOTE_COHORT_SOURCE');
@@ -370,7 +382,7 @@ function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId
   validateManuscriptDocument(before, projectId);
   const after = clone(before), ids = new Set(before.notes.map(n => n.id));
   const imported = candidates.map((candidate, index) => {
-    need(keys(candidate, ['kind', 'paragraphIndex', 'offsetUtf16', 'body'])
+    need(keys(candidate, ['kind', 'paragraphIndex', 'offsetUtf16', 'body', 'referenceTypography'])
       && Number.isSafeInteger(candidate.paragraphIndex) && candidate.paragraphIndex >= 0
       && typeof paragraphs[candidate.paragraphIndex] === 'string'
       && boundary(paragraphs[candidate.paragraphIndex], candidate.offsetUtf16), 'NOTE_IMPORT_POINT');
