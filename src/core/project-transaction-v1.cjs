@@ -1883,7 +1883,62 @@ function createNovelReadInvocation(manifestPath, fsAdapter) {
     novelNeed(canonicalize(actual)===canonicalize(binding), 'E_PROJECT_TRANSACTION_NOVEL_STALE');
   }
   };
-  return {reader,invocation,assertFresh};
+  return {reader,invocation,assertFresh, snapshotDigest:()=>sha256hex(canonicalize(
+    [...observed].sort(([a],[b])=>a.localeCompare(b)).map(([target,binding])=>({path:path.relative(path.dirname(manifestPath),target),binding}))))};
+}
+
+// Explicit recovery must prove the complete saved novel, not infer integrity
+// from an Undo availability result that intentionally absorbs read failures.
+async function readVerifiedProjectRecoverySnapshot({manifestPath,projectId,verifyManifestContinuation,fsAdapter=fsp}) {
+  treeNeed(typeof manifestPath==='string' && path.isAbsolute(manifestPath) && typeof projectId==='string','E_TREE_RECOVERY_INPUT');
+  const {reader,invocation,assertFresh,snapshotDigest}=createNovelReadInvocation(manifestPath,fsAdapter);
+  await assertResourceBoundary(manifestPath,manifestPath,fsAdapter);
+  const manifest=JSON.parse(await reader.readFile(manifestPath,'utf8'));
+  treeNeed(manifest.projectId===projectId && manifest.schemaVersion===1,'E_TREE_RECOVERY_PROJECT');
+  const tree=await readVerifiedProjectTreeMutationInInvocation({manifestPath,projectId,fsAdapter:reader},invocation);
+  treeNeed(tree.retainedPacket && tree.receipt,'E_TREE_RECOVERY_PACKET_REQUIRED');
+  await inspectTreePacket(tree.retainedPacket,manifestPath,reader,'after',invocation);
+  const plan=tree.retainedPacket.plan;
+  const scenes=plan.kind==='word-mixed-return' ? plan.input.scenes.map(scene=>({relativeFile:scene.sceneId}))
+    : plan.kind==='word-generic-import' ? plan.importReceipt?.createdScenes : null;
+  treeNeed(Array.isArray(scenes) && scenes.length>=1 && scenes.length<=512,'E_TREE_RECOVERY_NOVEL_REQUIRED');
+  const nodes=Object.values(manifest.treeIdentity?.nodes || {}).filter(node=>node.kind==='scene' && node.present!==false);
+  treeNeed(canonicalize(nodes.map(node=>node.bindingKey).sort())
+    ===canonicalize(scenes.map(scene=>'file:'+scene.relativeFile).sort()),'E_TREE_RECOVERY_MEMBERSHIP');
+  for(const scene of scenes) {
+    treeNeed(nodes.some(node=>node.bindingKey==='file:'+scene.relativeFile),'E_TREE_RECOVERY_MEMBERSHIP');
+    await readVerifiedProjectTransactionInInvocation({scenePath:treeAbsolute(manifestPath,scene.relativeFile),manifestPath,verifyManifestContinuation,fsAdapter:reader},invocation);
+  }
+  const directories=new Map();let files=0,total=0;
+  async function walk(directory,depth=0) {
+    treeNeed(depth<=16 && directories.size<256,'E_TREE_RECOVERY_SNAPSHOT_BUDGET');
+    const names=(await fsAdapter.readdir(directory)).sort();directories.set(directory,names);
+    for(const name of names) {
+      const target=path.join(directory,name),stat=await fsAdapter.lstat(target);
+      treeNeed(!stat.isSymbolicLink(),'E_TREE_RECOVERY_SNAPSHOT_BOUNDARY');
+      if(stat.isDirectory())await walk(target,depth+1);
+      else {
+        treeNeed(stat.isFile() && stat.nlink===1 && ++files<=2048,'E_TREE_RECOVERY_SNAPSHOT_BOUNDARY');
+        total+=stat.size;treeNeed(Number.isSafeInteger(total) && total<=512*1024*1024,'E_TREE_RECOVERY_SNAPSHOT_BUDGET');
+        if(path.dirname(target)===path.join(path.dirname(manifestPath),'.yalken-recovery') && /^wp201-[a-f0-9]{64}\.json$/u.test(name)) {
+          invocation.successPaths ||= new Set();invocation.successPaths.add(target);
+          // Use the existing coarse envelope only for this owned packet path;
+          // parsed category and full regeneration still impose32/48/256MiB.
+          const source=await readTreeEnvelopeSource(target,manifestPath,reader);
+          // The private reader rejects any byte change from the checked current
+          // packet. Reuse only that same immutable value within this query.
+          const packet=target===recoveryPacketPathFor(manifestPath,tree.receipt.transactionId)
+            ? tree.retainedPacket : await validateTreePacket(JSON.parse(source),manifestPath);
+          treeNeed(packet.projectId===projectId && name===`wp201-${packet.transactionId}.json`,'E_TREE_RECOVERY_PACKET_BINDING');
+        } else await reader.readFile(target);
+      }
+    }
+  }
+  await walk(path.dirname(manifestPath));
+  await assertFresh();
+  for(const [directory,names] of directories)treeNeed(canonicalize((await fsAdapter.readdir(directory)).sort())===canonicalize(names),'E_TREE_RECOVERY_SNAPSHOT_STALE');
+  return Object.freeze({projectId,projectRootDigest:sha256hex(path.dirname(manifestPath)),snapshotDigest:snapshotDigest(),
+    treeRevision:tree.treeRevision,sceneCount:scenes.length,fileCount:files,totalBytes:total});
 }
 
 // Complete read-only query. Its reuse context and observed bytes are created
@@ -2538,6 +2593,7 @@ module.exports = Object.freeze({
   readPendingProjectTransactionBinding,
   readVerifiedProjectTransaction,
   readVerifiedProjectDocxNovelCohort,
+  readVerifiedProjectRecoverySnapshot,
   readVerifiedNovelAnnotationLineage,
   recoveryPacketPathFor,
   recoverProjectTransaction,

@@ -4,6 +4,7 @@ const ALLOWED_COMMAND_IDS = Object.freeze([
   'cmd.project.open',
   'cmd.project.save',
   'cmd.project.saveAs',
+  'cmd.project.recoverMissingIntegrityAnchor',
   'cmd.project.exportCurrentSceneTxtV1',
   'cmd.project.exportSelectedScenesTxtV1',
   'cmd.project.exportAllScenesTxtV1',

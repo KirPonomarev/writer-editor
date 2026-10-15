@@ -718,6 +718,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_OPEN: 'cmd.project.open',
   PROJECT_SAVE: 'cmd.project.save',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  PROJECT_RECOVER_MISSING_INTEGRITY_ANCHOR: 'cmd.project.recoverMissingIntegrityAnchor',
   PROJECT_EXPORT_CURRENT_SCENE_TXT_V1: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   PROJECT_EXPORT_SELECTED_SCENES_TXT_V1: EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
   PROJECT_EXPORT_ALL_SCENES_TXT_V1: EXPORT_ALL_SCENES_TXT_COMMAND_ID,
@@ -15952,6 +15953,7 @@ function getInternalCommandSurfaceKernel() {
     return internalCommandSurfaceKernel;
   }
   internalCommandSurfaceKernel = createCommandSurfaceKernel({
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RECOVER_MISSING_INTEGRITY_ANCHOR]: handleMissingIntegrityAnchorRecovery,
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_OPEN]: async () => {
       await ensureCleanAction(handleOpen);
       return { ok: true };
@@ -16065,6 +16067,74 @@ const STAGE10_LEGACY_PRODUCT_SESSION_FILENAME = 'product-session.v1.json';
 const STAGE10_LEGACY_RECEIPT_AUTHORITY_HEAD_FILENAME = 'command-receipt-authority-head.v1.json';
 let activeStage10ApplicationBootstrap = null;
 let activeStage10ApplicationCommandRoute = null;
+
+// Main-only startup capability. Neither IPC payloads nor renderer approval
+// booleans can select a root or bypass native consent.
+let pendingMissingIntegrityAnchorRecoveryBinding = null;
+
+async function resolveReadOnlyStartupRecoveryBinding() {
+  const settings=await loadSettings(),continuity=readSessionContinuityV1(settings);
+  if(!continuity.ok && continuity.present)throw Object.assign(new Error('E_SESSION_CONTINUITY_INVALID'),{code:'E_SESSION_CONTINUITY_INVALID'});
+  const selectedId=normalizeStableProjectId(continuity.record?.projectId || continuity.projectId);
+  if(!selectedId && typeof settings.lastExternalFilePath==='string' && settings.lastExternalFilePath.trim())return null;
+  const root=fileManager.getDocumentsPath();
+  let names;
+  try {names=selectedId?(await fs.readdir(root,{withFileTypes:true})).filter(entry=>entry.isDirectory()).map(entry=>entry.name)
+    :[sanitizeFilename(currentProjectName || DEFAULT_PROJECT_NAME)];}
+  catch(error){if(error.code==='ENOENT' && !selectedId)return null;throw error;}
+  if(names.length>2048)throw Object.assign(new Error('E_STARTUP_PROJECT_BINDING'),{code:'E_STARTUP_PROJECT_BINDING'});
+  const matches=[];
+  for(const name of names) {
+    const projectRoot=path.join(root,name),manifestPath=path.join(projectRoot,PROJECT_MANIFEST_FILENAME);
+    let raw;try {raw=await fs.readFile(manifestPath,'utf8');}catch(error){if(error.code==='ENOENT')continue;throw error;}
+    let manifest;try {manifest=JSON.parse(raw);}catch(error){if(selectedId)continue;throw error;}
+    if(isPlainObjectValue(manifest) && normalizeStableProjectId(manifest.projectId)
+      && (!selectedId || manifest.projectId===selectedId))matches.push({projectId:manifest.projectId,projectRoot,manifestPath,manifest});
+  }
+  if(matches.length!==1) {
+    if(!selectedId && matches.length===0)return null;
+    throw Object.assign(new Error('E_STARTUP_PROJECT_BINDING'),{code:'E_STARTUP_PROJECT_BINDING'});
+  }
+  return matches[0];
+}
+
+async function handleMissingIntegrityAnchorRecovery(payload={}) {
+  const binding=pendingMissingIntegrityAnchorRecoveryBinding;
+  if(!binding || activeStage10ApplicationBootstrap || Object.keys(payload).length!==0) {
+    throw Object.assign(new Error('E_STAGE10_RECOVERY_CAPABILITY_REQUIRED'),{code:'E_STAGE10_RECOVERY_CAPABILITY_REQUIRED'});
+  }
+  const revalidateSelection=async()=>{
+    const selected=await resolveReadOnlyStartupRecoveryBinding();
+    if(pendingMissingIntegrityAnchorRecoveryBinding!==binding || activeStage10ApplicationBootstrap
+      || selected?.projectId!==binding.projectId || selected?.projectRoot!==binding.projectRoot) {
+      throw Object.assign(new Error('E_STAGE10_RECOVERY_SELECTION_STALE'),{code:'E_STAGE10_RECOVERY_SELECTION_STALE'});
+    }
+  };
+  await revalidateSelection();
+  const {createStage10MainPersistenceAdapter}=await loadStage10MainPersistenceAdapterModule();
+  const persistence=createStage10MainPersistenceAdapter({projectRoot:binding.projectRoot,
+    anchorRoot:path.join(app.getPath('userData'),'stage10-integrity-anchors'),
+    writeFileAtomic:(target,content)=>fileManager.writeFileAtomic(target,content),transactionAuthority:await getMainProjectManifestAuthority()});
+  const candidate=await persistence.prepareMissingIntegrityAnchorRecovery(binding.projectId);
+  if(!candidate)return {ok:true,skipped:true};
+  const choice=await dialog.showMessageBox({type:'warning',title:'Yalken: восстановление доверия к проекту',
+    message:'Внешняя запись доверия к истории этого проекта отсутствует.',
+    detail:`Сохранённый проект «${binding.manifest.projectName || binding.projectId}» проверен: ${candidate.sceneCount} сцен, ${candidate.fileCount} файлов. Восстановление создаст новое основание доверия к этой копии, сохранив прежние данные и историю. Подлинность утраченной записи и ключи старых Word-экспортов восстановлены не будут. Перед записью проект будет проверен повторно.`,
+    buttons:['Отмена','Восстановить доверие'],defaultId:0,cancelId:0,noLink:true});
+  if(choice.response!==1)throw Object.assign(new Error('E_STAGE10_RECOVERY_CANCELLED'),{code:'E_STAGE10_RECOVERY_CANCELLED'});
+  await revalidateSelection();
+  return persistence.recoverMissingIntegrityAnchor(binding.projectId,candidate,revalidateSelection);
+}
+
+async function recoverMissingIntegrityAnchorAtStartup() {
+  const binding=await resolveReadOnlyStartupRecoveryBinding();
+  if(!binding)return;
+  pendingMissingIntegrityAnchorRecoveryBinding=binding;
+  try {
+    const result=await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RECOVER_MISSING_INTEGRITY_ANCHOR,{});
+    if(result?.ok!==true)throw Object.assign(new Error(result?.error?.reason || 'E_STAGE10_RECOVERY_FAILED'),result?.error);
+  } finally {pendingMissingIntegrityAnchorRecoveryBinding=null;}
+}
 
 function getStage10LocalStatePath(projectRoot, fileName) {
   return joinPathSegmentsWithinRoot(projectRoot, [STAGE10_LOCAL_STATE_DIRNAME, fileName], {
@@ -38979,6 +39049,7 @@ function createMenu() {
 
 // Подготовка локальных директорий (Documents/craftsman + autosave) при запуске
 async function initializeApp() {
+  await recoverMissingIntegrityAnchorAtStartup();
   await fileManager.migrateDocumentsFolder();
   await fileManager.ensureDocumentsFolder();
   await ensureAutosaveDirectory();
