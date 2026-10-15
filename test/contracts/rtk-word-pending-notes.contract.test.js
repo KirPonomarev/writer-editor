@@ -1143,15 +1143,6 @@ function assertNoteInputUnchanged(value,beforeBytes,beforeJson,beforeAliases) {
   assert.equal(JSON.stringify(value),beforeJson,'complete canonical input JSON bytes changed');
   assert.deepEqual(noteInputAliases(value),beforeAliases,'complete input alias graph changed');
 }
-test('complete note-input oracle rejects changed values, binary bytes and reference sharing',()=>{
-  const shared={text:'Exact',optional:undefined},value={left:shared,right:shared,bytes:Buffer.from([1,2,3])};
-  const bytes=require('node:v8').serialize(value),json=JSON.stringify(value),aliases=noteInputAliases(value);
-  assertNoteInputUnchanged(value,bytes,json,aliases);
-  for(const mutate of [x=>x.left.text='Changed',x=>x.bytes[1]=4,x=>x.right={...x.right},x=>delete x.left.optional]) {
-    const bad=require('node:v8').deserialize(bytes);mutate(bad);
-    assert.throws(()=>assertNoteInputUnchanged(bad,bytes,json,aliases));
-  }
-});
 test('fresh book V2 complete defaults retain original notes and real edits remain explicit',async()=>{
   const f=await bookNoteDefaultsFixture(),value={document:f.document,source:f.source},before=plain(value),beforeBytes=require('node:v8').serialize(value),beforeJson=JSON.stringify(value),beforeAliases=noteInputAliases(value),actual=delta.planNoteReturnDelta(f.input);
   retainBookNoteDefaults('core-input-representation',{beforeJson,beforeBytes,beforeAliases,afterTyped:value,afterBytes:require('node:v8').serialize(value)});
@@ -1310,4 +1301,14 @@ test('note-free BODY_V2 language refuses stale forged before and returned note b
   assert.notEqual(JSON.stringify([proof,scenes]),JSON.stringify([f.proof,f.scenes]),fault+' mutation missing');
   assert.throws(()=>mixed.planMixedBookReturn({beforeText:f.beforeText,projectId,scenes,notesText:f.notesText,returnProofJson:JSON.stringify(proof)}),error=>error.code===({font:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED',size:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED',spacing:'MIXED_RETURN_NOTE_FORMAT_UNSUPPORTED','tracked-format':'PENDING_FORMAT_SOURCE_MISMATCH',code:'WORD_PARAGRAPH_SPACING_INVALID','source-drift':'MIXED_RETURN_BASELINE_STALE','baseline-point':'PENDING_NOTE_BASELINE_MISMATCH','returned-point':'PENDING_NOTE_UNION_BINDING','note-body':'PENDING_NOTE_BASELINE_MISMATCH','note-id':'PENDING_NOTE_BASELINE_MISMATCH','incoming-points':'PENDING_REVISIONS_INVALID'})[fault],fault);
  }
+});
+
+test('complete note-input oracle rejects changed values, binary bytes and reference sharing',()=>{
+  const shared={text:'Exact',optional:undefined},value={left:shared,right:shared,bytes:Buffer.from([1,2,3])};
+  const bytes=require('node:v8').serialize(value),json=JSON.stringify(value),aliases=noteInputAliases(value);
+  assertNoteInputUnchanged(value,bytes,json,aliases);
+  for(const mutate of [x=>x.left.text='Changed',x=>x.bytes[1]=4,x=>x.right={...x.right},x=>delete x.left.optional]) {
+    const bad=require('node:v8').deserialize(bytes);mutate(bad);
+    assert.throws(()=>assertNoteInputUnchanged(bad,bytes,json,aliases));
+  }
 });

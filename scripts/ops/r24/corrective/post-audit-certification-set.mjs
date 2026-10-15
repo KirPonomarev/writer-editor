@@ -25767,7 +25767,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
-      "sha256": "7051e6e3b30ea2cb7719b8aebd3ac17621fc074af3b174c874a1461ea389d945"
+      "sha256": "832008a275e26d59192f3cccc6016e4f6b631b1faf3da7522d5c70981e4d8e07"
     },
     {
       "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
@@ -26163,15 +26163,15 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "f2b8bc7a5b5a68c27c59f8682a0c420b29a7b06cb2a942e4be04850786626082"
+      "sha256": "ec11d278e85800a6feef8c780e4218bb40b08d0944060afadeddc5d8e8d96ac3"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "ffe20f9e20667d19c7382c16bf62ca5efd1311d7d4d0e1e17b89c5e5787aba66"
+      "sha256": "eb15f30de101e54428a7debccd4da0d95d72fde96d72658e65165f137c3a1dd6"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "cc5ce67c99933016c5e58b5a2fd467f0f50e2af996c83c2d8ec26189bbf223e1"
+      "sha256": "7a7fed7ed9af54fd58449462b858d50c2deb530b52722297ddc141de66b419dd"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26303,7 +26303,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
-      "sha256": "8202b5a29957421e0a3e6c6eb92c400d1c56ad4d62d10451ddbe682ea57af17a"
+      "sha256": "7989581781eed70b106c788c2f174ee59ee2108032729e6dfb93196364cbd941"
     },
     {
       "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
@@ -26313,7 +26313,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "49d80f5cbbd242393982a3b47590d61e5a93dae6cb954f4f68995a612516eea8"
+      "sha256": "bc6e4967b86c23e602a019a92b4644f77488bd47b945cd31e9eae093e6f33e9d"
     }
   ]
 });

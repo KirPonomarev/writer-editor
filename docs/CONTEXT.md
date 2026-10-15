@@ -52,6 +52,14 @@ Read-only real Word500k preview31 on exact7e58/shipped Electron preserves all
 21of21 values across42 planned scenes; original583541 bytes and source remain
 unchanged. No project write or native credit is claimed.
 
+Candidate d3aba148 CI38795181070 passed all4253 reported RTK results,
+but the unchanged strict inventory rejected seven nested duplicate test
+registrations: existing Main fixtures extract a helper slice from the pending
+notes test, and the new input-oracle qualification had been placed inside it.
+Move that one registration after the extracted slice; retain the exact helper
+functions, all four corruption controls and every domain case. The strict RTK
+runner remains byte-exact. No old failed CI receives acceptance credit.
+
 Earlier schema1 imports have already lost these values and are not repaired
 automatically. Native acceptance requires a fresh original-source import on a
 new frozen build or a separately authorized provenance-bound migration.

@@ -226,3 +226,13 @@ GREEN36 and SHIPPED37 execute the existing unmodified control and all seven
 mutants (1of1 maintained case on each engine, no skipped/todo), with unchanged
 kill predicates. Read-only copying-source review finds no second selective
 notes-module graph. Full normal CI remains mandatory for the final candidate.
+
+### Strict TAP registration closure
+
+Candidate d3aba148 CI38795181070 passes4253 reported cases, but the unchanged
+mandatory evaluator refuses seven nested duplicate oracle-test registrations
+inside existing Main helper extraction. Exact clean preflight41 admits moving
+only the qualification registration beyond that slice. Preserve its full four
+corruption controls and all domain assertions, keep runner bytes unchanged,
+and execute the three complete affected files before another candidate push.
+No old CI failure is treated as acceptance.
