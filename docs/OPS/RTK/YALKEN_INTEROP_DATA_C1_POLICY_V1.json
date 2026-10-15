@@ -666,7 +666,8 @@
     "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
     "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
     "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
-    "docs/tasks/2026-10-15--word-history-private-preparation-mac.md"
+    "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
+    "docs/tasks/2026-10-15--word-export-activation-mac.md"
   ],
   "protectedFiles": [
     {
@@ -895,7 +896,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "035967a62dd718401de4fb38dfd2f0424c6061a4c060fb718a5a2c099649837e"
+        "sha256": "559b7e710029685f881884d0f38f0e86a991cfb36ba9de7052ddd3c48e5ff70d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1203,7 +1204,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
-        "sha256": "bff012975d5c2afcf79e9bbc7787b735a292e2b915937b1634b034926d46e86d"
+        "sha256": "7cd0724e26081319ebd1effd7126ab79dae5f43f23dc31b283bdd81f5354b2ed"
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
@@ -2083,7 +2084,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "ccce0cd962555d9ff8bec725d9e3a17058dec71ce72fa453e3f8c600a7cf75e1"
+        "sha256": "c6d9e3d0cd0cb3498d2c251b43dac462039ef7f402329dddb6389098d374bbfb"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2103,7 +2104,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
-        "sha256": "718835b6ba721cb272ffb895e5c42dfa9065a1feeaac62c62b30cd37b8de3eca"
+        "sha256": "8e8c95957979a3e7da27e0f24edc29fd6aa67ced64fd9eeaebbc4205bcad8913"
       },
       {
         "path": "test/unit/docx-scene-comments.test.js",
@@ -2587,15 +2588,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "94f4f13d4b02e86be107af8f4128f2d87647053cd3ea03abd9010a745557100a"
+        "sha256": "dcd48aa63b510372a54b00480e52f7c2c36d2edba35a8fcfd963d1c5d61173fb"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d9f6ed74e7c44c11e45026f478974bda682b26146354e22945bef36681affb20"
+        "sha256": "16f85d42a5234ba4c8739aced51fcaf96c4ad0c0e9f8f93eea866a1ebe4a31a2"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "1ff2be26319401d5c5715473f1646d6c355655bead16ddb750c48f12691c30d1"
+        "sha256": "23e5a50e5f4a39a961dcbc2bbac0b2b37e0202976ba2dbeab629feca040b742e"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2731,11 +2732,11 @@
       },
       {
         "path": "src/core/word-review-authority-codec-v1.cjs",
-        "sha256": "1db5cffa659fed08fe6a0730fd5666a8a90d24e10683a70343668acf3ab54216"
+        "sha256": "47f5ec36443e02d4b41f192862f76a60c96c40e9cb1f08a8dfbed785ec95781b"
       },
       {
         "path": "test/contracts/rtk-word-review-authority-codec.contract.test.js",
-        "sha256": "92e7c3ebf8c848417cc613be73c93c331cd71a3498ed3c0ea09a1e099513f355"
+        "sha256": "93d4eb15ae6ed2e33e2b9b264d87700b4af6ff6e9297c5214ff9ee1e0513e80a"
       },
       {
         "path": "test/contracts/scene-document-admission.contract.test.js",
@@ -2855,7 +2856,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "f9cbf972d69d1059e73326a95acc5760225c69635064c07af011ed8757b19861"
+        "sha256": "0ff5da02d22ea29eca9b481f526e2484f517939cf064616f2be3660d31ff38f4"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -2932,6 +2933,10 @@
       {
         "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
         "sha256": "1191c94dd6d67499f0e4a1f5edcefeeb28293c87a260d32894325e68faef7d99"
+      },
+      {
+        "path": "docs/tasks/2026-10-15--word-export-activation-mac.md",
+        "sha256": "dc751beaea7f1af07879c8dcf7de733cf9d7928d5a0b506f5e60b9d614bbfb49"
       }
     ],
     "followupRepair": {

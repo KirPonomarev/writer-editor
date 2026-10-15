@@ -93,7 +93,7 @@ test('actual selected-scene signed producer, activation, explicit comment return
   // The actual producer binds its own new round; publication uses the actual
   // transition, durable CAS writer and crypto port rather than an inherited round.
   await f.probe.activate(source.pendingAuthorityStore);
-  const published=f.probe.strict(f.root).record.roundsById[source.localAuthorityCapsule.roundId];f.probe.fresh(published);
+  const published=f.probe.fresh(f.probe.strict(f.root).record.roundsById[source.localAuthorityCapsule.roundId]);
   const zip=parts(f,output.documentBuffer);zip['word/comments.xml']=zip['word/comments.xml'].replace('Root selected','Changed selected');
   // Exact native Word timestamp precision law: both representations may be
   // minute-truncated; authenticated canonical provenance must remain exact.
@@ -150,7 +150,7 @@ for(const mode of ['review','minimal'])test(`actual Main ${mode} refuses sibling
 test('actual Main Review command writes verified ZIP before activating its own newly produced durable round',async t=>{
   const f=await fixture(t), target=path.join(f.temp,'published-review.docx');f.chooseSavePath(target);
   const result=await f.probe.reviewExport({path:target,requestId:'publish-selected-comments'});assert.equal(result.ok,true,JSON.stringify(result));
-  const durable=f.probe.strict(f.root).record, active=durable.roundsById[durable.lastRoundId];
+  const durable=f.probe.strict(f.root).record, active=f.probe.fresh(durable.roundsById[durable.lastRoundId]);
   assert.equal(active.lifecycleState,'PUBLISHED_ACTIVE');assert.equal(active.commentExport.stateDigest,commentStateDigest(f.state));
   const imported=parsed(f,fs.readFileSync(target));assert.equal(imported.reviewIr.commentThreads.length,2);
   assert.equal(Object.values(parts(f,fs.readFileSync(target))).join('\n').includes('SIBLING_PRIVATE_BODY'),false);

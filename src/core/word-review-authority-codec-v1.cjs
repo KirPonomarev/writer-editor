@@ -8,9 +8,15 @@ const DECODED_MAX_BYTES = 64 * 1024 * 1024;
 const LEGACY_RECOVERY_MAX_BYTES = 32 * 1024 * 1024;
 const SCHEMA = 'yalken.rtk.word.product-review-docx-export.authority-store.v4';
 const LEGACY_SCHEMA = 'yalken.rtk.word.product-review-docx-export.authority-store.v2';
+const INDEX_SCHEMA = 'yalken.rtk.word.product-review-docx-export.authority-store.v5';
+const ROUND_PAYLOAD_SCHEMA = 'yalken.rtk.word.review-round-payload.v1';
+// V5 bounds cumulative verification work as well as each individual allocation.
+// Legacy V2/V4 aggregate limits above are deliberately unchanged.
+const INDEX_TOTAL_PAYLOAD_BYTES = 256 * 1024 * 1024;
+const INDEX_TOTAL_PAYLOAD_VALUES = 4000000;
 const fail = code => { throw Object.assign(Error(code), { code }); };
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
-function checkStructure(value) {
+function checkStructure(value, usage) {
   const stack = [[value, 0]], seen = new Set(); let nodes = 0;
   while (stack.length) {
     const [item, depth] = stack.pop();
@@ -26,10 +32,57 @@ function checkStructure(value) {
     } else if (!['string', 'boolean', 'number'].includes(typeof item) && item !== null) fail('RTK_ROUND_STORE_STRUCTURE_INVALID');
     else if (typeof item === 'number' && !Number.isFinite(item)) fail('RTK_ROUND_STORE_STRUCTURE_INVALID');
   }
-  if (!value || value.schemaVersion !== LEGACY_SCHEMA) fail('RTK_ROUND_STORE_VERSION_UNSUPPORTED');
+  if (!value || ![LEGACY_SCHEMA, INDEX_SCHEMA].includes(value.schemaVersion)) fail('RTK_ROUND_STORE_VERSION_UNSUPPORTED');
   if (!value.roundsById || Array.isArray(value.roundsById) || typeof value.roundsById !== 'object'
     || Object.keys(value.roundsById).length > 128) fail('RTK_ROUND_STORE_ROUND_BUDGET');
+  if (usage && (usage.values += nodes) > INDEX_TOTAL_PAYLOAD_VALUES) fail('RTK_ROUND_STORE_STRUCTURE_BUDGET');
   return value;
+}
+// Only lifecycle fields are hot. The complete immutable capsule remains in
+// this same atomic file, independently bounded and never an indexed payload.
+function packRound(round) {
+  if (round?.roundPayloadSchema !== undefined) { unpackRound(round); return round; }
+  if (!round || typeof round !== 'object' || Object.hasOwn(round, 'hmacSecret')) fail('RTK_ROUND_STORE_PAYLOAD_INVALID');
+  const { lifecycleState, recordVersion, terminalReceipt, updatedAt, ...body } = round;
+  const descriptor = { roundId: body.roundId, projectRoot: body.projectRoot, keyRef: body.keyRef,
+    lifecycleState, recordVersion,
+    ...(Object.hasOwn(round, 'terminalReceipt') ? { terminalReceipt } : {}),
+    ...(Object.hasOwn(round, 'updatedAt') ? { updatedAt } : {}),
+    roundPayloadSchema: ROUND_PAYLOAD_SCHEMA,
+    payload: encode({ schemaVersion: LEGACY_SCHEMA, lastRoundId: body.roundId, roundsById: { [body.roundId]: body } }) };
+  unpackRound(descriptor);
+  return descriptor;
+}
+function unpackRound(round, usage) {
+  if (round?.roundPayloadSchema === undefined) return round;
+  const required = ['roundId', 'projectRoot', 'keyRef', 'lifecycleState', 'recordVersion', 'roundPayloadSchema', 'payload'];
+  if (round.roundPayloadSchema !== ROUND_PAYLOAD_SCHEMA || required.some(key => !Object.hasOwn(round, key))
+    || Object.keys(round).some(key => !required.includes(key) && !['terminalReceipt', 'updatedAt'].includes(key))
+    || ['roundId', 'projectRoot', 'keyRef', 'lifecycleState'].some(key => typeof round[key] !== 'string' || !round[key])
+    || !Number.isSafeInteger(round.recordVersion) || round.recordVersion < 1
+    || (Object.hasOwn(round, 'updatedAt') && typeof round.updatedAt !== 'string')) fail('RTK_ROUND_STORE_PAYLOAD_INVALID');
+  const decoded = decode(round.payload, {}, false, usage);
+  if (Object.keys(decoded).length !== 3 || decoded.lastRoundId !== round.roundId
+    || Object.keys(decoded.roundsById).length !== 1 || !Object.hasOwn(decoded.roundsById, round.roundId)) fail('RTK_ROUND_STORE_PAYLOAD_BINDING');
+  const body = decoded.roundsById[round.roundId];
+  if (!body || ['roundId', 'projectRoot', 'keyRef'].some(key => body[key] !== round[key])
+    || ['lifecycleState', 'recordVersion', 'terminalReceipt', 'updatedAt', 'roundPayloadSchema', 'hmacSecret'].some(key => Object.hasOwn(body, key))) fail('RTK_ROUND_STORE_PAYLOAD_BINDING');
+  return { ...body, lifecycleState: round.lifecycleState, recordVersion: round.recordVersion,
+    ...(Object.hasOwn(round, 'terminalReceipt') ? { terminalReceipt: round.terminalReceipt } : {}),
+    ...(Object.hasOwn(round, 'updatedAt') ? { updatedAt: round.updatedAt } : {}) };
+}
+function validateRecord(record, allowIndexed = true, usage) {
+  if (!allowIndexed && record?.schemaVersion !== LEGACY_SCHEMA) fail('RTK_ROUND_STORE_PAYLOAD_RECURSIVE');
+  checkStructure(record, usage);
+  if (record.schemaVersion === INDEX_SCHEMA) {
+    if (!Object.hasOwn(record.roundsById, record.lastRoundId)) fail('RTK_ROUND_STORE_PAYLOAD_BINDING');
+    const total = { bytes: 0, values: 0 };
+    for (const [id, round] of Object.entries(record.roundsById)) {
+      if (round?.roundPayloadSchema !== ROUND_PAYLOAD_SCHEMA || round.roundId !== id) fail('RTK_ROUND_STORE_PAYLOAD_BINDING');
+      unpackRound(round, total); // Validate and discard one body at a time; never decodeAll.
+    }
+  } else if (Object.values(record.roundsById).some(round => round?.roundPayloadSchema !== undefined)) fail('RTK_ROUND_STORE_PAYLOAD_RECURSIVE');
+  return record;
 }
 // Scan nesting before JSON.parse allocates a deeply nested graph. Full node and
 // semantic validation follows; strings cannot manufacture nesting.
@@ -57,7 +110,7 @@ function parse(text) {
   try { return JSON.parse(text); } catch { fail('RTK_ROUND_STORE_INVALID'); }
 }
 function encode(record) {
-  checkStructure(record);
+  validateRecord(record);
   const bytes = Buffer.from(JSON.stringify(record), 'utf8');
   if (bytes.length > DECODED_MAX_BYTES) fail('RTK_ROUND_STORE_DECODED_BUDGET');
   const payload = deflateRawSync(bytes).toString('base64');
@@ -66,12 +119,17 @@ function encode(record) {
   if (Buffer.byteLength(text) > ENCODED_MAX_BYTES) fail('RTK_ROUND_STORE_ENCODED_BUDGET');
   return text;
 }
-function decode(text, { allowLegacyRecovery = false } = {}) {
+function decode(text, { allowLegacyRecovery = false } = {}, allowIndexed = true, usage) {
   if (typeof text !== 'string') fail('RTK_ROUND_STORE_INVALID');
   const byteLength = Buffer.byteLength(text);
   if (byteLength > (allowLegacyRecovery ? LEGACY_RECOVERY_MAX_BYTES : ENCODED_MAX_BYTES)) fail('RTK_ROUND_STORE_ENCODED_BUDGET');
   const envelope = parse(text);
-  if (envelope?.schemaVersion === LEGACY_SCHEMA) return checkStructure(envelope);
+  if (!allowIndexed && envelope?.schemaVersion !== SCHEMA) fail('RTK_ROUND_STORE_PAYLOAD_RECURSIVE');
+  if (envelope?.schemaVersion === LEGACY_SCHEMA) return validateRecord(envelope, allowIndexed);
+  if (envelope?.schemaVersion === INDEX_SCHEMA) {
+    if (byteLength > ENCODED_MAX_BYTES) fail('RTK_ROUND_STORE_ENCODED_BUDGET');
+    return validateRecord(envelope, allowIndexed);
+  }
   // The larger read allowance applies only to a fully validated legacy record.
   if (byteLength > ENCODED_MAX_BYTES) fail('RTK_ROUND_STORE_ENCODED_BUDGET');
   if (envelope?.schemaVersion !== SCHEMA) fail('RTK_ROUND_STORE_VERSION_UNSUPPORTED');
@@ -81,6 +139,7 @@ function decode(text, { allowLegacyRecovery = false } = {}) {
     || envelope.decodedByteLength < 1 || !/^[0-9a-f]{64}$/.test(envelope.decodedSha256)
     || typeof envelope.payload !== 'string' || (envelope.payload.length % 4 !== 0 || /[^A-Za-z0-9+/=]/.test(envelope.payload))) fail('RTK_ROUND_STORE_ENVELOPE_INVALID');
   if (envelope.decodedByteLength > DECODED_MAX_BYTES) fail('RTK_ROUND_STORE_DECODED_BUDGET');
+  if (usage && (usage.bytes += envelope.decodedByteLength) > INDEX_TOTAL_PAYLOAD_BYTES) fail('RTK_ROUND_STORE_DECODED_BUDGET');
   const compressed = Buffer.from(envelope.payload, 'base64');
   if (compressed.toString('base64') !== envelope.payload) fail('RTK_ROUND_STORE_ENVELOPE_INVALID');
   let result;
@@ -92,6 +151,7 @@ function decode(text, { allowLegacyRecovery = false } = {}) {
   let decoded;
   try { decoded = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
   catch { fail('RTK_ROUND_STORE_INVALID'); }
-  return checkStructure(parse(decoded));
+  return validateRecord(parse(decoded), allowIndexed, usage);
 }
-module.exports = Object.freeze({ encode, decode, SCHEMA, LEGACY_SCHEMA, ENCODED_MAX_BYTES, DECODED_MAX_BYTES, LEGACY_RECOVERY_MAX_BYTES });
+module.exports = Object.freeze({ encode, decode, packRound, unpackRound, SCHEMA, LEGACY_SCHEMA, INDEX_SCHEMA,
+  ENCODED_MAX_BYTES, DECODED_MAX_BYTES, LEGACY_RECOVERY_MAX_BYTES });
