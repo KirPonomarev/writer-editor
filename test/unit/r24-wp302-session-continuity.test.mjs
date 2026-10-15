@@ -429,18 +429,30 @@ test('startup recovers the selected journal before tree reconciliation and Stage
   const start = source.indexOf('async function initializeApp()');
   const end = source.indexOf('// ROUND-01', start);
   const body = source.slice(start, end) + '}';
-  for (const fails of [false, true]) {
+  for (const failure of ['none', 'integrity', 'journal']) {
     const calls = [];
-    const context = { currentProjectName: 'Alpha', DEFAULT_PROJECT_NAME: 'Default', fileManager: { migrateDocumentsFolder: async () => {}, ensureDocumentsFolder: async () => {} },
-      ensureAutosaveDirectory: async () => {}, ensureProjectStructure: async () => calls.push('ensure'),
-      recoverSelectedProjectAtStartup: async () => { calls.push('recover'); if (fails) throw Error('recovery'); },
+    const context = { currentProjectName: 'Alpha', DEFAULT_PROJECT_NAME: 'Default', fileManager: {
+      migrateDocumentsFolder: async () => calls.push('migrate'), ensureDocumentsFolder: async () => calls.push('documents') },
+      recoverMissingIntegrityAnchorAtStartup: async () => {
+        calls.push('integrity');
+        if (failure === 'integrity') throw Object.assign(Error('integrity recovery refused'), { code: 'E_STAGE10_RECOVERY_CANCELLED' });
+      },
+      ensureAutosaveDirectory: async () => calls.push('autosave-directory'), ensureProjectStructure: async () => calls.push('ensure'),
+      recoverSelectedProjectAtStartup: async () => { calls.push('recover'); if (failure === 'journal') throw Error('journal recovery'); },
       buildProjectTreeRootsWithIdentities: async () => calls.push('tree'),
       bootstrapStage10ApplicationAtStartup: async () => calls.push('stage10'),
       reconcileReviewFormattingReturnAtStartup: async () => {}, reconcileReviewStructuralReturnAtStartup: async () => {},
       reconcileReviewExactTextApplyJournalsAtStartup: async () => {}, reconcileRoundRecordV3StoreAtStartup: async () => {} };
     vm.runInNewContext(body, context);
-    if (fails) { await assert.rejects(context.initializeApp(), /recovery/); assert.deepEqual(calls, ['recover']); }
-    else { await context.initializeApp(); assert.deepEqual(calls, ['recover', 'ensure', 'tree', 'stage10']); }
+    const prefix = ['integrity', 'migrate', 'documents', 'autosave-directory', 'recover'];
+    if (failure === 'integrity') {
+      await assert.rejects(context.initializeApp(), error => error.code === 'E_STAGE10_RECOVERY_CANCELLED');
+      assert.deepEqual(calls, ['integrity'], 'refusal precedes every project migration, directory, journal and bootstrap writer');
+    } else if (failure === 'journal') {
+      await assert.rejects(context.initializeApp(), /journal recovery/); assert.deepEqual(calls, prefix);
+    } else {
+      await context.initializeApp(); assert.deepEqual(calls, [...prefix, 'ensure', 'tree', 'stage10']);
+    }
   }
 });
 
@@ -537,11 +549,14 @@ test('actual window startup continuation preserves autosave precedence after pro
   const continuation = 'async function loadedWindow() {' + source.slice(continuationStart, continuationEnd) + '}';
   const initializeStart = source.indexOf('async function initializeApp()');
   const initializeEnd = source.indexOf('// ROUND-01', initializeStart);
-  for (const autosave of [true, false]) {
+  for (const { autosave, refuses } of [{ autosave: true }, { autosave: false }, { autosave: true, refuses: true }]) {
     const calls = [];
     const c = { currentProjectName: 'Selected', DEFAULT_PROJECT_NAME: 'Default',
-      fileManager: { migrateDocumentsFolder: async () => {}, ensureDocumentsFolder: async () => {} },
-      ensureAutosaveDirectory: async () => {}, recoverSelectedProjectAtStartup: async () => calls.push('recovery'),
+      fileManager: { migrateDocumentsFolder: async () => calls.push('migrate'), ensureDocumentsFolder: async () => calls.push('documents') },
+      recoverMissingIntegrityAnchorAtStartup: async () => {
+        calls.push('integrity'); if (refuses) throw Object.assign(Error('integrity recovery refused'), { code: 'E_STAGE10_RECOVERY_CANCELLED' });
+      },
+      ensureAutosaveDirectory: async () => calls.push('autosave-directory'), recoverSelectedProjectAtStartup: async () => calls.push('recovery'),
       ensureProjectStructure: async () => calls.push('structure'), buildProjectTreeRootsWithIdentities: async () => calls.push('tree'),
       bootstrapStage10ApplicationAtStartup: async () => calls.push('stage10'),
       reconcileReviewFormattingReturnAtStartup: async () => {}, reconcileReviewStructuralReturnAtStartup: async () => {}, reconcileReviewExactTextApplyJournalsAtStartup: async () => {},
@@ -549,7 +564,13 @@ test('actual window startup continuation preserves autosave precedence after pro
       restoreAutosaveIfExists: async () => { calls.push('autosave'); return autosave; }, openLastFile: async () => { calls.push('last-file'); return 'loaded'; }, updateStatus: () => {},
     };
     vm.runInNewContext(source.slice(initializeStart, initializeEnd) + '}\n' + continuation, c);
-    await c.initializeApp(); await c.loadedWindow();
-    assert.deepEqual(calls, ['recovery', 'structure', 'tree', 'stage10', 'autosave', ...(autosave ? [] : ['last-file'])]);
+    const startup = async () => { await c.initializeApp(); await c.loadedWindow(); };
+    if (refuses) {
+      await assert.rejects(startup(), error => error.code === 'E_STAGE10_RECOVERY_CANCELLED');
+      assert.deepEqual(calls, ['integrity'], 'refusal cannot reach window continuation, autosave or last-file restore');
+    } else {
+      await startup();
+      assert.deepEqual(calls, ['integrity', 'migrate', 'documents', 'autosave-directory', 'recovery', 'structure', 'tree', 'stage10', 'autosave', ...(autosave ? [] : ['last-file'])]);
+    }
   }
 });

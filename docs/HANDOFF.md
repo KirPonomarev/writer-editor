@@ -62,6 +62,18 @@ the actual guarded block, envelope validation before payload interpretation,
 route and command allowlist; remove/reorder controls all reject. Failed RED01,
 GREEN03, SOURCE_CHAIN09 and DONOR_RED10 remain unaccepted and preserved.
 
+The first PR candidate5f057 inventory-baseline CI38810239584 exposed two WP302
+VM initializeApp extractors missing the new startup seam. Whole-file RED42
+reproduces both ReferenceErrors. Test-only integration records integrity recovery
+before every migration/directory/journal/tree/Stage10 writer and explicit refusal
+before writes/window/autosave continuation. All runtime bytes remain exactC3.
+Whole affected nonnested startup4-file chains pass80of80 on Node46 and shipped47;
+the unchanged future-schema suite passes15of15, including its2genuine nested
+cases, through the existing R24 runner-truth on both engines48/49. Initial combined
+44/45 RTK-count rejection93versus95 stays unaccepted; no test is flattened or
+removed and the RTK evaluator is unchanged. The failed first CI is never credited;
+required full jobs complete before one amended delivery push.
+
 Notes predecessor is fully delivered: PR2122 merged at bindingM8, all19required
 CI checks and both fullRTK4247cases passed; fresh merged410checks passed on both
 engines, independent actual ZIP/XML rejects16controls, and the frozen original

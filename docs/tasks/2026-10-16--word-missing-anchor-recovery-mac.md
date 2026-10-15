@@ -68,6 +68,8 @@ No large novel copies. Existing original69 and frozen Word inputs are read-only.
 - test/contracts/b2c09-command-surface-kernel.contract.test.js
 - scripts/ops/b2c09-command-surface-kernel.mjs
 
+- test/unit/r24-wp302-session-continuity.test.mjs
+
 ## DENYLIST
 
 All other paths; renderer, preload, unrelated Main flows, dependencies, native
@@ -185,3 +187,14 @@ orphan candidates and every project byte. SOURCE69_READONLY07 proves exact froze
 without profile restoration or native credit. Independent stdlib18 checks actual
 shipped tiny raw pair/root and two normal commit links, rejects8corruptions.
 Normal required CI, merge and exact merged verification remain pending.
+
+PR2123 candidate5f057 required inventory CI38810239584 exposed two maintained
+WP302 VM initializeApp extractors missing the new startup seam. Raw failing job
+116681349320 and local whole-file RED42 reproduce both ReferenceErrors. Clean
+same-slice preflight41 admits only the additional unit harness path; product
+runtime remains byte-exact. Harnesses now record the actual recovery-before-
+migration/directory/journal/tree/Stage10 order and explicitly reject integrity
+refusal before any writer or window/autosave/last-file continuation. No noop,
+skip or relaxed assertion is used. Every initializeApp source consumer is checked;
+whole affected files execute on both engines before one amended delivery push.
+The old CI failure remains unaccepted; other full jobs finish before resubmission.

@@ -26771,15 +26771,15 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "dfc7dcb94b0fdfbbe64f75802d199054126ba1c9b54990a98f146dd340aee8ff"
+      "sha256": "5511172adde6b1448543a22fda55957ffcc0f8447363e33dcb316653ce2749f1"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "e7e99b4dc034db2ec137be6345fcf4a238a24357b7fb078570a81b4260d23b9e"
+      "sha256": "49aa7ba00d514b5fc5a50eee70ccd7fa3e94d1e23322dd7598e2d37fd3c6e82f"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "e18b73fb799c0b9148d075c733346b1cd6a28d3869d360ad48b6913c241148f7"
+      "sha256": "656d726c3f4ef0a88a0efb3d945d1ab809398d780e19ba97c417216fb8a7ee8b"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26951,13 +26951,17 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-16--word-missing-anchor-recovery-mac.md",
-      "sha256": "ce450419eee6eb9b8a8dcc9665718e8ced47b6fe470b11e2c8ae1ff055f0a751"
+      "sha256": "d77a82e1f6e3b6b41e88362db5eed361f996fe3d368d8f9fbbc1f2f01d405e57"
+    },
+    {
+      "path": "test/unit/r24-wp302-session-continuity.test.mjs",
+      "sha256": "515d2a0f5a482d6d815cb1b3be4f933c6ee18a25a980edec62fb96f1ce255603"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c7309179c2a31e4ed24f35af860713a10fee6e4dccf073ac3476fbc0628367f1"
+      "sha256": "4cc7183e22889164b984d4deea160dbe412544e0c3354696ba89513b5c6c418a"
     }
   ]
 });
