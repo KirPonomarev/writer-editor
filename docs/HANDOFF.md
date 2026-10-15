@@ -60,6 +60,17 @@ Move that one registration after the extracted slice; retain the exact helper
 functions, all four corruption controls and every domain case. The strict RTK
 runner remains byte-exact. No old failed CI receives acceptance credit.
 
+Shipped auxiliary43 exposed the same noncanonical V8 encoding assertion
+in existing actual Main publication tests. Diagnostic47 retains both operands;
+an independent product-free reader50 confirms complete typed values, exact JSON
+and aliases equal even for65645versus65757 serialized bytes. Reuse the existing
+qualified complete-input helper slice, snapshot every value/Buffer byte/JSON
+and alias before publication, and retain every domain assertion. A direct Main
+wrapper qualification rejects text, binary, alias and absent-field corruption.
+The bounded complete two-file chain passes258of258 on the shipped engine before
+that additional qualification. Full final candidate and merged checks follow;
+interrupted wide auxiliary42/43 and failed CI remain explicitly unaccepted.
+
 Earlier schema1 imports have already lost these values and are not repaired
 automatically. Native acceptance requires a fresh original-source import on a
 new frozen build or a separately authorized provenance-bound migration.

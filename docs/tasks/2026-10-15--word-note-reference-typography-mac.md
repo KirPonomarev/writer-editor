@@ -58,6 +58,7 @@ Original frozen Word input is read-only; no large novel fixture copies.
 - test/contracts/rtk-word-pending-notes.contract.test.js
 - test/contracts/rtk-word-core-hash-parity.contract.test.js
 - test/unit/r24-wp204-lifecycle-recovery-mutants.test.js
+- test/contracts/rtk-word-review-default-typography.contract.test.js
 - docs/tasks/2026-10-15--word-note-reference-typography-mac.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -234,5 +235,20 @@ mandatory evaluator refuses seven nested duplicate oracle-test registrations
 inside existing Main helper extraction. Exact clean preflight41 admits moving
 only the qualification registration beyond that slice. Preserve its full four
 corruption controls and all domain assertions, keep runner bytes unchanged,
-and execute the three complete affected files before another candidate push.
+and execute complete pending and typography contracts plus the exact helper
+registration check before another candidate push. Full scene-identity capacity
+qualification remains in mandatory CI.
 No old CI failure is treated as acceptance.
+
+### Main complete-input oracle on the shipped engine
+
+Auxiliary43 exposes24 old V8-byte equality failures in Main typography tests;
+actual diagnostic47 and independent reader50 prove equivalent complete typed
+values, exact JSON and aliases despite changed string encoding. Fresh clean
+preflight48 admits only reusing the existing qualified helper slice in that
+maintained contract:13 snapshots and13 comparison sites, all domain assertions
+unchanged. Complete bounded shipped49 executes258of258 with mandatory TAP0.
+Add one direct wrapper case proving four corruption controls still reject;
+requalify final complete two-file chains on both engines and require normal CI.
+Wide auxiliary42/43 were stopped before unchanged seven-capsule capacity work,
+retain partial TAP as unaccepted; no quota or runner was increased or weakened.

@@ -2187,15 +2187,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "949a82c69af6b406b98cfff47948b25700e2382a40ce4a6f1215be63e6be5e48",
-      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
-      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/tasks/2026-09-27--word-combined-link-return.md",
       "sha256": "1908a552f2d18b1c0bac5b7310b0d91263f55e3cf828d3476dd71a8804be2d0c",
       "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
@@ -5627,92 +5618,101 @@
     {
       "filePath": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "7989581781eed70b106c788c2f174ee59ee2108032729e6dfb93196364cbd941"
+      "sha256": "b0831cfb7221d205aa15ecde28c59bd6f84be00b11bffa159a8bf3f54d8627eb"
     },
     {
       "filePath": "docs/CONTEXT.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "ec11d278e85800a6feef8c780e4218bb40b08d0944060afadeddc5d8e8d96ac3"
+      "sha256": "e6eeef3e3727697b1d84272a12d5d104b40ccfc363f2296280f184faf2a91f44"
     },
     {
       "filePath": "docs/HANDOFF.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "eb15f30de101e54428a7debccd4da0d95d72fde96d72658e65165f137c3a1dd6"
+      "sha256": "490f7b801781bfb052b8409fa7a201f829066ca753dfef7391f7d58509b6dbf8"
     },
     {
       "filePath": "docs/WORKLOG.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "7a7fed7ed9af54fd58449462b858d50c2deb530b52722297ddc141de66b419dd"
+      "sha256": "c3178cb640174bbed661f2a572ff4bfb76925d9b9d3d6e8d47180010ecb9e8c8"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "7282574b250e825756a18007e1eb7602e2320fc34f04193fe745dfc7460d9b35"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "bc6e4967b86c23e602a019a92b4644f77488bd47b945cd31e9eae093e6f33e9d"
+      "sha256": "c198ce54f5be94c03de4b386598b464fb880eece4f7f574284d971bf75bb682c"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "7d902b85ca3f8051506ce003dfa6060564078dea0cf110e28ec38eb0e9b062f5"
+      "sha256": "5e26f81c7a8939dad0248393d8f900d45fe7c000b1baa571cc8530a128042960"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "2ccd2266658b24704c1fc3d24798515091d8e89d668c0c71ce31131e598eeb7d"
+      "sha256": "60db37c568e68978994c56c508eb53105b1930c6e33502d74141824c4ae946b6"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "4a92a28011ec18101c9291c8d32471ebc79f3749d00b2c70f2bfe6d30716fe1e"
+      "sha256": "527bf352a33f12693ee44647c154e6e4240a375b27160e6dcbae6383d9bd5a8a"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "18823e32a3ccb45e25168717e1aec5bd9fdd60e0b9ce31ee50c2ee416f08ffc8"
+      "sha256": "1f9245ecedae41ca0304eb543ecad7f031a2d33e6be12b0c56bb52b69a27fef6"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "e7db181d44f6a1dd45753df88df0bd20191a2c49a348fb1908eda63c4343cb0e"
+      "sha256": "7fd66790955dfa70b5216ac32fce28fccfe0484f9e8248ef5922f1335b62dad8"
     }
   ],
   "evidenceStampIds": [
@@ -45319,6 +45319,105 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
       "sha256": "3e4824fde9769ec6028fa42c5451dff8dbc33d74473ac7e1b0c9ce0bfa574961"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "7989581781eed70b106c788c2f174ee59ee2108032729e6dfb93196364cbd941"
+    },
+    {
+      "filePath": "docs/CONTEXT.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "ec11d278e85800a6feef8c780e4218bb40b08d0944060afadeddc5d8e8d96ac3"
+    },
+    {
+      "filePath": "docs/HANDOFF.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "eb15f30de101e54428a7debccd4da0d95d72fde96d72658e65165f137c3a1dd6"
+    },
+    {
+      "filePath": "docs/WORKLOG.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "7a7fed7ed9af54fd58449462b858d50c2deb530b52722297ddc141de66b419dd"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "949a82c69af6b406b98cfff47948b25700e2382a40ce4a6f1215be63e6be5e48",
+      "approvedAtUtc": "2026-10-14T21:13:05.822829+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014",
+      "rationale": "Same owner-directed coherent export contour: opt-in bridge identity from existing validated parse, no Main re-extraction, complete export lifecycle protection. Retained fullRTK4202/4203 EVID failure and Quit RED; selected16/EVID18 and actual frozen500k83.43s. Final committed delivery required; no native cycle/SLO credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "bc6e4967b86c23e602a019a92b4644f77488bd47b945cd31e9eae093e6f33e9d"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "7d902b85ca3f8051506ce003dfa6060564078dea0cf110e28ec38eb0e9b062f5"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "2ccd2266658b24704c1fc3d24798515091d8e89d668c0c71ce31131e598eeb7d"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "4a92a28011ec18101c9291c8d32471ebc79f3749d00b2c70f2bfe6d30716fe1e"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "18823e32a3ccb45e25168717e1aec5bd9fdd60e0b9ce31ee50c2ee416f08ffc8"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:01:15.115742+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "e7db181d44f6a1dd45753df88df0bd20191a2c49a348fb1908eda63c4343cb0e"
     }
   ]
 }

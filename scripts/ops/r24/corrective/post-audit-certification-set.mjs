@@ -25871,7 +25871,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "949a82c69af6b406b98cfff47948b25700e2382a40ce4a6f1215be63e6be5e48"
+      "sha256": "7282574b250e825756a18007e1eb7602e2320fc34f04193fe745dfc7460d9b35"
     },
     {
       "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -26163,15 +26163,15 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "ec11d278e85800a6feef8c780e4218bb40b08d0944060afadeddc5d8e8d96ac3"
+      "sha256": "e6eeef3e3727697b1d84272a12d5d104b40ccfc363f2296280f184faf2a91f44"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "eb15f30de101e54428a7debccd4da0d95d72fde96d72658e65165f137c3a1dd6"
+      "sha256": "490f7b801781bfb052b8409fa7a201f829066ca753dfef7391f7d58509b6dbf8"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "7a7fed7ed9af54fd58449462b858d50c2deb530b52722297ddc141de66b419dd"
+      "sha256": "c3178cb640174bbed661f2a572ff4bfb76925d9b9d3d6e8d47180010ecb9e8c8"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26303,7 +26303,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
-      "sha256": "7989581781eed70b106c788c2f174ee59ee2108032729e6dfb93196364cbd941"
+      "sha256": "b0831cfb7221d205aa15ecde28c59bd6f84be00b11bffa159a8bf3f54d8627eb"
     },
     {
       "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
@@ -26313,7 +26313,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "bc6e4967b86c23e602a019a92b4644f77488bd47b945cd31e9eae093e6f33e9d"
+      "sha256": "c198ce54f5be94c03de4b386598b464fb880eece4f7f574284d971bf75bb682c"
     }
   ]
 });
