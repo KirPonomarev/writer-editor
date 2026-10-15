@@ -1159,6 +1159,10 @@ export function createStage10MainPersistenceAdapter(input = {}) {
   return {
     schemaVersion: STAGE10_MAIN_PERSISTENCE_PORT_SCHEMA,
     async prepareMissingIntegrityAnchorRecovery(projectId) {
+      // A pending Main-owned transaction belongs to ordinary validated recovery,
+      // including interrupted first persistence before its initial anchor.
+      // Never replace that journal's authority with a new owner trust root.
+      if(await physicallyPresent(pathsFor(projectId).transaction))return null;
       return (await missingAnchorRecoveryState(projectId))?.candidate || null;
     },
     async recoverMissingIntegrityAnchor(projectId, expectedCandidate, revalidateSelection) {

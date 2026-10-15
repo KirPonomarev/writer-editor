@@ -32,6 +32,11 @@ async function harness(t,options={}){
   const {createStage10ApplicationBootstrap}=await import('../../src/product/stage10ApplicationBootstrap.mjs');
   const makeAdapter=extra=>createStage10MainPersistenceAdapter({projectRoot:f.root,anchorRoot,transactionAuthority,useLeaseHeartbeatWorker:false,...extra});
   const adapter=makeAdapter(),bootstrap=createStage10ApplicationBootstrap({persistencePort:adapter});
+  if(options.initialCreateInterruption){
+    let hit=false;const fault=makeAdapter({onKillpoint:name=>{if(name==='after-session-write'&&!hit){hit=true;throw Error('initial Stage10 interruption');}}});
+    await assert.rejects(createStage10ApplicationBootstrap({persistencePort:fault}).createProjectRuntime({projectId}),/initial Stage10 interruption/);assert.equal(hit,true);
+    return {...f,projectId,userData,anchorRoot,transactionAuthority,makeAdapter,adapter,paths:adapter.paths(projectId),createStage10ApplicationBootstrap,protected:snapshot(f.root)};
+  }
   await bootstrap.createProjectRuntime({projectId,title:'Preserved original'});
   const paths=adapter.paths(projectId),oldBundle=await adapter.readStage10State(projectId);
   fs.unlinkSync(paths.anchor);fs.unlinkSync(paths.anchorRecovery);
@@ -54,6 +59,29 @@ function mainPort(f,{choice=0,onDialog,adapter=f.adapter}={}){
   return {sandbox,calls,kernel,setDocuments:value=>{documents=value;}};
 }
 
+async function ordinaryStartupPort(f){
+  const main=mainPort(f,{choice:1}),c=main.sandbox,source=fs.readFileSync(path.join(ROOT,'src/main.js'),'utf8'),order=[];
+  const early=c.recoverMissingIntegrityAnchorAtStartup;c.recoverMissingIntegrityAnchorAtStartup=async()=>{order.push('integrity');return early();};
+  Object.assign(c,{fsSync:fs,STAGE10_LOCAL_STATE_DIRNAME:'.stage10-local',STAGE10_LEGACY_PRODUCT_SESSION_FILENAME:'product-session.v1.json',
+    STAGE10_LEGACY_RECEIPT_AUTHORITY_HEAD_FILENAME:'command-receipt-authority-head.v1.json',PROJECT_MANIFEST_SCHEMA_VERSION:1,
+    joinPathSegmentsWithinRoot:(root,segments)=>path.join(root,...segments),getProjectManifestPath:()=>f.manifestPath,
+    ensureProjectManifest:async()=>({manifestPath:f.manifestPath,manifest:JSON.parse(await fsp.readFile(f.manifestPath,'utf8'))}),
+    setActiveProjectNameFromRoot:root=>{c.currentProjectName=path.basename(root);},prepareCanonicalProjectTruthCommand:()=>{throw Error('unexpected canonical command');},
+    loadStage10ApplicationBootstrapModule:()=>import('../../src/product/stage10ApplicationBootstrap.mjs'),
+    loadStage10ApplicationCommandRouteModule:()=>import('../../src/product/stage10ApplicationCommandRoute.mjs'),
+    recoverPendingWriterProjectTransaction:()=>f.transactionAuthority.withProjectLease(f.projectId,lease=>tx.recoverProjectTransaction({scenePath:path.join(f.root,f.ids[0]),manifestPath:f.manifestPath,
+      publishManifest:args=>f.transactionAuthority.commitManifestText({...args,projectId:f.projectId,lease}),revalidate:()=>lease.assertOwned()})),
+    ensureAutosaveDirectory:async()=>{order.push('autosave-directory');assert.equal((await fsp.stat(f.userData)).isDirectory(),true);},
+    ensureProjectStructure:async()=>{order.push('structure');await fsp.mkdir(path.join(f.root,'roman'),{recursive:true});},
+    buildProjectTreeRootsWithIdentities:async()=>{order.push('tree');await tx.readVerifiedProjectTreeMutation({manifestPath:f.manifestPath});}});
+  c.fileManager.migrateDocumentsFolder=async()=>{order.push('migrate');assert.equal((await fsp.stat(f.root)).isDirectory(),true);};
+  c.fileManager.ensureDocumentsFolder=async()=>{order.push('documents');assert.equal((await fsp.stat(path.dirname(f.root))).isDirectory(),true);};
+  for(const name of ['reconcileReviewFormattingReturnAtStartup','reconcileReviewStructuralReturnAtStartup','reconcileReviewExactTextApplyJournalsAtStartup','reconcileRoundRecordV3StoreAtStartup'])c[name]=async()=>{order.push(name);assert.equal((await fsp.stat(f.manifestPath)).isFile(),true);};
+  vm.runInNewContext(['getStage10LocalStatePath','readStage10LocalStatePresence','bootstrapStage10ApplicationForProject','resolveStartupStage10ProjectBinding','recoverSelectedProjectAtStartup','bootstrapStage10ApplicationAtStartup'].map(name=>named(source,name)).join('\n'),c);
+  for(const name of ['recoverSelectedProjectAtStartup','bootstrapStage10ApplicationAtStartup']){const actual=c[name];c[name]=async()=>{order.push(name);return actual();};}
+  return {...main,order};
+}
+
 test('missing-anchor recovery: ordinary reopen refuses and explicit recovery is required',async t=>{
   const f=await harness(t);
   await assert.rejects(f.createStage10ApplicationBootstrap({persistencePort:f.adapter}).reopenProjectRuntime({projectId:f.projectId}),e=>e.reason==='PERSISTENCE_SPLIT_STATE_DETECTED');
@@ -61,6 +89,22 @@ test('missing-anchor recovery: ordinary reopen refuses and explicit recovery is 
   const candidate=await f.adapter.prepareMissingIntegrityAnchorRecovery(f.projectId);
   assert.equal(candidate.sceneCount,3);assert.equal(candidate.treeRevision,1);assert.ok(candidate.fileCount>10);
   assert.deepEqual(snapshot(f.root),f.protected,'preparation never mutates original project');
+});
+
+test('missing-anchor recovery: valid interrupted initial persistence delegates to ordinary journal recovery',async t=>{
+  const f=await harness(t,{initialCreateInterruption:true}),main=mainPort(f,{choice:1});
+  assert.equal(fs.existsSync(f.paths.anchor),false);assert.equal(fs.existsSync(f.paths.transaction),true);
+  await main.sandbox.recoverMissingIntegrityAnchorAtStartup();
+  assert.equal(main.calls.dialog,0,'existing journal authority never prompts for a new trust root');
+  assert.equal(fs.existsSync(f.paths.anchor),false,'preparation remains read-only');assert.deepEqual(snapshot(f.root),f.protected);
+  const startup=await ordinaryStartupPort(f);await startup.sandbox.initializeApp();
+  assert.deepEqual(startup.order,['integrity','migrate','documents','autosave-directory','recoverSelectedProjectAtStartup','structure','tree','bootstrapStage10ApplicationAtStartup',
+    'reconcileReviewFormattingReturnAtStartup','reconcileReviewStructuralReturnAtStartup','reconcileReviewExactTextApplyJournalsAtStartup','reconcileRoundRecordV3StoreAtStartup']);
+  assert.equal(startup.calls.dialog,0);assert.equal(startup.sandbox.activeStage10ApplicationBootstrap.getProjectId(),f.projectId);
+  const repaired=await f.adapter.readStage10State(f.projectId);assert.equal(repaired.recoveryConsumed,true);assert.equal(repaired.integrityAnchor.anchorVersion,1);
+  assert.equal(fs.existsSync(f.paths.transaction),false);assert.equal(Object.hasOwn(repaired.integrityAnchor,'recoveryRoot'),false);
+  const reopened=await f.createStage10ApplicationBootstrap({persistencePort:f.makeAdapter()}).reopenProjectRuntime({projectId:f.projectId});assert.equal(reopened.readModels.replay.ok,true);
+  for(const [name,bytes]of Object.entries(f.protected))if(!name.startsWith('.stage10-local/'))assert.deepEqual(snapshot(f.root)[name],bytes);
 });
 test('missing-anchor recovery: actual initializeApp Cancel precedes every project writer',async t=>{
   const f=await harness(t),main=mainPort(f);
@@ -110,7 +154,13 @@ test('missing-anchor recovery: dangling anchor and symlink trust root never gran
 });
 for(const field of ['anchorRecovery','transaction'])test('missing-anchor recovery: preserved '+field+' refuses a new root',async t=>{
   const f=await harness(t);fs.writeFileSync(f.paths[field],'null');
-  await assert.rejects(f.adapter.prepareMissingIntegrityAnchorRecovery(f.projectId),e=>e.reason==='RECOVERY_EXISTING_TRUST_OR_TRANSACTION');
+  if(field==='transaction'){
+    assert.equal(await f.adapter.prepareMissingIntegrityAnchorRecovery(f.projectId),null);
+    const main=mainPort(f,{choice:1});await main.sandbox.recoverMissingIntegrityAnchorAtStartup();assert.equal(main.calls.dialog,0);
+    const startup=await ordinaryStartupPort(f);await assert.rejects(startup.sandbox.initializeApp());
+    assert.equal(startup.calls.dialog,0);assert.equal(startup.order.includes('reconcileRoundRecordV3StoreAtStartup'),false);
+    assert.equal(fs.existsSync(f.paths.anchor),false,'invalid pending authority never creates or replaces trust');
+  }else await assert.rejects(f.adapter.prepareMissingIntegrityAnchorRecovery(f.projectId),e=>e.reason==='RECOVERY_EXISTING_TRUST_OR_TRANSACTION');
   assert.deepEqual(snapshot(f.root),f.protected);
 });
 test('missing-anchor recovery: unknown trust evidence and legacy namespace refuse without migration',async t=>{
