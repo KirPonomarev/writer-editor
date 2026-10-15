@@ -665,7 +665,8 @@
     "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
     "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
     "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
-    "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md"
+    "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
+    "docs/tasks/2026-10-15--word-history-private-preparation-mac.md"
   ],
   "protectedFiles": [
     {
@@ -894,7 +895,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e17d4ee331e9248cff7829add60fa5a7b3685842ccf8263d46fd7aad1bd4f7ca"
+        "sha256": "035967a62dd718401de4fb38dfd2f0424c6061a4c060fb718a5a2c099649837e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1166,7 +1167,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "908413aa34ba4ffe91c68e18c8815bb93cd5f1db2e028d1530b88146c792ea82"
+        "sha256": "8211cf29a1a9582663196e5f00272a07fa0bd0fc655f23dd5965e0751c015038"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -2586,15 +2587,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "983d4cd149c321e09599216775c1616fb6c05b48ccfb9bfd1460d27211a552cd"
+        "sha256": "22723b3ebe7a0fe2013fe2d6e54f386436400d8bd2cd1873fc6cfb52dda621eb"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f24290e5144a5f8021cc8abc69455bdff257f915a5ef9398d243f8a4e8b9fce7"
+        "sha256": "6587891b30edb61a2ec41b8956085857a5fe00ca2962d79456c72219be712824"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f7c7a0f1968e9efd71178738d05db9d218ec3f6a82ec3a04d5ea76b35b109f47"
+        "sha256": "456dedbc68c526e68159aed21d12a885b455d9c3a33fdaeaefe9fab4557710b0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2854,7 +2855,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "8d2ac0cf3f14e6dcb788b26a8e91a335288a6664d4f8bdeef633d35c8a32f58e"
+        "sha256": "58f7d28fa1a6b65dd96dceba4e36c552fb01651c5d3ec3a7530d01d958627c0f"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -2927,6 +2928,10 @@
       {
         "path": "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
         "sha256": "b90a0940411b6f5f2fa820dea878de47176164176d1964119ec9ca24c90cab77"
+      },
+      {
+        "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
+        "sha256": "26c973aa5c748d090f468f48d8ccb402fa98333b93354de9fa0c859e3b1f47c7"
       }
     ],
     "followupRepair": {

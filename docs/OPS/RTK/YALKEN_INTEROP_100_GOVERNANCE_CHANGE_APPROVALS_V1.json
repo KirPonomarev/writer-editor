@@ -5230,12 +5230,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-      "sha256": "8d2ac0cf3f14e6dcb788b26a8e91a335288a6664d4f8bdeef633d35c8a32f58e",
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "sha256": "58f7d28fa1a6b65dd96dceba4e36c552fb01651c5d3ec3a7530d01d958627c0f",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015"
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015"
     },
     {
       "filePath": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -5284,12 +5284,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T05:58:31.067439Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:WORD_NOVEL_MANIFEST_CONTINUATION_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-transaction-v1.cjs",
-      "rationale": "Owner-authorized existing verifier propagation for saved imported novel Word return/recovery. Exact native failure and causal RED retained; three selected maintained cases pass with five proof refusals, Cancel/Apply/UndoRedo and interrupted recovery. Full frozen gates and delivery IN_PROGRESS. No native credit, predicate/quota/schema change.",
-      "sha256": "908413aa34ba4ffe91c68e18c8815bb93cd5f1db2e028d1530b88146c792ea82"
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "8211cf29a1a9582663196e5f00272a07fa0bd0fc655f23dd5965e0751c015038"
     },
     {
       "approved": true,
@@ -5347,12 +5347,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "e17d4ee331e9248cff7829add60fa5a7b3685842ccf8263d46fd7aad1bd4f7ca",
-      "approvedAtUtc": "2026-10-15T05:58:31.067439Z",
+      "sha256": "035967a62dd718401de4fb38dfd2f0424c6061a4c060fb718a5a2c099649837e",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized existing verifier propagation for saved imported novel Word return/recovery. Exact native failure and causal RED retained; three selected maintained cases pass with five proof refusals, Cancel/Apply/UndoRedo and interrupted recovery. Full frozen gates and delivery IN_PROGRESS. No native credit, predicate/quota/schema change.",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014|owner-delegated-codex:WORD_NOVEL_MANIFEST_CONTINUATION_MAC_20261015"
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015"
     },
     {
       "filePath": "src/core/word-pending-recording-comments-v1.cjs",
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "983d4cd149c321e09599216775c1616fb6c05b48ccfb9bfd1460d27211a552cd"
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "22723b3ebe7a0fe2013fe2d6e54f386436400d8bd2cd1873fc6cfb52dda621eb"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "f24290e5144a5f8021cc8abc69455bdff257f915a5ef9398d243f8a4e8b9fce7"
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "6587891b30edb61a2ec41b8956085857a5fe00ca2962d79456c72219be712824"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "f7c7a0f1968e9efd71178738d05db9d218ec3f6a82ec3a04d5ea76b35b109f47"
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "456dedbc68c526e68159aed21d12a885b455d9c3a33fdaeaefe9fab4557710b0"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "a9a01e247894466a1c6694a94fb64097e6f045e28f6bd63a2510867e07371a3e"
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "a0f5531ca4153ff3d6b001f7fd5e974970c778d992aa74d54615cbc8eac4900b"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "17a8a10dda9a7f8d901040fd640614567ed066616f61810f6f42acab2abcf974"
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "f72d9dd42a8c0ea65da6f979a12bc9c9d639a4e06e46c2313c64c863afc2fcf3"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "b27d4bc6bedac9b64ae2ef5d04a3f91c72233778e3f084f326c89dba97b502ba"
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "7895985bbe6d265102b6f5268cefdebe2eb97422315b88dc256c310bb0cfa248"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "3822bfe1ca32a1e47e3da48beedaa3572eac6ae5f06557869e11cbbbcc18f049"
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "363eddf3ea4ea68e1ad800d7b58c66bd150e429afce9bc75ebf54ccd88e4a0d7"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "918576ac529b71c44010948f37918c43b1a39a27c81735370508f2fe567f5722"
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "523ba25ca28f08ac3b83844955f514bb32e6c3d46669123df5c242294e3f1458"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "e1a2529b199e15ef3b162f982b0fdf0146987b36ab999025052d4bf8bf138325"
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "5054131a792275ccc3cbfb44157013cf4d1008238b0e2b1a7bd4d86c99c46ce2"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5668,6 +5668,15 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
       "sha256": "b90a0940411b6f5f2fa820dea878de47176164176d1964119ec9ca24c90cab77"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "26c973aa5c748d090f468f48d8ccb402fa98333b93354de9fa0c859e3b1f47c7"
     }
   ],
   "evidenceStampIds": [
@@ -44167,6 +44176,159 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED and Node22/Electron24 focused4of4 plus whole purity46of46 are actual; no assertion removed, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
       "sha256": "a2375ac6fd6987c91a4cc09cc14b7d03d0f379aaaf11d80031d9e97e406046aa"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "sha256": "8d2ac0cf3f14e6dcb788b26a8e91a335288a6664d4f8bdeef633d35c8a32f58e",
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T05:58:31.067439Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:WORD_NOVEL_MANIFEST_CONTINUATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/core/project-transaction-v1.cjs",
+      "rationale": "Owner-authorized existing verifier propagation for saved imported novel Word return/recovery. Exact native failure and causal RED retained; three selected maintained cases pass with five proof refusals, Cancel/Apply/UndoRedo and interrupted recovery. Full frozen gates and delivery IN_PROGRESS. No native credit, predicate/quota/schema change.",
+      "sha256": "908413aa34ba4ffe91c68e18c8815bb93cd5f1db2e028d1530b88146c792ea82"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "e17d4ee331e9248cff7829add60fa5a7b3685842ccf8263d46fd7aad1bd4f7ca",
+      "approvedAtUtc": "2026-10-15T05:58:31.067439Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized existing verifier propagation for saved imported novel Word return/recovery. Exact native failure and causal RED retained; three selected maintained cases pass with five proof refusals, Cancel/Apply/UndoRedo and interrupted recovery. Full frozen gates and delivery IN_PROGRESS. No native credit, predicate/quota/schema change.",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014|owner-delegated-codex:WORD_NOVEL_MANIFEST_CONTINUATION_MAC_20261015"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "983d4cd149c321e09599216775c1616fb6c05b48ccfb9bfd1460d27211a552cd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "f24290e5144a5f8021cc8abc69455bdff257f915a5ef9398d243f8a4e8b9fce7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "f7c7a0f1968e9efd71178738d05db9d218ec3f6a82ec3a04d5ea76b35b109f47"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "a9a01e247894466a1c6694a94fb64097e6f045e28f6bd63a2510867e07371a3e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "17a8a10dda9a7f8d901040fd640614567ed066616f61810f6f42acab2abcf974"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "b27d4bc6bedac9b64ae2ef5d04a3f91c72233778e3f084f326c89dba97b502ba"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "3822bfe1ca32a1e47e3da48beedaa3572eac6ae5f06557869e11cbbbcc18f049"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "918576ac529b71c44010948f37918c43b1a39a27c81735370508f2fe567f5722"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T09:53:33.467180+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED, old-loader RED08, Node22/Electron24 focused5of5 and complete local193of193 are actual; three loader literals target the new SHA implementation with all behavioral assertions retained, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "e1a2529b199e15ef3b162f982b0fdf0146987b36ab999025052d4bf8bf138325"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "4e2468c98a4216bc4d72ed4fb9d79959dde6b98aa50afcf3ce7b991f0c1f07db"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "b3e8d172dc4ef01faeac88e28ab846c920432f2b2092432eccb70601471a5f3f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "ae3398ef847b8c4d234f6c5bbb19708132edef8d04879c5172e5cc73dcefc38c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "04851c73012c2379b85da7a1312e66b87a9d25989a1fe0d13f09e522a0303de5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "a5363d1989e99d30c2e277e9aa80e23d4f409c3c1e16a4be68e1a6d6905e34c8"
     }
   ]
 }

@@ -3657,3 +3657,48 @@ preserved. Native retry requires fresh admission/build after delivery. Both orig
 scales, runtimes, three roles/five exchanges, historical recovery and shipping
 performance remain OPEN. T777 task folders retain all new materials/reports; APFS
 runtime exception is explicit. Task:2026-10-15--word-novel-manifest-continuation-mac.md.
+
+## 2026-10-15 — Core-owned preparation of complete Word history
+
+TASK_ID: WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015
+STATUS: CANDIDATE_LOCAL_PROOFS_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 1a51cb983f62eb136e5e2116462c10b4041421f6 (PR2119 normally merged)
+CLAIM_BOUNDARY: existing book Undo/Redo preparation; no native or feature acceptance
+
+Main sends only action/project/scene to the existing transaction port. Core
+copies that small descriptor before await, reads the checked current cohort in
+one private invocation and constructs the same frozen plan. Legacy caller plans
+retain their original defensive copy and independent semantic regeneration.
+The same current-packet canonical text serves complete digest/byte checks only
+within that read; all byte freshness, lease/CAS, journal and post-write readback
+remain. Private current/origin references end before the first durable write.
+Main publishes only the selected scene after fresh complete readback. The
+internal metadata never enters the public receipt. Local-ledger fallback and
+public unavailable/scene error meanings remain unchanged.
+
+Causal descriptor RED01 precedes implementation. Actual whole affected9 files
+pass238of238; focused genuine Main/Kernel/lease/FS history6of6 passes on both
+Node22.12.0 and shipped Electron41.10.6 Node24.18.0, mandatory TAP0 and no skips,
+todo or cancellation. Wrong identity/action and caller preparation, descriptor
+mutation across await, full raw scenes/annotations, stale source/publication,
+legacy forgeries and before/after-marker recovery remain covered. Assertions
+observe the small descriptor and actual durable journal/packet, never fake plans.
+
+One paired read-only observation on the same104 files: old preparation to first
+durable call164870.085ms, candidate67163.118ms. Both complete158709521byte journal
+inputs have SHA256 b641d4950d227e998cdf82d9002d8a87333109962acf2687caee76b16b55ca6a;
+no durable call executed, all project/manifest-transition bytes remain exact.
+Peak observed RSS3.528GB to3.764GB does not prove a memory gain. Earlier partial
+104s candidate/92.8s baseline are not a valid full-path comparison. Missing
+manifest verifier in first paired attempt failed honestly; final pair uses the
+actual existing read-only authority verifier. No statistical or native claim.
+
+PACKAGED75 at the old merged head reported public E_BRIDGE_TIMEOUT and actual
+V8 OOM/SIGTRAP before Redo commit. It has no normal Quit and no trace. Independent
+complete104file conservation passed. Native remains stopped pending this full
+normal delivery and fresh crash-continuation admission; no old failure is green.
+Official exact-head CI is the single complete RTK/certification baseline. Normal
+commit/push/PR/CI/merge and fresh merged Mac checks are still required. Full
+feature NOT_READY: original SOURCE80 external anchor,21 physical note-control
+fields, both origins/scales/runtimes, three roles and five Word exchanges stay
+open. Task:2026-10-15--word-history-private-preparation-mac.md.
