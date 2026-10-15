@@ -1467,15 +1467,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "4b31a0a1dfc2f1dec2c5f69ea4f8a706b2e9b7d42a5701dc82950493c0992e8d",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_NATIVE_PREVIEW_MAC_20261006|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009",
-      "approvedAtUtc": "2026-10-09T04:50:23.117914Z",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority."
-    },
-    {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
       "sha256": "597c89a346d6dc29d3bce1527210a0aa6f10bf3f2d8d9c7339ebc9977830ea32",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
@@ -5544,15 +5535,6 @@
       "sha256": "7a36d315d5cf2606246851649c51167a56902c0bffc63315f937869b24bfaa67"
     },
     {
-      "filePath": "src/core/word-manuscript-notes-v1.cjs",
-      "approved": true,
-      "approvedAtUtc": "2026-10-15T19:03:56.376008+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "cc956815a3ab8ba9f6817aad484afd72ffe7149acc9d183e799d47555359d260"
-    },
-    {
       "filePath": "src/core/word-note-return-delta-v1.cjs",
       "approved": true,
       "approvedAtUtc": "2026-10-15T19:03:56.376008+00:00",
@@ -5616,103 +5598,121 @@
       "sha256": "7051e6e3b30ea2cb7719b8aebd3ac17621fc074af3b174c874a1461ea389d945"
     },
     {
-      "filePath": "test/contracts/rtk-word-note-reference-typography.contract.test.js",
+      "filePath": "src/core/word-manuscript-notes-v1.cjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "74ed7c2c2fc2067901d38426327c72f5a4a1e65038f93be3cdc06f53b42e8a0c"
+      "sha256": "2c248f6cc46cd5636d6746ddee964d48c9f77508cc4d9807bd26263f9d27f0f5"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-note-reference-typography.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "af27ea3c71964d527b7ac6fb670a2f5f7596226819ff10f73a5dee6028c850a0"
     },
     {
       "filePath": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "0bd444eded242d894c68d414216c9ff8cdbdfd87f737ea759381a723ea3d0fae"
+      "sha256": "2e7d0b210426e58c428a38d11dd22bc69bd291bb4686d0ad992dc51ffa7f766c"
     },
     {
       "filePath": "docs/CONTEXT.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "101f8940a2324c568248982681ef427b56387a329eead476a2e52f691591aa1d"
+      "sha256": "fc8f58cca8b9d68518078178d28867c3ae9ee3cf64d123cc8c9536120577d034"
     },
     {
       "filePath": "docs/HANDOFF.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "ee114c2fc96b9af478a051a02c7521a6e10187a03871541d501faa27bcb88cee"
+      "sha256": "f9674ec0c0cd246617622230e84496af4a349aabc3b0a56c2d4f06d87ca59be4"
     },
     {
       "filePath": "docs/WORKLOG.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "9ed9942843a31819920d778dee78ececae3e4d1acd6195b76a40b78ec544e05f"
+      "sha256": "b5d0420b7c468a905f5d166f0a2a970fe27d8e5be8e8ebae450db62b41b5611f"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "b275455e83146d3b707627e75cb7556572a8b61de32a99c389f5420ebcd753ed"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "484cf99a6d43520755665c8aa1fca7dfa5cc46a7d81bcf70cf9e41c4cb644719"
+      "sha256": "e8a22dc08662482cca38ac846db685a2301de906d606302cdfa52a0edc7748f1"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "c36634b95bd905ef4e343233648bebb919dcf9653e2ee3ecdde8f18168b8a9a2"
+      "sha256": "e280c960013d103eddf2a757a4b66c76bd5a4563abceaadc975f1aa641e91094"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "13d27dff84fd50970b1cf59c7a07590c122810ef5e5c2936a8c7fd76e98b9548"
+      "sha256": "d6452aab03eae08f3f11649fdeee25708c27347a8db486e4d5c593422124fae5"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "d68e5e779acbcb684f89ab5247862b4be91eab113f34d7bc98f287d8d07b9299"
+      "sha256": "5a38b916388878fc0f2f58cff43762f829ccd3797ac17e25b30d5903e0f4e251"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "07c00e98db040b0718a6de23c094bfae0f0f03f152f6f75b9c77576f287ba9be"
+      "sha256": "1e00549966e44ad1bee477ed392bbcc375a1d4ca0f64f053786dce1f0076f6e8"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
       "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "2f1fb534184954a7d092c1f7880332d2971c5f72ea504a908cf2b8cfbadadd95"
+      "sha256": "0e6291d4fd381d79c7c1a1572d2e632f3c856355f24705b9289c02e304807801"
     }
   ],
   "evidenceStampIds": [
@@ -45004,6 +45004,123 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
       "sha256": "f60596a5ce21edd4e68fbfdb886d8560f23500723ce96263def9c23f1a867133"
+    },
+    {
+      "filePath": "src/core/word-manuscript-notes-v1.cjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:03:56.376008+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "cc956815a3ab8ba9f6817aad484afd72ffe7149acc9d183e799d47555359d260"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-note-reference-typography.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "74ed7c2c2fc2067901d38426327c72f5a4a1e65038f93be3cdc06f53b42e8a0c"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "0bd444eded242d894c68d414216c9ff8cdbdfd87f737ea759381a723ea3d0fae"
+    },
+    {
+      "filePath": "docs/CONTEXT.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "101f8940a2324c568248982681ef427b56387a329eead476a2e52f691591aa1d"
+    },
+    {
+      "filePath": "docs/HANDOFF.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "ee114c2fc96b9af478a051a02c7521a6e10187a03871541d501faa27bcb88cee"
+    },
+    {
+      "filePath": "docs/WORKLOG.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "9ed9942843a31819920d778dee78ececae3e4d1acd6195b76a40b78ec544e05f"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "4b31a0a1dfc2f1dec2c5f69ea4f8a706b2e9b7d42a5701dc82950493c0992e8d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_R_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_RETURN_HISTORY_20260928|owner-delegated-codex:WORD_PENDING_RECORDING_20260928|owner-delegated-codex:WORD_TABLE_CELL_LISTS_20260929|owner-delegated-codex:WORD_PENDING_RICH_BLOCKS_20260929|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_MOVE_RECORDING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_TABLE_CELL_SHIFT_20260929|owner-delegated-codex:WORD_CELL_SHIFT_CHAINS_20260929|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_MEDIA_RETURN_MAC_20261001|owner-delegated-codex:WORD_NOTE_LISTS_MAC_20261001|owner-delegated-codex:WORD_NOTE_TABLES_MAC_20261001|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_MEDIA_NOTES_MAC_20261001|owner-delegated-codex:WORD_NESTED_TABLES_MAC_20261001|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_CONCURRENT_RETURN_MAC_20261002|owner-delegated-codex:WORD_LIST_FORMATS_MAC_20261002|owner-delegated-codex:WORD_LIST_CONTINUATION_MAC_20261003|owner-delegated-codex:WORD_HEADING_OUTLINE_MAC_20261003|owner-delegated-codex:WORD_NUMBERED_HEADINGS_MAC_20261003|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_RICH_COMMENTS_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MULTIPARAGRAPH_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_STRUCTURAL_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_COMMENT_DECISIONS_MAC_20261005|owner-delegated-codex:WORD_RECORDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_NATIVE_PREVIEW_MAC_20261006|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009",
+      "approvedAtUtc": "2026-10-09T04:50:23.117914Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "484cf99a6d43520755665c8aa1fca7dfa5cc46a7d81bcf70cf9e41c4cb644719"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "c36634b95bd905ef4e343233648bebb919dcf9653e2ee3ecdde8f18168b8a9a2"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "13d27dff84fd50970b1cf59c7a07590c122810ef5e5c2936a8c7fd76e98b9548"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "d68e5e779acbcb684f89ab5247862b4be91eab113f34d7bc98f287d8d07b9299"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "07c00e98db040b0718a6de23c094bfae0f0f03f152f6f75b9c77576f287ba9be"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:07:48.648206+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "2f1fb534184954a7d092c1f7880332d2971c5f72ea504a908cf2b8cfbadadd95"
     }
   ]
 }

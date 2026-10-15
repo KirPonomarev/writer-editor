@@ -66,6 +66,7 @@ Original frozen Word input is read-only; no large novel fixture copies.
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 
@@ -205,3 +206,7 @@ TAP0 and no skips/todo; original failed logs remain.
 ### Final source qualification
 
 Final whole9-file Node22 and shipped Electron41.10.6 execute204of204 each; unchanged mandatory TAP evaluator0, zero fail/cancel/skip/todo and all source byte barriers true. The ninth new reference test covers real tracked DOCX emission, Original3 versus Current4 coordinates and protected body-edit return refusal. Independent XML observes both full seven-property sets and unchanged note body/point, rejects16 controls, and retains only9686bytes of new DOCX outputs. Existing raw RED and failed diagnostics remain unchanged.
+
+### Final Core bypass and catalog closure
+
+Fresh exact242d preflight and maintained RED22 prove a body-only Core cohort could change or downgrade an existing note reference payload. Core now compares validated prior/current reference typography for every existing manuscript note, while legitimate body edits and new-note import stay admitted. Complete204case chains pass on both engines again. Checkpointb869bb retains that fix before a clean26-path preflight. The first PR candidate CI38791665020 refused before RTK tests because the new test basename was absent from the strict catalog; add exactly that basename, preserve every previous member and all runner predicates, and execute the cheap plan and catalog contract before the next push. No old failed CI is counted as test acceptance.

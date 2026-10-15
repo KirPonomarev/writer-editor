@@ -19,7 +19,8 @@ Clean and pending/book return guards compare the signed reference binding
 against fresh canonical state and reject protected drift, including body-edit
 returns. Main's ordinary body edit/kind conversion/reanchor carries only fresh
 canonical typography under its existing lease/hash; renderer requests cannot
-supply it. Private state, source revision, note identity, atomic recovery and
+supply it. The generic Core body-update cohort also rejects replacing or
+stripping this protected metadata. Private state, source revision, note identity, atomic recovery and
 numeric limits remain protected. No dependency, UI or native writer was added.
 
 Maintained two-kind actual-import RED01 and Main body-edit RED06 precede their

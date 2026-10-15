@@ -25795,7 +25795,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "src/core/word-manuscript-notes-v1.cjs",
-      "sha256": "cc956815a3ab8ba9f6817aad484afd72ffe7149acc9d183e799d47555359d260"
+      "sha256": "2c248f6cc46cd5636d6746ddee964d48c9f77508cc4d9807bd26263f9d27f0f5"
     },
     {
       "path": "src/core/word-pending-text-revisions-v1.cjs",
@@ -26091,7 +26091,7 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "4b31a0a1dfc2f1dec2c5f69ea4f8a706b2e9b7d42a5701dc82950493c0992e8d"
+      "sha256": "b275455e83146d3b707627e75cb7556572a8b61de32a99c389f5420ebcd753ed"
     },
     {
       "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
@@ -26163,15 +26163,15 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "101f8940a2324c568248982681ef427b56387a329eead476a2e52f691591aa1d"
+      "sha256": "fc8f58cca8b9d68518078178d28867c3ae9ee3cf64d123cc8c9536120577d034"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "ee114c2fc96b9af478a051a02c7521a6e10187a03871541d501faa27bcb88cee"
+      "sha256": "f9674ec0c0cd246617622230e84496af4a349aabc3b0a56c2d4f06d87ca59be4"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "9ed9942843a31819920d778dee78ececae3e4d1acd6195b76a40b78ec544e05f"
+      "sha256": "b5d0420b7c468a905f5d166f0a2a970fe27d8e5be8e8ebae450db62b41b5611f"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26299,17 +26299,17 @@ export const R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR=Object.freeze(
     },
     {
       "path": "test/contracts/rtk-word-note-reference-typography.contract.test.js",
-      "sha256": "74ed7c2c2fc2067901d38426327c72f5a4a1e65038f93be3cdc06f53b42e8a0c"
+      "sha256": "af27ea3c71964d527b7ac6fb670a2f5f7596226819ff10f73a5dee6028c850a0"
     },
     {
       "path": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
-      "sha256": "0bd444eded242d894c68d414216c9ff8cdbdfd87f737ea759381a723ea3d0fae"
+      "sha256": "2e7d0b210426e58c428a38d11dd22bc69bd291bb4686d0ad992dc51ffa7f766c"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "484cf99a6d43520755665c8aa1fca7dfa5cc46a7d81bcf70cf9e41c4cb644719"
+      "sha256": "e8a22dc08662482cca38ac846db685a2301de906d606302cdfa52a0edc7748f1"
     }
   ]
 });
