@@ -26771,15 +26771,15 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "5511172adde6b1448543a22fda55957ffcc0f8447363e33dcb316653ce2749f1"
+      "sha256": "b3f7f018f56aa1bde812f2b7a0eb07fbeb01bf8fda7e48264057194e4795afea"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "49aa7ba00d514b5fc5a50eee70ccd7fa3e94d1e23322dd7598e2d37fd3c6e82f"
+      "sha256": "2a04c5e71bd55af0ad5d1dfe2afb978e6fd2c9189044c8ef2bb19585a7ec23d3"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "656d726c3f4ef0a88a0efb3d945d1ab809398d780e19ba97c417216fb8a7ee8b"
+      "sha256": "06a398b030edded230ae6a9b1e461417259b525baffe130298f98c7afd9899eb"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26931,11 +26931,11 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/product/stage10MainPersistenceAdapter.mjs",
-      "sha256": "bc232f12a672176c29c20e2ddb64dc637823e92215e83bc9e7ed4c393452de69"
+      "sha256": "b0af76913b918c58890016f1d1c565460c0456db135e900675d0969f95ae5f39"
     },
     {
       "path": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
-      "sha256": "201a7ada0bd9eb4183cf49347483d7ccac02d1b614e9ce0d2f997a04834e1666"
+      "sha256": "aee3bf969d513875827e28f9e45f061001fb644b552eb4d7cb75cb51ee4c2164"
     },
     {
       "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
@@ -26951,17 +26951,21 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-16--word-missing-anchor-recovery-mac.md",
-      "sha256": "d77a82e1f6e3b6b41e88362db5eed361f996fe3d368d8f9fbbc1f2f01d405e57"
+      "sha256": "f77e8bc8de7c258be70ee1892fdd79eda255b8e495a92999dba08c18fa7dbf59"
     },
     {
       "path": "test/unit/r24-wp302-session-continuity.test.mjs",
       "sha256": "515d2a0f5a482d6d815cb1b3be4f933c6ee18a25a980edec62fb96f1ce255603"
+    },
+    {
+      "path": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
+      "sha256": "fa81634c66b7ca65238766fa434a2ac32de3de69f96ce87e2474ebf3573e73fc"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "4cc7183e22889164b984d4deea160dbe412544e0c3354696ba89513b5c6c418a"
+      "sha256": "7804da792fc7735c69591a98120973244a8a30aa03a0a51f7828aee47a312760"
     }
   ]
 });

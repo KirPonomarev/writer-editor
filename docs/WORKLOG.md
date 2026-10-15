@@ -4,7 +4,7 @@ TASK_ID: WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016
 DOCUMENT_CLASS: FACTUAL_STATUS
 STATUS: CANDIDATE_SOURCE_VERIFIED_DELIVERY_PENDING
 BINDING_BASE_SHA: 4d477f143b8ed17f896fcd27a3e6065c6eebab60
-PRODUCT_CHECKPOINT_SHA: 7a32a60c1f31b2d4edbe5e9724d67dce8d5f03f4
+PRODUCT_CHECKPOINT_SHA: 23713bc186666e66247a6717fcd774804c2b2d6b
 CLAIM_BOUNDARY: source/CLI recovery only; original SOURCE80 native restore and full feature remain NOT_READY
 
 Main's existing internal Command Surface Kernel owns the missing-only startup
@@ -73,6 +73,28 @@ cases, through the existing R24 runner-truth on both engines48/49. Initial combi
 44/45 RTK-count rejection93versus95 stays unaccepted; no test is flattened or
 removed and the RTK evaluator is unchanged. The failed first CI is never credited;
 required full jobs complete before one amended delivery push.
+
+
+Final same-contour closure after checkpoint23713:
+The early missing-anchor probe delegates any physical pending transaction to the
+existing ordinary journal recovery. The explicit recovery writer still refuses
+pending authority. Actual full initializeApp proves valid interrupted initial
+creation repairs its original v1 anchor without dialog or new provenance; a
+corrupt pending journal refuses without anchor publication or later startup
+reconciliation. Initial full Node69/shipped70 pass55of55 each. Final complete
+10-file Node74/shipped75 chains pass252of252 each, no fail/cancel/skip/todo,
+unchanged mandatory TAP evaluator and exact source-byte barriers.
+Completed first CI38810239584 remains FAIL: both full RTK jobs executed4280tests
+with4279pass and exactly one stale B2C09 red-to-green ledger failure; inventory
+had the two already corrected WP302 harness omissions. No other RTK failure.
+After clean checkpoint and preflight71, only B2C09 membership moves from the
+existing red ledger to its existing green registry. Every executable flip,
+shape-drift and negative assertion remains unchanged. Full classification
+Node72/shipped73 passes6of6, actually executes35families (4red,6platform-bound,
+24green,1finite flaky), with no drift; no new outcome or retry is admitted.
+Runtime delta349lines and maintained test delta423lines remain within500/450.
+This supersedes the earlier source counts and exactC3 runtime statement above;
+required fresh CI, normal merge and exact merged verification remain pending.
 
 Notes predecessor is fully delivered: PR2122 merged at bindingM8, all19required
 CI checks and both fullRTK4247cases passed; fresh merged410checks passed on both

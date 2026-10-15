@@ -69,6 +69,7 @@ No large novel copies. Existing original69 and frozen Word inputs are read-only.
 - scripts/ops/b2c09-command-surface-kernel.mjs
 
 - test/unit/r24-wp302-session-continuity.test.mjs
+- test/contracts/rtk-evidence-stale-green-guard.contract.test.js
 
 ## DENYLIST
 
@@ -198,3 +199,24 @@ refusal before any writer or window/autosave/last-file continuation. No noop,
 skip or relaxed assertion is used. Every initializeApp source consumer is checked;
 whole affected files execute on both engines before one amended delivery push.
 The old CI failure remains unaccepted; other full jobs finish before resubmission.
+
+Final same-contour closure after checkpoint23713:
+The early missing-anchor probe delegates any physical pending transaction to the
+existing ordinary journal recovery. The explicit recovery writer still refuses
+pending authority. Actual full initializeApp proves valid interrupted initial
+creation repairs its original v1 anchor without dialog or new provenance; a
+corrupt pending journal refuses without anchor publication or later startup
+reconciliation. Initial full Node69/shipped70 pass55of55 each. Final complete
+10-file Node74/shipped75 chains pass252of252 each, no fail/cancel/skip/todo,
+unchanged mandatory TAP evaluator and exact source-byte barriers.
+Completed first CI38810239584 remains FAIL: both full RTK jobs executed4280tests
+with4279pass and exactly one stale B2C09 red-to-green ledger failure; inventory
+had the two already corrected WP302 harness omissions. No other RTK failure.
+After clean checkpoint and preflight71, only B2C09 membership moves from the
+existing red ledger to its existing green registry. Every executable flip,
+shape-drift and negative assertion remains unchanged. Full classification
+Node72/shipped73 passes6of6, actually executes35families (4red,6platform-bound,
+24green,1finite flaky), with no drift; no new outcome or retry is admitted.
+Runtime delta349lines and maintained test delta423lines remain within500/450.
+This supersedes the earlier source counts and exactC3 runtime statement above;
+required fresh CI, normal merge and exact merged verification remain pending.
