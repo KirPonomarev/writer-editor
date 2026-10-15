@@ -593,3 +593,13 @@ root independent source review b30219ab9ec22035f49a63700fa876191760eb8eec1fb3d21
 Actual1282of1282/focused248of248 and unchanged compiler outputs do not close
 native repeat export or the original large-novel denominator. Existing task-only
 3800 behavior adjustment and original rollback are unchanged; no canon exception.
+
+
+## 2026-10-15 — Exact deterministic Node imports in the existing cohort planner
+
+- Контекст: WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015 removes measured large-packet hashing/comparison allocations from the existing Node-only planner after actual Word Undo hit the unchanged bridge deadline.
+- Что нарушаем: literal Core effect-token policy sees node:crypto and node:util imports; the existing exact-source pure-runtime admission pattern is extended by precisely these two import lines for project-tree-cohort-v1.mjs.
+- Причина: SHA256 uses the same UTF8 bytes and complete plan regeneration remains mandatory. Structural equality has the full old canonical fallback for signed zero and prototype semantics. No I/O, entropy, clock, dependency, new port or trust cache is introduced.
+- Риск: an overbroad import exception could hide new effects. Whole maintained purity tests and appended actual-source plus forbidden-import/effect controls refuse expansion, including same-line calls; the general scanner is unchanged.
+- Rollback: ordinary revert of this one PR restores the portable hash, canonical-only comparison and prior exact import set; native profiles and complete journals remain preserved.
+- План удаления исключения: remove these two exact admissions if a separately owner-approved deterministic computation adapter replaces this existing host-specific seam. Until then they remain bounded by exact source/line checks; this entry adds no release gate or wider exception.

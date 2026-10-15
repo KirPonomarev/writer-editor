@@ -1,3 +1,45 @@
+## 2026-10-15 — Complete Word history comparison with standard Node primitives
+
+WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015 continues at exact base
+c54fa077b1ce0843967ecf0afe43e2b842699597. PR2118 is normally merged. Actual
+PACKAGED73 Word-origin500k R1 Apply/Save conserves42 scenes8391 paragraphs,
+three public notes plus private state and200 discussions400 messages. PACKAGED74
+reopens and fully exports, but its durable correct Undo reports E_BRIDGE_TIMEOUT.
+That public command and the whole changed exchange remain unaccepted.
+
+Node cohort SHA256 now uses built-in crypto. Complete mixed-plan regeneration
+still runs once, then standard structural equality avoids duplicate canonical
+strings on ordinary values. The complete old comparator remains for structural
+mismatches, preserving signed-zero and prototype semantics. Owner-supplied
+research led to a real maintained signed-zero RED02 before this correction;
+no digest, schema, write authority, timeout, source freshness or recovery changes.
+The purity gate admits only two exact import lines in this exact Core file.
+
+Focused4of4 pass on required Node22.12.0 and shipped Electron41.10.6 Node24.18.0,
+with mandatory TAP0 and zero exclusions. Whole purity gate46of46 includes actual
+Core source and refusal of other files/imports, filesystem, entropy, clock and cwd.
+An earlier Electron run used its default non-TAP reporter: process0 but oracle1;
+its result is preserved and replaced by an explicit-TAP run, not called green.
+All behavioral digest/value/cohort assertions remain unchanged. The old hash
+reference loader follows the actual Node implementation through three literal
+updates, retaining the independent portable reference. Its initial source-string
+refusal is preserved in local RED08 and complete CI4216of4217, never called PASS. The previous40s to30s retained-operand
+trial is diagnostic only. Full frozen RTK/certification, official CI and normal
+commit/push/PR/merge/exact merged proof remain required before native retry.
+The first frozen candidate09f2fbc4 completes certification317of318 with one C2A
+approval-metadata drift; RTK is explicitly cancelled with owned graph cleanup.
+All failed/cancelled outputs remain retained. Official C2A generation restores
+only its approval bytes; the other five generated outputs are already exact.
+All581 product/package inputs remain unchanged; new full gates are required.
+Focused5of5 pass on Node22 and shipped Node24; complete local cohort/purity/unit
+files pass193of193 with zero exclusions. Official CI is the single full RTK and
+certification baseline; complete raw logs, source identity and unchanged TAP
+oracles are required, plus fresh exact-merged Mac checks. No required test is
+omitted and no failed/partial old run is promoted.
+All native profiles, original WIP and old evidence remain preserved. Full feature
+NOT_READY: roles, origins/scales/runtimes/five exchanges, physical note controls
+and old SOURCE80 recovery stay open. Task:2026-10-15--word-novel-native-primitives-mac.md.
+
 ## 2026-10-15 — Final lifecycle effect revalidation
 
 Same unfinished WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_MAC_20261014 delivery/PR2117.

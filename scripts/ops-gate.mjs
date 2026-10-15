@@ -58,6 +58,8 @@ const PURE_RUNTIME_IMPORTS_BY_SOURCE = new Map([
   ])],
   ['src/core/project-tree-cohort-v1.mjs', new Set([
     "import path from 'node:path';",
+    "import crypto from 'node:crypto';",
+    "import { isDeepStrictEqual } from 'node:util';",
   ])],
   ['src/core/pdf-archive-review-profile-v1.mjs', new Set([
     "import crypto from 'node:crypto';",

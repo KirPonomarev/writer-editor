@@ -2856,9 +2856,9 @@ test('novel import: partition copies only selected roots with deep ownership and
 test('novel tree hashes retain old string UTF8 digests and complete canonical cohort bytes',async t=>{
  const filename=require.resolve('../../src/core/project-tree-cohort-v1.mjs'),{pathToFileURL}=require('node:url');
  const load=async legacy=>{
-  let source=readSource(filename);assert.ok(source.includes("const sha = x => hash.sha256Hex(String(x));"));
-  if(legacy)source=source.replace("import hash from './browser-safe-hash.cjs';","import { sha256Hex } from './browser-safe-hash.mjs';")
-    .replace('const sha = x => hash.sha256Hex(String(x));','const sha = x => sha256Hex(x);');
+  let source=readSource(filename);assert.ok(source.includes("const sha = x => crypto.createHash('sha256').update(String(x), 'utf8').digest('hex');"));
+  if(legacy)source=source.replace("import crypto from 'node:crypto';","import { sha256Hex } from './browser-safe-hash.mjs';")
+    .replace("const sha = x => crypto.createHash('sha256').update(String(x), 'utf8').digest('hex');",'const sha = x => sha256Hex(x);');
   source=source.replace(/(from\s+)(['"])(\.{1,2}\/[^'"]+)\2/g,(_,a,q,p)=>a+q+pathToFileURL(path.resolve(path.dirname(filename),p)).href+q);
   return import('data:text/javascript;base64,'+Buffer.from(source+'\nexport { sha as observedModelHash };').toString('base64'));
  };
@@ -2959,4 +2959,61 @@ test('novel manifest continuation: interrupted atomic return restores saved base
     outcomes.push({committed,fired,error:value.error,before:value.before,after:productFiles(f)});
   }
   retain('manifest-continuation-recovery',outcomes);
+});
+
+
+test('novel Node primitives: cohort identities match portable UTF8 while large Node inputs avoid portable SHA work',async()=>{
+ const model=await modelPromise,portable=require('../../src/core/browser-safe-hash.cjs'),reference=portable.sha256Hex;
+ const stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':value&&typeof value==='object'
+  ?'{'+Object.keys(value).sort().map(key=>JSON.stringify(key)+':'+stable(value[key])).join(',')+'}':JSON.stringify(value);
+ const corpus=['','Ж🙂漢字','\ud800','\udc00',...Array.from({length:8},(_,i)=>'x'.repeat([55,56,63,64,65,127,128,129][i])),
+  'Роман 漢字 🧭 café\n'.repeat(100000)];
+ for(const text of corpus)assert.equal(model.projectTreeCohortDigest({text}),reference(stable({text})),'exact compatible canonical UTF8 digest');
+ const value={text:corpus.at(-1)},expected=reference(stable(value));let largePortableCalls=0;
+ portable.sha256Hex=input=>{if(Buffer.byteLength(String(input))>1024*1024){largePortableCalls++;throw Error('NODE_COHORT_LARGE_PORTABLE_HASH');}return reference(input);};
+ try{assert.equal(model.projectTreeCohortDigest(value),expected);assert.equal(largePortableCalls,0,'large Node cohort hashing must use host primitive');}
+ finally{portable.sha256Hex=reference;}
+});
+
+test('novel Node primitives: full regenerated mixed values accept key order and refuse digest-rebound output forgeries before writes',async t=>{
+ const f=await importedTiny(t,'native-primitives',{canonicalNotes:true}),x=await exportImported(f);
+ const value=await authenticatedBookNoteReturn(t,f,x,changedNotesZip(x,'native-primitives',true),{label:'native-primitives'});
+ assert.equal(value.applied?.ok,true,JSON.stringify(value.error||value.result));const model=await modelPromise,plan=value.requests[0].treeCohort;
+ const reorder=node=>Array.isArray(node)?node.map(reorder):node&&typeof node==='object'
+  ?Object.fromEntries(Object.keys(node).reverse().map(key=>[key,reorder(node[key])])):node;
+ assert.deepEqual(model.validateProjectTreeCohort(reorder(plan)),plan,'complete JSON object member order is not semantic');
+ const cases=[['extra',p=>{p.untrustedExtra=true;}],['code',p=>{p.code='FORGED';}],
+  ['scene',p=>{p.entries.find(e=>e.role==='scene').afterBase64=Buffer.from('foreign content').toString('base64');}],
+  ['notes',p=>{p.entries.find(e=>e.role==='notes').afterBase64=Buffer.from('{"notes":[]}').toString('base64');}]];
+ for(const [label,change] of cases){
+  const forged=cloneJsonSafe(plan);change(forged);const {planDigest,...unsigned}=forged;forged.planDigest=model.projectTreeCohortDigest(unsigned);
+  assert.throws(()=>model.validateProjectTreeCohort(forged),error=>error.code==='E_TREE_COHORT_PLAN_MISMATCH','full '+label+' meaning is rederived even with matching rebound digest');
+  const before=productFiles(f);let writes=0;
+  await assert.rejects(tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:0,treeCohort:forged,
+   revalidate:async()=>{},publishManifest:async()=>{throw Error('UNEXPECTED_PUBLICATION');},
+   fsAdapter:{...fsp,writeFile:async(...args)=>{writes++;return fsp.writeFile(...args);}}}),error=>error.code==='E_TREE_COHORT_PLAN_MISMATCH');
+  assert.equal(writes,0);equal(productFiles(f),before,'forged '+label+' never writes journal, scene, notes or comments');
+ }
+});
+
+test('novel Node primitives: canonical JSON boundaries preserve signed zero and plain member meaning',async t=>{
+ const f=await importedTiny(t,'native-json-domain',{canonicalNotes:true}),x=await exportImported(f);
+ const value=await authenticatedBookNoteReturn(t,f,x,changedNotesZip(x,'native-json-domain',true),{label:'native-json-domain'});
+ assert.equal(value.applied?.ok,true,JSON.stringify(value.error||value.result));const model=await modelPromise,plan=value.requests[0].treeCohort;
+ const stable=node=>Array.isArray(node)?'['+node.map(stable).join(',')+']':node&&typeof node==='object'
+  ?'{'+Object.keys(node).sort().map(key=>JSON.stringify(key)+':'+stable(node[key])).join(',')+'}':JSON.stringify(node);
+ const zero=model.planProjectMixedWordReturnCohort({...plan.input,expectedTreeRevision:-0});
+ const regenerated=model.planProjectMixedWordReturnCohort(zero.input);
+ assert.equal(stable(zero),stable(regenerated),'existing canonical equality admits the generated signed-zero plan');
+ assert.equal(zero.planDigest,regenerated.planDigest,'signed zero retains the exact historical digest');
+ assert.doesNotThrow(()=>model.validateProjectTreeCohort(zero),'MIXED_CANONICAL_SIGNED_ZERO');
+ const nullPrototype=Object.assign(Object.create(null),cloneJsonSafe(regenerated));
+ assert.equal(stable(nullPrototype),stable(regenerated));
+ assert.doesNotThrow(()=>model.validateProjectTreeCohort(nullPrototype),'own enumerable canonical members retain existing meaning');
+ for(const revision of [NaN,Infinity,-Infinity,undefined,null,-1,0.5,'0'])
+  assert.throws(()=>model.planProjectMixedWordReturnCohort({...plan.input,expectedTreeRevision:revision}),error=>error.code==='E_TREE_REVISION_CAS');
+ for(const extra of [null,undefined,NaN]){
+  const forged={...cloneJsonSafe(regenerated),untrustedExtra:extra};
+  assert.throws(()=>model.validateProjectTreeCohort(forged),error=>error.code==='E_TREE_COHORT_PLAN_MISMATCH','extra own members never acquire authority');
+ }
 });

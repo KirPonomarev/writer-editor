@@ -1,5 +1,6 @@
 import path from 'node:path';
-import hash from './browser-safe-hash.cjs';
+import crypto from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 import { planProjectTreeIdentityCohort, normalizeProjectTreeIdentity, createDeterministicTreeNodeId } from './projectTreeIdentity.mjs';
 import envelope from './document-content-envelope-v1.cjs';
 import bookmarks from './word-user-bookmarks-v1.cjs';
@@ -64,7 +65,7 @@ function mixedWordInputLimit(input) {
 const clone = x => JSON.parse(JSON.stringify(x));
 const stable = x => Array.isArray(x) ? `[${x.map(stable).join(',')}]` : x && typeof x === 'object'
   ? `{${Object.keys(x).sort().map(k => JSON.stringify(k) + ':' + stable(x[k])).join(',')}}` : JSON.stringify(x);
-const sha = x => hash.sha256Hex(String(x));
+const sha = x => crypto.createHash('sha256').update(String(x), 'utf8').digest('hex');
 const fail = code => { throw Object.assign(Error(code), { code }); };
 const need = (ok, code = 'E_TREE_COHORT_INVALID') => { if (!ok) fail(code); };
 const text = x => x === null ? null : Buffer.from(x, 'base64').toString('utf8');
@@ -981,7 +982,9 @@ export function planProjectDocxImportCohort(input) {
 export function validateProjectTreeCohort(plan) {
   need(plan?.mode === TREE_COHORT_MODE, 'E_TREE_COHORT_MODE');
   if (plan.kind === 'word-generic-import') { need(same(planProjectDocxImportCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
-  if (plan.kind === 'word-mixed-return') { need(same(planProjectMixedWordReturnCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
+  // Structural equality avoids canonical-string copies for ordinary JSON. The
+  // complete old comparison preserves canonical -0 and prototype semantics.
+  if (plan.kind === 'word-mixed-return') { const regenerated=planProjectMixedWordReturnCohort(plan.input); need(isDeepStrictEqual(regenerated,plan)||same(regenerated,plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'story-bodies') { need(same(planProjectStoryBodyCohort(plan.input),plan),'E_TREE_COHORT_PLAN_MISMATCH'); return plan; }
   if (plan.kind === 'undo') {
     const regenerated = planProjectTreeUndo(plan.input); need(same(regenerated, plan), 'E_TREE_COHORT_PLAN_MISMATCH');
