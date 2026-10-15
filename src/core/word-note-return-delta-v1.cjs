@@ -7,6 +7,21 @@ const clone = value => JSON.parse(JSON.stringify(value));
 const stable = value => Array.isArray(value) ? `[${value.map(stable).join(',')}]`
   : value && typeof value === 'object' ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}` : JSON.stringify(value);
 const need = (ok, code) => { if (!ok) throw Object.assign(Error(code), { code }); };
+const referenceTypography = require('./word-note-reference-typography-v1.cjs');
+const referenceValue = value => value?.referenceTypography === undefined ? undefined : referenceTypography.validate(value.referenceTypography);
+function requireReferenceBaseline(binding, note) {
+  need(stable(referenceValue(binding)) === stable(referenceValue(note?.manuscript)), 'NOTE_RETURN_REFERENCE_BASELINE_CONFLICT');
+}
+function returnedReferenceValue(binding, returned) {
+  const actual = referenceValue(returned), expected = referenceValue(binding);
+  // Legacy capsules never claimed these values. Preserve their old schema;
+  // only a new note may acquire new literal values from an admitted package.
+  if (binding) {
+    if (expected !== undefined) need(stable(actual) === stable(expected), 'NOTE_RETURN_REFERENCE_TYPOGRAPHY_CHANGED');
+    return expected;
+  }
+  return actual;
+}
 
 // Word materializes document defaults and may split equivalent text runs.
 // Compare effective meanings, retaining the original authored representation
@@ -80,6 +95,7 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
   for (const binding of baseline.sourceBindings) {
     need(!localIds.has(binding.noteId), 'NOTE_RETURN_BASELINE_COLLISION'); localIds.add(binding.noteId);
     if (!binding.richBody) continue;
+    requireReferenceBaseline(binding, document.notes.find(note => note.id === binding.noteId));
     need(/^_YALKEN_NOTE_[a-f0-9]{24}$/u.test(binding.transportIdentity) && !known.has(binding.transportIdentity), 'NOTE_RETURN_BASELINE_COLLISION');
     known.set(binding.transportIdentity, binding);
   }
@@ -113,7 +129,9 @@ function planNoteReturnDelta({ document, projectId, roundId, artifactSha256, bas
     // literal envelope-looking text as metadata and change anchor coordinates.
     need(Buffer.byteLength(sceneContent, 'utf8') <= 8 * model.LIMITS.bytes
       && model.boundary(sceneContent, offsetUtf16), 'NOTE_RETURN_POINT_INVALID');
-    const manuscript = model.validateManuscriptPayload({ schemaVersion: 1, kind: note.kind, body,
+    const typography = returnedReferenceValue(binding, note);
+    const manuscript = model.validateManuscriptPayload({ schemaVersion: typography === undefined ? 1 : 2, kind: note.kind, body,
+      ...(typography === undefined ? {} : { referenceTypography: typography }),
       reference: { sceneId: block.sceneId, offsetUtf16, sourceTextSha256: model.sha(sceneContent), affinity: 'after' } });
     candidates.push({ noteId: binding?.noteId || `note-${model.sha(projectId + '\n' + roundId + '\n' + artifactSha256 + '\n' + index).slice(0, 32)}`,
       created: !binding, manuscript, body: model.validateNoteBody(note.body).text });
@@ -202,6 +220,8 @@ function bindPendingNotePoints({ document, projectId, sceneId, baseline, exportM
     const matches = returnedNotes.map((n, i) => ({ n, i })).filter(({ n }) => n.transportIdentity === binding.transportIdentity);
     need(binding.transportIdentity && matches.length === 1 && !used.has(matches[0].i), 'PENDING_NOTE_IDENTITY_MISMATCH');
     const { n, i } = matches[0]; used.add(i);
+    requireReferenceBaseline(binding, note);
+    returnedReferenceValue(binding, n);
     if (closedBookEmission !== undefined) {
       need(stable(binding.richBody) === stable(model.validateNoteBody(note.manuscript.body).body), 'PENDING_NOTE_BASELINE_MISMATCH');
       if (!bodyLaw && exportMap.scenes.length > 1) need(stable(n.breakProjection) === stable(localBookNoteBreakProjection(note.manuscript.body, closedBookEmission)), 'PENDING_NOTE_BREAK_CHANGED');
@@ -301,6 +321,7 @@ function cleanBookNoteEmission(document, baseline, exportMap) {
     'PENDING_NOTE_BASELINE_MISMATCH');
     if(fresh) {
       const note=active.find(note=>note.id===binding.noteId),owned=[...blocks.values()].filter(row=>row.sceneId===binding.sceneId);
+      requireReferenceBaseline(binding, note);
       const index=owned.findIndex(row=>row.blockId===binding.blockId),text=owned.map(row=>row.text).join('\n');
       need(note&&note.manuscript.kind===binding.kind&&stable(binding.richBody)===stable(model.validateNoteBody(note.manuscript.body).body)
         &&note.manuscript.reference.sourceTextSha256===model.sha(text)
@@ -344,6 +365,7 @@ function validateSingleSceneNoteRoster(document, baseline, exportMap) {
   need(active.length === bindings.length && active.every(note => bindings.some(b => b.noteId === note.id
     && b.kind === note.manuscript.kind && stable(b.richBody) === stable(model.validateNoteBody(note.manuscript.body).body))),
   'PENDING_NOTE_BASELINE_MISMATCH');
+  for (const binding of bindings) requireReferenceBaseline(binding, active.find(note => note.id === binding.noteId));
 }
 function completeBodyMeaning(body, defaults, emission, source = false) {
   const pinned = [2, 3].includes(emission?.schemaVersion);
@@ -472,6 +494,7 @@ function bindBookPendingNotes({ document, projectId, baseline, exportMap, scenes
       && binding.richBody && stable(binding.richBody) === stable(model.validateNoteBody(note.manuscript.body).body)
       && /^_YALKEN_NOTE_[a-f0-9]{24}$/u.test(binding.transportIdentity) && !identities.has(binding.transportIdentity), 'PENDING_NOTE_BASELINE_MISMATCH');
     identities.add(binding.transportIdentity);
+    requireReferenceBaseline(binding, note);
     const owner = scenes.findIndex(scene => scene.sceneId === binding.sceneId), rows = pending.paragraphs(pending.normalizeNode(scenes[owner].document));
     const texts = rows.map(row => (row.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join(''));
     let offset = note.manuscript.reference.offsetUtf16, local = 0;
@@ -485,6 +508,7 @@ function bindBookPendingNotes({ document, projectId, baseline, exportMap, scenes
     const matches = returnedNotes.map((note, index) => ({ note, index })).filter(item => item.note.transportIdentity === binding.transportIdentity);
     need(matches.length === 1 && !used.has(matches[0].index), 'PENDING_NOTE_IDENTITY_MISMATCH');
     const { note: returned, index } = matches[0]; used.add(index);
+    returnedReferenceValue(binding, returned);
     if(!bodyLaw)need(stable(returned.breakProjection)===stable(localBookNoteBreakProjection(note.manuscript.body,baseline.breakEmission)), 'PENDING_NOTE_BREAK_CHANGED');
     need(returned.kind === binding.kind && (bodyLaw?bodyLaw(note,returned,baseline,exportMap):equivalentCompleteBody(binding.richBody, returned.body, exportMap.exportTypography, baseline.breakEmission)), 'PENDING_NOTE_BODY_CHANGED');
     need(blocks[returned.paragraphIndex]?.sceneId === binding.sceneId
@@ -531,6 +555,8 @@ function planChangedBookNoteBodies({document,projectId,baseline,exportMap,return
   for(const binding of baseline.sourceBindings) {
     const note=after.notes.find(n=>n.id===binding.noteId),returned=returnedNotes.find(n=>n.transportIdentity===binding.transportIdentity);
     need(note?.manuscript&&!note.deleted&&returned,'NOTE_RETURN_TARGET_INVALID');
+    requireReferenceBaseline(binding, note);
+    returnedReferenceValue(binding, returned);
     const scene=scenes.find(s=>s.sceneId===binding.sceneId),doc=require('./document-content-envelope-v1.cjs').parseObservablePayload(scene.content).doc;
     const pending=require('./word-pending-text-revisions-v1.cjs'),point=pending.noteProjection(doc)?.find(p=>p.noteId===note.id);
     const body=equivalentCompleteBody(binding.richBody,returned.body,exportMap.exportTypography,baseline.breakEmission)?binding.richBody:model.validateNoteBody(returned.body).body;

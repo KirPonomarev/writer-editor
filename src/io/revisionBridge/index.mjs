@@ -11257,6 +11257,7 @@ export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProject
     const parsed=parseDocumentNoteRichBody(bytes,source,note,linksByPart.get(source.relationshipPart),includeBreakProjection,preserveBreakMarks);
     return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
       transportIdentity: source.transportIdentity || null, paragraphs: note.paragraphs,
+      ...(ref.referenceTypography ? { referenceTypography: cloneJsonSafe(ref.referenceTypography) } : {}),
       ...(includeBreakProjection?parsed:{body:parsed}) };
   });
   if ([...linksByPart.values()].some(links => links.usedIds.size !== links.size)) throw Error('NOTE_RETURN_UNUSED_RELATIONSHIP');
@@ -11792,6 +11793,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           if (!source || !paragraph
             || !Number.isSafeInteger(point.offsetUtf16) || point.offsetUtf16 < 0 || point.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
           return { kind: note.kind, paragraphIndex: point.paragraphIndex, offsetUtf16: point.offsetUtf16,
+            ...(ref.referenceTypography ? { referenceTypography: cloneJsonSafe(ref.referenceTypography) } : {}),
             body: richNotes[index].body };
         });
         parsed.diagnostics = parsed.diagnostics.filter(item => !['w:footnoteReference', 'w:endnoteReference'].includes(item.tagName));

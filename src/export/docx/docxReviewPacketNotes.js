@@ -7,6 +7,7 @@ const crypto = require('node:crypto');
 const { buildMediaPackage, mergeMediaParts, mergeMediaTypes } = require('./docxMedia.js');
 const { buildDocxRunContentXml, segmentDocxTextForSerialization, escapeXml } = require('./docxTextXml.js');
 const manuscriptModel = require('../../core/word-manuscript-notes-v1.cjs');
+const referenceTypography = require('../../core/word-note-reference-typography-v1.cjs');
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 
 const DOCUMENT_NOTES_SCHEMA = 'yalken.rtk.word.document-notes.v1';
@@ -123,6 +124,7 @@ function buildCanonicalNotesExport(document, selectionsRaw, blocks, projectId, o
     return { noteId, kind, selectionOrdinal, scope: note.scope, attachment: clone(note.attachment || {}),
       sceneId: block.sceneId, blockId: block.blockId, documentParagraphIndex: block.documentParagraphIndex,
       offsetUtf16, blockTextSha256: sha(block.text),
+      ...(note.manuscript?.referenceTypography ? { referenceTypography: referenceTypography.validate(note.manuscript.referenceTypography) } : {}),
       paragraphs: richBody ? manuscriptModel.validateNoteBody(richBody).paragraphs.map(({ paragraph }) => (paragraph.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join('')) : [note.title, note.body],
       ...(richBody ? { richBody, ...(options.editableReturn === true ? { transportIdentity: `_YALKEN_NOTE_${sha(projectId + "\n" + noteId).slice(0, 24)}` } : {}) } : {}) };
   }).sort((a, b) => a.documentParagraphIndex - b.documentParagraphIndex || a.offsetUtf16 - b.offsetUtf16
@@ -147,7 +149,10 @@ function noteMarkersForBlock(projection, block) {
     demand(binding.sceneId === block.sceneId && binding.blockTextSha256 === sha(block.text)
       && boundary(block.text, binding.offsetUtf16), 'DOCX_NOTE_ANCHOR_STALE');
     const style = binding.kind === 'footnote' ? 'FootnoteReference' : 'EndnoteReference';
-    const xml = `<w:r><w:rPr><w:rStyle w:val="${style}"/></w:rPr><w:${binding.kind}Reference w:id="${binding.nativeId}"/></w:r>`;
+    const typography = binding.referenceTypography === undefined ? null : referenceTypography.validate(binding.referenceTypography);
+    const fonts = typography?.fontSlots ? `<w:rFonts${Object.entries(typography.fontSlots).map(([key, value]) => ` w:${key}="${escapeXml(value)}"`).join('')}/>` : '';
+    const language = buildDocxWordLanguageXml(typography?.wordLanguage);
+    const xml = `<w:r><w:rPr><w:rStyle w:val="${style}"/>${fonts}${language}</w:rPr><w:${binding.kind}Reference w:id="${binding.nativeId}"/></w:r>`;
     markers.set(binding.offsetUtf16, (markers.get(binding.offsetUtf16) || '') + xml);
   }
   return markers;
@@ -228,6 +233,11 @@ function validateDocumentNotesReturn({ expected, returned, signedDigest } = {}) 
   if (stable(returned?.notes || []) !== stable(expected.notes)) mismatches.push('notes');
   if (returned?.protectedDigest !== expected.protectedDigest) mismatches.push('protectedDigest');
   if (signedDigest !== expected.protectedDigest) mismatches.push('signedDigest');
+  for (const [index, binding] of (expected.sourceBindings || []).entries()) if (binding.referenceTypography !== undefined) {
+    try {
+      if (stable(referenceTypography.validate(binding.referenceTypography)) !== stable(referenceTypography.validate(returned?.references?.[index]?.referenceTypography))) mismatches.push('referenceTypography');
+    } catch { mismatches.push('referenceTypography'); }
+  }
   return { ok: mismatches.length === 0, applicable: true,
     status: mismatches.length ? 'DOCUMENT_NOTES_MISMATCH' : 'VERIFIED_PROTECTED_DOCUMENT_NOTES', mismatches,
     ...(mismatches.length ? {} : { proof: { schemaVersion: DOCUMENT_NOTES_SCHEMA,

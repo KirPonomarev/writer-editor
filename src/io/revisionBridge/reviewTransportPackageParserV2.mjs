@@ -5,6 +5,7 @@ import paragraphLayout from '../../core/word-paragraph-layout-v1.cjs';
 import paragraphSpacing from '../../core/word-paragraph-spacing-v1.cjs';
 import docxHyperlinks from '../docxHyperlinks.cjs';
 import wordLanguage from '../../core/word-language-v1.cjs';
+import noteReferenceTypography from '../../core/word-note-reference-typography-v1.cjs';
 const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
 import documentTables from '../documentTables.js';
 import {
@@ -4291,7 +4292,7 @@ function directChildTokensWithin(documentScan, parent) {
 
 // Native IDs are a package-local bijection only. The signed semantic baseline
 // binds body text and source positions; no note returned here grants write authority.
-function parseDocumentNotes(parts, documentXml, documentScan, relationships, contentTypes, budgets, cryptoPort, budgetState) {
+function parseDocumentNotes(parts, documentXml, documentScan, relationships, contentTypes, budgets, cryptoPort, budgetState, stylesScan) {
   const schemaVersion = 'yalken.rtk.word.document-notes.v1';
   const reasons = [], notes = [], references = [], formatting = [], bodySources = [];
   const refs = documentScan.tokens.filter(token => ['footnoteReference', 'endnoteReference'].includes(token.localName))
@@ -4304,6 +4305,11 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
   };
   try {
     requireNote(refs.length <= 256, 'REFERENCE_COUNT');
+    const stylesXml = rawString(parts['word/styles.xml']);
+    // The same strict cascade as visible runs, retaining all four font slots.
+    // Empty reference controls have no text run and were previously skipped.
+    const effectiveStyles = reviewEffectiveStyleCatalog(stylesScan, documentScan, stylesXml, documentXml, {});
+    const definedStyles = new Set(stylesScan.tokens.filter(t => isWordToken(t, 'style')).map(t => attr(t, 'styleId', W_NS)));
     const paragraphs = documentScan.logicalTableParagraphs?.map(record => record.token)
       || documentScan.tokens.filter(token => isWordToken(token, 'p')
         && token.path.join('/') === 'document/body/p').sort((a, b) => a.openStart - b.openStart);
@@ -4467,8 +4473,28 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
       const atoms = extractSemanticAtoms(documentXml, documentScan, before).filter(atom =>
         !insertedRanges.some(range => atom.order >= range.openStart && atom.order < range.closeEnd));
       const offsetUtf16 = semanticAtomsToText(atoms).length;
+      const paragraphProperties = directChildTokensWithin(documentScan, owner).filter(t => isWordToken(t, 'pPr'));
+      const runProperties = directChildTokensWithin(documentScan, ownerRun).filter(t => isWordToken(t, 'rPr'));
+      requireNote(paragraphProperties.length <= 1 && runProperties.length <= 1, 'REFERENCE_PROPERTIES');
+      const paragraphStyle = effectiveStyles.paragraph(paragraphProperties.length ? directChildTokensWithin(documentScan, paragraphProperties[0]) : []);
+      const direct = runProperties.length ? directChildTokensWithin(documentScan, runProperties[0]) : [];
+      const styleReferences = direct.filter(t => t.localName === 'rStyle');
+      requireNote(styleReferences.length <= 1 && styleReferences.every(t => isWordToken(t, 'rStyle')
+        && attr(t, 'val', W_NS).length > 0 && attr(t, 'val', W_NS).length <= 256
+        && !childTokensWithin(documentScan, t).length && (t.selfClosing || !documentXml.slice(t.openEnd, t.closeStart).trim())
+        && t.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns' || a.namespaceUri === W_NS && a.localName === 'val')), 'REFERENCE_STYLE');
+      // ISO29500 rStyle: an absent referenced style applies no character style.
+      // This keeps old minimal exports readable; malformed or defined invalid
+      // style chains still fail in the unchanged strict cascade.
+      const missingStyle = styleReferences.length === 1 && !definedStyles.has(attr(styleReferences[0], 'val', W_NS));
+      const properties = effectiveStyles.run(paragraphStyle, direct, missingStyle);
+      const fonts = properties.find(t => isWordToken(t, 'rFonts')), language = properties.find(t => isWordToken(t, 'lang'));
+      const fontSlots = Object.fromEntries(noteReferenceTypography.FONT_SLOTS.flatMap(key => fonts && attr(fonts, key, W_NS) ? [[key, attr(fonts, key, W_NS)]] : []));
+      const typography = Object.keys(fontSlots).length || language ? noteReferenceTypography.validate({ schemaVersion: 1,
+        ...(Object.keys(fontSlots).length ? { fontSlots } : {}), ...(language ? { wordLanguage: readEffectiveTuple(language, 'lang') } : {}) }) : undefined;
       notes.push({ kind, paragraphIndex, offsetUtf16, paragraphs: noteByKey.get(key) });
-      references.push({ kind, nativeId: id, paragraphIndex, offsetUtf16 });
+      references.push({ kind, nativeId: id, paragraphIndex, offsetUtf16,
+        ...(typography ? { referenceTypography: typography } : {}) });
     }
     requireNote(used.size === noteByKey.size, 'ORPHAN_NOTE');
   } catch (error) {
@@ -4978,8 +5004,9 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const documentSectionsResult = parseDocumentSections(documentScan, cryptoPort, documentXml);
   reasons.push(...documentSectionsResult.reasons);
   const documentSections = documentSectionsResult.sections;
+  const stylesScan = parseXmlPart('word/styles.xml', rawString(parts['word/styles.xml']), budgets, cryptoPort, budgetState);
   const documentNotesResult = parseDocumentNotes(parts, documentXml, documentScan,
-    relationships.relationships, contentTypes.contentTypes, budgets, cryptoPort, budgetState);
+    relationships.relationships, contentTypes.contentTypes, budgets, cryptoPort, budgetState, stylesScan);
   reasons.push(...documentNotesResult.reasons);
   const documentNotes = documentNotesResult.documentNotes;
   const scans = {
@@ -5005,7 +5032,6 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     },
   };
 
-  const stylesScan = parseXmlPart('word/styles.xml', rawString(parts['word/styles.xml']), budgets, cryptoPort, budgetState);
   reasons.push(...stylesScan.diagnostics, ...scans.comments.diagnostics);
   if (!blockingReason(reasons)) validateWordSemanticTypes(documentScan, scans.comments, stylesScan, reasons);
   if (!blockingReason(reasons)) {
