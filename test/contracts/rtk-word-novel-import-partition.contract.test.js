@@ -1174,17 +1174,22 @@ async function authenticatedBookNoteReturn(t,f,x,returnedBytes,options={}) {
   context.reviewTransportAuthorityCapsule={...x.source.localAuthorityCapsule,
     exportMapAuthority:'main-owned-active-export-authority-store-after-return-authentication',returnedArtifactExportMapAccepted:false};
   context.reviewTransportReturnIntake={authenticated:true,returnedArtifactSha256:'sha256:'+sha(returnedBytes),parserResult:analysis};
+  const authorityCodec=require('../../src/core/word-review-authority-codec-v1.cjs');
   const priorRounds=Object.values(options.priorAuthorityRecord?.roundsById||{}).map(cloneJsonSafe);
   assert.ok(priorRounds.every(row=>row.roundId!==context.reviewTransportAuthorityCapsule.roundId),'a genuinely new round does not replace prior authority');
-  round=require('../helpers/main-docx-round-authority').installMainDocxRoundAuthority(sandbox,{projectRoot:f.root,projectId:f.projectId,references:[...priorRounds,context.reviewTransportAuthorityCapsule],publishAllocated:true,t});
-  roundRecord=sandbox.buildDocxReviewReturnAuthorityStoreRecord({lastRoundId:context.reviewTransportAuthorityCapsule.roundId,roundsById:round.roundsById});
+  // Install the private FS adapter with the newly signed current capsule, then
+  // assemble the complete indexed fixture before any command. Retained bodies
+  // stay packed; comparison resolves them one at a time rather than decodeAll.
+  round=require('../helpers/main-docx-round-authority').installMainDocxRoundAuthority(sandbox,{projectRoot:f.root,projectId:f.projectId,references:[context.reviewTransportAuthorityCapsule],publishAllocated:true,t});
+  const allRounds={...Object.fromEntries(priorRounds.map(row=>[row.roundId,row])),...round.roundsById};
+  roundRecord=sandbox.buildDocxReviewReturnAuthorityStoreRecord({lastRoundId:context.reviewTransportAuthorityCapsule.roundId,roundsById:allRounds},{indexed:true});
   retain('book-note-return-round-admission-'+(options.label||'tiny'),roundRecord);
   sandbox.validateDocxReviewAuthorityRoundBindings(roundRecord,f.root);
   const encodedRound=sandbox.reviewAuthorityCodec.encode(cloneJsonSafe(roundRecord));
   fs.writeFileSync(round.storePath,encodedRound);
   const strictRound=sandbox.readStrictDocxReviewAuthorityStore(f.root);
   equal(strictRound.record,roundRecord,'actual strict codec reopen binds every complete round field');
-  for(const prior of priorRounds)equal(strictRound.record.roundsById[prior.roundId],options.priorAuthorityRecord.roundsById[prior.roundId],'prior complete fixture round is unchanged');
+  for(const prior of priorRounds)equal(authorityCodec.unpackRound(strictRound.record.roundsById[prior.roundId]),authorityCodec.unpackRound(prior),'prior complete fixture round is unchanged');
   assert.equal(strictRound.record.lastRoundId,context.reviewTransportAuthorityCapsule.roundId);
   retainDirectory('book-note-return-round-'+(options.label||'tiny'),{'return-authority-store.v4.json':fs.readFileSync(round.storePath)});
   retain('book-note-return-round-'+(options.label||'tiny'),{record:roundRecord,encoded:encodedRound,decoded:strictRound.record,

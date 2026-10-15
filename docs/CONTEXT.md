@@ -6,6 +6,11 @@ STATUS: CANDIDATE_VERIFICATION_AND_DELIVERY_PENDING
 BINDING_BASE_SHA: ffd9d0e0d93a7ea6aac6e53dff23138d7449b1ca
 CLAIM_BOUNDARY: bounded store representation only; full native feature remains NOT_READY
 
+The maintained selected-scene consumers now call actual Main fresh-round
+resolution before reading complete comment authority. The actual-byte novel
+fixture builds V5 and resolves retained capsules individually; no decodeAll,
+assertion removal, synthetic native credit or product-source change.
+
 Native76/77 completed public Redo, Undo and Redo with full independent graph
 conservation and ordinary Quit. Native78 created a9670932byte full DOCX but
 activation failed; no durable round change occurred. Its failure is retained.

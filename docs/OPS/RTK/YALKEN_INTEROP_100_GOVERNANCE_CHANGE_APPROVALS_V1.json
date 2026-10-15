@@ -3637,10 +3637,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
-      "sha256": "718835b6ba721cb272ffb895e5c42dfa9065a1feeaac62c62b30cd37b8de3eca",
-      "approvedAtUtc": "2026-10-05T05:23:26.774191Z",
-      "approvedBy": "owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005",
-      "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: pending insert/delete plus canonical comments through finite rich source validation, ordinary and Review export, exact unchanged-ledger reply return and existing atomic comment publication. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "8e8c95957979a3e7da27e0f24edc29fd6aa67ced64fd9eeaebbc4205bcad8913",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -5600,11 +5600,11 @@
     {
       "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "a3dfb7c9bcf6b7ff9733c51f06c23a5f47bc5d3b3c2e25e624b68e1596c17cd2"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "0ff5da02d22ea29eca9b481f526e2484f517939cf064616f2be3660d31ff38f4"
     },
     {
       "filePath": "test/contracts/rtk-word-review-authority-codec.contract.test.js",
@@ -5627,65 +5627,65 @@
     {
       "filePath": "docs/tasks/2026-10-15--word-export-activation-mac.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "3e3186c60e1b5793db5c0fb60b19884239df1a8602132047011551a4b81cd5d9"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "dc751beaea7f1af07879c8dcf7de733cf9d7928d5a0b506f5e60b9d614bbfb49"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "e4bfde8a7946bc7a21c99fbf7f54d71a7d066a74b646bd1f9614f2613aee29cc"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "fad0b17f807600d3a05e78f7c7d8fe9c80926090bb8484f72ece5ca9a321fc41"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:52:26.566247+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "b45e709c1780df490058d11e81781e90398d77db65c5862d22cd9fd38a28dad2"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "227caed24327766ea47b09e6bed2e7ab96a56763625ae28b7f695dad2f88c44a"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "f7c7b57a2d435e051efb8ff0099805561d3eed5eb06c95841f5874d80d2ac0b3"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "0c3d138f7df78b973fb7a01b6a2275f8b1cc63902c7db672543bd76ca227a3a4"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "42d336f6e4747715c70d3d2361739deaab584df405d683f5422e6af5c6d1bd22"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "156f59c928ac251cc6f6bbb447d7350c6a4f3ce6751ceb53e843959d739f60b9"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "c8e8a44e0d813fd03b591eeb19fb6e16b178f11cf52b3afadff0641d1e47e2e9"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "2759f15765e6b8ecac5f834014300a15ecf377cba9f9b7f7a75fe138e3bc5a99"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedAtUtc": "2026-10-15T17:09:01.198564+00:00",
       "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
-      "sha256": "10c65fc14410bfd54d65296051a84f0700b002014b1ee42e01a554372c3af2fa"
+      "rationale": "Same indexed storage correction: maintained complete-capsule consumers use actual Main fresh authority, and the owned actual-byte novel fixture uses the actual V5 builder with sequential complete prior-capsule comparison. All original semantic/provenance/sibling/replay/race/recovery assertions and full required denominator remain. Runtime581 package inputs unchanged; no native acceptance from fixture results. Mechanical exact-byte companions only; full normal CI/delivery and fresh native still required.",
+      "sha256": "3c43d20bc2cd050318bd7477d9b8061cb9eddc0ca13219c246681bdf65634ae6"
     }
   ],
   "evidenceStampIds": [
@@ -44608,6 +44608,87 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
       "sha256": "d0d6eca80a73c5506169921cefb53052a7d2d1e6dd7733643ebe098707ef74bf"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
+      "sha256": "718835b6ba721cb272ffb895e5c42dfa9065a1feeaac62c62b30cd37b8de3eca",
+      "approvedAtUtc": "2026-10-05T05:23:26.774191Z",
+      "approvedBy": "owner-delegated-codex:WORD_SINGLE_SCENE_COMMENTS_MAC_20261002|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005",
+      "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: pending insert/delete plus canonical comments through finite rich source validation, ordinary and Review export, exact unchanged-ledger reply return and existing atomic comment publication. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "a3dfb7c9bcf6b7ff9733c51f06c23a5f47bc5d3b3c2e25e624b68e1596c17cd2"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-15--word-export-activation-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "3e3186c60e1b5793db5c0fb60b19884239df1a8602132047011551a4b81cd5d9"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "e4bfde8a7946bc7a21c99fbf7f54d71a7d066a74b646bd1f9614f2613aee29cc"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:52:26.566247+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "b45e709c1780df490058d11e81781e90398d77db65c5862d22cd9fd38a28dad2"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "f7c7b57a2d435e051efb8ff0099805561d3eed5eb06c95841f5874d80d2ac0b3"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "42d336f6e4747715c70d3d2361739deaab584df405d683f5422e6af5c6d1bd22"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "c8e8a44e0d813fd03b591eeb19fb6e16b178f11cf52b3afadff0641d1e47e2e9"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T16:44:02.124219+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_EXPORT_ACTIVATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish, bounded indexed authority storage correction. Preserve every complete capsule and lifecycle, validate all payloads sequentially, resolve selected eligible body, preserve fresh lease/text-CAS/atomic writer/readback. Legacy V2/V4 bounds retained; explicit V5 aggregate verification bounds256MiB/4M values. Actual representative7-round read-only full-body equality is not genuine exchange/native acceptance. Mechanical current-byte companions only; historical approvals, mandatory oracles and all feature acceptance denominators remain. Normal full CI/delivery and separately admitted ordinary native continuation required.",
+      "sha256": "10c65fc14410bfd54d65296051a84f0700b002014b1ee42e01a554372c3af2fa"
     }
   ]
 }

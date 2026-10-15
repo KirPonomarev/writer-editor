@@ -48,6 +48,7 @@ or OS temporary directory. No native process during code implementation.
 - src/export/docx/docxReviewPacketExportHandler.js
 - test/contracts/rtk-word-review-authority-codec.contract.test.js
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
+- test/contracts/rtk-word-scene-comment-export.contract.test.js
 - test/contracts/rtk-word-c5v2-full-manuscript-product-export.contract.test.js
 - test/contracts/rtk-word-novel-import-partition.contract.test.js
 - docs/tasks/2026-10-15--word-export-activation-mac.md
@@ -129,3 +130,15 @@ limitations and one next step; filenames basenames only.
 Retain native78 failure and all new negative outcomes. No blind native retry.
 Rollback is one ordinary PR revert; preserve native snapshots and readable old
 formats. A new indexed store refuses silent downgrade in an old runtime.
+
+### Complete consumer representation correction
+
+Additional whole scene-comment tests exposed two direct descriptor consumers:
+the context and its complete comment digest must use actual Main fresh-round
+resolution. All old content/provenance/sibling/replay/writer assertions remain.
+The full-novel actual-byte fixture now uses the actual indexed record builder
+and compares complete resolved prior capsules. It retains every prior round,
+all authority/semantic checks and the unchanged full baseline denominator.
+Fresh clean corrective preflight bound524a93137732e3112ab8522cb5cff0fb9f4d417f
+and explicitly admitted this test path before edits. Runtime/package bytes are
+unchanged; normal full delivery and native admission are still required.

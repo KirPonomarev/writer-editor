@@ -25523,7 +25523,7 @@ export const R24_INTEROP_WORD_EXPORT_ACTIVATION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-      "sha256": "a3dfb7c9bcf6b7ff9733c51f06c23a5f47bc5d3b3c2e25e624b68e1596c17cd2"
+      "sha256": "0ff5da02d22ea29eca9b481f526e2484f517939cf064616f2be3660d31ff38f4"
     },
     {
       "path": "test/unit/r24-wp201-project-transaction.test.js",
@@ -25575,15 +25575,15 @@ export const R24_INTEROP_WORD_EXPORT_ACTIVATION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "67174c62537feb7e94c05e9f08c439b6c0a3184c3fdbfd9cf8617fe25b72ce2a"
+      "sha256": "dcd48aa63b510372a54b00480e52f7c2c36d2edba35a8fcfd963d1c5d61173fb"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "3c793a65d33e888469f963b0fec6d30cfa017f32337892fc6b8639ff267831b0"
+      "sha256": "16f85d42a5234ba4c8739aced51fcaf96c4ad0c0e9f8f93eea866a1ebe4a31a2"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "2c5f5980e5e4cee995b0b6b059fcb608eccbfddc8a35910839b896388770782b"
+      "sha256": "23e5a50e5f4a39a961dcbc2bbac0b2b37e0202976ba2dbeab629feca040b742e"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -25695,13 +25695,17 @@ export const R24_INTEROP_WORD_EXPORT_ACTIVATION_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-15--word-export-activation-mac.md",
-      "sha256": "3e3186c60e1b5793db5c0fb60b19884239df1a8602132047011551a4b81cd5d9"
+      "sha256": "dc751beaea7f1af07879c8dcf7de733cf9d7928d5a0b506f5e60b9d614bbfb49"
+    },
+    {
+      "path": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
+      "sha256": "8e8c95957979a3e7da27e0f24edc29fd6aa67ced64fd9eeaebbc4205bcad8913"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e4bfde8a7946bc7a21c99fbf7f54d71a7d066a74b646bd1f9614f2613aee29cc"
+      "sha256": "fad0b17f807600d3a05e78f7c7d8fe9c80926090bb8484f72ece5ca9a321fc41"
     }
   ]
 });
