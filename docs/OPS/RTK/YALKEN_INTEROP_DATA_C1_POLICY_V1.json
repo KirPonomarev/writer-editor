@@ -664,7 +664,8 @@
     "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md",
     "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
     "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
-    "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md"
+    "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
+    "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md"
   ],
   "protectedFiles": [
     {
@@ -2073,7 +2074,7 @@
       },
       {
         "path": "src/core/project-tree-cohort-v1.mjs",
-        "sha256": "03117bc9c472b24d41883d33b9b35368cfa5ff345bba040e33ef8d4a4508653e"
+        "sha256": "4302ee5a1e6f3b018c5e333387e186c925b5023888857fc0c462f475001c60c1"
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -2129,15 +2130,15 @@
       },
       {
         "path": "scripts/ops-gate.mjs",
-        "sha256": "14b9a8eaf8d4285b8b9751a878abdef1f5e274f671cd006c43bed306d0246e56"
+        "sha256": "be537364427d416abd1db7dafc1d95b2abf2315b4d837034d72468876c51b2b4"
       },
       {
         "path": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
-        "sha256": "59d2d1c05069e8bae30e95dfcc20a056cd61bc323d3eee819e05a051873e89a9"
+        "sha256": "828a810dd57d5c4d72793c025abfc44274d18e83f76e89939ea85ff781623978"
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "86f8b0ca37a89d30200e7831192579f51d6ff66e1aa77b49abe5ff4aeeb49e90"
+        "sha256": "77d9e38d799f76cfd5ffb304e4475bb89f796af05d56cace4ba5a55a1465e0d3"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2585,15 +2586,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8cc4a8e000fd4f72eb9777aa608c8e215464db390ba46ae5998b7124ef26b2a0"
+        "sha256": "0489bbd53b9ca24ab7004a10406e9dcaa3376f58ffdcad710cec22a14b21198e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d5561a532ebcd50f8ee3dbb9116e987bc3d69e95db84f4e01321214561ea6290"
+        "sha256": "d938875a7be55cc58adb93efd171cbb20bf71cbb9026ebaf8f75b6fc2d1cf779"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "17495f9e1676f4a4bb4f5f90bae117356e4b9cd621050da0b1d727d335e058e0"
+        "sha256": "5f6c67e4e3aa520084acd7c3e44486790fe983537ce8fa272c67893483f7cafb"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2853,7 +2854,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "877bae0c36eaf9285b08e945b5880ca42d0ef46d4982fe24ace2e221a7f1966f"
+        "sha256": "45c9b6f6bc0d84990a7e980d3e82dda14a402906cc6e02c4be38304b46476ebf"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -2922,6 +2923,10 @@
       {
         "path": "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
         "sha256": "9fe63c489b705ab9533997e1aa746c6dac5edbeb9cdf494bea27ef559b803f4e"
+      },
+      {
+        "path": "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
+        "sha256": "acd766403392ed00f0a431bcd3a11b6e8a38bf357ced2bd4a2a48d9fd20c3f72"
       }
     ],
     "followupRepair": {

@@ -841,3 +841,28 @@ test('ops gate admits cohort lexical path import without admitting IO or other s
     if (expected === 1) assert.match(result.stderr, /CORE_PURITY_VIOLATION/u);
   }
 });
+
+test('ops gate admits exact deterministic cohort primitives while refusing effect and import expansion', (t) => {
+  const source = 'src/core/project-tree-cohort-v1.mjs';
+  const pure = "import crypto from 'node:crypto';\nimport { isDeepStrictEqual } from 'node:util';\n"
+    + "export const digest = value => crypto.createHash('sha256').update(value, 'utf8').digest('hex');\n"
+    + 'export const equal = (a, b) => isDeepStrictEqual(a, b);\n';
+  for (const [name, file, body, expected] of [
+    ['actual complete cohort source', source, fs.readFileSync(path.join(repoRoot, source), 'utf8'), 0],
+    ['exact pure subset', source, pure, 0],
+    ['other source', 'src/core/unadmitted-primitives.mjs', pure, 1],
+    ['wildcard util', source, pure + "import * as util from 'node:util';\n", 1],
+    ['other util binding', source, pure + "import { inspect } from 'node:util';\n", 1],
+    ['filesystem', source, pure + "import fs from 'node:fs';\n", 1],
+    ['entropy', source, pure + 'crypto.randomBytes(8);\n', 1],
+    ['clock', source, pure + 'Date.now();\n', 1],
+    ['cwd', source, pure + 'process.cwd();\n', 1],
+    ['same-line expansion', source, "import crypto from 'node:crypto'; crypto.randomBytes(8);\n", 1],
+  ]) {
+    const root = makeFixture(t);
+    writeFile(root, file, body);
+    const result = runGate(root);
+    assert.equal(result.status, expected, `${name}\n${result.stderr}`);
+    if (expected === 1) assert.match(result.stderr, /CORE_PURITY_VIOLATION/u);
+  }
+});
