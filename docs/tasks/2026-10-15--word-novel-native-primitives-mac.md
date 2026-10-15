@@ -32,7 +32,7 @@ H: Node Core currently hashes large retained packets with portable JS and create
 two large canonical strings just to compare complete rederived values. Built-in
 node:crypto and node:util preserve supported JSON meaning at lower measured cost.
 B: No UI/schema/dependency/cache/port/authority/timeout/quota changes. All old
-native profiles, raw evidence, test assertions and existing source freeze survive.
+native profiles, raw evidence, behavioral assertions and source freeze survive.
 P: Actual native74 causal FAIL; controlled retained-operand trials; digest parity,
 reordered JSON and forged full-value controls; complete affected/full required gates,
 normal delivery and actual exact-build native retry.
@@ -113,7 +113,7 @@ CHECK_02_POST_PROOF: All affected, required baseline and delivery proofs actuall
 - [ ] Actual native74 UI timeout retained with full durable conservation.
 - [ ] Supported exact values and actual retained digests remain identical.
 - [ ] Recomputed-digest full-value forgeries refuse before any write.
-- [ ] Every old maintained test assertion remains unchanged.
+- [ ] Every old behavioral value/digest/full-cohort assertion remains unchanged.
 - [ ] Full affected/RTK/certification and official CI pass with zero exclusions.
 - [ ] Normal delivery and exact merged checks complete before native retry.
 
@@ -122,8 +122,9 @@ CHECK_02_POST_PROOF: All affected, required baseline and delivery proofs actuall
 Causal portable-hash RED01 and maintained signed-zero RED02 are retained. The
 first direct structural comparator rejected a canonical valid generated -0 plan;
 the corrected fast comparison falls back to the full old canonical comparison.
-Original maintained test assertions remain exact prefixes. Node22 focused4of4 and
-shipped Electron41.10.6/Node24 focused4of4 pass with mandatory TAP0 and no exclusions.
+Original behavioral comparisons remain exact; three old hash-loader literals
+follow the actual Node implementation while keeping the independent portable
+reference. Node22 focused5of5 and shipped Electron41.10.6/Node24 focused5of5 pass with mandatory TAP0 and no exclusions.
 Whole purity gate46of46 passes including ten narrow positive/negative controls.
 Electron's first default reporter yielded process0 but mandatory oracle1; the
 explicit-TAP rerun is the sole qualified Electron result. No oracle changed.
@@ -136,6 +137,23 @@ approval-metadata drift; RTK is explicitly cancelled with owned graph cleanup.
 All failed/cancelled outputs remain retained. Official C2A generation restores
 only its approval bytes; the other five generated outputs are already exact.
 All581 product/package inputs remain unchanged; new full gates are required.
+
+### Proof execution ownership
+
+Whole local cohort/purity/unit contracts pass193of193. The old hash-copy loader
+requires its previous implementation string and caused the only official RTK
+failure4216of4217. Three loader literals now target actual Node SHA and construct
+the original independent portable MJS reference; all golden digest vectors and
+whole-cohort assertions remain unchanged. Local causal RED08 is retained.
+The previous whole-file byte-prefix constraint is narrowed only for those three
+fixture literals; no behavioral oracle is weakened or disabled.
+
+Full required RTK/certification execute once in official CI on the frozen exact
+candidate. Verify full raw job logs with the unchanged mandatory TAP oracle,
+exact head/tree/workflow identities and zero exclusions. Run focused old/new/private
+and complete affected cohort/purity/unit contracts on Mac, generated C2A checks
+before CI, and fresh relevant checks after normal merge. Local cancelled/failed
+full attempts remain unqualified. Native/public deadlines remain unchanged.
 
 ### REFERENCES
 

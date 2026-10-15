@@ -2856,9 +2856,9 @@ test('novel import: partition copies only selected roots with deep ownership and
 test('novel tree hashes retain old string UTF8 digests and complete canonical cohort bytes',async t=>{
  const filename=require.resolve('../../src/core/project-tree-cohort-v1.mjs'),{pathToFileURL}=require('node:url');
  const load=async legacy=>{
-  let source=readSource(filename);assert.ok(source.includes("const sha = x => hash.sha256Hex(String(x));"));
-  if(legacy)source=source.replace("import hash from './browser-safe-hash.cjs';","import { sha256Hex } from './browser-safe-hash.mjs';")
-    .replace('const sha = x => hash.sha256Hex(String(x));','const sha = x => sha256Hex(x);');
+  let source=readSource(filename);assert.ok(source.includes("const sha = x => crypto.createHash('sha256').update(String(x), 'utf8').digest('hex');"));
+  if(legacy)source=source.replace("import crypto from 'node:crypto';","import { sha256Hex } from './browser-safe-hash.mjs';")
+    .replace("const sha = x => crypto.createHash('sha256').update(String(x), 'utf8').digest('hex');",'const sha = x => sha256Hex(x);');
   source=source.replace(/(from\s+)(['"])(\.{1,2}\/[^'"]+)\2/g,(_,a,q,p)=>a+q+pathToFileURL(path.resolve(path.dirname(filename),p)).href+q);
   return import('data:text/javascript;base64,'+Buffer.from(source+'\nexport { sha as observedModelHash };').toString('base64'));
  };

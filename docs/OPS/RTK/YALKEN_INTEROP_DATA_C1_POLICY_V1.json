@@ -2586,15 +2586,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1679f13a40fb685b4d261c16714dfd5031d4e87acd7fecc51ca9efdb163689a0"
+        "sha256": "983d4cd149c321e09599216775c1616fb6c05b48ccfb9bfd1460d27211a552cd"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "cf51855569cbe8659427759ea7b8a2840176f2a973bdc36897c3270b78fbee96"
+        "sha256": "f24290e5144a5f8021cc8abc69455bdff257f915a5ef9398d243f8a4e8b9fce7"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "d111dd542a7163bbe08524b74f2aed092b3d09d5b4b43087d881050b92d4858a"
+        "sha256": "f7c7a0f1968e9efd71178738d05db9d218ec3f6a82ec3a04d5ea76b35b109f47"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2854,7 +2854,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "45c9b6f6bc0d84990a7e980d3e82dda14a402906cc6e02c4be38304b46476ebf"
+        "sha256": "8d2ac0cf3f14e6dcb788b26a8e91a335288a6664d4f8bdeef633d35c8a32f58e"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -2926,7 +2926,7 @@
       },
       {
         "path": "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
-        "sha256": "a2375ac6fd6987c91a4cc09cc14b7d03d0f379aaaf11d80031d9e97e406046aa"
+        "sha256": "b90a0940411b6f5f2fa820dea878de47176164176d1964119ec9ca24c90cab77"
       }
     ],
     "followupRepair": {

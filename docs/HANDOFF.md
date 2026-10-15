@@ -20,7 +20,10 @@ with mandatory TAP0 and zero exclusions. Whole purity gate46of46 includes actual
 Core source and refusal of other files/imports, filesystem, entropy, clock and cwd.
 An earlier Electron run used its default non-TAP reporter: process0 but oracle1;
 its result is preserved and replaced by an explicit-TAP run, not called green.
-Old maintained assertions stay byte-exact. The previous40s to30s retained-operand
+All behavioral digest/value/cohort assertions remain unchanged. The old hash
+reference loader follows the actual Node implementation through three literal
+updates, retaining the independent portable reference. Its initial source-string
+refusal is preserved in local RED08 and complete CI4216of4217, never called PASS. The previous40s to30s retained-operand
 trial is diagnostic only. Full frozen RTK/certification, official CI and normal
 commit/push/PR/merge/exact merged proof remain required before native retry.
 The first frozen candidate09f2fbc4 completes certification317of318 with one C2A
@@ -28,6 +31,11 @@ approval-metadata drift; RTK is explicitly cancelled with owned graph cleanup.
 All failed/cancelled outputs remain retained. Official C2A generation restores
 only its approval bytes; the other five generated outputs are already exact.
 All581 product/package inputs remain unchanged; new full gates are required.
+Focused5of5 pass on Node22 and shipped Node24; complete local cohort/purity/unit
+files pass193of193 with zero exclusions. Official CI is the single full RTK and
+certification baseline; complete raw logs, source identity and unchanged TAP
+oracles are required, plus fresh exact-merged Mac checks. No required test is
+omitted and no failed/partial old run is promoted.
 All native profiles, original WIP and old evidence remain preserved. Full feature
 NOT_READY: roles, origins/scales/runtimes/five exchanges, physical note controls
 and old SOURCE80 recovery stay open. Task:2026-10-15--word-novel-native-primitives-mac.md.
