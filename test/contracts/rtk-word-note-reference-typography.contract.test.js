@@ -132,6 +132,16 @@ test('real admitted SafeCreate persists and reopens reference values; changed pr
   model.validateNoteCohort(cohort, args);
   const forged = JSON.parse(cohort.afterText); forged.notes[0].manuscript.referenceTypography.fontSlots.ascii = 'Arial';
   assert.throws(() => model.validateNoteCohort({ ...cohort, afterText: JSON.stringify(forged) }, args), /NOTE_COHORT_REBASE/);
+  for (const mutate of [n => n.manuscript.referenceTypography.fontSlots.cs = 'Georgia',
+    n => { delete n.manuscript.referenceTypography; n.manuscript.schemaVersion = 1; }]) {
+    const bad = JSON.parse(notesText); mutate(bad.notes[0]);
+    assert.throws(() => model.validateNoteCohort({ mode: 'MANUSCRIPT_BODY_UPDATE_V1', beforeText: notesText, afterText: JSON.stringify(bad) },
+      { ...args, afterContent: entry.content }), /NOTE_COHORT_REFERENCE_TYPOGRAPHY/);
+  }
+  const bodyEdit = JSON.parse(notesText); bodyEdit.notes[0].manuscript.body.content[0].content[0].text += ' updated';
+  bodyEdit.notes[0].body = model.validateNoteBody(bodyEdit.notes[0].manuscript.body).text;
+  const bodyCohort = model.validateNoteCohort({ mode: 'MANUSCRIPT_BODY_UPDATE_V1', beforeText: notesText, afterText: JSON.stringify(bodyEdit) }, { ...args, afterContent: entry.content });
+  assert.deepEqual(JSON.parse(bodyCohort.afterText).notes[0].manuscript.referenceTypography, typography);
 });
 
 async function returnFixture({ legacy = false, tracked = false } = {}) {

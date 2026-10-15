@@ -342,6 +342,10 @@ function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterCon
       const old = byId.get(note.id);
       if (JSON.stringify(old) === JSON.stringify(note)) continue;
       need(note.manuscript && (!old || old.manuscript), 'NOTE_COHORT_MANUSCRIPT_ONLY');
+      if (old?.manuscript) {
+        const typography = payload => payload.referenceTypography === undefined ? undefined : referenceTypography.validate(payload.referenceTypography);
+        need(JSON.stringify(typography(old.manuscript)) === JSON.stringify(typography(note.manuscript)), 'NOTE_COHORT_REFERENCE_TYPOGRAPHY');
+      }
       const ref = note.manuscript.reference;
       if (ref.sceneId !== sceneId) need(old && JSON.stringify(old.manuscript.reference) === JSON.stringify(ref), 'NOTE_COHORT_OTHER_SCENE_REFERENCE');
       else need(ref.sourceTextSha256 === sha(text) && boundary(text, ref.offsetUtf16), 'NOTE_COHORT_SOURCE');
