@@ -665,7 +665,8 @@
     "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
     "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
     "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
-    "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md"
+    "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
+    "docs/tasks/2026-10-15--word-history-private-preparation-mac.md"
   ],
   "protectedFiles": [
     {
@@ -890,11 +891,11 @@
   "qualifiedRuntimeRepair": {
     "id": "DOCX_IMPORT_PREVIEW_REFERENCE_REPAIR_V1",
     "bindingBaseSha": "0a45daf438c778143afad28ba02b519393a11f9b",
-    "scope": "Main-owned preview reference transport and bounded recoverable DOCX create transaction; real fenced manifest authority, v3 durable receipt, retained staging-inode ownership witnesses and owned resource recovery. Preserve all raw preservation oracles and IPC limits; runtime changes require fresh native evidence, no historical PASS carry-forward.",
+    "scope": "Main-owned preview reference transport and bounded recoverable DOCX create transaction; real fenced manifest authority, v3 durable receipt, retained staging-inode ownership witnesses and owned resource recovery. Preserve all raw preservation oracles and IPC limits; runtime changes require fresh native evidence, no historical PASS carry-forward. Existing Word book Undo/Redo is prepared by Core in one private prewrite invocation (WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015); all final source/lease/CAS checks, model regeneration, journal/recovery and independent readback remain. Exact task admission and this policy/executable pair must be delivered atomically; no native acceptance.",
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e17d4ee331e9248cff7829add60fa5a7b3685842ccf8263d46fd7aad1bd4f7ca"
+        "sha256": "035967a62dd718401de4fb38dfd2f0424c6061a4c060fb718a5a2c099649837e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1166,7 +1167,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "908413aa34ba4ffe91c68e18c8815bb93cd5f1db2e028d1530b88146c792ea82"
+        "sha256": "8211cf29a1a9582663196e5f00272a07fa0bd0fc655f23dd5965e0751c015038"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -2586,15 +2587,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "983d4cd149c321e09599216775c1616fb6c05b48ccfb9bfd1460d27211a552cd"
+        "sha256": "94f4f13d4b02e86be107af8f4128f2d87647053cd3ea03abd9010a745557100a"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f24290e5144a5f8021cc8abc69455bdff257f915a5ef9398d243f8a4e8b9fce7"
+        "sha256": "d9f6ed74e7c44c11e45026f478974bda682b26146354e22945bef36681affb20"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f7c7a0f1968e9efd71178738d05db9d218ec3f6a82ec3a04d5ea76b35b109f47"
+        "sha256": "1ff2be26319401d5c5715473f1646d6c355655bead16ddb750c48f12691c30d1"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2854,7 +2855,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "8d2ac0cf3f14e6dcb788b26a8e91a335288a6664d4f8bdeef633d35c8a32f58e"
+        "sha256": "f9cbf972d69d1059e73326a95acc5760225c69635064c07af011ed8757b19861"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -2927,6 +2928,10 @@
       {
         "path": "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
         "sha256": "b90a0940411b6f5f2fa820dea878de47176164176d1964119ec9ca24c90cab77"
+      },
+      {
+        "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
+        "sha256": "1191c94dd6d67499f0e4a1f5edcefeeb28293c87a260d32894325e68faef7d99"
       }
     ],
     "followupRepair": {

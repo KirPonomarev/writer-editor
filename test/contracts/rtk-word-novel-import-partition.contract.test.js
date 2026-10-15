@@ -1539,7 +1539,11 @@ test('novel authenticated atomic notes: independent editor and corrector returns
     const h=await actualRichRecordingSavePort(t,{...f,...await realAuthority.withRealDocxImportAuthority({...f,transactionAuthority:undefined})},scene),projection=await h.c.readPendingRevisionProjection();
     const result=await h.dispatch('cmd.project.review.decidePendingRevision',{action,projectId:projection.projectId,sceneId:projection.sceneId,subjectId:projection.subjectId,expectedSceneSha256:projection.expectedSceneSha256});
     const after=productFiles(f);retain('independent-roles-decision-'+decisions.length,{action,before,expectedDoc:expected.doc,expectedContent,expectedNotes,commentDecision,projection,result,after,requests:h.port.requests,receipts:h.receipts});
-    assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);assert.equal(h.receipts.length,1);assert.equal(textFile(h.file),expectedContent,'complete before-derived public decision envelope');
+    assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);
+    assert.equal(h.noWriteHistoryAdmissions.length,['undo','redo'].includes(action)?1:0);
+    assert.equal(h.receipts.length,1+h.noWriteHistoryAdmissions.length,'retain every Core attempt including the proved no-write admission');
+    assert.equal(h.receipts.filter(receipt=>receipt.changed!==false).length,1,'exactly one actual decision transaction');
+    assert.equal(textFile(h.file),expectedContent,'complete before-derived public decision envelope');
     equal(JSON.parse(after['notes.craftsman.json']),expectedNotes);equal(JSON.parse(after[commentRelative]),JSON.parse(commentDecision.afterText));
     const actual=envelope.parseObservablePayload(after[scene.relativeFile].toString()).doc;equal(pending.readLedger(actual),expectedLedger);
     for(const mode of ['current','original'])equal(pending.materialize(pending.readLedger(actual),mode),pending.materialize(expectedLedger,mode),'complete decision '+mode);
@@ -1609,7 +1613,7 @@ async function actualRichRecordingSavePort(t,f,scene,options={}) {
   editor.getJSON=()=>editor.state.doc.toJSON();editor.getText=()=>editor.state.doc.textBetween(0,editor.state.doc.content.size,'\n');
   t.after(()=>editor.destroy());
   const port=await authenticatedBookNoteReturn(t,f,null,null,{historyOnly:true,scene}),c=port.sandbox;
-  const h={editor,content:raw,generation:0,acks:[],snapshots:[],receipts:[],errors:[],publications:[],lifecycle:'owned'};
+  const h={editor,content:raw,generation:0,acks:[],snapshots:[],receipts:[],noWriteHistoryAdmissions:[],errors:[],publications:[],lifecycle:'owned'};
   const requests=new Map(),gateway=require('../../src/core/legacy-strangler-v1.cjs');
   Object.assign(c,{setTimeout,clearTimeout,pendingSnapshotRequests:requests,activeAutoSavePromise:null,lastAcknowledgedEditGeneration:0,
     currentLifecycleSubjectId:()=>h.lifecycle,lastAutosaveHash:sha(raw),userBookmarkSaveContinuation:null,userBookmarkRenameLineage:null,
@@ -1666,7 +1670,23 @@ async function actualRichRecordingSavePort(t,f,scene,options={}) {
   const kernel=require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({
     'cmd.project.save':c.handleSave,'cmd.project.review.recordTextRevisions':c.handlePendingRecordingCommand,'cmd.project.review.decidePendingRevision':c.handlePendingRevisionCommand});
   c.MENU_COMMAND_HANDLERS=Object.fromEntries(['cmd.project.save','cmd.project.review.recordTextRevisions','cmd.project.review.decidePendingRevision'].map(id=>[id,payload=>kernel.dispatch(id,payload)]));
-  const realCommit=c.commitProjectTransaction;c.commitProjectTransaction=async args=>{const receipt=await realCommit(args);h.receipts.push(cloneJsonSafe(receipt));if(options.afterCommit)options.afterCommit({h,c,r});return receipt;};
+  const realCommit=c.commitProjectTransaction;c.commitProjectTransaction=async args=>{
+    const before=args.wordHistory?productFiles(f):null,writes=[];
+    const adapter=args.wordHistory?{...fsp,...Object.fromEntries(['writeFile','appendFile','rename','mkdir','unlink','rmdir','rm','link','symlink','truncate','copyFile','chmod','chown','utimes']
+      .map(name=>[name,(...values)=>{writes.push(name);return fsp[name](...values);}])) ,open:(file,flags,...rest)=>{
+        if(typeof flags==='number'?flags&(fs.constants.O_WRONLY|fs.constants.O_RDWR|fs.constants.O_CREAT|fs.constants.O_TRUNC|fs.constants.O_APPEND):/[wa+]/u.test(flags))writes.push('open');
+        return fsp.open(file,flags,...rest);
+      }}:null;
+    const receipt=await realCommit(adapter?{...args,fsAdapter:adapter}:args);
+    h.receipts.push(cloneJsonSafe(receipt));
+    if(args.wordHistory&&receipt.changed===false) {
+      assert.equal(receipt.success,true);assert.equal(receipt.wordHistory.available,false);
+      equal(writes,[],'unavailable book history invokes no filesystem mutation primitive');
+      equal(productFiles(f),before,'unavailable book history preserves every product, packet, journal and commit-marker byte');
+      h.noWriteHistoryAdmissions.push({descriptor:cloneJsonSafe(args.wordHistory),receipt:cloneJsonSafe(receipt),writes});
+    }
+    if(options.afterCommit)options.afterCommit({h,c,r});return receipt;
+  };
   h.renderer=r;h.c=c;h.kernel=kernel;h.port=port;h.file=file;
   h.dispatch=(id,payload)=>c.dispatchMenuCommand(id,payload,{route:'command.bus'});
   h.record=async action=>{const payload={action,projectId:f.projectId,sceneId:scene.relativeFile,subjectId:h.lifecycle+':'+c.commentAuthoringSessionId,
@@ -2132,7 +2152,7 @@ test('novel authenticated atomic notes: governed public history continuation reo
     retainDirectory('public-history-changed-physical-'+action,Object.fromEntries(changed.map(row=>[row.path,fs.readFileSync(path.join(f.root,row.path))])));
     assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);assert.equal(port.requests.length,1);assert.equal(port.publications.length,1);
     for(const relative of guarded)assert.ok(fs.readFileSync(path.join(f.root,relative)).equals(target[relative]),'complete synchronized rich body/notes/comments '+action+' '+relative);
-    const allowed=new Set(port.requests[0].treeCohort.entries.map(row=>row.relativePath));
+    const allowed=new Set(guarded);
     for(const scene of f.scenes)allowed.add(path.relative(f.root,tx.commitPathFor(path.join(f.root,scene.relativeFile))));
     allowed.add(path.relative(f.root,f.manifestPath));allowed.add(path.relative(f.root,tx.treeCommitPathFor(f.manifestPath)));
     for(const row of before.filter(row=>!row.path.startsWith('.test-authority/')&&!allowed.has(row.path)))equal(pins.find(after=>after.path===row.path),row,'every protected business byte after '+action);
@@ -2250,10 +2270,11 @@ test('novel authenticated atomic notes: private guards preserve unchanged, Cance
       if(mode.startsWith('history-')) {
         const after=productFiles(f);value.sandbox.commitProjectTransaction=async args=>{
           value.requests.push(cloneJsonSafe(args));
-          assert.equal(JSON.parse(args.treeCohort.input.returnProofJson).schemaVersion,6);
-          if(mode==='history-before-marker')return tx.commitProjectTransaction({...args,afterTreeFilesPublish:async()=>{fault=true;throw Object.assign(Error('TINY_HISTORY_BEFORE_MARKER'),{code:'TINY_HISTORY_BEFORE_MARKER'});}});
+          equal(args.wordHistory,{action:'undo',projectId:f.projectId,sceneId:f.scenes[0].relativeFile});assert.equal(args.treeCohort,undefined);
+          const actualJournal=()=>assert.equal(JSON.parse(JSON.parse(textFile(tx.journalPathFor(f.manifestPath))).packet.plan.input.returnProofJson).schemaVersion,6);
+          if(mode==='history-before-marker')return tx.commitProjectTransaction({...args,afterTreeFilesPublish:async()=>{actualJournal();fault=true;throw Object.assign(Error('TINY_HISTORY_BEFORE_MARKER'),{code:'TINY_HISTORY_BEFORE_MARKER'});}});
           return tx.commitProjectTransaction({...args,fsAdapter:{...fsp,unlink:async target=>{
-            if(!fault&&target===tx.journalPathFor(f.manifestPath)){fault=true;throw Object.assign(Error('TINY_HISTORY_AFTER_MARKER'),{code:'TINY_HISTORY_AFTER_MARKER'});}return fsp.unlink(target);}}});
+            if(!fault&&target===tx.journalPathFor(f.manifestPath)){actualJournal();fault=true;throw Object.assign(Error('TINY_HISTORY_AFTER_MARKER'),{code:'TINY_HISTORY_AFTER_MARKER'});}return fsp.unlink(target);}}});
         };
         const projection=await value.sandbox.readPendingRevisionProjection(),result=await value.kernel.dispatch('cmd.project.review.decidePendingRevision',
           {action:'undo',projectId:projection.projectId,sceneId:projection.sceneId,subjectId:projection.subjectId,expectedSceneSha256:projection.expectedSceneSha256});
@@ -2307,6 +2328,25 @@ test('novel authenticated atomic notes: complete final reads are sequential and 
   assert.equal(owned.exports.counts().latestRegenerations,1,'one owned lineage invocation shares complete latest verification');
   assert.equal(lineage.treeMutation.receipt.transactionId,ids[0]);retain('atomic-private-lineage-and-memory',{ids,cohort,lineage,counts:owned.exports.counts()});
 });
+test('novel authenticated atomic notes: private history descriptors reject unowned preparation before any effect',async()=>{
+  let effects=0;
+  const forbidden=async()=>{effects++;throw Error('UNAUTHORIZED_HISTORY_EFFECT');};
+  for(const wordHistory of [null,{}, {action:'delete',projectId:'book',sceneId:'scene.md'},
+    {action:'undo',projectId:'book',sceneId:'../foreign.md'},
+    {action:'undo',projectId:'book',sceneId:'roman/scene.md',prepared:{}},
+    {action:'undo',projectId:'book',sceneId:'roman/scene.md',invocation:{}},
+    {action:'undo',projectId:'book',sceneId:'roman/scene.md',plan:{}},
+    {action:'undo',projectId:'book',sceneId:'roman/scene.md',[Symbol('private')]:{}},
+    {action:'undo',projectId:'book',get sceneId(){throw Error('CALLER_GETTER_EXECUTED');}}]) {
+    await assert.rejects(tx.commitProjectTransaction({manifestPath:path.join(os.tmpdir(),'unowned-history','project.craftsman.json'),
+      revision:0,wordHistory,publishManifest:forbidden,revalidate:forbidden,
+      fsAdapter:{readFile:forbidden,stat:forbidden,lstat:forbidden,writeFile:forbidden}}),
+      error=>error.code==='E_WORD_BOOK_HISTORY_PROOF');
+  }
+  await assert.rejects(tx.commitProjectTransaction({wordHistory:{action:'undo',projectId:'book',sceneId:'roman/scene.md'},treeCohort:{},
+    revalidate:forbidden,publishManifest:forbidden}),error=>error.code==='E_WORD_BOOK_HISTORY_PROOF');
+  assert.equal(effects,0,'invalid identity or caller-owned preparation never reaches a read, lease callback or write');
+});
 test('novel authenticated atomic notes: private history verification retains nested binding and final prewrite freshness',async t=>{
   const f=await importedTiny(t,'private-history-verify',{canonicalNotes:true}),x=await exportImported(f);
   const filename=require.resolve('../../src/core/project-transaction-v1.cjs'),{Module,createRequire}=require('node:module'),owned=new Module(filename);
@@ -2317,8 +2357,14 @@ test('novel authenticated atomic notes: private history verification retains nes
     +source.replace(validate,validate+'actualValidations.push(proofVersion(packet.plan));')
       .replace(build,build+'actualBuilds.push(proofVersion(privatePlan));')
     +'\nmodule.exports={...module.exports,packetBinding:validateTreePacketBinding,packetMeaning:validateTreePacket,canonicalize,sha256hex,counts:()=>({actualValidations,actualBuilds}),reset:()=>{actualValidations=[];actualBuilds=[];}};',filename);
-  let lateTarget=null;const late=[];
+  let lateTarget=null,mutateDescriptor=false,descriptorChanged=false;const late=[];
   const commit=async args=>{
+    if(mutateDescriptor&&args.wordHistory) {
+      const original={...args.wordHistory};let first=true;
+      try{return await owned.exports.commitProjectTransaction({...args,revalidate:async()=>{
+        await args.revalidate();if(first){first=false;Object.assign(args.wordHistory,{action:'redo',projectId:'foreign',sceneId:'roman/foreign.txt'});descriptorChanged=true;}
+      }});}finally{Object.assign(args.wordHistory,original);mutateDescriptor=false;}
+    }
     if(!lateTarget)return owned.exports.commitProjectTransaction(args);
     let calls=0,writes=0,fired=false;
     const adapter={...fsp,writeFile:async(...values)=>{writes++;return fsp.writeFile(...values);}};
@@ -2328,12 +2374,28 @@ test('novel authenticated atomic notes: private history verification retains nes
   };
   const value=await authenticatedBookNoteReturn(t,f,x,changedNotesZip(x,'private-verify',true),{label:'private-verify',commit});
   assert.equal(value.applied?.ok,true,JSON.stringify(value.error||value.result));
-  const history=[];
+  const refused=[];
+  for(const [wordHistory,code] of [
+    [{action:'undo',projectId:'foreign',sceneId:f.scenes[0].relativeFile},'E_TREE_COHORT_PROJECT'],
+    [{action:'undo',projectId:f.projectId,sceneId:'roman/foreign.txt'},'E_WORD_BOOK_HISTORY_SCENE_REQUIRED'],
+    [{action:'redo',projectId:f.projectId,sceneId:f.scenes[0].relativeFile},'E_WORD_BOOK_HISTORY_UNAVAILABLE']]) {
+    const before=productFiles(f);let writes=0;
+    const deny=async()=>{writes++;throw Error('REJECTED_HISTORY_WRITE');};
+    const fsAdapter={...fsp,...Object.fromEntries(['open','writeFile','rename','mkdir','unlink','rmdir','link','symlink','truncate','rm'].map(key=>[key,deny]))};
+    await f.transactionAuthority.withProjectLease(f.projectId,lease=>lease.publish(async()=>{
+      await assert.rejects(tx.commitProjectTransaction({manifestPath:f.manifestPath,revision:0,wordHistory,fsAdapter,
+        revalidate:()=>lease.assertOwned(),publishManifest:deny}),error=>error.code===code);
+    }));
+    assert.equal(writes,0);equal(productFiles(f),before,'wrong project, scene or action has no product write authority');refused.push({wordHistory,code,writes});
+  }
+  const history=[];let historyBase=null;
   for(const action of ['undo','redo']) {
     const projection=await value.sandbox.readPendingRevisionProjection();owned.exports.reset();
+    mutateDescriptor=action==='undo';
     const result=await value.kernel.dispatch('cmd.project.review.decidePendingRevision',{action,projectId:projection.projectId,
       sceneId:projection.sceneId,subjectId:projection.subjectId,expectedSceneSha256:projection.expectedSceneSha256});
     assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);
+    if(action==='undo')historyBase=JSON.parse(textFile(tx.recoveryPacketPathFor(f.manifestPath,result.receipt.transactionId))).plan;
     const counts=cloneJsonSafe(owned.exports.counts());history.push({action,result,counts});
     equal(counts.actualBuilds,[6],'one private outer history meaning is independently regenerated');
     equal(counts.actualValidations.filter(v=>v===5||v===6),[action==='undo'?5:6],'current checked latest packet is regenerated once before journal, never once per member');
@@ -2342,7 +2404,8 @@ test('novel authenticated atomic notes: private history verification retains nes
       equal(files[relative],(action==='undo'?value.before:value.after)[relative],'complete body and both annotation stores follow the actual public inverse');
     await verifyAllSiblings(f);
   }
-  const model=await modelPromise,base=value.requests[1].treeCohort,forgeries=[];
+  assert.equal(descriptorChanged,true,'descriptor is copied before the first authority await');
+  const model=await modelPromise,base=historyBase,forgeries=[];assert.equal(JSON.parse(base.input.returnProofJson).schemaVersion,6);
   for(const kind of ['schema','transaction','revision','entries','meaning','project','manifest','origin']) {
     const input=cloneJsonSafe(base.input),packet=input.history.applyPacket,proof=JSON.parse(input.returnProofJson);
     if(kind==='schema')packet.schemaVersion='foreign';
@@ -2381,7 +2444,7 @@ test('novel authenticated atomic notes: private history verification retains nes
   assert.equal(owned.exports.sha256hex(owned.exports.canonicalize(query.retainedPacket)),model.projectTreeCohortDigest(query.retainedPacket));
   for(const text of ['', 'Ж🙂', '\ud800', '\udc00', ...[55,56,63,64,65,127,128,129].map(n=>'x'.repeat(n))])
     assert.equal(owned.exports.sha256hex(owned.exports.canonicalize({text})),model.projectTreeCohortDigest({text}));
-  retain('atomic-private-history-verification',{history,forgeries,late,query,files:productFiles(f)});
+  retain('atomic-private-history-verification',{history,refused,descriptorChanged,forgeries,late,query,files:productFiles(f)});
 });
 test('novel return: indexed ownership preserves exact signed ranges and refuses malformed aliases',async()=>{
   const {extractTransportParagraphOwnershipV1:read}=await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
@@ -2467,7 +2530,9 @@ test('novel authenticated atomic notes: two-owner note-only and joint returns us
   for(const {joint,outcome,root,projectId,scenePaths} of observed) {
     assert.equal(outcome.applied?.ok,true,JSON.stringify({status:outcome.result?.status,code:outcome.result?.code,error:outcome.error}));
     assert.equal(outcome.requests.length,5);assert.equal(outcome.requests[0].treeCohort?.kind,'word-mixed-return');
-    assert.ok(outcome.requests.every(request=>request.treeCohort?.kind==='word-mixed-return'));
+    for(const [i,request] of outcome.requests.slice(1).entries()) {
+      assert.equal(request.treeCohort,undefined);equal(request.wordHistory,{action:i%2?'redo':'undo',projectId,sceneId:path.relative(root,scenePaths[0])});
+    }
     assert.equal(outcome.kernelCalls.length,1,'actual existing Kernel executes the object-admitted tree Apply');
     assert.equal(outcome.history?.length,4,JSON.stringify(outcome.history?.at(-1)?.result));
     for(const item of outcome.history)assert.equal(item.result.changed,true,JSON.stringify(item));

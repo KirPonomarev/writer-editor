@@ -878,12 +878,13 @@ async function publishSceneExact({ scenePath, expectedText, nextText, revision, 
   await durableSaveTransaction({ filePath: scenePath, content: nextText, revision, fsAdapter });
 }
 
-async function recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, treeCohort, revalidate, fsAdapter = fsp }) {
+async function recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, treeCohort, wordHistory, revalidate, fsAdapter = fsp }) {
+  if(wordHistory!==undefined)admitWordHistory(wordHistory,treeCohort);
   const treeSource = await readTreeEnvelopeSource(journalPathFor(manifestPath), manifestPath, fsAdapter);
   // A tree admission may fail before staging its journal. Its caller still
   // discharges recovery under the lease; no scene path exists for this mode.
-  if (treeSource === null && treeCohort !== undefined) {
-    treeNeed(treeCohort?.mode === 'PROJECT_TREE_COHORT_V1' && typeof revalidate === 'function'
+  if (treeSource === null && (treeCohort !== undefined || wordHistory !== undefined)) {
+    treeNeed((wordHistory!==undefined || treeCohort?.mode === 'PROJECT_TREE_COHORT_V1') && typeof revalidate === 'function'
       && typeof publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
     await revalidate();
     return Object.freeze({ recovered: false, outcome: 'NO_JOURNAL', mode: 'tree' });
@@ -1027,10 +1028,18 @@ async function commitProjectTransaction({
   commentState: inputCommentState,
   noteState: inputNoteState,
   treeCohort,
+  wordHistory,
   revalidate,
   afterTreeFilesPublish,
   fsAdapter = fsp,
 }) {
+  if(wordHistory!==undefined) {
+    const admitted=admitWordHistory(wordHistory,treeCohort);
+    const options={manifestPath,revision,publishManifest,verifyManifestContinuation,revalidate,afterTreeFilesPublish,fsAdapter};
+    const prepared=await prepareWordHistory(options,admitted);
+    if(!prepared.treeCohort)return {success:true,changed:false,wordHistory:prepared.metadata};
+    return commitTreeCohort({...options,treeCohort:prepared.treeCohort},prepared);
+  }
   if (treeCohort !== undefined) return commitTreeCohort({ manifestPath, revision, treeCohort, publishManifest, verifyManifestContinuation, revalidate, afterTreeFilesPublish, fsAdapter });
   assertPathPair(scenePath, manifestPath);
   assertText(sceneContent, 'E_PROJECT_TRANSACTION_SCENE_CONTENT', TRANSACTION_PHASES.ADMIT);
@@ -2238,12 +2247,13 @@ function freezeTreeValue(value) {
   if(value && typeof value === 'object') {for(const child of Object.values(value))freezeTreeValue(child);Object.freeze(value);}
   return value;
 }
-async function buildVerifiedTreePacket(plan, manifestPath, revision) {
-  // Own the complete bounded input before any await. A caller cannot change
-  // admitted meaning while this invocation later revalidates filesystem state.
-  const source=canonicalize(plan);
+async function buildVerifiedTreePacket(plan, manifestPath, revision, internallyOwned = false) {
+  // Caller input is copied before await. Only this module's frozen history
+  // plan can already be privately owned; callers cannot select that path.
+  let source=canonicalize(plan);
   treeNeed(Buffer.byteLength(source)<=(isNovelWordReturnPacket({plan})?MAX_NOVEL_WORD_RETURN_BYTES:MAX_ARTIFACT_BYTES),'E_TREE_COHORT_BUDGET');
-  const privatePlan=JSON.parse(source),model=await treeModel();
+  const privatePlan=internallyOwned?plan:JSON.parse(source);source=null;
+  const model=await treeModel();
   model.validateProjectTreeCohort(privatePlan); // Before extracting any packet paths.
   const transactionId=sha256hex(`${privatePlan.projectId}\n${privatePlan.planDigest}\n${revision}`);
   const packet={schemaVersion:TREE_JOURNAL_SCHEMA_VERSION,projectId:privatePlan.projectId,manifestPath,transactionId,
@@ -2363,16 +2373,18 @@ async function readVerifiedProjectTreeMutationInInvocation({ manifestPath, proje
   const owned=invocation?.successPackets?.get(target)?.packet
     ||(invocation?.origin?.packet.transactionId===receipt.transactionId?invocation.origin.packet:null);
   const packet = owned || await validateTreePacket(JSON.parse(packetSource), manifestPath);
-  if(owned)treeNeed(packetSource===canonicalBytes(packet),'E_TREE_COHORT_RECEIPT_BINDING');
+  let packetCanonical=canonicalize(packet);
+  if(owned)treeNeed(packetSource===packetCanonical+'\n','E_TREE_COHORT_RECEIPT_BINDING');
   treeNeed(packet.projectId === parsed.projectId && packet.transactionId === receipt.transactionId
-    && sha256hex(canonicalize(packet)) === receipt.packetDigest && packet.plan.expectedTreeRevision + 1 === receipt.treeRevision
+    && sha256hex(packetCanonical) === receipt.packetDigest && packet.plan.expectedTreeRevision + 1 === receipt.treeRevision
     && packet.plan.kind === receipt.kind, 'E_TREE_COHORT_RECEIPT_BINDING');
   if(invocation && isNovelWordReturnPacket(packet)) {
-    treeNeed(packetSource===canonicalBytes(packet),'E_TREE_COHORT_RECEIPT_BINDING');
+    treeNeed(packetSource===packetCanonical+'\n','E_TREE_COHORT_RECEIPT_BINDING');
     invocation.successPackets ||= new Map();
     invocation.successPackets.clear();
     invocation.successPackets.set(target,freezeTreeValue({packet,source:packetSource}));
   }
+  packetCanonical=null; // Same checked value; no serialized graph retained over I/O.
   let canUndo = !['undo','word-mixed-return','word-generic-import'].includes(receipt.kind), unavailableReason = canUndo ? null : receipt.kind === 'word-generic-import' ? 'IMPORT_COHORT_INVERSE_UNPROVEN' : receipt.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : 'TREE_UNDO_CONSUMED';
   let wordReturnHistory=null;
   if(packet.plan.kind==='word-mixed-return') {
@@ -2389,18 +2401,64 @@ async function readVerifiedProjectTreeMutationInInvocation({ manifestPath, proje
   return { treeRevision: receipt.treeRevision, lastMutation: { id: receipt.transactionId, kind: receipt.kind, canUndo, unavailableReason,
     ...(wordReturnHistory?{wordReturnHistory}: {}) }, receipt, retainedPacket: packet };
 }
-async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publishManifest, verifyManifestContinuation, revalidate, afterTreeFilesPublish, fsAdapter }) {
+function admitWordHistory(value,treeCohort) {
+  treeNeed(value&&typeof value==='object'&&!Array.isArray(value)&&treeCohort===undefined
+    &&Reflect.ownKeys(value).length===3&&['action','projectId','sceneId'].every(key=>Object.hasOwn(value,key)),
+    'E_WORD_BOOK_HISTORY_PROOF');
+  const fields=Object.getOwnPropertyDescriptors(value);
+  treeNeed(Object.values(fields).every(field=>typeof field.value==='string'),'E_WORD_BOOK_HISTORY_PROOF');
+  const admitted=Object.freeze({action:fields.action.value,projectId:fields.projectId.value,sceneId:fields.sceneId.value});
+  treeNeed(['undo','redo'].includes(admitted.action)&&admitted.projectId.length>0&&admitted.projectId.length<=128
+    &&admitted.sceneId.length<=4096&&admitted.sceneId.startsWith('roman/')&&/\.(?:txt|md)$/iu.test(admitted.sceneId)
+    &&!/[\\\x00-\x1f]/u.test(admitted.sceneId)&&admitted.sceneId.split('/').every(p=>p&&p!=='.'&&p!=='..'),
+    'E_WORD_BOOK_HISTORY_PROOF');
+  return admitted;
+}
+async function prepareWordHistory({manifestPath,revision,publishManifest,revalidate,fsAdapter},descriptor) {
+  treeNeed(typeof revalidate==='function'&&typeof publishManifest==='function','E_TREE_COHORT_AUTHORITY');
+  treeNeed(typeof manifestPath==='string'&&path.isAbsolute(manifestPath)&&Number.isSafeInteger(revision)&&revision>=0,'E_TREE_COHORT_IDENTITY');
+  await revalidate();
+  const privateRead=createNovelReadInvocation(manifestPath,fsAdapter),reader=privateRead.reader;
+  const current=await readVerifiedProjectTreeMutationInInvocation({manifestPath,projectId:descriptor.projectId,fsAdapter:reader},privateRead.invocation);
+  const history=current.lastMutation?.wordReturnHistory;
+  if(history?.canUndo!==true&&history?.canRedo!==true) {
+    await privateRead.assertFresh();
+    return {metadata:freezeTreeValue({available:false,history:history||null})};
+  }
+  treeNeed(history[descriptor.action==='undo'?'canUndo':'canRedo']===true,'E_WORD_BOOK_HISTORY_UNAVAILABLE');
+  const apply=current.retainedPacket.plan.input.history?.applyPacket||current.retainedPacket;
+  treeNeed(apply.plan.entries.some(entry=>entry.role==='scene'&&entry.relativePath===descriptor.sceneId),'E_WORD_BOOK_HISTORY_SCENE_REQUIRED');
+  const optional=async relative=>treeText(await treeRead(treeAbsolute(manifestPath,relative),manifestPath,reader));
+  const model=await treeModel(),proof={schemaVersion:6,action:descriptor.action,applyTransactionId:apply.transactionId,applyPacketDigest:model.projectTreeCohortDigest(apply)};
+  const scenes=[];
+  for(const entry of apply.plan.entries.filter(entry=>entry.role==='scene'))scenes.push({sceneId:entry.relativePath,
+    beforeContent:await optional(entry.relativePath),commitText:await optional(entry.relativePath+'.wp201-commit.json')});
+  const input={operation:'word-mixed-return',operationId:'word-history-'+sha256hex(JSON.stringify([current.receipt,descriptor.action])),
+    projectId:descriptor.projectId,manifestPath,beforeManifestText:await readOptionalText(manifestPath,reader),expectedTreeRevision:current.treeRevision,
+    scenes,
+    notesText:await optional('notes.craftsman.json'),commentsText:await optional('.yalken/word-review/non-text-return-state.v1.json'),
+    returnProofJson:JSON.stringify(proof),history:{applyPacket:apply,receipt:current.receipt},
+    ...(apply.plan.input.novelOrigin?{novelOrigin:apply.plan.input.novelOrigin}:{})};
+  const plan=model.planProjectMixedWordReturnCohort(input),origin=privateRead.invocation.origin;
+  treeNeed(!input.novelOrigin||origin?.packet.projectId===descriptor.projectId,'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
+  const scenePaths=origin?origin.packet.plan.importReceipt.createdScenes.map(scene=>treeAbsolute(manifestPath,scene.relativeFile)):null;
+  const metadata=freezeTreeValue({available:true,content:treeText(plan.entries.find(entry=>entry.role==='scene'&&entry.relativePath===descriptor.sceneId).afterBase64),scenePaths});
+  return {treeCohort:plan,current,privateRead,metadata};
+}
+async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publishManifest, verifyManifestContinuation, revalidate, afterTreeFilesPublish, fsAdapter },prepared=null) {
   treeNeed(typeof revalidate === 'function' && typeof publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
   treeNeed(Number.isSafeInteger(revision) && revision >= 0 && plan?.input?.manifestPath === manifestPath ||
     (plan?.kind === 'undo' && plan?.input?.retainedPacket?.manifestPath === manifestPath && Number.isSafeInteger(revision) && revision >= 0), 'E_TREE_COHORT_IDENTITY');
   const localNovel=isNovelTreePacket({plan})||isNovelWordReturnPacket({plan});let packet=null;
-  if(localNovel) {packet=await buildVerifiedTreePacket(plan,manifestPath,revision);plan=packet.plan;}
+  if(localNovel) {packet=await buildVerifiedTreePacket(plan,manifestPath,revision,prepared!==null);plan=packet.plan;}
   const model = await treeModel();
   if(!localNovel)model.validateProjectTreeCohort(plan);
-  let privateRead=localNovel?createNovelReadInvocation(manifestPath,fsAdapter):null;
+  const historyMetadata=prepared?.metadata;
+  let privateRead=prepared?.privateRead||(localNovel?createNovelReadInvocation(manifestPath,fsAdapter):null);
   await revalidate();
   if (await readOptionalText(journalPathFor(manifestPath), privateRead?.reader||fsAdapter) !== null) treeError('E_PROJECT_TRANSACTION_RECOVERY_REQUIRED');
-  const current = await readVerifiedProjectTreeMutationInInvocation({ manifestPath, projectId: plan.projectId, fsAdapter:privateRead?.reader||fsAdapter },privateRead?.invocation);
+  let current = prepared?.current||await readVerifiedProjectTreeMutationInInvocation({ manifestPath, projectId: plan.projectId, fsAdapter:privateRead?.reader||fsAdapter },privateRead?.invocation);
+  prepared=null;
   treeNeed(current.treeRevision === plan.expectedTreeRevision, 'E_TREE_REVISION_CAS');
   if(plan.kind==='word-mixed-return'&&plan.input.history) {
     const proof=JSON.parse(plan.input.returnProofJson),apply=current.retainedPacket.plan.input.history?.applyPacket||current.retainedPacket;
@@ -2445,6 +2503,7 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   await revalidate();
   if(privateRead)await privateRead.assertFresh();
   privateRead=null; // Reuse ends before the first durable write.
+  current=null;
   await durableSaveTransaction({ filePath: journalPathFor(manifestPath), content: journalText, revision, fsAdapter });
   await publishTreeSide(packet, 'after', { manifestPath, publishManifest, revalidate, fsAdapter });
   if (afterTreeFilesPublish !== undefined) {
@@ -2460,7 +2519,8 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   return { success: true, changed: true, code: 'TREE_COHORT_COMMITTED', transactionId, treeRevision: receipt.treeRevision,
     lastMutation: { id: transactionId, kind: plan.kind, canUndo: !['undo','word-mixed-return','word-generic-import'].includes(plan.kind), unavailableReason: plan.kind === 'word-generic-import' ? 'IMPORT_COHORT_INVERSE_UNPROVEN' : plan.kind === 'word-mixed-return' ? 'EDITORIAL_SCENE_HISTORY_ONLY' : plan.kind === 'undo' ? 'TREE_UNDO_CONSUMED' : null },
     affectedScenes: plan.affectedScenes, pathBindings: plan.pathBindings, identityMap: plan.identityMap, revision,
-    manifestDigest: sha256hex(plan.manifestText), recovery: { recovered: false, outcome: 'NO_JOURNAL' } };
+    manifestDigest: sha256hex(plan.manifestText), recovery: { recovered: false, outcome: 'NO_JOURNAL' },
+    ...(historyMetadata?{wordHistory:historyMetadata}:{}) };
 }
 
 module.exports = Object.freeze({

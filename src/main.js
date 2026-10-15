@@ -26496,63 +26496,57 @@ async function handlePendingRevisionCommand(payload = {}) {
         || JSON.stringify(liveLedger) !== JSON.stringify(savedLedger)) throw Error('PENDING_REVISION_EDITOR_STALE');
       if(!admission&&['undo','redo'].includes(payload.action)) {
         const manifestPath=path.join(context.projectRoot,'project.craftsman.json');
-        const tree=await readVerifiedProjectTreeMutation({manifestPath,projectId:context.projectId});
-        const history=tree.lastMutation?.wordReturnHistory;
-        if(history&&history.canUndo!==true&&history.canRedo!==true) {
-          const local=pendingTextRevisions.projection(context.parsed.doc);
-          if(history.canUndo!==false||history.canRedo!==false
-            ||local?.[payload.action==='undo'?'canUndo':'canRedo']!==true)throw Error('WORD_BOOK_HISTORY_UNAVAILABLE');
-        }
-        if(history?.canUndo===true||history?.canRedo===true) {
-          if(history[payload.action==='undo'?'canUndo':'canRedo']!==true)throw Error('WORD_BOOK_HISTORY_UNAVAILABLE');
-          const apply=tree.retainedPacket.plan.input.history?.applyPacket||tree.retainedPacket;
-          if(!apply.plan.entries.some(entry=>entry.role==='scene'&&entry.relativePath===context.sceneId))throw Error('WORD_BOOK_HISTORY_SCENE_REQUIRED');
+        // Absence is only a routing hint. Core still verifies the no-history
+        // query; an existing marker always selects complete Core admission.
+        const bookHistorySelected=await fs.access(manifestPath+'.wp201-tree-commit.json').then(()=>true,async error=>{
+          if(error.code!=='ENOENT')throw error;
+          return Boolean((await readVerifiedProjectTreeMutation({manifestPath,projectId:context.projectId})).lastMutation?.wordReturnHistory);
+        });
+        if(bookHistorySelected) {
           const authority=await getMainProjectManifestAuthority(),owner=activeStage10ApplicationBootstrap;
           const check=()=>{userBookmarkCapability('cmd.project.review.decidePendingRevision');
             if(owner!==activeStage10ApplicationBootstrap||currentFilePath!==context.filePath||getProjectRootPath()!==context.projectRoot
               ||currentLifecycleSubjectId()+':'+commentAuthoringSessionId!==context.subjectId
               ||isDirty||autoSaveInProgress||activePendingRecording||lastSignaledEditGeneration>snapshot.generation)
               throw Error('WORD_BOOK_HISTORY_CONTEXT_STALE');};
-          return authority.withProjectLease(context.projectId,lease=>lease.publish(async()=>{
+          const outcome=await authority.withProjectLease(context.projectId,lease=>lease.publish(async()=>{
             const revalidate=async()=>{await lease.assertOwned();check();const live=await requestEditorSnapshot();
               if(live.content!==snapshot.content||live.generation!==snapshot.generation||live.commentAuthoringPending||live.manuscriptNoteAuthoringPending)
                 throw Error('WORD_BOOK_HISTORY_EDITOR_STALE');check();};
             await revalidate();
-            const novel=await readVerifiedNovelAnnotationLineage({scenePath:context.filePath,manifestPath,
-              verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId})});
-            const optional=async relative=>{const target=path.join(context.projectRoot,relative);try{
-              const stat=await fs.lstat(target);if(stat.isSymbolicLink()||!stat.isFile()||stat.nlink!==1||stat.size>32*1024*1024)throw Error('WORD_BOOK_HISTORY_SOURCE_BOUND');
-              const raw=await fs.readFile(target,'utf8');if(Buffer.byteLength(raw)!==stat.size)throw Error('WORD_BOOK_HISTORY_SOURCE_STALE');return raw;
-            }catch(error){if(error.code==='ENOENT')return null;throw error;}};
-            const proof={schemaVersion:6,action:payload.action,applyTransactionId:apply.transactionId,
-              applyPacketDigest:(await loadProjectTreeCohortModule()).projectTreeCohortDigest(apply)};
-            const input={operation:'word-mixed-return',operationId:'word-history-'+computeHash(JSON.stringify([tree.receipt,payload.action])),
-              projectId:context.projectId,manifestPath,beforeManifestText:await fs.readFile(manifestPath,'utf8'),expectedTreeRevision:tree.treeRevision,
-              scenes:await Promise.all(apply.plan.entries.filter(entry=>entry.role==='scene').map(async entry=>({sceneId:entry.relativePath,
-                beforeContent:await optional(entry.relativePath),commitText:await optional(entry.relativePath+'.wp201-commit.json')}))),
-              notesText:await optional('notes.craftsman.json'),commentsText:await optional('.yalken/word-review/non-text-return-state.v1.json'),
-              returnProofJson:JSON.stringify(proof),history:{applyPacket:apply,receipt:tree.receipt},
-              ...(apply.plan.input.novelOrigin?{novelOrigin:apply.plan.input.novelOrigin}:{})};
-            const model=await loadProjectTreeCohortModule(),plan=model.planProjectMixedWordReturnCohort(input);
-            const request={manifestPath,revision:snapshot.generation,treeCohort:plan,revalidate,
+            const request={manifestPath,revision:snapshot.generation,
+              wordHistory:{action:payload.action,projectId:context.projectId,sceneId:context.sceneId},revalidate,
               verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId}),
               publishManifest:({manifestPath:target,expectedText,nextText,reason})=>{
                 if(target!==manifestPath)throw Error('WORD_BOOK_HISTORY_MANIFEST_PATH');
                 return authority.commitManifestText({projectId:context.projectId,lease,targetPath:target,expectedText,nextText,label:reason});}};
-            let receipt;try{receipt=await commitProjectTransaction(request);}catch(error){await recoverProjectTransaction(request);throw error;}
-            if(!receipt.success)throw Error('WORD_BOOK_HISTORY_COMMIT_FAILED');
-            const content=Buffer.from(plan.entries.find(entry=>entry.role==='scene'&&entry.relativePath===context.sceneId).afterBase64,'base64').toString('utf8');
+            let committed;try{committed=await commitProjectTransaction(request);}catch(error){
+              await recoverProjectTransaction(request);
+              if(['E_WORD_BOOK_HISTORY_UNAVAILABLE','E_WORD_BOOK_HISTORY_SCENE_REQUIRED'].includes(error.code))throw Error(error.code.slice(2));
+              throw error;
+            }
+            if(!committed.success)throw Error('WORD_BOOK_HISTORY_COMMIT_FAILED');
+            const {wordHistory,...receipt}=committed;
+            if(wordHistory?.available===false) {
+              const history=wordHistory.history,local=pendingTextRevisions.projection(context.parsed.doc);
+              if(history&&(history.canUndo!==false||history.canRedo!==false
+                ||local?.[payload.action==='undo'?'canUndo':'canRedo']!==true))throw Error('WORD_BOOK_HISTORY_UNAVAILABLE');
+              return null;
+            }
+            if(wordHistory?.available!==true||typeof wordHistory.content!=='string')throw Error('WORD_BOOK_HISTORY_COMMIT_FAILED');
+            const content=wordHistory.content;
             const identity=await getProjectDocumentIdentityPayload(context.filePath),documentContext=getDocumentContextFromPath(context.filePath);
             const publication=await attachProjectIdToEditorPayload({content,...identity,projectId:context.projectId,
               title:documentContext.title,kind:documentContext.kind,metaEnabled:documentContext.metaEnabled},context.filePath);
             await lease.assertOwned();
-            const fresh=novel?(await readVerifiedProjectDocxNovelCohort({manifestPath,projectId:context.projectId,scenePaths:novel.scenePaths,
+            const fresh=wordHistory.scenePaths?(await readVerifiedProjectDocxNovelCohort({manifestPath,projectId:context.projectId,scenePaths:wordHistory.scenePaths,
               verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId})})).treeMutation
               :await readVerifiedProjectTreeMutation({manifestPath,projectId:context.projectId});
             if(fresh.lastMutation?.id!==receipt.transactionId)throw Error('WORD_BOOK_HISTORY_READBACK');
             check();sendEditorText(publication);lastAutosaveHash=computeHash(content);backupHashes.set(context.filePath,lastAutosaveHash);
             return {ok:true,changed:true,writerCalled:true,receipt};
           }));
+          if(outcome)return outcome;
         }
       }
       let expectedNotesDigest = admission?.notesDigest || null;
