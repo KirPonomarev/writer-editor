@@ -5518,12 +5518,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedAtUtc": "2026-10-15T12:02:37.610946+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
-      "sha256": "f72d9dd42a8c0ea65da6f979a12bc9c9d639a4e06e46c2313c64c863afc2fcf3"
+      "rationale": "Correct DATA_DELIVERY_SCOPE refusal: mirror the one exact new task document already admitted by the policy in its legacy executable literal list. Strict equality, protected files, full semantic/physical oracles and all224 historical tuples remain. Runtime/tests and all581 product/package source bytes are unchanged; no native acceptance.",
+      "sha256": "be03761782d1ed651f21a183843e07e5c94249ec9924a349f174e4f3d20c2b20"
     },
     {
       "approved": true,
@@ -5563,12 +5563,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedAtUtc": "2026-10-15T12:02:37.610946+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
-      "sha256": "5054131a792275ccc3cbfb44157013cf4d1008238b0e2b1a7bd4d86c99c46ce2"
+      "rationale": "Correct DATA_DELIVERY_SCOPE refusal: mirror the one exact new task document already admitted by the policy in its legacy executable literal list. Strict equality, protected files, full semantic/physical oracles and all224 historical tuples remain. Runtime/tests and all581 product/package source bytes are unchanged; no native acceptance.",
+      "sha256": "7963e649fed89b540107e59dbf7dd3a606743cf18bb61b18c5f7985f3e3a1675"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -44329,6 +44329,24 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
       "sha256": "a5363d1989e99d30c2e277e9aa80e23d4f409c3c1e16a4be68e1a6d6905e34c8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "f72d9dd42a8c0ea65da6f979a12bc9c9d639a4e06e46c2313c64c863afc2fcf3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "5054131a792275ccc3cbfb44157013cf4d1008238b0e2b1a7bd4d86c99c46ce2"
     }
   ]
 }
