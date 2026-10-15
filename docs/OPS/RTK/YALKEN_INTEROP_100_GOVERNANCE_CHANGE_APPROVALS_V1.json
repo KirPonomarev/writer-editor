@@ -5230,11 +5230,11 @@
     },
     {
       "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-      "sha256": "58f7d28fa1a6b65dd96dceba4e36c552fb01651c5d3ec3a7530d01d958627c0f",
-      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "sha256": "f9cbf972d69d1059e73326a95acc5760225c69635064c07af011ed8757b19861",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015"
     },
     {
@@ -5464,30 +5464,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/CONTEXT.md",
-      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
-      "sha256": "22723b3ebe7a0fe2013fe2d6e54f386436400d8bd2cd1873fc6cfb52dda621eb"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "94f4f13d4b02e86be107af8f4128f2d87647053cd3ea03abd9010a745557100a"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/HANDOFF.md",
-      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
-      "sha256": "6587891b30edb61a2ec41b8956085857a5fe00ca2962d79456c72219be712824"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "d9f6ed74e7c44c11e45026f478974bda682b26146354e22945bef36681affb20"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/WORKLOG.md",
-      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
-      "sha256": "456dedbc68c526e68159aed21d12a885b455d9c3a33fdaeaefe9fab4557710b0"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "1ff2be26319401d5c5715473f1646d6c355655bead16ddb750c48f12691c30d1"
     },
     {
       "approved": true,
@@ -5509,30 +5509,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
-      "sha256": "e2b447d07a97623f531d28e3093f655388f3beb036cfb528b0641826094b5e6c"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "d18474ee84a598afe1eea7ced1e549ad61e768c2cba6889fd15552c8720623ec"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
-      "sha256": "69fead8d0ce55d79cf6057067ae2ffbb0db51afd512880f82d83f95cc2a582c8"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "3f8d13a9173e959057e134881c149153f270ab95e1cda17fc2216e3928cc899f"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
-      "sha256": "7895985bbe6d265102b6f5268cefdebe2eb97422315b88dc256c310bb0cfa248"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "0ada192781861fd6e872bd92ab784b8ca6a5de512f9e10c5444b9c7ae3d199be"
     },
     {
       "approved": true,
@@ -5545,30 +5545,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
-      "sha256": "363eddf3ea4ea68e1ad800d7b58c66bd150e429afce9bc75ebf54ccd88e4a0d7"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "8d24062ac78d3dd52a63cf579f539647fe504e3cb2c8d900c1b2004921b79090"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
-      "sha256": "f4037ae1f50c964c1a17fd24e6f3419e1281ba2938ee41dc2cae7af20644715f"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "3932bc5053bc35ffd5b1566f90d22503ae3b07d5b9bac1fa419715c67efa37c2"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
-      "sha256": "52b73294112152e2ed7f23102bcb0d8ca847a40e217d7ceccf09414dfb6d6e0f"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "d0a402dd3439f93b82cf6a77025a1b5d6dd10d490d77ae403738de0a75feaaca"
     },
     {
       "filePath": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -5672,11 +5672,11 @@
     {
       "filePath": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedAtUtc": "2026-10-15T12:58:07.194177+00:00",
       "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
-      "sha256": "26c973aa5c748d090f468f48d8ccb402fa98333b93354de9fa0c859e3b1f47c7"
+      "rationale": "Same bounded role-observer correction;37of37 local affected cases on both engines, zero filesystem mutation primitives and every product byte conserved for no-write history admission, exactly one real transaction. Runtime sources unchanged; all required full CI and native proof remain. Refresh current active exact-byte approvals only; all later duplicate PK rows and historical RTK prefix remain intact.",
+      "sha256": "1191c94dd6d67499f0e4a1f5edcefeeb28293c87a260d32894325e68faef7d99"
     }
   ],
   "evidenceStampIds": [
@@ -44383,6 +44383,105 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Correct DATA_DELIVERY_SCOPE refusal: mirror the one exact new task document already admitted by the policy in its legacy executable literal list. Strict equality, protected files, full semantic/physical oracles and all224 historical tuples remain. Runtime/tests and all581 product/package source bytes are unchanged; no native acceptance.",
       "sha256": "7963e649fed89b540107e59dbf7dd3a606743cf18bb61b18c5f7985f3e3a1675"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "sha256": "58f7d28fa1a6b65dd96dceba4e36c552fb01651c5d3ec3a7530d01d958627c0f",
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "22723b3ebe7a0fe2013fe2d6e54f386436400d8bd2cd1873fc6cfb52dda621eb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "6587891b30edb61a2ec41b8956085857a5fe00ca2962d79456c72219be712824"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:58:18.440054+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same proved runtime/test bytes; remove one new WORKLOG EOF blank line reported by git diff --check and refresh only dependent exact metadata. Earlier failure retained; required cheap gates rerun, no runtime/native/oracle change.",
+      "sha256": "456dedbc68c526e68159aed21d12a885b455d9c3a33fdaeaefe9fab4557710b0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "e2b447d07a97623f531d28e3093f655388f3beb036cfb528b0641826094b5e6c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "69fead8d0ce55d79cf6057067ae2ffbb0db51afd512880f82d83f95cc2a582c8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "7895985bbe6d265102b6f5268cefdebe2eb97422315b88dc256c310bb0cfa248"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "363eddf3ea4ea68e1ad800d7b58c66bd150e429afce9bc75ebf54ccd88e4a0d7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "f4037ae1f50c964c1a17fd24e6f3419e1281ba2938ee41dc2cae7af20644715f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T12:07:58.478125+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Atomic DATA policy/executable delivery: the verifier correctly rejected an executable correction after its earliest unchanged policy delivery (SHARED_IMPLEMENTATION_DRIFT). Describe the actual bounded Core history scope in the policy and deliver its exact new hash with the aligned literal admission in the same commit. Strict oldest-delivery, immutable implementation and protected-source checks remain; runtime/tests and all581 package sources unchanged. Earlier DATA failures retained.",
+      "sha256": "52b73294112152e2ed7f23102bcb0d8ca847a40e217d7ceccf09414dfb6d6e0f"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T11:54:24.320651+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Bounded existing Word history preparation: strict copied descriptor, private current/read invocation, exact frozen plan, complete model regeneration and final freshness/lease/CAS/atomic recovery unchanged. Maintained causal RED; actual local9whole files238of238 and genuine Main history6of6 on Node22 and shipped Node24 have mandatoryTAP0/noexclusions. Paired read-only prewrite164870ms to67163ms, identical complete158709521byte journal; peakRSS not improved and native75OOM/timeout remains failed. Complete exact-head official baseline, normal delivery and later fresh native remain required. No format/dependency/heap/deadline/oracle relaxation.",
+      "sha256": "26c973aa5c748d090f468f48d8ccb402fa98333b93354de9fa0c859e3b1f47c7"
     }
   ]
 }

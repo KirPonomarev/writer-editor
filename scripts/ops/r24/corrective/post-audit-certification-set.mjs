@@ -24955,7 +24955,7 @@ export const R24_INTEROP_WORD_HISTORY_PRIVATE_PREPARATION_SUCCESSOR=Object.freez
     },
     {
       "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-      "sha256": "58f7d28fa1a6b65dd96dceba4e36c552fb01651c5d3ec3a7530d01d958627c0f"
+      "sha256": "f9cbf972d69d1059e73326a95acc5760225c69635064c07af011ed8757b19861"
     },
     {
       "path": "test/unit/r24-wp201-project-transaction.test.js",
@@ -25007,15 +25007,15 @@ export const R24_INTEROP_WORD_HISTORY_PRIVATE_PREPARATION_SUCCESSOR=Object.freez
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "22723b3ebe7a0fe2013fe2d6e54f386436400d8bd2cd1873fc6cfb52dda621eb"
+      "sha256": "94f4f13d4b02e86be107af8f4128f2d87647053cd3ea03abd9010a745557100a"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "6587891b30edb61a2ec41b8956085857a5fe00ca2962d79456c72219be712824"
+      "sha256": "d9f6ed74e7c44c11e45026f478974bda682b26146354e22945bef36681affb20"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "456dedbc68c526e68159aed21d12a885b455d9c3a33fdaeaefe9fab4557710b0"
+      "sha256": "1ff2be26319401d5c5715473f1646d6c355655bead16ddb750c48f12691c30d1"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -25111,13 +25111,13 @@ export const R24_INTEROP_WORD_HISTORY_PRIVATE_PREPARATION_SUCCESSOR=Object.freez
     },
     {
       "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
-      "sha256": "26c973aa5c748d090f468f48d8ccb402fa98333b93354de9fa0c859e3b1f47c7"
+      "sha256": "1191c94dd6d67499f0e4a1f5edcefeeb28293c87a260d32894325e68faef7d99"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e2b447d07a97623f531d28e3093f655388f3beb036cfb528b0641826094b5e6c"
+      "sha256": "d18474ee84a598afe1eea7ced1e549ad61e768c2cba6889fd15552c8720623ec"
     }
   ]
 });

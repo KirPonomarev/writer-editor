@@ -3853,3 +3853,27 @@ then fresh bounded native full export; read-only composed profiling may overlap 
 CI delivery continuation for YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010: candidateee8340 official run38058678806 remains RED at the30-minute full-graph wall, despite both new small/500k source cases passing. Same delivery scope17 bounds the existing Node complete-file worker width to2, preserving every catalog member/order, all TAP/oracle logic, deadlines, cleanup and product runtime. Actual whole runner contract20/20 proves two concurrent workers and eventual execution of the third. Original full50 source1488/1488 keeps its original exact source/test identities; delivery, exact merged proof and original native matrix remain open. No R2.4 cell acceptance or feature release claim.
 
 PR2105 continuation: run38062267216 on992fbd is RED at30min; worker2 hypothesis disproven and original scheduling restored. Correct earlier Root diagnosis: both official runs also fail independent ordinary Word admission because the current spread-expression successor is not committed literal JSON. Materialize the exact current118-member value, retaining every corruption/mixed/ancestry check and all historical predecessors. Only complete CLI graph wall35min is revised using measured prior complete27-28min plus mandatory large case224s, within unchanged CI job40min; no-progress10min, output/cleanup, product limits, public app deadlines and shippingSLO remain. Third repeated graph-wall signature stops retry. Native complete cycles0 and full release matrix remain OPEN.
+
+### FULL_ROLE_OBSERVER_CORRECTION_06
+
+Both first official full graphs completed4217of4218 with the same assertion
+expected1 Core attempt,actual2 in independent editor/corrector local decisions.
+Exact local ROLE_RED04 reproduced it. The unchanged Core first returns typed
+success:true,changed:false,history unavailable, then existing local Save commits.
+The observer now retains every Core receipt, compares every product/packet/
+journal/marker byte and filesystem mutation primitive before and after each
+no-write history admission, and still
+requires exactly one changed transaction and every original complete semantic
+role/branch/provenance/protected-state oracle. No runtime change or test removal.
+Complete local affected37of37 on Node22 and shipped Electron Node24 passes
+mandatoryTAP0, no skipped/todo/cancelled. This covers every shared rich-Save
+harness caller and complete roles/history/negative recovery cases. Remaining
+17 unchanged large-cohort cases passed both prior official full runs; all54
+remain mandatory in new exact-head full CI. Local FULL05 attempts stopped at
+auxiliary240s while starting the large500k block and remain incomplete, never
+PASS. The short initial selection missed this role observer; full affected
+denominator is now explicit and the54-case CI denominator is unchanged.
+Earlier failed full graphs and local RED remain FAIL, never promoted. Existing
+Main/Core/model bytes, package sources and paired159MB journal proof unchanged.
+Same PR2120 delivery, complete new exact-head CI and native admission remain
+required. Native75 still failed; whole feature remains NOT_READY.

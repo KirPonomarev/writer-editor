@@ -1539,7 +1539,11 @@ test('novel authenticated atomic notes: independent editor and corrector returns
     const h=await actualRichRecordingSavePort(t,{...f,...await realAuthority.withRealDocxImportAuthority({...f,transactionAuthority:undefined})},scene),projection=await h.c.readPendingRevisionProjection();
     const result=await h.dispatch('cmd.project.review.decidePendingRevision',{action,projectId:projection.projectId,sceneId:projection.sceneId,subjectId:projection.subjectId,expectedSceneSha256:projection.expectedSceneSha256});
     const after=productFiles(f);retain('independent-roles-decision-'+decisions.length,{action,before,expectedDoc:expected.doc,expectedContent,expectedNotes,commentDecision,projection,result,after,requests:h.port.requests,receipts:h.receipts});
-    assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);assert.equal(h.receipts.length,1);assert.equal(textFile(h.file),expectedContent,'complete before-derived public decision envelope');
+    assert.equal(result.ok,true,JSON.stringify(result));assert.equal(result.changed,true);
+    assert.equal(h.noWriteHistoryAdmissions.length,['undo','redo'].includes(action)?1:0);
+    assert.equal(h.receipts.length,1+h.noWriteHistoryAdmissions.length,'retain every Core attempt including the proved no-write admission');
+    assert.equal(h.receipts.filter(receipt=>receipt.changed!==false).length,1,'exactly one actual decision transaction');
+    assert.equal(textFile(h.file),expectedContent,'complete before-derived public decision envelope');
     equal(JSON.parse(after['notes.craftsman.json']),expectedNotes);equal(JSON.parse(after[commentRelative]),JSON.parse(commentDecision.afterText));
     const actual=envelope.parseObservablePayload(after[scene.relativeFile].toString()).doc;equal(pending.readLedger(actual),expectedLedger);
     for(const mode of ['current','original'])equal(pending.materialize(pending.readLedger(actual),mode),pending.materialize(expectedLedger,mode),'complete decision '+mode);
@@ -1609,7 +1613,7 @@ async function actualRichRecordingSavePort(t,f,scene,options={}) {
   editor.getJSON=()=>editor.state.doc.toJSON();editor.getText=()=>editor.state.doc.textBetween(0,editor.state.doc.content.size,'\n');
   t.after(()=>editor.destroy());
   const port=await authenticatedBookNoteReturn(t,f,null,null,{historyOnly:true,scene}),c=port.sandbox;
-  const h={editor,content:raw,generation:0,acks:[],snapshots:[],receipts:[],errors:[],publications:[],lifecycle:'owned'};
+  const h={editor,content:raw,generation:0,acks:[],snapshots:[],receipts:[],noWriteHistoryAdmissions:[],errors:[],publications:[],lifecycle:'owned'};
   const requests=new Map(),gateway=require('../../src/core/legacy-strangler-v1.cjs');
   Object.assign(c,{setTimeout,clearTimeout,pendingSnapshotRequests:requests,activeAutoSavePromise:null,lastAcknowledgedEditGeneration:0,
     currentLifecycleSubjectId:()=>h.lifecycle,lastAutosaveHash:sha(raw),userBookmarkSaveContinuation:null,userBookmarkRenameLineage:null,
@@ -1666,7 +1670,23 @@ async function actualRichRecordingSavePort(t,f,scene,options={}) {
   const kernel=require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({
     'cmd.project.save':c.handleSave,'cmd.project.review.recordTextRevisions':c.handlePendingRecordingCommand,'cmd.project.review.decidePendingRevision':c.handlePendingRevisionCommand});
   c.MENU_COMMAND_HANDLERS=Object.fromEntries(['cmd.project.save','cmd.project.review.recordTextRevisions','cmd.project.review.decidePendingRevision'].map(id=>[id,payload=>kernel.dispatch(id,payload)]));
-  const realCommit=c.commitProjectTransaction;c.commitProjectTransaction=async args=>{const receipt=await realCommit(args);h.receipts.push(cloneJsonSafe(receipt));if(options.afterCommit)options.afterCommit({h,c,r});return receipt;};
+  const realCommit=c.commitProjectTransaction;c.commitProjectTransaction=async args=>{
+    const before=args.wordHistory?productFiles(f):null,writes=[];
+    const adapter=args.wordHistory?{...fsp,...Object.fromEntries(['writeFile','appendFile','rename','mkdir','unlink','rmdir','rm','link','symlink','truncate','copyFile','chmod','chown','utimes']
+      .map(name=>[name,(...values)=>{writes.push(name);return fsp[name](...values);}])) ,open:(file,flags,...rest)=>{
+        if(typeof flags==='number'?flags&(fs.constants.O_WRONLY|fs.constants.O_RDWR|fs.constants.O_CREAT|fs.constants.O_TRUNC|fs.constants.O_APPEND):/[wa+]/u.test(flags))writes.push('open');
+        return fsp.open(file,flags,...rest);
+      }}:null;
+    const receipt=await realCommit(adapter?{...args,fsAdapter:adapter}:args);
+    h.receipts.push(cloneJsonSafe(receipt));
+    if(args.wordHistory&&receipt.changed===false) {
+      assert.equal(receipt.success,true);assert.equal(receipt.wordHistory.available,false);
+      equal(writes,[],'unavailable book history invokes no filesystem mutation primitive');
+      equal(productFiles(f),before,'unavailable book history preserves every product, packet, journal and commit-marker byte');
+      h.noWriteHistoryAdmissions.push({descriptor:cloneJsonSafe(args.wordHistory),receipt:cloneJsonSafe(receipt),writes});
+    }
+    if(options.afterCommit)options.afterCommit({h,c,r});return receipt;
+  };
   h.renderer=r;h.c=c;h.kernel=kernel;h.port=port;h.file=file;
   h.dispatch=(id,payload)=>c.dispatchMenuCommand(id,payload,{route:'command.bus'});
   h.record=async action=>{const payload={action,projectId:f.projectId,sceneId:scene.relativeFile,subjectId:h.lifecycle+':'+c.commentAuthoringSessionId,

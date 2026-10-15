@@ -3702,3 +3702,27 @@ commit/push/PR/CI/merge and fresh merged Mac checks are still required. Full
 feature NOT_READY: original SOURCE80 external anchor,21 physical note-control
 fields, both origins/scales/runtimes, three roles and five Word exchanges stay
 open. Task:2026-10-15--word-history-private-preparation-mac.md.
+
+### FULL_ROLE_OBSERVER_CORRECTION_06
+
+Both first official full graphs completed4217of4218 with the same assertion
+expected1 Core attempt,actual2 in independent editor/corrector local decisions.
+Exact local ROLE_RED04 reproduced it. The unchanged Core first returns typed
+success:true,changed:false,history unavailable, then existing local Save commits.
+The observer now retains every Core receipt, compares every product/packet/
+journal/marker byte and filesystem mutation primitive before and after each
+no-write history admission, and still
+requires exactly one changed transaction and every original complete semantic
+role/branch/provenance/protected-state oracle. No runtime change or test removal.
+Complete local affected37of37 on Node22 and shipped Electron Node24 passes
+mandatoryTAP0, no skipped/todo/cancelled. This covers every shared rich-Save
+harness caller and complete roles/history/negative recovery cases. Remaining
+17 unchanged large-cohort cases passed both prior official full runs; all54
+remain mandatory in new exact-head full CI. Local FULL05 attempts stopped at
+auxiliary240s while starting the large500k block and remain incomplete, never
+PASS. The short initial selection missed this role observer; full affected
+denominator is now explicit and the54-case CI denominator is unchanged.
+Earlier failed full graphs and local RED remain FAIL, never promoted. Existing
+Main/Core/model bytes, package sources and paired159MB journal proof unchanged.
+Same PR2120 delivery, complete new exact-head CI and native admission remain
+required. Native75 still failed; whole feature remains NOT_READY.
