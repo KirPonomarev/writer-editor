@@ -64,6 +64,10 @@ No large novel copies. Existing original69 and frozen Word inputs are read-only.
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 
+- test/contracts/donor-port-command-surface-kernel.contract.test.js
+- test/contracts/b2c09-command-surface-kernel.contract.test.js
+- scripts/ops/b2c09-command-surface-kernel.mjs
+
 ## DENYLIST
 
 All other paths; renderer, preload, unrelated Main flows, dependencies, native
@@ -157,3 +161,18 @@ KEY: VALUE, basenames only, no slash paths or URLs; precise scope and counts.
 
 Record expected, actual, exact source SHA, seed and digests; no silent fallback,
 skips or self-PASS. Diagnose one causal hypothesis before another attempt.
+
+Same-slice integration after clean checkpoint5402 and expanded preflight12:
+the maintained donor allowlist includes the new Main-only recovery command.
+The pre-existing B2C09 detector failed already on M8 because it required legacy
+direct ipcMain.handle while production uses guardedProtocolHandle. Its corrected
+check binds the actual guarded IPC block, envelope validation before interpretation,
+route and command allowlist; maintained remove/reorder controls reject each bypass.
+No command boundary, renderer allowlist or proof requirement is weakened.
+Raw recovered pair must use its existing owned writer pretty-JSON wire form;
+this rejects duplicate keys/alternate spellings rather than normalizing them.
+The actual original SOURCE80 pair satisfies that form byte-for-byte.
+Recovery performs two complete snapshots: preparation before consent, then fresh
+post-consent validation under the shared lease after candidate temp creation.
+Selection/capability is checked again inside publication immediately after the
+final snapshot. There is no cross-invocation Core cache or skipped verification.

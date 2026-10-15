@@ -219,13 +219,23 @@ const candidate=await adapter.prepareMissingIntegrityAnchorRecovery(projectId);a
     child.stdout.on('data',value=>stdout+=value);child.stderr.on('data',value=>stderr+=value);child.on('error',reject);child.on('close',(code,signal)=>{clearTimeout(timer);resolve({code,signal,stdout,stderr});});
   });
   assert.equal(result.signal,'SIGKILL',JSON.stringify(result));assert.match(result.stdout,new RegExp('HIT:'+boundary));assert.deepEqual(snapshot(f.root),f.protected);
-  const {createStage10MainPersistenceAdapter}=await import('../../src/product/stage10MainPersistenceAdapter.mjs');
-  // Controlled test clock admits reclaim only after the existing lease expiry;
-  // the product TTL, dead-owner checks and generation fencing are unchanged.
-  const recovery=createStage10MainPersistenceAdapter({projectRoot:f.root,anchorRoot:f.anchorRoot,useLeaseHeartbeatWorker:false,leaseNowMs:()=>Date.now()+120000});
-  const reopened=f.createStage10ApplicationBootstrap({persistencePort:recovery});
-  if(boundary.startsWith('before'))await assert.rejects(reopened.reopenProjectRuntime({projectId:f.projectId}),e=>e.reason==='PERSISTENCE_SPLIT_STATE_DETECTED');
-  else assert.equal((await reopened.reopenProjectRuntime({projectId:f.projectId})).readModels.replay.ok,true);
+  const orphans=fs.readdirSync(f.paths.anchorRoot).filter(name=>/^\.recovery-[a-f0-9-]{36}\.tmp$/u.test(name));assert.equal(orphans.length,1);
+  const orphanPath=path.join(f.paths.anchorRoot,orphans[0]),orphanBytes=fs.readFileSync(orphanPath);
+  const expected=Object.fromEntries(Object.entries(f.protected).map(([name,bytes])=>[name,sha(bytes)]));
+  const freshProgram=`import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+import{createStage10MainPersistenceAdapter}from ${JSON.stringify(path.join(ROOT,'src/product/stage10MainPersistenceAdapter.mjs'))};
+import{createStage10ApplicationBootstrap}from ${JSON.stringify(path.join(ROOT,'src/product/stage10ApplicationBootstrap.mjs'))};
+const [projectRoot,anchorRoot,projectId,boundary,expectedJson]=process.argv.slice(1),expected=JSON.parse(expectedJson);
+const observe=()=>{const rows={};const walk=dir=>{for(const name of fs.readdirSync(dir)){const full=path.join(dir,name);if(fs.lstatSync(full).isDirectory())walk(full);else rows[path.relative(projectRoot,full)]=crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex');}};walk(projectRoot);return rows;};assert.deepEqual(observe(),expected);
+const adapter=createStage10MainPersistenceAdapter({projectRoot,anchorRoot,useLeaseHeartbeatWorker:false,leaseNowMs:()=>Date.now()+120000});
+let beforeMissingRefused=false,explicitRetry=false;const bootstrap=createStage10ApplicationBootstrap({persistencePort:adapter});
+if(boundary.startsWith('before')){await assert.rejects(bootstrap.reopenProjectRuntime({projectId}),e=>e.reason==='PERSISTENCE_SPLIT_STATE_DETECTED');beforeMissingRefused=true;const candidate=await adapter.prepareMissingIntegrityAnchorRecovery(projectId);await adapter.recoverMissingIntegrityAnchor(projectId,candidate,async()=>{});explicitRetry=true;}
+const reopened=await createStage10ApplicationBootstrap({persistencePort:adapter}).reopenProjectRuntime({projectId});assert.equal(reopened.readModels.replay.ok,true);assert.deepEqual(observe(),expected);
+console.log(JSON.stringify({pid:process.pid,beforeMissingRefused,explicitRetry,ordinaryReopen:true,anchorVersion:(await adapter.readStage10State(projectId)).integrityAnchor.anchorVersion}));`;
+  const fresh=require('node:child_process').spawnSync(process.execPath,['--input-type=module','-e',freshProgram,f.root,f.anchorRoot,f.projectId,boundary,JSON.stringify(expected)],{encoding:'utf8',timeout:20000});
+  assert.equal(fresh.status,0,fresh.stderr);const observed=JSON.parse(fresh.stdout);assert.notEqual(observed.pid,process.pid);
+  assert.equal(observed.ordinaryReopen,true);assert.equal(observed.anchorVersion,2);assert.equal(observed.explicitRetry,boundary.startsWith('before'));
+  assert.deepEqual(fs.readFileSync(orphanPath),orphanBytes,'old orphan candidate remains exact; cleanup is not used as recovery');
   assert.deepEqual(snapshot(f.root),f.protected);
 });
 
@@ -263,4 +273,33 @@ for(const origin of ['Yalken','Word'])test('missing-anchor recovery: '+origin+' 
   json(f.manifestPath,manifest);fs.writeFileSync(path.join(f.root,'roman/foreign.txt'),'unverified data');
   await assert.rejects(f.adapter.prepareMissingIntegrityAnchorRecovery(f.projectId));assert.equal(fs.existsSync(f.paths.anchor),false);
   assert.equal(fs.readFileSync(path.join(f.root,'roman/foreign.txt'),'utf8'),'unverified data');
+});
+
+test('missing-anchor recovery: duplicate raw JSON keys refuse before normalization and never replace trust',async t=>{
+  const f=await harness(t),original=fs.readFileSync(f.paths.session,'utf8');
+  fs.writeFileSync(f.paths.session,original.replace('{','{\n  "projectId": "foreign",'));
+  await assert.rejects(f.adapter.prepareMissingIntegrityAnchorRecovery(f.projectId),e=>e.reason==='RECOVERY_RAW_PAIR_WIRE_INVALID');
+  assert.equal(fs.existsSync(f.paths.anchor),false);assert.equal(fs.readFileSync(f.paths.authority).equals(f.protected['.stage10-local/command-receipt-authority-store.v2.json']),true);
+});
+test('missing-anchor recovery: genuinely expired existing lease refuses publication without changing product files',async t=>{
+  const f=await harness(t),candidate=await f.adapter.prepareMissingIntegrityAnchorRecovery(f.projectId);
+  const {createProjectLeaseManager}=await import('../../src/product/projectLease.mjs'),{createMainProjectManifestAuthority}=await import('../../src/product/mainProjectManifestAuthority.mjs');
+  let offset=0;const leaseManager=createProjectLeaseManager({leaseRoot:f.anchorRoot,nowMs:()=>Date.now()+offset,nowMonotonicMs:()=>Number(process.hrtime.bigint()/1000000n)+offset,useProcessInstanceGuard:false,useHeartbeatWorker:false,ttlMs:5000});
+  const authority=createMainProjectManifestAuthority({anchorRoot:f.anchorRoot,leaseManager});
+  const adapter=f.makeAdapter({transactionAuthority:authority,onKillpoint:name=>{if(name==='before-recovery-anchor-link')offset=120000;}});
+  await assert.rejects(adapter.recoverMissingIntegrityAnchor(f.projectId,candidate,async()=>{}),e=>e.code==='E_STAGE10_RECOVERY_LEASE_EXPIRED');
+  assert.equal(fs.existsSync(f.paths.anchor),false);assert.deepEqual(snapshot(f.root),f.protected);
+});
+
+test('missing-anchor recovery: selection changes during the final real snapshot and publication is refused',async t=>{
+  const f=await harness(t),read=fsp.readFile;let armed=false,manifestReads=0,changed=false;
+  const main=mainPort(f,{choice:1,onDialog:async()=>{armed=true;}});
+  fsp.readFile=async(target,...args)=>{
+    const value=await read(target,...args);
+    if(armed && target===f.manifestPath && ++manifestReads===4){changed=true;main.setDocuments(path.join(f.userData,'changed-during-final-snapshot'));}
+    return value;
+  };
+  try {await assert.rejects(main.sandbox.recoverMissingIntegrityAnchorAtStartup(),e=>e.code==='E_STAGE10_RECOVERY_SELECTION_STALE');}
+  finally {fsp.readFile=read;}
+  assert.equal(changed,true,'the final Core snapshot was entered before selection changed');assert.equal(fs.existsSync(f.paths.anchor),false);assert.deepEqual(snapshot(f.root),f.protected);
 });

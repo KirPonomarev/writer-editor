@@ -1190,6 +1190,12 @@ export function createStage10MainPersistenceAdapter(input = {}) {
           const final=await missingAnchorRecoveryState(projectId);
           if(!final || hashCanonicalValue(final.candidate)!==expectedDigest)throw typedError('E_STAGE10_RECOVERY_STALE','RECOVERY_CANDIDATE_STALE');
           await lease.publish(async()=>{
+            const pair=await readMissingAnchorRecoveryPair(projectId);
+            if(!pair || pair.rawSessionDigest!==expectedCandidate.rawSessionDigest || pair.rawAuthorityStoreDigest!==expectedCandidate.rawAuthorityStoreDigest) {
+              throw typedError('E_STAGE10_RECOVERY_STALE','RECOVERY_CANDIDATE_STALE');
+            }
+            const currentLease=await leaseManager.inspect(projectId);
+            if(!currentLease.exists || currentLease.expired || !currentLease.ownershipBound)throw typedError('E_STAGE10_RECOVERY_LEASE_EXPIRED','RECOVERY_PROJECT_LEASE_NOT_CURRENT');
             await revalidateSelection();await lease.assertOwned();
             return linkArtifactExclusive(temporary,paths.anchor,'RECOVERY_ANCHOR_ALREADY_PRESENT');
           });
