@@ -2870,3 +2870,93 @@ test('novel tree hashes retain old string UTF8 digests and complete canonical co
  assert.equal(JSON.stringify(current),JSON.stringify(prior),'all rich scene/note/comment entries, receipts and canonical digests stay byte-exact');equal(current,baseline);
  retain('typed-model-hash-conservation',{vectors: vectors.map(String),current,prior});
 });
+test('novel manifest continuation: ordinary Save before authenticated Word Apply and history retains real lineage',async t=>{
+  const f=await importedTiny(t,'manifest-continuation',{canonicalNotes:true});
+  const scenePath=path.join(f.root,f.scenes[0].relativeFile),originalRecord=JSON.parse(textFile(tx.commitPathFor(scenePath)));
+  const saved=await saveOrdinaryScene(f,f.scenes[0],'saved-before-Word');
+  assert.equal(saved.result.success,true);
+  const record=JSON.parse(textFile(tx.commitPathFor(scenePath)));
+  assert.notEqual(record.manifestDigest,originalRecord.manifestDigest,'actual leased Save advances the manifest');
+  const x=await exportImported(f),bytes=changedNotesZip(x,'after-saved-manifest',true);
+  const cancelled=await authenticatedBookNoteReturn(t,f,x,bytes,{label:'manifest-continuation-cancel',cancel:true});
+  assert.equal(cancelled.result.status,'preview-ready');equal(cancelled.after,cancelled.before,'Cancel preserves every product byte after Save');
+  const value=await authenticatedBookNoteReturn(t,f,x,bytes,{label:'manifest-continuation-apply'});
+  retain('manifest-continuation-causal',{saved,record,originalRecord,result:value.result,error:value.error,commitErrors:value.commitErrors});
+  assert.equal(value.applied?.ok,true,JSON.stringify(value.error||value.result));
+  const files=f.scenes.map(s=>s.relativeFile).concat(['notes.craftsman.json',path.relative(f.root,commentPath(f))]);
+  for(const action of ['undo','redo']) {
+    const p=await value.sandbox.readPendingRevisionProjection();
+    const result=await value.kernel.dispatch('cmd.project.review.decidePendingRevision',{action,projectId:p.projectId,sceneId:p.sceneId,subjectId:p.subjectId,expectedSceneSha256:p.expectedSceneSha256});
+    assert.equal(result.changed,true,JSON.stringify(result));
+    for(const relative of files)assert.ok(fs.readFileSync(path.join(f.root,relative)).equals((action==='undo'?value.before:value.after)[relative]),'complete saved source/notes/discussions '+action);
+  }
+  assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+});
+test('novel manifest continuation: missing or mismatched verifier proof refuses before every product write',async t=>{
+  const f=await importedTiny(t,'manifest-continuation-negative',{canonicalNotes:true});
+  await saveOrdinaryScene(f,f.scenes[0],'saved-before-refusal');
+  const x=await exportImported(f),bytes=changedNotesZip(x,'manifest-proof-negative',true),outcomes=[];
+  for(const kind of ['missing','false','path','from','to']) {
+    let called=0,ownedVerifier;
+    const commit=async request=>{
+      ownedVerifier=request.verifyManifestContinuation;assert.equal(typeof ownedVerifier,'function','Main forwards its existing owned verifier');
+      const next={...request};
+      if(kind==='missing')delete next.verifyManifestContinuation;
+      else next.verifyManifestContinuation=async args=>{
+        called++;const proof=await ownedVerifier(args);assert.equal(proof.ok,true,'real authority proves this saved lineage');
+        if(kind==='false')return {...proof,ok:false};
+        return {...proof,[kind==='path'?'manifestPath':kind==='from'?'fromDigest':'toDigest']:kind==='path'?f.manifestPath+'.foreign':'0'.repeat(64)};
+      };
+      return tx.commitProjectTransaction(next);
+    };
+    const value=await authenticatedBookNoteReturn(t,f,x,bytes,{label:'manifest-proof-'+kind,commit});
+    assert.equal(value.applied,undefined);assert.equal(value.error?.message,'E_PROJECT_TRANSACTION_NOVEL_MANIFEST');
+    assert.equal(called,kind==='missing'?0:1);equal(value.after,value.before,'whole product refusal has no journal, scene or annotation write: '+kind);
+    assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+    outcomes.push({kind,called,error:value.error,before:value.before,after:value.after});
+  }
+  retain('manifest-continuation-proof-negatives',outcomes);
+});
+test('novel manifest continuation: interrupted atomic return restores saved baseline or committed whole graph',async t=>{
+  const outcomes=[];
+  for(const committed of [false,true]) {
+    const f=await importedTiny(t,'manifest-continuation-recovery-'+committed,{canonicalNotes:true});
+    await saveOrdinaryScene(f,f.scenes[0],'saved-before-recovery');
+    const x=await exportImported(f),bytes=changedNotesZip(x,'manifest-recovery-'+committed,true);
+    let fired=false,requestSeen;
+    const commit=async request=>{
+      requestSeen=request;assert.equal(typeof request.verifyManifestContinuation,'function');
+      const adapter={...fsp,
+        rename:async(a,b)=>{
+          if(!committed&&!fired&&b===path.join(f.root,f.scenes[0].relativeFile)){fired=true;throw Error('owned manifest-continuation interruption');}
+          return fsp.rename(a,b);
+        },
+        unlink:async p=>{
+          if(committed&&!fired&&p===tx.journalPathFor(f.manifestPath)){fired=true;throw Error('owned manifest-continuation cleanup interruption');}
+          return fsp.unlink(p);
+        }};
+      return tx.commitProjectTransaction({...request,fsAdapter:adapter});
+    };
+    const value=await authenticatedBookNoteReturn(t,f,x,bytes,{label:'manifest-recovery-'+committed,commit});
+    assert.equal(fired,true,'the intended durable boundary was reached');assert.equal(value.applied,undefined,'interrupted operation never supplies false success');
+    assert.equal(value.error?.message,committed?'E_COMMAND_FAILED':'E_SAVE_ATOMIC_PUBLISH');
+    if(committed)assert.equal(value.commitErrors[0].message,'owned manifest-continuation cleanup interruption','Kernel wraps the injected error after actual recovery');
+    assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false,'actual Main recovery consumed the journal');
+    const plan=requestSeen.treeCohort;
+    const current=committed?await tx.readVerifiedProjectDocxNovelCohort({manifestPath:f.manifestPath,projectId:f.projectId,
+      scenePaths:f.scenes.map(s=>path.join(f.root,s.relativeFile)),verifyManifestContinuation:args=>f.transactionAuthority.verifyManifestContinuation({...args,projectId:f.projectId})}):null;
+    // The planner's sceneCommit after-field is a placeholder; the independently
+    // regenerated durable packet binds the actual transaction-specific commits.
+    for(const entry of current?.treeMutation.retainedPacket.entries||plan.entries) {
+      const target=path.join(f.root,entry.relativePath),expected=entry[committed?'afterBase64':'beforeBase64'];
+      assert.equal(fs.existsSync(target)?fs.readFileSync(target).toString('base64'):null,expected,'every durable member restored on its complete side');
+    }
+    assert.equal(textFile(f.manifestPath),committed?plan.manifestText:plan.beforeManifestText);
+    if(!committed)equal(productFiles(f),value.before,'rollback preserves every unrelated byte and adds no recovery packet');
+    else {
+      assert.equal(current.records.length,f.scenes.length);assert.equal(current.treeMutation.lastMutation.wordReturnHistory.canUndo,true);
+    }
+    outcomes.push({committed,fired,error:value.error,before:value.before,after:productFiles(f)});
+  }
+  retain('manifest-continuation-recovery',outcomes);
+});

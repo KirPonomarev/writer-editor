@@ -6665,6 +6665,7 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
         return authority.withProjectLease(context.projectId,lease=>lease.publish(async()=>{
           await lease.assertOwned();await verifySources();
           const request={manifestPath,revision:snapshot.generation,treeCohort:plan,revalidate:async()=>{await lease.assertOwned();check();},
+            verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId}),
             publishManifest:({manifestPath:target,expectedText,nextText,reason})=>{
               if(target!==manifestPath)throw Error('WORD_BOOK_RETURN_MANIFEST_PATH');
               return authority.commitManifestText({projectId:context.projectId,lease,targetPath:target,expectedText,nextText,label:reason});}};
@@ -26534,6 +26535,7 @@ async function handlePendingRevisionCommand(payload = {}) {
               ...(apply.plan.input.novelOrigin?{novelOrigin:apply.plan.input.novelOrigin}:{})};
             const model=await loadProjectTreeCohortModule(),plan=model.planProjectMixedWordReturnCohort(input);
             const request={manifestPath,revision:snapshot.generation,treeCohort:plan,revalidate,
+              verifyManifestContinuation:request=>authority.verifyManifestContinuation({...request,projectId:context.projectId}),
               publishManifest:({manifestPath:target,expectedText,nextText,reason})=>{
                 if(target!==manifestPath)throw Error('WORD_BOOK_HISTORY_MANIFEST_PATH');
                 return authority.commitManifestText({projectId:context.projectId,lease,targetPath:target,expectedText,nextText,label:reason});}};

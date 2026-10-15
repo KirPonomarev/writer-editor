@@ -890,7 +890,7 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   }
   if (treeSource !== null) {
     let head; try { head = JSON.parse(treeSource); } catch { /* Existing parser reports malformed journal. */ }
-    if (head?.schemaVersion === TREE_JOURNAL_SCHEMA_VERSION && head.mode !== 'SCENE_RESOURCE_CONTINUATION_V1') return recoverTreeCohort({ manifestPath, publishManifest, revalidate, fsAdapter, source: treeSource });
+    if (head?.schemaVersion === TREE_JOURNAL_SCHEMA_VERSION && head.mode !== 'SCENE_RESOURCE_CONTINUATION_V1') return recoverTreeCohort({ manifestPath, publishManifest, verifyManifestContinuation, revalidate, fsAdapter, source: treeSource });
   }
   assertPathPair(scenePath, manifestPath);
   if (typeof publishManifest !== 'function') {
@@ -1031,7 +1031,7 @@ async function commitProjectTransaction({
   afterTreeFilesPublish,
   fsAdapter = fsp,
 }) {
-  if (treeCohort !== undefined) return commitTreeCohort({ manifestPath, revision, treeCohort, publishManifest, revalidate, afterTreeFilesPublish, fsAdapter });
+  if (treeCohort !== undefined) return commitTreeCohort({ manifestPath, revision, treeCohort, publishManifest, verifyManifestContinuation, revalidate, afterTreeFilesPublish, fsAdapter });
   assertPathPair(scenePath, manifestPath);
   assertText(sceneContent, 'E_PROJECT_TRANSACTION_SCENE_CONTENT', TRANSACTION_PHASES.ADMIT);
   if (expectedSceneContent !== null) {
@@ -2043,7 +2043,7 @@ async function consumeRestoredTreeAnnotationResources(resources, scenePath, mani
   for (const [target, entry] of managed) treeNeed(await treeRead(target, manifestPath, fsAdapter) === entry.afterBase64, 'E_TREE_COHORT_ANNOTATION_CAS');
   return resources.filter(entry => !managed.has(entry.path));
 }
-async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = null, privateInvocation = null) {
+async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = null, privateInvocation = null, verifyManifestContinuation = undefined) {
   const managed = treeManagedAnnotationEntries(packet.plan, manifestPath);
   const novelOrigin=packet.plan.kind==='word-mixed-return'?packet.plan.input.novelOrigin:undefined;
   const invocation=novelOrigin?(privateInvocation||{origin:null}):null;
@@ -2058,7 +2058,7 @@ async function inspectTreePacket(packet, manifestPath, fsAdapter, requireSide = 
       const origin=await verifyRetainedResources(checked, record.scenePath, manifestPath, fsAdapter,invocation);
       if(novelOrigin) {
         treeNeed(origin&&canonicalize(origin.resource)===canonicalize(novelOrigin),'E_PROJECT_TRANSACTION_NOVEL_ORIGIN');
-        if(raw===entry.beforeBase64&&requireSide==='before')await readNovelSceneBaseline(record,record.scenePath,manifestPath,undefined,fsAdapter,origin,invocation);
+        if(raw===entry.beforeBase64&&requireSide==='before')await readNovelSceneBaseline(record,record.scenePath,manifestPath,verifyManifestContinuation,fsAdapter,origin,invocation);
       }
     }
   }
@@ -2273,7 +2273,7 @@ async function parseTreeJournal(source, manifestPath) {
   await validateTreePacket(journal.packet, manifestPath);
   return validateTreeJournalEnvelope(journal,source,manifestPath);
 }
-async function publishTreeSide(packet, side, { manifestPath, publishManifest, revalidate, fsAdapter }) {
+async function publishTreeSide(packet, side, { manifestPath, publishManifest, verifyManifestContinuation, revalidate, fsAdapter }) {
   await revalidate();
   const orderedDirs = [...packet.plan.directories].sort((a,b)=>a.relativePath.split('/').length-b.relativePath.split('/').length);
   for (const dir of orderedDirs.filter(d=>d[side])) {
@@ -2306,7 +2306,7 @@ async function publishTreeSide(packet, side, { manifestPath, publishManifest, re
     treeNeed((await fsAdapter.readdir(target)).length === 0, 'E_TREE_COHORT_FOREIGN_ENTRY');
     await revalidate(); await fsAdapter.rmdir(target); await fsyncDirectory(path.dirname(target), fsAdapter);
   }
-  await inspectTreePacket(packet, manifestPath, fsAdapter, side);
+  await inspectTreePacket(packet, manifestPath, fsAdapter, side, null, verifyManifestContinuation);
 }
 async function persistTreePacket(packet, fsAdapter) {
   const target = recoveryPacketPathFor(packet.manifestPath, packet.transactionId);
@@ -2326,7 +2326,7 @@ async function preserveTreeConflict(journal, error, fsAdapter) {
   error.automaticRepairForbidden = true;
   throw error;
 }
-async function recoverTreeCohort({ manifestPath, publishManifest, revalidate, fsAdapter, source }) {
+async function recoverTreeCohort({ manifestPath, publishManifest, verifyManifestContinuation, revalidate, fsAdapter, source }) {
   treeNeed(typeof revalidate === 'function' && typeof publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
   const journal = await parseTreeJournal(source, manifestPath);
   await revalidate();
@@ -2335,7 +2335,7 @@ async function recoverTreeCohort({ manifestPath, publishManifest, revalidate, fs
   try {
     treeNeed(committed || currentReceipt === journal.previousReceiptText, 'E_TREE_COHORT_COMMIT_CONFLICT');
     await inspectTreePacket(journal.packet, manifestPath, fsAdapter);
-    await publishTreeSide(journal.packet, committed ? 'after' : 'before', { manifestPath, publishManifest, revalidate, fsAdapter });
+    await publishTreeSide(journal.packet, committed ? 'after' : 'before', { manifestPath, publishManifest, verifyManifestContinuation, revalidate, fsAdapter });
     if (committed) await persistTreePacket(journal.packet, fsAdapter);
     await revalidate(); await removeDurably(journalPathFor(manifestPath), fsAdapter);
     return { recovered: true, outcome: committed ? 'COMMITTED_ROLLED_FORWARD' : 'UNCOMMITTED_ROLLED_BACK', transactionId: journal.transactionId, mode: 'tree' };
@@ -2389,7 +2389,7 @@ async function readVerifiedProjectTreeMutationInInvocation({ manifestPath, proje
   return { treeRevision: receipt.treeRevision, lastMutation: { id: receipt.transactionId, kind: receipt.kind, canUndo, unavailableReason,
     ...(wordReturnHistory?{wordReturnHistory}: {}) }, receipt, retainedPacket: packet };
 }
-async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publishManifest, revalidate, afterTreeFilesPublish, fsAdapter }) {
+async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publishManifest, verifyManifestContinuation, revalidate, afterTreeFilesPublish, fsAdapter }) {
   treeNeed(typeof revalidate === 'function' && typeof publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
   treeNeed(Number.isSafeInteger(revision) && revision >= 0 && plan?.input?.manifestPath === manifestPath ||
     (plan?.kind === 'undo' && plan?.input?.retainedPacket?.manifestPath === manifestPath && Number.isSafeInteger(revision) && revision >= 0), 'E_TREE_COHORT_IDENTITY');
@@ -2423,7 +2423,7 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
       revision,plan,entries:buildTreeEntries(plan,manifestPath,revision,transactionId)};
     await validateTreePacket(packet,manifestPath);
   }
-  await inspectTreePacket(packet, manifestPath, privateRead?.reader||fsAdapter, 'before',privateRead?.invocation);
+  await inspectTreePacket(packet, manifestPath, privateRead?.reader||fsAdapter, 'before',privateRead?.invocation,verifyManifestContinuation);
   const previousReceiptText = await readOptionalText(treeCommitPathFor(manifestPath), privateRead?.reader||fsAdapter);
   const receipt = { schemaVersion: TREE_RECEIPT_SCHEMA_VERSION, projectId: plan.projectId, transactionId,
     treeRevision: current.treeRevision + 1, kind: plan.kind, packetDigest: sha256hex(canonicalize(packet)) };

@@ -663,7 +663,8 @@
     "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
     "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md",
     "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
-    "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md"
+    "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+    "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md"
   ],
   "protectedFiles": [
     {
@@ -892,7 +893,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "0c96d57f02036b2c6f3cd0a72e12afc8a166381f686cbdec53a8724ff7f5cc99"
+        "sha256": "e17d4ee331e9248cff7829add60fa5a7b3685842ccf8263d46fd7aad1bd4f7ca"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1164,7 +1165,7 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "8651ce6c8cbe19c9060bb3dcb43525b2fa75aadadbf5c7847eb272ad2c9f9f72"
+        "sha256": "908413aa34ba4ffe91c68e18c8815bb93cd5f1db2e028d1530b88146c792ea82"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
@@ -2584,15 +2585,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "911419910a339e300a7d638c640367e0a9166b883a14f84abba97d25bffd32f9"
+        "sha256": "8cc4a8e000fd4f72eb9777aa608c8e215464db390ba46ae5998b7124ef26b2a0"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0d6f56f28fdde38c439a56fa585c71ea52cc8e56329ce4af02aa60a88c181f05"
+        "sha256": "d5561a532ebcd50f8ee3dbb9116e987bc3d69e95db84f4e01321214561ea6290"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4fb52e0c6573f7a34d51520780574e0d1724c29773d5a2aa2456dd4538073ca4"
+        "sha256": "17495f9e1676f4a4bb4f5f90bae117356e4b9cd621050da0b1d727d335e058e0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2852,7 +2853,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "1d06a384d6534090a67883fd82ea962ddfe0790c7b5d3f5d7606ad425f664f2e"
+        "sha256": "877bae0c36eaf9285b08e945b5880ca42d0ef46d4982fe24ace2e221a7f1966f"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -2917,6 +2918,10 @@
       {
         "path": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
         "sha256": "408fc301ffb78db555cf90182bad765288c89d87746e432f248bfc1d7a1216e3"
+      },
+      {
+        "path": "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
+        "sha256": "9fe63c489b705ab9533997e1aa746c6dac5edbeb9cdf494bea27ef559b803f4e"
       }
     ],
     "followupRepair": {
