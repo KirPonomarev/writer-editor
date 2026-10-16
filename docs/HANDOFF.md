@@ -1,3 +1,36 @@
+# Verified tree read lifecycle — 2026-10-16
+
+TASK_ID: WORD_TREE_READ_LIFECYCLE_MAC_20261016
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SOURCE_PROOF_COMPLETE_REQUIRED_DELIVERY_PENDING
+BINDING_BASE_SHA: cf6cd26381f9776965cd7fe0990f4d1cbff8cf53
+CLAIM_BOUNDARY: read-port execution only; native book history and fresh finite16 remain NOT_READY
+
+The existing port now admits one full read lifecycle, including initial/final
+fence I/O and confirmed Worker retirement. At most eight distinct small active/
+waiting descriptors are retained. Identical pending descriptors share one freshly
+checked current snapshot; completed projections are never cached. Arrival-based
+monotonic deadlines remove expired queued work without starting a Worker. A failed
+unconfirmed stop makes this port unavailable rather than releasing its resource.
+Core/Worker/Main consumers, capability/context guards, persistence and format are
+unchanged. Public project opening, pending review and periodic backup use this
+same production singleton. Direct heavy Main reads/writes remain a distinct risk.
+
+A maintained controlled RED reproduces two simultaneous Workers on the base.
+The final focused chain passes14of14. Complete changed-tree contracts pass101of101
+on both engines; existing Main port consumers pass8of8 each, with zero
+failure/cancelled/skipped/todo. Final stop-count diagnostic adapts the5ms call
+deadline to allow expiry before Worker creation, still requiring exactly one
+stop for every actually created Worker. Final25/26 full changed-file reruns
+pass101of101 each on exactly these final source and test bytes.
+The exact original two large concurrent default-Electron requests now finish in
+45.577s with two actual Workers and peak live1. Independent complete result
+comparison matches the old sequential pair; all104 protected original files,
+directories and history resources are exact before and after. No heap flags,
+BrowserWindow or Word interaction; native credit is0. Mandatory complete official CI/Main/RTK baseline,
+ordinary delivery and a fresh exact-build native check remain required.
+All raw evidence belongs to the dated T777 word-tree-read-lifecycle-mac folders.
+
 # Comment ranges at completed revisions — 2026-10-16
 
 TASK_ID: WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016
@@ -4164,3 +4197,25 @@ passed unchanged mandatory TAP with zero fail/cancel/skip/todo. The same complet
 unchanged. Required delivery and fresh native recovery/cycle remain pending.
 NEXT: finish ordinary exact-head delivery, then fresh original-profile native
 recovery and the previously failing operation. Whole feature remains NOT_READY.
+
+### Exact generated approval correction and retained resource counterexample
+
+PR2126 candidate7504e3a0415ac78bc160271d34ee23d285a1ca9b fails the mandatory
+C1C shard: E_GENERATED_ARTIFACT_DRIFT for C2A approvals. The inventory itself is
+canonical; its one approval had custom current-task metadata inconsistent with
+the unchanged deterministic compiler. Restore the compiler's standing metadata,
+change only the current inventory digest, require actual checkArtifacts and the
+whole C2A contract, and refresh existing mechanical bindings. Original failed CI
+and the superseded custom approval remain in Git and append-only approval history.
+No test, runtime source, compiler or required gate is weakened.
+
+MAIN_WORKER47 is an additional read-only counterexample on the same original
+104-file Q2: one heavy Main Core read plus one actual Worker read aborts SIGTRAP
+with V8 heap OOM at15.811s. MAIN_WORKER49 uses matched inputs sequentially and
+passes41.177s with equal complete results, no explicit GC or heap flag. Full104
+files and directories remain exact. Thus this port correction proves bounded
+Worker-to-Worker admission only; safe Main/Worker overlap and full book history
+remain open. Do not attempt or credit native bookUndoRedo from this proof. A
+shared Main/Worker resource admission is the next bounded hypothesis after the
+current required delivery closes. Native OPEN-only verification may be admitted
+separately; native history/finite16/fullfeature status remains NOT_READY.

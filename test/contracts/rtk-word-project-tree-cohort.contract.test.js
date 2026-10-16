@@ -943,21 +943,16 @@ test('tree read Worker rejects malformed requests and projections without runnin
 
 test('tree read Worker stale/late/missing/failing delivery never falls back to blocking Core', async t => {
   const {EventEmitter}=require('node:events'),p=require('../../src/main/projectTreeReadPort.cjs'),f=fixture(t),input={manifestPath:f.manifestPath,projectId:'project-test'};
-  const value={treeRevision:0,lastMutation:null,original:null,structuralSeed:null};let starts=0,terminations=0;
+  const value={treeRevision:0,lastMutation:null,original:null,structuralSeed:null},created=[];let starts=0,terminations=0;
   class Controlled extends EventEmitter {
-    constructor(_file,{workerData}) {super();starts++;this.data=workerData;setImmediate(()=>{if(this.deliver)this.deliver();});}
-    terminate(){terminations++;return Promise.resolve(0);}
+    constructor(_file,{workerData}) {super();starts++;created.push(this);this.data=workerData;setImmediate(()=>{if(this.deliver)this.deliver();});}
+    terminate(){terminations++;this.stopCalls=(this.stopCalls||0)+1;return Promise.resolve(0);}
   }
   const healthy=[];
   class Healthy extends Controlled {constructor(...args){super(...args);healthy.push(this);}deliver(){}release(){this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}}
   const read=p.createProjectTreeReadPort({WorkerClass:Healthy});
-  const originalRead=fsp.readFile;let manifestReads=0,secondRead;
-  const fenced=new Promise(resolve=>{secondRead=resolve;});
-  fsp.readFile=async function(file,...args){const result=await originalRead.call(this,file,...args);if(file===f.manifestPath&&++manifestReads===2)secondRead();return result;};
-  try {
-    const jobs=[read(input),read(input)];await fenced;await new Promise(resolve=>setImmediate(resolve));healthy[0].release();
-    assert.deepEqual(await Promise.all(jobs),[value,value]);assert.equal(starts,1);
-  } finally {fsp.readFile=originalRead;}
+  const jobs=[read(input),read(input)];while(healthy.length<1)await new Promise(resolve=>setImmediate(resolve));healthy[0].release();
+  assert.deepEqual(await Promise.all(jobs),[value,value]);assert.equal(starts,1);
   const next=read(input);while(healthy.length<2)await new Promise(resolve=>setImmediate(resolve));healthy[1].release();
   await next;assert.equal(starts,2,'completed projections are never persistently cached');
   class Stale extends Controlled {deliver(){fs.appendFileSync(f.manifestPath,' ');this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}}
@@ -972,22 +967,178 @@ test('tree read Worker stale/late/missing/failing delivery never falls back to b
   await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Exited})(input),{code:'E_TREE_READ_WORKER_EXIT'});
   await assert.rejects(p.createProjectTreeReadPort({WorkerClass:Controlled,timeoutMs:5})(input),{code:'E_TREE_READ_TIMEOUT'});
   await assert.rejects(p.createProjectTreeReadPort({workerPath:path.join(f.root,'missing-worker.cjs')})(input),{code:'E_TREE_READ_WORKER'});
-  assert.equal(terminations,8);assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
+  // The 5ms whole-call deadline may expire in fence I/O before a Worker exists.
+  assert.ok(starts>=7);assert.equal(terminations,starts);assert.ok(created.every(w=>w.stopCalls===1));
+  assert.equal(fs.existsSync(tx.journalPathFor(f.manifestPath)),false);
 });
 
 
 test('tree read Worker bounds distinct in-flight work and still coalesces exact identities',async t=>{
  const {EventEmitter}=require('node:events'),p=require('../../src/main/projectTreeReadPort.cjs'),f=fixture(t);let starts=0;const workers=[];
  class Held extends EventEmitter {constructor(_file,{workerData}){super();starts++;this.data=workerData;workers.push(this);}terminate(){return Promise.resolve();}}
- const read=p.createProjectTreeReadPort({WorkerClass:Held,timeoutMs:1000}),base={manifestPath:f.manifestPath,projectId:'project-test'};
+ const read=p.createProjectTreeReadPort({WorkerClass:Held,timeoutMs:5000}),base={manifestPath:f.manifestPath,projectId:'project-test'};
  const jobs=Array.from({length:8},(_,i)=>read({...base,sceneId:`roman/${i}.txt`}));
- while(starts<8)await new Promise(resolve=>setImmediate(resolve));
+ while(starts<1)await new Promise(resolve=>setImmediate(resolve));
  await assert.rejects(read({...base,sceneId:'roman/overflow.txt'}),{code:'E_TREE_READ_BUSY'});
- const originalRead=fsp.readFile;let joinedRead;const fenced=new Promise(resolve=>{joinedRead=resolve;});
- fsp.readFile=async function(file,...args){const result=await originalRead.call(this,file,...args);if(file===f.manifestPath)joinedRead();return result;};
+ const joined=read({...base,sceneId:'roman/0.txt'});assert.equal(starts,1);
+ for(let i=0;i<8;i++){
+  while(workers.length<=i)await new Promise(resolve=>setImmediate(resolve));assert.equal(starts,i+1);
+  const w=workers[i];assert.equal(w.data.request.sceneId,`roman/${i}.txt`);
+  w.emit('message',{ok:true,fence:w.data.fence,value:{treeRevision:0,lastMutation:null,original:null,structuralSeed:null}});
+  await jobs[i];
+ }
+ await joined;assert.equal(starts,8);
+});
+
+test('tree read lifecycle holds admission until confirmed Worker exit', {timeout:3000}, async t=>{
+ const {EventEmitter}=require('node:events'),p=require('../../src/main/projectTreeReadPort.cjs'),f=fixture(t);
+ const workers=[],jobs=[],value={treeRevision:0,lastMutation:null,original:null,structuralSeed:null};let cleaning=false;
+ const tick=()=>new Promise(resolve=>setImmediate(resolve));
+ class Held extends EventEmitter {
+  constructor(_file,{workerData}){super();this.data=workerData;workers.push(this);
+   this.stopped=new Promise(resolve=>{this.stop=()=>{this.emit('exit',0);resolve(0);};});
+   if(cleaning)setImmediate(()=>{this.good();this.stop();});}
+  good(){this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}
+  terminate(){this.terminationRequested=true;return this.stopped;}
+ }
+ const read=p.createProjectTreeReadPort({WorkerClass:Held,timeoutMs:1000}),base={manifestPath:f.manifestPath,projectId:'project-test'};
+ t.after(async()=>{cleaning=true;for(const w of workers){w.good();w.stop();}await Promise.allSettled(jobs);});
+ const first=read({...base,sceneId:'roman/first.txt'});first.catch(()=>{});jobs.push(first);
+ while(workers.length<1)await tick();
+ const second=read({...base,sceneId:'roman/second.txt'});second.catch(()=>{});jobs.push(second);
+ await new Promise(resolve=>setTimeout(resolve,20));
+ assert.equal(workers.length,1,'a different descriptor waits before Worker allocation');
+ workers[0].good();await tick();
+ assert.equal(workers[0].terminationRequested,true);
+ assert.equal(workers.length,1,'a delivered result does not free a still-live Worker');
+ workers[0].stop();assert.deepEqual(await first,value);
+ while(workers.length<2)await tick();workers[1].good();workers[1].stop();
+ assert.deepEqual(await second,value);
+});
+
+function treeReadLifecycleRig(t,{timeoutMs=1000,stopFailure=false}={}) {
+ const {EventEmitter}=require('node:events'),p=require('../../src/main/projectTreeReadPort.cjs'),f=fixture(t);
+ const workers=[],jobs=[],value={treeRevision:0,lastMutation:null,original:null,structuralSeed:null};let cleaning=false,live=0,peak=0;
+ class Held extends EventEmitter {
+  constructor(_file,{workerData}){super();this.data=workerData;this.alive=true;live++;peak=Math.max(peak,live);workers.push(this);
+   this.stopped=new Promise(resolve=>{this.resolveStop=resolve;});if(cleaning)setImmediate(()=>{this.good();this.stop();});}
+  good(){this.emit('message',{ok:true,fence:this.data.fence,value:{...value}});}
+  terminate(){this.terminationRequested=true;if(stopFailure)throw Error('stop refused');return this.stopped;}
+  stop(){if(!this.alive)return;this.alive=false;live--;this.emit('exit',0);this.resolveStop(0);}
+ }
+ const read=p.createProjectTreeReadPort({WorkerClass:Held,timeoutMs}),base={manifestPath:f.manifestPath,projectId:'project-test'};
+ t.after(async()=>{cleaning=true;for(const w of workers){w.good();w.stop();}await Promise.allSettled(jobs);});
+ const call=(extra={})=>{const job=read({...base,...extra});job.catch(()=>{});jobs.push(job);return job;};
+ return {f,workers,value,call,get peak(){return peak;}};
+}
+const treeReadTick=()=>new Promise(resolve=>setImmediate(resolve));
+async function treeReadUntil(predicate){const deadline=performance.now()+1500;while(!predicate()){
+ assert.ok(performance.now()<deadline,'controlled tree-read barrier not reached');await new Promise(resolve=>setTimeout(resolve,1));
+}}
+
+test('tree read lifecycle errors and timeout retain occupancy until exit, then continue', {timeout:3000}, async t=>{
+ for(const mode of ['error','timeout']){
+  const r=treeReadLifecycleRig(t,{timeoutMs:100}),first=r.call({sceneId:'roman/first.txt'});
+  await treeReadUntil(()=>r.workers.length===1);
+  if(mode==='error')r.workers[0].emit('error',Error('read failed'));
+  else await assert.rejects(first,{code:'E_TREE_READ_TIMEOUT'});
+  const second=r.call({sceneId:'roman/second.txt'});await treeReadTick();
+  assert.equal(r.workers.length,1);assert.equal(r.workers[0].terminationRequested,true);
+  r.workers[0].stop();await assert.rejects(first,{code:mode==='error'?'E_TREE_READ_WORKER':'E_TREE_READ_TIMEOUT'});
+  await treeReadUntil(()=>r.workers.length===2);r.workers[1].good();r.workers[1].stop();
+  assert.deepEqual(await second,r.value);assert.equal(r.peak,1);
+ }
+});
+
+test('tree read lifecycle expired queued work never spawns after a delayed stop', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t,{timeoutMs:60}),first=r.call({sceneId:'roman/first.txt'});
+ await treeReadUntil(()=>r.workers.length===1);
+ const queued=r.call({sceneId:'roman/expired.txt'});
+ await assert.rejects(first,{code:'E_TREE_READ_TIMEOUT'});await assert.rejects(queued,{code:'E_TREE_READ_TIMEOUT'});
+ assert.equal(r.workers.length,1);r.workers[0].stop();await treeReadTick();
+ const fresh=r.call({sceneId:'roman/fresh.txt'});await treeReadUntil(()=>r.workers.length===2);
+ assert.equal(r.workers[1].data.request.sceneId,'roman/fresh.txt');r.workers[1].good();r.workers[1].stop();
+ assert.deepEqual(await fresh,r.value);assert.equal(r.peak,1);
+});
+
+test('tree read lifecycle failed unconfirmed termination refuses further work', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t,{stopFailure:true}),first=r.call({sceneId:'roman/first.txt'});
+ await treeReadUntil(()=>r.workers.length===1);const queued=r.call({sceneId:'roman/queued.txt'});
+ r.workers[0].good();await assert.rejects(first,{code:'E_TREE_READ_WORKER'});
+ await assert.rejects(queued,{code:'E_TREE_READ_WORKER'});
+ await assert.rejects(r.call({sceneId:'roman/next.txt'}),{code:'E_TREE_READ_WORKER'});
+ assert.equal(r.workers.length,1);assert.equal(r.workers[0].alive,true);
+});
+
+test('tree read lifecycle coalesces before fence IO and never caches completed values', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t);for(const suffix of ['.wp201-tree-commit.json','.wp201-transaction.json'])fs.writeFileSync(r.f.manifestPath+suffix,'small synthetic fence');
+ const original=fsp.readFile;let reads=0;
+ fsp.readFile=async function(file,...args){if(String(file).startsWith(r.f.manifestPath))reads++;return original.call(this,file,...args);};
  try {
-  const joined=read({...base,sceneId:'roman/0.txt'});await fenced;await new Promise(resolve=>setImmediate(resolve));assert.equal(starts,8);
-  for(const w of workers)w.emit('message',{ok:true,fence:w.data.fence,value:{treeRevision:0,lastMutation:null,original:null,structuralSeed:null}});
-  await Promise.all([...jobs,joined]);assert.equal(starts,8);
- } finally {fsp.readFile=originalRead;}
+  const same=Array.from({length:16},()=>r.call());await treeReadUntil(()=>r.workers.length===1);
+  assert.equal(reads,3,'one initial fence for the whole pending group');r.workers[0].good();r.workers[0].stop();
+  assert.deepEqual(await Promise.all(same),Array.from({length:16},()=>r.value));assert.equal(reads,6);
+  const fresh=r.call();await treeReadUntil(()=>r.workers.length===2);r.workers[1].good();r.workers[1].stop();
+  assert.deepEqual(await fresh,r.value);assert.equal(reads,12);
+ }finally{fsp.readFile=original;}
+});
+
+test('tree read lifecycle changed files reject an entire joined snapshot and fresh retry rechecks', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t),first=r.call();await treeReadUntil(()=>r.workers.length===1);
+ fs.appendFileSync(r.f.manifestPath,' ');const joined=r.call();r.workers[0].good();r.workers[0].stop();
+ await assert.rejects(first,{code:'E_TREE_READ_STALE'});await assert.rejects(joined,{code:'E_TREE_READ_STALE'});
+ const fresh=r.call();await treeReadUntil(()=>r.workers.length===2);r.workers[1].good();r.workers[1].stop();
+ assert.deepEqual(await fresh,r.value);
+});
+
+test('tree read lifecycle deadline includes initial fence and retains its occupied IO', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t,{timeoutMs:40}),original=fsp.readFile;let unblock,entered=false;
+ const held=new Promise(resolve=>{unblock=resolve;});
+ fsp.readFile=async function(file,...args){const bytes=await original.call(this,file,...args);if(file===r.f.manifestPath){entered=true;await held;}return bytes;};
+ try {
+  const first=r.call();await treeReadUntil(()=>entered);await assert.rejects(first,{code:'E_TREE_READ_TIMEOUT'});
+  const second=r.call({sceneId:'roman/expired.txt'});await assert.rejects(second,{code:'E_TREE_READ_TIMEOUT'});
+  assert.equal(r.workers.length,0,'expired admission cannot launch a Worker behind held IO');
+ }finally{fsp.readFile=original;unblock();}
+ await treeReadTick();const fresh=r.call();await treeReadUntil(()=>r.workers.length===1);
+ r.workers[0].good();r.workers[0].stop();assert.deepEqual(await fresh,r.value);
+});
+
+test('tree read lifecycle deadline includes final freshness after Worker exit', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t,{timeoutMs:60}),original=fsp.readFile;let reads=0,unblock,entered=false;
+ const held=new Promise(resolve=>{unblock=resolve;});
+ fsp.readFile=async function(file,...args){const bytes=await original.call(this,file,...args);if(file===r.f.manifestPath&&++reads===2){entered=true;await held;}return bytes;};
+ try {
+  const first=r.call();await treeReadUntil(()=>r.workers.length===1);r.workers[0].good();r.workers[0].stop();
+  await treeReadUntil(()=>entered);await assert.rejects(first,{code:'E_TREE_READ_TIMEOUT'});
+  const second=r.call({sceneId:'roman/second.txt'});await treeReadTick();assert.equal(r.workers.length,1);
+  unblock();await treeReadUntil(()=>r.workers.length===2);r.workers[1].good();r.workers[1].stop();
+  assert.deepEqual(await second,r.value);
+ }finally{fsp.readFile=original;unblock();}
+});
+
+test('tree read lifecycle serializes different projects and admits current queued fences', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t),other=fixture(t);fs.writeFileSync(other.manifestPath,JSON.stringify({...JSON.parse(text(other.manifestPath)),projectId:'project-other'}));
+ const first=r.call();await treeReadUntil(()=>r.workers.length===1);
+ const next=r.call({manifestPath:other.manifestPath,projectId:'project-other'}),third=r.call({sceneId:'roman/third.txt'});
+ fs.appendFileSync(other.manifestPath,' ');r.workers[0].good();r.workers[0].stop();await first;
+ await treeReadUntil(()=>r.workers.length===2);assert.equal(r.workers[1].data.request.manifestPath,other.manifestPath);
+ const p=require('../../src/main/projectTreeReadPort.cjs');assert.deepEqual(r.workers[1].data.fence,await p.readFence(other.manifestPath));
+ r.workers[1].good();r.workers[1].stop();await next;
+ await treeReadUntil(()=>r.workers.length===3);assert.equal(r.workers[2].data.request.sceneId,'roman/third.txt');
+ r.workers[2].good();r.workers[2].stop();await third;assert.equal(r.peak,1);
+});
+
+test('tree read lifecycle failed fence drains all started IO before admitting another request', {timeout:3000}, async t=>{
+ const r=treeReadLifecycleRig(t),other=fixture(t),oldStat=fsp.lstat,oldRead=fsp.readFile;let entered=0,unblock;
+ for(const suffix of ['.wp201-tree-commit.json','.wp201-transaction.json'])fs.writeFileSync(r.f.manifestPath+suffix,'small fence');
+ const held=new Promise(resolve=>{unblock=resolve;});
+ fsp.lstat=async function(file,...args){if(file===r.f.manifestPath)throw Object.assign(Error('fence denied'),{code:'EACCES'});return oldStat.call(this,file,...args);};
+ fsp.readFile=async function(file,...args){const bytes=await oldRead.call(this,file,...args);if(String(file).startsWith(r.f.manifestPath)){entered++;await held;}return bytes;};
+ try {
+  const first=r.call(),next=r.call({manifestPath:other.manifestPath});await treeReadUntil(()=>entered===2);await treeReadTick();
+  assert.equal(r.workers.length,0,'a failed fence does not abandon its other live reads');
+  unblock();await assert.rejects(first,{code:'EACCES'});await treeReadUntil(()=>r.workers.length===1);
+  r.workers[0].good();r.workers[0].stop();assert.deepEqual(await next,r.value);
+ }finally{fsp.lstat=oldStat;fsp.readFile=oldRead;unblock();}
 });

@@ -26771,19 +26771,19 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "d0dd152c340a66fd58c4cf6dda995223ab2b31397176d29b993e1a0445f2d4f4"
+      "sha256": "78e125982899d37d6ddba823886b234a1e9e60706ab8dc2c61b9d5db3abf9ab9"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "38cbf9eb3753704d6ba436686a4141d9d20308458af97dc09de1d8c022beaad5"
+      "sha256": "58be8e906e040d241ee1d947dd5fa70e1eb8d50bd0944acfa8c7d0b5b6d8b3a8"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "d0e1727a3800ffa0eae71b520e02fe080607eeabf5058bde6f1d6d02fd599cd2"
+      "sha256": "064ca50f484b769478cf9c897a7fc965d1fc7230c12c6a8ab62496378cd2e4c6"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-      "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
+      "sha256": "d0ac85425f9f0188b57d594f7afe24b479d931d4a2ed966f33a727dd02dc943f"
     },
     {
       "path": "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md",
@@ -26831,7 +26831,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main/projectTreeReadPort.cjs",
-      "sha256": "95f4b8b2ce450cd6897612ed0ef4d20a6ea4af765d01c7370f0b733460dbe3c7"
+      "sha256": "f0503474671b1ba710476fa35b5b5d1b1585862b64df7e98a0a54faa0c1c89b3"
     },
     {
       "path": "src/main/projectTreeReadWorker.cjs",
@@ -26968,12 +26968,16 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "docs/tasks/2026-10-16--word-book-history-memory-mac.md",
       "sha256": "50560cc2485228636f1ca95cce9b91a2048d9c2dbc8a1eda49f500b1e70d5e89"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-tree-read-lifecycle-mac.md",
+      "sha256": "a3beb739e62099f93bdd49580b75efe9e3bcbdd1ada9db906db4c2b27743d498"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "6791a24a6b05fb97f0e4a42f1e3ce8226005f98bb42b1da84c982c745a3471e0"
+      "sha256": "3cd779044c90d9217d5df7067d2564ca34c3175bf35701ce7002ca162b00f469"
     }
   ]
 });
