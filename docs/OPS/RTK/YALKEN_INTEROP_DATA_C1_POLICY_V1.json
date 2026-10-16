@@ -2602,15 +2602,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3b03f8658831dbaadd321e63be6575f13d170ac776ceca1d86995d2954f190e0"
+        "sha256": "78e125982899d37d6ddba823886b234a1e9e60706ab8dc2c61b9d5db3abf9ab9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "6f0e1bddc28edd1115fb669969d4b03c7745e5ecc05d2953c363078f4b5bde3c"
+        "sha256": "58be8e906e040d241ee1d947dd5fa70e1eb8d50bd0944acfa8c7d0b5b6d8b3a8"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4817c60dcfb5d26349194754508446bef63736562b7c9d80cf00f3a89e08b0a9"
+        "sha256": "064ca50f484b769478cf9c897a7fc965d1fc7230c12c6a8ab62496378cd2e4c6"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3006,7 +3006,7 @@
       },
       {
         "path": "docs/tasks/2026-10-16--word-tree-read-lifecycle-mac.md",
-        "sha256": "791e24886dfeee73ded3d97c73601ec12bda9d99667d2cb8c1efc29decc4fcea"
+        "sha256": "a3beb739e62099f93bdd49580b75efe9e3bcbdd1ada9db906db4c2b27743d498"
       }
     ],
     "followupRepair": {

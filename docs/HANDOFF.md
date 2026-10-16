@@ -4197,3 +4197,25 @@ passed unchanged mandatory TAP with zero fail/cancel/skip/todo. The same complet
 unchanged. Required delivery and fresh native recovery/cycle remain pending.
 NEXT: finish ordinary exact-head delivery, then fresh original-profile native
 recovery and the previously failing operation. Whole feature remains NOT_READY.
+
+### Exact generated approval correction and retained resource counterexample
+
+PR2126 candidate7504e3a0415ac78bc160271d34ee23d285a1ca9b fails the mandatory
+C1C shard: E_GENERATED_ARTIFACT_DRIFT for C2A approvals. The inventory itself is
+canonical; its one approval had custom current-task metadata inconsistent with
+the unchanged deterministic compiler. Restore the compiler's standing metadata,
+change only the current inventory digest, require actual checkArtifacts and the
+whole C2A contract, and refresh existing mechanical bindings. Original failed CI
+and the superseded custom approval remain in Git and append-only approval history.
+No test, runtime source, compiler or required gate is weakened.
+
+MAIN_WORKER47 is an additional read-only counterexample on the same original
+104-file Q2: one heavy Main Core read plus one actual Worker read aborts SIGTRAP
+with V8 heap OOM at15.811s. MAIN_WORKER49 uses matched inputs sequentially and
+passes41.177s with equal complete results, no explicit GC or heap flag. Full104
+files and directories remain exact. Thus this port correction proves bounded
+Worker-to-Worker admission only; safe Main/Worker overlap and full book history
+remain open. Do not attempt or credit native bookUndoRedo from this proof. A
+shared Main/Worker resource admission is the next bounded hypothesis after the
+current required delivery closes. Native OPEN-only verification may be admitted
+separately; native history/finite16/fullfeature status remains NOT_READY.
