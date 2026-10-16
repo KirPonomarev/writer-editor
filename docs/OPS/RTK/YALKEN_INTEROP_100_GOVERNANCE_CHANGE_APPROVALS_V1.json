@@ -2683,12 +2683,12 @@
     },
     {
       "filePath": "src/export/docx/docxPendingRevisions.js",
-      "sha256": "bba6aa65a65a9892952de1683555c302b67dc992a3931ddf3bba0c7e7dc51f20",
-      "approvedAtUtc": "2026-10-07T05:45:46.001497Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
-      "rationale": "Owner-authorized same original42b finite body contour amendment15 at clean c110f, original46paths/1800runtime2600behavior/onePR2093 rollback unchanged. Existing full source binding selects cloned pending transport; builder does not infer resolved topology. Owned boundary and row direct marker composition preserves all current and nested previous properties and raw provenance. Existing Core/Main/parser/adapter/Comments14/sourceCAS and canonical history frozen. Actual predecessor Main100k five exchanges and fiveUndo/fiveRedo1of1 passes but is not native Word or production performance. Required failed graph and all original native novel/gates/delivery remain open. Mechanical exact-byte successor only, never acceptance, skipped assertions or denominator reduction.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "fa6d8e914810b0dccf68e0bc4b35bfbeeddfb51bebe677a037626a35be02dad3"
     },
     {
       "filePath": "src/renderer/tiptap/wordPendingRevisions.mjs",
@@ -2863,12 +2863,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-pending-formatting.contract.test.js",
-      "sha256": "c38a8b70c5c49c24c1333f51f45932c14d2b670a9e210a51473ac1b5759ad84c",
-      "approvedAtUtc": "2026-10-07T10:34:12.846038Z",
-      "approvedBy": "owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
-      "rationale": "Owner-authorized same unfinished original42b novel body contour amendment22 at clean ee1f: existing72 scoped paths and original1800runtime2600behavior budgets. Bare hardBreak SOURCE omissions, complete source-owned pending/comment/history typography interaction and actual referenced fresh V2 reset styles are corrected inside existing strict guards. Canonical raw source, map, format IR, history and actual returned operands remain separate and preserved. Legacy emitted bytes and real formatting differences remain strict. Proofs are qualified by exact artifacts and executed denominator; native full novel/performance/release readiness remain OPEN. Preserve historical217 frozen tuples,622 admitted paths,480 actual source bindings and1597 inventory. Root final4 docs precede7 mechanical OPS writes; bindings never establish product acceptance.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "54e6121c6129a8f8f10073749ba81f2127c233009b0bced4344df892f98057bd"
     },
     {
       "filePath": "docs/tasks/2026-09-29--word-move-recording.md",
@@ -5573,11 +5573,11 @@
     {
       "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "7282574b250e825756a18007e1eb7602e2320fc34f04193fe745dfc7460d9b35"
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "fb8a41bcaceccbbbb4b39ede1d6c9614a4a73d4ef2b3bad29ba538f140909b2f"
     },
     {
       "filePath": "src/main.js",
@@ -5699,29 +5699,29 @@
     {
       "filePath": "docs/CONTEXT.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "b3f7f018f56aa1bde812f2b7a0eb07fbeb01bf8fda7e48264057194e4795afea"
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "f3fefff246462163aabfb88ad6d3cbaba04d45520913d33e402e6a25a53a2458"
     },
     {
       "filePath": "docs/HANDOFF.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "2a04c5e71bd55af0ad5d1dfe2afb978e6fd2c9189044c8ef2bb19585a7ec23d3"
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "8e0e97fc48b2432d53e605f01047f4008d04933890d1fefbb65762e7f9e7dc1a"
     },
     {
       "filePath": "docs/WORKLOG.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "06a398b030edded230ae6a9b1e461417259b525baffe130298f98c7afd9899eb"
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "44b3c7f51186d7b8a3918bb4f4ecea379e3da0b6cb7874625f86ef6573174693"
     },
     {
       "filePath": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
@@ -5735,56 +5735,65 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:54:54.927843+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "7804da792fc7735c69591a98120973244a8a30aa03a0a51f7828aee47a312760"
+      "rationale": "Mechanical final task-heading correction required by existing E0 exact10 H2 grammar; proof becomes H3 under FAIL_PROTOCOL. Runtime/tests unchanged. All prior approvals and failed observations retained; original owner-delegated three-line exporter correction and full ordinary delivery scope unchanged.",
+      "sha256": "6e02e492cd92bf62d0154bfc5ef2d5fd8264a91c7113435bb724ac9629ff2708"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:54:54.927843+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "55926b69d559eef55f246245e164c9ef47ee8e23fb06ec72ce819bed6899d1da"
+      "rationale": "Mechanical final task-heading correction required by existing E0 exact10 H2 grammar; proof becomes H3 under FAIL_PROTOCOL. Runtime/tests unchanged. All prior approvals and failed observations retained; original owner-delegated three-line exporter correction and full ordinary delivery scope unchanged.",
+      "sha256": "5e13b32ec507e02088e8b2ad7de7bbee87929e0f462021fb888da79b4baf8245"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "bbc1e59ff191e1832209d1ad50b32738090d48f53b4e580901bd53dcf109f0ba"
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "2150a3da7d65316dfb781336a17affda945635eee60ac5aacbdd180bc117f736"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "7efde165179155cf6c3ecbac8a7ac6d675273b730fe97ce253e6963c36d663f1"
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "28f9b3dddea2959d1af546fbe8daeee9ea9241d9599df30d5bea87878a1509f5"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:54:54.927843+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "f87f7f9637e87b206409635cdff5b0052a9f296c1aea33d6b4f4a8957d620c92"
+      "rationale": "Mechanical final task-heading correction required by existing E0 exact10 H2 grammar; proof becomes H3 under FAIL_PROTOCOL. Runtime/tests unchanged. All prior approvals and failed observations retained; original owner-delegated three-line exporter correction and full ordinary delivery scope unchanged.",
+      "sha256": "3c8d1c6707f2ea6bcadfd0d48e651c4750eb2de1cd009b017e033dce4585a4ee"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T07:54:54.927843+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "915b476b2c649da10afcf5e4618412e5308b55d8f98a5ffeff3552cd7668d6b3"
+      "rationale": "Mechanical final task-heading correction required by existing E0 exact10 H2 grammar; proof becomes H3 under FAIL_PROTOCOL. Runtime/tests unchanged. All prior approvals and failed observations retained; original owner-delegated three-line exporter correction and full ordinary delivery scope unchanged.",
+      "sha256": "36a79496b00c979fd3bb186da399fd270bc33b12a612724a1485afd06d4f95df"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:54:54.927843+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Mechanical final task-heading correction required by existing E0 exact10 H2 grammar; proof becomes H3 under FAIL_PROTOCOL. Runtime/tests unchanged. All prior approvals and failed observations retained; original owner-delegated three-line exporter correction and full ordinary delivery scope unchanged.",
+      "sha256": "2b0135661033070a7e40da072a7a474f2550c17b15f304aad3433de04b425143"
     }
   ],
   "evidenceStampIds": [
@@ -45823,6 +45832,159 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
       "sha256": "138d75318ef94080830ee56d713e981503d59100e296b4c92a5d33234ba35299"
+    },
+    {
+      "filePath": "src/export/docx/docxPendingRevisions.js",
+      "sha256": "bba6aa65a65a9892952de1683555c302b67dc992a3931ddf3bba0c7e7dc51f20",
+      "approvedAtUtc": "2026-10-07T05:45:46.001497Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_TEXT_MOVES_20260929|owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_PARAGRAPH_BOUNDARIES_20260929|owner-delegated-codex:WORD_TABLE_ROW_REVISIONS_20260929|owner-delegated-codex:WORD_PENDING_NOTES_MAC_20261001|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
+      "rationale": "Owner-authorized same original42b finite body contour amendment15 at clean c110f, original46paths/1800runtime2600behavior/onePR2093 rollback unchanged. Existing full source binding selects cloned pending transport; builder does not infer resolved topology. Owned boundary and row direct marker composition preserves all current and nested previous properties and raw provenance. Existing Core/Main/parser/adapter/Comments14/sourceCAS and canonical history frozen. Actual predecessor Main100k five exchanges and fiveUndo/fiveRedo1of1 passes but is not native Word or production performance. Required failed graph and all original native novel/gates/delivery remain open. Mechanical exact-byte successor only, never acceptance, skipped assertions or denominator reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-pending-formatting.contract.test.js",
+      "sha256": "c38a8b70c5c49c24c1333f51f45932c14d2b670a9e210a51473ac1b5759ad84c",
+      "approvedAtUtc": "2026-10-07T10:34:12.846038Z",
+      "approvedBy": "owner-delegated-codex:WORD_PENDING_FORMATTING_20260929|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
+      "rationale": "Owner-authorized same unfinished original42b novel body contour amendment22 at clean ee1f: existing72 scoped paths and original1800runtime2600behavior budgets. Bare hardBreak SOURCE omissions, complete source-owned pending/comment/history typography interaction and actual referenced fresh V2 reset styles are corrected inside existing strict guards. Canonical raw source, map, format IR, history and actual returned operands remain separate and preserved. Legacy emitted bytes and real formatting differences remain strict. Proofs are qualified by exact artifacts and executed denominator; native full novel/performance/release readiness remain OPEN. Preserve historical217 frozen tuples,622 admitted paths,480 actual source bindings and1597 inventory. Root final4 docs precede7 mechanical OPS writes; bindings never establish product acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T20:08:18.526331+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. The existing WP204 isolated copied module graph includes the new validator and its existing word-language dependency; unchanged unmodified control and seven implementation mutants execute on both engines. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "7282574b250e825756a18007e1eb7602e2320fc34f04193fe745dfc7460d9b35"
+    },
+    {
+      "filePath": "docs/CONTEXT.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "b3f7f018f56aa1bde812f2b7a0eb07fbeb01bf8fda7e48264057194e4795afea"
+    },
+    {
+      "filePath": "docs/HANDOFF.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "2a04c5e71bd55af0ad5d1dfe2afb978e6fd2c9189044c8ef2bb19585a7ec23d3"
+    },
+    {
+      "filePath": "docs/WORKLOG.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "06a398b030edded230ae6a9b1e461417259b525baffe130298f98c7afd9899eb"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "bbc1e59ff191e1832209d1ad50b32738090d48f53b4e580901bd53dcf109f0ba"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "7efde165179155cf6c3ecbac8a7ac6d675273b730fe97ce253e6963c36d663f1"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "7804da792fc7735c69591a98120973244a8a30aa03a0a51f7828aee47a312760"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "55926b69d559eef55f246245e164c9ef47ee8e23fb06ec72ce819bed6899d1da"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "f87f7f9637e87b206409635cdff5b0052a9f296c1aea33d6b4f4a8957d620c92"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T22:12:16.664042+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Final same-contour regression preserves existing initial journal recovery before missing-anchor consent, demonstrated by actual complete initializeApp valid-v1 and corrupt-pending refusal controls. Completed full CI4280 cases exposed only the stale B2C09 red-to-green ledger classification; exact membership moves to the existing executable green registry, with all flip/shape and mutation negatives unchanged. Final complete affected10-file252 cases and full6-case/35-family classification pass on Node22 and shipped Electron; no fail/cancel/skip/todo and exact source barriers. Required CI inventory baseline exposed two VM startup extractor omissions; the WP302 harness now asserts integrity recovery before all project writers and explicit refusal before writes or window/autosave continuation. Runtime bytes unchanged. Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "915b476b2c649da10afcf5e4618412e5308b55d8f98a5ffeff3552cd7668d6b3"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "cc4ff8b567b8953ac863d6d01a104907cd1a40935c79ca30eb353029ed95767b"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "c102d7831b4e22cd13493d350fbaaab99f600329510694feb6ecf9a776a65ec1"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "b9755f40c9d7319f3729308a38c046b872d4a813e402960106cb9e068910f7bb"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "673e270b0d0dbe48bb42f49d0d0a7a943b48f1faba9044a0ff38d96b2a74bdc4"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "d50353a8120cb110e3118085ab247714e1f3736755a1668219b31a199d215abc"
     }
   ]
 }

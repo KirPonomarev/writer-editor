@@ -26479,7 +26479,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
-      "sha256": "7282574b250e825756a18007e1eb7602e2320fc34f04193fe745dfc7460d9b35"
+      "sha256": "fb8a41bcaceccbbbb4b39ede1d6c9614a4a73d4ef2b3bad29ba538f140909b2f"
     },
     {
       "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -26499,7 +26499,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
-      "sha256": "bba6aa65a65a9892952de1683555c302b67dc992a3931ddf3bba0c7e7dc51f20"
+      "sha256": "fa6d8e914810b0dccf68e0bc4b35bfbeeddfb51bebe677a037626a35be02dad3"
     },
     {
       "path": "src/io/revisionBridge/reviewTransportCore.mjs",
@@ -26567,7 +26567,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
-      "sha256": "c38a8b70c5c49c24c1333f51f45932c14d2b670a9e210a51473ac1b5759ad84c"
+      "sha256": "54e6121c6129a8f8f10073749ba81f2127c233009b0bced4344df892f98057bd"
     },
     {
       "path": "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
@@ -26771,15 +26771,15 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "b3f7f018f56aa1bde812f2b7a0eb07fbeb01bf8fda7e48264057194e4795afea"
+      "sha256": "f3fefff246462163aabfb88ad6d3cbaba04d45520913d33e402e6a25a53a2458"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "2a04c5e71bd55af0ad5d1dfe2afb978e6fd2c9189044c8ef2bb19585a7ec23d3"
+      "sha256": "8e0e97fc48b2432d53e605f01047f4008d04933890d1fefbb65762e7f9e7dc1a"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "06a398b030edded230ae6a9b1e461417259b525baffe130298f98c7afd9899eb"
+      "sha256": "44b3c7f51186d7b8a3918bb4f4ecea379e3da0b6cb7874625f86ef6573174693"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26960,12 +26960,16 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
       "sha256": "fa81634c66b7ca65238766fa434a2ac32de3de69f96ce87e2474ebf3573e73fc"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
+      "sha256": "2b0135661033070a7e40da072a7a474f2550c17b15f304aad3433de04b425143"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "7804da792fc7735c69591a98120973244a8a30aa03a0a51f7828aee47a312760"
+      "sha256": "6e02e492cd92bf62d0154bfc5ef2d5fd8264a91c7113435bb724ac9629ff2708"
     }
   ]
 });

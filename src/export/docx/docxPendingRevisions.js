@@ -170,6 +170,8 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
     if (segment.revision && inner.some(point => remaining.has(point))) throw Error('PENDING_NOTE_REFERENCE_CONSUMED');
     const cuts = [offset, ...inner, end];
     for (let i = 0; i < cuts.length - 1; i++) {
+      // A completed revision must not own markers on the next segment's edge.
+      if (active && active.id !== segment.revision?.id) { flush(); active = null; }
       emit(cuts[i]);
       if ((active?.id || null) !== (segment.revision?.id || null)) { flush(); active = segment.revision; }
       const node = segment.node.type === 'hardBreak' ? segment.node : { ...segment.node, text: value.slice(cuts[i] - offset, cuts[i + 1] - offset) };
@@ -185,6 +187,7 @@ function buildPendingRunsXml(segments, renderRun, counter, sceneScope = '', mark
     }
     offset = end;
   }
+  flush(); active = null;
   emit(offset);
   if (remaining.size) throw Error('PENDING_NOTE_ANCHOR_UNEMITTED');
   if (remainingComments.size) throw Error('PENDING_COMMENT_ANCHOR_UNEMITTED');
