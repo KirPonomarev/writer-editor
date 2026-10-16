@@ -1142,3 +1142,33 @@ test('tree read lifecycle failed fence drains all started IO before admitting an
   r.workers[0].good();r.workers[0].stop();assert.deepEqual(await next,r.value);
  }finally{fsp.lstat=oldStat;fsp.readFile=oldRead;unblock();}
 });
+
+
+function treeReadBrowserBackendFixture(t,missing=false){
+ const {EventEmitter}=require('node:events'),vm=require('node:vm'),f=fixture(t),threads=[],forks=[],value={treeRevision:0,lastMutation:null,original:null,structuralSeed:null};
+ class Thread extends EventEmitter{constructor(file,{workerData}){super();threads.push({file,workerData});setImmediate(()=>this.emit('message',{ok:true,fence:workerData.fence,value}));}terminate(){return Promise.resolve(0);}}
+ const utilityProcess={fork(file,args,options){const child=new EventEmitter();child.kill=()=>{setImmediate(()=>child.emit('exit',0));return true;};child.postMessage=workerData=>{forks.at(-1).workerData=workerData;setImmediate(()=>child.emit('message',{ok:true,fence:workerData.fence,value}));};forks.push({file,args,options,child});setImmediate(()=>child.emit('spawn'));return child;}};
+ const location=require.resolve('../../src/main/projectTreeReadPort.cjs'),module={exports:{}};
+ const runtime={module,exports:module.exports,__dirname:path.dirname(location),Buffer,setTimeout,clearTimeout,process:{type:'browser',versions:{electron:'41.10.6'}},require:name=>name==='node:worker_threads'?{Worker:Thread}:name==='electron'?{utilityProcess:missing?undefined:utilityProcess}:require(name)};
+ vm.runInNewContext(fs.readFileSync(location,'utf8'),runtime,{filename:location});
+ return {p:module.exports,f,threads,forks,value};
+}
+test('Electron tree read backend uses ordinary utility process and unchanged bounded projection',async t=>{
+ const r=treeReadBrowserBackendFixture(t),input={manifestPath:r.f.manifestPath,projectId:'project-test'};
+ assert.deepEqual(await r.p.readVerifiedProjectTreeProjection(input),r.value);assert.equal(r.threads.length,0,'production browser Main must not run the heavy read in a Node Worker');assert.equal(r.forks.length,1);
+ assert.equal(r.forks[0].file,path.join(path.dirname(require.resolve('../../src/main/projectTreeReadPort.cjs')),'projectTreeReadWorker.cjs'));
+ assert.deepEqual(Array.from(r.forks[0].args),[]);assert.deepEqual(Object.keys(r.forks[0].options),['serviceName']);assert.equal(r.forks[0].options.serviceName,'Yalken project tree reader');assert.deepEqual({...r.forks[0].workerData.request},input);assert(Object.isFrozen(r.value));assert.equal(fs.existsSync(tx.journalPathFor(r.f.manifestPath)),false);
+});
+test('Electron tree read missing process backend fails typed without same-process fallback',async t=>{
+ const r=treeReadBrowserBackendFixture(t,true);await assert.rejects(r.p.readVerifiedProjectTreeProjection({manifestPath:r.f.manifestPath,projectId:'project-test'}),{code:'E_TREE_READ_WORKER_START'});assert.equal(r.threads.length,0);assert.equal(r.forks.length,0);assert.equal(text(path.join(r.f.root,'roman/01 Alpha.txt')),r.f.raw);
+});
+
+function treeUtilityAdapterFixture(){const {EventEmitter}=require('node:events');const child=new EventEmitter();child.sent=[];child.kills=0;child.kill=()=>{child.kills++;return true;};child.postMessage=x=>child.sent.push(x);const calls=[];const Reader=require('../../src/main/projectTreeReadPort.cjs').createUtilityProcessReaderClass({fork:(...args)=>{calls.push(args);return child;}});const data={request:{projectId:'owned'},fence:['a','b',null]};const reader=new Reader('/fixed/reader.cjs',{workerData:data});return{reader,child,calls,data};}
+test('utility reader exact static module and small data transfer use ordinary options without heap/env/privilege changes',()=>{const{reader,child,calls,data}=treeUtilityAdapterFixture();assert.deepEqual(calls,[['/fixed/reader.cjs',[],{serviceName:'Yalken project tree reader'}]]);assert.equal(child.sent.length,0);child.emit('spawn');assert.deepEqual(child.sent,[data]);const got=[];reader.on('message',x=>got.push(x));child.emit('message',{ok:true});assert.deepEqual(got,[{ok:true}]);child.emit('exit',0);});
+test('utility reader terminate is not complete until actual exit and repeated stop kills only once',async()=>{const{reader,child}=treeUtilityAdapterFixture();child.emit('spawn');let done=false;const a=reader.terminate(),b=reader.terminate();assert.equal(a,b);a.then(()=>{done=true;});await Promise.resolve();assert.equal(done,false);assert.equal(child.kills,1);child.emit('exit',0);assert.equal(await a,0);assert(done);assert.equal(await reader.terminate(),0);assert.equal(child.kills,1);});
+test('utility reader timeout before spawn never posts request and waits for actual spawned child retirement',async()=>{const{reader,child}=treeUtilityAdapterFixture();const stopped=reader.terminate();assert.equal(child.kills,0);assert.equal(child.sent.length,0);child.emit('spawn');assert.equal(child.kills,1);assert.equal(child.sent.length,0);child.emit('exit',0);await stopped;});
+test('utility reader stopping and exited readers cannot publish late results',async()=>{const{reader,child}=treeUtilityAdapterFixture(),got=[];reader.on('message',x=>got.push(x));child.emit('spawn');const stopped=reader.terminate();child.emit('message','late');child.emit('exit',0);await stopped;child.emit('message','later');assert.deepEqual(got,[]);});
+test('utility reader unconfirmed or throwing stop fails instead of freeing a live child',async()=>{for(const behavior of [()=>false,()=>{throw Error('stop');}]){const{reader,child}=treeUtilityAdapterFixture();child.kill=behavior;child.emit('spawn');await assert.rejects(reader.terminate(),/E_TREE_READ_WORKER/);assert.equal(reader.exited,false);child.emit('exit',1);}});
+test('utility reader child errors and spawn publication failure preserve typed error and actual exit',async()=>{for(const mode of ['fatal','post']){const{reader,child}=treeUtilityAdapterFixture(),errors=[];reader.on('error',e=>errors.push(e.message));if(mode==='post')child.postMessage=()=>{throw Error('post');};child.emit('spawn');if(mode==='fatal')child.emit('error','FatalError','location','report');assert.equal(errors.length,1);const stopped=reader.terminate();child.emit('exit',1);await stopped;assert.equal(reader.exited,true);}});
+
+test('utility reader a second fatal notification during an already requested stop cannot throw into Main',async()=>{const{reader,child}=treeUtilityAdapterFixture();let stopped;reader.once('error',()=>{stopped=reader.terminate();});child.postMessage=()=>{throw Error('post');};child.emit('spawn');assert.equal(child.kills,1);assert.doesNotThrow(()=>child.emit('error','FatalError','location','report'));child.emit('exit',1);await stopped;});

@@ -1,3 +1,41 @@
+# Isolated verified tree reader — 2026-10-16
+
+TASK_ID: WORD_TREE_READ_PROCESS_MAC_20261016
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_LOCAL_SOURCE_PROOF_COMPLETE_REQUIRED_DELIVERY_PENDING
+BINDING_BASE_SHA: 01fe7ad0e4e0a63ada3d965a5b1dd0ef833a3fea
+CLAIM_BOUNDARY: existing read transport; no native book/finite16 acceptance
+
+PR2126 is fully delivered at the binding base: all20official checks, complete
+4293-case RTK twice, fresh merged101tree and8Main cases on each engine,
+163governance cases, strict/bindings and matched large43.393s proof. The full
+104Q2 and105SOURCE80 files/directories remain exact. Earlier pending entries
+retain their historical observation and do not reopen that delivery.
+
+The candidate keeps the same bounded read port and validated Core projection,
+but ordinary Electron Main now uses one read-only utility process. Plain Node
+and shipped Node tooling keep Node Worker. No same-process fallback in Electron,
+new command, schema, Core/Main/renderer/package change, privilege/heap/GPU/env
+flag, dependency, result cache or runtime network is introduced. Existing1active,
+8distinct/120000ms limits, all initial/reader/final fences and Main guards remain.
+Termination before spawn cannot post data; confirmed actual exit owns release;
+late notifications during retirement cannot throw a second error into Main.
+
+Causal browser-backend RED07 fails on the exact base; GREEN08 passes. All110
+changed-tree cases pass on Node22 and shippedElectron, and8actual Main consumers
+pass on each, with0fail/cancel/skip/todo and unchanged mandatory TAP/source bars.
+An actual unmocked default Electron Main query overlaps the full Main Core read:
+21.685s, default4GiB Main heap, a distinct utility PID/creationTime observed by
+Electron metrics, complete project/selected-scene literals equal the frozen
+sequential result. No injected backend, reader body or runtime flag is used.
+Independent full104/105 file/directory rosters and Core/Main/preload/packages
+remain exact. npm audit reports0vulnerabilities; OSS policy passes.
+
+These are source/component proofs only. Complete candidate ASAR, mandatory full
+CI, ordinary delivery and exact merged verification remain required. Original
+book native Undo/Redo, real changed Word rounds and finite16 remain NOT_READY.
+New small materials/reports use dated T777 word-tree-read-process-mac folders.
+
 # Verified tree read lifecycle — 2026-10-16
 
 TASK_ID: WORD_TREE_READ_LIFECYCLE_MAC_20261016
