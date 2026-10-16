@@ -4137,3 +4137,30 @@ Earlier failed full graphs and local RED remain FAIL, never promoted. Existing
 Main/Core/model bytes, package sources and paired159MB journal proof unchanged.
 Same PR2120 delivery, complete new exact-head CI and native admission remain
 required. Native75 still failed; whole feature remains NOT_READY.
+
+
+### WORD_BOOK_HISTORY_MEMORY_MAC_20261016
+
+CANDIDATE at base fbd24baa6a9b55278acaaf094875e59ebc177aa5, 2026-10-16.
+Q1 completed one genuine cycle on that merged build; whole finite16 remains open.
+Q2 original import, genuine Word insertion, complete Apply and live Undo passed,
+but public Redo SIGTRAP/V8 OOM left its158692078-byte journal and105-file graph.
+Original Q2 and the105-file SOURCE80 graph remain byte-for-byte protected.
+The existing Core now releases only the serialized journal string after awaited
+successful durable ACK, before cohort publication and packet serialization.
+No format, semantic check, authority, dependency, limit or runtime flag changes.
+One default Electron Main component pair completed identical full results,
+all48 write payloads and6400 I/O calls, including the exact native crash journal,
+all42 scenes, notes/discussions and42 actual manifest-continuation checks.
+Observed peak heap2697295704 to2494998276 bytes; RSS3277127680 to3197517824.
+Both model variants completed; this is no native RED-to-GREEN or statistical claim.
+Paired proof PAIRED_COMPLETE_CORE_MODEL04.json SHA256
+3233013377ce8ba0673ea47b07254959b77a2e3571fa85d02bf465dcf02dd29b.
+Actual Core recovery on a separate exact APFS crash clone restored all104 Undo
+endpoint files exactly, removed its pending journal and preserved anchor bytes;
+no original project mutation or native credit. Existing Node22 affected140of140
+passed unchanged mandatory TAP with zero fail/cancel/skip/todo. The same complete
+140of140 also passed on shipped Electron Node24, zero exclusions, source bytes
+unchanged. Required delivery and fresh native recovery/cycle remain pending.
+NEXT: finish ordinary exact-head delivery, then fresh original-profile native
+recovery and the previously failing operation. Whole feature remains NOT_READY.
