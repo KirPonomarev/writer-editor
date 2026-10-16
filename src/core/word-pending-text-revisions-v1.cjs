@@ -1034,6 +1034,39 @@ function createCommentUnionLocator({document,projection,anchor,unionStart,unionE
   return locator;
 }
 function validateCommentUnionLocator({document,projection,anchor,locator}) {return checkedCommentLocator(projection?{rows:projection.segments}:commentBasis(document),anchor,locator);}
+// The visible point of a comment on deleted text is not its source interval.
+// Keep that interval in the existing union locator; derive its quote from the
+// ledger instead of copying hidden text into a second persistent field.
+function readCommentUnionContext({document,anchor}) {
+  const basis=commentBasis(document),locator=anchor?.pendingUnionLocator;
+  require('./word-comment-ranges-v1.cjs').validateCommentAnchor({sceneId:anchor?.sceneId,
+    paragraphs:paragraphs(basis.current).map(p=>(p.content||[]).map(textOf).join('')),anchor});
+  checkedCommentLocator(basis,anchor,locator);
+  const rows=commentLocatorRows(basis).map(row=>row.map(s=>textOf(s.node)).join(''));
+  const start=locator.unionStart,end=locator.unionEnd;
+  const quote=start.paragraphIndex===end.paragraphIndex
+    ?rows[start.paragraphIndex].slice(start.offsetUtf16,end.offsetUtf16)
+    :[rows[start.paragraphIndex].slice(start.offsetUtf16),...rows.slice(start.paragraphIndex+1,end.paragraphIndex),rows[end.paragraphIndex].slice(0,end.offsetUtf16)].join('\n');
+  assert(new TextEncoder().encode(quote).length<=16384,'PENDING_COMMENT_QUOTE_BUDGET');
+  return {quote,hidden:quote.length>0&&anchor.selectedText===''};
+}
+function rebaseCommentUnionAnchor({beforeDocument,afterDocument,anchor}) {
+  const before=commentBasis(beforeDocument),after=commentBasis(afterDocument),locator=anchor?.pendingUnionLocator;
+  checkedCommentLocator(before,anchor,locator);
+  assert(locator.geometrySha256===commentLocatorGeometry(after,locator.unionStart,locator.unionEnd),'PENDING_COMMENT_LOCATOR_STALE');
+  const start=locatorPoint(after,locator.unionStart,'current'),end=locatorPoint(after,locator.unionEnd,'current');
+  const rows=paragraphs(after.current).map(p=>(p.content||[]).map(textOf).join(''));
+  const input={paragraphIndex:start.paragraphIndex,startUtf16:start.offsetUtf16,
+    ...(end.paragraphIndex!==start.paragraphIndex?{kind:'multi-paragraph-range',endParagraphIndex:end.paragraphIndex,endUtf16:end.offsetUtf16}
+      :start.offsetUtf16===end.offsetUtf16?{kind:'point',affinity:'right',selectedText:''}
+        :{selectedText:rows[start.paragraphIndex].slice(start.offsetUtf16,end.offsetUtf16)})};
+  const result={...require('./word-comment-ranges-v1.cjs').deriveCommentAnchor({sceneId:anchor.sceneId,paragraphs:rows,input}),
+    pendingUnionLocator:clone(locator),
+    ...(anchor.authoritySource!==undefined?{authoritySource:anchor.authoritySource}:{}),
+    ...(anchor.sourceChangeId!==undefined?{sourceChangeId:anchor.sourceChangeId}:{})};
+  checkedCommentLocator(after,result,locator);
+  return result;
+}
 function commentAnchorBindings(basis,anchors) {
   assert(Array.isArray(anchors) && anchors.length<=require('./word-comment-body-v1.cjs').COMMENT_CAPACITY.threads,'PENDING_COMMENT_ANCHORS_INVALID');
   const seen=new Set(), ownerByNode=new Map(); let tableId=0;
@@ -1159,4 +1192,4 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
 function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
   return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
 }
-module.exports = { asRoundLedger, formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, readNoteProjectionPair, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { readCommentUnionContext, rebaseCommentUnionAnchor, asRoundLedger, formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, readNoteProjectionPair, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

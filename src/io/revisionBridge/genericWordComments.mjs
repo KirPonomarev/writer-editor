@@ -98,7 +98,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
       demand(plain(union)&&unionRows[start]&&unionRows[last],'PENDING_UNION');
       const quote=start===last?unionRows[start].text.slice(union.startUtf16,union.endUtf16):[unionRows[start].text.slice(union.startUtf16),...unionRows.slice(start+1,last).map(p=>p.text),unionRows[last].text.slice(0,union.endUtf16)].join('\n');
       demand(quote===thread.quotedAnchorText && quote===union.selectedText && union.blockTextSha256===sha256Hex(unionRows[start].text),'PENDING_UNION');
-      demand(!(union.selectedText && range?.selectedText===''),'PENDING_DELETED_ANCHOR');
+      demand(bytes(quote)<=16384,'BUDGET');
       demand(range.startUtf16===currentPoint(start,union.startUtf16) && range.endUtf16===currentPoint(last,union.endUtf16)
         && (range.endParagraphIndex??start)===last,'PENDING_ENDPOINT_BINDING');
     }
@@ -133,6 +133,7 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
       ...(pendingLedger?(()=>{
         const u=thread.anchorRange,locator=pendingTextRevisions.createCommentUnionLocator({projection:pendingProjection,anchor:derived,
           unionStart:{paragraphIndex:index,offsetUtf16:u.startUtf16},unionEnd:{paragraphIndex:u.endParagraphIndex??index,offsetUtf16:u.endUtf16}});
+        demand(!(u.selectedText&&range.selectedText==='')||locator,'PENDING_DELETED_ANCHOR');
         return locator?{pendingUnionLocator:locator}:{};
       })():{}),
       selectedText: range.selectedText, blockTextSha256: range.blockTextSha256,
@@ -183,6 +184,7 @@ export function materializeGenericComments({ candidates, paragraphs, pendingDocu
       demand(pendingDocument,'PENDING_DOCUMENT_REQUIRED');
       pendingTextRevisions.validateCommentUnionLocator({projection:locatorProjection,anchor,locator:candidate.pendingUnionLocator});
       anchor.pendingUnionLocator=clone(candidate.pendingUnionLocator);
+      if(anchor.kind==='point')pendingTextRevisions.readCommentUnionContext({document:pendingDocument,anchor});
     }
     const threadId = reserve(`generic-comment-${operation}-${ordinal}`);
     const messages = candidate.messages.map((item, index) => {

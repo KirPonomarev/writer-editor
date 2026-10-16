@@ -310,7 +310,16 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
       }
       const continuing=direction==='forward'&&entry===last&&entry&&!entry.undone;
       if(continuing&&!historyEqual(prior,entry.after)) fail('COMMENT_EDIT_HISTORY_STALE');
-      for(const step of group) {
+      // Decision intervals retain their union ownership when hidden text is
+      // revealed, including successive decisions at an existing range edge.
+      // A fully consumed visible range still uses the existing tombstone law.
+      let unionRebased=false;
+      if(fixedPendingSource&&groups.length===1&&thread.status!=='deleted'
+        &&thread.anchor.pendingUnionLocator) {
+        const restored=pending.rebaseCommentUnionAnchor({beforeDocument:beforeDoc,afterDocument:afterDoc,anchor:thread.anchor});
+        if(thread.anchor.kind==='point'||restored.selectedText!=='') {thread.anchor=restored;unionRebased=true;}
+      }
+      for(const step of unionRebased?[]:group) {
         if(thread.status==='deleted') {
           const mapped=mapCommentEndpoint({paragraphIndex:locator.sceneParagraphIndex,offsetUtf16:locator.startUtf16},step.edit,true);
           const text=step.afterRows[mapped.paragraphIndex]?.text;
