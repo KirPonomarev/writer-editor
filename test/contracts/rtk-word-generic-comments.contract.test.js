@@ -794,6 +794,48 @@ test('comment-only variant commits through real lease and durable decision reope
   assert.equal(sha(fs.readFileSync(fixture)),sourceSha);
 });
 
+function recordPrefix(context,paragraphIndex) {
+  const recording=require('../../src/core/word-pending-recording-v1.cjs');
+  const model=require('../../src/core/word-pending-recording-comments-v1.cjs');
+  const {textDigest}=require('../../src/core/word-comment-edit-intents-v1.cjs');
+  const beforeContent=envelope.composeObservablePayload({doc:context.doc}),working=pending.normalizeNode(context.doc);
+  const currentRows=rows(working),previous={schemaVersion:2,baselineTextSha256:textDigest(currentRows),edits:[]};
+  const next={...previous,edits:[{id:'prefix',historyId:'prefix',direction:'forward',fromParagraphIndex:paragraphIndex,
+    toParagraphIndex:paragraphIndex,fromUtf16:0,toUtf16:0,removedParagraphs:[''],insertedParagraphs:['!']}]};
+  working.content[paragraphIndex].content.unshift({type:'text',text:'!'});
+  const metadata={author:'Editor',date:'2026-10-17T00:00:00.000Z'},doc=recording.derive(context.doc,working,metadata,next).doc;
+  const plan=model.planRecordingCommentSave({beforeText:context.state,projectId:'tiny-import',sceneId:'roman/tiny.txt',beforeContent,
+    afterContent:envelope.composeObservablePayload({doc}),recordingProofJson:JSON.stringify({schemaVersion:1,baselineContent:beforeContent,
+      metadata,previousIntents:previous,nextIntents:next,sessionId:'owned-prefix-edit'})});
+  return {doc,state:plan.afterText,plan};
+}
+
+test('recording in another paragraph preserves hidden quote and locator through round Undo/Redo and rejection',async()=>{
+  const x=await input(),saved=recordPrefix(x,0),thread=deletedThread(saved.state);validateLive(saved.doc,saved.state);
+  assert.deepEqual(thread.anchor,deletedThread(x.state).anchor);assert.deepEqual(thread.messages,deletedThread(x.state).messages);
+  assert.deepEqual(pending.readCommentUnionContext({document:saved.doc,anchor:thread.anchor}),{quote:'УДАЛЕНИЕ🧭',hidden:true});
+  const undo=decide(saved,{action:'undo'});validateLive(undo.doc,undo.state);assert.deepEqual(deletedThread(undo.state).anchor,thread.anchor);
+  const redo=decide(undo,{action:'redo'});validateLive(redo.doc,redo.state);assert.deepEqual(deletedThread(redo.state).anchor,thread.anchor);
+  const rejected=decide(redo,{action:'rejectAll'});validateLive(rejected.doc,rejected.state);assert.equal(deletedThread(rejected.state).anchor.selectedText,'УДАЛЕНИЕ🧭');
+});
+
+test('unproved same-paragraph rebinding refuses before save instead of discarding a pending or accepted hidden quote',async()=>{
+  for(const accepted of [false,true]) {
+    const x=await input(),context=accepted?decide(x,{action:'acceptAll'}):x,before=JSON.stringify(context);
+    assert.throws(()=>recordPrefix(context,2),/COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED/);
+    assert.equal(JSON.stringify(context),before);assert.equal(deletedThread(context.state).anchor.kind,'point');
+    assert.deepEqual(pending.readCommentUnionContext({document:context.doc,anchor:deletedThread(context.state).anchor}),{quote:'УДАЛЕНИЕ🧭',hidden:true});
+  }
+});
+
+test('after rejection reveals the quote, ordinary recording and existing round Undo/Redo retain its visible range',async()=>{
+  const x=await input(),rejected=decide(x,{action:'rejectAll'}),saved=recordPrefix(rejected,2);validateLive(saved.doc,saved.state);
+  const thread=deletedThread(saved.state);assert.equal(thread.anchor.startUtf16,4);assert.equal(thread.anchor.selectedText,'УДАЛЕНИЕ🧭');
+  assert.equal(thread.anchor.pendingUnionLocator,undefined,'only independently unambiguous visible-source mapping drops the locator');
+  const undone=decide(saved,{action:'undo'});validateLive(undone.doc,undone.state);assert.deepEqual(deletedThread(undone.state).anchor,deletedThread(rejected.state).anchor);
+  const redone=decide(undone,{action:'redo'});validateLive(redone.doc,redone.state);assert.deepEqual(deletedThread(redone.state).anchor,thread.anchor);
+});
+
 test('Main quote projection is derived; renderer escapes hidden text without changing the canonical anchor',async()=>{
   const x=await input(),state=JSON.parse(x.state),before=JSON.stringify(state);
   const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');

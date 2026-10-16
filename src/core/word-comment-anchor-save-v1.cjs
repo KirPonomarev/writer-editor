@@ -257,7 +257,10 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
     const a=thread.anchor;
     if(!a||a.sceneId!==sceneId||typeof a.selectedText!=='string'||!a.selectedText.isWellFormed()
       ||a.selectedTextSha256!==sha(a.selectedText)) fail('COMMENT_SAVE_ANCHOR_STALE');
-    if(thread.status!=='deleted') validateCommentAnchor({sceneId,paragraphs:rows,anchor:a});
+    if(thread.status!=='deleted') {
+      validateCommentAnchor({sceneId,paragraphs:rows,anchor:a});
+      if(a.pendingUnionLocator)pending.validateCommentUnionLocator({document:beforeDoc,anchor:a,locator:a.pendingUnionLocator});
+    }
   }
   const {plan,steps}=replayEditIntents(rows.map(r=>r.text),finalRows.map(r=>r.text),editIntents);
   const after=JSON.parse(JSON.stringify(before)), groups=[];
@@ -327,7 +330,22 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
           locator={sceneParagraphIndex:mapped.paragraphIndex,startUtf16:mapped.offsetUtf16,blockTextSha256:sha(text)};
         } else {
           const mapped=rebaseStructuralCommentAnchor({anchor:thread.anchor,beforeParagraphs:step.beforeRows,afterParagraphs:step.afterRows,edit:step.edit});
-          if(fixedPendingSource&&thread.anchor.pendingUnionLocator)mapped.anchor.pendingUnionLocator=thread.anchor.pendingUnionLocator;
+          if(thread.anchor.pendingUnionLocator&&!mapped.deleted) {
+            const retained=thread.anchor.pendingUnionLocator;
+            try {
+              pending.validateCommentUnionLocator({document:afterDoc,anchor:mapped.anchor,locator:retained});
+              mapped.anchor.pendingUnionLocator=retained;
+            } catch {
+              // An unrelated edit may leave this source interval byte-exact.
+              // Otherwise only a unique visible-to-union binding can replace
+              // it. A nonempty hidden quote cannot become an ordinary cursor.
+              const hidden=thread.anchor.kind==='point'&&(retained.unionStart.paragraphIndex!==retained.unionEnd.paragraphIndex
+                ||retained.unionStart.offsetUtf16!==retained.unionEnd.offsetUtf16);
+              if(hidden)fail('COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED');
+              try {pending.buildCommentExportBinding({document:afterDoc,anchors:[{threadId:thread.threadId,anchor:mapped.anchor}]});}
+              catch {fail('COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED');}
+            }
+          }
           thread.anchor=mapped.anchor;if(mapped.deleted) {thread.status='deleted';locator=mapped.liveLocator;}
         }
       }
@@ -352,6 +370,8 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
       }
     }
   }
+  for(const thread of after.threads.filter(t=>t.sceneId===sceneId&&t.status!=='deleted'&&t.anchor.pendingUnionLocator))
+    pending.validateCommentUnionLocator({document:afterDoc,anchor:thread.anchor,locator:thread.anchor.pendingUnionLocator});
   const changed=JSON.stringify(after)!==JSON.stringify(before);
   if(changed) {if(before.revision===Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW');after.revision++;upgradeCommentState(after);}
   let afterText=changed?serializeCommentState(after,'COMMENT_SAVE_STATE_BUDGET'):beforeText;
