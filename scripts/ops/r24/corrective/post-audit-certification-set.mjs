@@ -26343,7 +26343,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "4f91696c20d7b75a2309d83c8d8ab93c43a8c870b86495b79a042bd4531d8724"
+      "sha256": "768121a3808e78c82ac633bf5e80786e378aeff92251ffee66d94a8001646f5f"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -26371,7 +26371,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "1516cf4b45229997daebd7901a6860e7a68401fadc35d4466a0fb3465d31d0a0"
+      "sha256": "3b6198a3209311a9b2ef4538de7eb446e1d2da36e3c33ba76f3753c3894c63aa"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
@@ -26407,7 +26407,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/core/word-pending-text-revisions-v1.cjs",
-      "sha256": "460e13f0b9d4b3ff357da7622eedddf0096157e816384c1f780cb3a3a75a3f79"
+      "sha256": "d5223500d489bab1bfe840e9c21bd12ba719c8b6943aab08beb21e6a1a015c00"
     },
     {
       "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
@@ -26495,7 +26495,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "a3267dad3b88c25c0e8e096e33cb51bf97499a6a139b2992b5b040dad3b414ca"
+      "sha256": "cfcfe144bf5559db6ae66f8453a9698a10e36f12b206971a9dcda5e613f5f07f"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -26599,7 +26599,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/core/word-comment-anchor-save-v1.cjs",
-      "sha256": "10de91755aa858c85848f5a04496db436e78995bef09efcfd2c4850166a21f40"
+      "sha256": "b8f8c74ab3e66db8d2afba0e0e4839b51db2cf160383f7074dcd2d20e658d783"
     },
     {
       "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -26631,7 +26631,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "1dafcb6a3c306ed77622a781144526bb2c437f6bcb40a018d5b129f9f297b4a6"
+      "sha256": "38da29d2ea7fd2c1d48f09d0a325998822ff6b2e9fa77c972eaa9208d951133c"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -26976,12 +26976,28 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "docs/tasks/2026-10-16--word-tree-read-process-mac.md",
       "sha256": "f167bda07f1790393134d21f9b677db38b6815c0ce2365e11a716cfba578c096"
+    },
+    {
+      "path": "src/io/revisionBridge/genericWordComments.mjs",
+      "sha256": "3dea3ab5fe0b0bbb4a95a0fbc2b857554e2ed36639083a4b8c6569cfcfd915ed"
+    },
+    {
+      "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
+      "sha256": "f0c26d46df5c794eadb9a4cf0af5d3cf6f324f4a875a580fcb821c72cc2b1af7"
+    },
+    {
+      "path": "test/fixtures/docx-pending-deleted-comment-import.docx",
+      "sha256": "796093baf899f924a0e9f401cbc9c241144931a96beecab71e20655a2641fabf"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md",
+      "sha256": "f213b02c50da1d601a5dbd99b2b1a9624235fe2f29c126437412f42a1fe1d36f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "26776253b856e369fe14dda3ea59e3c65b9e9c63800d23017a6a241b673434c5"
+      "sha256": "a73300b09676730bcc299d9e546cb73d80f5aadc07eed57aa92de0a2add90b24"
     }
   ]
 });
