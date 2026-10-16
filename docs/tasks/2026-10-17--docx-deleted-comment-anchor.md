@@ -16,6 +16,14 @@ Adjacent deletions and genuine point boundaries use the same occurrence geometry
 Manually deleted discussions remain deleted; consumed insertion comments keep the
 existing tombstone law and messages. No new schema, durable history or dependency.
 
+Recorded authoring edits now rebind hidden source intervals by retained revision
+identity and exact fragment, after the complete pure edit replay. Unique visible
+source mappings may drop an unnecessary locator; hidden occurrence identity
+cannot be replaced by text search. Existing history cursors update only when
+the complete snapshot matches the actual endpoint. Lost or changed source
+identity refuses the save before publication. Successive autosaves, multiple
+edit groups, editor Undo/Redo and recording-round Undo/Redo are covered.
+
 The original independent fixture is literal OOXML, not a product export or a
 signed return. Expected text, replies and UTF-16 positions were written before
 the importer ran. A source-only guard removal was tested and rejected because
@@ -24,12 +32,16 @@ NOTE_PENDING_IMPORT_REQUIRES_AUTHENTICATED_RETURN; that separate gap is retained
 The real disk-backed import/decision test explicitly uses the comment-only
 variant. No footnote-plus-pending publication is claimed.
 
-Observed: 83/83 affected contracts, zero skipped/todo; renderer/preload build,
+Observed: 90/90 affected contracts, zero skipped/todo; renderer/preload build,
 OSS policy, agent guardrails and npm audit completed (zero vulnerabilities).
 The component transaction uses the real Main manifest authority and verifies
 scene, comment state and manifest readback. This is not native app/Word evidence.
-No15k,100k or book-size acceptance, new-project UI completion, old roundtrip
-progress or previous native evidence is promoted by this change.
+A separate comment-only 15,000-character fixture verifies exact Current and
+Original text across all 72 paragraphs, real import/decision persistence and
+disk reopen. The component run took0.778sec with129,335,296 bytes peak child RSS;
+this is not whole-application memory or native acceptance. No100k or book-size
+acceptance, new-project UI completion, old roundtrip progress or previous native
+evidence is promoted by this change.
 
 CI initially rejected an extra standalone contract file; all nine cases now
 belong to the existing maintained generic-comment contract. Existing exact-byte
@@ -72,7 +84,7 @@ FEATURE_INTEGRATION_MANIFEST_V1 (contract only; no runtime registry):
     "No application launch, Word mutation, external service, large document or accepted memory allowance in this contour.",
     "New clean linked worktree bound to H, no prior frozen W mutation. Fresh remote main H before edit. Source DOCX hash pinned796093baf899f924a0e9f401cbc9c241144931a96beecab71e20655a2641fabf."
   ],
-  "revisionPolicy": "Exact same union source/revision definitions, geometry hash and visible anchor before decisions. No quote matching.",
+  "revisionPolicy": "Fixed-source decisions use canonical union coordinates. Authoring source changes rebind through retained revision ID, exact fragment and Current endpoint; an ambiguous or changed source refuses the save. No quote matching.",
   "writePath": "Existing admitted importer -> real manifest authority -> Core transaction -> atomic scene/comment/manifest",
   "readPath": "Canonical saved scene + comments -> Core validated union quote -> Main projection -> existing rail escaped label",
   "requiredProductPorts": [
@@ -106,7 +118,7 @@ FEATURE_INTEGRATION_MANIFEST_V1 (contract only; no runtime registry):
     "Typed refusal for remaining unsupported pending endpoints, zero writes before input validation. No new long-lived undo after restart."
   ],
   "rollback": "Revert one coherent PR. Existing state schema and prior project formats unchanged; imported point+locator already valid canonical representation. Preserve literal original fixture and failed evidence. No reset/stash/cleanup user data.",
-  "performanceBudget": "Tiny synthetic cases only,60sec each. Restore union anchor only for fixed-ledger point during one exact decision group; no per-keystroke worker or whole-book loop added. Quote/status escaped in existing rail; no colors-only state or new interactive affordance. No book performance claim.",
+  "performanceBudget": "Tiny synthetic cases only,60sec each. Pure source-geometry rebinding occurs at existing save/decision boundaries; no per-keystroke worker or whole-book loop added. Quote/status escaped in existing rail; no colors-only state or new interactive affordance. No book performance claim.",
   "securityBoundary": "All DOCX bytes untrusted; existing ZIP/XML budgets and schema validation retained. No YRTK signed round/key/export requirement for ordinary fresh import. No dependencies, secret reads, network runtime or real private data.",
   "lifecycle": "Imported fresh identity -> pending deletion comment point -> rejected deletion exact range; accepted deletion hidden quote remains ledger-owned; existing history only",
   "negativeBypassChecks": [
@@ -115,14 +127,15 @@ FEATURE_INTEGRATION_MANIFEST_V1 (contract only; no runtime registry):
     "Typed refusal for remaining unsupported pending endpoints, zero writes before input validation. No new long-lived undo after restart."
   ],
   "evidenceBindings": [
-    "AFFECTED_MAINTAINED19.process.json: actual83/83, zero skip/todo",
+    "SOURCE_REBIND_AFFECTED43.process.json: actual90/90, zero skip/todo",
+    "CHAPTER15K_COMPONENT45.process.json: real comment-only import/decision and disk reopen; no full-profile or native credit",
     "Hand-authored docx-pending-deleted-comment-import.docx SHA256796093baf899f924a0e9f401cbc9c241144931a96beecab71e20655a2641fabf",
     "No native or whole-book acceptance"
   ],
   "currentReality": [
     "Existing generic preview imports deletion-only comment using existing source locator. Exact rejection and saved Undo/Redo tested.",
     "Full fixture note-plus-pending materialization remains blocked; comment-only variant verified through real lease/CAS/transaction/readback.",
-    "Public DOCX-to-new-project lifecycle and all15k/100k/book scale stages remain unproved."
+    "Public DOCX-to-new-project lifecycle, full-profile15k stage and100k/book scale stages remain unproved."
   ],
   "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
   "integrationMode": "EXISTING_SEAM: BOUND_TO_CURRENT_APPROVED_ENTRYPOINTS"

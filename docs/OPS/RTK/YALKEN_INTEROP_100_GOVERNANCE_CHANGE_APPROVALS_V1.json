@@ -1577,11 +1577,11 @@
     {
       "filePath": "src/renderer/editor.bundle.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "cfcfe144bf5559db6ae66f8453a9698a10e36f12b206971a9dcda5e613f5f07f"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "1fb25a47bbd80539fbf49b0071fc45ade911497dcb6882df3cf87a08d63f0a7f"
     },
     {
       "filePath": "src/renderer/editor.js",
@@ -2225,11 +2225,11 @@
     {
       "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "f0c26d46df5c794eadb9a4cf0af5d3cf6f324f4a875a580fcb821c72cc2b1af7"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "fe587df366aebd842342cc9c2b3d1242f19cec2c831520f79c9c5241f1c149a8"
     },
     {
       "filePath": "src/io/revisionBridge/genericWordComments.mjs",
@@ -2315,11 +2315,11 @@
     {
       "filePath": "src/core/word-comment-anchor-save-v1.cjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "b8f8c74ab3e66db8d2afba0e0e4839b51db2cf160383f7074dcd2d20e658d783"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "d8c1ab57d782ebf8d0a6e8191171b1798ef1bc56e34da4e6526da94889821a45"
     },
     {
       "filePath": "src/core/document-content-envelope-v1.cjs",
@@ -2675,11 +2675,11 @@
     {
       "filePath": "src/core/word-pending-text-revisions-v1.cjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "d5223500d489bab1bfe840e9c21bd12ba719c8b6943aab08beb21e6a1a015c00"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "749c2cda0855f817517e3cf8e731bbde3895a94e3c174724509b880d1261d689"
     },
     {
       "filePath": "src/export/docx/docxPendingRevisions.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "a73300b09676730bcc299d9e546cb73d80f5aadc07eed57aa92de0a2add90b24"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "ae143e661bded8138181ec65a79dad043972ae2f4c36f106ecdf5f78581f57f3"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "6437820f656aa2a433b1ae86540dfc8335d7dff9683584e4642bf44be364e982"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "e5af86b156ddd2f996d6dfc41cf37525ac3ee158a832794116c469c2ed11d38a"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "2bdb2fa4a0ea3cbf0fa64ab6cb5d80e46490a0fd677d9f89659e036b14afa10c"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "724bbb8a2737bdc02f43f582606722e436286d1624cf871266ed022b618195e7"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:06:56.492844+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 C2A generated-metadata correction only. Original native buildApprovals/canonicalBytes output and unchanged original checkArtifacts now agree; five other generated artifacts, all product/test bytes and historical approvals preserved. No compiler, predicate, skip, test membership or certification status change.",
-      "sha256": "beb11625557409112e7ba2cc4691da05f6e144aaabf704fc368e65b445281bdd"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "cf9991500de80eed14e52c68352e0fda3ab79a86e2c54b43ac2ccda44298554f"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "306571e29454ba3a572814dec37edd685af8517bb5b5f2aaf950a54469a9fbbb"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "858fd3111ffadf554b486cec804e97b0f3c663151efe77c037db409ac175712e"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:06:56.492844+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 C2A generated-metadata correction only. Original native buildApprovals/canonicalBytes output and unchanged original checkArtifacts now agree; five other generated artifacts, all product/test bytes and historical approvals preserved. No compiler, predicate, skip, test membership or certification status change.",
-      "sha256": "f7c05c853f6a6750d0ae99f2cff02340276bb4c1a4aad64e5fed27362693a9f5"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "3b0534c9f40119af8f4aa31665101cd8350fdf3a7588ac102f26bb85d32715b0"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5834,11 +5834,11 @@
     {
       "filePath": "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "f213b02c50da1d601a5dbd99b2b1a9624235fe2f29c126437412f42a1fe1d36f"
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "2c04556655a0358bf61401c8e2c701b1549c971982d4e6b42d9e8200b1401973"
     }
   ],
   "evidenceStampIds": [
@@ -46561,6 +46561,105 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
       "sha256": "b84942e4cd783a43221d9dd90859af012cf8fedfb895d8bced51263a118576ac"
+    },
+    {
+      "filePath": "src/core/word-comment-anchor-save-v1.cjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "b8f8c74ab3e66db8d2afba0e0e4839b51db2cf160383f7074dcd2d20e658d783"
+    },
+    {
+      "filePath": "src/core/word-pending-text-revisions-v1.cjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "d5223500d489bab1bfe840e9c21bd12ba719c8b6943aab08beb21e6a1a015c00"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "cfcfe144bf5559db6ae66f8453a9698a10e36f12b206971a9dcda5e613f5f07f"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "f0c26d46df5c794eadb9a4cf0af5d3cf6f324f4a875a580fcb821c72cc2b1af7"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "f213b02c50da1d601a5dbd99b2b1a9624235fe2f29c126437412f42a1fe1d36f"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "2bdb2fa4a0ea3cbf0fa64ab6cb5d80e46490a0fd677d9f89659e036b14afa10c"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:06:56.492844+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 C2A generated-metadata correction only. Original native buildApprovals/canonicalBytes output and unchanged original checkArtifacts now agree; five other generated artifacts, all product/test bytes and historical approvals preserved. No compiler, predicate, skip, test membership or certification status change.",
+      "sha256": "beb11625557409112e7ba2cc4691da05f6e144aaabf704fc368e65b445281bdd"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:06:56.492844+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 C2A generated-metadata correction only. Original native buildApprovals/canonicalBytes output and unchanged original checkArtifacts now agree; five other generated artifacts, all product/test bytes and historical approvals preserved. No compiler, predicate, skip, test membership or certification status change.",
+      "sha256": "f7c05c853f6a6750d0ae99f2cff02340276bb4c1a4aad64e5fed27362693a9f5"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "a73300b09676730bcc299d9e546cb73d80f5aadc07eed57aa92de0a2add90b24"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "6437820f656aa2a433b1ae86540dfc8335d7dff9683584e4642bf44be364e982"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "306571e29454ba3a572814dec37edd685af8517bb5b5f2aaf950a54469a9fbbb"
     }
   ]
 }

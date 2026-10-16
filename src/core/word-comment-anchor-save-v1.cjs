@@ -331,20 +331,9 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
         } else {
           const mapped=rebaseStructuralCommentAnchor({anchor:thread.anchor,beforeParagraphs:step.beforeRows,afterParagraphs:step.afterRows,edit:step.edit});
           if(thread.anchor.pendingUnionLocator&&!mapped.deleted) {
-            const retained=thread.anchor.pendingUnionLocator;
-            try {
-              pending.validateCommentUnionLocator({document:afterDoc,anchor:mapped.anchor,locator:retained});
-              mapped.anchor.pendingUnionLocator=retained;
-            } catch {
-              // An unrelated edit may leave this source interval byte-exact.
-              // Otherwise only a unique visible-to-union binding can replace
-              // it. A nonempty hidden quote cannot become an ordinary cursor.
-              const hidden=thread.anchor.kind==='point'&&(retained.unionStart.paragraphIndex!==retained.unionEnd.paragraphIndex
-                ||retained.unionStart.offsetUtf16!==retained.unionEnd.offsetUtf16);
-              if(hidden)fail('COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED');
-              try {pending.buildCommentExportBinding({document:afterDoc,anchors:[{threadId:thread.threadId,anchor:mapped.anchor}]});}
-              catch {fail('COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED');}
-            }
+            // Keep occurrence identity during the pure edit replay. Rebind it
+            // against the complete final source before returning any plan.
+            mapped.anchor.pendingUnionLocator=thread.anchor.pendingUnionLocator;
           }
           thread.anchor=mapped.anchor;if(mapped.deleted) {thread.status='deleted';locator=mapped.liveLocator;}
         }
@@ -370,8 +359,20 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
       }
     }
   }
-  for(const thread of after.threads.filter(t=>t.sceneId===sceneId&&t.status!=='deleted'&&t.anchor.pendingUnionLocator))
-    pending.validateCommentUnionLocator({document:afterDoc,anchor:thread.anchor,locator:thread.anchor.pendingUnionLocator});
+  for(const thread of after.threads.filter(t=>t.sceneId===sceneId&&t.status!=='deleted'&&t.anchor.pendingUnionLocator)) {
+    try {pending.validateCommentUnionLocator({document:afterDoc,anchor:thread.anchor,locator:thread.anchor.pendingUnionLocator});}
+    catch {
+      const origin=before.threads.find(t=>t.threadId===thread.threadId),prior=structuralSnapshot(thread);
+      let locator;try {locator=pending.rebaseChangedCommentUnionLocator({beforeDocument:beforeDoc,afterDocument:afterDoc,
+        beforeAnchor:origin?.anchor,afterAnchor:thread.anchor});}catch {fail('COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED');}
+      if(locator)thread.anchor.pendingUnionLocator=locator;else delete thread.anchor.pendingUnionLocator;
+      const next=structuralSnapshot(thread);
+      // Only the cursor that matches the actual current endpoint is updated.
+      // Historical text, coordinates and digests are never reconstructed.
+      for(const entry of thread.anchorEditHistory||[])for(const key of ['before','after'])
+        if(historyEqual(entry[key],prior))entry[key]=JSON.parse(JSON.stringify(next));
+    }
+  }
   const changed=JSON.stringify(after)!==JSON.stringify(before);
   if(changed) {if(before.revision===Number.MAX_SAFE_INTEGER) fail('COMMENT_SAVE_REVISION_OVERFLOW');after.revision++;upgradeCommentState(after);}
   let afterText=changed?serializeCommentState(after,'COMMENT_SAVE_STATE_BUDGET'):beforeText;

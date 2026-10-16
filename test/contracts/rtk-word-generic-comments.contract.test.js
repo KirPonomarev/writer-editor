@@ -753,6 +753,12 @@ test('successive adjacent deletions and true point boundaries retain union occur
     pendingUnionLocator:pending.createCommentUnionLocator({document:doc,anchor,unionStart:{paragraphIndex:0,offsetUtf16:from},unionEnd:{paragraphIndex:0,offsetUtf16:to}}),
     status:'open',messages:[{sourceCommentId:String(from)+':'+to,body:'Exact occurrence '+from+':'+to,provenance:{}}]}));
   const state=generic.materializeGenericComments({candidates,paragraphs:['A  Z'],pendingDocument:doc,projectId:'tiny-import',sceneId:'roman/tiny.txt',importOperationId:'adjacent-deletes',beforeText:null}).afterText;
+  const recorded=recordPrefix({doc,state},0);validateLive(recorded.doc,recorded.state);
+  const shifted=JSON.parse(recorded.state).threads;
+  assert.equal(shifted[1].anchor.pendingUnionLocator.unionStart.offsetUtf16,3);
+  assert.equal(shifted[2].anchor.pendingUnionLocator.unionStart.offsetUtf16,9);
+  const revealed=decide(recorded,{action:'rejectAll'});validateLive(revealed.doc,revealed.state);
+  assert.equal(JSON.parse(revealed.state).threads[1].anchor.startUtf16,2);assert.equal(JSON.parse(revealed.state).threads[2].anchor.startUtf16,8);
   const first=decide({doc,state},{action:'reject',revisionId:'revision-1'});validateLive(first.doc,first.state);
   assert.equal(JSON.parse(first.state).threads[0].anchor.selectedText,'old');
   const second=decide(first,{action:'reject',revisionId:'revision-2'});validateLive(second.doc,second.state);
@@ -794,20 +800,26 @@ test('comment-only variant commits through real lease and durable decision reope
   assert.equal(sha(fs.readFileSync(fixture)),sourceSha);
 });
 
-function recordPrefix(context,paragraphIndex) {
+function recordPrefix(context,paragraphIndex,direction='forward') {
   const recording=require('../../src/core/word-pending-recording-v1.cjs');
   const model=require('../../src/core/word-pending-recording-comments-v1.cjs');
   const {textDigest}=require('../../src/core/word-comment-edit-intents-v1.cjs');
   const beforeContent=envelope.composeObservablePayload({doc:context.doc}),working=pending.normalizeNode(context.doc);
-  const currentRows=rows(working),previous={schemaVersion:2,baselineTextSha256:textDigest(currentRows),edits:[]};
-  const next={...previous,edits:[{id:'prefix',historyId:'prefix',direction:'forward',fromParagraphIndex:paragraphIndex,
-    toParagraphIndex:paragraphIndex,fromUtf16:0,toUtf16:0,removedParagraphs:[''],insertedParagraphs:['!']}]};
-  working.content[paragraphIndex].content.unshift({type:'text',text:'!'});
-  const metadata={author:'Editor',date:'2026-10-17T00:00:00.000Z'},doc=recording.derive(context.doc,working,metadata,next).doc;
+  const currentRows=rows(working),session=context.recordingSession;
+  const previous=session?.nextIntents||{schemaVersion:2,baselineTextSha256:textDigest(currentRows),edits:[]};
+  const id='prefix-'+direction+'-'+previous.edits.length,undo=direction==='undo';
+  const next={...previous,edits:[...previous.edits,{id,historyId:direction==='forward'?id:'prefix-forward-1',direction,fromParagraphIndex:paragraphIndex,
+    toParagraphIndex:paragraphIndex,fromUtf16:0,toUtf16:undo?1:0,removedParagraphs:[undo?'!':''],insertedParagraphs:[undo?'':'!']}]};
+  if(undo) {
+    const content=working.content[paragraphIndex].content;assert.ok(content[0].text.startsWith('!'));
+    if(content[0].text.length===1)content.shift();else content[0]={...content[0],text:content[0].text.slice(1)};
+  } else working.content[paragraphIndex].content.unshift({type:'text',text:'!'});
+  const baselineContent=session?.baselineContent||beforeContent,baseline=envelope.parseObservablePayload(baselineContent).doc;
+  const metadata={author:'Editor',date:'2026-10-17T00:00:00.000Z'},doc=recording.derive(baseline,working,metadata,next).doc;
   const plan=model.planRecordingCommentSave({beforeText:context.state,projectId:'tiny-import',sceneId:'roman/tiny.txt',beforeContent,
-    afterContent:envelope.composeObservablePayload({doc}),recordingProofJson:JSON.stringify({schemaVersion:1,baselineContent:beforeContent,
+    afterContent:envelope.composeObservablePayload({doc}),recordingProofJson:JSON.stringify({schemaVersion:1,baselineContent,
       metadata,previousIntents:previous,nextIntents:next,sessionId:'owned-prefix-edit'})});
-  return {doc,state:plan.afterText,plan};
+  return {doc,state:plan.afterText,plan,recordingSession:{baselineContent,nextIntents:next}};
 }
 
 test('recording in another paragraph preserves hidden quote and locator through round Undo/Redo and rejection',async()=>{
@@ -819,13 +831,51 @@ test('recording in another paragraph preserves hidden quote and locator through 
   const rejected=decide(redo,{action:'rejectAll'});validateLive(rejected.doc,rejected.state);assert.equal(deletedThread(rejected.state).anchor.selectedText,'УДАЛЕНИЕ🧭');
 });
 
-test('unproved same-paragraph rebinding refuses before save instead of discarding a pending or accepted hidden quote',async()=>{
-  for(const accepted of [false,true]) {
-    const x=await input(),context=accepted?decide(x,{action:'acceptAll'}):x,before=JSON.stringify(context);
-    assert.throws(()=>recordPrefix(context,2),/COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED/);
-    assert.equal(JSON.stringify(context),before);assert.equal(deletedThread(context.state).anchor.kind,'point');
-    assert.deepEqual(pending.readCommentUnionContext({document:context.doc,anchor:deletedThread(context.state).anchor}),{quote:'УДАЛЕНИЕ🧭',hidden:true});
-  }
+for(const accepted of [false,true])test(`retained revision identity rebinds a same-paragraph edit with ${accepted?'accepted':'pending'} hidden text`,async()=>{
+  const x=await input(),context=accepted?decide(x,{action:'acceptAll'}):x,before=JSON.stringify(context),saved=recordPrefix(context,2);
+  assert.equal(JSON.stringify(context),before);validateLive(saved.doc,saved.state);
+  const thread=deletedThread(saved.state);assert.equal(thread.anchor.startUtf16,4);assert.equal(thread.anchor.kind,'point');
+  assert.deepEqual(thread.anchor.pendingUnionLocator.unionStart,{paragraphIndex:2,offsetUtf16:4});
+  assert.deepEqual(thread.anchor.pendingUnionLocator.unionEnd,{paragraphIndex:2,offsetUtf16:14});
+  assert.deepEqual(pending.readCommentUnionContext({document:saved.doc,anchor:thread.anchor}),{quote:'УДАЛЕНИЕ🧭',hidden:true});
+  const undone=decide(saved,{action:'undo'});validateLive(undone.doc,undone.state);assert.deepEqual(deletedThread(undone.state).anchor,deletedThread(context.state).anchor);
+  const redone=decide(undone,{action:'redo'});validateLive(redone.doc,redone.state);assert.deepEqual(deletedThread(redone.state).anchor,thread.anchor);
+  if(!accepted) {const rejected=decide(redone,{action:'rejectAll'});validateLive(rejected.doc,rejected.state);assert.equal(deletedThread(rejected.state).anchor.selectedText,'УДАЛЕНИЕ🧭');}
+});
+
+test('successive same-paragraph autosaves retain source identity through PM Undo/Redo and round Undo/Redo',async()=>{
+  const x=await input(),first=recordPrefix(x,2),second=recordPrefix(first,2),thread=deletedThread(second.state);validateLive(second.doc,second.state);
+  assert.equal(thread.anchor.startUtf16,5);assert.deepEqual(pending.readCommentUnionContext({document:second.doc,anchor:thread.anchor}),{quote:'УДАЛЕНИЕ🧭',hidden:true});
+  const pmUndo=recordPrefix(second,2,'undo');validateLive(pmUndo.doc,pmUndo.state);assert.deepEqual(deletedThread(pmUndo.state).anchor,deletedThread(first.state).anchor);
+  const pmRedo=recordPrefix(pmUndo,2,'redo');validateLive(pmRedo.doc,pmRedo.state);assert.deepEqual(deletedThread(pmRedo.state).anchor,thread.anchor);
+  const undo=decide(pmRedo,{action:'undo'});validateLive(undo.doc,undo.state);assert.deepEqual(deletedThread(undo.state).anchor,deletedThread(x.state).anchor);
+  const redo=decide(undo,{action:'redo'});validateLive(redo.doc,redo.state);assert.deepEqual(deletedThread(redo.state).anchor,thread.anchor);
+});
+
+test('one save with multiple edit groups rebinds only the proved current cursor before later PM and round reversal',async()=>{
+  const x=await input(),first=recordPrefix(x,2),second=recordPrefix(first,2),session=second.recordingSession;
+  const previous={schemaVersion:2,baselineTextSha256:session.nextIntents.baselineTextSha256,edits:[]};
+  const plan=require('../../src/core/word-pending-recording-comments-v1.cjs').planRecordingCommentSave({beforeText:x.state,projectId:'tiny-import',sceneId:'roman/tiny.txt',
+    beforeContent:session.baselineContent,afterContent:envelope.composeObservablePayload({doc:second.doc}),recordingProofJson:JSON.stringify({schemaVersion:1,
+      baselineContent:session.baselineContent,metadata:{author:'Editor',date:'2026-10-17T00:00:00.000Z'},previousIntents:previous,nextIntents:session.nextIntents,sessionId:'owned-prefix-edit'})});
+  const saved={...second,state:plan.afterText};validateLive(saved.doc,saved.state);assert.equal(deletedThread(saved.state).anchor.startUtf16,5);
+  const pmUndo=recordPrefix(saved,2,'undo');validateLive(pmUndo.doc,pmUndo.state);assert.deepEqual(deletedThread(pmUndo.state).anchor,deletedThread(first.state).anchor);
+  const pmRedo=recordPrefix(pmUndo,2,'redo');validateLive(pmRedo.doc,pmRedo.state);assert.deepEqual(deletedThread(pmRedo.state).anchor,deletedThread(saved.state).anchor);
+  const undo=decide(pmRedo,{action:'undo'});validateLive(undo.doc,undo.state);assert.deepEqual(deletedThread(undo.state).anchor,deletedThread(x.state).anchor);
+  const redo=decide(undo,{action:'redo'});validateLive(redo.doc,redo.state);assert.deepEqual(deletedThread(redo.state).anchor,deletedThread(saved.state).anchor);
+});
+
+test('discarded or changed hidden source identity refuses before any save instead of becoming a cursor comment',async()=>{
+  const x=await input(),before=JSON.stringify({doc:x.doc,state:x.state}),working=pending.normalizeNode(x.doc);working.content[2].content.unshift({type:'text',text:'!'});
+  const intents={schemaVersion:2,baselineTextSha256:require('../../src/core/word-comment-edit-intents-v1.cjs').textDigest(rows(pending.normalizeNode(x.doc))),
+    edits:[{id:'unsafe',historyId:'unsafe',direction:'forward',fromParagraphIndex:2,toParagraphIndex:2,fromUtf16:0,toUtf16:0,removedParagraphs:[''],insertedParagraphs:['!']}]};
+  assert.throws(()=>require('../../src/core/word-comment-anchor-save-v1.cjs').planCommentAnchorSave({beforeText:x.state,projectId:'tiny-import',sceneId:'roman/tiny.txt',
+    beforeContent:x.entry.content,afterContent:envelope.composeObservablePayload({doc:working}),editIntents:intents,sessionId:'unsafe-flatten'}),/COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED/);
+  const ledger=structuredClone(pending.readLedger(x.doc)),paragraph=ledger.source.content[2];paragraph.content=paragraph.content.map(n=>n.text?.includes('УДАЛЕНИЕ')?{...n,text:n.text.replace('УДАЛЕНИЕ','XXXXXXXX')}:n);
+  const changed=pending.bindLedger(ledger),anchor=deletedThread(x.state).anchor;
+  assert.throws(()=>pending.rebaseChangedCommentUnionLocator({beforeDocument:x.doc,afterDocument:changed,beforeAnchor:anchor,afterAnchor:anchor}),/LOCATOR_REBASE_UNPROVED|LOCATOR_QUOTE_CHANGED/);
+  assert.throws(()=>pending.rebaseChangedCommentUnionLocator({beforeDocument:x.doc,afterDocument:x.doc,beforeAnchor:anchor,afterAnchor:{...anchor,sceneId:'roman/foreign.txt'}}),/LOCATOR_OWNER/);
+  assert.equal(JSON.stringify({doc:x.doc,state:x.state}),before);
 });
 
 test('after rejection reveals the quote, ordinary recording and existing round Undo/Redo retain its visible range',async()=>{
