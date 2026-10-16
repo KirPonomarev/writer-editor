@@ -26771,19 +26771,19 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "78e125982899d37d6ddba823886b234a1e9e60706ab8dc2c61b9d5db3abf9ab9"
+      "sha256": "88b856806a5a94f86d2927098f9499aca1de231d3c75a2b990f323fb30d12b05"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "58be8e906e040d241ee1d947dd5fa70e1eb8d50bd0944acfa8c7d0b5b6d8b3a8"
+      "sha256": "f5d62896d1f3c2b4792dbf533330d3e2087e65c0b00a2783d1b41161c5ede666"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "064ca50f484b769478cf9c897a7fc965d1fc7230c12c6a8ab62496378cd2e4c6"
+      "sha256": "81b6e161f3effb5f047a18f14177ed05f7f656e685c1a3f7f590bfc04f228229"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-      "sha256": "d0ac85425f9f0188b57d594f7afe24b479d931d4a2ed966f33a727dd02dc943f"
+      "sha256": "e9911c48f537255d45354ed2c31fd3772e7a39919ff25cac74296d03b3da5c00"
     },
     {
       "path": "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md",
@@ -26831,11 +26831,11 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main/projectTreeReadPort.cjs",
-      "sha256": "f0503474671b1ba710476fa35b5b5d1b1585862b64df7e98a0a54faa0c1c89b3"
+      "sha256": "2cce63b9fdc0f8fae8c112566bc92465c636667e5b4439cdf0cd94aa84c99031"
     },
     {
       "path": "src/main/projectTreeReadWorker.cjs",
-      "sha256": "1797117b0fceb07fa279d33247c27c278fa69949eba3634f586a4955f5cea1e8"
+      "sha256": "b2a21c70cbf56d2efd6ff24c50c7c5f05b60bf2efffa3add0e21213deafa9a9a"
     },
     {
       "path": "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
@@ -26972,12 +26972,16 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "docs/tasks/2026-10-16--word-tree-read-lifecycle-mac.md",
       "sha256": "a3beb739e62099f93bdd49580b75efe9e3bcbdd1ada9db906db4c2b27743d498"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-tree-read-process-mac.md",
+      "sha256": "f167bda07f1790393134d21f9b677db38b6815c0ce2365e11a716cfba578c096"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3cd779044c90d9217d5df7067d2564ca34c3175bf35701ce7002ca162b00f469"
+      "sha256": "26776253b856e369fe14dda3ea59e3c65b9e9c63800d23017a6a241b673434c5"
     }
   ]
 });

@@ -4,6 +4,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { performance } = require('node:perf_hooks');
 const { Worker } = require('node:worker_threads');
+const { EventEmitter } = require('node:events');
 const MAX_TEXT_BYTES = 32 * 1024 * 1024;
 const WORKER_PATH = path.join(__dirname, 'projectTreeReadWorker.cjs');
 function failure(code) { return Object.assign(new Error(code), { code }); }
@@ -60,7 +61,48 @@ function validateProjection(value) {
   }
   return Object.freeze(value);
 }
-function createProjectTreeReadPort({ WorkerClass = Worker, workerPath = WORKER_PATH, timeoutMs = 120000 } = {}) {
+function createUtilityProcessReaderClass(utilityProcess) {
+  return class UtilityProcessReader extends EventEmitter {
+    constructor(modulePath, { workerData }) {
+      super();
+      this.spawned = false; this.exited = false; this.stopping = false; this.stopCalled = false; this.exitCode = null;
+      this.stopped = new Promise((resolve, reject) => { this.resolveStopped = resolve; this.rejectStopped = reject; });
+      this.child = utilityProcess.fork(modulePath, [], { serviceName: 'Yalken project tree reader' });
+      this.child.once('spawn', () => {
+        this.spawned = true;
+        if (this.stopping) { this.stop(); return; }
+        try { this.child.postMessage(workerData); }
+        catch { this.emit('error', failure('E_TREE_READ_WORKER_START')); }
+      });
+      this.child.on('message', value => { if (!this.exited && !this.stopping) this.emit('message', value); });
+      // Retirement already has its terminal outcome; a late fatal notification
+      // must not become an unhandled second error in Main. Exit still owns stop.
+      this.child.once('error', () => { if (!this.exited && !this.stopping) this.emit('error', failure('E_TREE_READ_WORKER')); });
+      this.child.once('exit', code => {
+        this.exited = true; this.exitCode = code; this.resolveStopped(code); this.emit('exit', code);
+      });
+    }
+    stop() {
+      if (this.exited || this.stopCalled) return;
+      this.stopCalled = true;
+      try { if (!this.child.kill()) this.rejectStopped(failure('E_TREE_READ_WORKER')); }
+      catch { this.rejectStopped(failure('E_TREE_READ_WORKER')); }
+    }
+    terminate() {
+      if (this.exited) return Promise.resolve(this.exitCode);
+      this.stopping = true;
+      if (this.spawned) this.stop();
+      return this.stopped;
+    }
+  };
+}
+function runtimeReaderClass() {
+  // Electron Main must not share its process with the heavy reader. Missing
+  // process support fails at construction, never falls back to a Node Worker.
+  return process.versions.electron && process.type === 'browser'
+    ? createUtilityProcessReaderClass(require('electron').utilityProcess) : Worker;
+}
+function createProjectTreeReadPort({ WorkerClass = runtimeReaderClass(), workerPath = WORKER_PATH, timeoutMs = 120000 } = {}) {
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 120000) throw failure('E_TREE_READ_DEADLINE');
   // Identical pending descriptors share one freshly checked snapshot, never a cache.
   // Admission covers fence I/O as well as the working AND stopping Worker.
@@ -149,4 +191,4 @@ function createProjectTreeReadPort({ WorkerClass = Worker, workerPath = WORKER_P
   };
 }
 const readVerifiedProjectTreeProjection = createProjectTreeReadPort();
-module.exports = { readVerifiedProjectTreeProjection, createProjectTreeReadPort, validateRequest, validateProjection, readFence, sameFence, createReadOnlyFileAdapter };
+module.exports = { readVerifiedProjectTreeProjection, createProjectTreeReadPort, createUtilityProcessReaderClass, validateRequest, validateProjection, readFence, sameFence, createReadOnlyFileAdapter };
