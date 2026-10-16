@@ -2542,7 +2542,7 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
     treeRevision: current.treeRevision + 1, kind: plan.kind, packetDigest: sha256hex(canonicalize(packet)) };
   const receiptText = canonicalBytes(receipt), journal = { schemaVersion: TREE_JOURNAL_SCHEMA_VERSION,
     manifestPath, transactionId, previousReceiptText, receiptText, packet };
-  const journalText = canonicalBytes(journal);
+  let journalText = canonicalBytes(journal);
   // These canonical bytes come from this invocation's frozen, fully verified
   // packet. External and recovery journals still regenerate through the parser.
   if(localNovel)validateTreeJournalEnvelope(journal,journalText,manifestPath);
@@ -2560,6 +2560,9 @@ async function commitTreeCohort({ manifestPath, revision, treeCohort: plan, publ
   privateRead=null; // Reuse ends before the first durable write.
   current=null;
   await durableSaveTransaction({ filePath: journalPathFor(manifestPath), content: journalText, revision, fsAdapter });
+  // The durable journal now owns these bytes. Do not retain its serialized
+  // graph while publishing/verifying the cohort and serializing its packet.
+  journalText=null;
   await publishTreeSide(packet, 'after', { manifestPath, publishManifest, revalidate, fsAdapter });
   if (afterTreeFilesPublish !== undefined) {
     treeNeed(typeof afterTreeFilesPublish === 'function', 'E_TREE_COHORT_OBSERVER');

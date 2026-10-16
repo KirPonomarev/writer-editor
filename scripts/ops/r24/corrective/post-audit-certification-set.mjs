@@ -26759,7 +26759,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/core/project-transaction-v1.cjs",
-      "sha256": "6a12599666c8b2f77c3a9ba9091007e3018f0726544ebaac616399212d41e561"
+      "sha256": "e4aab760ae3e0508cd99bb51a955f0d3c669e79a8be3425afd49cce5bc00e544"
     },
     {
       "path": "src/core/project-tree-cohort-v1.mjs",
@@ -26771,15 +26771,15 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "f3fefff246462163aabfb88ad6d3cbaba04d45520913d33e402e6a25a53a2458"
+      "sha256": "d0dd152c340a66fd58c4cf6dda995223ab2b31397176d29b993e1a0445f2d4f4"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "8e0e97fc48b2432d53e605f01047f4008d04933890d1fefbb65762e7f9e7dc1a"
+      "sha256": "38cbf9eb3753704d6ba436686a4141d9d20308458af97dc09de1d8c022beaad5"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "44b3c7f51186d7b8a3918bb4f4ecea379e3da0b6cb7874625f86ef6573174693"
+      "sha256": "d0e1727a3800ffa0eae71b520e02fe080607eeabf5058bde6f1d6d02fd599cd2"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -26964,12 +26964,16 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
       "sha256": "2b0135661033070a7e40da072a7a474f2550c17b15f304aad3433de04b425143"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-book-history-memory-mac.md",
+      "sha256": "50560cc2485228636f1ca95cce9b91a2048d9c2dbc8a1eda49f500b1e70d5e89"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "6e02e492cd92bf62d0154bfc5ef2d5fd8264a91c7113435bb724ac9629ff2708"
+      "sha256": "6791a24a6b05fb97f0e4a42f1e3ce8226005f98bb42b1da84c982c745a3471e0"
     }
   ]
 });
