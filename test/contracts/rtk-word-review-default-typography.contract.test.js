@@ -1712,3 +1712,40 @@ test('Main input conservation oracle rejects text binary alias and absent-field 
   const bad=require('node:v8').deserialize(before.bytes);mutate(bad);assert.throws(()=>assertTypedInputUnchanged(bad,before));
  }
 });
+
+
+test('Completed insertion boundary keeps root and reply through real review and minimum exporters',async t=>{
+ const [,bridge]=await modules,review=require('../../src/core/word-pending-text-revisions-v1.cjs'),authoring=require('../../src/core/word-comment-authoring-v1.cjs');
+ const doc=review.bindLedger({schemaVersion:1,source:{type:'doc',content:[{type:'paragraph',content:[
+  {type:'text',text:'added 😀 ',marks:[{type:'bold'}]},{type:'text',text:'kept '},{type:'text',text:'text',marks:[{type:'italic'}]}]}]},
+  revisions:[{id:'revision-1',nativeId:'1',operation:'insert',author:'Word writer',date:'2026-10-16T07:00:00Z',dateUtc:'2026-10-16T07:00:00Z',paragraphIndex:0,from:0,to:9,state:'pending',groupId:null}],undo:[],redo:[]});
+ const projectId='boundary-discussion',state={schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:0,events:[],threads:[{
+  threadId:'boundary-thread',rootCommentId:'boundary-root',sceneId,status:'open',anchor:authoring.exactAnchor({paragraphIndex:0,startUtf16:9,selectedText:'kept'},sceneId,['added 😀 kept text']),
+  messages:[{commentId:'boundary-root',kind:'root',body:'Keep this discussion.',provenance:{author:'Writer'}},{commentId:'boundary-reply',kind:'reply',body:'The reply stays attached.',provenance:{author:'Editor'}}]}]};
+ const before={doc:structuredClone(doc),state:structuredClone(state)},f=actualBodyPublication(doc,bridge,{projectId,nonTextReturnState:state});
+ const [docxPageSetupBindModule,semanticMappingModule,styleMapModule]=await Promise.all([import('../../src/docxPageSetupBind.mjs'),import('../../src/derived/semanticMapping.mjs'),import('../../src/derived/styleMap.mjs')]);
+ const root=f.source.commentExport.threads[0].messages[0].commentId,reply=f.source.commentExport.threads[0].messages[1].commentId;
+ const originalSource=typedInputSnapshot(f.source);
+ for(const profile of ['review','minimum']){
+  const bytes=profile==='review'?f.bytes:require('../../src/export/docx/docxMinBuilder.js').buildDocxMinBuffer({doc,bookProfile:{formatId:'A4'}},
+   {docxPageSetupBindModule,semanticMappingModule,styleMapModule,commentExport:f.source.commentExport,commentBlocks:f.source.blocks});
+  const parts=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes}).parts,xml=parts['word/document.xml'];
+  const paragraph=xml.match(/<w:p\b[^>]*>[^]*?<\/w:p>/gu).find(p=>p.includes('<w:commentRangeStart'));
+  assert.ok(paragraph,profile);
+  for(const original of [false,true]){
+   const visible=original?paragraph.replace(/<w:ins\b[^>]*>[^]*?<\/w:ins>/gu,''):paragraph;
+   let text='';const markers=[];
+   for(const m of visible.matchAll(/<w:t\b[^>]*>([^]*?)<\/w:t>|<w:(commentRangeStart|commentRangeEnd|commentReference)\b[^>]*w:id="([^"]+)"[^>]*\/>/gu)){
+    if(m[1]!==undefined)text+=m[1];else markers.push([m[2],m[3],text.length]);
+   }
+   const start=original?0:9,end=original?4:13;
+   assert.deepEqual({text,markers},{text:original?'kept text':'added 😀 kept text',markers:[['commentRangeStart',root,start],['commentRangeStart',reply,start],['commentRangeEnd',reply,end],['commentRangeEnd',root,end],['commentReference',root,end],['commentReference',reply,end]]},profile+':'+(original?'Original':'Current'));
+  }
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(analysis.ok,true,JSON.stringify(analysis));
+  assert.equal(require('../../src/export/docx/docxReviewPacketComments.js').compareCommentExportReadback(f.source.commentExport,analysis.reviewIr.commentThreads).ok,true);
+  retainCommentTypographyEvidence(t.name+' '+profile,{...f,doc,state,before},bytes,{profile,analysis});
+  assert.match(xml,/<w:ins[^>]*w:author="Word writer"/u);assert.match(paragraph,/<w:b(?: w:val="1")?\/>/u);assert.match(paragraph,/<w:i(?: w:val="1")?\/>/u);
+ }
+ const published=await f.publish(f.bytes);assert.equal(published.ok,true,JSON.stringify(published));assert.equal(published.publishAllowed,true);
+ assertTypedInputUnchanged(f.source,originalSource);assert.deepEqual({doc,state},before);
+});

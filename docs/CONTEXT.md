@@ -1,3 +1,27 @@
+# Comment ranges at completed revisions — 2026-10-16
+
+TASK_ID: WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: LOCAL_SOURCE_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 296e7b4092d97c8fbe136c69df8579049832be61
+
+Independent physical readback of Q1 final reexport found both root/reply starts
+inside the preceding insertion; Original retained only four of six markers.
+The complete canonical graph, further authoring and export projection passed.
+A555-byte actual emitter reproducer and two maintained regressions reproduced
+that loss. The existing emitter now closes completed outgoing revisions before
+boundary markers, including the final paragraph edge. Same-revision rich and
+interior marker ownership, text, provenance, notes and publication guards remain.
+Complete affected14-file chains passed524of524 on Node22 and shipped Electron,
+zero failures/cancelled/skipped/todo; exact input byte barriers passed. Independent
+standard ZIP/XML readback passed tiny and real review/minimum outputs and rejected
+eight mutations. Original failed evidence remains retained on T777.
+Source recovery was delivered at the binding base; original SOURCE80 and all90
+project files/history remain protected. Native Q1 remains unaccepted at S5 and
+finite16 remains0of16. This code-only proof is not native/feature acceptance.
+Next: ordinary scoped CI/delivery and exact merged verification, then a fresh
+native admission and actual reexport of the same retained project.
+
 # Explicit missing-anchor recovery — 2026-10-16
 
 TASK_ID: WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016

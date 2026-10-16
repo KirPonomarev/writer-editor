@@ -654,3 +654,46 @@ test('Fresh source-owned paragraph reset styles resolve all four phases without 
   assert.equal(old['word/styles.xml'],explicit['word/styles.xml']);assert.equal(old['word/styles.xml'].includes(definition),false);
  }
 });
+
+
+test('Completed pending revision boundaries preserve literal discussion ranges in both views',()=>{
+ const {buildPendingRunsXml}=require('../../src/export/docx/docxPendingRevisions.js');
+ const revision=(id,operation='insert',extra={})=>({id,operation,state:'pending',author:'Word writer',date:'2026-10-16T07:00:00Z',...extra});
+ const ins=revision('revision-1'),other=revision('revision-2'),del=revision('revision-3','delete'),move=revision('revision-4','insert',{moveName:'owned-move',groupId:'owned-pair'});
+ const starts='<w:commentRangeStart w:id="0"/><w:commentRangeStart w:id="1"/>',ends='<w:commentRangeEnd w:id="1"/><w:commentRangeEnd w:id="0"/><w:r><w:commentReference w:id="0"/></w:r><w:r><w:commentReference w:id="1"/></w:r>';
+ // Finite literal XML observer, independent of the product revision/comment parser.
+ // These generated fixtures have no nested same-kind revision or escaped text.
+ const view=(xml,original)=>{
+  xml=xml.replace(original?/<w:(ins|moveTo)\b[^>]*>[^]*?<\/w:\1>/gu:/<w:(del|moveFrom)\b[^>]*>[^]*?<\/w:\1>/gu,'');
+  let text='';const events=[];
+  for(const m of xml.matchAll(/<w:(?:t|delText)\b[^>]*>([^]*?)<\/w:(?:t|delText)>|<w:br\/>|<w:(commentRangeStart|commentRangeEnd|commentReference|footnoteReference)\b[^>]*w:id="([^"]+)"[^>]*\/>/gu)){
+   if(m[1]!==undefined)text+=m[1];else if(m[0]==='<w:br/>')text+='\n';else events.push([m[2],m[3],text.length]);
+  }
+  return {text,events};
+ };
+ const cases=[
+  {name:'insert/plain',parts:[['added ',ins],['kept text']],range:[6,10],current:'added kept text',original:'kept text',originalRange:[0,4]},
+  {name:'delete/plain',parts:[['added ',del],['kept text']],range:[6,10],current:'kept text',original:'added kept text',currentRange:[0,4]},
+  {name:'adjacent inserts',parts:[['added ',ins],['kept',other],[' text']],range:[6,10],current:'added kept text',original:' text',originalRange:[0,0]},
+  {name:'moveTo/plain',parts:[['added ',move],['kept text']],range:[6,10],current:'added kept text',original:'kept text',originalRange:[0,4]},
+  {name:'rich fragments',parts:[['add',ins],['ed ',ins],['kept text']],range:[6,10],current:'added kept text',original:'kept text',originalRange:[0,4]},
+  {name:'paragraph end',parts:[['added ',ins]],range:[6,6],current:'added ',original:'',originalRange:[0,0]},
+  {name:'inserted hard break',parts:[['add',ins],['\n',ins],['kept']],range:[4,8],current:'add\nkept',original:'kept',originalRange:[0,4]},
+  {name:'interior same revision',parts:[['add',ins],['ed ',ins],['kept text']],range:[3,4],current:'added kept text',original:'kept text',interior:true},
+  {name:'co-located note',parts:[['added ',ins],['kept text']],range:[6,10],current:'added kept text',original:'kept text',originalRange:[0,4],note:true},
+ ];
+ for(const c of cases){
+  const segments=c.parts.map(([text,revision],i)=>({node:text==='\n'?{type:'hardBreak'}:{type:'text',text,marks:i===1?[{type:'bold'}]:[]},revision})),before=structuredClone(segments);
+  const markers=c.range[0]===c.range[1]?new Map([[c.range[0],starts+ends]]):new Map([[c.range[0],starts],[c.range[1],ends]]);
+  const notes=c.note?new Map([[6,'<w:r><w:footnoteReference w:id="2"/></w:r>']]):new Map();
+  const beforeMarkers=structuredClone(markers),beforeNotes=structuredClone(notes);
+  const xml=buildPendingRunsXml(segments,n=>n.type==='hardBreak'?'<w:r><w:br/></w:r>':run(n.text,n.marks?.length?'<w:b/>':''),{next:1},'owned-scene',notes,markers);
+  for(const original of [false,true]){
+   const observed=view(xml,original),range=original?(c.originalRange||c.range):(c.currentRange||c.range);
+   const expected=original&&c.interior?[]:[['commentRangeStart','0',range[0]],['commentRangeStart','1',range[0]],...(c.note?[['footnoteReference','2',range[0]]]:[]),['commentRangeEnd','1',range[1]],['commentRangeEnd','0',range[1]],['commentReference','0',range[1]],['commentReference','1',range[1]]];
+   assert.deepEqual(observed,{text:original?c.original:c.current,events:expected},c.name+':'+(original?'Original':'Current'));
+  }
+  if(c.name==='rich fragments')assert.equal([...xml.matchAll(/<w:ins\s/gu)].length,1);
+  assert.deepEqual(segments,before);assert.deepEqual(markers,beforeMarkers);assert.deepEqual(notes,beforeNotes);
+ }
+});
