@@ -5157,13 +5157,13 @@
       "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
-      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
-      "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "d0ac85425f9f0188b57d594f7afe24b479d931d4a2ed966f33a727dd02dc943f"
     },
     {
       "filePath": "src/core/word-pending-recording-intents-v1.cjs",
@@ -5329,12 +5329,12 @@
     },
     {
       "filePath": "src/main/projectTreeReadPort.cjs",
-      "sha256": "95f4b8b2ce450cd6897612ed0ef4d20a6ea4af765d01c7370f0b733460dbe3c7",
-      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
-      "approvedBy": "owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
       "approved": true,
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved."
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "f0503474671b1ba710476fa35b5b5d1b1585862b64df7e98a0a54faa0c1c89b3"
     },
     {
       "filePath": "src/main/projectTreeReadWorker.cjs",
@@ -5699,29 +5699,29 @@
     {
       "filePath": "docs/CONTEXT.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
-      "sha256": "d0dd152c340a66fd58c4cf6dda995223ab2b31397176d29b993e1a0445f2d4f4"
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "3b03f8658831dbaadd321e63be6575f13d170ac776ceca1d86995d2954f190e0"
     },
     {
       "filePath": "docs/HANDOFF.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
-      "sha256": "38cbf9eb3753704d6ba436686a4141d9d20308458af97dc09de1d8c022beaad5"
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "6f0e1bddc28edd1115fb669969d4b03c7745e5ecc05d2953c363078f4b5bde3c"
     },
     {
       "filePath": "docs/WORKLOG.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
-      "sha256": "d0e1727a3800ffa0eae71b520e02fe080607eeabf5058bde6f1d6d02fd599cd2"
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "4817c60dcfb5d26349194754508446bef63736562b7c9d80cf00f3a89e08b0a9"
     },
     {
       "filePath": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
-      "sha256": "6791a24a6b05fb97f0e4a42f1e3ce8226005f98bb42b1da84c982c745a3471e0"
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "8110bb63b7a5829bcb7b8f30d01c62c1dd13461e85b60275fe7ab7801e55998b"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
-      "sha256": "b0e0710ed365fa795e8c928f24ecaf90f25ce0d89ebc66d878eabfd24099f459"
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "ecb80864ec7edb7017dbddac6ed34be080ce43966c086ed76ce14376d3d36a55"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:50:12.194918+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
-      "sha256": "2150a3da7d65316dfb781336a17affda945635eee60ac5aacbdd180bc117f736"
+      "rationale": "Use the unchanged native inventory compiler canonical bytes; all1600 file memberships, skip classifications and test contents are preserved except the declared existing tree-contract correction. No product source or proof predicate changed. Previous intermediate noncanonical binding remains unaccepted; prior approvals retained.",
+      "sha256": "b2f4921396ab500cb7a24712fad2d7bdc4eb7d3944c2fc426c49c015eb204f0e"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:50:12.194918+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
-      "sha256": "28f9b3dddea2959d1af546fbe8daeee9ea9241d9599df30d5bea87878a1509f5"
+      "rationale": "Use the unchanged native inventory compiler canonical bytes; all1600 file memberships, skip classifications and test contents are preserved except the declared existing tree-contract correction. No product source or proof predicate changed. Previous intermediate noncanonical binding remains unaccepted; prior approvals retained.",
+      "sha256": "64b1ca6226f2da1dc6a6c64980dca9da95e926b564db6a5b126839a02c868aba"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
-      "sha256": "e175cd51e38d5f8f7fd7c4204852dab77220ecb3f2be447046095a8cac736031"
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "6783906025bfb337e779e67a9264f8a5e06f6671f282c7031a680e78e2cc0862"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "approvedAtUtc": "2026-10-16T14:50:12.194918+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
-      "sha256": "6cb2ec4df417efd5994b0f7bea4b20c3c749e0c6c5273b3917a1721e793199d3"
+      "rationale": "Use the unchanged native inventory compiler canonical bytes; all1600 file memberships, skip classifications and test contents are preserved except the declared existing tree-contract correction. No product source or proof predicate changed. Previous intermediate noncanonical binding remains unaccepted; prior approvals retained.",
+      "sha256": "6a8fd83d566873237989916d37df929823596d6484909e827f99d02a8b2ca160"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5803,6 +5803,15 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
       "sha256": "50560cc2485228636f1ca95cce9b91a2048d9c2dbc8a1eda49f500b1e70d5e89"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-16--word-tree-read-lifecycle-mac.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "791e24886dfeee73ded3d97c73601ec12bda9d99667d2cb8c1efc29decc4fcea"
     }
   ],
   "evidenceStampIds": [
@@ -46066,6 +46075,132 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Mechanical final task-heading correction required by existing E0 exact10 H2 grammar; proof becomes H3 under FAIL_PROTOCOL. Runtime/tests unchanged. All prior approvals and failed observations retained; original owner-delegated three-line exporter correction and full ordinary delivery scope unchanged.",
       "sha256": "36a79496b00c979fd3bb186da399fd270bc33b12a612724a1485afd06d4f95df"
+    },
+    {
+      "filePath": "src/main/projectTreeReadPort.cjs",
+      "sha256": "95f4b8b2ce450cd6897612ed0ef4d20a6ea4af765d01c7370f0b733460dbe3c7",
+      "approvedAtUtc": "2026-10-14T01:44:15.975761Z",
+      "approvedBy": "owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Main verified tree read responsiveness: unchanged Core verification runs on fixed read-only Worker, small immutable selected projections, exact raw manifest/receipt/journal and Main context guards, fixed8 in-flight bound and120s deadline; guarded existing unchanged backup hash avoids redundant lookup. Real SOURCE47 retained-packet parity and Main heartbeat RED20.44s versus Worker16.29ms; no native-cycle claim. All prior tuples/history/test membership/acceptance denominators/predicates preserved."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T01:59:17.007289Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-delegated-codex:MAIN_TREE_READ_WORKER_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
+      "rationale": "Same unreleased PR2114 deterministic test-fixture correction only: actual completed fence-read event barrier replaces wall-clock mock release; every assertion, all runtime bytes, inventory membership, DATA paths/predicates and prior certificate tuples retained. Mandatory aggregate and CI remain required.",
+      "sha256": "fadaaf778c89ddf3690c2fe249681a7b61af2b4f73f8aac179631dd4ba8f0f15"
+    },
+    {
+      "filePath": "docs/CONTEXT.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
+      "sha256": "d0dd152c340a66fd58c4cf6dda995223ab2b31397176d29b993e1a0445f2d4f4"
+    },
+    {
+      "filePath": "docs/HANDOFF.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
+      "sha256": "38cbf9eb3753704d6ba436686a4141d9d20308458af97dc09de1d8c022beaad5"
+    },
+    {
+      "filePath": "docs/WORKLOG.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
+      "sha256": "d0e1727a3800ffa0eae71b520e02fe080607eeabf5058bde6f1d6d02fd599cd2"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
+      "sha256": "6791a24a6b05fb97f0e4a42f1e3ce8226005f98bb42b1da84c982c745a3471e0"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
+      "sha256": "b0e0710ed365fa795e8c928f24ecaf90f25ce0d89ebc66d878eabfd24099f459"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
+      "sha256": "e175cd51e38d5f8f7fd7c4204852dab77220ecb3f2be447046095a8cac736031"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T11:55:14.069365+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_BOOK_HISTORY_MEMORY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct autonomous Mac Word finish: release only the serialized journal string after awaited durable ACK. Existing complete Node22 and shipped-engine affected tests, exact48 write payload/full Core result comparison, protected source/anchor barriers and exact104-file crash-clone recovery pass. Native failure retained and finite16 still open. Mechanical source/document bindings only; all protected files, historical approvals, inventory/tests, limits and semantic oracles preserved.",
+      "sha256": "6cb2ec4df417efd5994b0f7bea4b20c3c749e0c6c5273b3917a1721e793199d3"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "2150a3da7d65316dfb781336a17affda945635eee60ac5aacbdd180bc117f736"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T07:52:50.231143+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner autonomous Mac Word finish and takeover: three-line existing emitter correction closes completed revisions before discussion boundary markers. Actual RED retained; complete affected524of524 on Node22 and shipped Electron, zero skip/todo; independent tiny and real review/minimum ZIP/XML proof with eight rejected mutants. Exact byte companions only; original project/history, source guards, protected files and all previous approvals preserved. Native finite16 remains open; ordinary CI/merge still required.",
+      "sha256": "28f9b3dddea2959d1af546fbe8daeee9ea9241d9599df30d5bea87878a1509f5"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "fad0cac20981d9238188b4b1b75fc98f6c587ea6633909cd453591e69f7bd313"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "232054705642bab6ee52b010be70cb6b6cb4cf1aa41845b777133ccbbc4e8835"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T14:48:22.420397+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_TREE_READ_LIFECYCLE_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner go-ahead for one bounded existing read-port lifecycle correction. Controlled RED, complete changed tree101of101 and selected Main8of8 each on Node/shipped pass, and the actual large concurrent pair passes with full result equality and all104 protected files/directories exact. No Core/Worker/Main, format, capability, envelope, skip or oracle relaxation; all previous approvals retained. Complete official Main/RTK/CI delivery gates and native acceptance remain pending.",
+      "sha256": "42f1fa0016a692f1dcb543e0f19b9fd437ab1ac264d40a5dcf3ce99d44274fce"
     }
   ]
 }

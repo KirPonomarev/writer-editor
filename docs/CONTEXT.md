@@ -1,3 +1,36 @@
+# Verified tree read lifecycle — 2026-10-16
+
+TASK_ID: WORD_TREE_READ_LIFECYCLE_MAC_20261016
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SOURCE_PROOF_COMPLETE_REQUIRED_DELIVERY_PENDING
+BINDING_BASE_SHA: cf6cd26381f9776965cd7fe0990f4d1cbff8cf53
+CLAIM_BOUNDARY: read-port execution only; native book history and fresh finite16 remain NOT_READY
+
+The existing port now admits one full read lifecycle, including initial/final
+fence I/O and confirmed Worker retirement. At most eight distinct small active/
+waiting descriptors are retained. Identical pending descriptors share one freshly
+checked current snapshot; completed projections are never cached. Arrival-based
+monotonic deadlines remove expired queued work without starting a Worker. A failed
+unconfirmed stop makes this port unavailable rather than releasing its resource.
+Core/Worker/Main consumers, capability/context guards, persistence and format are
+unchanged. Public project opening, pending review and periodic backup use this
+same production singleton. Direct heavy Main reads/writes remain a distinct risk.
+
+A maintained controlled RED reproduces two simultaneous Workers on the base.
+The final focused chain passes14of14. Complete changed-tree contracts pass101of101
+on both engines; existing Main port consumers pass8of8 each, with zero
+failure/cancelled/skipped/todo. Final stop-count diagnostic adapts the5ms call
+deadline to allow expiry before Worker creation, still requiring exactly one
+stop for every actually created Worker. Final25/26 full changed-file reruns
+pass101of101 each on exactly these final source and test bytes.
+The exact original two large concurrent default-Electron requests now finish in
+45.577s with two actual Workers and peak live1. Independent complete result
+comparison matches the old sequential pair; all104 protected original files,
+directories and history resources are exact before and after. No heap flags,
+BrowserWindow or Word interaction; native credit is0. Mandatory complete official CI/Main/RTK baseline,
+ordinary delivery and a fresh exact-build native check remain required.
+All raw evidence belongs to the dated T777 word-tree-read-lifecycle-mac folders.
+
 # Comment ranges at completed revisions — 2026-10-16
 
 TASK_ID: WORD_COMMENT_REVISION_BOUNDARY_MAC_20261016

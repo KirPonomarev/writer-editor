@@ -2,6 +2,7 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { performance } = require('node:perf_hooks');
 const { Worker } = require('node:worker_threads');
 const MAX_TEXT_BYTES = 32 * 1024 * 1024;
 const WORKER_PATH = path.join(__dirname, 'projectTreeReadWorker.cjs');
@@ -27,7 +28,11 @@ async function readFence(manifestPath) {
       return crypto.createHash('sha256').update(bytes).digest('hex');
     } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
   };
-  return Promise.all([manifestPath, `${manifestPath}.wp201-tree-commit.json`, `${manifestPath}.wp201-transaction.json`].map(read));
+  // Failure does not retire the other reads that already own file buffers.
+  const settled = await Promise.allSettled([manifestPath, `${manifestPath}.wp201-tree-commit.json`, `${manifestPath}.wp201-transaction.json`].map(read));
+  const failed = settled.find(row => row.status === 'rejected');
+  if (failed) throw failed.reason;
+  return settled.map(row => row.value);
 }
 function createReadOnlyFileAdapter() {
   return new Proxy(fs, { get(target, key) {
@@ -57,42 +62,90 @@ function validateProjection(value) {
 }
 function createProjectTreeReadPort({ WorkerClass = Worker, workerPath = WORKER_PATH, timeoutMs = 120000 } = {}) {
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 120000) throw failure('E_TREE_READ_DEADLINE');
-  // Call-local concurrent reads only; no result survives completion or becomes truth.
-  const pending = new Map();
+  // Identical pending descriptors share one freshly checked snapshot, never a cache.
+  // Admission covers fence I/O as well as the working AND stopping Worker.
+  const pending = new Map(), queue = [];
+  let active = null, unavailable = false;
+  const settle = (job, error, value) => {
+    if (job.settled) return;
+    job.settled = true; clearTimeout(job.timer);
+    if (pending.get(job.key) === job) pending.delete(job.key);
+    if (error) job.reject(error); else job.resolve(value);
+  };
+  const checkDeadline = job => {
+    if (job.settled || performance.now() >= job.deadline) throw failure('E_TREE_READ_TIMEOUT');
+  };
+  const runWorker = (job, fence) => new Promise((resolve, reject) => {
+    let worker, finishing = false, exited = false;
+    const finish = (error, value) => {
+      if (finishing) return;
+      finishing = true; job.cancel = null;
+      const complete = () => {
+        if (worker) worker.removeAllListeners();
+        if (error) reject(error); else resolve(value);
+      };
+      const stopFailed = () => {
+        if (exited) { complete(); return; }
+        // An unconfirmed stop cannot free the resource for another heavy read.
+        unavailable = true;
+        for (const waiting of queue.splice(0)) settle(waiting, failure('E_TREE_READ_WORKER'));
+        reject(failure('E_TREE_READ_WORKER'));
+      };
+      if (!worker) { complete(); return; }
+      try { Promise.resolve(worker.terminate()).then(complete, stopFailed); }
+      catch { stopFailed(); }
+    };
+    try { worker = new WorkerClass(workerPath, { workerData: { request: job.request, fence } }); }
+    catch { finish(failure('E_TREE_READ_WORKER_START')); return; }
+    job.cancel = error => finish(error);
+    worker.once('message', message => {
+      try {
+        if (!message || typeof message.ok !== 'boolean' || Object.keys(message).sort().join(',') !== (message.ok ? 'fence,ok,value' : 'code,ok')) throw failure('E_TREE_READ_RESULT');
+        if (!message.ok) throw failure(typeof message.code === 'string' && /^[A-Z0-9_]{1,128}$/u.test(message.code) ? message.code : 'E_TREE_READ_WORKER');
+        if (!sameFence(message.fence, fence)) throw failure('E_TREE_READ_STALE');
+        finish(null, validateProjection(message.value));
+      } catch (error) { finish(error); }
+    });
+    worker.once('error', () => finish(failure('E_TREE_READ_WORKER')));
+    worker.once('exit', () => { exited = true; finish(failure('E_TREE_READ_WORKER_EXIT')); });
+  });
+  const pump = () => {
+    if (active || unavailable || !queue.length) return;
+    const job = active = queue.shift();
+    (async () => {
+      try {
+        checkDeadline(job);
+        const fence = await readFence(job.request.manifestPath);
+        checkDeadline(job);
+        if (!fence[0]) throw failure('E_TREE_READ_FENCE');
+        const value = await runWorker(job, fence);
+        checkDeadline(job);
+        if (!sameFence(fence, await readFence(job.request.manifestPath))) throw failure('E_TREE_READ_STALE');
+        checkDeadline(job);
+        settle(job, null, value);
+      } catch (error) { settle(job, error); }
+      finally { active = null; pump(); }
+    })();
+  };
   return async input => {
-    const request = validateRequest(input), fence = await readFence(request.manifestPath);
-    if (!fence[0]) throw failure('E_TREE_READ_FENCE');
-    const key = JSON.stringify([request, fence]);
-    if (!pending.has(key)) {
-      if (pending.size >= 8) throw failure('E_TREE_READ_BUSY');
-      const job = new Promise((resolve, reject) => {
-        let worker, timer, settled = false;
-        const finish = (error, value) => {
-          if (settled) return;
-          settled = true; clearTimeout(timer);
-          if (worker) { worker.removeAllListeners(); worker.terminate().catch(() => {}); }
-          if (error) reject(error); else resolve(value);
-        };
-        try { worker = new WorkerClass(workerPath, { workerData: { request, fence } }); }
-        catch { finish(failure('E_TREE_READ_WORKER_START')); return; }
-        timer = setTimeout(() => finish(failure('E_TREE_READ_TIMEOUT')), timeoutMs);
-        worker.once('message', message => {
-          try {
-            if (!message || typeof message.ok !== 'boolean' || Object.keys(message).sort().join(',') !== (message.ok ? 'fence,ok,value' : 'code,ok')) throw failure('E_TREE_READ_RESULT');
-            if (!message.ok) throw failure(typeof message.code === 'string' && /^[A-Z0-9_]{1,128}$/u.test(message.code) ? message.code : 'E_TREE_READ_WORKER');
-            if (!sameFence(message.fence, fence)) throw failure('E_TREE_READ_STALE');
-            finish(null, validateProjection(message.value));
-          } catch (error) { finish(error); }
-        });
-        worker.once('error', () => finish(failure('E_TREE_READ_WORKER')));
-        worker.once('exit', () => finish(failure('E_TREE_READ_WORKER_EXIT')));
-      });
-      pending.set(key, job);
-      job.finally(() => { if (pending.get(key) === job) pending.delete(key); }).catch(() => {});
+    const request = validateRequest(input), key = JSON.stringify(request);
+    if (unavailable) throw failure('E_TREE_READ_WORKER');
+    let job = pending.get(key);
+    if (!job) {
+      if (queue.length + Number(active !== null) >= 8) throw failure('E_TREE_READ_BUSY');
+      job = { request, key, deadline: performance.now() + timeoutMs, settled: false, cancel: null };
+      job.promise = new Promise((resolve, reject) => { job.resolve = resolve; job.reject = reject; });
+      pending.set(key, job); queue.push(job);
+      job.timer = setTimeout(() => {
+        const error = failure('E_TREE_READ_TIMEOUT');
+        settle(job, error);
+        if (job.cancel) job.cancel(error);
+        const index = queue.indexOf(job);
+        if (index !== -1) queue.splice(index, 1);
+      }, timeoutMs);
+      pump();
     }
-    const value = await pending.get(key);
-    if (!sameFence(fence, await readFence(request.manifestPath))) throw failure('E_TREE_READ_STALE');
-    return value;
+    return job.promise;
   };
 }
 const readVerifiedProjectTreeProjection = createProjectTreeReadPort();
