@@ -31,6 +31,7 @@ One bounded repair of the approved import path: full JSON-frame whitespace compa
 - src/io/revisionBridge/index.mjs
 - src/main.js
 - src/renderer/editor.js
+- src/renderer/editor.bundle.js
 - test/contracts/revision-bridge-docx-import-reference.contract.test.js
 - test/unit/project-tree-pathless-contract.test.js
 - test/unit/sector-m-review-surface-ui.test.js
@@ -191,3 +192,5 @@ AGENT_FINAL_REPORT_V1; one text block, KEY: VALUE, basenames only.
 Record exact source/input/build/profile identities, actual expected versus observed and one next hypothesis. Prototype107 is plan validation only; native book98 was refusal before Create. Neither is whole-book application acceptance. No feature-complete claim with any open blocking outcome or missing delivery.
 
 SOURCE_OBSERVATIONS: The actual four changed runtime files pass93 focused contracts plus223 affected contracts, with zero skips/todo. Complete decoded source/partition/project conservation, hash validation, same-project no-reload, stale pending tree query rejection, Core reject/Undo, retained original quote and every reply, manual tombstone and external-text escaping are executed. Initial131 found two existing same-project listener harness failures caused by unconditional helper invocation; the product handler now invokes the refresh only on actual identity change. No old oracle weakened. Runtime source delta is85 changed lines; no style/layout/HTML or quota changes. Native acceptance and delivery remain pending.
+
+ARTIFACT_REFINEMENT149: Exact native source freeze148 refused before launch because official build-renderer updated the tracked editor.bundle.js that C3 had not regenerated. Same PR2132; original base8a104920 and same behavior/rollback. Supplemental declaration149 binds cleanC3 and includes only the required generated artifact, task and mechanical exact-byte refresh. Official builder runs twice with byte-idempotence; preload and all handwritten runtime files stay exact. CI failures on C3 generated drift are preserved and not acceptance. Generated artifact is exempt from handwritten runtime line budget; no handwritten bundle patch.
