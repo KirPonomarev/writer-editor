@@ -47,8 +47,9 @@ export function prepareDocxNewProject({ plan, projectId, projectName, operationI
   let size = 0, treeIdentity = { schemaVersion: 1, nodes: {} }, noteState = null, commentState = null;
   let currentUtf16CodeUnits = 0, originalUtf16CodeUnits = 0, characters = 0, revisionCount = 0, noteCount = 0, commentCount = 0;
   const add = (relativePath, role, content) => {
-    size += bytes(content); need(size <= DOCX_NEW_PROJECT_LIMITS.bytes, 'DOCX_NEW_PROJECT_BYTES');
-    files.push({ relativePath, role, content, byteLength: bytes(content), sha256: sha256Hex(content) });
+    const byteLength = bytes(content);
+    size += byteLength; need(size <= DOCX_NEW_PROJECT_LIMITS.bytes, 'DOCX_NEW_PROJECT_BYTES');
+    files.push({ relativePath, role, content, byteLength, sha256: sha256Hex(content) });
   };
   entries.forEach((entry, index) => {
     const parsed = envelope.parseObservablePayload(entry.content);
@@ -58,20 +59,28 @@ export function prepareDocxNewProject({ plan, projectId, projectName, operationI
     for (const candidate of entry.notes || []) textProfile(candidate.body);
     const content = entry.notes?.length ? notes.prepareImportedNoteScene({ candidates: entry.notes,
       sceneContent: entry.content, projectId, importOperationId }) : entry.content;
-    const afterParsed = envelope.parseObservablePayload(content), doc = afterParsed.doc || envelope.buildParagraphDocumentFromText(afterParsed.text);
-    const beforeProjection = pending.projection(sourceDoc), afterProjection = pending.projection(doc);
-    need(canonicalSerialize(beforeProjection) === canonicalSerialize(afterProjection), 'DOCX_NEW_PROJECT_TEXT_CHANGED');
-    if (ledger) {
-      const bound = pending.readLedger(doc);
-      need(canonicalSerialize(bound.source) === canonicalSerialize(ledger.source)
-        && canonicalSerialize(bound.revisions) === canonicalSerialize(ledger.revisions), 'DOCX_NEW_PROJECT_SOURCE_CHANGED');
+    const beforeProjection = pending.projection(sourceDoc);
+    let doc = sourceDoc;
+    // Without imported notes the content is the exact validated input string.
+    // Reparse and verify invariants only when note binding transformed it.
+    if (content !== entry.content) {
+      const afterParsed = envelope.parseObservablePayload(content);
+      need(!afterParsed.issue, 'DOCX_NEW_PROJECT_SCENE');
+      doc = afterParsed.doc || envelope.buildParagraphDocumentFromText(afterParsed.text);
+      need(canonicalSerialize(beforeProjection) === canonicalSerialize(pending.projection(doc)), 'DOCX_NEW_PROJECT_TEXT_CHANGED');
+      if (ledger) {
+        const bound = pending.readLedger(doc);
+        need(bound && canonicalSerialize(bound.source) === canonicalSerialize(ledger.source)
+          && canonicalSerialize(bound.revisions) === canonicalSerialize(ledger.revisions), 'DOCX_NEW_PROJECT_SOURCE_CHANGED');
+      }
     }
     const relativePath = `roman/Imported/${String(index + 1).padStart(4, '0')} Imported DOCX.txt`;
     const identity = upsertProjectTreeIdentityNode({ projectId, registry: treeIdentity, bindingKey: `file:${relativePath}`, kind: 'scene' });
     need(identity.ok, 'DOCX_NEW_PROJECT_TREE_IDENTITY'); treeIdentity = identity.value;
     add(relativePath, 'scene', content); scenes.push({ sceneId: relativePath, nodeId: identity.nodeId });
     const current = notes.sceneText(content), original = beforeProjection?.original;
-    characters += Array.from(current).length + (index > 0 ? 1 : 0); currentUtf16CodeUnits += current.length + (index > 0 ? 1 : 0);
+    for (const character of current) characters++;
+    characters += index > 0 ? 1 : 0; currentUtf16CodeUnits += current.length + (index > 0 ? 1 : 0);
     originalUtf16CodeUnits += (typeof original === 'string' ? original.length : current.length) + (index > 0 ? 1 : 0);
     revisionCount += ledger?.revisions.length || 0;
     if (entry.notes?.length) {
