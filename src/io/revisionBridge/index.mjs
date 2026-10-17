@@ -10146,6 +10146,11 @@ function docxResolveParagraphAlignment(metadata, catalog) {
     const raw=metadata.paragraphMarkProperties||{}, value=Object.fromEntries(['bold','italic','underline','strike'].filter(key=>markProperties[key]===true).map(key=>[key,true]));
     for(const key of ['bold','italic','underline','strike','color','highlight'])if(Object.hasOwn(raw,key))value[key]=raw[key];
     if(Object.hasOwn(raw,'shading')&&!Object.hasOwn(raw,'highlight'))value.highlight=raw.shading;
+    if(catalog.oneWayManuscript)for(const key of ['color','highlight'])if(Object.hasOwn(value,key)){
+      const resolved=docxInlineResolveColor(value[key],catalog);
+      if(resolved===DOCX_UNSUPPORTED_COLOR){metadata.unsupportedColor=true;delete value[key];}
+      else value[key]=resolved;
+    }
     const effectiveMark={...markProperties,...raw};
     // Preserve authored slots; absence is inherited context, never permission
     // to expand a western font over undeclared East Asian/complex-script slots.
@@ -10776,6 +10781,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       const raw=activeParagraphMetadata.paragraphMarkProperties ||= {}, seen=activeParagraphMetadata.paragraphMarkSeen ||= new Set();
       if(seen.has(tagName))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_DUPLICATE');seen.add(tagName);
       const keys=tagName==='w:rFonts'?['ascii','hAnsi','eastAsia','cs','asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme']:tagName==='w:shd'?['val','fill']:['val'];
+      if(inlineStyles.oneWayManuscript&&tagName==='w:color')keys.push('themeColor','themeTint','themeShade');
+      if(inlineStyles.oneWayManuscript&&tagName==='w:shd')keys.push('themeFill','themeFillTint','themeFillShade');
       for(const [key]of docxFontAttributes(token,tokenNamespaceMap))if(!key.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')||!keys.includes(key.split('\u0000')[1]))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
       docxInlineReadProperty(raw,tagName,token,tokenNamespaceMap,inlineStyles.oneWayManuscript);
     }

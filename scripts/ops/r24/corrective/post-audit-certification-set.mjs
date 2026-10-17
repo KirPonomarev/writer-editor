@@ -26371,7 +26371,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "8e887a379c2f0ff381ad6d4f7ac5548815890341240319cd3f8e03d036f0469f"
+      "sha256": "f85c0ca35fa63b766e1d5715ce60268955aa00617d6799164205ec0a06509731"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
@@ -27087,17 +27087,17 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-17--docx-theme-colors.md",
-      "sha256": "9502b00f8cd4314033e1bff0e9b6601fe403828ca189c2c1b6ffc6f662e25f20"
+      "sha256": "c87a50f38292d4c2d7be057835e7d5405adbab79ef967d8465f0e3923d414abb"
     },
     {
       "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
-      "sha256": "b2b7887b05e3f48096d9e0e1ab0fd05ab3b6d495eaf579241f57389d39589c9c"
+      "sha256": "6963635eedfb7b46d7b1195547f74455064104bb758df13d1ec2f718d8a1fa2f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3a0505a6ea0f49a183aa06dc3c4f66f08600cbcf87a1e38197fe38687bc454b6"
+      "sha256": "f12b076fa5f7d393d7072715973b30f63e1e04682516adb68dd55755e79bedbe"
     }
   ]
 });

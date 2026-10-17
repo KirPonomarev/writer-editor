@@ -121,6 +121,21 @@ test('one-way theme colors: actual compute path retains pending insert/delete co
   }
 });
 
+test('one-way theme colors: authored paragraph-mark color and shading resolve before literal model normalization', async () => {
+  const body='<w:p><w:pPr><w:rPr><w:color w:val="FF0000" w:themeColor="accent1" w:themeShade="BF"/><w:shd w:val="clear" w:fill="000000" w:themeFill="accent2" w:themeFillTint="99"/></w:rPr></w:pPr>'+run('text')+'</w:p>';
+  const bytes=pack(body,'',{theme:colorTheme()}),value=await preview(bytes,manuscript);
+  assert.deepEqual(value.doc.content[0].attrs.wordParagraphMarkTypography,{color:'#0f4761',highlight:'#f1a984'});
+  assert.equal(value.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_COLOR_NOT_IMPORTED'),false);
+  const [bridge]=await modules;assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes).ok,false);
+});
+
+test('one-way theme colors: unresolved pending paragraph-mark color refuses with its precise main-body paragraph', async () => {
+  const [bridge]=await modules,body='<w:p>'+run('safe')+'</w:p><w:p><w:pPr><w:rPr><w:color w:val="112233" w:themeColor="accent1"/></w:rPr></w:pPr><w:ins w:id="1" w:author="Editor" w:date="2026-10-17T00:00:00Z">'+run('new')+'</w:ins></w:p>';
+  const report=bridge.buildDocxContentPreviewFromZipBytes({bytes:pack(body),...manuscript});
+  assert.equal(report.ok,false);assert.equal(report.reason,'DOCX_INLINE_COLOR_UNSUPPORTED');assert.equal(report.diagnostics[0].paragraphIndex,1);
+  assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(report).ok,false);
+});
+
 test('C1 colors: foreground, native and arbitrary highlight preserve plain neighbors and existing marks', async () => {
   const doc = { type: 'doc', content: [{ type: 'paragraph', content: [text('R', '#c12345'), text('plain'), text('H', null, '#12ab56'), { ...text('B', '#1255aa', '#ffff00'), marks: [...text('', '#1255aa', '#ffff00').marks, { type: 'bold' }] }] }] };
   const { doc: returned, plan } = await preview(await exportDoc(doc));
