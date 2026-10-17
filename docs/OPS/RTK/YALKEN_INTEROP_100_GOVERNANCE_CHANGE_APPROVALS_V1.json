@@ -5654,11 +5654,11 @@
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T21:24:36.854692+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "approvedAtUtc": "2026-10-17T17:37:51.965596+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
-      "sha256": "f7acb2065ec6525c285a14eb8721ce51f0d802a435839e72bee9e096b7a20dfd"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "741513062652f0677f977cd4d32b62dff2f149f4de6166e5007ba1da0e6b801d"
     },
     {
       "filePath": "test/unit/r24-wp302-session-continuity.test.mjs",
@@ -5735,20 +5735,20 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedAtUtc": "2026-10-17T17:37:51.965596+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "c443aa5acd8ebff63a89ab28cf20f4e6d75ddd929236f7cbac7a7ed567fac1ac"
+      "sha256": "0d69c487af8cdeedda12be4936ed76ce635ee940c44cf91c0d8856376b3f1f98"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedAtUtc": "2026-10-17T17:37:51.965596+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "12283fadfc17c6f9d4b57e2bdf7edaf1268cf361f07a1646a5dbf0621ff64ef3"
+      "sha256": "19500b8a623a03d45993466d42e42b6fa7236c9c1f5df1309edbfad81faaf1d1"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -5771,20 +5771,20 @@
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedAtUtc": "2026-10-17T17:37:51.965596+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "22b8489866cb98a05d952e6e335ce62e0f225aad9e495589c2ac3c534332dbaf"
+      "sha256": "38e57dde2be76a227db017c9c0573b0e5869abc331904ec38ee4a4d1de5c555c"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedAtUtc": "2026-10-17T17:37:51.965596+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "8e7760def9477b18f3409df24c29cfcdf91ecc5a27280d979f91d763b98bf35a"
+      "sha256": "f6dfb16b8af0beb0ee220c49109001bf6e2fc16e5d829c76d48e011ea322c5af"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5960,11 +5960,11 @@
     {
       "filePath": "docs/tasks/2026-10-17--google-docx-small-manuscript.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedAtUtc": "2026-10-17T17:37:51.965596+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "156c63b9e8082c08364a4d20450379a87b0626cd80dd03b7b73a79b5d46ad9f7"
+      "sha256": "868adcbb40255fd9354b7a7abbfeac18aaaa6b7f51da7252ea1cebc7a2a7f6c4"
     },
     {
       "filePath": "test/contracts/docx-google-manuscript-small.contract.test.js",
@@ -48028,6 +48028,60 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
       "sha256": "b21bde751a2a92be0229dc07cc48e957f46b7b71f58ba990fdf33d09045a5084"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T21:24:36.854692+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_MISSING_ANCHOR_RECOVERY_MAC_20261016",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct human explicit recovery-contract authorization and autonomous Mac Word finish: strict raw unchanged pair and full production replay, complete Core snapshot of both origin cohorts and every retained WP201 history packet, native Cancel-default Main-only Kernel consent, fresh selection/pair/snapshot and existing shared lease revalidation, exclusive durable no-clobber v2 recovery root with honest new provenance. Existing v1 unchanged; old pair/history/keys never rewritten. Tiny actual APFS/SIGKILL/ordinary commit-reopen controls, exact frozen SOURCE80 69-file read-only proof, existing complete affected chains and both shipped/source engine tests. Mechanical donor command expectation and existing B2C09 guarded IPC detector alignment retain/add envelope-before-payload, route and allowlist mutation controls. No native acceptance, profile restoration, dependency, renderer, quota or runtime network change; original failures and all predecessor approvals retained; normal full required CI/delivery remains mandatory.",
+      "sha256": "f7acb2065ec6525c285a14eb8721ce51f0d802a435839e72bee9e096b7a20dfd"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--google-docx-small-manuscript.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "156c63b9e8082c08364a4d20450379a87b0626cd80dd03b7b73a79b5d46ad9f7"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "8e7760def9477b18f3409df24c29cfcdf91ecc5a27280d979f91d763b98bf35a"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "c443aa5acd8ebff63a89ab28cf20f4e6d75ddd929236f7cbac7a7ed567fac1ac"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "12283fadfc17c6f9d4b57e2bdf7edaf1268cf361f07a1646a5dbf0621ff64ef3"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "22b8489866cb98a05d952e6e335ce62e0f225aad9e495589c2ac3c534332dbaf"
     }
   ]
 }

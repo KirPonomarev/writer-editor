@@ -38,6 +38,7 @@ One bounded compatibility repair in the existing one-way manuscript parser plus 
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 
@@ -130,3 +131,5 @@ LOCAL_SOURCE_OBSERVATIONS20: Both immutable physical derivatives complete the ex
 The small focused chain executes185of185 on Node22 and shipped Electron Node24; existing new-project/reference/color chain executes180of180 on Node22, zero fail/cancel/skip/todo. These are local component/source observations, not installed-app or current Google account acceptance. The older whole content-preview file has25failures in117tests on both exact baseced3d59 and candidate, with identical failed names and totals (92pass). Preserve that baseline failure evidence; do not claim that file green or change its assertions. Required current official CI and post-merge verification remain mandatory. No large-book or native application run occurred.
 
 REFERENCES: The read-only brain reference lookup suggested the existing Manuskript storage/scene note; no external source code or UI/design workflow is used. Current parser/Core and immutable Google provenance remain the operative implementation evidence.
+
+REQUIRED_GRAPH_COMPLETION31: The new27case small contract is explicitly appended to the existing maintained-extra test catalog so required CI actually executes it. Every original catalog member and frozen1120cell denominator remains unchanged. Declaration31 precedes this same-PR delivery repair. A separately generated15,000-character/37paragraph diagnostic completes independent Python XML Current/Original comparison, pending decisions, actual fenced create and complete new-process readback in526ms on candidate7902a8e79; this synthetic extension is not a fresh Google export or native-app proof.

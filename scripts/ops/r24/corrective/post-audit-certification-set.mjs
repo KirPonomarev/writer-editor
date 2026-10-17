@@ -26699,7 +26699,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "f7acb2065ec6525c285a14eb8721ce51f0d802a435839e72bee9e096b7a20dfd"
+      "sha256": "741513062652f0677f977cd4d32b62dff2f149f4de6166e5007ba1da0e6b801d"
     },
     {
       "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
@@ -27095,7 +27095,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-17--google-docx-small-manuscript.md",
-      "sha256": "156c63b9e8082c08364a4d20450379a87b0626cd80dd03b7b73a79b5d46ad9f7"
+      "sha256": "868adcbb40255fd9354b7a7abbfeac18aaaa6b7f51da7252ea1cebc7a2a7f6c4"
     },
     {
       "path": "test/contracts/docx-google-manuscript-small.contract.test.js",
@@ -27105,7 +27105,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c443aa5acd8ebff63a89ab28cf20f4e6d75ddd929236f7cbac7a7ed567fac1ac"
+      "sha256": "0d69c487af8cdeedda12be4936ed76ce635ee940c44cf91c0d8856376b3f1f98"
     }
   ]
 });

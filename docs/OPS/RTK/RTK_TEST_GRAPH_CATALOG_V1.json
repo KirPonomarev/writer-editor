@@ -281,6 +281,7 @@
   },
   "extraMaintainedContractBasenames": [
     "b3c07-security-runtime-boundary.contract.test.js",
-    "donor-port-command-surface-kernel.contract.test.js"
+    "donor-port-command-surface-kernel.contract.test.js",
+    "docx-google-manuscript-small.contract.test.js"
   ]
 }
