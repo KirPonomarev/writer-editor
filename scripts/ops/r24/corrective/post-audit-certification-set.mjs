@@ -26995,7 +26995,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
-      "sha256": "cf103ce88b9400a05799bd6d6da523cbfe17435f6977f06d31f5b33e35989ce1"
+      "sha256": "b5708c8500bedb448fb904c9e952830a4a7afe633b823d6e552455d17fbe449d"
     },
     {
       "path": "src/core/docx-new-project-v1.mjs",
@@ -27024,12 +27024,16 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "test/unit/docx-import-product-flow-command.test.js",
       "sha256": "15b9e7c39d98c85659760b0ddf02412291137e21d22ec18ae64dab41cb193a47"
+    },
+    {
+      "path": "test/unit/sector-m-s29-import-surface-existing.test.js",
+      "sha256": "714c32f554bbcd710682b0d804e691e8cb618f93b8276c962530b4aa0ce96018"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "10cfea07b160063485049beacbff5a581c5fa3e64924575d29ea86f42e31ebc3"
+      "sha256": "aa85f16267867297ca071289bed4cf6722b4c04b382bda0f3406bd26925018da"
     }
   ]
 });

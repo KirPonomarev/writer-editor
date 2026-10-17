@@ -2577,7 +2577,7 @@
       },
       {
         "path": "test/unit/sector-m-s29-import-surface-existing.test.js",
-        "sha256": "fb6683ec891ca574b01ffef68e7a8eebe3f95b03ad58fa070f68ab5d9ea72073"
+        "sha256": "714c32f554bbcd710682b0d804e691e8cb618f93b8276c962530b4aa0ce96018"
       },
       {
         "path": "src/core/word-import-attempt-v1.cjs",
@@ -3029,7 +3029,7 @@
       },
       {
         "path": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
-        "sha256": "cf103ce88b9400a05799bd6d6da523cbfe17435f6977f06d31f5b33e35989ce1"
+        "sha256": "b5708c8500bedb448fb904c9e952830a4a7afe633b823d6e552455d17fbe449d"
       },
       {
         "path": "src/core/docx-new-project-v1.mjs",
