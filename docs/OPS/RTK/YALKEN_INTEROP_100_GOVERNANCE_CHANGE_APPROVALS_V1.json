@@ -215,11 +215,11 @@
     {
       "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "bbbfddb906f960229abe79ee65beba8e43bffd90ae8765f71c3b3769456cafd3"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "16eb398da3e93808e821748d0ebc553315dd2e69fc5aa3800a5300d1451f1f64"
     },
     {
       "filePath": "test/unit/docx-import-product-flow-command.test.js",
@@ -630,13 +630,13 @@
       "sha256": "3a959b271bbf40e66bf076228c575663a55984cf059432d2bc71640e53e6a940"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/revision-bridge-docx-colors.contract.test.js",
-      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
-      "sha256": "f1018fedb91704c93f849399368bbf8e4a826ff53860f2f912ae7bf71b328010"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "b2b7887b05e3f48096d9e0e1ab0fd05ab3b6d495eaf579241f57389d39589c9c"
     },
     {
       "approved": true,
@@ -1577,20 +1577,20 @@
     {
       "filePath": "src/renderer/editor.bundle.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "13dfc112d91eb830dec0cf2e509500b8d5283b8b48ce9f0e80e0939f1251e73e"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "a4a860a5c380a7ad81777f8a1ed85b88cc8b134637f0af7e867db5ab954a8568"
     },
     {
       "filePath": "src/renderer/editor.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "2196427ab8c77b69e32775f36edb170204965db645e2e76a2348dbb0d37d5d3d"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "41a84a7e7af0cf33045b6ca74147e934886e277f2f803f8d6560db770fc6bdfe"
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -5492,11 +5492,11 @@
     {
       "filePath": "src/io/revisionBridge/index.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
-      "sha256": "ea7b1a088b47010e5f879d0324ca2d844abc265a8890883777ae4a85ecf08fd3"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "8e887a379c2f0ff381ad6d4f7ac5548815890341240319cd3f8e03d036f0469f"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "f347fdf5db00caf991478e7d2dec99396f1e1f6956ab98def34032dde5d4a020"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "3a0505a6ea0f49a183aa06dc3c4f66f08600cbcf87a1e38197fe38687bc454b6"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "24208c92775f91a6902808ca1359bd595ee75d81c09f9f9824018d9d775bec04"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "2382203133cb7aa0492d483cf8d608199e55171a0c33bce4eff52007ae03b11f"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "5b8c58a98a0f2eee0cc08e25fb6627cd345c0a5c7cb198f68c23570a57c9aaa1"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "72420514b81ea2e7cc5184b27e6acd52ace45eb2e1918479af747ad1a0af5107"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "7b1b40a701a6e0065e6beaed647e0a119f3b50e9d06e2cd60cc1ed19b9698f83"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "2803c5b83e2a951ff8120f6ac8f940b8149927e6455bb9a20b1c0d912a8b975e"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "abc8e72dac60b8c3178a0c0a34668d54b835e3dcc3de101aa6383d16479a43de"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "59c252c3bceb42ecf778afa952fd2f814447f646727febe65003913ce2e6efd3"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "c3df1288c9288b1369f51fd928cf645faa35fc68250864f384085c104db26046"
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "13b911bf808333f02aa8bd857f874f92cbbd8dc68f59c9d3d32cdcfe50d7b293"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5947,6 +5947,15 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
       "sha256": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-theme-colors.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T14:43:00.807516+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "9502b00f8cd4314033e1bff0e9b6601fe403828ca189c2c1b6ffc6f662e25f20"
     }
   ],
   "evidenceStampIds": [
@@ -47740,6 +47749,105 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
       "sha256": "e99a57080138ba5692dc07bf4650d73b84370c29b5f1089c8c4a6c58b1454f16"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "ea7b1a088b47010e5f879d0324ca2d844abc265a8890883777ae4a85ecf08fd3"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "13dfc112d91eb830dec0cf2e509500b8d5283b8b48ce9f0e80e0939f1251e73e"
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "2196427ab8c77b69e32775f36edb170204965db645e2e76a2348dbb0d37d5d3d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/revision-bridge-docx-colors.contract.test.js",
+      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "f1018fedb91704c93f849399368bbf8e4a826ff53860f2f912ae7bf71b328010"
+    },
+    {
+      "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "bbbfddb906f960229abe79ee65beba8e43bffd90ae8765f71c3b3769456cafd3"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "5b8c58a98a0f2eee0cc08e25fb6627cd345c0a5c7cb198f68c23570a57c9aaa1"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "7b1b40a701a6e0065e6beaed647e0a119f3b50e9d06e2cd60cc1ed19b9698f83"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "c3df1288c9288b1369f51fd928cf645faa35fc68250864f384085c104db26046"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "f347fdf5db00caf991478e7d2dec99396f1e1f6956ab98def34032dde5d4a020"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "24208c92775f91a6902808ca1359bd595ee75d81c09f9f9824018d9d775bec04"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "abc8e72dac60b8c3178a0c0a34668d54b835e3dcc3de101aa6383d16479a43de"
     }
   ]
 }

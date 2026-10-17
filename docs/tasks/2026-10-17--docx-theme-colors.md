@@ -28,8 +28,11 @@ Bounded resolution in the existing parser, explicit normalization text in the ex
 ## ALLOWLIST
 
 - src/io/revisionBridge/index.mjs
+- src/renderer/editor.js
+- src/renderer/editor.bundle.js
 - test/contracts/revision-bridge-docx-colors.contract.test.js
 - test/contracts/rtk-generic01-create-only-import.contract.test.js
+- test/unit/docx-import-preview-ui-flow.test.js
 - docs/tasks/2026-10-17--docx-theme-colors.md
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
@@ -44,7 +47,8 @@ Bounded resolution in the existing parser, explicit normalization text in the ex
 - src/core
 - src/product
 - src/main.js
-- src/renderer
+- src/renderer/index.html
+- src/renderer/styles.css
 - package.json
 - package-lock.json
 - Existing manuscripts, profiles, trust, histories, SOURCE80 and original input documents.
@@ -101,3 +105,7 @@ AGENT_FINAL_REPORT_V1; one text block, KEY: VALUE, basenames only.
 Retain failed logs and exact hashes; no invented green, native acceptance, rounding equivalence or historical proof promotion. Rollback is this single PR revert.
 
 REFERENCES: brain refs returned generic UI notes, inapplicable to this mechanical parser fix. Algorithm derives from Microsoft MS-OI29500 2.1.72 and existing bounded parser contracts; no third-party code copied or dependency installed. Original 72-case Word RTF matrix is retained as independent observations, including differences from mathematical HSL normalization.
+
+SAME_CONTOUR_CHECKPOINT: 038e35555 contains the parser plus18 passing color cases. Declaration13 freshly binds that clean checkpoint before a mechanical existing-modal message change and official bundle rebuild. Existing modal previously discarded specific refusal diagnostics; reconstruct only the fixed color explanation from exact diagnostic code and bounded paragraph index. No new surface or component state. ui-craft discovery confirms existing vanilla CSS/modal; no design choices, tokens or external research. Original M6 binding and this one rollback/delivery chain remain intact.
+
+SOURCE_OBSERVATIONS: Four new maintained cases reproduce missing theme support and generic pending refusal on M6; final18 color cases cover real worker execution, literal precedence, mappings, modifiers, strict legacy behavior and accept/reject/reopen/undo/redo. Independent Fraction HSL agrees with all72 actual imported matrix outputs. Native Word RTF matches61 exactly; the remaining11 differ by one channel unit, disclosed as normalization rather than exact Word rounding. All original six editorial paragraphs, four comment/reply bodies, exact anchors, revision records and notes remain equal across11 supported pending variants. Both no-revision contrasts also prepare successfully. The first matrix intentionally removed its referenced note and correctly refused; the coherent matrix retains the controls. Overbroad local partition08 entered historical whole-book tests and was stopped with no PASS credit, respecting the owner's light-local-testing preference; complete maintained graph remains mandatory in remote CI. No test is skipped or disabled. All final focused color/theme-font/UI cases pass on Node22 and the shipped Electron Node engine, with unchanged source hashes and no fail/cancel/skip/todo. Packaging/installation and native project acceptance remain outside these source claims.
