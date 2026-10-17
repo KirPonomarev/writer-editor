@@ -130,7 +130,7 @@ test('C4 required CI runs the deterministic RTK graph without product network', 
   const workflow = fs.readFileSync(WORKFLOW_PATH, 'utf8');
   assert.match(workflow, /name: rtk-required/u);
   assert.match(workflow, /npm run -s test:rtk/u);
-  assert.match(workflow, /timeout-minutes:\s*40\b/u);
+  assert.match(workflow, /timeout-minutes:\s*60\b/u);
   assert.doesNotMatch(workflow, /password|secret|google|drive|network/iu);
 });
 

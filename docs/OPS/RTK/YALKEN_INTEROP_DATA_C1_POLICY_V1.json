@@ -684,7 +684,12 @@
     "docs/tasks/2026-10-16--word-tree-read-lifecycle-mac.md",
     "docs/tasks/2026-10-16--word-tree-read-process-mac.md",
     "test/fixtures/docx-pending-deleted-comment-import.docx",
-    "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md"
+    "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md",
+    "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+    "src/core/docx-new-project-v1.mjs",
+    "src/product/docxNewProjectCreateV1.mjs",
+    "src/renderer/commands/command-catalog.v1.mjs",
+    ".github/workflows/rtk-required.yml"
   ],
   "protectedFiles": [
     {
@@ -913,7 +918,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "768121a3808e78c82ac633bf5e80786e378aeff92251ffee66d94a8001646f5f"
+        "sha256": "63ee784310e78ce95a3f575b89074fd0aecfd44aa9ccbae1ab13ee2fedc10aa2"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -921,15 +926,15 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "fd2bd5a6cb2cf7fb3bba1607c527748a6269830cd8438f74fa1f74f944fd33c3"
+        "sha256": "ddf8f9e174f1eca9662647936a64738bef89321b50536e9f222d4335aca9c6f3"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "1fb25a47bbd80539fbf49b0071fc45ade911497dcb6882df3cf87a08d63f0a7f"
+        "sha256": "50dd5244e4b8f118cc24c9e3bd3b66290d9a9936b1c762fa8f0fa0da40e219c6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-        "sha256": "bc406cdb91ea2cfa556bc8e6b056608a9bc9766dfe9cd739e5cc611e433c6921"
+        "sha256": "81ee07765e122adfd5ebaeddfef1b1dbebdc2e88aceda15035aa11f674858da5"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
@@ -949,11 +954,11 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "3b6198a3209311a9b2ef4538de7eb446e1d2da36e3c33ba76f3753c3894c63aa"
+        "sha256": "d94fde605220848d35706f18433477d8a7fcb6507f6f9b24b51a22646f3b0a7f"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "d23c5bb1376b1ef27760172fae10d30be11fd5f2e085b0161fde2c1b48d68dd8"
+        "sha256": "0e6415bf8fae98c2e406e71b041ee24f81b94ad8359c43df6262f47664e48ce7"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
@@ -1089,7 +1094,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "38da29d2ea7fd2c1d48f09d0a325998822ff6b2e9fa77c972eaa9208d951133c"
+        "sha256": "61a309ed5d3882172bfcca95a001e320e4458cbd36186a694ec7e7cfc363724e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1105,7 +1110,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
+        "sha256": "56a85485764362190e5910bfee0e380afc4b8addcb8beb7d402bf35d71a62c01"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -1729,7 +1734,7 @@
       },
       {
         "path": "src/core/word-manuscript-notes-v1.cjs",
-        "sha256": "2c248f6cc46cd5636d6746ddee964d48c9f77508cc4d9807bd26263f9d27f0f5"
+        "sha256": "9860ba84c949e05bea02910c7f0e50073f66ed0ce91fce421a4dd08ed4c20943"
       },
       {
         "path": "src/renderer/tiptap/manuscriptNotes.mjs",
@@ -1741,7 +1746,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
-        "sha256": "bc2cd582670aaa34de45c879021b1800c7e776e0218b42843cf70760edfc2fe6"
+        "sha256": "5622fdc525471774c7f6e3960a744df7ee543d3ca42b834508867c2c249a0943"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
@@ -2093,7 +2098,7 @@
       },
       {
         "path": "src/core/project-tree-cohort-v1.mjs",
-        "sha256": "4302ee5a1e6f3b018c5e333387e186c925b5023888857fc0c462f475001c60c1"
+        "sha256": "bc9813180f0fb24f1d3343a8209b31473dbd8f377f64fb1d4125a57ba02cc447"
       },
       {
         "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -2565,15 +2570,15 @@
       },
       {
         "path": "test/unit/docx-import-preview-ui-flow.test.js",
-        "sha256": "df75b4fbc34336efec41f3a3e1b6a8ac461c9f73cc19a88abaa475be1fe32546"
+        "sha256": "2509ed68ae26fd25185ea0565954681b3e0ae2b3e74456f258e89ad265b79b7e"
       },
       {
         "path": "test/unit/docx-import-product-flow-command.test.js",
-        "sha256": "640191b52a983d8da28393239319fe0d179b13ebeb06ee0f3f2281b27563efd0"
+        "sha256": "15b9e7c39d98c85659760b0ddf02412291137e21d22ec18ae64dab41cb193a47"
       },
       {
         "path": "test/unit/sector-m-s29-import-surface-existing.test.js",
-        "sha256": "fb6683ec891ca574b01ffef68e7a8eebe3f95b03ad58fa070f68ab5d9ea72073"
+        "sha256": "714c32f554bbcd710682b0d804e691e8cb618f93b8276c962530b4aa0ce96018"
       },
       {
         "path": "src/core/word-import-attempt-v1.cjs",
@@ -2901,7 +2906,7 @@
       },
       {
         "path": "test/contracts/rtk-test-graph-catalog.contract.test.js",
-        "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
+        "sha256": "f19a008c718842fa61b8155949e350486ee10fc7fbbf6a3ad6ae46c53440ab68"
       },
       {
         "path": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -3022,6 +3027,26 @@
       {
         "path": "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md",
         "sha256": "2c04556655a0358bf61401c8e2c701b1549c971982d4e6b42d9e8200b1401973"
+      },
+      {
+        "path": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+        "sha256": "ed893106aa8c16e7ec4067e7e4939f0115b1fb1fd99ee0d39701d2d5a7990bc2"
+      },
+      {
+        "path": "src/core/docx-new-project-v1.mjs",
+        "sha256": "a3a90c70743913a86e0cfecd048598380d6c324ad0dee305f507f9de1863679a"
+      },
+      {
+        "path": "src/product/docxNewProjectCreateV1.mjs",
+        "sha256": "f24300b463af155386fe0faeabe88cd5b2b91bd9f376dbf869f1515d63d3bf63"
+      },
+      {
+        "path": "src/renderer/commands/command-catalog.v1.mjs",
+        "sha256": "50b4366abfe29931c4241a77a579a32237082f28e7dee2d861af4d55191e321b"
+      },
+      {
+        "path": ".github/workflows/rtk-required.yml",
+        "sha256": "5ec3beaa3589bed1d5d940800be538eaac051095808abaee1b4eac7570237b5c"
       }
     ],
     "followupRepair": {
@@ -3217,6 +3242,26 @@
       "path": "README.md",
       "predecessorSha256": "sha256:fe2afbd2a004a025f8a61a6b437285e8a9d0c48d47b6a69f89ea5f7d1c24aa49",
       "sha256": "sha256:adb972685c09e9aba2205891b3a509f8414535c0c8fa689beae7c49b1b227e36"
+    },
+    "wordNewProjectImportWording": {
+      "schemaVersion": 1,
+      "taskId": "YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "bindingBaseSha": "cac72773ba1abdf07a0dffa37f372b44af6739ff",
+      "scope": "Local import action/status wording only; no support, compatibility, saturation, denominator or whole-plan promotion.",
+      "claims": [
+        {
+          "claimId": "claim-editor-docx-new-project-import-completed",
+          "claimClass": "DECLARED_ONLY",
+          "surfaceId": "surface-editor-js",
+          "wording": "Word manuscript imported into a new project",
+          "evidenceBinding": {
+            "profileId": "word-mac-16.111.2-d1"
+          },
+          "blockedRowRef": null,
+          "evidenceScope": "BUILD_INDEPENDENT_PRODUCT_FUNCTION",
+          "claimDigest": "sha256:37e96e957438c07fe3bd6282dfb6317bf82556db7d618b5b79b877fdf08b8d5c"
+        }
+      ]
     }
   },
   "wordTextOrderBatch": {

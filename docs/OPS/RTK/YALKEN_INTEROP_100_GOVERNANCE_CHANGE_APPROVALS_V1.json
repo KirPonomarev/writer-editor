@@ -204,31 +204,31 @@
       "sha256": "40e9c55d7016edb2c9b91388dee62447b52aff94ae8f7a2806cc54a03038963f"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/renderer/commands/projectCommands.mjs",
-      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "sha256": "fd2bd5a6cb2cf7fb3bba1607c527748a6269830cd8438f74fa1f74f944fd33c3"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "ddf8f9e174f1eca9662647936a64738bef89321b50536e9f222d4335aca9c6f3"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
-      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
-      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "sha256": "df75b4fbc34336efec41f3a3e1b6a8ac461c9f73cc19a88abaa475be1fe32546"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "2509ed68ae26fd25185ea0565954681b3e0ae2b3e74456f258e89ad265b79b7e"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
-      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/unit/docx-import-product-flow-command.test.js",
-      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
-      "sha256": "640191b52a983d8da28393239319fe0d179b13ebeb06ee0f3f2281b27563efd0"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "15b9e7c39d98c85659760b0ddf02412291137e21d22ec18ae64dab41cb193a47"
     },
     {
       "approved": true,
@@ -459,13 +459,13 @@
       "sha256": "a8e370b449affb34bee65b5de5ec006923db58208684f4c7d6038a79cc13119c"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-09T10:41:36.792Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized complete supported macOS Word-origin500k local import, finite semantic48MiB origin with ordinary20/32 ceilings and TOTAL129 unchanged, invocation-private fresh whole-cohort verification, real atomic filesystem and lease readback/replay/reopen plus six chapter Saves. Separate frozen whole29 source proof and independent complete operands bind this bounded delivery; native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,634 admitted paths,492 source identities,240 byte-identical historical tuples plus one coherent241st set; predicates, runner, catalog, dependencies and generated artifacts unchanged.",
-      "sha256": "bc406cdb91ea2cfa556bc8e6b056608a9bc9766dfe9cd739e5cc611e433c6921"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "81ee07765e122adfd5ebaeddfef1b1dbebdc2e88aceda15035aa11f674858da5"
     },
     {
       "approved": true,
@@ -1577,20 +1577,20 @@
     {
       "filePath": "src/renderer/editor.bundle.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
-      "sha256": "1fb25a47bbd80539fbf49b0071fc45ade911497dcb6882df3cf87a08d63f0a7f"
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "50dd5244e4b8f118cc24c9e3bd3b66290d9a9936b1c762fa8f0fa0da40e219c6"
     },
     {
       "filePath": "src/renderer/editor.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "38da29d2ea7fd2c1d48f09d0a325998822ff6b2e9fa77c972eaa9208d951133c"
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "61a309ed5d3882172bfcca95a001e320e4458cbd36186a694ec7e7cfc363724e"
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1621,12 +1621,12 @@
     },
     {
       "filePath": "src/utils/docxImportSafeCreate.js",
-      "sha256": "d23c5bb1376b1ef27760172fae10d30be11fd5f2e085b0161fde2c1b48d68dd8",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009",
-      "approvedAtUtc": "2026-10-09T14:39:05.738Z",
       "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized complete supported macOS Word-origin500k local import, finite semantic48MiB origin with ordinary20/32 ceilings and TOTAL129 unchanged, invocation-private fresh whole-cohort verification, real atomic filesystem and lease readback/replay/reopen plus six chapter Saves. Separate frozen whole29 source proof and independent complete operands bind this bounded delivery; native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,634 admitted paths,492 source identities,240 byte-identical historical tuples plus one coherent241st set; predicates, runner, catalog, dependencies and generated artifacts unchanged. Owner-authorized same PR2102 large-novel import correction: immutable invocation-owned validation snapshot, complete guarded media bindings, selected chapter deep-cloning with byte-identical canonical outputs. Fresh genuine500108 public Main/fs/lease/replay/reopen/sixSaves and independent complete raw Word/body/annotation/sixSave oracles;645of645 whole29 source tests. Existing120s/20/48/32/129 limits, bothfreshCorequeries and all authority/race/recovery guards unchanged. SafeCreate90.398s/full618.599s are single source observations, not CI/native/shipping SLO. Scope18, inventory1598, admitted634/source492 and same241st108-binding tuple; prior240 tuples byte-exact. Three-role/five-changed-round native feature remains OPEN; no dependency/runner/catalog/compiler/generated changes."
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "0e6415bf8fae98c2e406e71b041ee24f81b94ad8359c43df6262f47664e48ce7"
     },
     {
       "filePath": "src/utils/flowSceneBatchAtomic.js",
@@ -2593,12 +2593,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
-      "sha256": "bc2cd582670aaa34de45c879021b1800c7e776e0218b42843cf70760edfc2fe6",
-      "approvedAtUtc": "2026-10-03T04:52:08.350939Z",
-      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003",
-      "rationale": "Owner-authorized P3d symbol no-write admission and named-style normalization disclosure in Mac import. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "5622fdc525471774c7f6e3960a744df7ee543d3ca42b834508867c2c249a0943"
     },
     {
       "filePath": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
@@ -4519,12 +4519,12 @@
     },
     {
       "filePath": "test/unit/sector-m-s29-import-surface-existing.test.js",
-      "sha256": "fb6683ec891ca574b01ffef68e7a8eebe3f95b03ad58fa070f68ab5d9ea72073",
-      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
-      "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "714c32f554bbcd710682b0d804e691e8cb618f93b8276c962530b4aa0ce96018"
     },
     {
       "filePath": "src/core/word-import-attempt-v1.cjs",
@@ -5139,22 +5139,22 @@
       "sha256": "9f3a5c9adfd61e0156afeb4af6b03c6cfeeaf0c4e7e7743fbc49a5a162596b2b"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-15T08:47:45.025390+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/core/project-tree-cohort-v1.mjs",
-      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED and Node22/Electron24 focused4of4 plus whole purity46of46 are actual; no assertion removed, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
-      "sha256": "4302ee5a1e6f3b018c5e333387e186c925b5023888857fc0c462f475001c60c1"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "bc9813180f0fb24f1d3343a8209b31473dbd8f377f64fb1d4125a57ba02cc447"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-test-graph-catalog.contract.test.js",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "f19a008c718842fa61b8155949e350486ee10fc7fbbf6a3ad6ae46c53440ab68"
     },
     {
       "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -5274,13 +5274,13 @@
       "sha256": "6bbfa15f187354b14e8cf8226d26bfb0edee11f0717981b1d4a544326a4deb46"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
-      "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "56a85485764362190e5910bfee0e380afc4b8addcb8beb7d402bf35d71a62c01"
     },
     {
       "approved": true,
@@ -5492,11 +5492,11 @@
     {
       "filePath": "src/io/revisionBridge/index.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "3b6198a3209311a9b2ef4538de7eb446e1d2da36e3c33ba76f3753c3894c63aa"
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "d94fde605220848d35706f18433477d8a7fcb6507f6f9b24b51a22646f3b0a7f"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -5528,11 +5528,11 @@
     {
       "filePath": "src/core/word-manuscript-notes-v1.cjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "2c248f6cc46cd5636d6746ddee964d48c9f77508cc4d9807bd26263f9d27f0f5"
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "9860ba84c949e05bea02910c7f0e50073f66ed0ce91fce421a4dd08ed4c20943"
     },
     {
       "filePath": "test/contracts/rtk-word-note-reference-typography.contract.test.js",
@@ -5582,11 +5582,11 @@
     {
       "filePath": "src/main.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "768121a3808e78c82ac633bf5e80786e378aeff92251ffee66d94a8001646f5f"
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "63ee784310e78ce95a3f575b89074fd0aecfd44aa9ccbae1ab13ee2fedc10aa2"
     },
     {
       "filePath": "src/command/commandSurfaceKernel.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
-      "sha256": "ae143e661bded8138181ec65a79dad043972ae2f4c36f106ecdf5f78581f57f3"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "19dd44416ff43193f3514c2dd4e1ea7e000fbaa8daecf5e1d145919cb8ab2b9a"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
-      "sha256": "e5af86b156ddd2f996d6dfc41cf37525ac3ee158a832794116c469c2ed11d38a"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "11372de8ca1792a1aceac038bf0c8535e518ad1a7fcc9e77de6abb395897e51d"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
-      "sha256": "724bbb8a2737bdc02f43f582606722e436286d1624cf871266ed022b618195e7"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "909fa13b45f5a2e7e02fad2fefc5bc8aa9e830979e95cc577d0fcdf886b80ba9"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
-      "sha256": "cf9991500de80eed14e52c68352e0fda3ab79a86e2c54b43ac2ccda44298554f"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "687948a219245c821293d2b9e8fdf1a1cb9c2170426dcab7279e7ecd1d9aaf86"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
-      "sha256": "858fd3111ffadf554b486cec804e97b0f3c663151efe77c037db409ac175712e"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "295f5e55583203b096dfc0089283c083e63c1d8c32705ba3d43a041d93b52868"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
-      "sha256": "3b0534c9f40119af8f4aa31665101cd8350fdf3a7588ac102f26bb85d32715b0"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "55ecbd8e3b7bac59e07aa559161df68868bbf1809c770feaeecb31158a7d8189"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5839,6 +5839,51 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
       "sha256": "2c04556655a0358bf61401c8e2c701b1549c971982d4e6b42d9e8200b1401973"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "ed893106aa8c16e7ec4067e7e4939f0115b1fb1fd99ee0d39701d2d5a7990bc2"
+    },
+    {
+      "filePath": "src/core/docx-new-project-v1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "a3a90c70743913a86e0cfecd048598380d6c324ad0dee305f507f9de1863679a"
+    },
+    {
+      "filePath": "src/product/docxNewProjectCreateV1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "f24300b463af155386fe0faeabe88cd5b2b91bd9f376dbf869f1515d63d3bf63"
+    },
+    {
+      "filePath": "src/renderer/commands/command-catalog.v1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "50b4366abfe29931c4241a77a579a32237082f28e7dee2d861af4d55191e321b"
+    },
+    {
+      "filePath": ".github/workflows/rtk-required.yml",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "5ec3beaa3589bed1d5d940800be538eaac051095808abaee1b4eac7570237b5c"
     }
   ],
   "evidenceStampIds": [
@@ -46660,6 +46705,384 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
       "sha256": "306571e29454ba3a572814dec37edd685af8517bb5b5f2aaf950a54469a9fbbb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T08:47:45.025390+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOVEL_NATIVE_PRIMITIVES_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/core/project-tree-cohort-v1.mjs",
+      "rationale": "Same bounded Word native-primitives correction: exact standard SHA256, full regenerated values, canonical fallback preserves signed-zero/prototype semantics. Maintained causal signed-zero RED and Node22/Electron24 focused4of4 plus whole purity46of46 are actual; no assertion removed, timeout/quota/authority unchanged. Required frozen full gates, CI and native acceptance remain separate.",
+      "sha256": "4302ee5a1e6f3b018c5e333387e186c925b5023888857fc0c462f475001c60c1"
+    },
+    {
+      "filePath": "src/core/word-manuscript-notes-v1.cjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:15:17.970263+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "2c248f6cc46cd5636d6746ddee964d48c9f77508cc4d9807bd26263f9d27f0f5"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "3b6198a3209311a9b2ef4538de7eb446e1d2da36e3c33ba76f3753c3894c63aa"
+    },
+    {
+      "filePath": "src/main.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "768121a3808e78c82ac633bf5e80786e378aeff92251ffee66d94a8001646f5f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_LOCAL_IMAGE_MAC_20261001|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/renderer/commands/projectCommands.mjs",
+      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "fd2bd5a6cb2cf7fb3bba1607c527748a6269830cd8438f74fa1f74f944fd33c3"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "1fb25a47bbd80539fbf49b0071fc45ade911497dcb6882df3cf87a08d63f0a7f"
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "38da29d2ea7fd2c1d48f09d0a325998822ff6b2e9fa77c972eaa9208d951133c"
+    },
+    {
+      "filePath": "src/utils/docxImportSafeCreate.js",
+      "sha256": "d23c5bb1376b1ef27760172fae10d30be11fd5f2e085b0161fde2c1b48d68dd8",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_NOTE_MEDIA_MAC_20261001|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_MIXED_RETURN_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009",
+      "approvedAtUtc": "2026-10-09T14:39:05.738Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized complete supported macOS Word-origin500k local import, finite semantic48MiB origin with ordinary20/32 ceilings and TOTAL129 unchanged, invocation-private fresh whole-cohort verification, real atomic filesystem and lease readback/replay/reopen plus six chapter Saves. Separate frozen whole29 source proof and independent complete operands bind this bounded delivery; native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,634 admitted paths,492 source identities,240 byte-identical historical tuples plus one coherent241st set; predicates, runner, catalog, dependencies and generated artifacts unchanged. Owner-authorized same PR2102 large-novel import correction: immutable invocation-owned validation snapshot, complete guarded media bindings, selected chapter deep-cloning with byte-identical canonical outputs. Fresh genuine500108 public Main/fs/lease/replay/reopen/sixSaves and independent complete raw Word/body/annotation/sixSave oracles;645of645 whole29 source tests. Existing120s/20/48/32/129 limits, bothfreshCorequeries and all authority/race/recovery guards unchanged. SafeCreate90.398s/full618.599s are single source observations, not CI/native/shipping SLO. Scope18, inventory1598, admitted634/source492 and same241st108-binding tuple; prior240 tuples byte-exact. Three-role/five-changed-round native feature remains OPEN; no dependency/runner/catalog/compiler/generated changes."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-09T10:41:36.792Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009|owner-delegated-codex:WORD_NOVEL_FULL500K_ATOMIC_IMPORT_MAC_20261009",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority. Owner-authorized complete supported macOS Word-origin500k local import, finite semantic48MiB origin with ordinary20/32 ceilings and TOTAL129 unchanged, invocation-private fresh whole-cohort verification, real atomic filesystem and lease readback/replay/reopen plus six chapter Saves. Separate frozen whole29 source proof and independent complete operands bind this bounded delivery; native three-role/five-changed-Word-round release remains OPEN. Mechanical1598 inventory,634 admitted paths,492 source identities,240 byte-identical historical tuples plus one coherent241st set; predicates, runner, catalog, dependencies and generated artifacts unchanged.",
+      "sha256": "bc406cdb91ea2cfa556bc8e6b056608a9bc9766dfe9cd739e5cc611e433c6921"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
+      "sha256": "bc2cd582670aaa34de45c879021b1800c7e776e0218b42843cf70760edfc2fe6",
+      "approvedAtUtc": "2026-10-03T04:52:08.350939Z",
+      "approvedBy": "owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_IMPORT_FIDELITY_MAC_20261003",
+      "rationale": "Owner-authorized P3d symbol no-write admission and named-style normalization disclosure in Mac import. Exact-byte governance binding only; acceptance requires separately executed native and mandatory checks.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
+      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "df75b4fbc34336efec41f3a3e1b6a8ac461c9f73cc19a88abaa475be1fe32546"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-04T22:48:50.859370Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14|owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004|owner-delegated-codex:WORD_IMPORT_RESTART_MAC_20261004",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/docx-import-product-flow-command.test.js",
+      "rationale": "Owner-authorized original Mac plan P1-08: resume accepted imports after restart through fresh source admission, coherent transaction recovery and verified continuity acknowledgement; preserve prior scenes, comments, assets and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "sha256": "640191b52a983d8da28393239319fe0d179b13ebeb06ee0f3f2281b27563efd0"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "724bbb8a2737bdc02f43f582606722e436286d1624cf871266ed022b618195e7"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "cf9991500de80eed14e52c68352e0fda3ab79a86e2c54b43ac2ccda44298554f"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "3b0534c9f40119af8f4aa31665101cd8350fdf3a7588ac102f26bb85d32715b0"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "ae143e661bded8138181ec65a79dad043972ae2f4c36f106ecdf5f78581f57f3"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "e5af86b156ddd2f996d6dfc41cf37525ac3ee158a832794116c469c2ed11d38a"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T23:36:52.827150+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2128 source-owned deleted-comment rebinding after recorded authoring edits. Exact90of90 affected contracts, zero skip/todo; separate comment-only15000-character disk import/decision/reopen observed. Preserve original predicates, test membership, protected sources and all previous approval tuples. Original C2A emitter output only. No native, full-profile, book-size or public new-project completion credit.",
+      "sha256": "858fd3111ffadf554b486cec804e97b0f3c663151efe77c037db409ac175712e"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "cf103ce88b9400a05799bd6d6da523cbfe17435f6977f06d31f5b33e35989ce1"
+    },
+    {
+      "filePath": "test/unit/sector-m-s29-import-surface-existing.test.js",
+      "sha256": "fb6683ec891ca574b01ffef68e7a8eebe3f95b03ad58fa070f68ab5d9ea72073",
+      "approvedAtUtc": "2026-10-04T16:22:34.556507Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_ATTEMPTS_MAC_20261004",
+      "rationale": "Owner-authorized original Mac plan P1-08: distinguish deliberate new DOCX import from retry with per-attempt identity, preserve protected prior imports and existing Main/Core authority. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "7af528a6f3bb3d079295aeb1c3de4c5f9ee122349e2b343720e8a8fed65825ec"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "9d5e284ca1ce3a576bdad6fcb46f08e99b26446b29c67954937c299dd964e045"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "d3bf16b56709ef33323941137720cce2cd8579d74af0a01d12d50bf4c8caeed3"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "10cfea07b160063485049beacbff5a581c5fa3e64924575d29ea86f42e31ebc3"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "c1a21c3006f34516a34d78aa318c34cfec56bbbd9ead2c559a324ef71ea0a834"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "64b31de576b95439f25545d4e924cd0d7f19996f53cbc14c776c2f9f832cb5c3"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "b5708c8500bedb448fb904c9e952830a4a7afe633b823d6e552455d17fbe449d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "d843e7a7ac5f673652cfb0ff62424987f9d444512e2e898743d02776693b2150"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "a3b5a3ef6dc891a715bf18e67fd7ffabbcf7270a458e67c833309718f95ed322"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "c044da928208e44d8b2a300f98b24c371d76e59c61bea0b7486df9614ecd1561"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "aa85f16267867297ca071289bed4cf6722b4c04b382bda0f3406bd26925018da"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "33403cb97438b205f357ec22eadb4c74b72db4e8261c40ca681d6123aec03962"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "4a1939d03eddae529e4c4bd81512001106bf6c4a537cbf86f3a749d450b8926f"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "1f42d8a9acbeafb54a73c928ff132f9d00c592612652f8bab8d8be08cf1ce6a3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-test-graph-catalog.contract.test.js",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "80a4aa4009a91588aa08646545d00aa73084838bd0e93cac4f045f3cf5537a0b"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "e2ea8e0d5e07c5bf78a599d8df5a38b660891f6e06218d3dbc36e512fd962e0a"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "661799d40d04f6845bdf7b01c0bc350cc500b3907184f0a990fca6adaeb7e4ab"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "8f6750ed30816c1d991213565687269da72c83941dd99de95df064d10ea0ecde"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "45fa53255990ceb30a6b966efe11e31b6129f10ea949d2924be599d6366c79bf"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "947b443559544428a6d2d167f0620e924fa2244d9b75c14b788853dd6e864bb1"
     }
   ]
 }

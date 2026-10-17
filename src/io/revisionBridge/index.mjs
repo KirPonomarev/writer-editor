@@ -11782,18 +11782,22 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         parsed.contentPreview.manuscriptNotes = notes.notes.map((note, index) => {
           const ref = notes.references[index];
           const source = notes.bodySources.find(body => body.kind === ref.kind && body.nativeId === ref.nativeId);
-          let point = note;
+          let point = note, sourcePoint;
           if (parsed.contentPreview.pendingRevisionDocument) {
             const ledger = pendingTextRevisions.readLedger(parsed.contentPreview.pendingRevisionDocument);
             const union = parsed.contentPreview.pendingNoteReferences.find(r => r.kind === ref.kind && r.nativeId === ref.nativeId);
-            if (!union || pendingTextRevisions.projectSourcePoint(ledger, union, 'original').offsetUtf16 !== note.offsetUtf16)
+            const original = union && pendingTextRevisions.projectSourcePoint(ledger, union, 'original');
+            if (!original || original.paragraphIndex !== note.paragraphIndex || original.offsetUtf16 !== note.offsetUtf16)
               throw Error('PENDING_NOTE_ORIGINAL_BINDING');
+            sourcePoint = { paragraphIndex: union.paragraphIndex, offsetUtf16: union.offsetUtf16,
+              originalParagraphIndex: note.paragraphIndex, originalOffsetUtf16: note.offsetUtf16 };
             point = pendingTextRevisions.projectSourcePoint(ledger, union);
           }
           const paragraph = parsed.contentPreview.paragraphs[point.paragraphIndex];
           if (!source || !paragraph
             || !Number.isSafeInteger(point.offsetUtf16) || point.offsetUtf16 < 0 || point.offsetUtf16 > paragraph.text.length) throw Error('DOCX_GENERIC_NOTE_POINT');
           return { kind: note.kind, paragraphIndex: point.paragraphIndex, offsetUtf16: point.offsetUtf16,
+            ...(sourcePoint ? { sourcePoint } : {}),
             ...(ref.referenceTypography ? { referenceTypography: cloneJsonSafe(ref.referenceTypography) } : {}),
             body: richNotes[index].body };
         });

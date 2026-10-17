@@ -431,6 +431,29 @@ async function compileRelease01CurrentWordingRegistry({
     registry.claims.push(clone(claim));
   }
 
+  // New-project import adds one local completion status. Preserve all prior
+  // declarations and keep native compatibility and terminal acceptance blocked.
+  const newProject = repair.wordNewProjectImportWording;
+  if (!exactKeys(newProject, ['schemaVersion','taskId','bindingBaseSha','scope','claims'])
+    || newProject.schemaVersion !== 1 || newProject.taskId !== 'YALKEN_DOCX_NEW_PROJECT_15K_20261017'
+    || newProject.bindingBaseSha !== 'cac72773ba1abdf07a0dffa37f372b44af6739ff'
+    || newProject.scope !== wording.scope
+    || !Array.isArray(newProject.claims) || newProject.claims.length !== 1) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'exact new-project import status declaration required');
+  }
+  const completion = newProject.claims[0];
+  if (!exactKeys(completion,['claimId','claimClass','surfaceId','wording','evidenceBinding','blockedRowRef','evidenceScope','claimDigest'])
+    || completion.claimId !== 'claim-editor-docx-new-project-import-completed'
+    || seen.has(completion.claimId) || registry.claims.some(existing => existing.claimId === completion.claimId)
+    || completion.wording !== 'Word manuscript imported into a new project'
+    || completion.claimClass !== 'DECLARED_ONLY' || completion.surfaceId !== 'surface-editor-js'
+    || completion.blockedRowRef !== null || completion.evidenceScope !== 'BUILD_INDEPENDENT_PRODUCT_FUNCTION'
+    || !exactKeys(completion.evidenceBinding,['profileId']) || completion.evidenceBinding.profileId !== 'word-mac-16.111.2-d1'
+    || completion.claimDigest !== claimsModule.computeClaimDigest(stripDigest(completion))) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'invalid or promoted new-project import status');
+  }
+  registry.claims.push(clone(completion));
+
   // Only after the preserved wording chain is validated may the exact
   // security successor replace the current package surface binding.
   const security = await import(pathToFileURL(path.join(REPO_ROOT, 'scripts/ops/r24/package-content-trust-pk0.mjs')).href);
@@ -2181,7 +2204,7 @@ test('RELEASE01 current import wordings remain declared-only and do not mutate h
   const compiled=await compileRelease01CurrentWordingRegistry({historicalRegistry:loaded.registry});
   const claims=loadJsonWithBytes(C1_DATA_POLICY_PATH).value.qualifiedRuntimeRepair.wordImportAttemptWording.claims;
   for(const claim of claims){assert.equal(claim.claimClass,'DECLARED_ONLY');assert.deepEqual(compiled.claims.find(c=>c.claimId===claim.claimId),claim);}
-  assert.equal(compiled.claims.length,loaded.registry.claims.length+5);
+  assert.equal(compiled.claims.length,loaded.registry.claims.length+6);
   assert.equal(JSON.stringify(loaded.registry),historical);assert.deepEqual(fs.readFileSync(REGISTRY_PATH),before);
 });
 
@@ -2227,7 +2250,7 @@ test('RELEASE01 import restart wordings preserve historical and prior attempt de
     assert.equal(claim.claimClass, 'DECLARED_ONLY');
     assert.deepEqual(compiled.claims.find(value => value.claimId === claim.claimId), claim);
   }
-  assert.equal(compiled.claims.length, loaded.registry.claims.length + 5);
+  assert.equal(compiled.claims.length, loaded.registry.claims.length + 6);
   assert.equal(JSON.stringify(loaded.registry), historical);
   assert.deepEqual(fs.readFileSync(REGISTRY_PATH), bytes);
 });
@@ -2273,4 +2296,64 @@ test('RELEASE01 import restart rejects forged qualification even with recomputed
       currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }),
     error => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
   }
+});
+
+test('RELEASE01 new-project status preserves prior declarations and terminal blockers', async () => {
+  const module = await loadModule(), loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  const bytes = fs.readFileSync(REGISTRY_PATH), historical = clone(loaded.registry);
+  const repair = loadJsonWithBytes(C1_DATA_POLICY_PATH).value.qualifiedRuntimeRepair;
+  const compiled = await compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry });
+  const declared = [...repair.wordImportAttemptWording.claims, ...repair.wordImportRestartWording.claims,
+    ...repair.wordNewProjectImportWording.claims];
+  assert.equal(declared.length, 6);
+  for (const claim of declared) {
+    assert.equal(claim.claimClass, 'DECLARED_ONLY');
+    assert.deepEqual(compiled.claims.find(value => value.claimId === claim.claimId), claim);
+  }
+  for (const claim of historical.claims) assert.deepEqual(compiled.claims.find(value => value.claimId === claim.claimId), claim);
+  assert.deepEqual(compiled.terminalRollup, historical.terminalRollup);
+  assert.equal(compiled.terminalRollup.state, 'NOT_MADE_WORD_TERMINAL_PASS_REQUIRED');
+  assert.deepEqual(loaded.registry, historical);
+  assert.deepEqual(fs.readFileSync(REGISTRY_PATH), bytes);
+});
+
+test('RELEASE01 new-project status rejects omission drift and support promotion with fresh digests', async () => {
+  const module = await loadModule(), loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  const cases = [
+    r => { delete r.wordNewProjectImportWording; },
+    r => { r.wordNewProjectImportWording = null; },
+    r => { r.wordNewProjectImportWording.schemaVersion = 2; },
+    r => { r.wordNewProjectImportWording.taskId = 'untrusted'; },
+    r => { r.wordNewProjectImportWording.bindingBaseSha = '0'.repeat(40); },
+    r => { r.wordNewProjectImportWording.scope = 'Native Word support'; },
+    r => { r.wordNewProjectImportWording.extra = true; },
+    r => { r.wordNewProjectImportWording.claims = []; },
+    r => { r.wordNewProjectImportWording.claims.push(clone(r.wordNewProjectImportWording.claims[0])); },
+    r => { r.wordNewProjectImportWording.claims[0].claimId = r.wordImportAttemptWording.claims[0].claimId; },
+    r => { r.wordNewProjectImportWording.claims[0].wording = 'Word import always succeeds'; },
+    r => { r.wordNewProjectImportWording.claims[0].claimClass = 'USER_FACING_BOUNDED_SUPPORTED'; },
+    r => { r.wordNewProjectImportWording.claims[0].surfaceId = 'surface-menu-config'; },
+    r => { r.wordNewProjectImportWording.claims[0].evidenceScope = 'CURRENT_BUILD_COMPATIBILITY'; },
+    r => { r.wordNewProjectImportWording.claims[0].evidenceBinding.profileId = 'word-mac-16.112-26081010'; },
+    r => { r.wordNewProjectImportWording.claims[0].evidenceBinding.extra = true; },
+    r => { r.wordNewProjectImportWording.claims[0].blockedRowRef = 'invented'; },
+    r => { r.wordNewProjectImportWording.claims[0].extra = true; },
+  ];
+  for (const mutate of cases) {
+    const value = loadJsonWithBytes(C1_DATA_POLICY_PATH).value;
+    mutate(value.qualifiedRuntimeRepair);
+    for (const claim of value.qualifiedRuntimeRepair.wordNewProjectImportWording?.claims || []) {
+      claim.claimDigest = module.computeClaimDigest(stripDigest(claim));
+    }
+    const bytes = Buffer.from(JSON.stringify(value)), digest = sha256RawBytes(bytes);
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
+      currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }),
+    error => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+  }
+  const value = loadJsonWithBytes(C1_DATA_POLICY_PATH).value;
+  value.qualifiedRuntimeRepair.wordNewProjectImportWording.claims[0].claimDigest = 'sha256:' + '0'.repeat(64);
+  const bytes = Buffer.from(JSON.stringify(value)), digest = sha256RawBytes(bytes);
+  await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
+    currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }),
+  error => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
 });

@@ -116,10 +116,12 @@ test('S29 import surface: canonical format flows still own preview and accept co
   const preview = sectionBetween(editor, 'async function openDocxImportPreviewFlow()', 'async function confirmDocxImportPreviewAndRun()');
   const accept = sectionBetween(editor, 'async function confirmDocxImportPreviewAndRun()', 'function summarizeTxtImportPreview');
   assert.ok(preview.includes("requestId: 'docx-import-' + crypto.randomUUID()"));
-  assert.ok(preview.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: attempt.requestId })'));
+  assert.ok(preview.includes("dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: attempt.requestId, target: 'new-project' })"));
   assert.equal(preview.includes('accept: true'), false);
   assert.ok(accept.includes('requestId: attempt.requestId,'));
   assert.ok(accept.includes('accept: true,'));
+  assert.ok(accept.includes('docxImportPreviewRef: previewValue.docxImportPreviewRef,'));
+  assert.ok(accept.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN, { projectId: resultValue.projectId })'));
 
   for (const marker of [
     'async function openDocxImportPreviewFlow()',

@@ -21032,6 +21032,20 @@ async function openImportedTxtSceneAfterAccept(plan, createdSceneIds) {
 }
 
 function summarizeDocxImportPreview(value) {
+  if (value?.target === 'new-project') {
+    const prepared = value.newProjectPreview;
+    if (prepared?.ok !== true) {
+      const reason = {
+        DOCX_NEW_PROJECT_CONTENT_UNSUPPORTED: 'This version supports text paragraphs and headings. Tables and embedded objects are outside this import profile.',
+        DOCX_NEW_PROJECT_REVISIONS_UNSUPPORTED: 'This version supports tracked text insertions and deletions inside existing paragraphs.',
+        DOCX_NEW_PROJECT_STORIES_UNSUPPORTED: 'Headers, footers and other separate document stories are outside this import profile.',
+        NOTE_PENDING_IMPORT_PROFILE_UNSUPPORTED: 'These note references cannot be preserved together with the document revisions.',
+      }[prepared?.code] || 'This document cannot be preserved by the supported import profile.';
+      return `${reason} No project was created; the original file is unchanged.`;
+    }
+    const summary = prepared.summary;
+    return `Ready to create a new project. Text chars: ${summary.characters}; scenes: ${summary.sceneCount}; comments: ${summary.commentCount}; revisions: ${summary.revisionCount}; notes: ${summary.noteCount}.`;
+  }
   const plan = getDocxImportPreviewPlanFromValue(value);
   const entryCount = Number.isInteger(plan?.candidateCreatePlan?.entryCount)
     ? plan.candidateCreatePlan.entryCount
@@ -21093,7 +21107,7 @@ function invalidateDocxImportAttempt() {
 
 function isCurrentDocxImportAttempt(attempt) {
   if (pendingDocxImportAttempt !== attempt) return false;
-  if (currentProjectId !== attempt.projectId) {
+  if (currentProjectId !== attempt.projectId && !(attempt.phase === 'opening' && currentProjectId === attempt.targetProjectId)) {
     invalidateDocxImportAttempt();
     return false;
   }
@@ -21111,9 +21125,9 @@ function openDocxImportPreviewModal(value) {
     docxImportPreviewLoss.value = summarizeDocxImportLoss(value);
   }
   docxImportPreviewConfirmButtons.forEach((button) => {
-    button.disabled = !(plan && plan.ok === true);
+    button.disabled = !(plan && plan.ok === true) || value?.target === 'new-project' && value.newProjectPreview?.ok !== true;
     button.textContent = pendingDocxImportAttempt?.phase === 'reselect' ? 'Select file again'
-      : pendingDocxImportAttempt?.phase === 'retry' ? 'Retry import' : 'Import DOCX';
+      : pendingDocxImportAttempt?.phase === 'retry' ? 'Retry import' : value?.target === 'new-project' ? 'Create new project' : 'Import DOCX';
   });
   openSimpleModal(docxImportPreviewModal);
 }
@@ -21125,7 +21139,7 @@ async function openDocxImportPreviewFlow() {
   pendingDocxImportAttempt = attempt;
   updateStatusText('Preparing DOCX import preview');
   try {
-    const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: attempt.requestId });
+    const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: attempt.requestId, target: 'new-project' });
     if (!isCurrentDocxImportAttempt(attempt)) return;
     if (!result || result.ok !== true || result.value?.localFilePreview?.status === 'cancelled') {
       invalidateDocxImportAttempt();
@@ -21166,7 +21180,10 @@ async function confirmDocxImportPreviewAndRun() {
   updateStatusText('Importing DOCX');
   let result;
   try {
-    result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, {
+    result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, previewValue?.target === 'new-project' ? {
+      requestId: attempt.requestId, target: 'new-project', accept: true,
+      docxImportPreviewRef: previewValue.docxImportPreviewRef,
+    } : {
       requestId: attempt.requestId,
       accept: true,
       localFilePreview: previewValue?.localFilePreview || null,
@@ -21181,6 +21198,7 @@ async function confirmDocxImportPreviewAndRun() {
     const staleReasons = new Set(['DOCX_IMPORT_PLAN_REFERENCE_EXPIRED', 'DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED',
       'DOCX_IMPORT_CONTENT_REFERENCE_INVALID', 'DOCX_IMPORT_PLAN_REFERENCE_INVALID']);
     const staleReference = result?.error?.code === 'E_DOCX_IMPORT_REFERENCE_INVALID'
+      || result?.error?.code === 'E_DOCX_NEW_PROJECT_IMPORT' && staleReasons.has(result.error.reason)
       || (result?.error?.code === 'E_DOCX_IMPORT_SAFE_CREATE_FAILED'
         && [result.error.reason, result.error.details?.message].some(reason => staleReasons.has(reason)));
     attempt.phase = staleReference ? 'reselect' : 'retry';
@@ -21197,6 +21215,18 @@ async function confirmDocxImportPreviewAndRun() {
   const resultValue = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
     ? result.value
     : {};
+  if (previewValue?.target === 'new-project') {
+    attempt.targetProjectId = resultValue.projectId;
+    try {
+      const opened = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN, { projectId: resultValue.projectId });
+      if (!isCurrentDocxImportAttempt(attempt)) return;
+      if (opened?.ok === true) { await loadTree(); updateStatusText('Word manuscript imported into a new project'); }
+      else updateStatusText('New project saved. Open it from the project library when ready.');
+    } catch {
+      if (isCurrentDocxImportAttempt(attempt)) updateStatusText('New project saved. Open it from the project library when ready.');
+    } finally { if (isCurrentDocxImportAttempt(attempt)) invalidateDocxImportAttempt(); }
+    return;
+  }
   const createdSceneIds = Array.isArray(resultValue.visibleCreatedSceneIds)
     ? resultValue.visibleCreatedSceneIds
     : (Array.isArray(resultValue.createdSceneIds) ? resultValue.createdSceneIds : []);
