@@ -1034,6 +1034,85 @@ function createCommentUnionLocator({document,projection,anchor,unionStart,unionE
   return locator;
 }
 function validateCommentUnionLocator({document,projection,anchor,locator}) {return checkedCommentLocator(projection?{rows:projection.segments}:commentBasis(document),anchor,locator);}
+// The visible point of a comment on deleted text is not its source interval.
+// Keep that interval in the existing union locator; derive its quote from the
+// ledger instead of copying hidden text into a second persistent field.
+function readCommentUnionContext({document,anchor}) {
+  const basis=commentBasis(document),locator=anchor?.pendingUnionLocator;
+  require('./word-comment-ranges-v1.cjs').validateCommentAnchor({sceneId:anchor?.sceneId,
+    paragraphs:paragraphs(basis.current).map(p=>(p.content||[]).map(textOf).join('')),anchor});
+  checkedCommentLocator(basis,anchor,locator);
+  const rows=commentLocatorRows(basis).map(row=>row.map(s=>textOf(s.node)).join(''));
+  const start=locator.unionStart,end=locator.unionEnd;
+  const quote=start.paragraphIndex===end.paragraphIndex
+    ?rows[start.paragraphIndex].slice(start.offsetUtf16,end.offsetUtf16)
+    :[rows[start.paragraphIndex].slice(start.offsetUtf16),...rows.slice(start.paragraphIndex+1,end.paragraphIndex),rows[end.paragraphIndex].slice(0,end.offsetUtf16)].join('\n');
+  assert(new TextEncoder().encode(quote).length<=16384,'PENDING_COMMENT_QUOTE_BUDGET');
+  return {quote,hidden:quote.length>0&&anchor.selectedText===''};
+}
+function rebaseCommentUnionAnchor({beforeDocument,afterDocument,anchor}) {
+  const before=commentBasis(beforeDocument),after=commentBasis(afterDocument),locator=anchor?.pendingUnionLocator;
+  checkedCommentLocator(before,anchor,locator);
+  assert(locator.geometrySha256===commentLocatorGeometry(after,locator.unionStart,locator.unionEnd),'PENDING_COMMENT_LOCATOR_STALE');
+  const start=locatorPoint(after,locator.unionStart,'current'),end=locatorPoint(after,locator.unionEnd,'current');
+  const rows=paragraphs(after.current).map(p=>(p.content||[]).map(textOf).join(''));
+  const input={paragraphIndex:start.paragraphIndex,startUtf16:start.offsetUtf16,
+    ...(end.paragraphIndex!==start.paragraphIndex?{kind:'multi-paragraph-range',endParagraphIndex:end.paragraphIndex,endUtf16:end.offsetUtf16}
+      :start.offsetUtf16===end.offsetUtf16?{kind:'point',affinity:'right',selectedText:''}
+        :{selectedText:rows[start.paragraphIndex].slice(start.offsetUtf16,end.offsetUtf16)})};
+  const result={...require('./word-comment-ranges-v1.cjs').deriveCommentAnchor({sceneId:anchor.sceneId,paragraphs:rows,input}),
+    pendingUnionLocator:clone(locator),
+    ...(anchor.authoritySource!==undefined?{authoritySource:anchor.authoritySource}:{}),
+    ...(anchor.sourceChangeId!==undefined?{sourceChangeId:anchor.sourceChangeId}:{})};
+  checkedCommentLocator(after,result,locator);
+  return result;
+}
+// Recording may insert new source runs before a hidden Word interval. A
+// retained revision identity and its unchanged literal fragment own that
+// interval; matching another occurrence of its words never does.
+function rebaseChangedCommentUnionLocator({beforeDocument,afterDocument,beforeAnchor,afterAnchor}) {
+  assert(typeof beforeAnchor?.sceneId==='string'&&beforeAnchor.sceneId===afterAnchor?.sceneId,'PENDING_COMMENT_LOCATOR_OWNER');
+  const before=commentBasis(beforeDocument),after=commentBasis(afterDocument),old=beforeAnchor?.pendingUnionLocator;
+  checkedCommentLocator(before,beforeAnchor,old);
+  const texts=basis=>commentLocatorRows(basis).map(row=>row.map(s=>textOf(s.node)).join(''));
+  const oldRows=texts(before),newRows=texts(after),currentRows=paragraphs(after.current).map(p=>(p.content||[]).map(textOf).join(''));
+  require('./word-comment-ranges-v1.cjs').validateCommentAnchor({sceneId:afterAnchor?.sceneId,paragraphs:currentRows,anchor:afterAnchor});
+  // Export omits decided revisions; locators still belong to the full source.
+  // Build the inverse Current view over that source, using actual decisions.
+  const actualById=new Map((after.ledger?.revisions||[]).map(r=>[r.id,r]));
+  const inverse={rows:commentLocatorRows(after).map(row=>row.map(segment=>{
+    const revision=actualById.get(segment.revision?.id);
+    const hidden=revision&&(revision.operation==='insert'?revision.state==='rejected':revision.operation==='delete'&&revision.state!=='rejected');
+    return {...segment,revision:hidden?{operation:'delete'}:null};
+  }))};
+  const meaning=({from,to,paragraphIndex,state,...identity})=>identity;
+  let needed=false;
+  const endpoint=(point,current)=>{
+    try{return basisEndpoint(inverse,current.paragraphIndex,current.offsetUtf16,'current',true);}
+    catch(error){if(error.code!=='PENDING_COMMENT_ENDPOINT_AMBIGUOUS')throw error;}
+    needed=true;const candidates=new Map();
+    for(const previous of before.ledger?.revisions||[]) {
+      if(!['insert','delete'].includes(previous.operation)||previous.paragraphIndex!==point.paragraphIndex
+        ||point.offsetUtf16<previous.from||point.offsetUtf16>previous.to)continue;
+      const next=after.ledger?.revisions.find(r=>r.id===previous.id);
+      if(!next||stable(meaning(previous))!==stable(meaning(next))||previous.to-previous.from!==next.to-next.from
+        ||oldRows[previous.paragraphIndex].slice(previous.from,previous.to)!==newRows[next.paragraphIndex].slice(next.from,next.to))continue;
+      const proposed={paragraphIndex:next.paragraphIndex,offsetUtf16:next.from+point.offsetUtf16-previous.from};
+      if(stable(locatorPoint(after,proposed,'current'))===stable(current))candidates.set(stable(proposed),proposed);
+    }
+    assert(candidates.size===1,'PENDING_COMMENT_LOCATOR_REBASE_UNPROVED');
+    return candidates.values().next().value;
+  };
+  const start={paragraphIndex:afterAnchor.sceneParagraphIndex,offsetUtf16:afterAnchor.startUtf16};
+  const end={paragraphIndex:afterAnchor.endSceneParagraphIndex??start.paragraphIndex,offsetUtf16:afterAnchor.endUtf16??start.offsetUtf16+afterAnchor.selectedText.length};
+  const unionStart=endpoint(old.unionStart,start),unionEnd=endpoint(old.unionEnd,end);
+  const quote=(rows,a,b)=>a.paragraphIndex===b.paragraphIndex?rows[a.paragraphIndex].slice(a.offsetUtf16,b.offsetUtf16)
+    :[rows[a.paragraphIndex].slice(a.offsetUtf16),...rows.slice(a.paragraphIndex+1,b.paragraphIndex),rows[b.paragraphIndex].slice(0,b.offsetUtf16)].join('\n');
+  if(beforeAnchor.kind==='point')assert(quote(oldRows,old.unionStart,old.unionEnd)===quote(newRows,unionStart,unionEnd),'PENDING_COMMENT_LOCATOR_QUOTE_CHANGED');
+  const locator={schemaVersion:1,geometrySha256:commentLocatorGeometry(after,unionStart,unionEnd),unionStart,unionEnd};
+  checkedCommentLocator(after,afterAnchor,locator);
+  return needed?locator:undefined;
+}
 function commentAnchorBindings(basis,anchors) {
   assert(Array.isArray(anchors) && anchors.length<=require('./word-comment-body-v1.cjs').COMMENT_CAPACITY.threads,'PENDING_COMMENT_ANCHORS_INVALID');
   const seen=new Set(), ownerByNode=new Map(); let tableId=0;
@@ -1159,4 +1238,4 @@ function mixedCommentBases({document,binding,returnedDocument,anchors=[],exportT
 function mapCheckedCommentProjectionEndpoint({projection,paragraphIndex,offsetUtf16}) {
   return basisEndpoint({rows:projection.segments},paragraphIndex,offsetUtf16,'current');
 }
-module.exports = { asRoundLedger, formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, readNoteProjectionPair, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };
+module.exports = { rebaseChangedCommentUnionLocator, readCommentUnionContext, rebaseCommentUnionAnchor, asRoundLedger, formatTransitionMeaning, roundFrame, lastRoundFrame, compactRoundHistory, createCommentUnionLocator, validateCommentUnionLocator, mixedCommentBases, mapCheckedCommentProjectionEndpoint, commentTransportSegments, buildCommentExportBinding, mapCommentExportEndpoint, verifyCommentReturnBinding, setDefaultTabStop, exportNoteBasis, projectSourcePoint, bindNoteSourcePoints, noteProjection, readNoteProjectionPair, isTableRow, isStructural, tableRows, KEY, validateLedger, bindLedger, readLedger, materialize, segments, decide, projection, normalizeNode, replaceFromReturn, paragraphs, exportSegments, paragraphProperties, isParagraphFormat, isParagraphBoundary, paragraphSibling, exportDocument };

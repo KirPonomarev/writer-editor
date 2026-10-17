@@ -25825,7 +25825,14 @@ async function readCommentAuthoringProjection() {
     return { available: true, projectId: context.projectId, sceneId: context.sceneId, subjectId: context.subjectId,
       expectedStateSha256: context.saved.stateSha256, expectedSceneSha256: context.sceneSha256,
       threads: context.saved.state.threads.filter(t => t.sceneId === context.sceneId && t.status !== 'deleted')
-        .map(normalizeRtkNonTextReturnThreadProjection) };
+        .map(thread => {
+          const projection=normalizeRtkNonTextReturnThreadProjection(thread);
+          if(thread.anchor?.kind==='point'&&thread.anchor.pendingUnionLocator) {
+            const source=pendingTextRevisions.readCommentUnionContext({document:context.parsed.doc,anchor:thread.anchor});
+            if(source.hidden)projection.anchorContext={kind:'hidden-revision-text',quote:source.quote};
+          }
+          return projection;
+        }) };
   } catch (error) { return { available: false, reason: error.message, threads: [] }; }
 }
 

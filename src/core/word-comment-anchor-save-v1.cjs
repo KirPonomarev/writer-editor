@@ -257,7 +257,10 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
     const a=thread.anchor;
     if(!a||a.sceneId!==sceneId||typeof a.selectedText!=='string'||!a.selectedText.isWellFormed()
       ||a.selectedTextSha256!==sha(a.selectedText)) fail('COMMENT_SAVE_ANCHOR_STALE');
-    if(thread.status!=='deleted') validateCommentAnchor({sceneId,paragraphs:rows,anchor:a});
+    if(thread.status!=='deleted') {
+      validateCommentAnchor({sceneId,paragraphs:rows,anchor:a});
+      if(a.pendingUnionLocator)pending.validateCommentUnionLocator({document:beforeDoc,anchor:a,locator:a.pendingUnionLocator});
+    }
   }
   const {plan,steps}=replayEditIntents(rows.map(r=>r.text),finalRows.map(r=>r.text),editIntents);
   const after=JSON.parse(JSON.stringify(before)), groups=[];
@@ -310,7 +313,16 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
       }
       const continuing=direction==='forward'&&entry===last&&entry&&!entry.undone;
       if(continuing&&!historyEqual(prior,entry.after)) fail('COMMENT_EDIT_HISTORY_STALE');
-      for(const step of group) {
+      // Decision intervals retain their union ownership when hidden text is
+      // revealed, including successive decisions at an existing range edge.
+      // A fully consumed visible range still uses the existing tombstone law.
+      let unionRebased=false;
+      if(fixedPendingSource&&groups.length===1&&thread.status!=='deleted'
+        &&thread.anchor.pendingUnionLocator) {
+        const restored=pending.rebaseCommentUnionAnchor({beforeDocument:beforeDoc,afterDocument:afterDoc,anchor:thread.anchor});
+        if(thread.anchor.kind==='point'||restored.selectedText!=='') {thread.anchor=restored;unionRebased=true;}
+      }
+      for(const step of unionRebased?[]:group) {
         if(thread.status==='deleted') {
           const mapped=mapCommentEndpoint({paragraphIndex:locator.sceneParagraphIndex,offsetUtf16:locator.startUtf16},step.edit,true);
           const text=step.afterRows[mapped.paragraphIndex]?.text;
@@ -318,7 +330,11 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
           locator={sceneParagraphIndex:mapped.paragraphIndex,startUtf16:mapped.offsetUtf16,blockTextSha256:sha(text)};
         } else {
           const mapped=rebaseStructuralCommentAnchor({anchor:thread.anchor,beforeParagraphs:step.beforeRows,afterParagraphs:step.afterRows,edit:step.edit});
-          if(fixedPendingSource&&thread.anchor.pendingUnionLocator)mapped.anchor.pendingUnionLocator=thread.anchor.pendingUnionLocator;
+          if(thread.anchor.pendingUnionLocator&&!mapped.deleted) {
+            // Keep occurrence identity during the pure edit replay. Rebind it
+            // against the complete final source before returning any plan.
+            mapped.anchor.pendingUnionLocator=thread.anchor.pendingUnionLocator;
+          }
           thread.anchor=mapped.anchor;if(mapped.deleted) {thread.status='deleted';locator=mapped.liveLocator;}
         }
       }
@@ -341,6 +357,20 @@ function planStructuralIntentSave({before,beforeText,sceneId,beforeContent,after
         thread.anchorEditHistory.push({schemaVersion:2,historyId,sessionId,before:historyBefore,after:historyAfter,
           beforeTextSha256:snapshotDigest(historyBefore),afterTextSha256:snapshotDigest(historyAfter),undone:inverse});
       }
+    }
+  }
+  for(const thread of after.threads.filter(t=>t.sceneId===sceneId&&t.status!=='deleted'&&t.anchor.pendingUnionLocator)) {
+    try {pending.validateCommentUnionLocator({document:afterDoc,anchor:thread.anchor,locator:thread.anchor.pendingUnionLocator});}
+    catch {
+      const origin=before.threads.find(t=>t.threadId===thread.threadId),prior=structuralSnapshot(thread);
+      let locator;try {locator=pending.rebaseChangedCommentUnionLocator({beforeDocument:beforeDoc,afterDocument:afterDoc,
+        beforeAnchor:origin?.anchor,afterAnchor:thread.anchor});}catch {fail('COMMENT_SAVE_PENDING_LOCATOR_REBASE_REQUIRED');}
+      if(locator)thread.anchor.pendingUnionLocator=locator;else delete thread.anchor.pendingUnionLocator;
+      const next=structuralSnapshot(thread);
+      // Only the cursor that matches the actual current endpoint is updated.
+      // Historical text, coordinates and digests are never reconstructed.
+      for(const entry of thread.anchorEditHistory||[])for(const key of ['before','after'])
+        if(historyEqual(entry[key],prior))entry[key]=JSON.parse(JSON.stringify(next));
     }
   }
   const changed=JSON.stringify(after)!==JSON.stringify(before);
