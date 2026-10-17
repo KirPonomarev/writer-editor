@@ -206,29 +206,29 @@
     {
       "filePath": "src/renderer/commands/projectCommands.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "ddf8f9e174f1eca9662647936a64738bef89321b50536e9f222d4335aca9c6f3"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "f08b362a966a452b1463423bd14f4d74a319cd9dd036dfe20c7b4a0e70ed62e7"
     },
     {
       "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "2509ed68ae26fd25185ea0565954681b3e0ae2b3e74456f258e89ad265b79b7e"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "bbbfddb906f960229abe79ee65beba8e43bffd90ae8765f71c3b3769456cafd3"
     },
     {
       "filePath": "test/unit/docx-import-product-flow-command.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "15b9e7c39d98c85659760b0ddf02412291137e21d22ec18ae64dab41cb193a47"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "28e46c2dddbd4f2f4edd042270f6eddf9804daf9c742c435dd4c03d723179fc9"
     },
     {
       "approved": true,
@@ -461,11 +461,11 @@
     {
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
-      "sha256": "46a4bf6c39d6a6003d23dfc69b6283df6572e38f1e04d7f59f5380809da1cd71"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "7732b20aee16e9e5a4aa7b3254e612e305ce9a5d234e4931eb55866238936086"
     },
     {
       "approved": true,
@@ -1279,12 +1279,12 @@
     },
     {
       "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-      "sha256": "f8d4a53f117cb5e3e7f674d36a76df50c0c33d74e335a09e1ac790415b5783d2",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
-      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
-      "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "592ca3ee5fea6e382eeb5043af0b12d2ccf1927073c1d29472992ac948ab3e82"
     },
     {
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
@@ -1577,20 +1577,20 @@
     {
       "filePath": "src/renderer/editor.bundle.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:15:09.089915+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import implementation. Exact native build refused stale tracked renderer output before app launch; unchanged official builder now regenerates editor.bundle.js. Two official builds byte identical and agree with the independent failed freeze artifact; preload and all handwritten runtime/tests unchanged from passing411 contracts. This refresh binds generated bytes and task refinement only; original predicates, protected files and prior approval tuples retained. No native or release completion credit",
-      "sha256": "0637b30eb7348273693f1deb75127863278718ae6beeaff5ef82221ff7e4b1ac"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "13dfc112d91eb830dec0cf2e509500b8d5283b8b48ce9f0e80e0939f1251e73e"
     },
     {
       "filePath": "src/renderer/editor.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
-      "sha256": "e664f481b3b16cb69d6c8d80a6e682b40d402713391de7d32272e62e33bedd78"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "2196427ab8c77b69e32775f36edb170204965db645e2e76a2348dbb0d37d5d3d"
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1613,11 +1613,11 @@
     {
       "filePath": "src/utils/docxImportLocalFilePreview.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "e6120c9e65d575371a255869a3a5b8622279a8e45b370092f0f1c00b70c3324c"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "fe5aa4377653a8f119a6772d8b5c4769797f4fbad57b0072e197f7ef818b9ba6"
     },
     {
       "filePath": "src/utils/docxImportSafeCreate.js",
@@ -5582,11 +5582,11 @@
     {
       "filePath": "src/main.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
-      "sha256": "0f3dbb47df566a2f2308f0e3b66a1450af15fe5ad45b2be2627fd969c67aadb3"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "67717af1995488119e2ad75c62ebad7cb6bf3a6fd04dc3a48d383cbe16167050"
     },
     {
       "filePath": "src/command/commandSurfaceKernel.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
-      "sha256": "c03893766df63e1593b3b229884b062cc4d9aa6189b92312c0c6e5c11f7f9587"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "f347fdf5db00caf991478e7d2dec99396f1e1f6956ab98def34032dde5d4a020"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
-      "sha256": "d0926ce4195ea04286829db82d59b51506ceb7c995f54b0ca22f634fb156f63a"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "24208c92775f91a6902808ca1359bd595ee75d81c09f9f9824018d9d775bec04"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
-      "sha256": "b5325d262cece908ca985e68f998dabfcc55615d7f1893450b52f6eeb8eb2c52"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "5b8c58a98a0f2eee0cc08e25fb6627cd345c0a5c7cb198f68c23570a57c9aaa1"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
-      "sha256": "3731c52223be3c2ee396d5d17dbbfb2b463c5a5f9c6926ab968e59f5015a349c"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "7b1b40a701a6e0065e6beaed647e0a119f3b50e9d06e2cd60cc1ed19b9698f83"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
-      "sha256": "e99a57080138ba5692dc07bf4650d73b84370c29b5f1089c8c4a6c58b1454f16"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "abc8e72dac60b8c3178a0c0a34668d54b835e3dcc3de101aa6383d16479a43de"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
-      "sha256": "a4336466a3857ab57a8eb72e8fdac87a32ad8b6ed221ee93fa9de66842fe7944"
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "c3df1288c9288b1369f51fd928cf645faa35fc68250864f384085c104db26046"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5920,6 +5920,33 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
       "sha256": "0d00562c3d8524c06a7a7f575da9a3619df65f784f36593eba32f7179012c308"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-responsive-user-build.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "4ce32a49d87679fa88a30f7eea9b718ff3f13bde285f1a6be55f17af1339b6d1"
+    },
+    {
+      "filePath": "src/main/docxImportComputePort.cjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab"
+    },
+    {
+      "filePath": "src/main/docxImportComputeWorker.cjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4"
     }
   ],
   "evidenceStampIds": [
@@ -47578,6 +47605,141 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same owner-authorized PR2132 usable-import implementation. Exact native build refused stale tracked renderer output before app launch; unchanged official builder now regenerates editor.bundle.js. Two official builds byte identical and agree with the independent failed freeze artifact; preload and all handwritten runtime/tests unchanged from passing411 contracts. This refresh binds generated bytes and task refinement only; original predicates, protected files and prior approval tuples retained. No native or release completion credit",
       "sha256": "7c104662b2245130ca99959dda758d20753bac68421d969d6e4df17458d6fbf4"
+    },
+    {
+      "filePath": "src/main.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
+      "sha256": "0f3dbb47df566a2f2308f0e3b66a1450af15fe5ad45b2be2627fd969c67aadb3"
+    },
+    {
+      "filePath": "src/renderer/commands/projectCommands.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "ddf8f9e174f1eca9662647936a64738bef89321b50536e9f222d4335aca9c6f3"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:15:09.089915+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import implementation. Exact native build refused stale tracked renderer output before app launch; unchanged official builder now regenerates editor.bundle.js. Two official builds byte identical and agree with the independent failed freeze artifact; preload and all handwritten runtime/tests unchanged from passing411 contracts. This refresh binds generated bytes and task refinement only; original predicates, protected files and prior approval tuples retained. No native or release completion credit",
+      "sha256": "0637b30eb7348273693f1deb75127863278718ae6beeaff5ef82221ff7e4b1ac"
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "e664f481b3b16cb69d6c8d80a6e682b40d402713391de7d32272e62e33bedd78"
+    },
+    {
+      "filePath": "src/utils/docxImportLocalFilePreview.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "e6120c9e65d575371a255869a3a5b8622279a8e45b370092f0f1c00b70c3324c"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "46a4bf6c39d6a6003d23dfc69b6283df6572e38f1e04d7f59f5380809da1cd71"
+    },
+    {
+      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+      "sha256": "f8d4a53f117cb5e3e7f674d36a76df50c0c33d74e335a09e1ac790415b5783d2",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_PENDING_COMMENTS_MAC_20261005|owner-delegated-codex:WORD_NOVEL_EDITORIAL_CAPACITY_MAC_20261005",
+      "approvedAtUtc": "2026-10-05T17:18:32.213216Z",
+      "rationale": "Owner-authorized original Mac plan and 2026-10-05 novel-text priority: bounded100000-word five-exchange editorial capacity: compact hash-checked paragraph history and finite versioned discussion persistence/import/export; preserve every prior revision and message and all protected history; existing atomic project publication only. Preserve identity, raw and scene CAS, journal/recovery and bounded fail-closed semantics. Exact-byte scope binding only; native outcome and mandatory gate evidence remain separate.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "2509ed68ae26fd25185ea0565954681b3e0ae2b3e74456f258e89ad265b79b7e"
+    },
+    {
+      "filePath": "test/unit/docx-import-product-flow-command.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "15b9e7c39d98c85659760b0ddf02412291137e21d22ec18ae64dab41cb193a47"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
+      "sha256": "b5325d262cece908ca985e68f998dabfcc55615d7f1893450b52f6eeb8eb2c52"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
+      "sha256": "3731c52223be3c2ee396d5d17dbbfb2b463c5a5f9c6926ab968e59f5015a349c"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
+      "sha256": "a4336466a3857ab57a8eb72e8fdac87a32ad8b6ed221ee93fa9de66842fe7944"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
+      "sha256": "c03893766df63e1593b3b229884b062cc4d9aa6189b92312c0c6e5c11f7f9587"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
+      "sha256": "d0926ce4195ea04286829db82d59b51506ceb7c995f54b0ca22f634fb156f63a"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:32:03.219889+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same owner-authorized PR2132 usable-import task. Actual15k native Notes query rejects the new project because it selects default context. One Main caller now uses the existing readOnlyActive path, retaining all project/root/owner/lifecycle/session checks and avoiding default preparation writes. Actual Main active/foreign/stale contract and default Notes regression total96tests pass without skips. Existing S18 fixture opens its seeded scene through lifecycle with canonical real paths; original assertions retained. Both generated bundles byte unchanged after two official builds. Protected bytes, predicates and prior approval tuples retained; no native or release completion credit",
+      "sha256": "e99a57080138ba5692dc07bf4650d73b84370c29b5f1089c8c4a6c58b1454f16"
     }
   ]
 }

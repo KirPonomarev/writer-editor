@@ -33,6 +33,7 @@ const {
   verifyDocxMediaAssetFiles,
 } = require('./utils/docxImportSafeCreate');
 const { createDocxImportPreviewReferences } = require('./utils/docxImportPreviewReferences');
+const { runDocxImportComputation } = require('./main/docxImportComputePort.cjs');
 const {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
   createDocxImportLocalFilePreview,
@@ -12851,6 +12852,7 @@ function captureDocxImportPreviewContext() {
 }
 
 function invalidateDocxImportPreviewReferences() {
+  if (typeof cancelDocxImportComputeJob === 'function') cancelDocxImportComputeJob();
   docxImportPreviewProjectGeneration += 1;
   docxImportPreviewReferences.clear();
   docxImportOpenAcknowledgement = null;
@@ -13693,10 +13695,12 @@ async function handleDocxImportPreviewCommandSurface(payload = {}) {
   try {
     const build = typeof revisionBridge.buildDocxNovelImportPreviewPlanFromContentPreview === 'function'
       ? revisionBridge.buildDocxNovelImportPreviewPlanFromContentPreview : revisionBridge.buildDocxImportPreviewPlanFromContentPreview;
-    importPreviewResult = build(
-      validated.docxContentPreviewReport,
-    );
+    importPreviewResult = validated.docxContentPreviewReport.diagnostics?.some(item => item.code === 'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED')
+      ? await runDocxImportComputation('import-plan', { contentPreviewReport: validated.docxContentPreviewReport }, docxImportComputeOptions(payload.requestId))
+      : build(validated.docxContentPreviewReport);
+    if (typeof assertDocxImportComputeCurrent === 'function') assertDocxImportComputeCurrent(payload.requestId);
   } catch (error) {
+    if (typeof finishDocxImportComputeJob === 'function') finishDocxImportComputeJob(payload.requestId);
     return makeDocxImportPreviewTypedError(
       'E_DOCX_IMPORT_PREVIEW_FAILED',
       'DOCX_IMPORT_PREVIEW_EXECUTION_FAILED',
@@ -13731,6 +13735,7 @@ async function handleDocxImportPreviewCommandSurface(payload = {}) {
   if (referenceContext !== null && referenceContext !== captureDocxImportPreviewContext()) {
     return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_REFERENCE_INVALID', 'DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED');
   }
+  if (!importPreviewResult.ok && typeof finishDocxImportComputeJob === 'function') finishDocxImportComputeJob(payload.requestId);
   if (importPreviewResult.ok === true && typeof rememberDocxImportPreviewPlanAdmission === 'function') {
     rememberDocxImportPreviewPlanAdmission(importPreviewResult);
   }
@@ -14414,6 +14419,21 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
 // DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_END
 
 // DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_START
+let docxImportComputeJob = null;
+function cancelDocxImportComputeJob() {
+  docxImportComputeJob?.controller.abort(); docxImportComputeJob = null;
+}
+function docxImportComputeOptions(requestId) {
+  return docxImportComputeJob && docxImportComputeJob.requestId === requestId ? { signal: docxImportComputeJob.controller.signal } : {};
+}
+function assertDocxImportComputeCurrent(requestId) {
+  const job = docxImportComputeJob;
+  if (job && job.requestId === requestId && (job.controller.signal.aborted || job.context !== captureDocxImportPreviewContext()
+    || job.window !== mainWindow || job.window?.isDestroyed?.())) throw Error('DOCX_IMPORT_COMPUTE_CANCELLED');
+}
+function finishDocxImportComputeJob(requestId) {
+  if (docxImportComputeJob && docxImportComputeJob.requestId === requestId) docxImportComputeJob.preparing = false;
+}
 const DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewLocalFile';
 const DOCX_IMPORT_LOCAL_FILE_PREVIEW_FORBIDDEN_RESULT_KEYS = new Set([
   ['review', 'Packet'].join(''),
@@ -14656,7 +14676,7 @@ function buildDocxImportLocalFilePreviewCommandResult(previewResult) {
 }
 
 async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
-  const referenceContext = typeof captureDocxImportPreviewContext === 'function'
+  let referenceContext = typeof captureDocxImportPreviewContext === 'function'
     ? captureDocxImportPreviewContext() : null;
   if (typeof createDocxImportLocalFilePreview !== 'function') {
     return makeDocxImportLocalFilePreviewTypedError(
@@ -14666,19 +14686,39 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
   }
 
   // Validate before any dialog or project read; stored correlation never supplies a plan.
-  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId', 'target'].includes(key))
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId', 'target', 'action'].includes(key))
     || payload.target !== undefined && payload.target !== 'new-project'
+    || payload.target === 'new-project' && (typeof payload.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(payload.requestId))
+    || payload.action !== undefined && (payload.action !== 'cancel-preview' || payload.target !== 'new-project'
+      || typeof payload.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(payload.requestId))
     || payload.requestId !== undefined && (typeof payload.requestId !== 'string' || payload.requestId.trim().length > 120)) {
     return makeDocxImportLocalFilePreviewTypedError('E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_INPUT_INVALID', 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_INPUT_INVALID');
   }
   const assertCurrent = () => {
     userBookmarkCapability(DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID);
     if (referenceContext !== captureDocxImportPreviewContext()) throw new Error('DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED');
+    assertDocxImportComputeCurrent(payload.requestId);
   };
   let effectivePayload = payload;
   let previewResult = null;
+  let ownedComputeJob = null;
   try {
     assertCurrent();
+    if (payload.action === 'cancel-preview') {
+      const matches = docxImportComputeJob?.requestId === payload.requestId;
+      if (matches && docxNewProjectAttempt?.promise) throw Error('DOCX_IMPORT_COMPUTE_BUSY');
+      if (matches) invalidateDocxImportPreviewReferences();
+      return { ok: true, requestId: payload.requestId, status: 'cancelled', writeEffects: false,
+        contentPreviewOk: false, importPreviewOk: false, cancelled: Boolean(matches) };
+    }
+    if (payload.target === 'new-project') {
+      if (docxImportComputeJob?.preparing || docxNewProjectAttempt?.promise) throw Error('DOCX_IMPORT_COMPUTE_BUSY');
+      invalidateDocxImportPreviewReferences();
+      referenceContext = captureDocxImportPreviewContext();
+      docxImportComputeJob = { requestId: payload.requestId, context: referenceContext, window: mainWindow,
+        controller: new AbortController(), preparing: true };
+      ownedComputeJob = docxImportComputeJob;
+    }
     if (payload.target !== 'new-project') {
       const projectRoot = getProjectRootPath();
       const manifest = JSON.parse(await fs.readFile(getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME), 'utf8'));
@@ -14722,10 +14762,12 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
       maxBytes: DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
       novelImport: true,
       oneWayManuscript: payload.target === 'new-project',
+      ...(payload.target === 'new-project' ? { computePreview: input => runDocxImportComputation('local-preview', input, docxImportComputeOptions(payload.requestId)) } : {}),
       contentPreviewBudgets: {maxBlocks:50_000,maxWorkerOutputBytes:64*1024*1024},
     });
     assertCurrent();
   } catch (error) {
+    if (ownedComputeJob && docxImportComputeJob === ownedComputeJob) finishDocxImportComputeJob(payload.requestId);
     return makeDocxImportLocalFilePreviewTypedError(
       'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
       'DOCX_IMPORT_LOCAL_FILE_PREVIEW_EXECUTION_FAILED',
@@ -14733,6 +14775,8 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
         message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
       },
     );
+  } finally {
+    if (ownedComputeJob && docxImportComputeJob === ownedComputeJob && !previewResult?.importPreviewOk) finishDocxImportComputeJob(payload.requestId);
   }
 
   if (!isPlainObjectValue(previewResult)) {
@@ -21938,7 +21982,9 @@ async function handleDocxNewProjectCreateCommand(payload = {}) {
     if (docxNewProjectAttempt !== attempt) return failure('DOCX_NEW_PROJECT_ATTEMPT_CHANGED');
     if (attempt.promise) return await attempt.promise;
     if (payload.action === 'preview') {
-      const summary = prepareDocxNewProject({ plan, ...attempt.identity }).summary;
+      const summary = await runDocxImportComputation('project-summary', { plan, identity: attempt.identity }, docxImportComputeOptions(payload.requestId));
+      assertSourceCurrent(); assertDocxImportComputeCurrent(payload.requestId);
+      finishDocxImportComputeJob(payload.requestId);
       return { ok: true, target: 'new-project', requestId: payload.requestId, preview: true, writeEffects: false, summary };
     }
     const assertPublication = () => {
@@ -21962,6 +22008,7 @@ async function handleDocxNewProjectCreateCommand(payload = {}) {
     })();
     try { return await attempt.promise; } finally { attempt.promise = null; }
   } catch (error) {
+    finishDocxImportComputeJob(payload.requestId);
     return failure(/^[A-Z][A-Z0-9_]{1,95}$/u.test(error?.code || error?.message || '')
       ? error.code || error.message : 'DOCX_NEW_PROJECT_CREATE_FAILED');
   }

@@ -21113,6 +21113,16 @@ function closeDocxImportPreviewModal() {
     updateStatusText('DOCX import is completing; closing the preview cannot undo it');
     return;
   }
+  const attempt = pendingDocxImportAttempt;
+  if (attempt?.phase === 'previewing') {
+    const reportCancellation = confirmed => {
+      if (!pendingDocxImportAttempt && currentProjectId === attempt.projectId)
+        updateStatusText(confirmed ? 'DOCX import cancelled' : 'DOCX import preview unavailable');
+    };
+    void dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, {
+      target: 'new-project', requestId: attempt.requestId, action: 'cancel-preview',
+    }).then(result => reportCancellation(result?.ok === true && result.value?.cancelled === true), () => reportCancellation(false));
+  }
   invalidateDocxImportAttempt();
 }
 
@@ -21120,6 +21130,7 @@ function invalidateDocxImportAttempt() {
   pendingDocxImportAttempt = null;
   pendingDocxImportPreviewValue = null;
   pendingDocxImportPreviewPlan = null;
+  if (docxImportPreviewModal) docxImportPreviewModal.ariaBusy = 'false';
   closeSimpleModal(docxImportPreviewModal);
 }
 
@@ -21133,6 +21144,7 @@ function isCurrentDocxImportAttempt(attempt) {
 }
 
 function openDocxImportPreviewModal(value) {
+  if (docxImportPreviewModal) docxImportPreviewModal.ariaBusy = 'false';
   const plan = getDocxImportPreviewPlanFromValue(value);
   pendingDocxImportPreviewValue = value && typeof value === 'object' && !Array.isArray(value) ? value : null;
   pendingDocxImportPreviewPlan = plan;
@@ -21156,6 +21168,11 @@ async function openDocxImportPreviewFlow() {
   const attempt = { requestId: 'docx-import-' + crypto.randomUUID(), projectId: currentProjectId, phase: 'previewing' };
   pendingDocxImportAttempt = attempt;
   updateStatusText('Preparing DOCX import preview');
+  if (docxImportPreviewMessage) docxImportPreviewMessage.textContent = 'Preparing manuscript. You can cancel before creating a project.';
+  if (docxImportPreviewLoss) docxImportPreviewLoss.value = '';
+  docxImportPreviewConfirmButtons.forEach(button => { button.disabled = true; button.textContent = 'Create new project'; });
+  if (docxImportPreviewModal) docxImportPreviewModal.ariaBusy = 'true';
+  openSimpleModal(docxImportPreviewModal);
   try {
     const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: attempt.requestId, target: 'new-project' });
     if (!isCurrentDocxImportAttempt(attempt)) return;

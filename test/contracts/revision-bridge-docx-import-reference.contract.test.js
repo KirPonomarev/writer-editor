@@ -314,11 +314,13 @@ async function newProjectHarness(t, inputBytes, referenceOptions = {}, oneWayMan
   const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
   const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(parent, '.authority'), useLeaseHeartbeatWorker: false });
   const sandbox = { isPlainObjectValue: record, crypto, ...admission, mainWindow: { isDestroyed: () => false },
+    AbortController, runDocxImportComputation: require('../../src/main/docxImportComputePort.cjs').runDocxImportComputation,
     captureDocxImportPreviewContext: () => state.context,
     rememberDocxImportPreviewReference: (kind, value, context) => refs.remember(kind, value, context),
     cloneJsonSafe: copy, Buffer, loadRevisionBridgeModule: bridge,
     resolveDocxImportPreviewReference: (kind, ref) => refs.resolve(kind, ref, state.context),
     isDocxImportPreviewReferenceCurrent: (kind, ref) => refs.isCurrent(kind, ref, state.context),
+    invalidateDocxImportPreviewReferences: () => { sandbox.cancelDocxImportComputeJob(); state.context += ':invalidated'; refs.clear(); },
     userBookmarkCapability: id => { state.checks.push(id); if (!state.allowed) throw Error('CAPABILITY_DENIED'); },
     fileManager: { getDocumentsPath: () => parent }, PROJECT_SUBFOLDERS: { roman: 'roman', materials: 'materials' },
     getMainProjectManifestAuthority: async () => authority,
@@ -730,4 +732,27 @@ test('compact source deterministically rederives every partition and preserves t
     if (file.role === 'scene') assert.deepEqual(envelope.parseObservablePayload(file.content), envelope.parseObservablePayload(after.content));
     else assert.equal(file.content, after.content);
   });
+});
+
+test('actual Main cancels only its current preparation and cannot publish late preview output',async t=>{
+ const h=await newProjectHarness(t,fs.readFileSync(path.join(root,'test/fixtures/docx-word-native-manuscript-profile.docx')),{},true);
+ let release,signal;const original=h.sandbox.runDocxImportComputation;
+ h.sandbox.runDocxImportComputation=(op,input,options)=>op==='local-preview'?new Promise(resolve=>{release=()=>original(op,input).then(resolve);signal=options.signal}):original(op,input,options);
+ const selecting=h.sandbox.handleDocxImportLocalFilePreviewCommandSurface({requestId:'owned-prepare',target:'new-project'});
+ await new Promise(setImmediate);assert.ok(release);assert.equal(signal.aborted,false);
+ const duplicate=await h.sandbox.handleDocxImportLocalFilePreviewCommandSurface({requestId:'owned-prepare',target:'new-project'});
+ assert.equal(duplicate.ok,false);assert.equal(duplicate.error.reason,'DOCX_IMPORT_LOCAL_FILE_PREVIEW_EXECUTION_FAILED');assert.equal(signal.aborted,false);
+ const foreign=await h.sandbox.handleDocxImportLocalFilePreviewCommandSurface({requestId:'foreign',target:'new-project',action:'cancel-preview'});
+ assert.equal(foreign.cancelled,false);assert.equal(signal.aborted,false);
+ const cancelled=await h.sandbox.handleDocxImportLocalFilePreviewCommandSurface({requestId:'owned-prepare',target:'new-project',action:'cancel-preview'});
+ assert.equal(cancelled.cancelled,true);assert.equal(signal.aborted,true);assert.equal(h.refs.resolve('plan',h.reference,h.state.context),null);
+ release();const late=await selecting;assert.equal(late.ok,false);assert.equal(late.docxContentPreviewRef,undefined);assert.equal(h.state.registrations,0);
+});
+
+for(const mutation of ['project','window'])test(`new-project summary refuses ${mutation} change while isolated computation is pending`,async t=>{
+ const h=await newProjectHarness(t);let release;const original=h.sandbox.runDocxImportComputation;
+ h.sandbox.runDocxImportComputation=(op,input,options)=>op==='project-summary'?new Promise(resolve=>{release=()=>original(op,input,options).then(resolve)}):original(op,input,options);
+ const preparing=h.invoke(h.request);await new Promise(setImmediate);assert.ok(release);
+ if(mutation==='project')h.state.context+=':new-project';else h.sandbox.mainWindow={isDestroyed:()=>false};
+ release();const late=await preparing;assert.equal(late.ok,false);assert.equal(h.state.registrations,0);
 });

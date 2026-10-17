@@ -642,6 +642,12 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
     );
   }
 
+  // Main may delegate the complete pure computation after its picker and
+  // bounded external read. The fixed worker runs this same validated helper.
+  if (options.oneWayManuscript === true && typeof options.computePreview === 'function') {
+    return options.computePreview({ requestId: normalizeRequestId(input.requestId), bytesBase64: fileBytes.toString('base64') });
+  }
+
   const loadRevisionBridgeModule = typeof options.loadRevisionBridgeModule === 'function'
     ? options.loadRevisionBridgeModule
     : loadRevisionBridgeModuleDefault;

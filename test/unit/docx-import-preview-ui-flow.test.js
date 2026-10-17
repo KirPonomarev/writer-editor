@@ -279,18 +279,18 @@ test('DOCX import preview UI flow: generated bundle carries the shipped DOCX acc
 });
 
 function attemptHarness() {
-  const editor=read('src/renderer/editor.js'), calls=[], statuses=[], pending=[], acknowledgements=[];
+  const editor=read('src/renderer/editor.js'), calls=[], statuses=[], pending=[], acknowledgements=[], cancellations=[];
   const c={currentProjectId:'project-a',crypto:require('node:crypto'),COMMAND_IDS:{PROJECT_IMPORT_DOCX_V1:'import'},
     pendingDocxImportPreviewValue:null,pendingDocxImportPreviewPlan:null,pendingDocxImportAttempt:null,
     docxImportPreviewModal:{},docxImportPreviewMessage:{},docxImportPreviewLoss:{},docxImportPreviewConfirmButtons:[{}],
     getDocxImportPreviewPlanFromValue:value=>value?.docxImportPreviewPlan||null,
     summarizeDocxImportPreview:()=> 'source.docx',summarizeDocxImportLoss:()=> 'retained loss',
     updateStatusText:value=>statuses.push(value),openSimpleModal:()=>{c.visible=true;},closeSimpleModal:()=>{c.visible=false;},
-    dispatchUiCommand:(_id,payload)=>{if(payload.action === 'acknowledge-open'){acknowledgements.push(payload);return Promise.resolve(c.ackResult || {ok:true,value:{acknowledged:true}});}calls.push(payload);return new Promise((resolve,reject)=>pending.push({resolve,reject}));},
+    dispatchUiCommand:(_id,payload)=>{if(payload.action === 'cancel-preview'){cancellations.push(payload);return Promise.resolve(c.cancelResult || {ok:true,value:{cancelled:true}});}if(payload.action === 'acknowledge-open'){acknowledgements.push(payload);return Promise.resolve(c.ackResult || {ok:true,value:{acknowledged:true}});}calls.push(payload);return new Promise((resolve,reject)=>pending.push({resolve,reject}));},
     loadTree:async()=>{},openImportedDocxSceneAfterAccept:async()=>({opened:true,nodeId:'tree-node-'+ 'a'.repeat(32)})};
   vm.createContext(c);vm.runInContext(editor.slice(editor.indexOf('function closeDocxImportPreviewModal()'),editor.indexOf('function summarizeTxtImportPreview(')),c);
   const preview={ok:true,value:{docxImportPreviewPlan:{ok:true},localFilePreview:{status:'preview',get requestId(){return calls.at(-1)?.requestId;}}}};
-  return {c,calls,statuses,pending,preview,acknowledgements};
+  return {c,calls,statuses,pending,preview,acknowledgements,cancellations};
 }
 
 test('actual DOCX UI keeps one attempt through failure and retry, then allocates a fresh explicit import',async()=>{
@@ -332,7 +332,8 @@ test('actual DOCX UI invalidates project ABA at both real assignment sites and d
  const assignments=[...editor.matchAll(/invalidateDocxImportAttempt\(\);\s*currentProjectId = nextProjectId;/gu)];assert.equal(assignments.length,2);
  const h=attemptHarness(),{c}=h;const old=c.openDocxImportPreviewFlow();
  for(const nextProjectId of ['project-b','project-a']){c.nextProjectId=nextProjectId;vm.runInContext(assignments[0][0],c);}
- const fresh=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await old;assert.equal(c.visible,false);
+ const fresh=c.openDocxImportPreviewFlow();h.pending.shift().resolve(h.preview);await old;
+ assert.equal(c.visible,true);assert.equal(c.docxImportPreviewModal.ariaBusy,'true');assert.equal(c.docxImportPreviewConfirmButtons[0].disabled,true);
  h.pending.shift().resolve(h.preview);await fresh;const accepting=c.confirmDocxImportPreviewAndRun();
  c.closeDocxImportPreviewModal();assert.equal(c.pendingDocxImportAttempt.phase,'accepting');
  h.pending.shift().resolve({ok:true,value:{createdSceneIds:['scene']}});await accepting;assert.equal(h.calls.length,3);assert.equal(c.pendingDocxImportAttempt,null);
@@ -413,4 +414,18 @@ test('new-project UI creates once and uses canonical Open; cancellation or navig
     assert.equal(h.calls.length, 3);assert.equal(h.acknowledgements.length, 0);assert.equal(c.pendingDocxImportAttempt, null);
     assert.match(h.statuses.at(-1), failure === 'none' ? /imported into a new project/ : /New project saved/);
   }
+});
+
+test('preparing modal exposes Cancel before completion; late completion cannot reopen it or enable Create',async()=>{
+ const h=attemptHarness(),{c}=h,opening=c.openDocxImportPreviewFlow();
+ assert.equal(c.visible,true);assert.equal(c.docxImportPreviewModal.ariaBusy,'true');assert.equal(c.docxImportPreviewConfirmButtons[0].disabled,true);
+ assert.match(c.docxImportPreviewMessage.textContent,/cancel/);
+ const id=c.pendingDocxImportAttempt.requestId;c.closeDocxImportPreviewModal();
+ assert.equal(h.cancellations.length,1);assert.deepEqual(JSON.parse(JSON.stringify(h.cancellations[0])),{target:'new-project',requestId:id,action:'cancel-preview'});
+ assert.equal(c.visible,false);h.pending.shift().resolve(h.preview);await opening;assert.equal(c.visible,false);assert.equal(c.pendingDocxImportAttempt,null);
+});
+test('unconfirmed cancellation remains explicit and never overwrites a newer attempt',async()=>{
+ const h=attemptHarness(),{c}=h;c.cancelResult={ok:false};const opening=c.openDocxImportPreviewFlow();c.closeDocxImportPreviewModal();
+ await new Promise(setImmediate);assert.equal(h.statuses.at(-1),'DOCX import preview unavailable');
+ h.pending.shift().resolve(h.preview);await opening;assert.equal(c.visible,false);
 });
