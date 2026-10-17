@@ -3280,6 +3280,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
 
     let cursor = 0;
     const formattedRuns = [];
+    let previousFormattingSignature = null;
     const typedBreaks = [];
     let typedBreakInvalid = false;
     for (const runRecord of paragraphRecord.runs) {
@@ -3344,10 +3345,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       const invalidSupportedValue = expectedActionKeys.some((key) => !Object.hasOwn(inline, key))
         || inline.highlightConflict === true || language.invalid === true;
       delete inline.highlightConflict;
-      formattedRuns.push({
-        from,
-        to,
-        text,
+      const semantics = {
         inline,
         inlineState: formattingInlineState(inline),
         ...(language.value ? { wordLanguage: language.value } : {}),
@@ -3362,8 +3360,22 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
           ? { resolvedFontFamily: defaultFontFamily } : {}),
         unsupportedNames,
         invalidSupportedValue,
-        sourceXmlProvenance: provenance(properties || run),
-      });
+      };
+      // One-way import needs semantic spans, not Word's script-dependent run
+      // fragmentation. Validate every run above before comparing *all* fields.
+      // The strict return profile keeps exact per-run provenance unchanged.
+      const signature = options.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1' ? stableJson(semantics) : null;
+      const previous = formattedRuns.at(-1);
+      if (signature !== null && signature === previousFormattingSignature && previous?.to === from) {
+        previous.to = to;
+        previous.text += text;
+        // A merged span is located by its containing paragraph, never falsely
+        // attributed to a single source run or used as return authority.
+        previous.sourceXmlProvenance = provenance(paragraph);
+      } else {
+        formattedRuns.push({ from, to, text, ...semantics, sourceXmlProvenance: provenance(properties || run) });
+      }
+      previousFormattingSignature = signature;
     }
     results.push({
       paragraphIndex,
@@ -5134,6 +5146,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const formattingParagraphScan = extractReviewTransportFormattingRunsV2(documentXml, {
     cryptoPort,
     budgets,
+    manuscriptProfile: ports.manuscriptProfile,
     documentScan,
     relationshipsXml: parts['word/_rels/document.xml.rels'],
     stylesXml: parts['word/styles.xml'],
@@ -5591,7 +5604,11 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
         for (const edge of children(token)) {
           require(edge.namespaceUri===W_NS&&['top','left','bottom','right','between'].includes(edge.localName)&&!seen.has(edge.localName));seen.add(edge.localName);
           attrs(edge,['space','sz','val']);scalar(edge);
-          require(attr(edge,'space',W_NS)==='0'&&attr(edge,'sz',W_NS)==='0'&&attr(edge,'val',W_NS)==='nil');
+          // Word omits zero-valued attributes on an absent border. Explicit
+          // empty/nonzero values are still invalid, as are active borders.
+          const neutralSize = name => !Object.hasOwn(edge.attrsByNs, `${W_NS}|${name}`)
+            || attr(edge, name, W_NS) === '0';
+          require(neutralSize('space') && neutralSize('sz') && attr(edge,'val',W_NS)==='nil');
         }
         normalize(token);return;
       }

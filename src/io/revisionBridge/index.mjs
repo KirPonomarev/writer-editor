@@ -4224,12 +4224,14 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
 export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}) {
   const extracted = extractDocxReviewTransportPackagePartsFromZipBytes(input, options);
   if (!extracted.ok) return extracted;
+  // ZIP bytes have already been extracted. Do not serialize their Buffer
+  // representation into a throwaway array just to delete it afterward.
+  const { bytes: sourceBytes, ...metadata } = isPlainObject(input) ? input : {};
   const parserInput = {
-    ...(isPlainObject(input) ? cloneJsonSafe(input) : {}),
+    ...cloneJsonSafe(metadata),
     parts: extracted.parts,
     zipInventory: extracted.zipInventory,
   };
-  delete parserInput.bytes;
   const mediaCache = new Map(); let mediaBytes = 0;
   const commentProjectionCache = {oneWayManuscript:options.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1'};
   const readDocumentMediaPart = name => {
@@ -4243,7 +4245,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
   };
   const result = {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,
-      readCommentRichDocument: source => parseCommentRichDocument(input.bytes, source, commentProjectionCache),
+      readCommentRichDocument: source => parseCommentRichDocument(sourceBytes, source, commentProjectionCache),
       readTechnicalPartDigest:name=>extracted.technicalPartDigests?.[name] || null }),
     // Private adapter attachment, never part of semantic ReviewIR. The worker
     // signs it in the evidence packet and bounds the complete emitted result.
@@ -8098,6 +8100,14 @@ DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set('DOCX_PARAGRAPH_SPACING_UNSUPPORTED', '
 DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set('DOCX_INLINE_COLOR_UNSUPPORTED', 'CONTENT_INVALID');
 for(const code of ['WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID','WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED','WORD_PARAGRAPH_MARK_PROPERTY_DUPLICATE','WORD_PARAGRAPH_MARK_PROPERTY_INVALID','WORD_PARAGRAPH_MARK_DUPLICATE','WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED','WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED'])DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
+  if (error?.message === 'RTK_BUDGET_EXCEEDED') {
+    return docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_RESOURCE_LIMIT', {
+      sourceCode: 'RTK_BUDGET_EXCEEDED', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+      ...(Number.isSafeInteger(error.actual) && error.actual >= 0 ? { actual: error.actual } : {}),
+      ...(Number.isSafeInteger(error.limit) && error.limit > 0 ? { limit: error.limit } : {}),
+      message: 'Документ превышает лимит безопасного разбора. Проект не создан. Попробуйте импортировать меньшую часть рукописи.',
+    });
+  }
   const bookmarkCodes=['DOCX_USER_BOOKMARK_CRYPTO_REQUIRED','DOCX_USER_BOOKMARK_XML_INVALID','DOCX_USER_BOOKMARK_ENDPOINT_OWNER','DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE','DOCX_USER_BOOKMARK_PAIR_INVALID','DOCX_USER_BOOKMARK_NAME_INVALID','DOCX_USER_BOOKMARK_BUDGET','DOCX_USER_BOOKMARK_RANGE_INVALID','DOCX_USER_BOOKMARK_LINK_INVALID','DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED'];
   for(const code of bookmarkCodes) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
   for (const code of ['WORD_SECTIONS_INVALID','WORD_SECTIONS_UNSUPPORTED','WORD_SECTIONS_PENDING_UNSUPPORTED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
@@ -11881,6 +11891,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         // The same bounded rich grammar applies to native-origin import and
         // authenticated return. Formatting projection never grants return
         // authority: generic import still allocates entirely new local IDs.
+        const resourceFailure = analysis.reasons?.find(item => item.code === 'RTK_BUDGET_EXCEEDED');
+        if (analysis.code === 'RTK_BUDGET_EXCEEDED' || resourceFailure) {
+          throw Object.assign(Error('RTK_BUDGET_EXCEEDED'), {
+            actual: resourceFailure?.actual, limit: resourceFailure?.limit,
+          });
+        }
         const grammar = analysis.reviewIr?.commentBodyGrammar;
         if (grammar?.profile !== 'RICH_INLINE_V1' || grammar.status !== 'SUPPORTED') {
           throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');

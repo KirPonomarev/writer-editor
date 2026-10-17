@@ -756,3 +756,43 @@ for(const mutation of ['project','window'])test(`new-project summary refuses ${m
  if(mutation==='project')h.state.context+=':new-project';else h.sandbox.mainWindow={isDestroyed:()=>false};
  release();const late=await preparing;assert.equal(late.ok,false);assert.equal(h.state.registrations,0);
 });
+
+test('cooperative preparation preserves the exact synchronous project, including notes and pending comments', async t => {
+  const h = await newProjectHarness(t, trackedChapter15k()), identity = freshIdentity();
+  const expected = h.core.prepareDocxNewProject({ plan: h.plan, ...identity });
+  const steps = h.core.prepareDocxNewProjectSteps({ plan: h.plan, ...identity });
+  let step = steps.next(), pauses = 0;
+  while (!step.done) {
+    assert.equal(step.value, undefined, 'intermediate preparation exposes no partial project');
+    pauses++;step = steps.next();
+  }
+  assert.equal(pauses, expected.scenes.length);
+  assert.deepEqual(step.value, expected);assert.equal(Object.isFrozen(step.value), true);
+});
+
+test('new-project preparation captures source and identity before yielding to caller callbacks', async t => {
+  const h = await newProjectHarness(t, docx(Array.from({length:401}, (_,i)=>`Chapter ${i} 😀`)));
+  const plan = structuredClone(h.plan), identity = freshIdentity();
+  const expected = h.core.prepareDocxNewProject({plan,...identity});
+  let changed = false;
+  const result = await h.port.createDocxNewProject({plan, identity, parentDirectoryPath:h.parent,
+    transactionAuthority:h.authority, ownership:{}, assertPublication:async()=>{
+      if (changed) return;
+      changed=true;identity.projectId=freshIdentity().projectId;identity.projectName='Changed during preparation';
+      plan.candidateCreatePlan.entries[0].content='FOREIGN';
+    }});
+  assert.equal(result.projectId,expected.projectId);assert.equal(result.projectName,expected.projectName);
+  for(const file of expected.files) assert.equal(fs.readFileSync(path.join(result.projectRoot,file.relativePath),'utf8'),file.content);
+  assert.equal(fs.readFileSync(result.manifestPath,'utf8'),expected.manifestText);
+});
+
+test('revocation between preparation steps acquires no publication lease and creates no files', async t => {
+  const h = await newProjectHarness(t, docx(Array.from({length:401}, (_,i)=>`Chapter ${i}`)));
+  let checks = 0, leaseAcquired = false, eventLoopRan = false;
+  setImmediate(()=>{eventLoopRan=true;});
+  await assert.rejects(h.port.createDocxNewProject({plan:h.plan,identity:freshIdentity(),parentDirectoryPath:h.parent,
+    ownership:{},transactionAuthority:{...h.authority,withProjectLease:(...args)=>{leaseAcquired=true;return h.authority.withProjectLease(...args);}},
+    assertPublication:async()=>{if(++checks===2) {assert.equal(eventLoopRan,true);throw Error('PREPARATION_REVOKED');}}
+  }),/PREPARATION_REVOKED/u);
+  assert.equal(leaseAcquired,false);assert.deepEqual(fs.readdirSync(h.parent),[]);
+});

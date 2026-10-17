@@ -9,12 +9,26 @@ const { buildFullManuscriptDocxReviewPacketSource: makeSource } = require('../..
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
 const hash = v => crypto.createHash('sha256').update(v).digest('hex');
 
-test('ordinary Word Apply admits the real candidate and rejects corrupted or mixed successor bytes', async () => {
+test('ordinary Word Apply admits the real candidate and rejects corrupted or mixed successor bytes', async t => {
   const path = require('node:path');
   const { execFileSync } = require('node:child_process');
   const root = path.resolve(__dirname, '../..');
   const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
-  const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options, maxBuffer: 64 * 1024 * 1024 });
+  // The corruption wrappers below still execute every verifier check. Reuse
+  // only the real, immutable input blobs beneath those wrappers; never cache
+  // a verifier result, a mutable ref, a failure or an injected corruption.
+  const blobs = new Map();
+  let blobReads = 0, blobHits = 0;
+  const git = (args, options = {}) => {
+    const cacheable = args.length === 2 && args[0] === 'show'
+      && /^[a-f0-9]{40}:.+$/u.test(args[1])
+      && (Object.keys(options).length === 0
+        || Object.keys(options).length === 1 && options.encoding === null);
+    if (cacheable && blobs.has(args[1])) { blobHits++; return Buffer.from(blobs.get(args[1])); }
+    const value = execFileSync('git', args, { cwd: root, ...options, maxBuffer: 64 * 1024 * 1024 });
+    if (cacheable) { blobReads++; blobs.set(args[1], Buffer.from(value)); }
+    return value;
+  };
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
   // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
   const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
@@ -58,6 +72,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: unrelated }),
     /E_INTEROP_WORD_TABLES_ANCESTRY/);
   assert.equal(ancestryChecked, true, 'ancestry rejection must execute');
+  t.diagnostic(`Immutable Git blobs: ${blobReads} reads, ${blobHits} reused; all corruption checks executed.`);
 });
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);

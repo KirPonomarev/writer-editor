@@ -170,3 +170,73 @@ test('interior deletion anchors require the manuscript profile and retain the fu
  const altered=structuredClone(analysis);altered.reviewIr.commentThreads[0].anchorRange.endUtf16--;
  assert.throws(()=>genericCommentCandidates(altered,preview.contentPreview.paragraphs,{...options,manuscriptProfile:'YALKEN_MANUSCRIPT_V1'}),/DOCX_GENERIC_COMMENT_PENDING_UNION/u);
 });
+
+for (const omitted of [['space'], ['sz'], ['space', 'sz']]) test(`Word nil comment borders tolerate omitted ${omitted.join('/')} only in manuscript import`, async () => {
+  const changed = rewrite(input(), parts => {
+    let xml = parts.get('word/comments.xml').toString();
+    for (const name of omitted) xml = xml.replace(new RegExp(` w:${name}="0"`, 'gu'), '');
+    parts.set('word/comments.xml', xml);
+  });
+  const baseline = await read(), actual = await read(changed);
+  assert.equal(actual.plan.ok, true, JSON.stringify(actual.preview.diagnostics));
+  const { prepareDocxNewProject } = await import('../../src/core/docx-new-project-v1.mjs');
+  const id = identity();
+  assert.deepEqual(prepareDocxNewProject({plan:actual.plan,...id}).files, prepareDocxNewProject({plan:baseline.plan,...id}).files);
+  assert.equal((await read(changed, false)).plan.ok, false);
+});
+for (const edge of ['<w:top w:val="nil" w:sz=""/>', '<w:top w:val="nil" w:space="1"/>',
+  '<w:top w:val="nil" w:sz="1"/>', '<w:top/>', '<w:top w:val="single"/>',
+  '<w:top w:val="nil"/><w:top w:val="nil"/>', '<x:top xmlns:x="urn:foreign" w:val="nil"/>',
+  '<w:top w:val="nil"><w:r><w:t>hidden</w:t></w:r></w:top>']) test(`nil comment border rejects malformed or active edge ${edge}`, async () => {
+  const changed = rewrite(input(), parts => {
+    const xml = parts.get('word/comments.xml').toString();
+    assert.match(xml, /<w:pBdr>.*?<\/w:pBdr>/u);
+    parts.set('word/comments.xml', xml.replace(/<w:pBdr>.*?<\/w:pBdr>/u, `<w:pBdr>${edge}</w:pBdr>`));
+  });
+  const result = await read(changed);
+  assert.equal(result.preview.ok, false);assert.equal(result.plan.ok, false);
+});
+
+test('fragmentation does not consume the manuscript semantic budget or alter text and comment placement', async () => {
+  const run = '<w:r><w:t>क</w:t></w:r>';
+  const append = body => changeMain(input(), xml => xml.replace('<w:sectPr', `<w:p>${body}</w:p><w:sectPr`));
+  const compact = append('<w:r><w:t>' + 'क'.repeat(3000) + '</w:t></w:r>'), fragmented = append(run.repeat(3000));
+  const io = await import('../../src/io/revisionBridge/index.mjs');
+  const preview = io.buildDocxContentPreviewFromZipBytes({bytes:fragmented,manuscriptProfile:'YALKEN_MANUSCRIPT_V1',budgets:{maxWorkerOutputBytes:128*1024}});
+  assert.equal(preview.ok, true, JSON.stringify(preview.diagnostics));
+  const plan = io.buildDocxNovelImportPreviewPlanFromContentPreview(preview);
+  assert.equal(plan.ok, true);
+  const {prepareDocxNewProject} = await import('../../src/core/docx-new-project-v1.mjs'), id=identity();
+  const model = prepareDocxNewProject({plan,...id}), baseline=prepareDocxNewProject({plan:(await read(compact)).plan,...id});
+  assert.deepEqual(model.files, baseline.files);assert.deepEqual(model.summary, baseline.summary);
+  assert.deepEqual(oracle(fragmented), oracle(compact));
+  // A late malformed property may not be concealed by compacting earlier runs.
+  const bad = changeMain(fragmented, xml => xml.replace('<w:sectPr', '<w:p><w:r><w:rPr><w:color w:val="invalid"/></w:rPr><w:t>tail</w:t></w:r></w:p><w:sectPr'));
+  assert.equal((await read(bad)).plan.ok, false);
+});
+
+test('formatting compaction retains distinct styles, offsets and invalid-property evidence; default scanner stays exact', async () => {
+  const {extractReviewTransportFormattingRunsV2:scan} = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const xml = `<w:document xmlns:w="${W}"><w:body><w:p>`
+    + '<w:r><w:t>A</w:t></w:r><w:r><w:t>😀</w:t></w:r>'
+    + '<w:r><w:rPr><w:b/></w:rPr><w:t>B</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>C</w:t></w:r>'
+    + '<w:r><w:rPr><w:color w:val="invalid"/></w:rPr><w:t>D</w:t></w:r></w:p></w:body></w:document>';
+  const options = {cryptoPort:{sha256Text:sha,sha256Json:v=>'sha256:'+sha(JSON.stringify(v)),byteLength:Buffer.byteLength}};
+  const exact=scan(xml,options), compact=scan(xml,{...options,manuscriptProfile:'YALKEN_MANUSCRIPT_V1'});
+  assert.equal(exact.ok,true);assert.equal(compact.ok,true);
+  assert.equal(exact.paragraphs[0].formattedRuns.length,5);
+  const runs=compact.paragraphs[0].formattedRuns;
+  assert.deepEqual(runs.map(r=>[r.from,r.to,r.text]),[[0,3,'A😀'],[3,5,'BC'],[5,6,'D']]);
+  assert.equal(runs[1].inlineState.bold,true);assert.equal(runs[2].invalidSupportedValue,true);
+  assert.equal(runs[0].sourceXmlProvenance.elementName,'p','coalesced provenance honestly names the containing paragraph');
+});
+
+test('comment analysis budget refusal is reported as a resource limit, not unsupported comment metadata', async () => {
+  const io = await import('../../src/io/revisionBridge/index.mjs');
+  const preview = io.buildDocxContentPreviewFromZipBytes({bytes:input(),manuscriptProfile:'YALKEN_MANUSCRIPT_V1',budgets:{maxWorkerOutputBytes:1}});
+  assert.equal(preview.ok,false);assert.equal(preview.reason,'RTK_BUDGET_EXCEEDED');
+  assert.equal(preview.code,'DOCX_CONTENT_PREVIEW_RESOURCE_LIMIT');
+  assert.equal(io.buildDocxNovelImportPreviewPlanFromContentPreview(preview).ok,false);
+  const diagnostic=preview.diagnostics.find(d=>d.sourceCode==='RTK_BUDGET_EXCEEDED');
+  assert.equal(diagnostic.limit,1);assert.ok(diagnostic.actual>diagnostic.limit);
+});
