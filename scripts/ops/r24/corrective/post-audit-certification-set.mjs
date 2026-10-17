@@ -26371,7 +26371,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "f85c0ca35fa63b766e1d5715ce60268955aa00617d6799164205ec0a06509731"
+      "sha256": "6083f5d77a12b8d308971eb73e4368c04541b7c634833a4b20b00b0155e03360"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
@@ -26483,7 +26483,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "30520aec7070d20143a930bc52886c3472b64d63aa6836d77769528ad6dc5c34"
+      "sha256": "8911b8a16ec1013dd900bbd8aae40dd761d8c817305737df9e7b84b7eeac6d6b"
     },
     {
       "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
@@ -26699,7 +26699,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "f7acb2065ec6525c285a14eb8721ce51f0d802a435839e72bee9e096b7a20dfd"
+      "sha256": "81d6d987cca86f39846efbb672d30c2cef8ff096d465606254870c6a85505dc4"
     },
     {
       "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
@@ -26979,7 +26979,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/genericWordComments.mjs",
-      "sha256": "3dea3ab5fe0b0bbb4a95a0fbc2b857554e2ed36639083a4b8c6569cfcfd915ed"
+      "sha256": "6849ed42dddbd0ce00995624fc570a3044abd36ccbbd054087fd0defc6eb1c79"
     },
     {
       "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
@@ -27092,12 +27092,20 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
       "sha256": "6963635eedfb7b46d7b1195547f74455064104bb758df13d1ec2f718d8a1fa2f"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--google-docx-small-manuscript.md",
+      "sha256": "0e71caa6944dc307a9418258b1b2addbbdbe6ba17c8be8ab56c96e517b4ad648"
+    },
+    {
+      "path": "test/contracts/rtk-docx-google-manuscript-small.contract.test.js",
+      "sha256": "814aa39d47b218f20092cece0a4267bfcf6ed08efcc26f7731660351b50de76e"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f12b076fa5f7d393d7072715973b30f63e1e04682516adb68dd55755e79bedbe"
+      "sha256": "69a3a2a1553323f6009a4ce8ee1998300ee8819e04cc6a529062ac37fef30088"
     }
   ]
 });
