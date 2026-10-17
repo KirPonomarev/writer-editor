@@ -4245,7 +4245,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
   };
   const result = {
     ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart,
-      readCommentRichDocument: source => parseCommentRichDocument(input.bytes, source, commentProjectionCache),
+      readCommentRichDocument: source => parseCommentRichDocument(sourceBytes, source, commentProjectionCache),
       readTechnicalPartDigest:name=>extracted.technicalPartDigests?.[name] || null }),
     // Private adapter attachment, never part of semantic ReviewIR. The worker
     // signs it in the evidence packet and bounds the complete emitted result.

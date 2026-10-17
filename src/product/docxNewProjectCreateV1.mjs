@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import { constants } from 'node:fs';
 import path from 'node:path';
-import { prepareDocxNewProject } from '../core/docx-new-project-v1.mjs';
+import { prepareDocxNewProjectSteps } from '../core/docx-new-project-v1.mjs';
 import { sha256Hex } from '../core/browser-safe-hash.mjs';
 
 const need = (ok, code) => { if (!ok) throw Object.assign(Error(code), { code }); };
@@ -19,11 +19,21 @@ export async function createDocxNewProject({ plan, identity, parentDirectoryPath
   assertPublication, ownership, initialDirectories = [] }) {
   need(typeof assertPublication === 'function' && ownership && typeof ownership === 'object'
     && transactionAuthority?.withProjectLease && transactionAuthority?.commitManifestText, 'DOCX_NEW_PROJECT_AUTHORITY');
-  const model = prepareDocxNewProject({ plan, ...identity });
+  // Capture all source data before the first asynchronous callback. A caller
+  // cannot replace a later scene or identity while preparation is paused.
+  const preparation = prepareDocxNewProjectSteps(structuredClone({ plan, ...identity }));
   need(path.isAbsolute(parentDirectoryPath), 'DOCX_NEW_PROJECT_PARENT');
   need(Array.isArray(initialDirectories) && initialDirectories.length <= 16
     && initialDirectories.every(name => typeof name === 'string' && /^[a-z][a-z0-9-]{0,31}$/u.test(name)), 'DOCX_NEW_PROJECT_DIRECTORIES');
+  initialDirectories = [...initialDirectories];
   await assertPublication();
+  let step = preparation.next();
+  while (!step.done) {
+    await new Promise(resolve => setImmediate(resolve));
+    await assertPublication();
+    step = preparation.next();
+  }
+  const model = step.value;
   const parent = await fs.realpath(parentDirectoryPath), parentStat = await fs.lstat(parent);
   need(parentStat.isDirectory() && !parentStat.isSymbolicLink(), 'DOCX_NEW_PROJECT_PARENT');
   const root = path.join(parent, model.directoryName), manifestPath = path.join(root, 'project.craftsman.json');

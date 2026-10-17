@@ -32,7 +32,7 @@ function profile(doc) {
 }
 
 // Pure fresh initialization. Filenames and identities are local, never provider authority.
-export function prepareDocxNewProject({ plan, projectId, projectName, operationId, createdAtUtc }) {
+export function* prepareDocxNewProjectSteps({ plan, projectId, projectName, operationId, createdAtUtc }) {
   need(typeof projectId === 'string' && /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/u.test(projectId), 'DOCX_NEW_PROJECT_ID');
   need(typeof projectName === 'string' && projectName.trim() === projectName && projectName.length > 0
     && projectName.isWellFormed() && bytes(projectName) <= 512 && !/[\u0000-\u001f\u007f]/u.test(projectName), 'DOCX_NEW_PROJECT_NAME');
@@ -51,7 +51,7 @@ export function prepareDocxNewProject({ plan, projectId, projectName, operationI
     size += byteLength; need(size <= DOCX_NEW_PROJECT_LIMITS.bytes, 'DOCX_NEW_PROJECT_BYTES');
     files.push({ relativePath, role, content, byteLength, sha256: sha256Hex(content) });
   };
-  entries.forEach((entry, index) => {
+  for (const [index, entry] of entries.entries()) {
     const parsed = envelope.parseObservablePayload(entry.content);
     need(!parsed.issue, 'DOCX_NEW_PROJECT_SCENE');
     const sourceDoc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text);
@@ -93,7 +93,8 @@ export function prepareDocxNewProject({ plan, projectId, projectName, operationI
         pendingDocument: doc, projectId, sceneId: relativePath, importOperationId, beforeText: commentState }).afterText;
       commentCount += entry.comments.length;
     }
-  });
+    yield; // Pure checkpoint; the owning adapter chooses whether to yield the event loop.
+  }
   if (noteState !== null) add('notes.craftsman.json', 'notes', noteState);
   if (commentState !== null) add('.yalken/word-review/non-text-return-state.v1.json', 'comments', commentState);
   const manifestText = json({ schemaVersion: 1, projectId, projectName, createdAtUtc, treeIdentity, lastCommandId: 1 });
@@ -106,4 +107,12 @@ export function prepareDocxNewProject({ plan, projectId, projectName, operationI
     files, directories, scenes, manifestText, manifestSha256: sha256Hex(manifestText),
     summary: { target: 'new-project', sceneCount: scenes.length, characters, currentUtf16CodeUnits,
       originalUtf16CodeUnits, revisionCount, noteCount, commentCount } });
+}
+
+// Existing pure/synchronous consumers share the same preparation and validation.
+export function prepareDocxNewProject(input) {
+  const steps = prepareDocxNewProjectSteps(input);
+  let step = steps.next();
+  while (!step.done) step = steps.next();
+  return step.value;
 }

@@ -26371,7 +26371,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "6083f5d77a12b8d308971eb73e4368c04541b7c634833a4b20b00b0155e03360"
+      "sha256": "2d2ade78cd7b76b441d86b783924a4bb629b1188c06549aeb7b4987a58d6e620"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
@@ -26483,7 +26483,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "8911b8a16ec1013dd900bbd8aae40dd761d8c817305737df9e7b84b7eeac6d6b"
+      "sha256": "e90560684d0c454c0df579075a8525c9d71517c882944849776b69ada3210921"
     },
     {
       "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
@@ -26711,7 +26711,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-      "sha256": "7732b20aee16e9e5a4aa7b3254e612e305ce9a5d234e4931eb55866238936086"
+      "sha256": "51981d23dfd55d12164428d79cdb604ba5c18107ff77ec97d6a3b968bad01b8b"
     },
     {
       "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
@@ -26999,11 +26999,11 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/core/docx-new-project-v1.mjs",
-      "sha256": "a3a90c70743913a86e0cfecd048598380d6c324ad0dee305f507f9de1863679a"
+      "sha256": "2a6effe7eefb2dfcf3905cb804bd5f7e49b8216226a22633a90bcc7cc04e9e24"
     },
     {
       "path": "src/product/docxNewProjectCreateV1.mjs",
-      "sha256": "f24300b463af155386fe0faeabe88cd5b2b91bd9f376dbf869f1515d63d3bf63"
+      "sha256": "0a8f34280f938deef0681fc776a3bf36f5c8f607b1955cfbbd6b4ee74d2ac09a"
     },
     {
       "path": "src/renderer/commands/command-catalog.v1.mjs",
@@ -27099,13 +27099,17 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-docx-google-manuscript-small.contract.test.js",
-      "sha256": "814aa39d47b218f20092cece0a4267bfcf6ed08efcc26f7731660351b50de76e"
+      "sha256": "23fff74e55b4f4f3f53810d341fcd3d4e8bf1a7eb9c30bdd73b8379cf0fd3105"
+    },
+    {
+      "path": "docs/tasks/2026-10-18--docx-million-hardening.md",
+      "sha256": "1c9a935699da61b68594d75fc515d97854ba58e2e298efa12ea6a26eb0e814f0"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "69a3a2a1553323f6009a4ce8ee1998300ee8819e04cc6a529062ac37fef30088"
+      "sha256": "cf60b051715472bfd3b65e50364d021be1b06c1b20460bfe271be8226b8583eb"
     }
   ]
 });

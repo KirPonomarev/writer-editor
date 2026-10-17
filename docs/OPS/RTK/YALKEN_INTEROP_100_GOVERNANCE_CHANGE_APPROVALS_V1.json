@@ -461,11 +461,11 @@
     {
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "7732b20aee16e9e5a4aa7b3254e612e305ce9a5d234e4931eb55866238936086"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "51981d23dfd55d12164428d79cdb604ba5c18107ff77ec97d6a3b968bad01b8b"
     },
     {
       "approved": true,
@@ -5483,20 +5483,20 @@
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "8911b8a16ec1013dd900bbd8aae40dd761d8c817305737df9e7b84b7eeac6d6b"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "e90560684d0c454c0df579075a8525c9d71517c882944849776b69ada3210921"
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "6083f5d77a12b8d308971eb73e4368c04541b7c634833a4b20b00b0155e03360"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "2d2ade78cd7b76b441d86b783924a4bb629b1188c06549aeb7b4987a58d6e620"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "69a3a2a1553323f6009a4ce8ee1998300ee8819e04cc6a529062ac37fef30088"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "cf60b051715472bfd3b65e50364d021be1b06c1b20460bfe271be8226b8583eb"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "1aea3f362d05d705f1955e59f8ba7c1de52d0d97ef3b694280e39def00337b1e"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "27764ead0bd5fffde5244bffb42240a0b32beb5eb46cfb8278427400057594a2"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "59e7e9c0c53ded1bee20d0a7ee9c51ab8abde9263f14f4d5b24b2023b91187ac"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "db5ccc6c422519aabf7db0086f3d49fa7d3a56f2acd4f2a1e992f349764fca25"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "d7c91b5a8f46dca8cab465613aa89c039af6053b15a246471189f0a87a387f35"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "f1fae25b0dd17e63415b50c172f36a70c04f961eed2df2e0a92edeb90aabf9bd"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "e41de12190e6180ee0f0bd9198936e8e349c47402c3914e7e6ace3ea32b018ab"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "53c8d4d32f71feda090bed2ce4b5da75edcc68cbf39b7507108a4c64740a6cc0"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "547438816c1d9f3fbe6e8ef48e16244393f606030aef30b2dc2eb8fae848fbf5"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "d6d5bd109fb4e1583a8caca2dea056809c3ee226a7ccee1f0997ef30c3f6d199"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5852,20 +5852,20 @@
     {
       "filePath": "src/core/docx-new-project-v1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "a3a90c70743913a86e0cfecd048598380d6c324ad0dee305f507f9de1863679a"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "2a6effe7eefb2dfcf3905cb804bd5f7e49b8216226a22633a90bcc7cc04e9e24"
     },
     {
       "filePath": "src/product/docxNewProjectCreateV1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "f24300b463af155386fe0faeabe88cd5b2b91bd9f376dbf869f1515d63d3bf63"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "0a8f34280f938deef0681fc776a3bf36f5c8f607b1955cfbbd6b4ee74d2ac09a"
     },
     {
       "filePath": "src/renderer/commands/command-catalog.v1.mjs",
@@ -5969,11 +5969,20 @@
     {
       "filePath": "test/contracts/rtk-docx-google-manuscript-small.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
-      "sha256": "814aa39d47b218f20092cece0a4267bfcf6ed08efcc26f7731660351b50de76e"
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "23fff74e55b4f4f3f53810d341fcd3d4e8bf1a7eb9c30bdd73b8379cf0fd3105"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-18--docx-million-hardening.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T22:26:59.988843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_MILLION_HARDENING_20261018",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested bounded feature hardening. Fixes actual Word omitted nil-border attributes and excessive identical formatting-run fragmentation in the explicit one-way manuscript profile; resource refusals remain bounded. Pure preparation checkpoints retain an isolated input snapshot and publication revalidation; writer/fencing/rollback unchanged. 80 focused tests pass, including regression, negative, snapshot and cancellation cases. Four unchanged Word million-codepoint language groups pass full command creation, current/original text and all comment anchors, five decision/readback steps; actual Google native million-codepoint export passes text creation/reopen only. No fresh Google editorial, arbitrary DOCX or installed native UI claim here. Mechanical inventory/source hashes only; existing membership, protected bytes, prior approvals and verifier predicates retained.",
+      "sha256": "1c9a935699da61b68594d75fc515d97854ba58e2e298efa12ea6a26eb0e814f0"
     }
   ],
   "evidenceStampIds": [
@@ -48163,6 +48172,114 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
       "sha256": "38e57dde2be76a227db017c9c0573b0e5869abc331904ec38ee4a4d1de5c555c"
+    },
+    {
+      "filePath": "src/core/docx-new-project-v1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "a3a90c70743913a86e0cfecd048598380d6c324ad0dee305f507f9de1863679a"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "6083f5d77a12b8d308971eb73e4368c04541b7c634833a4b20b00b0155e03360"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "8911b8a16ec1013dd900bbd8aae40dd761d8c817305737df9e7b84b7eeac6d6b"
+    },
+    {
+      "filePath": "src/product/docxNewProjectCreateV1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "f24300b463af155386fe0faeabe88cd5b2b91bd9f376dbf869f1515d63d3bf63"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T12:00:47.368887+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_RESPONSIVE_USER_BUILD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested eliminating large DOCX preparation blocking and installing a verified user build. Existing pure parse, plan and summary execute through a fixed read-only utility process with bounded admission, confirmed retirement, cancellation and source/context/window guards; no inline Electron Main fallback. Existing modal shows preparing with Cancel and disabled Create. Complete actual native fixture outputs match;100k Main heartbeat gap2602ms to19ms. Current focused and affected contracts pass without skips. Original Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "7732b20aee16e9e5a4aa7b3254e612e305ce9a5d234e4931eb55866238936086"
+    },
+    {
+      "filePath": "test/contracts/rtk-docx-google-manuscript-small.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "814aa39d47b218f20092cece0a4267bfcf6ed08efcc26f7731660351b50de76e"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "59e7e9c0c53ded1bee20d0a7ee9c51ab8abde9263f14f4d5b24b2023b91187ac"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "d7c91b5a8f46dca8cab465613aa89c039af6053b15a246471189f0a87a387f35"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "547438816c1d9f3fbe6e8ef48e16244393f606030aef30b2dc2eb8fae848fbf5"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "69a3a2a1553323f6009a4ce8ee1998300ee8819e04cc6a529062ac37fef30088"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "1aea3f362d05d705f1955e59f8ba7c1de52d0d97ef3b694280e39def00337b1e"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T18:16:17.360314+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "e41de12190e6180ee0f0bd9198936e8e349c47402c3914e7e6ace3ea32b018ab"
     }
   ]
 }
