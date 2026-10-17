@@ -812,3 +812,112 @@ function harness(t, options = {}) {
  }
 
 });
+
+// Isolated preparation transport contracts; original create-only oracles above are unchanged.
+{
+const test = require('node:test'), assert = require('node:assert/strict');
+const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+const { EventEmitter } = require('node:events');
+const { createDocxImportComputePort } = require('../../src/main/docxImportComputePort.cjs');
+const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
+const fixture = fs.readFileSync(path.join(__dirname, '../fixtures/docx-word-native-manuscript-profile.docx'));
+const input = { requestId: 'compute-contract', bytesBase64: fixture.toString('base64') };
+function controlled({ stop = 'hold' } = {}) {
+  const workers = [];
+  class Controlled extends EventEmitter {
+    constructor(entry, options) { super(); this.entry = entry; this.data = options.workerData; this.stops = 0; workers.push(this); }
+    terminate() { this.stops++; return stop === 'reject' ? Promise.reject(Error('unconfirmed')) : stop === 'immediate'
+      ? Promise.resolve(0) : new Promise(resolve => this.stopped = resolve); }
+    answer(value = { value: 'complete' }, changes = {}) {
+      this.emit('message', { operation: this.data.operation, nonce: this.data.nonce, inputDigest: this.data.inputDigest,
+        resultJson: JSON.stringify({ ok: true, value }), ...changes });
+    }
+  }
+  return { workers, Controlled };
+}
+test('actual fixed worker preserves complete native Word preview, deterministic plan and Core summary', async () => {
+  const compute = createDocxImportComputePort();
+  const inline = await createDocxImportLocalFilePreview({ requestId: input.requestId }, {
+    pickLocalFile: async () => ({ fileName: 'source.docx' }), readLocalFileBytes: async () => fixture,
+    novelImport: true, oneWayManuscript: true, contentPreviewBudgets: { maxBlocks: 50000, maxWorkerOutputBytes: 64*1024*1024 },
+  });
+  const actual = await compute('local-preview', input);
+  assert.equal(actual.importPreviewOk, true); assert.deepEqual(actual, inline);
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const plan = await compute('import-plan', { contentPreviewReport: actual.docxContentPreviewReport });
+  assert.deepEqual(plan, bridge.buildDocxNovelImportPreviewPlanFromContentPreview(actual.docxContentPreviewReport));
+  const identity = { projectId: 'fb14f8ea-aef6-4d2f-a5e2-a1532c78ae20', projectName: 'Computation proof',
+    operationId: 'computation-proof', createdAtUtc: '2026-10-17T12:00:00.000Z' };
+  const core = await import('../../src/core/docx-new-project-v1.mjs');
+  assert.deepEqual(await compute('project-summary', { plan, identity }), core.prepareDocxNewProject({ plan, ...identity }).summary);
+});
+test('Main event loop continues while actual parser Worker owns computation; abort retires it and permits a fresh request', async () => {
+  const compute = createDocxImportComputePort(), controller = new AbortController();
+  const promise = compute('local-preview', input, { signal: controller.signal });
+  const rejected = assert.rejects(promise, { code: 'DOCX_IMPORT_COMPUTE_CANCELLED' });
+  await new Promise(setImmediate); controller.abort(); await rejected;
+  assert.equal((await compute('local-preview', input)).importPreviewOk, true);
+});
+test('active admission remains held through confirmed retirement and abort during retirement wins over ready result', async () => {
+  const h = controlled(), compute = createDocxImportComputePort({ WorkerClass: h.Controlled }), controller = new AbortController();
+  const p = compute('import-plan', {}, { signal: controller.signal }); const rejected = assert.rejects(p, { code: 'DOCX_IMPORT_COMPUTE_CANCELLED' });
+  h.workers[0].answer(); assert.equal(h.workers[0].stops, 1);
+  await assert.rejects(compute('import-plan', {}), { code: 'DOCX_IMPORT_COMPUTE_BUSY' });
+  controller.abort(); h.workers[0].answer({ stale: true }); h.workers[0].stopped(0); await rejected;
+});
+test('cancellation before response rejects late output with exactly one retirement', async () => {
+  const h = controlled(), compute = createDocxImportComputePort({ WorkerClass: h.Controlled }), controller = new AbortController();
+  const p = compute('import-plan', {}, { signal: controller.signal }); const rejected = assert.rejects(p, { code: 'DOCX_IMPORT_COMPUTE_CANCELLED' });
+  controller.abort(); h.workers[0].answer({ late: true }); h.workers[0].stopped(0); await rejected;
+  assert.equal(h.workers[0].stops, 1);
+});
+for (const [name,changes] of [['nonce',{nonce:'f'.repeat(64)}],['operation',{operation:'local-preview'}],['digest',{inputDigest:'f'.repeat(64)}],
+  ['extra',{path:'/foreign'}],['json',{resultJson:'{'}],['shape',{resultJson:'{"ok":true,"value":1,"write":true}'}]])
+test(`worker response ${name} corruption is rejected, never published`, async () => {
+  const h=controlled({stop:'immediate'}),compute=createDocxImportComputePort({WorkerClass:h.Controlled}),p=compute('import-plan',{});
+  const rejected=assert.rejects(p);h.workers[0].answer({},changes);await rejected;assert.equal(h.workers[0].stops,1);
+});
+for (const kind of ['error','exit','start']) test(`worker ${kind} fails closed without inline parser fallback`, async () => {
+  const h=controlled({stop:'immediate'});const WorkerClass=kind==='start'?class{constructor(){throw Error('start')}}:h.Controlled;
+  const compute=createDocxImportComputePort({WorkerClass}),p=compute('import-plan',{}),rejected=assert.rejects(p);
+  if(kind!=='start')h.workers[0].emit(kind,kind==='error'?Error('failure'):2);await rejected;
+});
+test('timeout retires the worker; failed retirement permanently refuses new work on this port',async()=>{
+  const h=controlled({stop:'immediate'}),compute=createDocxImportComputePort({WorkerClass:h.Controlled,timeoutMs:10});
+  await assert.rejects(compute('import-plan',{}),{code:'DOCX_IMPORT_COMPUTE_TIMEOUT'});assert.equal(h.workers[0].stops,1);
+  const bad=controlled({stop:'reject'}),broken=createDocxImportComputePort({WorkerClass:bad.Controlled}),p=broken('import-plan',{});
+  const rejected=assert.rejects(p,{code:'DOCX_IMPORT_COMPUTE_STOP'});bad.workers[0].answer();await rejected;
+  await assert.rejects(broken('import-plan',{}),{code:'DOCX_IMPORT_COMPUTE_STOP'});assert.equal(bad.workers.length,1);
+});
+test('hung retirement is bounded and never releases admission for another worker',async()=>{
+  const h=controlled(),compute=createDocxImportComputePort({WorkerClass:h.Controlled}),p=compute('import-plan',{});
+  const rejected=assert.rejects(p,{code:'DOCX_IMPORT_COMPUTE_STOP'});h.workers[0].answer();await rejected;
+  await assert.rejects(compute('import-plan',{}),{code:'DOCX_IMPORT_COMPUTE_STOP'});assert.equal(h.workers.length,1);
+});
+test('unknown operation, over-limit input, invalid deadline and already cancelled request cannot spawn',async()=>{
+  const h=controlled(),compute=createDocxImportComputePort({WorkerClass:h.Controlled}),controller=new AbortController();controller.abort();
+  await assert.rejects(compute('import-plan',{}, {signal:controller.signal}),{code:'DOCX_IMPORT_COMPUTE_CANCELLED'});
+  await assert.rejects(compute('execute-command',{}),{code:'DOCX_IMPORT_COMPUTE_INPUT'});
+  await assert.rejects(compute('import-plan',{text:'x'.repeat(64*1024*1024)}),{code:'DOCX_IMPORT_COMPUTE_INPUT'});
+  assert.throws(()=>createDocxImportComputePort({timeoutMs:120001}));assert.equal(h.workers.length,0);
+});
+test('Electron Main selects a distinct utility process; unavailable fork never falls back to a Node Worker',async()=>{
+  const source=fs.readFileSync(path.join(__dirname,'../../src/main/docxImportComputePort.cjs'),'utf8');
+  const children=[];let threadStarts=0,broken=false;
+  const utilityProcess={fork(entry,args,options){if(broken)throw Error('no fork');const child=new EventEmitter();child.kill=()=>{setImmediate(()=>child.emit('exit',0));return true};child.postMessage=data=>{child.data=data};children.push({child,entry,args,options});return child;}};
+  const sandbox={module:{exports:{}},process:{versions:{electron:'41.10.6'},type:'browser'},Buffer,__dirname:path.join(__dirname,'../../src/main'),setTimeout,clearTimeout,
+    require:name=>name==='electron'?{utilityProcess}:name==='node:worker_threads'?{Worker:class{constructor(){threadStarts++}}}:require(name)};
+  vm.runInNewContext(source,sandbox);const compute=sandbox.module.exports.createDocxImportComputePort(),p=compute('import-plan',{});
+  assert.equal(children.length,1);const {child}=children[0];child.emit('spawn');
+  child.emit('message',{...Object.fromEntries(['operation','nonce','inputDigest'].map(k=>[k,child.data[k]])),resultJson:'{"ok":true,"value":{"ready":true}}'});
+  assert.equal((await p).ready,true);assert.equal(threadStarts,0);assert.equal(children[0].options.serviceName,'Yalken DOCX preparation');
+  broken=true;await assert.rejects(compute('import-plan',{}),{code:'DOCX_IMPORT_COMPUTE_START'});assert.equal(threadStarts,0);
+});
+
+test('over-limit result is refused before interpretation and never becomes a ready preview',async()=>{
+ const h=controlled({stop:'immediate'}),compute=createDocxImportComputePort({WorkerClass:h.Controlled}),p=compute('import-plan',{});
+ const rejected=assert.rejects(p,{code:'DOCX_IMPORT_COMPUTE_RESULT'});h.workers[0].answer({}, {resultJson:'x'.repeat(64*1024*1024+1)});await rejected;
+ assert.equal(h.workers[0].stops,1);
+});
+
+}

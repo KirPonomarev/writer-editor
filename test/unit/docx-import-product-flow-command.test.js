@@ -453,3 +453,15 @@ test('new-project public command uses opaque Main references and lifecycle creat
   }
   assert.equal(calls.length, before);
 });
+
+test('new-project cancellation uses only the existing guarded preview bridge with matching request identity',async()=>{
+ const {createCommandRegistry,createCommandRunner,registerProjectCommands,COMMAND_IDS}=await loadCommandModules();
+ const requests=[],registry=createCommandRegistry();let wrong=false;
+ registerProjectCommands(registry,{electronAPI:{invokeUiCommandBridge:async request=>{requests.push(request);return {ok:true,value:{ok:true,requestId:wrong?'foreign':request.payload.requestId,status:'cancelled',cancelled:true,writeEffects:false}}}}});
+ const run=createCommandRunner(registry,{capability:{platformId:'node'}});
+ const payload={target:'new-project',requestId:'cancel-current',action:'cancel-preview'};
+ const result=await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1,payload);assert.equal(result.ok,true);assert.equal(result.value.cancelled,true);
+ assert.equal(requests.length,1);assert.equal(requests[0].commandId,'cmd.project.docx.previewLocalFile');assert.deepEqual(requests[0].payload,payload);
+ wrong=true;assert.equal((await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1,payload)).ok,false);
+ const before=requests.length;assert.equal((await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1,{...payload,accept:true})).ok,false);assert.equal(requests.length,before);
+});

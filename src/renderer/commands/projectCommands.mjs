@@ -448,10 +448,20 @@ function buildDocxImportPreviewValue(localFilePreview, fallbackPlan = null) {
 
 async function runDocxNewProjectImport(electronAPI, input) {
   const bad = reason => fail('E_DOCX_NEW_PROJECT_IMPORT', COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, reason);
-  if (Object.keys(input).some(key => !['target', 'requestId', 'accept', 'docxImportPreviewRef', 'editorMode'].includes(key))
+  if (Object.keys(input).some(key => !['target', 'requestId', 'accept', 'docxImportPreviewRef', 'editorMode', 'action'].includes(key))
     || Object.hasOwn(input, 'editorMode') && !['tiptap', 'legacy'].includes(input.editorMode)
     || typeof input.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(input.requestId)
-    || input.accept !== undefined && typeof input.accept !== 'boolean') return bad('DOCX_NEW_PROJECT_PAYLOAD_INVALID');
+    || input.accept !== undefined && typeof input.accept !== 'boolean'
+    || input.action !== undefined && (input.action !== 'cancel-preview' || input.accept !== undefined || input.docxImportPreviewRef !== undefined)) return bad('DOCX_NEW_PROJECT_PAYLOAD_INVALID');
+  if (input.action === 'cancel-preview') {
+    try {
+      const response = unwrapBridgeResponseValue(await invokeBridgeOnlyCommand(electronAPI, EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE, {
+        requestId: input.requestId, target: 'new-project', action: 'cancel-preview',
+      }));
+      return response?.ok === true && response.requestId === input.requestId && response.status === 'cancelled' && response.writeEffects === false
+        ? ok({ cancelled: response.cancelled === true, writeEffects: false }) : bad('DOCX_IMPORT_CANCEL_UNCONFIRMED');
+    } catch { return bad('DOCX_IMPORT_CANCEL_UNCONFIRMED'); }
+  }
   let localFilePreview, plan, reference = input.docxImportPreviewRef;
   if (input.accept !== true) {
     if (reference !== undefined) return bad('DOCX_NEW_PROJECT_PAYLOAD_INVALID');
