@@ -690,7 +690,9 @@
     "src/product/docxNewProjectCreateV1.mjs",
     "src/renderer/commands/command-catalog.v1.mjs",
     ".github/workflows/rtk-required.yml",
-    "docs/tasks/2026-10-17--docx-new-project-source-guard.md"
+    "docs/tasks/2026-10-17--docx-new-project-source-guard.md",
+    "docs/tasks/2026-10-17--docx-new-project-word-profile.md",
+    "test/fixtures/docx-word-native-manuscript-profile.docx"
   ],
   "protectedFiles": [
     {
@@ -919,7 +921,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f7abd328ef22367a8d384e6faeb6f92605a45b09f9f017abb7e6db9eb0a6e31f"
+        "sha256": "d7aafcdd56858cfe4cf78400d8926fca889e0f7da877316b0d7e07a08420ba14"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -935,7 +937,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-        "sha256": "90d6f1f7e19f62e5c5bba858f1ee7cb827f300ceb6371584532209c181ca6f77"
+        "sha256": "1618fdb85f3548ee7a768b9b4ad57614ec38c20f117d5450214db71554105689"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
@@ -955,7 +957,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "d94fde605220848d35706f18433477d8a7fcb6507f6f9b24b51a22646f3b0a7f"
+        "sha256": "fc22c37b35d20162a5d6f27bf825c891ffd7ee4e493bbb3fe0ba3f2d89ddeb3a"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -963,7 +965,7 @@
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "6b745668bfe4859cd2272a0e9e81c2135a06598fa5b73c2e30d359af5a2166e9"
+        "sha256": "e6120c9e65d575371a255869a3a5b8622279a8e45b370092f0f1c00b70c3324c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -1035,7 +1037,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "4195e59f6f6b42674c895abff548233b293ba2add099a0734aa67b56ff8fa3d2"
+        "sha256": "30520aec7070d20143a930bc52886c3472b64d63aa6836d77769528ad6dc5c34"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1747,7 +1749,7 @@
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
-        "sha256": "5622fdc525471774c7f6e3960a744df7ee543d3ca42b834508867c2c249a0943"
+        "sha256": "3757016bb03009e94644984cb41a16709fd22818acd73f2a7f39a8c72d94cc1e"
       },
       {
         "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
@@ -3052,6 +3054,14 @@
       {
         "path": "docs/tasks/2026-10-17--docx-new-project-source-guard.md",
         "sha256": "9a2edd3709a26d30011c48fb6633ba7308e6515fb59b4c7249830634969267b0"
+      },
+      {
+        "path": "docs/tasks/2026-10-17--docx-new-project-word-profile.md",
+        "sha256": "1f11956ca14c179cdb1d03fd5cb5eee488698cdb2378e8d297b118a4a5903ab3"
+      },
+      {
+        "path": "test/fixtures/docx-word-native-manuscript-profile.docx",
+        "sha256": "fae1413613e75d1f476201c4aa6b61bde7f7ea59f1c3d7eb194116fccc867027"
       }
     ],
     "followupRepair": {

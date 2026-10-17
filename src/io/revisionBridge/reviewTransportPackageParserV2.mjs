@@ -2713,7 +2713,7 @@ function readEffectiveTuple(token,kind) {
   return kind==='spacing'?paragraphSpacing.normalizeWordParagraphSpacing(value):wordLanguage.normalizeWordLanguage(value);
 }
 
-function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml, fontDefaults) {
+function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml, fontDefaults, oneWayManuscript = false) {
   // parseXmlPart emits completed elements; indexes require document-open order.
   // Sort separate views so shared parser evidence retains its original ordering.
   const orderedStyles = [...scan.tokens].sort((a,b)=>a.openStart-b.openStart);
@@ -2795,6 +2795,26 @@ function reviewEffectiveStyleCatalog(scan, documentScan, stylesXml, documentXml,
       for (const token of values) {
         const key = token.namespaceUri + ':' + token.localName;
         if (own.has(key)) throw Error('duplicate-property'); own.add(key);
+        if (oneWayManuscript && ((token.namespaceUri === W_NS && ['rFonts','sz','szCs'].includes(token.localName))
+          || token.namespaceUri === W14_NS && token.localName === 'ligatures')) {
+          // A one-way manuscript has no Word font-selection contract. Validate
+          // the complete leaf before normalizing it; unknown namespaces/attrs,
+          // nested content and malformed values never become a safe fallback.
+          const sourceXml=token.partName==='word/styles.xml' ? stylesXml : documentXml;
+          const names=token.localName==='rFonts'
+            ? ['ascii','hAnsi','eastAsia','cs','asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme','hint'] : ['val'];
+          if(nonLeaf.has(token) || (!token.selfClosing && sourceXml.slice(token.openEnd,token.closeStart).trim())
+            || token.attributes.some(a=>a.qName!=='xmlns' && a.prefix!=='xmlns'
+              && (a.namespaceUri!==token.namespaceUri || !names.includes(a.localName)))) throw Error('manuscript-font-shape');
+          for(const a of token.attributes.filter(a=>a.qName!=='xmlns' && a.prefix!=='xmlns')) {
+            if(!a.value || a.value.length>256 || /[\u0000-\u001f\u007f]/u.test(a.value)) throw Error('manuscript-font-value');
+            if(['sz','szCs'].includes(token.localName) && (!/^\d{1,4}$/u.test(a.value) || Number(a.value)<2 || Number(a.value)>3276)) throw Error('manuscript-font-size');
+            if(/Theme$|^cstheme$/u.test(a.localName) && !/^(?:major|minor)(?:Ascii|HAnsi|EastAsia|Bidi)$/u.test(a.value)) throw Error('manuscript-font-theme');
+            if(a.localName==='hint' && !['default','eastAsia','cs'].includes(a.value)) throw Error('manuscript-font-hint');
+            if(token.localName==='ligatures' && !['none','standardContextual'].includes(a.value)) throw Error('manuscript-ligatures-value');
+          }
+          continue;
+        }
         if (token.namespaceUri !== W_NS) throw Error('property-namespace');
         const permitted = {b:['val'],i:['val'],strike:['val'],u:['val'],jc:['val'],outlineLvl:['val'],
           color:['val'],highlight:['val'],shd:['val','fill','color'],sz:['val'],szCs:['val'],
@@ -4292,7 +4312,7 @@ function directChildTokensWithin(documentScan, parent) {
 
 // Native IDs are a package-local bijection only. The signed semantic baseline
 // binds body text and source positions; no note returned here grants write authority.
-function parseDocumentNotes(parts, documentXml, documentScan, relationships, contentTypes, budgets, cryptoPort, budgetState, stylesScan) {
+function parseDocumentNotes(parts, documentXml, documentScan, relationships, contentTypes, budgets, cryptoPort, budgetState, stylesScan, oneWayManuscript = false) {
   const schemaVersion = 'yalken.rtk.word.document-notes.v1';
   const reasons = [], notes = [], references = [], formatting = [], bodySources = [];
   const refs = documentScan.tokens.filter(token => ['footnoteReference', 'endnoteReference'].includes(token.localName))
@@ -4308,7 +4328,7 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
     const stylesXml = rawString(parts['word/styles.xml']);
     // The same strict cascade as visible runs, retaining all four font slots.
     // Empty reference controls have no text run and were previously skipped.
-    const effectiveStyles = reviewEffectiveStyleCatalog(stylesScan, documentScan, stylesXml, documentXml, {});
+    const effectiveStyles = reviewEffectiveStyleCatalog(stylesScan, documentScan, stylesXml, documentXml, {}, oneWayManuscript);
     const definedStyles = new Set(stylesScan.tokens.filter(t => isWordToken(t, 'style')).map(t => attr(t, 'styleId', W_NS)));
     const paragraphs = documentScan.logicalTableParagraphs?.map(record => record.token)
       || documentScan.tokens.filter(token => isWordToken(token, 'p')
@@ -5006,7 +5026,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const documentSections = documentSectionsResult.sections;
   const stylesScan = parseXmlPart('word/styles.xml', rawString(parts['word/styles.xml']), budgets, cryptoPort, budgetState);
   const documentNotesResult = parseDocumentNotes(parts, documentXml, documentScan,
-    relationships.relationships, contentTypes.contentTypes, budgets, cryptoPort, budgetState, stylesScan);
+    relationships.relationships, contentTypes.contentTypes, budgets, cryptoPort, budgetState, stylesScan, ports.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1');
   reasons.push(...documentNotesResult.reasons);
   const documentNotes = documentNotesResult.documentNotes;
   const scans = {

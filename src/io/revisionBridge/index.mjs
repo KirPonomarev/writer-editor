@@ -4231,7 +4231,7 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
   };
   delete parserInput.bytes;
   const mediaCache = new Map(); let mediaBytes = 0;
-  const commentProjectionCache = {};
+  const commentProjectionCache = {oneWayManuscript:options.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1'};
   const readDocumentMediaPart = name => {
     if (mediaCache.has(name)) return mediaCache.get(name);
     const bytes = extracted.binaryParts?.[name];
@@ -9701,6 +9701,7 @@ function docxInlineReadTypography(properties, tag, token, namespaces) {
 }
 
 function docxInlineEffectiveTypography(properties, metadata, catalog, text) {
+  if (catalog.oneWayManuscript) return {}; // Values were validated while reading XML; only presentation is normalized.
   const result = {};
   const resolved = Object.fromEntries(DOCX_FONT_SLOTS.map(slot => [slot, docxFontResolveTheme(properties[`font_${slot}`], catalog.themeFonts)]));
   // Literal and theme declarations both select fonts by the actual run script.
@@ -9776,7 +9777,7 @@ function docxReadLanguageTuple(token,namespaces) {
   return wordLanguage.normalizeWordLanguage(value);
 }
 
-function docxInlineReadProperty(properties, tag, token, namespaces) {
+function docxInlineReadProperty(properties, tag, token, namespaces, oneWayManuscript = false) {
   if(tag==='w:lang'){ if(properties.wordLanguage)throw Error('WORD_LANGUAGE_INVALID');properties.wordLanguage=docxReadLanguageTuple(token,namespaces);return;}
   const mark = DOCX_INLINE_MARKS[tag];
   const isColor = ['w:color', 'w:highlight', 'w:shd'].includes(tag);
@@ -9786,7 +9787,14 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
   if (docxContentPreviewNamespaceUriForTagName(docxContentPreviewTagName(token), namespaces)
     !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw new Error('DOCX_INLINE_PROPERTY_NAMESPACE');
   if (isColor) { docxInlineReadColor(properties, tag, token, namespaces); return; }
-  if (isTypography) { docxInlineReadTypography(properties, tag, token, namespaces); return; }
+  if (isTypography) {
+    if (oneWayManuscript) {
+      const names=tag==='w:rFonts' ? [...DOCX_FONT_SLOTS,'asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme','hint'] : ['val'];
+      if (!/\/\s*>$/u.test(token) || [...docxFontAttributes(token,namespaces).keys()].some(key =>
+        !key.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000') || !names.includes(key.split('\u0000')[1]))) throw Error('DOCX_FONT_ATTRIBUTES_INVALID');
+    }
+    docxInlineReadTypography(properties, tag, token, namespaces); return;
+  }
   const value = docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim();
   if (visibility) {
     if (Object.hasOwn(properties, visibility) || !['', 'true', 'false', 'on', 'off', '1', '0'].includes(value)) {
@@ -9845,8 +9853,8 @@ function docxNoteBreakReadProperty(properties, unknown, seen, tag, token, namesp
   }
 }
 
-function docxInlineStyleCatalog(bytes, noteBreakStrict = false) {
-  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', defaultTable: '', themeFonts: docxFontThemeCatalog(bytes), hyperlinks: docxHyperlinkCatalog(bytes) };
+function docxInlineStyleCatalog(bytes, noteBreakStrict = false, oneWayManuscript = false) {
+  const catalog = { oneWayManuscript, styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', defaultTable: '', themeFonts: docxFontThemeCatalog(bytes), hyperlinks: docxHyperlinkCatalog(bytes) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_INLINE_STYLE_INVENTORY');
   if (!metadata.entries.some((entry) => entry.entryId === 'word/styles.xml')) return catalog;
@@ -9970,10 +9978,10 @@ function docxInlineStyleCatalog(bytes, noteBreakStrict = false) {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current && ['paragraph', 'character'].includes(current.type)) {
         if(noteBreakStrict)docxNoteBreakReadProperty(current.properties,current.noteBreakUnknown,current.noteBreakSeen,tag,token,parsed.namespaceMap);
-        docxInlineReadProperty(current.properties, tag, token, parsed.namespaceMap);
+        docxInlineReadProperty(current.properties, tag, token, parsed.namespaceMap,oneWayManuscript);
       } else if (owner === 'w:rPrDefault') {
         if(noteBreakStrict)docxNoteBreakReadProperty(catalog.defaults,catalog.noteBreakUnknown ||= [],catalog.noteBreakSeen ||= new Set(),tag,token,parsed.namespaceMap);
-        docxInlineReadProperty(catalog.defaults, tag, token, parsed.namespaceMap);
+        docxInlineReadProperty(catalog.defaults, tag, token, parsed.namespaceMap,oneWayManuscript);
       } else if (current?.type === 'table' && ['w:vanish', 'w:webHidden'].includes(tag)) {
         // Conditional table-style precedence is not represented by our model.
         // Retain the risk only on this style; unused styles remain inert.
@@ -10100,12 +10108,12 @@ function docxResolveParagraphAlignment(metadata, catalog) {
     // Preserve authored slots; absence is inherited context, never permission
     // to expand a western font over undeclared East Asian/complex-script slots.
     const slots=Object.fromEntries(DOCX_FONT_SLOTS.filter(slot=>raw[`font_${slot}`]!==undefined).map(slot=>[slot,raw[`font_${slot}`]]));
-    if(Object.keys(slots).length){
+    if(!catalog.oneWayManuscript && Object.keys(slots).length){
       if(Object.values(slots).some(v=>typeof v!=='string'||v===DOCX_UNSUPPORTED_FONT))throw Error('WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED');
       if(Object.keys(slots).length===4&&new Set(Object.values(slots)).size===1)value.fontFamily=slots.ascii;
       else value.fontSlots=slots;
     }
-    if(raw.font_size!==undefined||raw.font_sizeCs!==undefined){if(effectiveMark.font_size!==undefined&&effectiveMark.font_sizeCs!==undefined&&effectiveMark.font_size!==effectiveMark.font_sizeCs)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');value.fontSize=effectiveMark.font_size??effectiveMark.font_sizeCs;}
+    if(!catalog.oneWayManuscript && (raw.font_size!==undefined||raw.font_sizeCs!==undefined)){if(effectiveMark.font_size!==undefined&&effectiveMark.font_sizeCs!==undefined&&effectiveMark.font_size!==effectiveMark.font_sizeCs)throw Error('WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED');value.fontSize=effectiveMark.font_size??effectiveMark.font_sizeCs;}
     if(Object.keys(value).length)metadata.wordParagraphMarkTypography=normalizeParagraphMarkTypography(value);
   }
   const layoutLayers=[metadata];
@@ -10717,7 +10725,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     } else if (activeInlineRun && !closing && parentTag === 'w:rPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:r') {
       if(noteBreaks)docxNoteBreakReadProperty(activeInlineRun.properties,activeInlineRun.noteBreakUnknown ||= [],activeInlineRun.noteBreakSeen ||= new Set(),tagName,token,tokenNamespaceMap,true);
-      docxInlineReadProperty(activeInlineRun.properties, tagName, token, tokenNamespaceMap);
+      docxInlineReadProperty(activeInlineRun.properties, tagName, token, tokenNamespaceMap,inlineStyles.oneWayManuscript);
       if (tagName === 'w:rStyle') activeInlineRun.styleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val');
     }
 
@@ -10727,7 +10735,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if(seen.has(tagName))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_DUPLICATE');seen.add(tagName);
       const keys=tagName==='w:rFonts'?['ascii','hAnsi','eastAsia','cs','asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme']:tagName==='w:shd'?['val','fill']:['val'];
       for(const [key]of docxFontAttributes(token,tokenNamespaceMap))if(!key.startsWith(DOCX_WORDPROCESSINGML_MAIN_NAMESPACE+'\u0000')||!keys.includes(key.split('\u0000')[1]))throw Error('WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED');
-      docxInlineReadProperty(raw,tagName,token,tokenNamespaceMap);
+      docxInlineReadProperty(raw,tagName,token,tokenNamespaceMap,inlineStyles.oneWayManuscript);
     }
     if(insideParagraph&&!closing&&tagName==='w:lang'&&parentTag==='w:rPr'&&elementStack.at(selfClosing?-2:-3)?.semanticTagName==='w:pPr'){
       if(activeParagraphMetadata.wordParagraphMarkLanguage)throw Error('WORD_LANGUAGE_INVALID');
@@ -11085,7 +11093,7 @@ function resolveNoteTableStyleLosses(bytes, parsed) {
 // Comments use the same proven inline/style/theme projection as other stories,
 // but never inherit main-document relationship authority or admit block objects.
 function parseCommentRichDocument(bytes, source, cache = {}) {
-  cache.styles ||= docxInlineStyleCatalog(bytes);
+  cache.styles ||= docxInlineStyleCatalog(bytes,false,cache.oneWayManuscript);
   cache.hyperlinks ||= docxHyperlinkCatalog(bytes,source.relationshipPart);
   const styles = {...cache.styles, hyperlinks:cache.hyperlinks};
   const body = docxContentPreviewParseMainDocumentXml(source.documentXml,styles,docxNumberingCatalog(bytes));
@@ -11128,8 +11136,8 @@ function docxNoteBreakFormat(metadata, run, catalog) {
     ...(properties.font_hint!==undefined?{fontHint:properties.font_hint}:{}),
     ...(color?{color}:{}),...(highlight?{highlight}:{}),...(properties.wordLanguage?{wordLanguage:properties.wordLanguage}:{}),...(metadata.currentHref?{href:metadata.currentHref}:{})};
 }
-function parseDocumentNoteRichBody(bytes, source, note, hyperlinks, includeBreakProjection = false, preserveBreakMarks = false) {
-  const inlineStyles = docxInlineStyleCatalog(bytes,includeBreakProjection),breaks=includeBreakProjection?[]:null;
+function parseDocumentNoteRichBody(bytes, source, note, hyperlinks, includeBreakProjection = false, preserveBreakMarks = false, oneWayManuscript = false) {
+  const inlineStyles = docxInlineStyleCatalog(bytes,includeBreakProjection,oneWayManuscript),breaks=includeBreakProjection?[]:null;
   const styles = { ...inlineStyles, hyperlinks };
   const body = docxContentPreviewParseMainDocumentXml(source.documentXml, styles, docxNumberingCatalog(bytes),breaks);
   if (!body.failure) {
@@ -11242,7 +11250,7 @@ export function parseDocumentStoriesRichReturn(bytes, { includeParts = false } =
   return includeParts ? {registry, validatedParts, storyMediaParts} : registry;
 }
 
-export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProjection = false, preserveBreakMarks = false } = {}) {
+export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProjection = false, preserveBreakMarks = false, manuscriptProfile } = {}) {
   if(typeof includeBreakProjection!=='boolean'||typeof preserveBreakMarks!=='boolean')throw Error('NOTE_BREAK_PROJECTION_INVALID');
   if (notes == null) return [];
   if (notes.inventoryStatus !== 'COMPLETE' || !Array.isArray(notes.notes) || notes.notes.length > 256
@@ -11255,7 +11263,7 @@ export function parseDocumentNotesRichReturn(bytes, notes, { includeBreakProject
     if (source.transportIdentity && seen.has(source.transportIdentity)) throw Error('NOTE_RETURN_IDENTITY_COLLISION');
     if (source.transportIdentity) seen.add(source.transportIdentity);
     if (!linksByPart.has(source.relationshipPart)) linksByPart.set(source.relationshipPart, docxHyperlinkCatalog(bytes, source.relationshipPart));
-    const parsed=parseDocumentNoteRichBody(bytes,source,note,linksByPart.get(source.relationshipPart),includeBreakProjection,preserveBreakMarks);
+    const parsed=parseDocumentNoteRichBody(bytes,source,note,linksByPart.get(source.relationshipPart),includeBreakProjection,preserveBreakMarks,manuscriptProfile === 'YALKEN_MANUSCRIPT_V1');
     return { kind: note.kind, paragraphIndex: note.paragraphIndex, offsetUtf16: note.offsetUtf16,
       transportIdentity: source.transportIdentity || null, paragraphs: note.paragraphs,
       ...(ref.referenceTypography ? { referenceTypography: cloneJsonSafe(ref.referenceTypography) } : {}),
@@ -11495,6 +11503,8 @@ export function buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budget
 }
 
 export function buildDocxContentPreviewFromZipBytes(input) {
+  const oneWayManuscript = isPlainObject(input) && input.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1';
+  const manuscriptOptions = oneWayManuscript ? {manuscriptProfile:'YALKEN_MANUSCRIPT_V1'} : {};
   const byteInput = docxZipInventoryInputToBytes(input) || (isPlainObject(input) ? input.bytes : input);
   const budgets = isPlainObject(input) && isPlainObject(input.budgets) ? input.budgets : undefined;
   const preflight = buildDocxIntakePreflightReportFromZipBytes(byteInput);
@@ -11652,7 +11662,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     const settingsCrypto={budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}};
     validateDocumentSettingsBindingV1({settingsXml:settingsPart('word/settings.xml'),relationshipsXml:settingsPart('word/_rels/document.xml.rels'),contentTypesXml:settingsPart('[Content_Types].xml')},settingsCrypto);
     const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
-    const inlineStyles = docxInlineStyleCatalog(bytes);
+    const inlineStyles = docxInlineStyleCatalog(bytes,false,oneWayManuscript);
     namedStylesNormalized = inlineStyles.styles.size > 0;
     const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { budgets, allowCommentMarkers: true, cryptoPort: {
       sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
@@ -11666,7 +11676,8 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       if (stories) { parsed.contentPreview.wordStories = stories.registry; parsed.storyParts = stories.validatedParts; parsed.storyMediaParts = stories.storyMediaParts; }
       if (sections) {
         if (pendingSource.revisions.some(r=>!['insert','delete'].includes(r.operation)||r.boundary||r.structure||r.moveName)) throw Error('WORD_SECTIONS_PENDING_UNSUPPORTED');
-        parsed.contentPreview.wordSections = sections;
+        if (oneWayManuscript && sections.boundaries.length) throw Error('WORD_SECTIONS_UNSUPPORTED');
+        if (!oneWayManuscript) parsed.contentPreview.wordSections = sections;
         parsed.diagnostics = parsed.diagnostics.filter(item => item.code !== DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC);
       }
     }
@@ -11766,14 +11777,14 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes, budgets }, { cryptoPort: {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
-        } });
+        }, ...manuscriptOptions });
         const ir = analysis.reviewIr, notes = ir?.documentNotes;
         if (!analysis.ok || !notes
           || !parsed.contentPreview.pendingRevisionDocument && ir.sourceMode !== 'CLEAN'
           || analysis.reasons?.some(item => /NOTES.*BLOCKED|BUDGET|HOSTILE|MALFORMED/u.test(item.code || ''))
           || !parsed.contentPreview.pendingRevisionDocument && ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length
           || notes.notes.length !== notes.references.length || notes.notes.length !== notes.bodySources.length) throw Error('DOCX_GENERIC_NOTES_INCOMPLETE');
-        const richNotes = parseDocumentNotesRichReturn(bytes, notes, { preserveBreakMarks: true });
+        const richNotes = parseDocumentNotesRichReturn(bytes, notes, { preserveBreakMarks: true, ...manuscriptOptions });
         parsed.contentPreview.noteMediaParts = [...new Set(notes.bodySources.flatMap(source => extractDocumentMediaReferencesV1(source.documentXml, {
           relationshipsXml: Buffer.from(auxiliary(source.relationshipPart) || []).toString('utf8'),
           contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
@@ -11808,7 +11819,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
         } };
-        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes, budgets }, commentPorts);
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes, budgets }, { ...commentPorts, ...manuscriptOptions });
         // The same bounded rich grammar applies to native-origin import and
         // authenticated return. Formatting projection never grants return
         // authority: generic import still allocates entirely new local IDs.
@@ -11852,6 +11863,10 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   } catch (error) {
     parsed = { failure: docxContentPreviewSemanticFailure(error) };
   }
+  if (!parsed.failure && oneWayManuscript) parsed.diagnostics.unshift({
+    code:'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED', severity:'warning', sourcePart:'word/document.xml',
+    message:'Новый проект использует гарнитуру и кегль Ялкена. Шрифты Word и конечные параметры страницы не переносятся. Текст, поддерживаемое выделение, обсуждения, исправления и сноски сохраняются. Пустые черновики комментариев и ответов нужно удалить в Word перед импортом.',
+  });
   if (parsed.failure) {
     return docxContentPreviewResult({
       ok: false,
@@ -12500,6 +12515,9 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoun
       message: 'DOCX field hyperlink instruction is retained as explicit link loss only',
     };
   }
+  if (diagnosticCode === 'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED') return {
+    code:'DOCX_IMPORT_PREVIEW_MANUSCRIPT_PRESENTATION_NORMALIZED', category:'formatting', message:diagnostic.message,
+  };
   if (diagnosticCode === 'DOCX_NAMED_STYLES_NORMALIZED') return {
     code: 'DOCX_IMPORT_PREVIEW_NAMED_STYLES_NORMALIZED', category: 'formatting',
     message: 'Named style identities, names and inheritance are not retained; supported effective formatting and semantic paragraph roles are imported as document properties.',
@@ -12660,6 +12678,7 @@ function docxImportPreviewBuildLossReport(
       'DOCX_LIST_EXPLICIT_RESTART_UNSUPPORTED',
       'DOCX_LIST_MARKER_LAYOUT_NORMALIZED',
       'DOCX_NAMED_STYLES_NORMALIZED',
+      'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED',
       'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS',
       'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
       DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC,

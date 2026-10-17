@@ -302,11 +302,11 @@ test('project invalidation before atomic activation leaves no imported scene', a
   assert.deepEqual(fs.existsSync(imported) ? fs.readdirSync(imported).filter(name => name.endsWith('.txt')) : [], []);
 });
 
-async function newProjectHarness(t, inputBytes, referenceOptions = {}) {
+async function newProjectHarness(t, inputBytes, referenceOptions = {}, oneWayManuscript = false) {
   const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-docx-new-project-15k-20261017-'));
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   const io = await bridge(), bytes = inputBytes || fs.readFileSync(path.join(root, 'test/fixtures/docx-pending-deleted-comment-import.docx'));
-  const preview = io.buildDocxContentPreviewFromZipBytes(bytes), plan = io.buildDocxNovelImportPreviewPlanFromContentPreview(preview);
+  const preview = io.buildDocxContentPreviewFromZipBytes(oneWayManuscript ? {bytes,manuscriptProfile:'YALKEN_MANUSCRIPT_V1'} : bytes), plan = io.buildDocxNovelImportPreviewPlanFromContentPreview(preview);
   assert.equal(plan.ok, true, JSON.stringify(plan));admission.rememberDocxImportPreviewPlanAdmission(plan);
   const refs = createDocxImportPreviewReferences(referenceOptions), state = { context: 'source-project:1', allowed: true, registrations: 0, checks: [] };
   const reference = refs.remember('plan', plan, state.context);
@@ -650,4 +650,28 @@ test('new-project revocation before or during effects still refuses without publ
     assert.deepEqual(fs.readdirSync(h.parent).filter(name => name.startsWith('Word-')), []);
     if (when === 'before') assert.deepEqual(fs.readdirSync(h.parent), []);
   }
+});
+
+
+test('real Word public new-project target binds explicit manuscript profile and persists exact editorial graph', async t => {
+  const bytes = fs.readFileSync(path.join(root, 'test/fixtures/docx-word-native-manuscript-profile.docx'));
+  const h = await newProjectHarness(t, bytes, {}, true);
+  const selected = await h.sandbox.handleDocxImportLocalFilePreviewCommandSurface({requestId:'real-word-public',target:'new-project'});
+  assert.equal(selected.importPreviewOk, true, JSON.stringify(selected));
+  assert.ok(selected.docxImportPreviewPlan.lossReport.items.some(i => i.code === 'DOCX_IMPORT_PREVIEW_MANUSCRIPT_PRESENTATION_NORMALIZED'));
+  const planned = await h.sandbox.handleDocxImportPreviewCommandSurface({requestId:'real-word-public',docxContentPreviewRef:selected.docxContentPreviewRef});
+  assert.equal(planned.importPreviewOk, true, JSON.stringify(planned));
+  const created = await h.invoke({requestId:'real-word-public',docxImportPreviewRef:planned.docxImportPreviewRef,action:'create'});
+  assert.equal(created.ok, true, JSON.stringify(created));
+  assert.equal(created.summary.commentCount,3);assert.equal(created.summary.noteCount,1);assert.equal(created.summary.revisionCount,2);
+  const project = path.join(h.parent,'Word-'+created.projectId), sceneId='roman/Imported/0001 Imported DOCX.txt';
+  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs'), env=require('../../src/core/document-content-envelope-v1.cjs');
+  const doc=env.parseObservablePayload(fs.readFileSync(path.join(project,sceneId),'utf8')).doc;
+  assert.deepEqual(newProjectRows(pending.normalizeNode(doc)),literalCurrent);assert.equal(pending.projection(doc).original,literalOriginal.join('\n'));
+  const threads=JSON.parse(fs.readFileSync(path.join(project,'.yalken/word-review/non-text-return-state.v1.json'))).threads;
+  assert.deepEqual(threads.map(c=>c.messages.map(m=>m.body)),[['Нативное обсуждение вставки','Нативный ответ к вставке'],['Нативное обсуждение удаления'],['Нативно: именно второй повтор']]);
+  assert.deepEqual(pending.readCommentUnionContext({document:doc,anchor:threads[1].anchor}),{quote:'УДАЛЕНИЕ🧭',hidden:true});
+  const notes=JSON.parse(fs.readFileSync(path.join(project,'notes.craftsman.json'))).notes;
+  assert.equal(notes[0].body,' Содержание нативной сноски сохраняется.');assert.equal(notes[0].manuscript.reference.offsetUtf16,95);
+  assert.deepEqual(fs.readFileSync(path.join(root,'test/fixtures/docx-word-native-manuscript-profile.docx')),bytes);
 });

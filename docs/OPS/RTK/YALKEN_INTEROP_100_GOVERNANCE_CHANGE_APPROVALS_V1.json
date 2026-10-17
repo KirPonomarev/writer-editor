@@ -461,11 +461,11 @@
     {
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "90d6f1f7e19f62e5c5bba858f1ee7cb827f300ceb6371584532209c181ca6f77"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "1618fdb85f3548ee7a768b9b4ad57614ec38c20f117d5450214db71554105689"
     },
     {
       "approved": true,
@@ -1612,12 +1612,12 @@
     },
     {
       "filePath": "src/utils/docxImportLocalFilePreview.js",
-      "sha256": "6b745668bfe4859cd2272a0e9e81c2135a06598fa5b73c2e30d359af5a2166e9",
-      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009",
-      "approvedAtUtc": "2026-10-09T04:50:23.117914Z",
       "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority."
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "e6120c9e65d575371a255869a3a5b8622279a8e45b370092f0f1c00b70c3324c"
     },
     {
       "filePath": "src/utils/docxImportSafeCreate.js",
@@ -2594,11 +2594,11 @@
     {
       "filePath": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "5622fdc525471774c7f6e3960a744df7ee543d3ca42b834508867c2c249a0943"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "3757016bb03009e94644984cb41a16709fd22818acd73f2a7f39a8c72d94cc1e"
     },
     {
       "filePath": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
@@ -5483,20 +5483,20 @@
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-15T19:03:56.376008+00:00",
-      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
-      "sha256": "4195e59f6f6b42674c895abff548233b293ba2add099a0734aa67b56ff8fa3d2"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "30520aec7070d20143a930bc52886c3472b64d63aa6836d77769528ad6dc5c34"
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "d94fde605220848d35706f18433477d8a7fcb6507f6f9b24b51a22646f3b0a7f"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "fc22c37b35d20162a5d6f27bf825c891ffd7ee4e493bbb3fe0ba3f2d89ddeb3a"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -5582,11 +5582,11 @@
     {
       "filePath": "src/main.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "f7abd328ef22367a8d384e6faeb6f92605a45b09f9f017abb7e6db9eb0a6e31f"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "d7aafcdd56858cfe4cf78400d8926fca889e0f7da877316b0d7e07a08420ba14"
     },
     {
       "filePath": "src/command/commandSurfaceKernel.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "25358a216fbf0d3670b3d777ee0de720a37ff484f4a003ba32534b9d8465b673"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "3cdeb0ff183e8e2a8ea9c4012591a1d5cf0ec1bf329e17103a4b618749401f62"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "89e797103985c6940d657511cea2cf80f89fd6c79ef57b01286c2cc562997491"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "b4942c498be149abdba6d9b04b67ccca53bb6a45da235fb66e210fec21be9317"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "f1bbe4f5b865494ee1c9995749a8e1f48a920064d05ede0dc5c712218399fb43"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "31a4ee9f5bc4cc9de668f2161edfd0b87af4d462907d40603cc8b0eb57ae4277"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "d24b6946eaca3994ec194c5c616378620f71a27e70556d4f37f3c10327f271ac"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "8a1a43833fba562b01ef6579390ab756c595ab2e15a6c383e35544a7f0f8c641"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "fae3f05711412801e74237caa1df6be96e9d66b7576534ad6871b8cee1fcbeb9"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "6d81779c0143a2c9766ac3d815cc8172519d0a27b05b415bc91678d57f2d72c7"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "4bf414691b80f1120573e44c72e250b1d10db2843079e34ee1752f36d53815fa"
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "6b5a5ea59794c11cab3b2f6f5354b6fc801f6f65bd9a259cf45c278036a088af"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5893,6 +5893,24 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
       "sha256": "9a2edd3709a26d30011c48fb6633ba7308e6515fb59b4c7249830634969267b0"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-word-profile.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "1f11956ca14c179cdb1d03fd5cb5eee488698cdb2378e8d297b118a4a5903ab3"
+    },
+    {
+      "filePath": "test/fixtures/docx-word-native-manuscript-profile.docx",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "fae1413613e75d1f476201c4aa6b61bde7f7ea59f1c3d7eb194116fccc867027"
     }
   ],
   "evidenceStampIds": [
@@ -47182,6 +47200,114 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
       "sha256": "295f5e55583203b096dfc0089283c083e63c1d8c32705ba3d43a041d93b52868"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "d94fde605220848d35706f18433477d8a7fcb6507f6f9b24b51a22646f3b0a7f"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-15T19:03:56.376008+00:00",
+      "approvedBy": "owner-delegated-codex:WORD_NOTE_REFERENCE_TYPOGRAPHY_MAC_20261015",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner autonomous Mac Word finish and verified implementation delegation: preserve seven effective main-body note reference font/language slots in explicit manuscript2 through strict import, atomic canonical persistence, ordinary authoring and export; schema1 unchanged, protected return drift rejects. Tiny independent ZIP/XML and full Node/shipped-engine source proofs; no native credit, profile/anchor mutation, dependency, UI, budget or authority expansion. Replace noncanonical V8 binary-encoding equality only with complete typed values, every binary view byte, exact JSON and full alias graph; maintained corruption controls retained. Mechanical current-byte companions preserve all prior certificate and approval entries and require full normal CI/delivery.",
+      "sha256": "4195e59f6f6b42674c895abff548233b293ba2add099a0734aa67b56ff8fa3d2"
+    },
+    {
+      "filePath": "src/main.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "f7abd328ef22367a8d384e6faeb6f92605a45b09f9f017abb7e6db9eb0a6e31f"
+    },
+    {
+      "filePath": "src/utils/docxImportLocalFilePreview.js",
+      "sha256": "6b745668bfe4859cd2272a0e9e81c2135a06598fa5b73c2e30d359af5a2166e9",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_COMMENT_INTAKE_20260927|owner-delegated-codex:WORD_MANUSCRIPT_NOTES_G_20260928|owner-delegated-codex:WORD_PENDING_TEXT_REVISIONS_20260928|owner-delegated-codex:WORD_USER_BOOKMARKS_MAC_20260930|owner-delegated-codex:WORD_TYPED_BREAKS_MAC_20261003|owner-delegated-codex:WORD_SECTIONS_MAC_20261003|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_EFFECTIVE_STYLE_RETURN_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_LAYOUT_MAC_20261003|owner-delegated-codex:WORD_PARAGRAPH_MARK_TYPOGRAPHY_MAC_20261005|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007|owner-delegated-codex:WORD_ORIGIN_NOVEL_PARTITION_MAC_20261009",
+      "approvedAtUtc": "2026-10-09T04:50:23.117914Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized macOS Word-origin novel partition at exact merged5ca5d936 after full PR2100 closure. Existing public admission, Main-owned finite parser policy and one v7 atomic cohort; default/small combined paths and all authority/bounds remain. Canonical-default uniform-section input only; nondefault layouts and unsupported stories refuse before write. Verified novel annotation authoring and independent chapter Save use the existing transaction with canonical replay; legacy paths remain exact. The existing comment-authoring VM wiring preserves every original assertion and fixture. The same4500 literal large-reference positive intentionally expects ordered novel scenes with full joined text, while the actual default builder still proves combined/one entry; every wire/reference/expiry guard and all other tests remain exact. The new-kind retained input keeps one complete source candidate and exact finite policy/cohort identity; independent regeneration stays mandatory. Actual origin packet plus immutable resources must fit the unchanged20MiB/129 bound before journal or business publication;32MiB artifact bound also remains. Exact-byte companions and one maintained contract membership only; preserve all old admissions, binding identities and239 historical certificate tuples. Full native three-role/five-round500k novel release remains OPEN; no new product PASS authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "90d6f1f7e19f62e5c5bba858f1ee7cb827f300ceb6371584532209c181ca6f77"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "5622fdc525471774c7f6e3960a744df7ee543d3ca42b834508867c2c249a0943"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "f1bbe4f5b865494ee1c9995749a8e1f48a920064d05ede0dc5c712218399fb43"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "d24b6946eaca3994ec194c5c616378620f71a27e70556d4f37f3c10327f271ac"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "4bf414691b80f1120573e44c72e250b1d10db2843079e34ee1752f36d53815fa"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "25358a216fbf0d3670b3d777ee0de720a37ff484f4a003ba32534b9d8465b673"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "89e797103985c6940d657511cea2cf80f89fd6c79ef57b01286c2cc562997491"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "fae3f05711412801e74237caa1df6be96e9d66b7576534ad6871b8cee1fcbeb9"
     }
   ]
 }
