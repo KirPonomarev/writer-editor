@@ -26371,7 +26371,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "ea7b1a088b47010e5f879d0324ca2d844abc265a8890883777ae4a85ecf08fd3"
+      "sha256": "f85c0ca35fa63b766e1d5715ce60268955aa00617d6799164205ec0a06509731"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
@@ -26495,7 +26495,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "13dfc112d91eb830dec0cf2e509500b8d5283b8b48ce9f0e80e0939f1251e73e"
+      "sha256": "a4a860a5c380a7ad81777f8a1ed85b88cc8b134637f0af7e867db5ab954a8568"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -26631,7 +26631,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "2196427ab8c77b69e32775f36edb170204965db645e2e76a2348dbb0d37d5d3d"
+      "sha256": "41a84a7e7af0cf33045b6ca74147e934886e277f2f803f8d6560db770fc6bdfe"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -27019,7 +27019,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/unit/docx-import-preview-ui-flow.test.js",
-      "sha256": "bbbfddb906f960229abe79ee65beba8e43bffd90ae8765f71c3b3769456cafd3"
+      "sha256": "16eb398da3e93808e821748d0ebc553315dd2e69fc5aa3800a5300d1451f1f64"
     },
     {
       "path": "test/unit/docx-import-product-flow-command.test.js",
@@ -27084,12 +27084,20 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
       "sha256": "592ca3ee5fea6e382eeb5043af0b12d2ccf1927073c1d29472992ac948ab3e82"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-theme-colors.md",
+      "sha256": "c87a50f38292d4c2d7be057835e7d5405adbab79ef967d8465f0e3923d414abb"
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
+      "sha256": "6963635eedfb7b46d7b1195547f74455064104bb758df13d1ec2f718d8a1fa2f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f347fdf5db00caf991478e7d2dec99396f1e1f6956ab98def34032dde5d4a020"
+      "sha256": "f12b076fa5f7d393d7072715973b30f63e1e04682516adb68dd55755e79bedbe"
     }
   ]
 });

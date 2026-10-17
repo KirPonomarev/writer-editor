@@ -28,6 +28,22 @@ function loadDocxImportResolverHelpers() {
   });
 }
 
+test('DOCX import preview UI flow: unsupported color identifies a bounded paragraph without echoing source text', () => {
+  const editor=read('src/renderer/editor.js'),start=editor.indexOf('function summarizeDocxImportPreview(value)'),end=editor.indexOf('function summarizeDocxImportLoss(value)',start);
+  assert.ok(start>=0&&end>start);
+  const summarize=vm.runInNewContext(editor.slice(start,end)+'\nsummarizeDocxImportPreview',{getDocxImportPreviewPlanFromValue:()=>null});
+  const diagnostic={code:'DOCX_CONTENT_PREVIEW_CONTENT_INVALID',sourceCode:'DOCX_INLINE_COLOR_UNSUPPORTED',sourcePart:'word/document.xml',tagName:'w:rPr',paragraphIndex:6,message:'<img src=x onerror=alert(1)>'};
+  const value={target:'new-project',newProjectPreview:{ok:false},localFilePreview:{docxContentPreviewReport:{ok:false,code:diagnostic.code,reason:diagnostic.sourceCode,diagnostics:[diagnostic]}}};
+  assert.match(summarize(value),/color or patterned shading in paragraph 7/u);assert.match(summarize(value),/No project was created/u);
+  assert.equal(summarize(value).includes('<img'),false);
+  for(const patch of[{paragraphIndex:-1},{paragraphIndex:64000},{paragraphIndex:1.5},{paragraphIndex:'6'},{sourceCode:'OTHER'},{sourcePart:'word/comments.xml'},{tagName:'w:p'},{code:'OTHER'}]) {
+    const bad=structuredClone(value);Object.assign(bad.localFilePreview.docxContentPreviewReport.diagnostics[0],patch);
+    assert.equal(summarize(bad).includes('color or patterned'),false,JSON.stringify(patch));
+  }
+  const ready=structuredClone(value);ready.localFilePreview.docxContentPreviewReport.ok=true;
+  assert.equal(summarize(ready).includes('color or patterned'),false);
+});
+
 test('DOCX import preview UI flow: existing modal surface exposes preview and accept hooks', () => {
   const html = read('src/renderer/index.html');
   const editor = read('src/renderer/editor.js');

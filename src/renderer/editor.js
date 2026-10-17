@@ -21050,6 +21050,14 @@ async function openImportedTxtSceneAfterAccept(plan, createdSceneIds) {
 }
 
 function summarizeDocxImportPreview(value) {
+  const report = value?.docxContentPreviewReport || value?.localFilePreview?.docxContentPreviewReport;
+  const colorFailure = value?.target === 'new-project' && report?.ok === false
+    && report.code === 'DOCX_CONTENT_PREVIEW_CONTENT_INVALID' && report.reason === 'DOCX_INLINE_COLOR_UNSUPPORTED'
+    && Array.isArray(report.diagnostics) && report.diagnostics.slice(0, 200).find(item =>
+      item?.code === 'DOCX_CONTENT_PREVIEW_CONTENT_INVALID' && item.sourceCode === 'DOCX_INLINE_COLOR_UNSUPPORTED'
+      && item.sourcePart === 'word/document.xml' && item.tagName === 'w:rPr'
+      && Number.isSafeInteger(item.paragraphIndex) && item.paragraphIndex >= 0 && item.paragraphIndex < 64000);
+  if (colorFailure) return `Cannot import the color or patterned shading in paragraph ${colorFailure.paragraphIndex + 1}. In Word, use a plain RGB color or remove the patterned shading. No project was created; the original file is unchanged.`;
   if (value?.target === 'new-project') {
     const prepared = value.newProjectPreview;
     if (prepared?.ok !== true) {

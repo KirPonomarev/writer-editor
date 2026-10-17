@@ -696,7 +696,8 @@
     "docs/tasks/2026-10-17--docx-new-project-usable-import.md",
     "docs/tasks/2026-10-17--docx-responsive-user-build.md",
     "src/main/docxImportComputePort.cjs",
-    "src/main/docxImportComputeWorker.cjs"
+    "src/main/docxImportComputeWorker.cjs",
+    "docs/tasks/2026-10-17--docx-theme-colors.md"
   ],
   "protectedFiles": [
     {
@@ -937,7 +938,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "13dfc112d91eb830dec0cf2e509500b8d5283b8b48ce9f0e80e0939f1251e73e"
+        "sha256": "a4a860a5c380a7ad81777f8a1ed85b88cc8b134637f0af7e867db5ab954a8568"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -961,7 +962,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "ea7b1a088b47010e5f879d0324ca2d844abc265a8890883777ae4a85ecf08fd3"
+        "sha256": "f85c0ca35fa63b766e1d5715ce60268955aa00617d6799164205ec0a06509731"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1045,7 +1046,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
-        "sha256": "f1018fedb91704c93f849399368bbf8e4a826ff53860f2f912ae7bf71b328010"
+        "sha256": "6963635eedfb7b46d7b1195547f74455064104bb758df13d1ec2f718d8a1fa2f"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
@@ -1101,7 +1102,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "2196427ab8c77b69e32775f36edb170204965db645e2e76a2348dbb0d37d5d3d"
+        "sha256": "41a84a7e7af0cf33045b6ca74147e934886e277f2f803f8d6560db770fc6bdfe"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2577,7 +2578,7 @@
       },
       {
         "path": "test/unit/docx-import-preview-ui-flow.test.js",
-        "sha256": "bbbfddb906f960229abe79ee65beba8e43bffd90ae8765f71c3b3769456cafd3"
+        "sha256": "16eb398da3e93808e821748d0ebc553315dd2e69fc5aa3800a5300d1451f1f64"
       },
       {
         "path": "test/unit/docx-import-product-flow-command.test.js",
@@ -3082,6 +3083,10 @@
       {
         "path": "src/main/docxImportComputeWorker.cjs",
         "sha256": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4"
+      },
+      {
+        "path": "docs/tasks/2026-10-17--docx-theme-colors.md",
+        "sha256": "c87a50f38292d4c2d7be057835e7d5405adbab79ef967d8465f0e3923d414abb"
       }
     ],
     "followupRepair": {
