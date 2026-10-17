@@ -237,3 +237,29 @@ for (const invalid of ['future', 'missing', 'projectId', 'inactive', 'mismatched
     assert.equal(result.ok, false); assert.equal(h.preparationWrites, 0); assert.equal(h.storageLoads, 0);
   });
 }
+
+test('public Notes query reads nondefault active project without default preparation and refuses foreign or stale context', async () => {
+  for (const mode of ['active', 'foreign', 'stale']) {
+    const h = notesContextHarness();let noteReads = 0;
+    h.c.loadNotesStorageModule = async () => ({ buildNotesReadModel(document, options) {
+      assert.equal(options.projectId, 'active-id');return { ok: true, projectId: options.projectId, state: 'ready', notes: document.notes };
+    } });
+    Object.assign(h.c, {
+      readProjectNotesDocument: async context => {
+        noteReads++;assert.equal(context.projectRoot, '/owned/Active project');assert.equal(context.projectId, 'active-id');
+        return { ok: true, current: { document: { notes: [{ id: 'imported-note', body: ' Содержание нативной сноски сохраняется.' }] } } };
+      },
+      readCommentAuthoringContext: async () => { throw Error('NO_SELECTED_SCENE'); },
+      makeNotesCommandError: (_op, code, reason) => ({ ok: false, code, reason }),
+    });
+    if (mode === 'stale') h.phase = phase => { if (phase === 'manifest') h.c.currentProjectName = 'Other project'; };
+    vm.runInContext(main.slice(main.indexOf('async function handleWorkspaceProjectNotesQuery('), main.indexOf('function normalizeProjectSearchPayload(')), h.c);
+    const result = await h.c.handleWorkspaceProjectNotesQuery({ projectId: mode === 'foreign' ? 'default-id' : 'active-id' });
+    assert.equal(h.preparationWrites, 0);
+    if (mode === 'active') {
+      assert.equal(result.ok, true);assert.equal(result.projectId, 'active-id');assert.equal(result.notes[0].body, ' Содержание нативной сноски сохраняется.');assert.equal(noteReads, 1);
+    } else {
+      assert.equal(result.ok, false);assert.equal(result.reason, mode === 'foreign' ? 'NOTES_PROJECT_MISMATCH' : 'NOTES_PROJECT_STALE');assert.equal(noteReads, 0);
+    }
+  }
+});

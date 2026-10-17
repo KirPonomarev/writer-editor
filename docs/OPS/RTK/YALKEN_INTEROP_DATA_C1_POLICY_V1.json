@@ -922,7 +922,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "8e3144a9ea69650e0ae3db382106a85f62a6d2f692b4b6a56ad096ba7e0b7c8d"
+        "sha256": "0f3dbb47df566a2f2308f0e3b66a1450af15fe5ad45b2be2627fd969c67aadb3"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1894,7 +1894,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
-        "sha256": "0a403187632a54e96ea34b320407dfb40d3aa3eb912a8ff033e78ef1087132d3"
+        "sha256": "7d601ed81a7d83feca892d5e74ee2cacc33e6bcdfbdfef75548e52968f4ae0ba"
       },
       {
         "path": "docs/tasks/2026-09-30--word-user-bookmarks-mac.md",
@@ -2186,7 +2186,7 @@
       },
       {
         "path": "test/unit/sector-m-s18-notes-commands-read-models.test.js",
-        "sha256": "22af7703c74b644cd9a1b12e948b3a08c86f86e2c622e7919ac7517227364b10"
+        "sha256": "54033e01cf32219511a6780f7672260e1e3e277cc361fc7f32e9a12998036f8f"
       },
       {
         "path": "test/unit/sector-m-s17-notes-schema-storage.test.js",
@@ -3066,7 +3066,7 @@
       },
       {
         "path": "docs/tasks/2026-10-17--docx-new-project-usable-import.md",
-        "sha256": "fbedaea9531d32fb767542405a07c54f62c13c12f02c89fb66019aca0a1e3a78"
+        "sha256": "0d00562c3d8524c06a7a7f575da9a3619df65f784f36593eba32f7179012c308"
       }
     ],
     "followupRepair": {

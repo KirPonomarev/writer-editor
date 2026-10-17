@@ -17506,7 +17506,7 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
 }
 
 async function handleWorkspaceProjectNotesQuery(payload = {}) {
-  const context = await getProjectNotesContext(payload);
+  const context = await getProjectNotesContext(payload, { readOnlyActive: true });
   if (!context.ok) {
     return makeNotesCommandError('query.projectNotes', context.code, context.reason);
   }

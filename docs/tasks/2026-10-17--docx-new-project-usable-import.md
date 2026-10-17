@@ -33,7 +33,9 @@ One bounded repair of the approved import path: full JSON-frame whitespace compa
 - src/renderer/editor.js
 - src/renderer/editor.bundle.js
 - test/contracts/revision-bridge-docx-import-reference.contract.test.js
+- test/contracts/rtk-word-full-manuscript-current-project.contract.test.js
 - test/unit/project-tree-pathless-contract.test.js
+- test/unit/sector-m-s18-notes-commands-read-models.test.js
 - test/unit/sector-m-review-surface-ui.test.js
 - docs/tasks/2026-10-17--docx-new-project-usable-import.md
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
@@ -87,7 +89,8 @@ RUNTIME_SCOPE: Only fresh synthetic temporary APFS profiles; final materials and
   "queryIds": [
     "query.projectTree",
     "query.reviewSurface",
-    "query.rtkNonTextReturnState"
+    "query.rtkNonTextReturnState",
+    "query.projectNotes"
   ],
   "productProjectionIds": [
     "Source/context-bound DOCX import preview summary",
@@ -142,7 +145,8 @@ RUNTIME_SCOPE: Only fresh synthetic temporary APFS profiles; final materials and
     "Compact frame UTF16 lengths, feature declarations, idempotence, malformed lengths/trailing content and full decoded document/source/entry semantic equality. Core rederives the identical cohort; hashes and final preview validation reject tampering.",
     "Project switch while old tree query is pending triggers a new query, clears old mutation authority and rejects stale completion; same-project events do not reload or reset tree. Existing Main owner/project/manifest guards unchanged.",
     "Actual Core reject/Undo supplies deleted-fragment context; full root/reply/quote survives; manual tombstone without history remains unchanged; every external quote/message/author is HTML escaped.",
-    "Affected public import/reference/new project, pending/comment/history, notes and pathless tree query/UI contracts plus original required CI/guardrails/OSS/byte bindings. Native tiny then15k/100k/book after exact build freeze; no repeated heavy local RTK."
+    "Affected public import/reference/new project, pending/comment/history, notes and pathless tree query/UI contracts plus original required CI/guardrails/OSS/byte bindings. Native tiny then15k/100k/book after exact build freeze; no repeated heavy local RTK.",
+    "Actual public Notes query reads the nondefault active project through existing readOnlyActive binding with no default-project preparation write; foreign identity and stale context refuse."
   ],
   "evidenceBindings": [
     "COMPACT_BOTH_PROTOTYPE106: full100k decoded project graph conservation and deterministic rederivation.",
@@ -194,3 +198,9 @@ Record exact source/input/build/profile identities, actual expected versus obser
 SOURCE_OBSERVATIONS: The actual four changed runtime files pass93 focused contracts plus223 affected contracts, with zero skips/todo. Complete decoded source/partition/project conservation, hash validation, same-project no-reload, stale pending tree query rejection, Core reject/Undo, retained original quote and every reply, manual tombstone and external-text escaping are executed. Initial131 found two existing same-project listener harness failures caused by unconditional helper invocation; the product handler now invokes the refresh only on actual identity change. No old oracle weakened. Runtime source delta is85 changed lines; no style/layout/HTML or quota changes. Native acceptance and delivery remain pending.
 
 ARTIFACT_REFINEMENT149: Exact native source freeze148 refused before launch because official build-renderer updated the tracked editor.bundle.js that C3 had not regenerated. Same PR2132; original base8a104920 and same behavior/rollback. Supplemental declaration149 binds cleanC3 and includes only the required generated artifact, task and mechanical exact-byte refresh. Official builder runs twice with byte-idempotence; preload and all handwritten runtime files stay exact. CI failures on C3 generated drift are preserved and not acceptance. Generated artifact is exempt from handwritten runtime line budget; no handwritten bundle patch.
+
+NOTES_QUERY_REFINEMENT173: Native15k172 created the full15000-character manuscript and all editorial data exactly (independent171), but the Notes surface refused E_NOTES_PROJECT_MISMATCH. The existing read-only Query called default-project context instead of its already validated active-project path. Same PR2132 and original rollback; supplemental173 binds cleanC4. Change only that caller, keep all identity/stale guards and command/write behavior unchanged. No data/markup schema or quota change. Native acceptance remains open.
+
+NOTES_FIXTURE_REFINEMENT178: Existing S18 queried before opening its seeded project and depended on implicit default preparation. Its fixture now explicitly opens the seeded project through the existing lifecycle command before the original empty/read/create/update/delete/restore assertions. No production fallback or oracle relaxation; all current context guards remain. Expanded clean preflight178 passed after byte-exact external preservation of own work.
+
+NOTES_QUERY_OBSERVATIONS183: Actual Main query RED175 fails at default preparation; GREEN183 executes96/96 including active/foreign/stale context, existing default Notes commands/UI and manuscript-note import/authoring. S18 fixture explicitly opens a minimal seeded scene and uses canonical real paths so existing no-follow admission is exercised; original note mutation/read assertions remain. Only one handwritten Main caller line changes. Two original builder runs184 leave both renderer/preload artifacts byte exact. Native Notes visibility and current delivery remain pending.
