@@ -446,6 +446,44 @@ function buildDocxImportPreviewValue(localFilePreview, fallbackPlan = null) {
   };
 }
 
+async function runDocxNewProjectImport(electronAPI, input) {
+  const bad = reason => fail('E_DOCX_NEW_PROJECT_IMPORT', COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, reason);
+  if (Object.keys(input).some(key => !['target', 'requestId', 'accept', 'docxImportPreviewRef', 'editorMode'].includes(key))
+    || Object.hasOwn(input, 'editorMode') && !['tiptap', 'legacy'].includes(input.editorMode)
+    || typeof input.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(input.requestId)
+    || input.accept !== undefined && typeof input.accept !== 'boolean') return bad('DOCX_NEW_PROJECT_PAYLOAD_INVALID');
+  let localFilePreview, plan, reference = input.docxImportPreviewRef;
+  if (input.accept !== true) {
+    if (reference !== undefined) return bad('DOCX_NEW_PROJECT_PAYLOAD_INVALID');
+    const selected = await runDocxImportLocalFilePreviewBridge(electronAPI, { requestId: input.requestId, target: 'new-project' });
+    if (!selected.ok) return selected;
+    localFilePreview = selected.value.localFilePreview;
+    const base = { ...buildDocxImportPreviewValue(localFilePreview), target: 'new-project', newProjectPreview: { ok: false } };
+    if (localFilePreview?.status === 'cancelled' || !localFilePreview?.docxImportPreviewPlan?.ok) return ok(base);
+    if (typeof localFilePreview?.docxContentPreviewRef !== 'string') return bad('DOCX_IMPORT_CONTENT_REFERENCE_INVALID');
+    const preview = await runDocxImportPreviewPlanBridge(electronAPI, { requestId: input.requestId,
+      docxContentPreviewRef: localFilePreview.docxContentPreviewRef });
+    if (!preview.ok) return preview;
+    plan = preview.value.docxImportPreviewPlan; reference = preview.value.docxImportPreviewRef;
+  }
+  if (typeof reference !== 'string' || !reference || reference.length > 256) return bad('DOCX_IMPORT_PLAN_REFERENCE_INVALID');
+  let response;
+  try {
+    response = unwrapBridgeResponseValue(await invokeBridgeOnlyCommand(electronAPI, EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, {
+      requestId: input.requestId, docxImportPreviewRef: reference, action: input.accept === true ? 'create' : 'preview',
+    }));
+  } catch { return bad('DOCX_NEW_PROJECT_BACKEND_UNAVAILABLE'); }
+  if (input.accept !== true) return ok({ ...buildDocxImportPreviewValue(localFilePreview, plan), target: 'new-project',
+    docxImportPreviewRef: reference, newProjectPreview: response?.ok === true && response.preview === true
+      && response.requestId === input.requestId && response.target === 'new-project' ? { ok: true, summary: response.summary }
+      : { ok: false, code: response?.error?.reason || 'DOCX_NEW_PROJECT_PROFILE_UNSUPPORTED' } });
+  if (response?.ok !== true) return bad(response?.error?.reason || 'DOCX_NEW_PROJECT_CREATE_UNCONFIRMED');
+  if (response.projectCreated !== true || response.created !== true || response.requestId !== input.requestId
+    || response.target !== 'new-project' || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/u.test(response.projectId || ''))
+    return bad('DOCX_NEW_PROJECT_CREATE_UNCONFIRMED');
+  return ok({ ...response, imported: true, accepted: true });
+}
+
 function buildDocxImportAcceptedValue(safeCreateResult, options = {}) {
   const safeCreate = getObjectOrNull(safeCreateResult);
   const createdSceneIds = Array.isArray(safeCreate?.createdSceneIds)
@@ -3232,6 +3270,10 @@ export function registerProjectCommands(registry, options = {}) {
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, async (input = {}) => {
+    if (Object.hasOwn(input, 'target')) {
+      if (input.target !== 'new-project') return fail('E_DOCX_NEW_PROJECT_IMPORT', COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, 'DOCX_IMPORT_TARGET_INVALID');
+      return runDocxNewProjectImport(electronAPI, input);
+    }
     if (!electronAPI || typeof electronAPI !== 'object') {
       return fail(
         'E_DOCX_IMPORT_BACKEND_NOT_WIRED',

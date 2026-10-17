@@ -154,3 +154,50 @@ test('named character-style inheritance in notes retains effective body values a
     type: 'text', text: 'Styled note', marks: [{ type: 'bold' }, { type: 'textStyle', attrs: { color: '#123456' } }],
   });
 });
+
+
+// New-project source points: literal native fixture, independent Current/Original positions.
+async function freshPendingNoteInput() {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const bytes = fs.readFileSync(path.join(__dirname, '../fixtures/docx-pending-deleted-comment-import.docx'));
+  const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+  assert.equal(preview.ok, true, JSON.stringify(preview));
+  const plan = bridge.buildDocxNovelImportPreviewPlanFromContentPreview(preview);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  return { bytes, entry: plan.candidateCreatePlan.entries[0] };
+}
+test('native pending note source binds fresh local identity and exact Current/Original references before creation', async () => {
+  const { entry, bytes } = await freshPendingNoteInput(), before = JSON.stringify(entry);
+  const model = require('../../src/core/word-manuscript-notes-v1.cjs'), envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  assert.deepEqual(entry.notes[0].sourcePoint, { paragraphIndex: 4, offsetUtf16: 6, originalParagraphIndex: 4, originalOffsetUtf16: 6 });
+  const identity = { projectId: 'fresh-note-project', importOperationId: 'fresh-note-operation' }, sceneId = 'roman/tiny.txt';
+  const content = model.prepareImportedNoteScene({ candidates: entry.notes, sceneContent: entry.content, ...identity });
+  const result = model.materializeImportedNotes({ candidates: entry.notes, sceneContent: content, sceneId, beforeText: null, ...identity });
+  assert.equal(result.imported[0].manuscript.reference.offsetUtf16, 95);
+  assert.equal(result.imported[0].body, 'Содержание сноски сохраняется.');
+  const doc = envelope.parseObservablePayload(content).doc;
+  assert.equal(pending.noteProjection(doc)[0].noteId, result.imported[0].id);
+  for (const [action, expectedOffset] of [['acceptAll', 95], ['rejectAll', 96]]) {
+    const afterContent = envelope.composeObservablePayload({ doc: pending.decide(doc, { action }).doc });
+    const change = model.planManuscriptNoteAnchorSave({ beforeText: result.afterText, sceneId, beforeContent: content, afterContent, ...identity, includeUnchanged: true });
+    model.validateNoteCohort(change, { projectId: identity.projectId, sceneId, beforeContent: content, afterContent });
+    const reopened = JSON.parse(change.afterText).notes[0];
+    assert.equal(reopened.manuscript.reference.offsetUtf16, expectedOffset);assert.equal(reopened.body, result.imported[0].body);
+  }
+  assert.equal(JSON.stringify(entry), before);
+  assert.deepEqual(fs.readFileSync(path.join(__dirname, '../fixtures/docx-pending-deleted-comment-import.docx')), bytes);
+});
+test('pending note import refuses malformed or mismatched native source positions and foreign local IDs', async () => {
+  const { entry } = await freshPendingNoteInput(), model = require('../../src/core/word-manuscript-notes-v1.cjs');
+  const identity = { projectId: 'fresh-note-project', importOperationId: 'fresh-note-operation' };
+  const invalid = structuredClone(entry.notes);invalid[0].sourcePoint.originalOffsetUtf16++;
+  assert.throws(() => model.prepareImportedNoteScene({ candidates: invalid, sceneContent: entry.content, ...identity }), /NOTE_IMPORT_SOURCE_POINT_BINDING/);
+  assert.throws(() => model.prepareImportedNoteScene({ candidates: [null], sceneContent: entry.content, ...identity }), /NOTE_IMPORT_POINT/);
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs'), envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const forged = pending.bindNoteSourcePoints(envelope.parseObservablePayload(entry.content).doc, [{ noteId: 'foreign-note', paragraphIndex: 4, offsetUtf16: 6 }]);
+  assert.throws(() => model.materializeImportedNotes({ candidates: entry.notes, sceneContent: envelope.composeObservablePayload({ doc: forged }),
+    sceneId: 'roman/tiny.txt', beforeText: null, ...identity }), /NOTE_PENDING_IMPORT_IDENTITY/);
+  assert.throws(() => model.materializeImportedNotes({ candidates: entry.notes, sceneContent: entry.content,
+    sceneId: 'roman/tiny.txt', beforeText: null, ...identity }), /NOTE_PENDING_IMPORT_REQUIRES_AUTHENTICATED_RETURN/);
+});

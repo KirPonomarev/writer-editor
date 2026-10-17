@@ -393,3 +393,24 @@ test('acknowledgement follows governed opening; failure retains resumable status
     assert.match(h.statuses.at(-1), failed ? /could not be confirmed.*resume/ : /opened imported scene/);
   }
 });
+
+test('new-project UI creates once and uses canonical Open; cancellation or navigation failure never repeats import', async () => {
+  for (const failure of ['cancel', 'throw', 'none']) {
+    const h = attemptHarness(), { c } = h;
+    c.EXTRA_COMMAND_IDS = { PROJECT_LIFECYCLE_OPEN: 'open-project' };
+    const start = c.openDocxImportPreviewFlow();assert.equal(h.calls[0].target, 'new-project');
+    h.pending.shift().resolve({ ...h.preview, value: { ...h.preview.value, target: 'new-project',
+      docxImportPreviewRef: 'a'.repeat(64), newProjectPreview: { ok: true, summary: {} } } });await start;
+    assert.equal(c.docxImportPreviewConfirmButtons[0].textContent, 'Create new project');
+    const imported = c.confirmDocxImportPreviewAndRun();
+    assert.deepEqual(Object.keys(h.calls[1]).sort(), ['accept', 'docxImportPreviewRef', 'requestId', 'target']);
+    h.pending.shift().resolve({ ok: true, value: { projectId: 'new-project', projectCreated: true } });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(h.calls[2].projectId, 'new-project');
+    if (failure === 'throw') h.pending.shift().reject(Error('open failed'));
+    else { if (failure === 'none') c.currentProjectId = 'new-project';h.pending.shift().resolve({ ok: failure === 'none' }); }
+    await imported;await c.confirmDocxImportPreviewAndRun();
+    assert.equal(h.calls.length, 3);assert.equal(h.acknowledgements.length, 0);assert.equal(c.pendingDocxImportAttempt, null);
+    assert.match(h.statuses.at(-1), failure === 'none' ? /imported into a new project/ : /New project saved/);
+  }
+});

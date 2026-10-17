@@ -373,16 +373,55 @@ function validateNoteCohort(value, { projectId, sceneId, beforeContent, afterCon
   return clone(value);
 }
 
+// The native source point is retained by the parser. Current alone cannot
+// distinguish the two sides of hidden text; check Original as well before
+// binding fresh local note identities. This preparation is pure, not a writer.
+function prepareImportedNoteScene({ candidates, sceneContent, projectId, importOperationId }) {
+  need(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= LIMITS.notes, 'NOTE_IMPORT_COUNT');
+  need(candidates.every(candidate => keys(candidate, ['kind', 'paragraphIndex', 'offsetUtf16', 'body', 'referenceTypography', 'sourcePoint'])), 'NOTE_IMPORT_POINT');
+  const parsed = parseObservablePayload(sceneContent), pending = require('./word-pending-text-revisions-v1.cjs');
+  need(!parsed.issue, 'NOTE_SCENE_INVALID');
+  const ledger = pending.readLedger(parsed.doc);
+  if (!ledger) {
+    need(candidates.every(candidate => !Object.hasOwn(candidate, 'sourcePoint')), 'NOTE_IMPORT_UNEXPECTED_SOURCE_POINT');
+    return sceneContent;
+  }
+  need(ledger.revisions.every(r => ['insert', 'delete'].includes(r.operation) && !pending.isStructural(r)
+    && !r.moveName && r.state === 'pending')
+    && [ledger.undo, ledger.redo, ledger.roundUndo || [], ledger.roundRedo || [], ledger.returnReceipts || []].every(rows => rows.length === 0),
+  'NOTE_PENDING_IMPORT_PROFILE_UNSUPPORTED');
+  const points = candidates.map((candidate, index) => {
+    const point = candidate.sourcePoint;
+    need(keys(point, ['paragraphIndex', 'offsetUtf16', 'originalParagraphIndex', 'originalOffsetUtf16'])
+      && Object.keys(point).length === 4 && Object.values(point).every(n => Number.isSafeInteger(n) && n >= 0), 'NOTE_IMPORT_SOURCE_POINT');
+    const source = { paragraphIndex: point.paragraphIndex, offsetUtf16: point.offsetUtf16 };
+    const current = pending.projectSourcePoint(ledger, source), original = pending.projectSourcePoint(ledger, source, 'original');
+    need(current.paragraphIndex === candidate.paragraphIndex && current.offsetUtf16 === candidate.offsetUtf16
+      && original.paragraphIndex === point.originalParagraphIndex && original.offsetUtf16 === point.originalOffsetUtf16, 'NOTE_IMPORT_SOURCE_POINT_BINDING');
+    return { noteId: `note-${sha(`${projectId}\u0000${importOperationId}\u0000${index}`).slice(0, 32)}`, ...source };
+  });
+  if (ledger.noteSourcePoints) {
+    need(ledger.noteSourcePoints.length === points.length && points.every((point, index) => {
+      const actual = ledger.noteSourcePoints[index];
+      return actual.noteId === point.noteId && actual.paragraphIndex === point.paragraphIndex && actual.offsetUtf16 === point.offsetUtf16;
+    }), 'NOTE_PENDING_IMPORT_IDENTITY');
+    return sceneContent;
+  }
+  return require('./document-content-envelope-v1.cjs').composeObservablePayload({ ...parsed, doc: pending.bindNoteSourcePoints(parsed.doc, points) });
+}
+
 function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId, importOperationId, beforeText, createdAt = '1970-01-01T00:00:00.000Z' }) {
   need(Array.isArray(candidates) && candidates.length > 0 && candidates.length <= LIMITS.notes, 'NOTE_IMPORT_COUNT');
   const text = sceneText(sceneContent), parsed = parseObservablePayload(sceneContent);
-  need(!require('./word-pending-text-revisions-v1.cjs').readLedger(parsed.doc), 'NOTE_PENDING_IMPORT_REQUIRES_AUTHENTICATED_RETURN');
+  const ledger = require('./word-pending-text-revisions-v1.cjs').readLedger(parsed.doc);
+  if (ledger) need(ledger.noteSourcePoints && prepareImportedNoteScene({ candidates, sceneContent, projectId, importOperationId }) === sceneContent,
+    'NOTE_PENDING_IMPORT_REQUIRES_AUTHENTICATED_RETURN');
   const paragraphs = parsed.doc ? sceneParagraphs(parsed.doc) : parsed.text.split('\n');
   const before = beforeText === null ? { schemaVersion: 1, projectId, notes: [] } : JSON.parse(beforeText);
   validateManuscriptDocument(before, projectId);
   const after = clone(before), ids = new Set(before.notes.map(n => n.id));
   const imported = candidates.map((candidate, index) => {
-    need(keys(candidate, ['kind', 'paragraphIndex', 'offsetUtf16', 'body', 'referenceTypography'])
+    need(keys(candidate, ['kind', 'paragraphIndex', 'offsetUtf16', 'body', 'referenceTypography', 'sourcePoint'])
       && Number.isSafeInteger(candidate.paragraphIndex) && candidate.paragraphIndex >= 0
       && typeof paragraphs[candidate.paragraphIndex] === 'string'
       && boundary(paragraphs[candidate.paragraphIndex], candidate.offsetUtf16), 'NOTE_IMPORT_POINT');
@@ -404,4 +443,4 @@ function materializeImportedNotes({ candidates, sceneContent, projectId, sceneId
 
 module.exports = { MODE, LIMITS, sha, boundary, validateNoteBody, validateNoteBodyProjection, sceneText, noteSceneSchemaDefaults,
   validateManuscriptPayload, bindManuscriptPayload, validateManuscriptDocument, bindOrdinaryRecordingNotes,
-  mapPoint, planManuscriptNoteAnchorSave, validateNoteCohort, materializeImportedNotes };
+  mapPoint, planManuscriptNoteAnchorSave, validateNoteCohort, prepareImportedNoteScene, materializeImportedNotes };

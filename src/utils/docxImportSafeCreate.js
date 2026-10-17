@@ -501,8 +501,10 @@ function validateDocxImportPreviewPlan(plan) {
   } catch (error) { return buildError('DOCX_SAFE_CREATE_REVISIONS_INVALID', 'docx_import_revisions_invalid', { code: error.code || error.message }); }
   if (entry.notes !== undefined) {
     try {
-      require('../core/word-manuscript-notes-v1.cjs').materializeImportedNotes({ candidates: entry.notes,
-        sceneContent: content, projectId: 'preview', sceneId: 'roman/preview.txt', importOperationId: 'preview', beforeText: null });
+      const model = require('../core/word-manuscript-notes-v1.cjs');
+      const noteScene = model.prepareImportedNoteScene({ candidates: entry.notes, sceneContent: content, projectId: 'preview', importOperationId: 'preview' });
+      model.materializeImportedNotes({ candidates: entry.notes,
+        sceneContent: noteScene, projectId: 'preview', sceneId: 'roman/preview.txt', importOperationId: 'preview', beforeText: null });
     } catch (error) { return buildError('DOCX_SAFE_CREATE_NOTES_INVALID', 'docx_import_notes_invalid', { code: error.code || error.message }); }
   }
   if (entry.comments !== undefined && (!Array.isArray(entry.comments) || !entry.comments.length

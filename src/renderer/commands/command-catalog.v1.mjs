@@ -62,7 +62,7 @@ const COMMAND_CATALOG_ROWS = [
   {
     key: 'PROJECT_IMPORT_DOCX_V1',
     id: 'cmd.project.importDocxV1',
-    label: 'Import DOCX Content (Content only)',
+    label: 'Import Word manuscript into a new project',
     group: 'import',
     surface: ['palette'],
     hotkey: '',

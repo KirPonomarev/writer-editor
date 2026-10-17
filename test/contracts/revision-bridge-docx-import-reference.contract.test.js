@@ -301,3 +301,268 @@ test('project invalidation before atomic activation leaves no imported scene', a
   const imported = path.join(port.tempRoot, 'A', 'roman', 'Imported');
   assert.deepEqual(fs.existsSync(imported) ? fs.readdirSync(imported).filter(name => name.endsWith('.txt')) : [], []);
 });
+
+async function newProjectHarness(t, inputBytes) {
+  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-docx-new-project-15k-20261017-'));
+  t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
+  const io = await bridge(), bytes = inputBytes || fs.readFileSync(path.join(root, 'test/fixtures/docx-pending-deleted-comment-import.docx'));
+  const preview = io.buildDocxContentPreviewFromZipBytes(bytes), plan = io.buildDocxNovelImportPreviewPlanFromContentPreview(preview);
+  assert.equal(plan.ok, true, JSON.stringify(plan));admission.rememberDocxImportPreviewPlanAdmission(plan);
+  const refs = createDocxImportPreviewReferences(), state = { context: 'source-project:1', allowed: true, registrations: 0, checks: [] };
+  const reference = refs.remember('plan', plan, state.context);
+  const core = await import('../../src/core/docx-new-project-v1.mjs'), port = await import('../../src/product/docxNewProjectCreateV1.mjs');
+  const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
+  const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(parent, '.authority'), useLeaseHeartbeatWorker: false });
+  const sandbox = { isPlainObjectValue: record, crypto, ...admission, mainWindow: { isDestroyed: () => false },
+    captureDocxImportPreviewContext: () => state.context,
+    rememberDocxImportPreviewReference: (kind, value, context) => refs.remember(kind, value, context),
+    cloneJsonSafe: copy, Buffer, loadRevisionBridgeModule: bridge,
+    resolveDocxImportPreviewReference: (kind, ref) => refs.resolve(kind, ref, state.context),
+    userBookmarkCapability: id => { state.checks.push(id); if (!state.allowed) throw Error('CAPABILITY_DENIED'); },
+    fileManager: { getDocumentsPath: () => parent }, PROJECT_SUBFOLDERS: { roman: 'roman', materials: 'materials' },
+    getMainProjectManifestAuthority: async () => authority,
+    touchProjectLibraryIndexForBinding: async () => { state.registrations++; },
+    makeProjectLifecycleError: (code, reason) => ({ ok: false, error: { code, reason } }),
+    loadCore: async () => core, loadPort: async () => port,
+  };
+  // Only module resolution is injected; the actual Main handler and both product modules execute.
+  const handler = section('DOCX_NEW_PROJECT_CREATE')
+    .replace("import('./core/docx-new-project-v1.mjs')", 'loadCore()')
+    .replace("import('./product/docxNewProjectCreateV1.mjs')", 'loadPort()');
+  vm.runInNewContext('let docxNewProjectAttempt=null; const docxNewProjectCompleted=new Map();\n' + handler, sandbox);
+  const invoke = payload => sandbox.handleDocxNewProjectCreateCommand(payload);
+  const request = { requestId: 'fresh-request', docxImportPreviewRef: reference, action: 'preview' };
+  const localModule = require('../../src/utils/docxImportLocalFilePreview.js');
+  Object.assign(sandbox, { ...localModule, readDocxImportAttempt: () => { throw Error('NEW_TARGET_MUST_NOT_READ_OLD_RECEIPT'); } });
+  vm.runInNewContext(section('DOCX_IMPORT_PREVIEW_COMMAND_SURFACE') + '\n' + section('DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE'), sandbox);
+  sandbox.pickDocxImportLocalFilePreviewFile = async () => ({ path: '/synthetic/manuscript.docx', size: bytes.length });
+  sandbox.readDocxImportLocalFilePreviewBytes = async () => bytes;
+  return { parent, bytes, plan, core, port, authority, sandbox, state, refs, reference, request, invoke };
+}
+const freshIdentity = () => ({ projectId: crypto.randomUUID(), projectName: 'Fresh manuscript', operationId: 'fresh-operation', createdAtUtc: '2026-10-17T01:00:00.000Z' });
+const newProjectRows = doc => require('../../src/core/word-pending-text-revisions-v1.cjs').paragraphs(doc)
+  .map(p => (p.content || []).map(n => n.type === 'hardBreak' ? '\n' : n.text || '').join(''));
+const literalCurrent = ['Одинаковая фраза: повтор 🧭.', 'До ВСТАВКА😀 после.', 'До  после.', 'Одинаковая фраза: повтор 🧭.', 'Перед сноской.', 'Кавычки «точно», Café, Ελληνικά, 中文 и семья 👨‍👩‍👧‍👦.'];
+const literalOriginal = [...literalCurrent.slice(0, 1), 'До  после.', 'До УДАЛЕНИЕ🧭 после.', ...literalCurrent.slice(3)];
+
+test('new-project preview writes nothing; real manifest-last creation preserves literal text, notes and discussions', async t => {
+  const h = await newProjectHarness(t), before = fs.readdirSync(h.parent);
+  const preview = await h.invoke(h.request);assert.equal(preview.ok, true, JSON.stringify(preview));
+  assert.equal(preview.writeEffects, false);assert.deepEqual(fs.readdirSync(h.parent), before);
+  assert.equal(preview.summary.noteCount, 1);assert.equal(preview.summary.commentCount, 3);assert.equal(preview.summary.revisionCount, 2);
+  const payload = { ...h.request, action: 'create' };
+  const [created, duplicate] = await Promise.all([h.invoke(payload), h.invoke(payload)]);
+  assert.equal(created.ok, true, JSON.stringify(created));assert.equal(duplicate.projectId, created.projectId);
+  const replay = await h.invoke(payload);assert.equal(replay.idempotent, true);assert.equal(replay.projectId, created.projectId);
+  assert.equal(h.state.registrations, 1);
+  const project = path.join(h.parent, 'Word-' + created.projectId), manifest = JSON.parse(fs.readFileSync(path.join(project, 'project.craftsman.json')));
+  assert.equal(manifest.projectId, created.projectId);assert.equal(manifest.projectName, 'Рукопись из Word');
+  const sceneId = 'roman/Imported/0001 Imported DOCX.txt', content = fs.readFileSync(path.join(project, sceneId), 'utf8');
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs'), envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const doc = envelope.parseObservablePayload(content).doc, projection = pending.projection(doc);
+  assert.deepEqual(newProjectRows(pending.normalizeNode(doc)), literalCurrent);
+  assert.equal(projection.original, literalOriginal.join('\n'));
+  assert.equal(manifest.treeIdentity.nodes[Object.keys(manifest.treeIdentity.nodes)[0]].bindingKey, 'file:' + sceneId);
+  const notes = JSON.parse(fs.readFileSync(path.join(project, 'notes.craftsman.json'))), threads = JSON.parse(fs.readFileSync(path.join(project, '.yalken/word-review/non-text-return-state.v1.json'))).threads;
+  assert.equal(notes.notes[0].body, 'Содержание сноски сохраняется.');assert.equal(notes.notes[0].manuscript.reference.offsetUtf16, 95);
+  assert.equal(pending.noteProjection(doc)[0].noteId, notes.notes[0].id);
+  assert.equal(threads[0].messages[1].body, 'Ответ к вставке');assert.equal(threads[2].anchor.sceneParagraphIndex, 3);
+  assert.deepEqual(pending.readCommentUnionContext({ document: doc, anchor: threads[1].anchor }), { quote: 'УДАЛЕНИЕ🧭', hidden: true });
+  assert.equal(fs.readdirSync(h.parent).filter(name => name.startsWith('Word-')).length, 1);
+  const separate = await h.invoke({ ...payload, requestId: 'explicit-repeat' });assert.equal(separate.ok, true);
+  assert.notEqual(separate.projectId, created.projectId);assert.equal(h.state.registrations, 2);
+  assert.ok(h.state.checks.includes('cmd.project.lifecycle.create'));assert.ok(h.state.checks.includes('cmd.project.importDocxV1'));
+  assert.deepEqual(fs.readFileSync(path.join(root, 'test/fixtures/docx-pending-deleted-comment-import.docx')), h.bytes);
+});
+
+test('new-project Main refuses raw authority, expired references, request conflicts and denied capability before writes', async t => {
+  const h = await newProjectHarness(t);
+  for (const extra of [{ path: '/foreign' }, { projectId: crypto.randomUUID() }, { docxImportPreviewPlan: h.plan }, { accepted: true }, { action: 'unknown' }, { requestId: '' }]) {
+    assert.equal((await h.invoke({ ...h.request, ...extra })).ok, false);
+  }
+  h.state.allowed = false;assert.equal((await h.invoke(h.request)).ok, false);h.state.allowed = true;
+  assert.equal((await h.invoke(h.request)).ok, true);
+  assert.equal((await h.invoke({ ...h.request, projectName: 'other' })).error.reason, 'DOCX_NEW_PROJECT_REQUEST_CONFLICT');
+  h.state.context = 'other:2';assert.equal((await h.invoke({ ...h.request, action: 'create' })).ok, false);
+  assert.deepEqual(fs.readdirSync(h.parent), []);
+});
+
+for (const fault of ['cancel', 'foreign', 'changed', 'published', 'root-swap', 'nested-symlink', 'hardlink']) test(`new-project port protects source and foreign data after ${fault}`, async t => {
+  const h = await newProjectHarness(t), identity = freshIdentity(), ownership = {}, model = h.core.prepareDocxNewProject({ plan: h.plan, ...identity });
+  const project = path.join(h.parent, model.directoryName), scene = path.join(project, model.files[0].relativePath), manifestPath = path.join(project, 'project.craftsman.json');
+  const outside = path.join(h.parent, 'protected.txt');fs.writeFileSync(outside, 'FOREIGN');let injected = false;
+  const authority = fault === 'published' ? { ...h.authority, commitManifestText: async args => {
+    const value = await h.authority.commitManifestText(args);injected = true;throw Error('INJECTED_AFTER_PUBLICATION');
+  } } : h.authority;
+  const options = { plan: h.plan, identity, ownership, parentDirectoryPath: h.parent, transactionAuthority: authority,
+    assertPublication: async () => {
+      if (injected || !fs.existsSync(scene)) return;
+      if (!fs.statSync(scene).size) return;
+      injected = true;
+      if (fault === 'foreign') fs.writeFileSync(path.join(project, 'FOREIGN.txt'), 'FOREIGN');
+      if (fault === 'changed') fs.writeFileSync(scene, 'EXTERNAL CHANGE');
+      if (fault === 'root-swap') { fs.renameSync(project, project + '-moved');fs.mkdirSync(project);fs.writeFileSync(path.join(project, 'FOREIGN.txt'), 'FOREIGN'); }
+      if (fault === 'nested-symlink') { fs.renameSync(path.dirname(scene), path.dirname(scene) + '-moved');fs.symlinkSync(h.parent, path.dirname(scene), 'dir'); }
+      if (fault === 'hardlink') { fs.unlinkSync(scene);fs.linkSync(outside, scene); }
+      if (fault !== 'published') throw Error('INJECTED_BEFORE_PUBLICATION');
+    } };
+  await assert.rejects(h.port.createDocxNewProject(options));assert.equal(injected, true);
+  assert.equal(fs.readFileSync(outside, 'utf8'), 'FOREIGN');
+  if (fault === 'cancel') { assert.equal(fs.existsSync(project), false); }
+  else if (fault === 'published') {
+    assert.equal(fs.existsSync(manifestPath), true);
+    const verified = await h.port.createDocxNewProject({ ...options, transactionAuthority: h.authority, assertPublication: async () => {} });
+    assert.equal(verified.idempotent, true);assert.equal(verified.projectId, identity.projectId);
+  } else {
+    assert.equal(fs.existsSync(manifestPath), false);
+    if (fault === 'foreign' || fault === 'root-swap') assert.equal(fs.readFileSync(path.join(project, 'FOREIGN.txt'), 'utf8'), 'FOREIGN');
+    if (fault === 'changed') assert.equal(fs.readFileSync(scene, 'utf8'), 'EXTERNAL CHANGE');
+  }
+});
+
+test('new-project port never claims a pre-existing directory or symlink', async t => {
+  const h = await newProjectHarness(t);
+  for (const symlink of [false, true]) {
+    const identity = freshIdentity(), model = h.core.prepareDocxNewProject({ plan: h.plan, ...identity }), target = path.join(h.parent, model.directoryName);
+    if (symlink) fs.symlinkSync(h.parent, target, 'dir');else { fs.mkdirSync(target);fs.writeFileSync(path.join(target, 'foreign'), 'KEEP'); }
+    await assert.rejects(h.port.createDocxNewProject({ plan: h.plan, identity, parentDirectoryPath: h.parent, transactionAuthority: h.authority, ownership: {}, assertPublication: async () => {} }));
+    if (!symlink) assert.equal(fs.readFileSync(path.join(target, 'foreign'), 'utf8'), 'KEEP');
+  }
+});
+
+test('new-project clean plain text imports without requiring a private envelope', async t => {
+  const expected = ['Plain chapter', '', 'Unicode 😀 café'];
+  const h = await newProjectHarness(t, docx(expected)), created = await h.invoke({ ...h.request, action: 'create' });
+  assert.equal(created.ok, true, JSON.stringify(created));
+  const text = fs.readFileSync(path.join(h.parent, 'Word-' + created.projectId, 'roman/Imported/0001 Imported DOCX.txt'), 'utf8');
+  assert.equal(text, expected.join('\n'));assert.equal(created.summary.characters, Array.from(expected.join('\n')).length);
+});
+
+function trackedChapter15k() {
+  // A ZIP-only fixture reader, not a DOCX semantic oracle. Literal expected rows are above.
+  const { inflateRawSync } = require('node:zlib'), source = fs.readFileSync(path.join(root, 'test/fixtures/docx-pending-deleted-comment-import.docx'));
+  const entries = [];
+  for (let offset = 0; source.readUInt32LE(offset) === 0x04034b50;) {
+    const flags = source.readUInt16LE(offset + 6), method = source.readUInt16LE(offset + 8), length = source.readUInt32LE(offset + 18);
+    assert.equal(flags & 8, 0);assert.ok([0, 8].includes(method));
+    const nameLength = source.readUInt16LE(offset + 26), extraLength = source.readUInt16LE(offset + 28);
+    const name = source.subarray(offset + 30, offset + 30 + nameLength).toString();
+    const begin = offset + 30 + nameLength + extraLength, packed = source.subarray(begin, begin + length);
+    entries.push({ name, data: (method === 8 ? inflateRawSync(packed) : packed).toString() });offset = begin + length;
+  }
+  const expected = [...literalCurrent];
+  const row = 'Контрольный абзац — текст главы, точные символы и пробелы. '.repeat(4);
+  while (Array.from([...expected, row].join('\n')).length < 15000) expected.push(row);
+  const missing = 15000 - Array.from(expected.join('\n')).length - 1;expected.push('я'.repeat(missing));
+  const suffix = expected.slice(literalCurrent.length).map(text => `<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`).join('');
+  const document = entries.find(e => e.name === 'word/document.xml');assert.ok(document);
+  document.data = document.data.replace('</w:body>', suffix + '</w:body>');
+  return { bytes: buildStoredZip(entries), expected, original: [...literalOriginal, ...expected.slice(literalCurrent.length)] };
+}
+
+test('15000-character public command creates a new project; cold reopen and durable decisions preserve all text, comments and notes', async t => {
+  const fixture = trackedChapter15k();assert.equal(Array.from(fixture.expected.join('\n')).length, 15000);
+  const h = await newProjectHarness(t, fixture.bytes);
+  const protectedRoot = path.join(h.parent, 'Existing-project');fs.mkdirSync(protectedRoot);
+  const protectedFile = path.join(protectedRoot, 'manuscript.txt');fs.writeFileSync(protectedFile, 'Existing saved text');
+  const unsavedDraft = { text: 'Unsaved author text', revision: 7 }, beforeDraft = JSON.stringify(unsavedDraft);
+  h.sandbox.confirmDiscardChanges = () => { throw Error('IMPORT_MUST_NOT_DISCARD_CURRENT_DRAFT'); };
+
+  const registryModule = await import('../../src/renderer/commands/registry.mjs'), runnerModule = await import('../../src/renderer/commands/runCommand.mjs');
+  const commands = await import('../../src/renderer/commands/projectCommands.mjs'), registry = registryModule.createCommandRegistry();
+  const calls = [];
+  commands.registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    calls.push(request.commandId);
+    if (request.commandId === 'cmd.project.docx.previewLocalFile') return { ok: true, value: await h.sandbox.handleDocxImportLocalFilePreviewCommandSurface(request.payload) };
+    if (request.commandId === 'cmd.project.docx.previewImportPlan') return { ok: true, value: await h.sandbox.handleDocxImportPreviewCommandSurface(request.payload) };
+    assert.equal(request.commandId, 'cmd.project.lifecycle.create');return { ok: true, value: await h.invoke(request.payload) };
+  } } });
+  const run = runnerModule.createCommandRunner(registry, { capability: { platformId: 'node' } });
+  const preview = await run(commands.COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { target: 'new-project', requestId: 'chapter15k', editorMode: 'tiptap' });
+  assert.equal(preview.ok, true, JSON.stringify(preview));assert.equal(preview.value.newProjectPreview.summary.characters, 15000);
+  assert.deepEqual(fs.readdirSync(h.parent), ['Existing-project']);
+  const created = await run(commands.COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { target: 'new-project', requestId: 'chapter15k', accept: true,
+    docxImportPreviewRef: preview.value.docxImportPreviewRef, editorMode: 'tiptap' });
+  assert.equal(created.ok, true, JSON.stringify(created));
+  const projectId = created.value.projectId, projectRoot = path.join(h.parent, 'Word-' + projectId), sceneId = 'roman/Imported/0001 Imported DOCX.txt';
+  const scenePath = path.join(projectRoot, sceneId), manifestPath = path.join(projectRoot, 'project.craftsman.json');
+  const { createStage10MainPersistenceAdapter } = await import('../../src/product/stage10MainPersistenceAdapter.mjs');
+  const { createStage10ApplicationBootstrap } = await import('../../src/product/stage10ApplicationBootstrap.mjs');
+  const portOptions = { projectRoot, anchorRoot: path.join(h.parent, '.cold-anchors'), transactionAuthority: h.authority };
+  const firstRuntime = createStage10ApplicationBootstrap({ persistencePort: createStage10MainPersistenceAdapter(portOptions) });
+  assert.equal((await firstRuntime.createProjectRuntime({ projectId, title: 'Word manuscript' })).ok, true);
+  const coldRuntime = createStage10ApplicationBootstrap({ persistencePort: createStage10MainPersistenceAdapter(portOptions) });
+  assert.equal((await coldRuntime.reopenProjectRuntime({ projectId })).ok, true);
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs'), envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const noteModel = require('../../src/core/word-manuscript-notes-v1.cjs'), commentModel = require('../../src/core/word-pending-comment-decisions-v1.cjs');
+  const tx = require('../../src/core/project-transaction-v1.cjs'), notesPath = path.join(projectRoot, 'notes.craftsman.json');
+  const commentsPath = path.join(projectRoot, '.yalken/word-review/non-text-return-state.v1.json');
+  for (const action of ['rejectAll', 'undo', 'acceptAll']) {
+    const content = fs.readFileSync(scenePath, 'utf8'), doc = envelope.parseObservablePayload(content).doc;
+    const initial = pending.projection(doc);assert.equal(initial.original, fixture.original.join('\n'));
+    const state = fs.readFileSync(commentsPath, 'utf8'), noteText = fs.readFileSync(notesPath, 'utf8');
+    const after = pending.decide(doc, { action }).doc, nextContent = envelope.composeObservablePayload({ doc: after });
+    const commentState = commentModel.planPendingCommentDecision({ beforeText: state, projectId, sceneId, beforeContent: content, afterContent: nextContent, decision: { action } });
+    const noteState = noteModel.planManuscriptNoteAnchorSave({ beforeText: noteText, projectId, sceneId, beforeContent: content, afterContent: nextContent, includeUnchanged: true });
+    await h.authority.withProjectLease(projectId, lease => lease.publish(async proof => {
+      const before = fs.readFileSync(manifestPath, 'utf8'), manifest = JSON.parse(before);manifest.lastCommandId++;
+      const args = { scenePath, sceneContent: nextContent, expectedSceneContent: content, manifestPath, expectedManifestContent: before,
+        manifestContent: JSON.stringify(manifest), revision: lease.fencingGeneration, commentState, noteState, revalidate: () => proof.assertOwned(),
+        verifyManifestContinuation: request => h.authority.verifyManifestContinuation({ ...request, projectId }),
+        publishManifest: async ({ manifestPath, expectedText, nextText }) => {
+          const r = await h.authority.commitManifestText({ projectId, lease, targetPath: manifestPath, expectedText, nextText });assert.equal(r.durablePublication, true);
+        } };
+      assert.equal((await tx.commitProjectTransaction(args)).success, true);await tx.readVerifiedProjectTransaction(args);
+    }));
+    const reopened = envelope.parseObservablePayload(fs.readFileSync(scenePath, 'utf8')).doc;
+    assert.deepEqual(newProjectRows(pending.normalizeNode(reopened)), action === 'rejectAll' ? fixture.original : fixture.expected);
+    const persistedNotes = JSON.parse(fs.readFileSync(notesPath)).notes, threads = JSON.parse(fs.readFileSync(commentsPath)).threads;
+    assert.equal(persistedNotes[0].body, 'Содержание сноски сохраняется.');assert.equal(persistedNotes[0].manuscript.reference.offsetUtf16, action === 'rejectAll' ? 96 : 95);
+    assert.equal(threads[0].messages[1].body, 'Ответ к вставке');assert.equal(threads[1].messages[0].body, 'Обсуждение удаления');
+    assert.equal(threads[2].anchor.sceneParagraphIndex, 3);assert.equal(threads[2].anchor.selectedText, 'повтор 🧭');
+    pending.buildCommentExportBinding({ document: reopened, anchors: threads.filter(x => x.status !== 'deleted').map(x => ({ threadId: x.threadId, anchor: x.anchor })) });
+  }
+  assert.equal(fs.readFileSync(protectedFile, 'utf8'), 'Existing saved text');assert.equal(JSON.stringify(unsavedDraft), beforeDraft);
+  assert.deepEqual(calls, ['cmd.project.docx.previewLocalFile', 'cmd.project.docx.previewImportPlan', 'cmd.project.lifecycle.create', 'cmd.project.lifecycle.create']);
+});
+
+test('seeded creation revalidates context and capability after asynchronous adapter loading', async t => {
+  for (const change of ['context', 'capability']) {
+    const h = await newProjectHarness(t), original = h.sandbox.loadPort;
+    h.sandbox.loadPort = async () => { if (change === 'context') h.state.context = 'different:2';else h.state.allowed = false;return original(); };
+    const result = await h.invoke({ ...h.request, action: 'create' });assert.equal(result.ok, false);
+    assert.deepEqual(fs.readdirSync(h.parent), []);
+  }
+});
+
+test('unknown seeded fields cannot fall through to ordinary empty-project creation', async t => {
+  const h = await newProjectHarness(t);
+  vm.runInNewContext(namedMainFunction('handleProjectLifecycleCreateCommand'), h.sandbox);
+  for (const payload of [{ path: '/foreign' }, { docxImportPreviewPlan: h.plan }, { target: 'new-project' }, { action: 'create' }, { projectId: crypto.randomUUID() }]) {
+    const result = await h.sandbox.handleProjectLifecycleCreateCommand(payload);assert.equal(result.ok, false);assert.equal(result.error.code, 'E_PROJECT_CREATE_PAYLOAD_INVALID');
+  }
+  assert.equal(validateIpcEnvelope(createEnvelope('ui:command-bridge', 'cmd.project.lifecycle.create', h.request), 'ui:command-bridge').ok, true);
+  assert.deepEqual(fs.readdirSync(h.parent), []);
+});
+
+test('supported-profile refusal is visible before new-project publication', async t => {
+  const bytes = buildStoredZip([
+    { name: '[Content_Types].xml', data: '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>' },
+    { name: '_rels/.rels', data: '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="d" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>' },
+    { name: 'word/document.xml', data: '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:tbl><w:tblPr/><w:tblGrid><w:gridCol/></w:tblGrid><w:tr><w:tc><w:tcPr/><w:p><w:r><w:t>Cell content</w:t></w:r></w:p></w:tc></w:tr></w:tbl></w:body></w:document>' },
+  ]);
+  const h = await newProjectHarness(t, bytes), result = await h.invoke(h.request);
+  assert.equal(result.ok, false);assert.equal(result.error.reason, 'DOCX_NEW_PROJECT_CONTENT_UNSUPPORTED');assert.deepEqual(fs.readdirSync(h.parent), []);
+});
+
+test('partitioned manuscript retains paragraph separators and reports the complete text size', async t => {
+  const expected = Array.from({ length: 201 }, (_, i) => `Paragraph ${i} 😀`), h = await newProjectHarness(t, docx(expected));
+  assert.equal(h.plan.candidateCreatePlan.entries.length, 2);
+  const result = await h.invoke({ ...h.request, action: 'create' });assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.summary.sceneCount, 2);assert.equal(result.summary.characters, Array.from(expected.join('\n')).length);
+  assert.equal(result.summary.currentUtf16CodeUnits, expected.join('\n').length);
+  const model = h.core.prepareDocxNewProject({ plan: h.plan, ...freshIdentity() });
+  const texts = model.files.filter(f => f.role === 'scene').map(f => fs.readFileSync(path.join(h.parent, 'Word-' + result.projectId, f.relativePath), 'utf8'));
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  assert.equal(texts.map(text => envelope.parseObservablePayload(text).text).join('\n'), expected.join('\n'));
+});

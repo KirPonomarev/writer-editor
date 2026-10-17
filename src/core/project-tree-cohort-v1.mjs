@@ -99,7 +99,7 @@ export function partitionDocxImportCandidate(candidate, artifactSha256, requeste
   for (const k of Object.keys(policy)) need(Number.isSafeInteger(policy[k]) && policy[k] > 0 && policy[k] <= DOCX_NOVEL_POLICY[k], 'E_DOCX_NOVEL_POLICY');
   const sourceCandidate = clone(candidate.entries[0]), parsed = parsedScene(sourceCandidate.content);
   const doc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text), ledger = pending.readLedger(doc);
-  if (sourceCandidate.notes?.length) need(!ledger, 'NOTE_PENDING_IMPORT_REQUIRES_AUTHENTICATED_RETURN');
+  if (sourceCandidate.notes?.length) notesModel.prepareImportedNoteScene({candidates:sourceCandidate.notes,sceneContent:sourceCandidate.content,projectId:'preview',importOperationId:'preview'});
   const source = ledger ? ledger.source : doc, leaves = bookmarks.paragraphs(source), leafTexts = leaves.map(bookmarks.textOf);
   const roots = source.content, metrics = [], prefix = [0];
   for (const root of roots) { const rows = bookmarks.paragraphs({ type: 'doc', content: [root] });
@@ -186,7 +186,9 @@ export function partitionDocxImportCandidate(candidate, artifactSha256, requeste
       }
       return item;
     });
-    const notes = (sourceCandidate.notes || []).filter(n => n.paragraphIndex >= leafFrom && n.paragraphIndex < leafTo).map(n => ({...clone(n),paragraphIndex:n.paragraphIndex-leafFrom}));
+    const notes = (sourceCandidate.notes || []).filter(n => n.paragraphIndex >= leafFrom && n.paragraphIndex < leafTo).map(n => ({...clone(n),paragraphIndex:n.paragraphIndex-leafFrom,
+      ...(n.sourcePoint ? {sourcePoint:{...clone(n.sourcePoint),paragraphIndex:n.sourcePoint.paragraphIndex-leafFrom,
+        originalParagraphIndex:n.sourcePoint.originalParagraphIndex-leafFrom}} : {})}));
     entries.push({sceneId:`docx-import-scene-${sha(`${artifactSha256}\n${i}\n${rootFrom}\n${rootTo}`)}`,kind:'scene',title:`${String(i+1).padStart(4,'0')} Imported DOCX`,content,
       contentTextHash:novelHash(content),candidateContentSha256:sha(content),source:{...clone(sourceCandidate.source),paragraphRange:{start:leafFrom,end:leafTo-1}},
       partition:{rootFrom,rootTo,leafFrom,leafTo},...(comments.length?{comments}:{}),...(notes.length?{notes}:{})});

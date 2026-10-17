@@ -26343,7 +26343,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "768121a3808e78c82ac633bf5e80786e378aeff92251ffee66d94a8001646f5f"
+      "sha256": "63ee784310e78ce95a3f575b89074fd0aecfd44aa9ccbae1ab13ee2fedc10aa2"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -26371,7 +26371,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/io/revisionBridge/index.mjs",
-      "sha256": "3b6198a3209311a9b2ef4538de7eb446e1d2da36e3c33ba76f3753c3894c63aa"
+      "sha256": "d94fde605220848d35706f18433477d8a7fcb6507f6f9b24b51a22646f3b0a7f"
     },
     {
       "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
@@ -26403,7 +26403,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/core/word-manuscript-notes-v1.cjs",
-      "sha256": "2c248f6cc46cd5636d6746ddee964d48c9f77508cc4d9807bd26263f9d27f0f5"
+      "sha256": "9860ba84c949e05bea02910c7f0e50073f66ed0ce91fce421a4dd08ed4c20943"
     },
     {
       "path": "src/core/word-pending-text-revisions-v1.cjs",
@@ -26495,7 +26495,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "1fb25a47bbd80539fbf49b0071fc45ade911497dcb6882df3cf87a08d63f0a7f"
+      "sha256": "50dd5244e4b8f118cc24c9e3bd3b66290d9a9936b1c762fa8f0fa0da40e219c6"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -26631,7 +26631,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "38da29d2ea7fd2c1d48f09d0a325998822ff6b2e9fa77c972eaa9208d951133c"
+      "sha256": "61a309ed5d3882172bfcca95a001e320e4458cbd36186a694ec7e7cfc363724e"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -26707,11 +26707,11 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/utils/docxImportSafeCreate.js",
-      "sha256": "d23c5bb1376b1ef27760172fae10d30be11fd5f2e085b0161fde2c1b48d68dd8"
+      "sha256": "0e6415bf8fae98c2e406e71b041ee24f81b94ad8359c43df6262f47664e48ce7"
     },
     {
       "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-      "sha256": "bc406cdb91ea2cfa556bc8e6b056608a9bc9766dfe9cd739e5cc611e433c6921"
+      "sha256": "81ee07765e122adfd5ebaeddfef1b1dbebdc2e88aceda15035aa11f674858da5"
     },
     {
       "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
@@ -26763,7 +26763,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/core/project-tree-cohort-v1.mjs",
-      "sha256": "4302ee5a1e6f3b018c5e333387e186c925b5023888857fc0c462f475001c60c1"
+      "sha256": "bc9813180f0fb24f1d3343a8209b31473dbd8f377f64fb1d4125a57ba02cc447"
     },
     {
       "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
@@ -26992,12 +26992,44 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md",
       "sha256": "2c04556655a0358bf61401c8e2c701b1549c971982d4e6b42d9e8200b1401973"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "sha256": "cf103ce88b9400a05799bd6d6da523cbfe17435f6977f06d31f5b33e35989ce1"
+    },
+    {
+      "path": "src/core/docx-new-project-v1.mjs",
+      "sha256": "a3a90c70743913a86e0cfecd048598380d6c324ad0dee305f507f9de1863679a"
+    },
+    {
+      "path": "src/product/docxNewProjectCreateV1.mjs",
+      "sha256": "f24300b463af155386fe0faeabe88cd5b2b91bd9f376dbf869f1515d63d3bf63"
+    },
+    {
+      "path": "src/renderer/commands/command-catalog.v1.mjs",
+      "sha256": "50b4366abfe29931c4241a77a579a32237082f28e7dee2d861af4d55191e321b"
+    },
+    {
+      "path": "src/renderer/commands/projectCommands.mjs",
+      "sha256": "ddf8f9e174f1eca9662647936a64738bef89321b50536e9f222d4335aca9c6f3"
+    },
+    {
+      "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
+      "sha256": "5622fdc525471774c7f6e3960a744df7ee543d3ca42b834508867c2c249a0943"
+    },
+    {
+      "path": "test/unit/docx-import-preview-ui-flow.test.js",
+      "sha256": "2509ed68ae26fd25185ea0565954681b3e0ae2b3e74456f258e89ad265b79b7e"
+    },
+    {
+      "path": "test/unit/docx-import-product-flow-command.test.js",
+      "sha256": "15b9e7c39d98c85659760b0ddf02412291137e21d22ec18ae64dab41cb193a47"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "ae143e661bded8138181ec65a79dad043972ae2f4c36f106ecdf5f78581f57f3"
+      "sha256": "10cfea07b160063485049beacbff5a581c5fa3e64924575d29ea86f42e31ebc3"
     }
   ]
 });

@@ -27,6 +27,7 @@ const {
   readDocxImportAttempt,
   acknowledgeDocxImportAttempt,
   isDocxImportPreviewPlanAdmitted,
+  hashDocxImportPreviewPlanForAdmission,
   rememberDocxImportPreviewPlanAdmission,
   verifyDocxMediaAssetFiles,
 } = require('./utils/docxImportSafeCreate');
@@ -12841,6 +12842,8 @@ const docxImportPreviewReferences = createDocxImportPreviewReferences({
   maxTotalBytes: 48 * 1024 * 1024,
 });
 let docxImportPreviewProjectGeneration = 0;
+let docxNewProjectAttempt = null;
+const docxNewProjectCompleted = new Map();
 
 function captureDocxImportPreviewContext() {
   return JSON.stringify([getProjectRootPath(), docxImportPreviewProjectGeneration]);
@@ -12850,6 +12853,8 @@ function invalidateDocxImportPreviewReferences() {
   docxImportPreviewProjectGeneration += 1;
   docxImportPreviewReferences.clear();
   docxImportOpenAcknowledgement = null;
+  if (!docxNewProjectAttempt?.promise) docxNewProjectAttempt = null;
+  docxNewProjectCompleted.clear();
 }
 
 function rememberDocxImportPreviewReference(kind, value, context) {
@@ -14656,7 +14661,8 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
   }
 
   // Validate before any dialog or project read; stored correlation never supplies a plan.
-  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => key !== 'requestId')
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId', 'target'].includes(key))
+    || payload.target !== undefined && payload.target !== 'new-project'
     || payload.requestId !== undefined && (typeof payload.requestId !== 'string' || payload.requestId.trim().length > 120)) {
     return makeDocxImportLocalFilePreviewTypedError('E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_INPUT_INVALID', 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_INPUT_INVALID');
   }
@@ -14668,32 +14674,34 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
   let previewResult = null;
   try {
     assertCurrent();
-    const projectRoot = getProjectRootPath();
-    const manifest = JSON.parse(await fs.readFile(getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME), 'utf8'));
-    assertCurrent();
-    const pending = await readDocxImportAttempt({ projectRoot, projectId: manifest.projectId });
-    assertCurrent();
-    if (pending.record) {
-      const resumable = [pending.record.sourceArtifactSha256, pending.record.candidateContentSha256]
-        .every(value => typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value));
-      const choice = await dialog.showMessageBox(mainWindow, {
-        type: 'question', title: 'Незавершённый импорт DOCX', message: 'Продолжить предыдущий импорт?',
-        detail: resumable ? 'Повторно выберите исходный DOCX. Новый импорт создаст отдельную сцену.'
-          : 'Для этой попытки нельзя проверить исходный файл. Выберите «Новый импорт».',
-        buttons: resumable ? ['Продолжить', 'Новый импорт', 'Отмена'] : ['Новый импорт', 'Отмена'],
-        defaultId: 0, cancelId: resumable ? 2 : 1, noLink: true,
-      });
+    if (payload.target !== 'new-project') {
+      const projectRoot = getProjectRootPath();
+      const manifest = JSON.parse(await fs.readFile(getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME), 'utf8'));
       assertCurrent();
-      if (choice.response !== 0 && (!resumable || choice.response !== 1)) {
-        return { ok: true, requestId: normalizeDocxImportLocalFilePreviewRequestId(payload.requestId),
-          status: 'cancelled', writeEffects: false, contentPreviewOk: false, importPreviewOk: false };
+      const pending = await readDocxImportAttempt({ projectRoot, projectId: manifest.projectId });
+      assertCurrent();
+      if (pending.record) {
+        const resumable = [pending.record.sourceArtifactSha256, pending.record.candidateContentSha256]
+          .every(value => typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value));
+        const choice = await dialog.showMessageBox(mainWindow, {
+          type: 'question', title: 'Незавершённый импорт DOCX', message: 'Продолжить предыдущий импорт?',
+          detail: resumable ? 'Повторно выберите исходный DOCX. Новый импорт создаст отдельную сцену.'
+            : 'Для этой попытки нельзя проверить исходный файл. Выберите «Новый импорт».',
+          buttons: resumable ? ['Продолжить', 'Новый импорт', 'Отмена'] : ['Новый импорт', 'Отмена'],
+          defaultId: 0, cancelId: resumable ? 2 : 1, noLink: true,
+        });
+        assertCurrent();
+        if (choice.response !== 0 && (!resumable || choice.response !== 1)) {
+          return { ok: true, requestId: normalizeDocxImportLocalFilePreviewRequestId(payload.requestId),
+            status: 'cancelled', writeEffects: false, contentPreviewOk: false, importPreviewOk: false };
+        }
+        const current = await readDocxImportAttempt({ projectRoot, projectId: manifest.projectId });
+        assertCurrent();
+        if (current.sha256 !== pending.sha256) throw new Error('DOCX_IMPORT_ATTEMPT_CHANGED');
+        effectivePayload = { requestId: resumable && choice.response === 0 ? pending.record.requestId : 'docx-import-' + crypto.randomUUID() };
       }
-      const current = await readDocxImportAttempt({ projectRoot, projectId: manifest.projectId });
-      assertCurrent();
-      if (current.sha256 !== pending.sha256) throw new Error('DOCX_IMPORT_ATTEMPT_CHANGED');
-      effectivePayload = { requestId: resumable && choice.response === 0 ? pending.record.requestId : 'docx-import-' + crypto.randomUUID() };
     }
-    previewResult = await createDocxImportLocalFilePreview(effectivePayload, {
+    previewResult = await createDocxImportLocalFilePreview({ requestId: effectivePayload.requestId }, {
       pickLocalFile: async options => {
         assertCurrent();
         const selected = await pickDocxImportLocalFilePreviewFile(options);
@@ -21860,7 +21868,82 @@ async function openProjectDocumentFile(filePath, options = {}) {
   };
 }
 
+// DOCX_NEW_PROJECT_CREATE_START
+async function handleDocxNewProjectCreateCommand(payload = {}) {
+  const failure = code => makeProjectLifecycleError('E_DOCX_NEW_PROJECT_CREATE', code);
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId', 'docxImportPreviewRef', 'projectName', 'action'].includes(key))
+    || typeof payload.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(payload.requestId)
+    || typeof payload.docxImportPreviewRef !== 'string' || payload.docxImportPreviewRef.length > 256
+    || !['preview', 'create'].includes(payload.action)
+    || payload.projectName !== undefined && typeof payload.projectName !== 'string') return failure('DOCX_NEW_PROJECT_PAYLOAD_INVALID');
+  const context = captureDocxImportPreviewContext(), window = mainWindow;
+  const currentPlan = () => {
+    userBookmarkCapability('cmd.project.lifecycle.create');
+    userBookmarkCapability('cmd.project.importDocxV1');
+    if (!window || window !== mainWindow || window.isDestroyed() || context !== captureDocxImportPreviewContext())
+      throw Error('DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED');
+    const plan = resolveDocxImportPreviewReference('plan', payload.docxImportPreviewRef);
+    if (!plan || !isDocxImportPreviewPlanAdmitted(plan)) throw Error('DOCX_IMPORT_PLAN_REFERENCE_INVALID');
+    return plan;
+  };
+  try {
+    const plan = currentPlan(), sourceHash = hashDocxImportPreviewPlanForAdmission(plan);
+    const projectName = payload.projectName === undefined ? 'Рукопись из Word' : payload.projectName;
+    const binding = JSON.stringify([context, sourceHash, projectName]);
+    const completed = docxNewProjectCompleted.get(payload.requestId);
+    if (completed) {
+      if (completed.binding !== binding) return failure('DOCX_NEW_PROJECT_REQUEST_CONFLICT');
+      return { ...completed.result, idempotent: true };
+    }
+    let attempt = docxNewProjectAttempt;
+    if (attempt && attempt.requestId === payload.requestId && attempt.binding !== binding) return failure('DOCX_NEW_PROJECT_REQUEST_CONFLICT');
+    if (attempt?.promise && attempt.requestId !== payload.requestId) return failure('DOCX_NEW_PROJECT_BUSY');
+    if (!attempt || attempt.requestId !== payload.requestId) {
+      attempt = { requestId: payload.requestId, binding, ownership: {}, identity: {
+        projectId: crypto.randomUUID(), projectName, operationId: `docx-new-${crypto.randomUUID()}`, createdAtUtc: new Date().toISOString(),
+      } };
+      docxNewProjectAttempt = attempt;
+    }
+    if (attempt.promise) return await attempt.promise;
+    const { prepareDocxNewProject } = await import('./core/docx-new-project-v1.mjs');
+    currentPlan();
+    if (docxNewProjectAttempt !== attempt) return failure('DOCX_NEW_PROJECT_ATTEMPT_CHANGED');
+    if (attempt.promise) return await attempt.promise;
+    if (payload.action === 'preview') {
+      const summary = prepareDocxNewProject({ plan, ...attempt.identity }).summary;
+      return { ok: true, target: 'new-project', requestId: payload.requestId, preview: true, writeEffects: false, summary };
+    }
+    const assertPublication = () => {
+      const live = currentPlan();
+      if (docxNewProjectAttempt !== attempt || hashDocxImportPreviewPlanForAdmission(live) !== sourceHash)
+        throw Error('DOCX_NEW_PROJECT_ATTEMPT_CHANGED');
+    };
+    attempt.promise = (async () => {
+      const { createDocxNewProject } = await import('./product/docxNewProjectCreateV1.mjs');
+      assertPublication();
+      const transactionAuthority = await getMainProjectManifestAuthority();
+      const created = await createDocxNewProject({ plan, identity: attempt.identity, parentDirectoryPath: fileManager.getDocumentsPath(),
+        transactionAuthority, assertPublication, ownership: attempt.ownership, initialDirectories: Object.values(PROJECT_SUBFOLDERS) });
+      const result = { ok: true, created: true, projectCreated: true, target: 'new-project', requestId: payload.requestId,
+        projectId: created.projectId, projectName: created.projectName, summary: created.summary, idempotent: created.idempotent };
+      docxNewProjectCompleted.set(payload.requestId, { binding, result });
+      while (docxNewProjectCompleted.size > 8) docxNewProjectCompleted.delete(docxNewProjectCompleted.keys().next().value);
+      // Registration is derived. Failure cannot unpublish or repeat the project.
+      try { await touchProjectLibraryIndexForBinding(created); } catch { result.libraryRefreshPending = true; }
+      return result;
+    })();
+    try { return await attempt.promise; } finally { attempt.promise = null; }
+  } catch (error) {
+    return failure(/^[A-Z][A-Z0-9_]{1,95}$/u.test(error?.code || error?.message || '')
+      ? error.code || error.message : 'DOCX_NEW_PROJECT_CREATE_FAILED');
+  }
+}
+// DOCX_NEW_PROJECT_CREATE_END
+
 async function handleProjectLifecycleCreateCommand(payload = {}) {
+  if (payload && Object.hasOwn(payload, 'docxImportPreviewRef')) return handleDocxNewProjectCreateCommand(payload);
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => key !== 'projectName'))
+    return makeProjectLifecycleError('E_PROJECT_CREATE_PAYLOAD_INVALID', 'PROJECT_CREATE_PAYLOAD_INVALID');
   const normalized = normalizeProjectLifecyclePayload(payload);
   const projectName = normalized.projectName || DEFAULT_PROJECT_NAME;
   if (await hasPendingAutosaveRecovery()) {

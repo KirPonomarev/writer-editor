@@ -424,3 +424,32 @@ test('ACK bridge preserves only fixed Main diagnostic codes and never arbitrary 
   const unknown = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, payload);
   assert.equal(unknown.error.code, 'E_DOCX_IMPORT_ACK_FAILED'); assert.equal(JSON.stringify(unknown).includes('private'), false);
 });
+
+test('new-project public command uses opaque Main references and lifecycle create, including real editor metadata', async () => {
+  const { createCommandRegistry, createCommandRunner, registerProjectCommands, COMMAND_IDS } = await loadCommandModules();
+  const calls = [], registry = createCommandRegistry(), plan = previewPlan(), ref = 'a'.repeat(64), contentRef = 'b'.repeat(64);
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    calls.push(cloneJsonSafe(request)); const p = request.payload;
+    if (request.commandId === 'cmd.project.docx.previewLocalFile') return { ok: true, value: { ok: true, requestId: p.requestId,
+      status: 'preview', contentPreviewOk: true, importPreviewOk: true, docxImportPreviewPlan: plan, docxContentPreviewRef: contentRef } };
+    if (request.commandId === 'cmd.project.docx.previewImportPlan') return { ok: true, value: { ok: true, docxImportPreviewPlan: plan, docxImportPreviewRef: ref } };
+    assert.equal(request.commandId, 'cmd.project.lifecycle.create');
+    assert.deepEqual(Object.keys(p).sort(), ['action', 'docxImportPreviewRef', 'requestId']);
+    return { ok: true, value: { ok: true, target: 'new-project', requestId: p.requestId,
+      ...(p.action === 'preview' ? { preview: true, writeEffects: false, summary: { characters: 15 } }
+        : { projectCreated: true, created: true, projectId: '12345678-1234-4234-8234-123456789abc' }) } };
+  } } });
+  const run = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  for (const editorMode of ['tiptap', 'legacy']) {
+    const p = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: 'new-target', target: 'new-project', editorMode });
+    assert.equal(p.ok, true, JSON.stringify(p));assert.equal(p.value.newProjectPreview.ok, true);assert.equal(p.value.docxImportPreviewRef, ref);
+    const created = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: 'new-target', target: 'new-project', accept: true, docxImportPreviewRef: ref, editorMode });
+    assert.equal(created.ok, true, JSON.stringify(created));assert.equal(created.value.projectCreated, true);
+  }
+  const before = calls.length;
+  for (const extra of [{ target: 'current-project' }, { docxImportPreviewPlan: plan }, { path: '/foreign' }, { projectId: 'foreign' }, { editorMode: null }, { action: 'acknowledge-open' }]) {
+    const result = await run(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, { requestId: 'new-target', target: 'new-project', ...extra });
+    assert.equal(result.ok, false);
+  }
+  assert.equal(calls.length, before);
+});
