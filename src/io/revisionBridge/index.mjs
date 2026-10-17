@@ -11885,7 +11885,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         if (grammar?.profile !== 'RICH_INLINE_V1' || grammar.status !== 'SUPPORTED') {
           throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
         }
-        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated: true, pendingDocument: parsed.contentPreview.pendingRevisionDocument });
+        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated: true, pendingDocument: parsed.contentPreview.pendingRevisionDocument, ...manuscriptOptions });
         parsed.contentPreview.commentNormalizationLedger = (grammar.normalizationLedger || []).map(item => ({
           sourcePart: item.part, xmlElement: item.path, offset: item.offset,
           attribute: item.attribute, value: item.value, disposition: item.disposition, reason: item.reason,

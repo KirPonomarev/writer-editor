@@ -37,7 +37,7 @@ function message(source, reply = false) {
     ...commentBodyModel.validateCommentMessageContent(source), provenance };
 }
 
-export function genericCommentCandidates(analysis, paragraphs, { metadataValidated = false, pendingDocument } = {}) {
+export function genericCommentCandidates(analysis, paragraphs, { metadataValidated = false, pendingDocument, manuscriptProfile } = {}) {
   demand(analysis?.ok === true && (analysis.reviewIr?.sourceMode === 'CLEAN' || pendingDocument), 'ANALYSIS');
   const ir = analysis.reviewIr;
   demand(Array.isArray(ir.commentThreads) && ir.commentThreads.length <= commentBodyModel.COMMENT_CAPACITY.threads
@@ -80,8 +80,8 @@ export function genericCommentCandidates(analysis, paragraphs, { metadataValidat
     let result=offset;
     for(const revision of pendingLedger.revisions){
       if(revision.paragraphIndex!==paragraphIndex||revision.operation!=='delete')continue;
-      demand(!(revision.from<offset&&offset<revision.to),'PENDING_DELETED_ENDPOINT');
-      if(revision.to<=offset)result-=revision.to-revision.from;
+      demand(manuscriptProfile === 'YALKEN_MANUSCRIPT_V1' || !(revision.from<offset&&offset<revision.to),'PENDING_DELETED_ENDPOINT');
+      if(revision.from<offset)result-=Math.min(offset,revision.to)-revision.from;
     }
     return result;
   };

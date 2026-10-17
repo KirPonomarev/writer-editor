@@ -2234,11 +2234,11 @@
     {
       "filePath": "src/io/revisionBridge/genericWordComments.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
-      "sha256": "3dea3ab5fe0b0bbb4a95a0fbc2b857554e2ed36639083a4b8c6569cfcfd915ed"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "6849ed42dddbd0ce00995624fc570a3044abd36ccbbd054087fd0defc6eb1c79"
     },
     {
       "filePath": "docs/tasks/2026-09-27--word-comment-authoring.md",
@@ -5483,20 +5483,20 @@
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "30520aec7070d20143a930bc52886c3472b64d63aa6836d77769528ad6dc5c34"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "8911b8a16ec1013dd900bbd8aae40dd761d8c817305737df9e7b84b7eeac6d6b"
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "f85c0ca35fa63b766e1d5715ce60268955aa00617d6799164205ec0a06509731"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "6083f5d77a12b8d308971eb73e4368c04541b7c634833a4b20b00b0155e03360"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "f12b076fa5f7d393d7072715973b30f63e1e04682516adb68dd55755e79bedbe"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "c443aa5acd8ebff63a89ab28cf20f4e6d75ddd929236f7cbac7a7ed567fac1ac"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "87ad55069bcac0692a2155674426f4e336c51e5490d6645c63da0bdc628125d4"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "12283fadfc17c6f9d4b57e2bdf7edaf1268cf361f07a1646a5dbf0621ff64ef3"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "11612340c623f4b88af230e7cd783c6f4d8192ca8f3e63b7fb5b114f29cb5363"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "043fc68fbd31bee4cc6b032575adff463f4ec4ff002d41b82af44d1b0745b463"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "f87e8feb72c3b7a42120b4c66bcf4a7cf69982f0267e0c478ff822ded2148790"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "62160b5671976f773b57381245d15e5b5fed3a309a0c099b035c581b6048087b"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "b21bde751a2a92be0229dc07cc48e957f46b7b71f58ba990fdf33d09045a5084"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "22b8489866cb98a05d952e6e335ce62e0f225aad9e495589c2ac3c534332dbaf"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
-      "sha256": "95ddc5dd248a4cefd91c43160f293cea69d0223fdc0ad363792d5b987a8da30e"
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "8e7760def9477b18f3409df24c29cfcdf91ecc5a27280d979f91d763b98bf35a"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5956,6 +5956,24 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
       "sha256": "c87a50f38292d4c2d7be057835e7d5405adbab79ef967d8465f0e3923d414abb"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--google-docx-small-manuscript.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "156c63b9e8082c08364a4d20450379a87b0626cd80dd03b7b73a79b5d46ad9f7"
+    },
+    {
+      "filePath": "test/contracts/docx-google-manuscript-small.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T17:31:44.997047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested testing/implementing small Google DOCX manuscript intake through the existing one-way new-project feature. Two unchanged provenance-bound Google samples retain full independent text/revisions/discussion through real fenced create and cold-process file readback; 185 focused cases pass Node22 and shipped Electron, plus180 new-project/reference/color tests. Profile-only point-mark and neutral presentation normalization is explicit; only exact adjacent matching insert/delete duplicate IDs are admitted; interior deletion comments retain the existing full union proof. Original strict profiles, Core/model/writer/quotas/protected pins and prior approval tuples remain. Known legacy whole-content-preview25 failures independently match the exact baseline and are not green. No current provider/account, installed-app or book claim.",
+      "sha256": "814aa39d47b218f20092cece0a4267bfcf6ed08efcc26f7731660351b50de76e"
     }
   ],
   "evidenceStampIds": [
@@ -47929,6 +47947,87 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
       "sha256": "59c252c3bceb42ecf778afa952fd2f814447f646727febe65003913ce2e6efd3"
+    },
+    {
+      "filePath": "src/io/revisionBridge/genericWordComments.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-16T22:48:25.744159+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_DELETED_COMMENT_ANCHOR_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Direct owner one-way DOCX implementation go-ahead. Exact-byte integration of one deleted-comment/decision-geometry correction; affected83of83 and real lease/CAS/transaction readback observed, zero skip/todo. Preserve all old approvals/protected sources and proof predicates. No native, large manuscript, new-project UI or old roundtrip acceptance. Same PR2128 only.",
+      "sha256": "3dea3ab5fe0b0bbb4a95a0fbc2b857554e2ed36639083a4b8c6569cfcfd915ed"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "f85c0ca35fa63b766e1d5715ce60268955aa00617d6799164205ec0a06509731"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "30520aec7070d20143a930bc52886c3472b64d63aa6836d77769528ad6dc5c34"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "11612340c623f4b88af230e7cd783c6f4d8192ca8f3e63b7fb5b114f29cb5363"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "f87e8feb72c3b7a42120b4c66bcf4a7cf69982f0267e0c478ff822ded2148790"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "95ddc5dd248a4cefd91c43160f293cea69d0223fdc0ad363792d5b987a8da30e"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "f12b076fa5f7d393d7072715973b30f63e1e04682516adb68dd55755e79bedbe"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "87ad55069bcac0692a2155674426f4e336c51e5490d6645c63da0bdc628125d4"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T15:14:37.721179+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_THEME_COLORS_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner requested repairing DOCX colors. Existing one-way parser resolves only validated explicit theme sRGB through bounded document mapping and exact integer HSL luminance normalization, with shade rounding differences disclosed. Existing modal reconstructs only fixed bounded color refusal text. Final focused source tests pass on both engines; independent Fraction oracle agrees with72 actual imported colors, original editorial controls remain exact. Legacy return behavior, Core, publication, quotas, dependencies, protected pins and prior approval tuples preserved. This mechanical byte binding grants no native or release certification",
+      "sha256": "b21bde751a2a92be0229dc07cc48e957f46b7b71f58ba990fdf33d09045a5084"
     }
   ]
 }

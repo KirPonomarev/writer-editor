@@ -3,7 +3,7 @@
 TASK_ID: YALKEN_GOOGLE_DOCX_SMALL_MANUSCRIPT_20261017
 TYPE: CORE
 DOCUMENT_CLASS: PROCESS
-STATUS: IMPLEMENTATION_PENDING
+STATUS: LOCAL_SMALL_SOURCE_PROOF_COMPLETE_DELIVERY_PENDING
 CLAIM_BOUNDARY: Small local Google-exported DOCX to a new independent project; no current Google account, installed app or complete Google compatibility claim.
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
@@ -124,3 +124,9 @@ Record expected/actual, exact source and input hashes. Synthetic derivative succ
 CAUSAL_PROTOTYPES02_06: Immutable originals retain the bookmark refusal. Isolated synthetic diagnostics reveal subsequent shared replacement ID, final pgNumType start1 and neutral comment metadata guards. These altered diagnostic packages are not provider acceptance evidence. Same-contour declaration07 records the complete hypothesis before runtime implementation; the exact physical derivatives remain the required acceptance inputs.
 
 SOURCE_CHECKPOINT12: First immutable physical derivative now completes full independent Current/Original, two pending revisions, exact insertion comment and real fenced durable new-project creation. The second physical derivative has an anchor ending inside the deletion. Its full union geometry is already representable by the existing locator model; generic intake currently refuses that endpoint instead of projecting it to the deletion boundary. Same-contour completion may use the existing source-bound union locator and clipped current endpoint only in the explicit manuscript profile; exact union quote/geometry remains checked, strict behavior and Core schema remain unchanged. Both immutable derivatives remain required, with negative and decision-survival checks.
+
+LOCAL_SOURCE_OBSERVATIONS20: Both immutable physical derivatives complete the existing fenced manifest-last create port and cold-process complete file digest readback. Independent DOM text extraction agrees with complete Current/Original, two pending wrappers and exact comment bodies/ranges. Cross-replacement union retains the literal original quote and exact source coordinates; accept/reject preserves messages and Undo restores the anchor. One synthetic Google-shaped composite retains the original three roots, reply, note and full scene bytes exactly; it grants no real-provider credit for those additional fields. Default profile, malformed/reference/range/duplicate/foreign markers, ambiguous IDs and active comment presentation counterexamples refuse. A clean real user bookmark range remains preserved.
+
+The small focused chain executes185of185 on Node22 and shipped Electron Node24; existing new-project/reference/color chain executes180of180 on Node22, zero fail/cancel/skip/todo. These are local component/source observations, not installed-app or current Google account acceptance. The older whole content-preview file has25failures in117tests on both exact baseced3d59 and candidate, with identical failed names and totals (92pass). Preserve that baseline failure evidence; do not claim that file green or change its assertions. Required current official CI and post-merge verification remain mandatory. No large-book or native application run occurred.
+
+REFERENCES: The read-only brain reference lookup suggested the existing Manuskript storage/scene note; no external source code or UI/design workflow is used. Current parser/Core and immutable Google provenance remain the operative implementation evidence.

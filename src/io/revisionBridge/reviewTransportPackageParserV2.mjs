@@ -2494,7 +2494,8 @@ function manuscriptPointBookmarks(documentXml, scan) {
     const permitted = (t, keys) => t.namespaceUri === W_NS && t.selfClosing && t.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
       || a.namespaceUri === W_NS && keys.includes(a.localName));
     if (!/^\d{1,10}$/u.test(id) || !/^[a-zA-Z0-9_]{1,40}$/u.test(name) || ids.has(id) || names.has(name.toLowerCase())
-      || starts.filter(t => attr(t, 'id', W_NS) === id).length !== 1 || finish.length !== 1 || !parent
+      || starts.filter(t => attr(t, 'id', W_NS) === id).length !== 1 || starts.filter(t=>attr(t,'name',W_NS).toLowerCase()===name.toLowerCase()).length!==1
+      || finish.length !== 1 || !parent
       || !permitted(start, ['id','name','colFirst','colLast']) || !permitted(finish[0], ['id'])
       || finish[0].depth !== start.depth || finish[0].openStart < start.closeEnd
       || documentXml.slice(start.closeEnd, finish[0].openStart).trim()
