@@ -196,7 +196,14 @@ function rememberDocxImportPreviewPlanAdmission(plan) {
 
 function isDocxImportPreviewPlanAdmitted(plan) {
   const admissionHash = hashDocxImportPreviewPlanForAdmission(plan);
-  if (!admissionHash || !docxImportPreviewPlanAdmissions.has(admissionHash)) {
+  return isDocxImportPreviewPlanAdmissionCurrent(admissionHash);
+}
+
+// Main may use this only after validating and freezing its private snapshot.
+// A digest supplied by a caller is never a substitute for that source check.
+function isDocxImportPreviewPlanAdmissionCurrent(admissionHash) {
+  if (typeof admissionHash !== 'string' || !/^[a-f0-9]{64}$/u.test(admissionHash)
+    || !docxImportPreviewPlanAdmissions.has(admissionHash)) {
     return false;
   }
   docxImportPreviewPlanAdmissions.delete(admissionHash);
@@ -1912,6 +1919,7 @@ module.exports = {
   buildImportOperationId,
   hashDocxImportPreviewPlanForAdmission,
   isDocxImportPreviewPlanAdmitted,
+  isDocxImportPreviewPlanAdmissionCurrent,
   rememberDocxImportPreviewPlanAdmission,
   validateDocxImportPreviewPlan,
 };

@@ -27,6 +27,7 @@ const {
   readDocxImportAttempt,
   acknowledgeDocxImportAttempt,
   isDocxImportPreviewPlanAdmitted,
+  isDocxImportPreviewPlanAdmissionCurrent,
   hashDocxImportPreviewPlanForAdmission,
   rememberDocxImportPreviewPlanAdmission,
   verifyDocxMediaAssetFiles,
@@ -12865,6 +12866,10 @@ function rememberDocxImportPreviewReference(kind, value, context) {
 function resolveDocxImportPreviewReference(kind, reference) {
   return docxImportPreviewReferences.resolve(kind, reference, captureDocxImportPreviewContext());
 }
+
+function isDocxImportPreviewReferenceCurrent(kind, reference) {
+  return docxImportPreviewReferences.isCurrent(kind, reference, captureDocxImportPreviewContext());
+}
 // DOCX_IMPORT_PREVIEW_REFERENCES_END
 
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
@@ -21877,17 +21882,31 @@ async function handleDocxNewProjectCreateCommand(payload = {}) {
     || !['preview', 'create'].includes(payload.action)
     || payload.projectName !== undefined && typeof payload.projectName !== 'string') return failure('DOCX_NEW_PROJECT_PAYLOAD_INVALID');
   const context = captureDocxImportPreviewContext(), window = mainWindow;
-  const currentPlan = () => {
+  const assertContext = () => {
     userBookmarkCapability('cmd.project.lifecycle.create');
     userBookmarkCapability('cmd.project.importDocxV1');
     if (!window || window !== mainWindow || window.isDestroyed() || context !== captureDocxImportPreviewContext())
       throw Error('DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED');
+  };
+  const currentPlan = () => {
+    assertContext();
     const plan = resolveDocxImportPreviewReference('plan', payload.docxImportPreviewRef);
     if (!plan || !isDocxImportPreviewPlanAdmitted(plan)) throw Error('DOCX_IMPORT_PLAN_REFERENCE_INVALID');
     return plan;
   };
   try {
     const plan = currentPlan(), sourceHash = hashDocxImportPreviewPlanForAdmission(plan);
+    // The private store retains immutable JSON. Freeze this one resolved copy
+    // so later effects need only revalidate the live authority, not its bytes.
+    const freezeSource = value => {
+      if (value && typeof value === 'object') { Object.values(value).forEach(freezeSource); Object.freeze(value); }
+    };
+    freezeSource(plan);
+    const assertSourceCurrent = () => {
+      assertContext();
+      if (!isDocxImportPreviewReferenceCurrent('plan', payload.docxImportPreviewRef)
+        || !isDocxImportPreviewPlanAdmissionCurrent(sourceHash)) throw Error('DOCX_IMPORT_PLAN_REFERENCE_INVALID');
+    };
     const projectName = payload.projectName === undefined ? 'Рукопись из Word' : payload.projectName;
     const binding = JSON.stringify([context, sourceHash, projectName]);
     const completed = docxNewProjectCompleted.get(payload.requestId);
@@ -21906,7 +21925,7 @@ async function handleDocxNewProjectCreateCommand(payload = {}) {
     }
     if (attempt.promise) return await attempt.promise;
     const { prepareDocxNewProject } = await import('./core/docx-new-project-v1.mjs');
-    currentPlan();
+    assertSourceCurrent();
     if (docxNewProjectAttempt !== attempt) return failure('DOCX_NEW_PROJECT_ATTEMPT_CHANGED');
     if (attempt.promise) return await attempt.promise;
     if (payload.action === 'preview') {
@@ -21914,8 +21933,8 @@ async function handleDocxNewProjectCreateCommand(payload = {}) {
       return { ok: true, target: 'new-project', requestId: payload.requestId, preview: true, writeEffects: false, summary };
     }
     const assertPublication = () => {
-      const live = currentPlan();
-      if (docxNewProjectAttempt !== attempt || hashDocxImportPreviewPlanForAdmission(live) !== sourceHash)
+      assertSourceCurrent();
+      if (docxNewProjectAttempt !== attempt)
         throw Error('DOCX_NEW_PROJECT_ATTEMPT_CHANGED');
     };
     attempt.promise = (async () => {

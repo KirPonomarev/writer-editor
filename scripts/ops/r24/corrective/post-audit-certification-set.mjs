@@ -26343,7 +26343,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "63ee784310e78ce95a3f575b89074fd0aecfd44aa9ccbae1ab13ee2fedc10aa2"
+      "sha256": "f7abd328ef22367a8d384e6faeb6f92605a45b09f9f017abb7e6db9eb0a6e31f"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -26707,11 +26707,11 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "src/utils/docxImportSafeCreate.js",
-      "sha256": "0e6415bf8fae98c2e406e71b041ee24f81b94ad8359c43df6262f47664e48ce7"
+      "sha256": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70"
     },
     {
       "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-      "sha256": "81ee07765e122adfd5ebaeddfef1b1dbebdc2e88aceda15035aa11f674858da5"
+      "sha256": "90d6f1f7e19f62e5c5bba858f1ee7cb827f300ceb6371584532209c181ca6f77"
     },
     {
       "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
@@ -27036,12 +27036,20 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     {
       "path": ".github/workflows/rtk-required.yml",
       "sha256": "5ec3beaa3589bed1d5d940800be538eaac051095808abaee1b4eac7570237b5c"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-new-project-source-guard.md",
+      "sha256": "9a2edd3709a26d30011c48fb6633ba7308e6515fb59b4c7249830634969267b0"
+    },
+    {
+      "path": "src/utils/docxImportPreviewReferences.js",
+      "sha256": "6861a9d8bef905f7eb0314ecdcb5b5df80a71948cd6700093a7ca032a36ddf6f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "19dd44416ff43193f3514c2dd4e1ea7e000fbaa8daecf5e1d145919cb8ab2b9a"
+      "sha256": "25358a216fbf0d3670b3d777ee0de720a37ff484f4a003ba32534b9d8465b673"
     }
   ]
 });
