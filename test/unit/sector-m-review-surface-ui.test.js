@@ -1180,3 +1180,47 @@ test('Word formatting operations survive state storage and repeated rendering wi
   assert.equal(replay.sceneReadback[0].matchesAfter, true);
   assert.equal(h.buildReviewSurfaceViewModel(h.reviewSurfaceNormalizeState({})).formattingReturn, null);
 });
+
+test('consumed imported discussion retains its original quote and every reply through actual Core decisions and Main projection', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { prepareDocxNewProject } = await import('../../src/core/docx-new-project-v1.mjs');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const comments = require('../../src/core/word-pending-comment-decisions-v1.cjs');
+  const bytes = fs.readFileSync(path.join(ROOT, 'test/fixtures/docx-word-native-manuscript-profile.docx'));
+  const plan = bridge.buildDocxNovelImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes({ bytes, manuscriptProfile: 'YALKEN_MANUSCRIPT_V1' }));
+  const projectId = '00000000-0000-4000-8000-000000000001';
+  const model = prepareDocxNewProject({ plan, projectId, projectName: 'Retained discussion', operationId: 'retained-proof', createdAtUtc: '2026-10-17T09:00:00.000Z' });
+  const scene = model.files.find(f => f.role === 'scene'), initial = model.files.find(f => f.role === 'comments').content;
+  const decision = { action: 'rejectAll' }, rejectedDoc = pending.decide(envelope.parseObservablePayload(scene.content).doc, decision).doc;
+  const afterContent = envelope.composeObservablePayload({ doc: rejectedDoc });
+  const rejected = comments.planPendingCommentDecision({ beforeText: initial, projectId, sceneId: scene.relativePath,
+    beforeContent: scene.content, afterContent, decision });
+  const state = JSON.parse(rejected.afterText), inputBefore = JSON.stringify(state);
+  const source = read(['src', 'main.js']), a = source.indexOf('function normalizeRtkNonTextReturnThreadProjection('), b = source.indexOf('function handleWorkspaceRtkNonTextReturnStateQuery(', a);
+  assert(a > 0 && b > a);
+  const c = { require: require('node:module').createRequire(path.join(ROOT, 'src/main.js')),
+    isPlainObjectValue: value => value && typeof value === 'object' && !Array.isArray(value),
+    docxReviewPreviewSessionDetailString: value => typeof value === 'string' ? value : '', normalizeCommentProvenance: value => value,
+    computeHash: value => require('node:crypto').createHash('sha256').update(value).digest('hex'), cloneJsonSafe: value => JSON.parse(JSON.stringify(value)) };
+  vm.createContext(c);vm.runInContext(source.slice(a, b), c);
+  const threads = state.threads.map(thread => c.normalizeRtkNonTextReturnThreadProjection(thread));
+  assert.equal(threads[0].status, 'deleted');assert.equal(threads[0].retainedContext.quote, 'ВСТАВКА😀');
+  const projection = c.buildRtkNonTextReturnReviewSurfaceProjection({ projectId, present: true, threads });
+  const helpers = loadReviewSurfaceHelpers(), view = helpers.buildReviewSurfaceViewModel(projection), markup = helpers.renderReviewSurfaceMarkup(view);
+  assert.equal(view.orphanComments.length, 1);assert.equal(view.orphanComments[0].messages.length, 2);
+  for (const literal of ['Фрагмент удалён', 'Исходная цитата: ВСТАВКА😀', 'Нативное обсуждение вставки', 'Нативный ответ к вставке']) assert(markup.includes(literal), literal);
+  assert.equal(JSON.stringify(state), inputBefore, 'read-only projection cannot mutate canonical history or status');
+  const manual = { ...state.threads[0], anchorEditHistory: undefined };
+  assert.equal(c.normalizeRtkNonTextReturnThreadProjection(manual).retainedContext, undefined);
+  const undo = { action: 'undo' }, restoredContent = envelope.composeObservablePayload({ doc: pending.decide(rejectedDoc, undo).doc });
+  const restored = comments.planPendingCommentDecision({ beforeText: rejected.afterText, projectId, sceneId: scene.relativePath,
+    beforeContent: afterContent, afterContent: restoredContent, decision: undo });
+  const reopened = c.normalizeRtkNonTextReturnThreadProjection(JSON.parse(restored.afterText).threads[0]);
+  assert.equal(reopened.status, 'open');assert.equal(reopened.retainedContext, undefined);
+  const item = projection.commentSurvivalPreview.preservedThreads[0];
+  item.retainedContext.quote = '<img src=x onerror=bad()>';item.messages[1].body = '<script>bad()</script>';item.messages[1].author = '<b>forged</b>';
+  const hostile = helpers.renderReviewSurfaceMarkup(helpers.buildReviewSurfaceViewModel(projection));
+  for (const raw of ['<img src=x', '<script>bad()', '<b>forged</b>']) assert.equal(hostile.includes(raw), false);
+  for (const escaped of ['&lt;img src=x', '&lt;script&gt;bad()', '&lt;b&gt;forged&lt;/b&gt;']) assert(hostile.includes(escaped));
+});

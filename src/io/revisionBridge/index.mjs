@@ -27,7 +27,7 @@ import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../para
 import { readDocxBlockStyleId } from '../../export/docx/docxBlockStyles.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import { genericCommentCandidates } from './genericWordComments.mjs';
-import { partitionDocxImportCandidate } from '../../core/project-tree-cohort-v1.mjs';
+import { partitionDocxImportCandidate, compactDocxImportCandidateContent } from '../../core/project-tree-cohort-v1.mjs';
 import { analyzeCleanLinkLabelReturn } from './reviewTransportCleanLinkLabel.mjs';
 import {
   validateDocumentSettingsBindingV1,
@@ -13015,10 +13015,23 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
 
 // Main selects this bounded create-only projection. The default combined
 // builder above remains the contract for every other caller.
+function compactManuscriptImportPreviewPlan(combined) {
+  const entry = combined.candidateCreatePlan.entries[0];
+  const content = compactDocxImportCandidateContent(entry.content);
+  if (content === entry.content) return combined;
+  const replacement = { ...entry, content, contentTextHash: docxContentPreviewStableHash(content),
+    candidateContentSha256: sha256Hex(content) };
+  return docxImportPreviewResult({ ...combined,
+    candidateCreatePlan: { ...combined.candidateCreatePlan, entries: [replacement] },
+    source: { ...combined.source, candidateContentSha256: replacement.candidateContentSha256 } });
+}
+
 export function buildDocxNovelImportPreviewPlanFromContentPreview(input = {}, policy = {}) {
-  const combined = buildDocxImportPreviewPlanFromContentPreview(input);
-  if (!combined.ok) return combined;
+  const initial = buildDocxImportPreviewPlanFromContentPreview(input);
+  if (!initial.ok) return initial;
   try {
+    const combined = input.diagnostics?.some(d => d.code === 'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED')
+      ? compactManuscriptImportPreviewPlan(initial) : initial;
     const candidateCreatePlan = partitionDocxImportCandidate(combined.candidateCreatePlan, combined.source.sourceArtifactSha256, policy);
     if (candidateCreatePlan === combined.candidateCreatePlan) return combined;
     return docxImportPreviewResult({...combined,candidateCreatePlan,

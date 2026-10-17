@@ -1020,3 +1020,27 @@ test('whole editor listener accepts same-ID partition only after checked replace
     }
   }
 });
+
+test('canonical project publication refreshes the navigator after a pending read without accepting the old tree', async () => {
+  const requests = [], status = [];
+  const c = { currentProjectId: 'old-project', activeTab: 'notes', treeQueryGeneration: 0,
+    treeRoot: { nodeId: 'old-root' }, treeMutationProjection: { treeRevision: 7 },
+    window: { electronAPI: { invokeWorkspaceQueryBridge() {} } }, PROJECT_TREE_QUERY_ID: 'query.projectTree',
+    invokeWorkspaceQueryBridge: () => new Promise(resolve => requests.push(resolve)),
+    renderTree() {}, updateStatusText: value => status.push(value), normalizeProjectId: value => value,
+    treeContainer: null, activeDocumentRevealRequested: false };
+  vm.createContext(c);vm.runInContext(executableFunctions(['refreshTreeForProjectPublication', 'loadTree']), c);
+  const stale = c.loadTree();c.currentProjectId = 'imported-project';
+  c.refreshTreeForProjectPublication('old-project');
+  assert.equal(requests.length, 2);assert.equal(c.treeRoot, null);assert.equal(c.treeMutationProjection, null);
+  requests[0]({ ok: true, projectId: 'old-project', root: { nodeId: 'stale' }, treeRevision: 9 });await stale;
+  assert.equal(c.treeRoot, null);
+  requests[1]({ ok: true, projectId: 'imported-project', root: { nodeId: 'imported-scenes' }, treeRevision: 0 });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(c.treeRoot.nodeId, 'imported-scenes');assert.equal(c.treeMutationProjection.projectId, 'imported-project');
+  c.refreshTreeForProjectPublication('imported-project');assert.equal(requests.length, 2);assert.deepEqual(status, []);
+  const editor = read('src/renderer/editor.js'), begin = editor.indexOf('  window.electronAPI.onEditorSetText((payload) => {');
+  const incoming = editor.slice(begin, editor.indexOf('  window.electronAPI.onEditorTextRequest', begin));
+  assert(begin >= 0);assert.match(incoming, /const previousProjectId = currentProjectId;/u);
+  assert(incoming.indexOf('currentProjectId = nextProjectId;') < incoming.indexOf('refreshTreeForProjectPublication(previousProjectId);'));
+});

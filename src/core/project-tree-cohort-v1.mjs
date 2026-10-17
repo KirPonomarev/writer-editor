@@ -91,6 +91,27 @@ const novelHash = value => { let h = 2166136261; for (let i = 0; i < value.lengt
 // represented on intermediate scenes without inventing a real section end.
 const novelDefaultSection = { type: 'nextPage', pageSize: { widthTwips: 11906, heightTwips: 16838, orientation: 'portrait' },
   margins: { topTwips: 1440, rightTwips: 1440, bottomTwips: 1440, leftTwips: 1440, headerTwips: 720, footerTwips: 720, gutterTwips: 0 }, columns: { count: 1, spaceTwips: 720 } };
+// Same scene grammar and complete canonical document, without JSON indentation.
+// Keep the feature declaration verbatim; no metadata or trailing block may vanish.
+export function compactDocxImportCandidateContent(content) {
+  need(typeof content === 'string', 'E_DOCX_NOVEL_COMPACT_FRAME');
+  const observed = parsedScene(content);
+  if (!observed.doc) return content;
+  const frame = /^\[doc-v2 length=(\d+)\]\n/u.exec(content);
+  need(frame, 'E_DOCX_NOVEL_COMPACT_FRAME');
+  const encoded = content.slice(frame[0].length);
+  need(encoded.length === Number(frame[1]), 'E_DOCX_NOVEL_COMPACT_FRAME');
+  const readable = envelope.serializeDocumentJson(observed.doc);
+  const compact = JSON.stringify(JSON.parse(readable));
+  const suffix = encoded.endsWith(readable) ? readable : encoded.endsWith(compact) ? compact : null;
+  need(suffix !== null, 'E_DOCX_NOVEL_COMPACT_FRAME');
+  const body = encoded.slice(0, -suffix.length) + compact;
+  const result = `[doc-v2 length=${body.length}]\n${body}`;
+  const checked = parsedScene(result);
+  need(checked.text === observed.text && same(checked.doc, observed.doc), 'E_DOCX_NOVEL_COMPACT_CONSERVATION');
+  return result;
+}
+
 export function partitionDocxImportCandidate(candidate, artifactSha256, requested = {}) {
   need(candidate?.mode === 'create-only'
     && candidate.entries?.length === 1 && candidate.entryCount === 1, 'E_DOCX_NOVEL_SOURCE');
@@ -98,6 +119,8 @@ export function partitionDocxImportCandidate(candidate, artifactSha256, requeste
   const policy = { ...DOCX_NOVEL_POLICY, ...requested };
   for (const k of Object.keys(policy)) need(Number.isSafeInteger(policy[k]) && policy[k] > 0 && policy[k] <= DOCX_NOVEL_POLICY[k], 'E_DOCX_NOVEL_POLICY');
   const sourceCandidate = clone(candidate.entries[0]), parsed = parsedScene(sourceCandidate.content);
+  const compactEncoding = Boolean(parsed.doc && !sourceCandidate.content.endsWith('\n}')
+    && compactDocxImportCandidateContent(sourceCandidate.content) === sourceCandidate.content);
   const doc = parsed.doc || envelope.buildParagraphDocumentFromText(parsed.text), ledger = pending.readLedger(doc);
   if (sourceCandidate.notes?.length) notesModel.prepareImportedNoteScene({candidates:sourceCandidate.notes,sceneContent:sourceCandidate.content,projectId:'preview',importOperationId:'preview'});
   const source = ledger ? ledger.source : doc, leaves = bookmarks.paragraphs(source), leafTexts = leaves.map(bookmarks.textOf);
@@ -169,7 +192,8 @@ export function partitionDocxImportCandidate(candidate, artifactSha256, requeste
       if (localLedger.schemaVersion >= 2) Object.assign(localLedger,{roundUndo:[],roundRedo:[],returnReceipts:[]});
       local = pending.bindLedger(localLedger);
     }
-    const content = envelope.composeObservablePayload({ doc: local });
+    const readableContent = envelope.composeObservablePayload({ doc: local });
+    const content = compactEncoding ? compactDocxImportCandidateContent(readableContent) : readableContent;
     const observed = parsedScene(content).doc;
     need(same((pending.readLedger(observed)?.source || observed).content, roots.slice(rootFrom,rootTo)), 'E_DOCX_NOVEL_ROOT_CONSERVATION');
     need(Buffer.byteLength(content) <= policy.maxSceneBytes, 'E_DOCX_NOVEL_SCENE_BUDGET');

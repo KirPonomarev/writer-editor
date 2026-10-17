@@ -461,11 +461,11 @@
     {
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "1618fdb85f3548ee7a768b9b4ad57614ec38c20f117d5450214db71554105689"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "46a4bf6c39d6a6003d23dfc69b6283df6572e38f1e04d7f59f5380809da1cd71"
     },
     {
       "approved": true,
@@ -1586,11 +1586,11 @@
     {
       "filePath": "src/renderer/editor.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "61a309ed5d3882172bfcca95a001e320e4458cbd36186a694ec7e7cfc363724e"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "e664f481b3b16cb69d6c8d80a6e682b40d402713391de7d32272e62e33bedd78"
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -2170,12 +2170,12 @@
     },
     {
       "filePath": "test/unit/project-tree-pathless-contract.test.js",
-      "sha256": "de8816e0c81efd16ab55b972baefa11f909565a4564a1ad0e1e8ea2710bf46ae",
-      "approvedAtUtc": "2026-10-07T18:02:21.920819Z",
-      "approvedBy": "owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
-      "rationale": "Owner-authorized same unfinished original42b novel contour amendment29 at clean a890:87 paths, original1800runtime2600behavior budgets. Reuse only freshly parsed canonical RHS in private Core proof equality; all raw envelope validation, independent derived canonicalization and both complete replays remain. Related unit static ordinary-tree ordering correction and exact unit literal ZIP allowlist preserve complete behavior/refusal controls. No Main/Renderer/transaction/canonicalizer/readLedger/schema/cap/API/cache/dependency/network changes. Actual causal red and complete parity controls, independent bounded500k observation and complete root review remain separately pinned; no native/release/resource acceptance. Preserve224 historical tuples/622 admitted paths/480 bindings/1597 inventory. Mechanical exact byte pins do not create authority or acceptance; original full delivery remains open.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "79ee7ce662537f8b6659360445d37e2c605c666918833d30dbfba3c0c2ffd4b1"
     },
     {
       "filePath": "docs/tasks/2026-09-26--word-review-default-typography.md",
@@ -2278,12 +2278,12 @@
     },
     {
       "filePath": "test/unit/sector-m-review-surface-ui.test.js",
-      "sha256": "4dec850d76ffef988d787b2e59e288619e6ee5903ffd19d75eb744604831fc7d",
-      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
-      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "0e9dd32b836f71d50e9f3abf5fadb22df74a6c74f849cf7a6f433eb97c98988f"
     },
     {
       "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js",
@@ -5141,11 +5141,11 @@
     {
       "filePath": "src/core/project-tree-cohort-v1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "bc9813180f0fb24f1d3343a8209b31473dbd8f377f64fb1d4125a57ba02cc447"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "d9483cff4c6652f2b30a398598807d9944891690f8499a03efe99a198a8e3a91"
     },
     {
       "filePath": "test/contracts/rtk-test-graph-catalog.contract.test.js",
@@ -5492,11 +5492,11 @@
     {
       "filePath": "src/io/revisionBridge/index.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "fc22c37b35d20162a5d6f27bf825c891ffd7ee4e493bbb3fe0ba3f2d89ddeb3a"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "ea7b1a088b47010e5f879d0324ca2d844abc265a8890883777ae4a85ecf08fd3"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -5582,11 +5582,11 @@
     {
       "filePath": "src/main.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "d7aafcdd56858cfe4cf78400d8926fca889e0f7da877316b0d7e07a08420ba14"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "8e3144a9ea69650e0ae3db382106a85f62a6d2f692b4b6a56ad096ba7e0b7c8d"
     },
     {
       "filePath": "src/command/commandSurfaceKernel.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "3cdeb0ff183e8e2a8ea9c4012591a1d5cf0ec1bf329e17103a4b618749401f62"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "d81e4149a4efbff78b7dc085b4b23a0929176beec6d18db0642c390380f94227"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "b4942c498be149abdba6d9b04b67ccca53bb6a45da235fb66e210fec21be9317"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "5f9ebb3199d920dc56f236c20796f526fb0a9220002d90e708e288f2aabb5caa"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "31a4ee9f5bc4cc9de668f2161edfd0b87af4d462907d40603cc8b0eb57ae4277"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "8aa0892ee014514e0219fe76f405a56cdbb2896f27c4bd74aa005df64926c948"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "8a1a43833fba562b01ef6579390ab756c595ab2e15a6c383e35544a7f0f8c641"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "8d503c28778f3cac656d361074e1ac21043e8e76716ede5116ef7264afe9c9fc"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "6d81779c0143a2c9766ac3d815cc8172519d0a27b05b415bc91678d57f2d72c7"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "31051c200612ea9c079faccf373eac29c6b3f92d6ce8e76dbc4670f0ecf2375a"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
-      "sha256": "6b5a5ea59794c11cab3b2f6f5354b6fc801f6f65bd9a259cf45c278036a088af"
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "eb379ce45447c0a01c993ce3413e32cdb00351ba915fb84105dad5fa4794507f"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5911,6 +5911,15 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
       "sha256": "fae1413613e75d1f476201c4aa6b61bde7f7ea59f1c3d7eb194116fccc867027"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-usable-import.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T10:11:00.374010+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_USABLE_IMPORT_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way Word manuscript usable import repair: existing JSON frame whitespace compacted without semantic loss or quota changes; deterministic Core rederivation and complete decoded project conservation. Existing navigator refreshes on canonical project identity publication with stale read guards retained. Existing read-only orphan article shows Core-retained original quote, root and every reply without changing tombstone or Undo laws.93 focused and223 affected maintained tests pass without skips. No native or release completion credit. Original protected bytes, predicates, prior approval tuples and exact existing generators retained",
+      "sha256": "ca6af856458102522b55724fd75c1dc808e80fabac444003a8ba2ba494d257a4"
     }
   ],
   "evidenceStampIds": [
@@ -47308,6 +47317,123 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
       "sha256": "fae3f05711412801e74237caa1df6be96e9d66b7576534ad6871b8cee1fcbeb9"
+    },
+    {
+      "filePath": "src/core/project-tree-cohort-v1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "bc9813180f0fb24f1d3343a8209b31473dbd8f377f64fb1d4125a57ba02cc447"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "fc22c37b35d20162a5d6f27bf825c891ffd7ee4e493bbb3fe0ba3f2d89ddeb3a"
+    },
+    {
+      "filePath": "src/main.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "d7aafcdd56858cfe4cf78400d8926fca889e0f7da877316b0d7e07a08420ba14"
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "61a309ed5d3882172bfcca95a001e320e4458cbd36186a694ec7e7cfc363724e"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "1618fdb85f3548ee7a768b9b4ad57614ec38c20f117d5450214db71554105689"
+    },
+    {
+      "filePath": "test/unit/project-tree-pathless-contract.test.js",
+      "sha256": "de8816e0c81efd16ab55b972baefa11f909565a4564a1ad0e1e8ea2710bf46ae",
+      "approvedAtUtc": "2026-10-07T18:02:21.920819Z",
+      "approvedBy": "owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_SCENE_IDENTITY_MAC_20261002|owner-delegated-codex:WORD_SCENE_SPLIT_MERGE_MAC_20261002|owner-delegated-codex:WORD_HEADER_FOOTER_MAC_20261003|owner-delegated-codex:WORD_LIST_PATTERNS_MAC_20261004|owner-delegated-codex:WORD_COMMENT_ANCHORS_MAC_20261004|owner-delegated-codex:WORD_BOOK_BODY_TYPOGRAPHY_MAC_20261007",
+      "rationale": "Owner-authorized same unfinished original42b novel contour amendment29 at clean a890:87 paths, original1800runtime2600behavior budgets. Reuse only freshly parsed canonical RHS in private Core proof equality; all raw envelope validation, independent derived canonicalization and both complete replays remain. Related unit static ordinary-tree ordering correction and exact unit literal ZIP allowlist preserve complete behavior/refusal controls. No Main/Renderer/transaction/canonicalizer/readLedger/schema/cap/API/cache/dependency/network changes. Actual causal red and complete parity controls, independent bounded500k observation and complete root review remain separately pinned; no native/release/resource acceptance. Preserve224 historical tuples/622 admitted paths/480 bindings/1597 inventory. Mechanical exact byte pins do not create authority or acceptance; original full delivery remains open.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/sector-m-review-surface-ui.test.js",
+      "sha256": "4dec850d76ffef988d787b2e59e288619e6ee5903ffd19d75eb744604831fc7d",
+      "approvedAtUtc": "2026-09-28T00:39:54.504748Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_JPEG_MEDIA_BASELINE_20260928",
+      "rationale": "Owner-authorized macOS Word plan, independent JPEG slice: bounded baseline binary validation, byte-preserving canonical media, MIME-bound import/export and existing renderer. Exact source/test/companion bindings only; no image-return mutation authority, acceptance credit or weakened oracle.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "31a4ee9f5bc4cc9de668f2161edfd0b87af4d462907d40603cc8b0eb57ae4277"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "8a1a43833fba562b01ef6579390ab756c595ab2e15a6c383e35544a7f0f8c641"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "6b5a5ea59794c11cab3b2f6f5354b6fc801f6f65bd9a259cf45c278036a088af"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "3cdeb0ff183e8e2a8ea9c4012591a1d5cf0ec1bf329e17103a4b618749401f62"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "b4942c498be149abdba6d9b04b67ccca53bb6a45da235fb66e210fec21be9317"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T09:20:58.117893+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_WORD_PROFILE_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way ordinary Word DOCX to new project. Main selects explicit manuscript presentation only for validated new-project target; original artifact bytes and SHA stay exact. App font and size plus validated final page context are normalized with explicit loss report; supported text, comments, meaningful replies, pending insert/delete and notes preserved. Strict default and return calls unchanged. Real Word tiny and partition boundary, malformed font/hidden/broken notes negative and affected contracts pass without skips. Empty drafts explicitly refused, never silently removed. No native/release completion credit; original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "6d81779c0143a2c9766ac3d815cc8172519d0a27b05b415bc91678d57f2d72c7"
     }
   ]
 }

@@ -675,3 +675,59 @@ test('real Word public new-project target binds explicit manuscript profile and 
   assert.equal(notes[0].body,' Содержание нативной сноски сохраняется.');assert.equal(notes[0].manuscript.reference.offsetUtf16,95);
   assert.deepEqual(fs.readFileSync(path.join(root,'test/fixtures/docx-word-native-manuscript-profile.docx')),bytes);
 });
+
+test('one-way manuscript compacts existing rich frames losslessly and refuses malformed frame variants', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { compactDocxImportCandidateContent: compact } = await import('../../src/core/project-tree-cohort-v1.mjs');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const bytes = fs.readFileSync(path.join(root, 'test/fixtures/docx-word-native-manuscript-profile.docx'));
+  const preview = bridge.buildDocxContentPreviewFromZipBytes({ bytes, manuscriptProfile: 'YALKEN_MANUSCRIPT_V1' });
+  const before = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+  const after = bridge.buildDocxNovelImportPreviewPlanFromContentPreview(preview);
+  assert(before.ok && after.ok);
+  const original = before.candidateCreatePlan.entries[0].content, content = after.candidateCreatePlan.entries[0].content;
+  assert(Buffer.byteLength(content) < Buffer.byteLength(original));
+  assert.deepEqual(envelope.parseObservablePayload(content), envelope.parseObservablePayload(original));
+  assert.equal(compact(content), content);
+  assert.equal(compact('Plain 🧭 text'), 'Plain 🧭 text');
+  assert.equal(admission.validateDocxImportPreviewPlan(after).ok, true);
+  assert.equal(after.source.sourceArtifactSha256, before.source.sourceArtifactSha256);
+  assert.notEqual(after.previewHash, before.previewHash);
+  assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(preview).candidateCreatePlan.entries[0].content, original);
+  for (const bad of [undefined, original.replace(/length=\d+/u, 'length=1'), original + '\nforeign',
+    envelope.composeObservablePayload({ doc: envelope.parseObservablePayload(original).doc, metaEnabled: true })]) {
+    assert.throws(() => compact(bad), error => /E_DOCX_NOVEL_COMPACT_FRAME|E_TREE_COHORT_SCENE_INVALID/u.test(error.code));
+  }
+});
+
+test('compact source deterministically rederives every partition and preserves the complete prepared project graph', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { partitionDocxImportCandidate } = await import('../../src/core/project-tree-cohort-v1.mjs');
+  const { prepareDocxNewProject } = await import('../../src/core/docx-new-project-v1.mjs');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const bytes = fs.readFileSync(path.join(root, 'test/fixtures/docx-word-native-manuscript-profile.docx'));
+  const preview = bridge.buildDocxContentPreviewFromZipBytes({ bytes, manuscriptProfile: 'YALKEN_MANUSCRIPT_V1' });
+  const original = bridge.buildDocxImportPreviewPlanFromContentPreview(preview), policy = { targetParagraphs: 2, targetUtf16: 1000 };
+  const readable = partitionDocxImportCandidate(original.candidateCreatePlan, original.source.sourceArtifactSha256, policy);
+  const plan = bridge.buildDocxNovelImportPreviewPlanFromContentPreview(preview, policy), candidate = plan.candidateCreatePlan;
+  assert(plan.ok && candidate.entryCount > 1);
+  assert.deepEqual(partitionDocxImportCandidate({ mode: 'create-only', sceneStrategy: 'single-scene', entryCount: 1,
+    entries: [candidate.sourceCandidate] }, plan.source.sourceArtifactSha256, policy), candidate);
+  candidate.entries.forEach((entry, index) => {
+    const before = readable.entries[index];
+    assert.deepEqual(envelope.parseObservablePayload(entry.content), envelope.parseObservablePayload(before.content));
+    assert.deepEqual(entry.comments, before.comments);assert.deepEqual(entry.notes, before.notes);
+  });
+  const readablePlan = bridge.buildDocxNovelImportPreviewPlanFromContentPreview({ ...preview,
+    diagnostics: preview.diagnostics.filter(item => item.code !== 'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED') }, policy);
+  assert.deepEqual(readablePlan.candidateCreatePlan, readable);
+  const identity = { projectId: '00000000-0000-4000-8000-000000000001', projectName: 'Lossless manuscript',
+    operationId: 'compact-proof', createdAtUtc: '2026-10-17T09:00:00.000Z' };
+  const left = prepareDocxNewProject({ plan: readablePlan, ...identity }), right = prepareDocxNewProject({ plan, ...identity });
+  assert.equal(left.manifestText, right.manifestText);assert.deepEqual(left.summary, right.summary);
+  left.files.forEach((file, i) => {
+    const after = right.files[i];assert.equal(file.relativePath, after.relativePath);
+    if (file.role === 'scene') assert.deepEqual(envelope.parseObservablePayload(file.content), envelope.parseObservablePayload(after.content));
+    else assert.equal(file.content, after.content);
+  });
+});
