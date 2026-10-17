@@ -49,6 +49,8 @@ No old history merge, return registration or durable undo system is introduced.
 - test/unit/docx-import-preview-ui-flow.test.js
 - test/unit/sector-m-s29-import-surface-existing.test.js
 - test/contracts/rtk-release01-terminal-claims.contract.test.js
+- .github/workflows/rtk-required.yml
+- test/contracts/rtk-test-graph-catalog.contract.test.js
 - docs/tasks/2026-10-17--docx-new-project-15k-public-path.md
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
@@ -72,7 +74,7 @@ Existing maintained test-file membership and skip/oracle classifications stay fi
 - All original projects, SOURCE80, Q1/Q2, integrity stores, native profiles, old Word release acceptance and unrelated workflows/oracles.
 
 No new dependency, runtime network, private bus/Core, broad cleanup, native app,
-Word, old project mutation, permission/heap flags, workflow changes or synthetic
+Word, old project mutation, permission/heap flags, unrelated workflow changes or synthetic
 acceptance receipts. Original failed evidence and prior approval tuples remain.
 
 ## CONTRACT / SHAPES
@@ -230,6 +232,8 @@ SOURCE_OBSERVATIONS:198/198 affected tests passed with0 skipped/todo in16.960s. 
 CI_CORRECTION: Run38989567588 on candidate fc5b92f37221cd842ae39bce886badb170df6b4b failed the old S29 exact-string expectation for a target-less UI import call. The authorized UI now explicitly requests a new project. Declaration03 admits a correction within this same delivery: retain every existing S29 check, assert the exact new target and additionally require the opaque reference and canonical Open. No runtime code, test membership, skip, compiler/oracle policy or protected predicate changes. The failed run is preserved and cancelled; it grants no acceptance credit.
 
 CI_WORDING_CORRECTION: Both RTK jobs in run38990484537 completed4335/4336 with the sole failure RELEASE01-14: the new success status was not registered. Declaration04 admits one exact DECLARED_ONLY, build-independent local status through the existing C1 wording qualification. Preserve all historical registry bytes, previous declarations, profiles, terminal blockers and detector predicates. Add exact registration and adversarial checks for omitted, drifted, duplicated, forged and promoted claims even with recomputed digests. Runtime bytes are unchanged; this registration grants no native or large-book acceptance.
+
+CI_JOB_BUDGET_CORRECTION: Run39007126938 independently passed4338/4338 in both RTK executions, zero skipped/todo/fail. The required job was cancelled by its40-minute wall-clock limit while starting the later Atlas event contracts; authoritative GitHub timeout annotation and full-log hashes are preserved. Declarations05/06 admit only that related job allowance40to60minutes and its one exact contract assertion. The runner own35-minute wall deadline, no-progress and kill/cancel safety remain unchanged. All workflow commands, order, jobs, events, permissions, runner and artifact behavior remain byte-exact after reversing the one numeric substitution. Product performance limits, existing gates, membership and acceptance requirements are unchanged. The cancelled run is not CI acceptance; the new candidate must finish every mandatory job.
 
 ## STOP_CONDITION
 

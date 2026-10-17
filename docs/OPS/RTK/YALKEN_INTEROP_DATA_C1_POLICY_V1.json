@@ -688,7 +688,8 @@
     "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
     "src/core/docx-new-project-v1.mjs",
     "src/product/docxNewProjectCreateV1.mjs",
-    "src/renderer/commands/command-catalog.v1.mjs"
+    "src/renderer/commands/command-catalog.v1.mjs",
+    ".github/workflows/rtk-required.yml"
   ],
   "protectedFiles": [
     {
@@ -2905,7 +2906,7 @@
       },
       {
         "path": "test/contracts/rtk-test-graph-catalog.contract.test.js",
-        "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
+        "sha256": "f19a008c718842fa61b8155949e350486ee10fc7fbbf6a3ad6ae46c53440ab68"
       },
       {
         "path": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
@@ -3029,7 +3030,7 @@
       },
       {
         "path": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
-        "sha256": "1f42d8a9acbeafb54a73c928ff132f9d00c592612652f8bab8d8be08cf1ce6a3"
+        "sha256": "ed893106aa8c16e7ec4067e7e4939f0115b1fb1fd99ee0d39701d2d5a7990bc2"
       },
       {
         "path": "src/core/docx-new-project-v1.mjs",
@@ -3042,6 +3043,10 @@
       {
         "path": "src/renderer/commands/command-catalog.v1.mjs",
         "sha256": "50b4366abfe29931c4241a77a579a32237082f28e7dee2d861af4d55191e321b"
+      },
+      {
+        "path": ".github/workflows/rtk-required.yml",
+        "sha256": "5ec3beaa3589bed1d5d940800be538eaac051095808abaee1b4eac7570237b5c"
       }
     ],
     "followupRepair": {

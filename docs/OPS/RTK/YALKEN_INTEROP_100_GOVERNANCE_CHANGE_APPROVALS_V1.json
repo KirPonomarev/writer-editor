@@ -5148,13 +5148,13 @@
       "sha256": "bc9813180f0fb24f1d3343a8209b31473dbd8f377f64fb1d4125a57ba02cc447"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
-      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-test-graph-catalog.contract.test.js",
-      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
-      "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "f19a008c718842fa61b8155949e350486ee10fc7fbbf6a3ad6ae46c53440ab68"
     },
     {
       "filePath": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "8f6750ed30816c1d991213565687269da72c83941dd99de95df064d10ea0ecde"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "19dd44416ff43193f3514c2dd4e1ea7e000fbaa8daecf5e1d145919cb8ab2b9a"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "45fa53255990ceb30a6b966efe11e31b6129f10ea949d2924be599d6366c79bf"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "11372de8ca1792a1aceac038bf0c8535e518ad1a7fcc9e77de6abb395897e51d"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "80a4aa4009a91588aa08646545d00aa73084838bd0e93cac4f045f3cf5537a0b"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "909fa13b45f5a2e7e02fad2fefc5bc8aa9e830979e95cc577d0fcdf886b80ba9"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "e2ea8e0d5e07c5bf78a599d8df5a38b660891f6e06218d3dbc36e512fd962e0a"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "687948a219245c821293d2b9e8fdf1a1cb9c2170426dcab7279e7ecd1d9aaf86"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "947b443559544428a6d2d167f0620e924fa2244d9b75c14b788853dd6e864bb1"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "295f5e55583203b096dfc0089283c083e63c1d8c32705ba3d43a041d93b52868"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "661799d40d04f6845bdf7b01c0bc350cc500b3907184f0a990fca6adaeb7e4ab"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "55ecbd8e3b7bac59e07aa559161df68868bbf1809c770feaeecb31158a7d8189"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5843,11 +5843,11 @@
     {
       "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "1f42d8a9acbeafb54a73c928ff132f9d00c592612652f8bab8d8be08cf1ce6a3"
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "ed893106aa8c16e7ec4067e7e4939f0115b1fb1fd99ee0d39701d2d5a7990bc2"
     },
     {
       "filePath": "src/core/docx-new-project-v1.mjs",
@@ -5875,6 +5875,15 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
       "sha256": "50b4366abfe29931c4241a77a579a32237082f28e7dee2d861af4d55191e321b"
+    },
+    {
+      "filePath": ".github/workflows/rtk-required.yml",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "5ec3beaa3589bed1d5d940800be538eaac051095808abaee1b4eac7570237b5c"
     }
   ],
   "evidenceStampIds": [
@@ -47002,6 +47011,78 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
       "sha256": "4a1939d03eddae529e4c4bd81512001106bf6c4a537cbf86f3a749d450b8926f"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "1f42d8a9acbeafb54a73c928ff132f9d00c592612652f8bab8d8be08cf1ce6a3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-14T06:50:48.182742Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_ORIGIN_NOVEL_WORD_RETURN_MAC_20261010|owner-direct-codex:RTK_RETIRED_MEMBER_IDENTITY_MAC_20261014",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-test-graph-catalog.contract.test.js",
+      "rationale": "Direct owner resumed error diagnosis and implementation. Controlled unchanged-source RED proves retired nonleader PID cache over-refusal; complete absence now retires only nonleader births. Leader/replacement/signal/cleanup guards and35min/10min/32MiB caps remain. Whole runner23 tests pass; product package581 unchanged. Historical RTK04 cause remains UNKNOWN; no native credit.",
+      "sha256": "d2a76023f4ca48fa3a17bfbef1b35f292fb5a27e1d53bebba6c832a0da38de2e"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "80a4aa4009a91588aa08646545d00aa73084838bd0e93cac4f045f3cf5537a0b"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "e2ea8e0d5e07c5bf78a599d8df5a38b660891f6e06218d3dbc36e512fd962e0a"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "661799d40d04f6845bdf7b01c0bc350cc500b3907184f0a990fca6adaeb7e4ab"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "8f6750ed30816c1d991213565687269da72c83941dd99de95df064d10ea0ecde"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "45fa53255990ceb30a6b966efe11e31b6129f10ea949d2924be599d6366c79bf"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "947b443559544428a6d2d167f0620e924fa2244d9b75c14b788853dd6e864bb1"
     }
   ]
 }
