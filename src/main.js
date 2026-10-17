@@ -14721,6 +14721,7 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
       },
       maxBytes: DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
       novelImport: true,
+      oneWayManuscript: payload.target === 'new-project',
       contentPreviewBudgets: {maxBlocks:50_000,maxWorkerOutputBytes:64*1024*1024},
     });
     assertCurrent();

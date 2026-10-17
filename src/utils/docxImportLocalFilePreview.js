@@ -668,7 +668,8 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
   let contentPreviewReport = null;
   try {
     contentPreviewReport = revisionBridge.buildDocxContentPreviewFromZipBytes(options.novelImport === true
-      ? {bytes:fileBytes,budgets:options.contentPreviewBudgets} : fileBytes);
+      ? {bytes:fileBytes,budgets:options.contentPreviewBudgets,
+        ...(options.oneWayManuscript === true ? {manuscriptProfile:'YALKEN_MANUSCRIPT_V1'} : {})} : fileBytes);
   } catch {
     return buildError(
       'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_CONTENT_REPORT_INVALID',
