@@ -31,7 +31,7 @@ One bounded compatibility repair in the existing one-way manuscript parser plus 
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 - src/io/revisionBridge/index.mjs
 - src/io/revisionBridge/genericWordComments.mjs
-- test/contracts/docx-google-manuscript-small.contract.test.js
+- test/contracts/rtk-docx-google-manuscript-small.contract.test.js
 - docs/tasks/2026-10-17--google-docx-small-manuscript.md
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
@@ -133,3 +133,5 @@ The small focused chain executes185of185 on Node22 and shipped Electron Node24; 
 REFERENCES: The read-only brain reference lookup suggested the existing Manuskript storage/scene note; no external source code or UI/design workflow is used. Current parser/Core and immutable Google provenance remain the operative implementation evidence.
 
 REQUIRED_GRAPH_COMPLETION31: The new27case small contract is explicitly appended to the existing maintained-extra test catalog so required CI actually executes it. Every original catalog member and frozen1120cell denominator remains unchanged. Declaration31 precedes this same-PR delivery repair. A separately generated15,000-character/37paragraph diagnostic completes independent Python XML Current/Original comparison, pending decisions, actual fenced create and complete new-process readback in526ms on candidate7902a8e79; this synthetic extension is not a fresh Google export or native-app proof.
+
+CI_CATALOG_CLASS_CORRECTION48: Official candidate02145d136 executed4397cases:4396pass,one stale-green guard failure,zero skip/todo. The added test was incorrectly placed in the closed extra-maintained live-claim class. Declaration48 precedes correcting the new test name to rtk-docx-google-manuscript-small.contract.test.js and moving it into ordinary contractBasenames, restoring the original two extra members verbatim. The old guard, runner, every previous test/member/predicate, frozen1120cell denominator and all runtime/test-body bytes remain unchanged. Earlier catalog-addition proof does not count as finalCI success. Full required CI is repeated only after the exact failing guard, catalog and small cases pass locally.
