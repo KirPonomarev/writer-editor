@@ -48,6 +48,7 @@ No old history merge, return registration or durable undo system is introduced.
 - test/unit/docx-import-product-flow-command.test.js
 - test/unit/docx-import-preview-ui-flow.test.js
 - test/unit/sector-m-s29-import-surface-existing.test.js
+- test/contracts/rtk-release01-terminal-claims.contract.test.js
 - docs/tasks/2026-10-17--docx-new-project-15k-public-path.md
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
@@ -227,6 +228,8 @@ CHECK_08_POST_NATIVE_BOUNDARY: no native/installed-app,100k,500k-word or whole-a
 SOURCE_OBSERVATIONS:198/198 affected tests passed with0 skipped/todo in16.960s. The15000-character/15007-UTF16 fixture has69 paragraphs, pending insert/delete, three discussions plus one reply and one footnote. Literal Current/Original text, exact duplicate occurrence, hidden-deletion quote, note body/reference, existing durable decisions and fresh/cold runtime reopen passed. Initial preview creates no project; existing saved text and a synthetic unsaved draft remain unchanged. Failure injection covers capability/context changes, collision, foreign/changed files, root swap, symlink/hardlink and uncertain published-manifest retry. The new parser descriptor binds existing schema3 source points; no new durable history. Component process RSS is not whole-app memory and establishes no large-book memory budget. Delivery still requires exact candidate CI, merge and merged checks.
 
 CI_CORRECTION: Run38989567588 on candidate fc5b92f37221cd842ae39bce886badb170df6b4b failed the old S29 exact-string expectation for a target-less UI import call. The authorized UI now explicitly requests a new project. Declaration03 admits a correction within this same delivery: retain every existing S29 check, assert the exact new target and additionally require the opaque reference and canonical Open. No runtime code, test membership, skip, compiler/oracle policy or protected predicate changes. The failed run is preserved and cancelled; it grants no acceptance credit.
+
+CI_WORDING_CORRECTION: Both RTK jobs in run38990484537 completed4335/4336 with the sole failure RELEASE01-14: the new success status was not registered. Declaration04 admits one exact DECLARED_ONLY, build-independent local status through the existing C1 wording qualification. Preserve all historical registry bytes, previous declarations, profiles, terminal blockers and detector predicates. Add exact registration and adversarial checks for omitted, drifted, duplicated, forged and promoted claims even with recomputed digests. Runtime bytes are unchanged; this registration grants no native or large-book acceptance.
 
 ## STOP_CONDITION
 

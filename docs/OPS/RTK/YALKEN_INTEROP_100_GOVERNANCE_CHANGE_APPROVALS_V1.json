@@ -5274,13 +5274,13 @@
       "sha256": "6bbfa15f187354b14e8cf8226d26bfb0edee11f0717981b1d4a544326a4deb46"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
-      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
-      "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "56a85485764362190e5910bfee0e380afc4b8addcb8beb7d402bf35d71a62c01"
     },
     {
       "approved": true,
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "aa85f16267867297ca071289bed4cf6722b4c04b382bda0f3406bd26925018da"
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "8f6750ed30816c1d991213565687269da72c83941dd99de95df064d10ea0ecde"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "33403cb97438b205f357ec22eadb4c74b72db4e8261c40ca681d6123aec03962"
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "45fa53255990ceb30a6b966efe11e31b6129f10ea949d2924be599d6366c79bf"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "d843e7a7ac5f673652cfb0ff62424987f9d444512e2e898743d02776693b2150"
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "80a4aa4009a91588aa08646545d00aa73084838bd0e93cac4f045f3cf5537a0b"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "a3b5a3ef6dc891a715bf18e67fd7ffabbcf7270a458e67c833309718f95ed322"
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "e2ea8e0d5e07c5bf78a599d8df5a38b660891f6e06218d3dbc36e512fd962e0a"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "4a1939d03eddae529e4c4bd81512001106bf6c4a537cbf86f3a749d450b8926f"
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "947b443559544428a6d2d167f0620e924fa2244d9b75c14b788853dd6e864bb1"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "c044da928208e44d8b2a300f98b24c371d76e59c61bea0b7486df9614ecd1561"
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "661799d40d04f6845bdf7b01c0bc350cc500b3907184f0a990fca6adaeb7e4ab"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5843,11 +5843,11 @@
     {
       "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedAtUtc": "2026-10-17T05:39:50.335161+00:00",
       "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "b5708c8500bedb448fb904c9e952830a4a7afe633b823d6e552455d17fbe449d"
+      "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "1f42d8a9acbeafb54a73c928ff132f9d00c592612652f8bab8d8be08cf1ce6a3"
     },
     {
       "filePath": "src/core/docx-new-project-v1.mjs",
@@ -46930,6 +46930,78 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
       "sha256": "64b31de576b95439f25545d4e924cd0d7f19996f53cbc14c776c2f9f832cb5c3"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "b5708c8500bedb448fb904c9e952830a4a7afe633b823d6e552455d17fbe449d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-12T17:53:58.824248+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STORAGE_MAP_20261012",
+      "authority": "DIRECT_OWNER_STORAGE_DOCUMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Owner-approved Yalken storage documentation delivery on main 3408f361. Keep historical registry and all existing assertions. Add exact C1-pinned current README metadata and test-local adapter with negative forgery checks; correct the new successor name to WORD convention. Product runtime, native authority, claims and acceptance unchanged.",
+      "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "d843e7a7ac5f673652cfb0ff62424987f9d444512e2e898743d02776693b2150"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "a3b5a3ef6dc891a715bf18e67fd7ffabbcf7270a458e67c833309718f95ed322"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "c044da928208e44d8b2a300f98b24c371d76e59c61bea0b7486df9614ecd1561"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "aa85f16267867297ca071289bed4cf6722b4c04b382bda0f3406bd26925018da"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "33403cb97438b205f357ec22eadb4c74b72db4e8261c40ca681d6123aec03962"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:20:28.753803+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 correction for the obsolete S29 UI exact-string expectation exposed by CI. Preserve its checks, explicitly assert new-project target, opaque reference and canonical Open.37of37 focused UI tests pass with zero skip/todo; runtime bytes remain exactly fc5b92f37221cd842ae39bce886badb170df6b4b, whose198 affected tests passed. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "4a1939d03eddae529e4c4bd81512001106bf6c4a537cbf86f3a749d450b8926f"
     }
   ]
 }

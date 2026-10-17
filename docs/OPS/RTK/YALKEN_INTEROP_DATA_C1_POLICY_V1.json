@@ -1109,7 +1109,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "c6653519ef5e3c4c4bd1c87f195286e4e599dbfe9d5c7e28a74c42892480d465"
+        "sha256": "56a85485764362190e5910bfee0e380afc4b8addcb8beb7d402bf35d71a62c01"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -3029,7 +3029,7 @@
       },
       {
         "path": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
-        "sha256": "b5708c8500bedb448fb904c9e952830a4a7afe633b823d6e552455d17fbe449d"
+        "sha256": "1f42d8a9acbeafb54a73c928ff132f9d00c592612652f8bab8d8be08cf1ce6a3"
       },
       {
         "path": "src/core/docx-new-project-v1.mjs",
@@ -3237,6 +3237,26 @@
       "path": "README.md",
       "predecessorSha256": "sha256:fe2afbd2a004a025f8a61a6b437285e8a9d0c48d47b6a69f89ea5f7d1c24aa49",
       "sha256": "sha256:adb972685c09e9aba2205891b3a509f8414535c0c8fa689beae7c49b1b227e36"
+    },
+    "wordNewProjectImportWording": {
+      "schemaVersion": 1,
+      "taskId": "YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "bindingBaseSha": "cac72773ba1abdf07a0dffa37f372b44af6739ff",
+      "scope": "Local import action/status wording only; no support, compatibility, saturation, denominator or whole-plan promotion.",
+      "claims": [
+        {
+          "claimId": "claim-editor-docx-new-project-import-completed",
+          "claimClass": "DECLARED_ONLY",
+          "surfaceId": "surface-editor-js",
+          "wording": "Word manuscript imported into a new project",
+          "evidenceBinding": {
+            "profileId": "word-mac-16.111.2-d1"
+          },
+          "blockedRowRef": null,
+          "evidenceScope": "BUILD_INDEPENDENT_PRODUCT_FUNCTION",
+          "claimDigest": "sha256:37e96e957438c07fe3bd6282dfb6317bf82556db7d618b5b79b877fdf08b8d5c"
+        }
+      ]
     }
   },
   "wordTextOrderBatch": {
