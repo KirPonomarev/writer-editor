@@ -26387,7 +26387,7 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "63a240d100384fd274569f6d76d3698ed9e8856fbac08d51bcdd4e53e53f63b3"
+      "sha256": "233900af1171fd0d69ee57f7aa7c305e7e4b9a1573a745bd1b1f22ccaa992d3c"
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
@@ -27103,13 +27103,13 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-18--docx-million-hardening.md",
-      "sha256": "1c9a935699da61b68594d75fc515d97854ba58e2e298efa12ea6a26eb0e814f0"
+      "sha256": "ec7ad32501477be006de02f027d0d715ae2796adbd9d55fb71e9b7c03125a461"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "cf60b051715472bfd3b65e50364d021be1b06c1b20460bfe271be8226b8583eb"
+      "sha256": "1c8d407321afbe80c7559d30aece1597495e99b58a18ce21f41a5d11d3ccf320"
     }
   ]
 });

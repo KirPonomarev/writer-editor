@@ -1665,7 +1665,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "63a240d100384fd274569f6d76d3698ed9e8856fbac08d51bcdd4e53e53f63b3"
+        "sha256": "233900af1171fd0d69ee57f7aa7c305e7e4b9a1573a745bd1b1f22ccaa992d3c"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -3101,7 +3101,7 @@
       },
       {
         "path": "docs/tasks/2026-10-18--docx-million-hardening.md",
-        "sha256": "1c9a935699da61b68594d75fc515d97854ba58e2e298efa12ea6a26eb0e814f0"
+        "sha256": "ec7ad32501477be006de02f027d0d715ae2796adbd9d55fb71e9b7c03125a461"
       }
     ],
     "followupRepair": {
