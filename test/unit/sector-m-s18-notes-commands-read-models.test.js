@@ -9,7 +9,7 @@ const { pathToFileURL } = require('node:url');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 // Each harness owns its persistence profile; repository bytes stay read-only.
-const USER_DATA_ROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-main-test-profile-'));
+const USER_DATA_ROOT = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-main-test-profile-')));
 test.after(() => fs.rmSync(USER_DATA_ROOT, { recursive: true, force: true }));
 
 async function importModule(relativeParts) {
@@ -80,7 +80,7 @@ function findNode(root, predicate) {
 }
 
 async function createProjectFixture(prefix) {
-  const tempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), prefix));
+  const tempRoot = await fsPromises.realpath(await fsPromises.mkdtemp(path.join(os.tmpdir(), prefix)));
   const documentsRoot = path.join(tempRoot, 'Documents', 'craftsman');
   const projectRoot = path.join(documentsRoot, 'Роман');
   await fsPromises.mkdir(path.join(projectRoot, 'roman', 'Imported'), { recursive: true });
@@ -107,6 +107,9 @@ test('S18 notes commands create update delete restore and query pathless read mo
   fileManager.getDocumentsPath = () => documentsRoot;
   t.after(() => { fileManager.getDocumentsPath = originalGetDocumentsPath; });
 
+  await fsPromises.writeFile(path.join(projectRoot, 'roman', 'Imported', '00_Fixture.txt'), 'Fixture manuscript.', 'utf8');
+  const opened = await main.handleProjectLifecycleOpenCommand({ projectId: 'project-alpha' });
+  assert.equal(opened.ok, true, JSON.stringify(opened));
   const empty = await main.handleWorkspaceProjectNotesQuery({ projectId: 'project-alpha', scope: 'inbox' });
   assert.equal(empty.ok, true);
   assert.equal(empty.state, 'ready');

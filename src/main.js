@@ -16357,6 +16357,12 @@ function normalizeRtkNonTextReturnThreadProjection(thread = {}) {
     : [];
   const rootMessage = messages.find((message) => message.kind === 'root') || messages[0] || null;
   const anchor = isPlainObjectValue(thread.anchor) ? thread.anchor : {};
+  const retainedSnapshot = thread.status === 'deleted'
+    ? require('./core/word-comment-anchor-save-v1.cjs').currentStructuralHistorySnapshot(thread) : null;
+  const retainedContext = retainedSnapshot?.status === 'deleted'
+    && typeof retainedSnapshot.deletedText === 'string' && retainedSnapshot.deletedText
+    && retainedSnapshot.deletedText === anchor.selectedText
+    ? { kind: 'deleted-fragment', quote: retainedSnapshot.deletedText } : null;
   return {
     threadId: docxReviewPreviewSessionDetailString(thread.threadId),
     sceneId: docxReviewPreviewSessionDetailString(thread.sceneId),
@@ -16376,6 +16382,7 @@ function normalizeRtkNonTextReturnThreadProjection(thread = {}) {
       sourceChangeId: docxReviewPreviewSessionDetailString(anchor.sourceChangeId),
     },
     messages,
+    ...(retainedContext ? { retainedContext } : {}),
   };
 }
 
@@ -16406,6 +16413,7 @@ function buildRtkNonTextReturnReviewSurfaceProjection(projection) {
         author: thread.messages?.[0]?.provenance?.author || '',
         createdAt: thread.messages?.[0]?.provenance?.dateUtc || thread.messages?.[0]?.provenance?.date || '',
         resolved: thread.status !== 'open',
+        ...(thread.retainedContext ? { retainedContext: cloneJsonSafe(thread.retainedContext) } : {}),
         messages: Array.isArray(thread.messages)
           ? thread.messages.map((message) => ({
             messageId: docxReviewPreviewSessionDetailString(message.commentId),
@@ -17498,7 +17506,7 @@ async function runManuscriptNotesMutation(commandId, payload, mutationInput, con
 }
 
 async function handleWorkspaceProjectNotesQuery(payload = {}) {
-  const context = await getProjectNotesContext(payload);
+  const context = await getProjectNotesContext(payload, { readOnlyActive: true });
   if (!context.ok) {
     return makeNotesCommandError('query.projectNotes', context.code, context.reason);
   }

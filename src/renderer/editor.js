@@ -2428,12 +2428,17 @@ function reviewSurfaceBuildOrphanComments(state) {
   for (const thread of reviewSurfaceArray(commentPreview.preservedThreads)) {
     const threadId = reviewSurfaceText(thread?.threadId);
     if (!threadId) continue;
-    const messageBody = reviewSurfaceArray(thread?.messages)
-      .map((message) => reviewSurfaceText(message?.body))
-      .find(Boolean);
+    const messages = reviewSurfaceArray(thread?.messages).map((message) => ({
+      body: reviewSurfaceText(message?.body), author: reviewSurfaceText(message?.author),
+      createdAt: reviewSurfaceText(message?.createdAt),
+    })).filter((message) => message.body);
+    const messageBody = messages[0]?.body;
+    const retainedQuote = thread?.retainedContext?.kind === 'deleted-fragment'
+      ? reviewSurfaceText(thread.retainedContext.quote) : '';
     threadsById.set(threadId, {
       threadId,
       body: messageBody || 'Текст комментария недоступен',
+      messages, retainedQuote,
     });
   }
 
@@ -2449,6 +2454,8 @@ function reviewSurfaceBuildOrphanComments(state) {
         itemId: reviewSurfaceText(placement?.placementId) || `orphan-${index}`,
         threadId,
         body: thread?.body || 'Текст комментария недоступен',
+        messages: thread?.messages || [],
+        retainedQuote: thread?.retainedQuote || '',
         status: reviewSurfacePresentStatus(placement?.status) || 'не привязан',
         reasonCodes,
       };
@@ -3135,10 +3142,13 @@ function renderReviewSurfaceMarkup(viewModel) {
   const orphanMarkup = reviewSurfaceRenderList(viewModel.orphanComments, (item) => `
     <article class="right-rail-review-item right-rail-review-item--orphan">
       <div class="right-rail-review-item-head">
-        <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(item.threadId || item.itemId)}</div>
-        <span class="right-rail-review-pill right-rail-review-pill--blocked">${reviewSurfaceEscapeHtml(item.status)}</span>
+        <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(item.retainedQuote ? 'Обсуждение удалённого фрагмента' : item.threadId || item.itemId)}</div>
+        <span class="right-rail-review-pill right-rail-review-pill--blocked">${reviewSurfaceEscapeHtml(item.retainedQuote ? 'Фрагмент удалён' : item.status)}</span>
       </div>
-      <p class="right-rail-review-item-body">${reviewSurfaceEscapeHtml(item.body)}</p>
+      ${item.retainedQuote ? `<p class="right-rail-review-item-body">${reviewSurfaceEscapeHtml('Исходная цитата: ' + item.retainedQuote)}</p>
+      ${item.messages.map((message) => `<p class="right-rail-review-item-body">${reviewSurfaceEscapeHtml(message.body)}</p>
+      <div class="right-rail-review-item-meta"><span>${reviewSurfaceEscapeHtml(message.author)}</span><span>${reviewSurfaceEscapeHtml(message.createdAt)}</span></div>`).join('')}`
+        : `<p class="right-rail-review-item-body">${reviewSurfaceEscapeHtml(item.body)}</p>`}
       <div class="right-rail-review-item-meta">${item.reasonCodes.map((value) => `<span>${reviewSurfaceEscapeHtml(value)}</span>`).join('')}</div>
     </article>
   `, 'Нет потерянных или непривязанных комментариев.');
@@ -11032,6 +11042,14 @@ function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
   renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
   updateInspectorSnapshot();
   updateWriterHomeSurface();
+}
+
+function refreshTreeForProjectPublication(previousProjectId) {
+  if (previousProjectId === currentProjectId) return;
+  treeRoot = null;
+  treeMutationProjection = null;
+  renderTree();
+  void loadTree();
 }
 
 async function loadTree() {
@@ -24442,6 +24460,7 @@ if (window.electronAPI) {
     const useLargePayloadFastPath = !parsed.doc && shouldUseCentralSheetLargePayloadFastPath(parsed.text || '');
     if (useLargePayloadFastPath) parsed.doc = buildLargeSingleParagraphPresentationDoc(parsed.text || '');
     const nextDocumentId = hasDocumentId ? documentId || null : hasKind || hasProjectId ? null : currentDocumentId;
+    const previousProjectId = currentProjectId;
     const nextProjectId = hasProjectId ? normalizeProjectId(projectId) : currentProjectId;
     if (isTiptapMode && !treeContentParsed && !setTiptapDocumentSnapshot({
       doc: parsed.doc,
@@ -24555,6 +24574,7 @@ if (window.electronAPI) {
       refreshAtlasCurrentScene();
     }
     applyPendingProjectSearchJump(currentDocumentId || '');
+    if (previousProjectId !== currentProjectId) refreshTreeForProjectPublication(previousProjectId);
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
