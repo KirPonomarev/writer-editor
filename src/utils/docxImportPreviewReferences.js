@@ -51,6 +51,14 @@ function createDocxImportPreviewReferences({
       if (!entry || entry.kind !== kind || entry.context !== context) return null;
       return JSON.parse(entry.json);
     },
+    // The stored JSON is immutable and a reference is never rebound. This
+    // checks revocation/expiry without copying the already captured snapshot.
+    isCurrent(kind, reference, context) {
+      if (typeof reference !== 'string' || !/^[a-f0-9]{64}$/u.test(reference) || !validContext(context)) return false;
+      prune();
+      const entry = entries.get(reference);
+      return Boolean(entry && entry.kind === kind && entry.context === context);
+    },
     clear() { entries.clear(); totalBytes = 0; },
   });
 }

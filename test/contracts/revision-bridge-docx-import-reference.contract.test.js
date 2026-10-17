@@ -302,13 +302,13 @@ test('project invalidation before atomic activation leaves no imported scene', a
   assert.deepEqual(fs.existsSync(imported) ? fs.readdirSync(imported).filter(name => name.endsWith('.txt')) : [], []);
 });
 
-async function newProjectHarness(t, inputBytes) {
+async function newProjectHarness(t, inputBytes, referenceOptions = {}) {
   const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-docx-new-project-15k-20261017-'));
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   const io = await bridge(), bytes = inputBytes || fs.readFileSync(path.join(root, 'test/fixtures/docx-pending-deleted-comment-import.docx'));
   const preview = io.buildDocxContentPreviewFromZipBytes(bytes), plan = io.buildDocxNovelImportPreviewPlanFromContentPreview(preview);
   assert.equal(plan.ok, true, JSON.stringify(plan));admission.rememberDocxImportPreviewPlanAdmission(plan);
-  const refs = createDocxImportPreviewReferences(), state = { context: 'source-project:1', allowed: true, registrations: 0, checks: [] };
+  const refs = createDocxImportPreviewReferences(referenceOptions), state = { context: 'source-project:1', allowed: true, registrations: 0, checks: [] };
   const reference = refs.remember('plan', plan, state.context);
   const core = await import('../../src/core/docx-new-project-v1.mjs'), port = await import('../../src/product/docxNewProjectCreateV1.mjs');
   const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
@@ -318,6 +318,7 @@ async function newProjectHarness(t, inputBytes) {
     rememberDocxImportPreviewReference: (kind, value, context) => refs.remember(kind, value, context),
     cloneJsonSafe: copy, Buffer, loadRevisionBridgeModule: bridge,
     resolveDocxImportPreviewReference: (kind, ref) => refs.resolve(kind, ref, state.context),
+    isDocxImportPreviewReferenceCurrent: (kind, ref) => refs.isCurrent(kind, ref, state.context),
     userBookmarkCapability: id => { state.checks.push(id); if (!state.allowed) throw Error('CAPABILITY_DENIED'); },
     fileManager: { getDocumentsPath: () => parent }, PROJECT_SUBFOLDERS: { roman: 'roman', materials: 'materials' },
     getMainProjectManifestAuthority: async () => authority,
@@ -565,4 +566,88 @@ test('partitioned manuscript retains paragraph separators and reports the comple
   const texts = model.files.filter(f => f.role === 'scene').map(f => fs.readFileSync(path.join(h.parent, 'Word-' + result.projectId, f.relativePath), 'utf8'));
   const envelope = require('../../src/core/document-content-envelope-v1.cjs');
   assert.equal(texts.map(text => envelope.parseObservablePayload(text).text).join('\n'), expected.join('\n'));
+});
+
+
+test('new-project per-effect freshness does not reparse and hash the complete immutable source', async t => {
+  const h = await newProjectHarness(t, docx(Array.from({ length: 201 }, (_, i) => `Source paragraph ${i} 😀`)));
+  const counts = {};
+  for (const key of ['resolveDocxImportPreviewReference', 'isDocxImportPreviewPlanAdmitted', 'hashDocxImportPreviewPlanForAdmission']) {
+    const original = h.sandbox[key];counts[key] = 0;
+    h.sandbox[key] = (...args) => { counts[key]++;return original(...args); };
+  }
+  const created = await h.invoke({ ...h.request, action: 'create' });
+  assert.equal(created.ok, true, JSON.stringify(created));assert.equal(created.summary.sceneCount, 2);
+  assert.equal(counts.resolveDocxImportPreviewReference, 1, 'one private snapshot read, independent of file-effect count');
+  assert.equal(counts.isDocxImportPreviewPlanAdmitted, 1, 'one initial full admission check');
+  assert.equal(counts.hashDocxImportPreviewPlanForAdmission, 1, 'one initial source binding hash');
+  assert.ok(h.state.checks.filter(id => id === 'cmd.project.lifecycle.create').length > 20, 'capability remains live at every effect');
+});
+
+test('reference freshness checks preserve kind, context, non-extending TTL, eviction and invalidation', () => {
+  let now = 0;
+  const refs = createDocxImportPreviewReferences({ now: () => now, ttlMs: 10, maxEntries: 1 });
+  const ref = refs.remember('plan', { value: 'original' }, 'A');
+  assert.equal(refs.isCurrent('plan', ref, 'A'), true);
+  for (const [kind, token, context] of [['content', ref, 'A'], ['plan', ref, 'B'], ['plan', 'raw', 'A'], ['plan', {}, 'A'], ['plan', ref, '']]) {
+    assert.equal(refs.isCurrent(kind, token, context), false);
+  }
+  now = 9;assert.equal(refs.isCurrent('plan', ref, 'A'), true);
+  now = 10;assert.equal(refs.isCurrent('plan', ref, 'A'), false);
+  assert.equal(refs.resolve('plan', ref, 'A'), null);
+  const replaced = refs.remember('plan', { value: 1 }, 'A');
+  const live = refs.remember('plan', { value: 2 }, 'A');
+  assert.equal(refs.isCurrent('plan', replaced, 'A'), false);assert.equal(refs.isCurrent('plan', live, 'A'), true);
+  refs.clear();assert.equal(refs.isCurrent('plan', live, 'A'), false);
+  for (const value of [null, {}, '', 'a'.repeat(64), '0'.repeat(63), 'A'.repeat(64)]) assert.equal(admission.isDocxImportPreviewPlanAdmissionCurrent(value), false);
+});
+
+test('new-project source is frozen before asynchronous adapters can change any part of its binding', async t => {
+  const h = await newProjectHarness(t), resolve = h.sandbox.resolveDocxImportPreviewReference;
+  let captured;
+  h.sandbox.resolveDocxImportPreviewReference = (...args) => { captured = resolve(...args);return captured; };
+  const load = h.sandbox.loadPort;
+  h.sandbox.loadPort = async () => {
+    assert.equal(Object.isFrozen(captured), true);assert.equal(Object.isFrozen(captured.candidateCreatePlan.entries[0]), true);
+    const before = admission.hashDocxImportPreviewPlanForAdmission(captured);
+    assert.equal(Reflect.set(captured.candidateCreatePlan.entries[0], 'content', 'FOREIGN TEXT'), false);
+    assert.equal(admission.hashDocxImportPreviewPlanForAdmission(captured), before);
+    return load();
+  };
+  const result = await h.invoke({ ...h.request, action: 'create' });assert.equal(result.ok, true, JSON.stringify(result));
+  const text = fs.readFileSync(path.join(h.parent, 'Word-' + result.projectId, 'roman/Imported/0001 Imported DOCX.txt'), 'utf8');
+  assert.equal(parseObservablePayload(text).text, literalCurrent.join('\n'));
+});
+
+test('new-project revocation before or during effects still refuses without publishing a project', async t => {
+  for (const when of ['before', 'during']) for (const reason of ['clear', 'expiry', 'eviction', 'admission']) {
+    let now = 0, revoked = false;
+    const h = await newProjectHarness(t, undefined, { now: () => now, ttlMs: 10 });
+    const revoke = () => {
+      revoked = true;
+      if (reason === 'clear') h.refs.clear();
+      else if (reason === 'expiry') now = 10;
+      else if (reason === 'eviction') for (let i = 0; i < 64; i++) h.refs.remember('plan', { index: i }, h.state.context);
+      else for (let i = 0; i < 65; i++) admission.rememberDocxImportPreviewPlanAdmission({ otherSource: i });
+    };
+    const load = h.sandbox.loadPort;
+    h.sandbox.loadPort = async () => {
+      const actual = await load();
+      if (when === 'before') revoke();
+      return { createDocxNewProject: args => actual.createDocxNewProject({ ...args, assertPublication: async () => {
+        if (when === 'during' && !revoked) {
+          const project = path.join(h.parent, 'Word-' + args.identity.projectId);
+          const scene = path.join(project, 'roman/Imported/0001 Imported DOCX.txt');
+          if (fs.existsSync(scene) && fs.statSync(scene).size > 0) revoke();
+        }
+        return args.assertPublication();
+      } }) };
+    };
+    const result = await h.invoke({ ...h.request, action: 'create' });assert.equal(result.ok, false, JSON.stringify({ when, reason, result }));
+    assert.equal(revoked, true);
+    assert.equal(result.error.reason, 'DOCX_IMPORT_PLAN_REFERENCE_INVALID');
+    assert.equal(h.state.registrations, 0);
+    assert.deepEqual(fs.readdirSync(h.parent).filter(name => name.startsWith('Word-')), []);
+    if (when === 'before') assert.deepEqual(fs.readdirSync(h.parent), []);
+  }
 });

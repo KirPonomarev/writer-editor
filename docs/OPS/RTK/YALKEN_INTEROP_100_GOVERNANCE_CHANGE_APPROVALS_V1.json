@@ -450,22 +450,22 @@
       "sha256": "62ca427e6bc31d199ed81bbb2d0ca224cf723cd04c5e4450b0a467e7f1876a8f"
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
-      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "filePath": "src/utils/docxImportPreviewReferences.js",
-      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "a8e370b449affb34bee65b5de5ec006923db58208684f4c7d6038a79cc13119c"
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "6861a9d8bef905f7eb0314ecdcb5b5df80a71948cd6700093a7ca032a36ddf6f"
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "81ee07765e122adfd5ebaeddfef1b1dbebdc2e88aceda15035aa11f674858da5"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "90d6f1f7e19f62e5c5bba858f1ee7cb827f300ceb6371584532209c181ca6f77"
     },
     {
       "approved": true,
@@ -1622,11 +1622,11 @@
     {
       "filePath": "src/utils/docxImportSafeCreate.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "0e6415bf8fae98c2e406e71b041ee24f81b94ad8359c43df6262f47664e48ce7"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70"
     },
     {
       "filePath": "src/utils/flowSceneBatchAtomic.js",
@@ -5582,11 +5582,11 @@
     {
       "filePath": "src/main.js",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
-      "sha256": "63ee784310e78ce95a3f575b89074fd0aecfd44aa9ccbae1ab13ee2fedc10aa2"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "f7abd328ef22367a8d384e6faeb6f92605a45b09f9f017abb7e6db9eb0a6e31f"
     },
     {
       "filePath": "src/command/commandSurfaceKernel.js",
@@ -5735,56 +5735,56 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
-      "sha256": "19dd44416ff43193f3514c2dd4e1ea7e000fbaa8daecf5e1d145919cb8ab2b9a"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "25358a216fbf0d3670b3d777ee0de720a37ff484f4a003ba32534b9d8465b673"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
-      "sha256": "11372de8ca1792a1aceac038bf0c8535e518ad1a7fcc9e77de6abb395897e51d"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "89e797103985c6940d657511cea2cf80f89fd6c79ef57b01286c2cc562997491"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
-      "sha256": "909fa13b45f5a2e7e02fad2fefc5bc8aa9e830979e95cc577d0fcdf886b80ba9"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "f1bbe4f5b865494ee1c9995749a8e1f48a920064d05ede0dc5c712218399fb43"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
-      "sha256": "687948a219245c821293d2b9e8fdf1a1cb9c2170426dcab7279e7ecd1d9aaf86"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "d24b6946eaca3994ec194c5c616378620f71a27e70556d4f37f3c10327f271ac"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
-      "sha256": "295f5e55583203b096dfc0089283c083e63c1d8c32705ba3d43a041d93b52868"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "fae3f05711412801e74237caa1df6be96e9d66b7576534ad6871b8cee1fcbeb9"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
-      "sha256": "55ecbd8e3b7bac59e07aa559161df68868bbf1809c770feaeecb31158a7d8189"
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "4bf414691b80f1120573e44c72e250b1d10db2843079e34ee1752f36d53815fa"
     },
     {
       "filePath": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -5884,6 +5884,15 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
       "sha256": "5ec3beaa3589bed1d5d940800be538eaac051095808abaee1b4eac7570237b5c"
+    },
+    {
+      "filePath": "docs/tasks/2026-10-17--docx-new-project-source-guard.md",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T08:18:20.108527+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_SOURCE_GUARD_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX new-project completion: bind only the measured Main immutable source-guard repair and its maintained regressions. Initial full plan validation and hash remain; frozen private source is bound to live opaque reference, TTL/context/capability/admission checks before every effect. Existing port, lease/CAS/readback/rollback, quotas and profiles unchanged. Small causal RED observed37source reads instead of1;30of30 complete focused contracts pass with zero skip/todo, including revocation and immutable mutation controls. No native or release acceptance credit. Original protected bytes, predicates and prior approval tuples retained",
+      "sha256": "9a2edd3709a26d30011c48fb6633ba7308e6515fb59b4c7249830634969267b0"
     }
   ],
   "evidenceStampIds": [
@@ -47083,6 +47092,96 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Same PR2129 correction for RELEASE01-14 unmapped status exposed by full CI4335of4336. Register exactly one DECLARED_ONLY new-project completion wording through the existing C1 qualifier.59of59 whole-file RELEASE01 tests pass, including strict tamper and promotion refusals. Preserve every historical claim, prior qualification, profile, terminal blocker, protected predicate and test membership. Runtime bytes unchanged at08fcafed794f3b0836778d5a9c0df65c2482c63b. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
       "sha256": "947b443559544428a6d2d167f0620e924fa2244d9b75c14b788853dd6e864bb1"
+    },
+    {
+      "filePath": "src/main.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "63ee784310e78ce95a3f575b89074fd0aecfd44aa9ccbae1ab13ee2fedc10aa2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
+      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
+      "filePath": "src/utils/docxImportPreviewReferences.js",
+      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
+      "sha256": "a8e370b449affb34bee65b5de5ec006923db58208684f4c7d6038a79cc13119c"
+    },
+    {
+      "filePath": "src/utils/docxImportSafeCreate.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "0e6415bf8fae98c2e406e71b041ee24f81b94ad8359c43df6262f47664e48ce7"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T01:06:10.589062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized one-way DOCX to a new project, source/component15k path.198of198 affected maintained tests, zero skip/todo; literal full text, comments/replies, note and existing decisions survive disk reopen. Bind implementation bytes only; original oracle, predicates, protected sources, test membership and prior approvals preserved. No native, installed-app,100k,500k-word or full-app memory acceptance credit.",
+      "sha256": "81ee07765e122adfd5ebaeddfef1b1dbebdc2e88aceda15035aa11f674858da5"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "909fa13b45f5a2e7e02fad2fefc5bc8aa9e830979e95cc577d0fcdf886b80ba9"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "687948a219245c821293d2b9e8fdf1a1cb9c2170426dcab7279e7ecd1d9aaf86"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "55ecbd8e3b7bac59e07aa559161df68868bbf1809c770feaeecb31158a7d8189"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "19dd44416ff43193f3514c2dd4e1ea7e000fbaa8daecf5e1d145919cb8ab2b9a"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "11372de8ca1792a1aceac038bf0c8535e518ad1a7fcc9e77de6abb395897e51d"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-10-17T07:03:49.037585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_DOCX_NEW_PROJECT_15K_20261017",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Same PR2129 delivery repair after independent CI39007126938 passed4338of4338 in both RTK executions but exceeded the40-minute outer job budget in later Atlas gates. Increase only that job allowance40to60 and require it in the existing exact workflow assertion; all workflow steps, commands, events, permissions and runner fields unchanged. The RTK runner own35-minute wall deadline and safety tests remain unchanged.30of30 focused graph/toolchain checks pass with zero skip/todo. Original protected files, predicates, membership and prior approvals preserved. No product/native/book/memory acceptance credit.",
+      "sha256": "295f5e55583203b096dfc0089283c083e63c1d8c32705ba3d43a041d93b52868"
     }
   ]
 }
