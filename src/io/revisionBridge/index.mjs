@@ -8095,6 +8095,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
 for (const code of ['PENDING_REVISIONS_CRYPTO_REQUIRED', 'PENDING_REVISIONS_XML_INVALID', 'PENDING_REVISIONS_BUDGET', 'PENDING_REVISIONS_COMPOSITE_UNSUPPORTED', 'PENDING_REVISIONS_STRUCTURE_UNSUPPORTED', 'PENDING_REVISIONS_ID_INVALID', 'PENDING_REVISIONS_BODY_UNSUPPORTED', 'PENDING_REVISIONS_BREAK_UNSUPPORTED', 'PENDING_REVISIONS_TEXT_KIND_INVALID', 'PENDING_REVISIONS_EMPTY_UNSUPPORTED', 'PENDING_REVISIONS_ORPHAN_DELETION', 'PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED', 'PENDING_REVISIONS_CONTENT_UNSUPPORTED', 'PENDING_REVISIONS_INVALID', 'PENDING_REVISIONS_GROUP_INVALID', 'PENDING_REVISIONS_MARK_UNSUPPORTED', 'PENDING_REVISIONS_PROJECTION_MISMATCH', 'PENDING_REVISIONS_HISTORY_BUDGET']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 for (const code of ['PENDING_TABLE_ROW_XML_INVALID', 'PENDING_TABLE_ROW_OWNER', 'PENDING_TABLE_ROW_EMPTY', 'PENDING_TABLE_ROW_NESTED_REVISION_UNSUPPORTED', 'PENDING_TABLE_ROW_CHILD_OWNER', 'PENDING_TABLE_ROW_INVALID', 'PENDING_TABLE_ROW_OVERLAP', 'PENDING_TABLE_ROW_VERTICAL_MERGE_UNSUPPORTED', 'PENDING_PARAGRAPH_BOUNDARY_OWNER', 'PENDING_PARAGRAPH_BOUNDARY_INVALID', 'PENDING_FORMAT_CONTENT_UNSUPPORTED', 'PENDING_FORMAT_EMPTY_RUN', 'PENDING_FORMAT_INVALID', 'PENDING_FORMAT_NO_CHANGE', 'PENDING_FORMAT_OVERLAP', 'PENDING_FORMAT_OWNER_UNSUPPORTED', 'PENDING_FORMAT_PREVIOUS_INVALID', 'PENDING_FORMAT_PROPERTIES_UNSUPPORTED', 'PENDING_FORMAT_RUN_AMBIGUOUS', 'PENDING_FORMAT_SOURCE_MISMATCH', 'PENDING_FORMAT_SOURCE_MISSING', 'PENDING_MOVE_NAME_INVALID', 'PENDING_MOVE_PAIR_DUPLICATE', 'PENDING_MOVE_PAIR_INVALID', 'PENDING_MOVE_PROVENANCE_MISMATCH', 'PENDING_MOVE_RANGE_BODY_UNSUPPORTED', 'PENDING_MOVE_RANGE_INVALID', 'PENDING_MOVE_RANGE_ORPHAN', 'PENDING_MOVE_RANGE_OVERLAP', 'PENDING_MOVE_RANGE_UNSUPPORTED', 'PENDING_REVISIONS_CURRENT_BINDING', 'PENDING_REVISIONS_ORIGINAL_BINDING', 'PENDING_REVISIONS_PARAGRAPH_REMOVED']) DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code, 'CONTENT_INVALID');
 DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set('DOCX_PARAGRAPH_SPACING_UNSUPPORTED', 'CONTENT_INVALID');
+DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set('DOCX_INLINE_COLOR_UNSUPPORTED', 'CONTENT_INVALID');
 for(const code of ['WORD_PARAGRAPH_MARK_TYPOGRAPHY_INVALID','WORD_PARAGRAPH_MARK_PROPERTY_UNSUPPORTED','WORD_PARAGRAPH_MARK_PROPERTY_DUPLICATE','WORD_PARAGRAPH_MARK_PROPERTY_INVALID','WORD_PARAGRAPH_MARK_DUPLICATE','WORD_PARAGRAPH_MARK_FONT_UNSUPPORTED','WORD_PARAGRAPH_MARK_SIZE_UNSUPPORTED'])DOCX_CONTENT_PREVIEW_FAILURE_REASONS.set(code,'CONTENT_INVALID');
 function docxContentPreviewSemanticFailure(error) {
   const bookmarkCodes=['DOCX_USER_BOOKMARK_CRYPTO_REQUIRED','DOCX_USER_BOOKMARK_XML_INVALID','DOCX_USER_BOOKMARK_ENDPOINT_OWNER','DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE','DOCX_USER_BOOKMARK_PAIR_INVALID','DOCX_USER_BOOKMARK_NAME_INVALID','DOCX_USER_BOOKMARK_BUDGET','DOCX_USER_BOOKMARK_RANGE_INVALID','DOCX_USER_BOOKMARK_LINK_INVALID','DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED'];
@@ -8105,11 +8106,14 @@ function docxContentPreviewSemanticFailure(error) {
   const category = DOCX_CONTENT_PREVIEW_FAILURE_REASONS.get(sourceCode) || 'INTERNAL_ERROR';
   return docxContentPreviewDiagnostic(`DOCX_CONTENT_PREVIEW_${category}`, {
     sourceCode, sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
-    ...(['DOCX_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_TABLE_VISIBILITY_UNSUPPORTED'].includes(sourceCode)
+    ...(['DOCX_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_TABLE_VISIBILITY_UNSUPPORTED', 'DOCX_INLINE_COLOR_UNSUPPORTED'].includes(sourceCode)
       && Number.isInteger(error.paragraphIndex) && error.paragraphIndex >= 0
       && error.paragraphIndex < DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs
-      ? { paragraphIndex: error.paragraphIndex, tagName: sourceCode === 'DOCX_HIDDEN_TEXT_UNSUPPORTED' ? 'w:vanish' : sourceCode === 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED' ? 'w:webHidden' : 'w:tblStyle' } : {}),
-    message: category === 'INTERNAL_ERROR' ? 'DOCX preview failed internally; the document was not imported.'
+      ? { paragraphIndex: error.paragraphIndex, tagName: sourceCode === 'DOCX_INLINE_COLOR_UNSUPPORTED' ? 'w:rPr' : sourceCode === 'DOCX_HIDDEN_TEXT_UNSUPPORTED' ? 'w:vanish' : sourceCode === 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED' ? 'w:webHidden' : 'w:tblStyle' } : {}),
+    message: sourceCode === 'DOCX_INLINE_COLOR_UNSUPPORTED' && Number.isSafeInteger(error.paragraphIndex)
+      && error.paragraphIndex >= 0 && error.paragraphIndex < DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs
+      ? `Не удалось перенести цвет или узорную заливку: абзац ${error.paragraphIndex + 1}. Замените этот цвет в Word на обычный RGB или уберите узорную заливку. Проект не создан.`
+      : category === 'INTERNAL_ERROR' ? 'DOCX preview failed internally; the document was not imported.'
       : `DOCX preview blocked: ${sourceCode}.`,
   });
 }
@@ -9545,8 +9549,18 @@ function docxSectionInventory(bytes, parsed, preserveDefault = false) {
   return { schemaVersion: 1, boundaries: records.slice(0,-1).map(({endParagraphIndex,properties})=>({endParagraphIndex,properties})), final: records.at(-1).properties };
 }
 
+const DOCX_THEME_COLOR_SLOTS = new Map([
+  ['dark1', 'dk1'], ['light1', 'lt1'], ['dark2', 'dk2'], ['light2', 'lt2'],
+  ...[1,2,3,4,5,6].map(n => [`accent${n}`, `accent${n}`]), ['hyperlink', 'hlink'], ['followedHyperlink', 'folHlink'],
+]);
+const DOCX_THEME_COLOR_MAPPING = new Map([
+  ['text1', 't1'], ['background1', 'bg1'], ['text2', 't2'], ['background2', 'bg2'],
+  ...[1,2,3,4,5,6].map(n => [`accent${n}`, `accent${n}`]), ['hyperlink', 'hyperlink'], ['followedHyperlink', 'followedHyperlink'],
+]);
 function docxFontThemeCatalog(bytes) {
-  const catalog = { groups: new Map(), languages: new Map(), colors: new Map(), linkColorMap: new Map([['hyperlink', 'hlink'], ['followedHyperlink', 'folHlink']]) };
+  const catalog = { groups: new Map(), languages: new Map(), colors: new Map(), linkColorMap: new Map([['hyperlink', 'hlink'], ['followedHyperlink', 'folHlink']]), colorMap: new Map([
+    ['t1','dk1'], ['bg1','lt1'], ['t2','dk2'], ['bg2','lt2'], ...DOCX_THEME_COLOR_SLOTS,
+  ]) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_FONT_PACKAGE_INVALID');
   const entries = new Set(metadata.entries.map(entry => entry.entryId));
@@ -9603,6 +9617,10 @@ function docxFontThemeCatalog(bytes) {
       if (stack.length !== 1 || node.namespaceUri !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) return;
       if (node.localName === 'clrSchemeMapping') {
         if (++colorMaps !== 1) throw new Error('DOCX_INLINE_COLOR_INVALID');
+        for (const key of DOCX_THEME_COLOR_MAPPING.values()) {
+          const value = attr(key, DOCX_WORDPROCESSINGML_MAIN_NAMESPACE);
+          if (value !== undefined) catalog.colorMap.set(key, DOCX_THEME_COLOR_SLOTS.get(value) || DOCX_UNSUPPORTED_COLOR);
+        }
         for (const key of ['hyperlink', 'followedHyperlink']) {
           const value = attr(key, DOCX_WORDPROCESSINGML_MAIN_NAMESPACE);
           if (value !== undefined) catalog.linkColorMap.set(key, value === 'hyperlink' ? 'hlink' : value === 'followedHyperlink' ? 'folHlink' : value);
@@ -9739,12 +9757,38 @@ function docxInlineReadColor(properties, tag, token, namespaces) {
   if (tag === 'w:shd' && value === 'nil') { properties.shading = null; return; }
   if (tag === 'w:color' && ['hyperlink', 'followedHyperlink'].includes(themeName) && !modifiers.some(Boolean)) {
     properties[key] = { linkThemeColor: themeName };
-  } else if (themeName || modifiers.some(Boolean) || (tag === 'w:shd' && !['', 'clear'].includes(value))) {
+  } else if (themeName && (tag === 'w:color' || ['', 'clear'].includes(value))) {
+    properties[key] = { themeColor: themeName, tint: modifiers[0], shade: modifiers[1] };
+  } else if (modifiers.some(Boolean) || (tag === 'w:shd' && !['', 'clear'].includes(value))) {
     properties[key] = DOCX_UNSUPPORTED_COLOR;
   } else if (!fill || fill === 'auto') {
     if (tag === 'w:color' && !fill) throw new Error('DOCX_INLINE_COLOR_VALUE_REQUIRED');
     properties[key] = null;
   } else properties[key] = `#${fill.toLowerCase()}`;
+}
+
+function docxInlineResolveColor(value, catalog) {
+  if (!isPlainObject(value)) return value;
+  const name = value.themeColor || value.linkThemeColor;
+  if (!catalog.oneWayManuscript) return value.linkThemeColor
+    ? catalog.themeFonts.colors.get(catalog.themeFonts.linkColorMap.get(name)) || DOCX_UNSUPPORTED_COLOR : DOCX_UNSUPPORTED_COLOR;
+  const slot = DOCX_THEME_COLOR_MAPPING.has(name)
+    ? catalog.themeFonts.colorMap.get(DOCX_THEME_COLOR_MAPPING.get(name)) : DOCX_THEME_COLOR_SLOTS.get(name);
+  const rgb = catalog.themeFonts.colors.get(slot);
+  if (!rgb || rgb === DOCX_UNSUPPORTED_COLOR) return DOCX_UNSUPPORTED_COLOR;
+  const modifier = value.tint || value.shade;
+  if (!modifier || modifier.toLowerCase() === 'ff') return rgb;
+  // MS-OI29500 2.1.72: modify HSL luminance; tint wins over shade.
+  // Algebra in integer RGB units avoids floating-point errors at byte edges.
+  // This is mathematical normalization, not a Word renderer rounding oracle.
+  const channels = [1,3,5].map(offset => parseInt(rgb.slice(offset, offset + 2), 16));
+  const sum = Math.max(...channels) + Math.min(...channels), denominator = Math.min(sum, 510 - sum);
+  const factor = parseInt(modifier, 16);
+  const luminance = value.tint ? 510 * 255 - (510 - sum) * factor : sum * factor;
+  const chroma = 130050 - Math.abs(2 * luminance - 130050);
+  return '#' + channels.map(channel => (denominator === 0 ? Math.floor(luminance / 510)
+    : Math.floor((2 * luminance * denominator + chroma * (2 * channel - sum)) / (1020 * denominator)))
+    .toString(16).padStart(2, '0')).join('');
 }
 
 function docxReadLayoutTuple(token,namespaces,kind) {
@@ -10054,12 +10098,10 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
   if (!metadata || !text) return;
   const properties = docxInlineEffectiveRunProperties(metadata, run, catalog);
   const marks = Object.values(DOCX_INLINE_MARKS).filter((mark) => properties[mark] === true);
-  const color = isPlainObject(properties.color) && properties.color.linkThemeColor
-    ? catalog.themeFonts.colors.get(catalog.themeFonts.linkColorMap.get(properties.color.linkThemeColor)) || DOCX_UNSUPPORTED_COLOR
-    : properties.color;
+  const color = docxInlineResolveColor(properties.color, catalog);
   // Highlight supersedes shading, even when inherited from a style. Clearing
   // highlight reveals effective shading; the properties cascade separately.
-  const highlight = properties.highlight ?? properties.shading;
+  const highlight = docxInlineResolveColor(properties.highlight ?? properties.shading, catalog);
   if (color === DOCX_UNSUPPORTED_COLOR || highlight === DOCX_UNSUPPORTED_COLOR) metadata.unsupportedColor = true;
   const colors = {
     ...(typeof color === 'string' && color !== DOCX_UNSUPPORTED_COLOR ? { color } : {}),
@@ -11124,9 +11166,8 @@ function docxNoteBreakFormat(metadata, run, catalog) {
     const value=docxFontResolveTheme(properties['font_'+slot],catalog.themeFonts);
     if(typeof value!=='string'||value===DOCX_UNSUPPORTED_FONT)throw Error('NOTE_BREAK_FORMAT_INVALID');fontSlots[slot]=value;
   }
-  const color=isPlainObject(properties.color)&&properties.color.linkThemeColor
-    ? catalog.themeFonts.colors.get(catalog.themeFonts.linkColorMap.get(properties.color.linkThemeColor))||DOCX_UNSUPPORTED_COLOR : properties.color;
-  const highlight=properties.highlight??properties.shading;
+  const color=docxInlineResolveColor(properties.color,catalog);
+  const highlight=docxInlineResolveColor(properties.highlight??properties.shading,catalog);
   if(color===DOCX_UNSUPPORTED_COLOR||highlight===DOCX_UNSUPPORTED_COLOR)throw Error('NOTE_BREAK_FORMAT_INVALID');
   return {marks:Object.values(DOCX_INLINE_MARKS).filter(mark=>properties[mark]===true).sort(),
     boldCs:properties.boldCs===true,italicCs:properties.italicCs===true,forceCs:properties.font_forceCs===true,rtl:properties.font_rtl===true,
@@ -11693,9 +11734,14 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     }
     if (!parsed.failure && pendingSource.revisions.length) {
       const pendingSections=parsed.contentPreview.wordSections;
+      const requireSupportedColor = result => {
+        const diagnostic = oneWayManuscript && result.diagnostics?.find(d => d.sourceCode === 'DOCX_INLINE_COLOR_UNSUPPORTED');
+        if (diagnostic) throw Object.assign(Error('DOCX_INLINE_COLOR_UNSUPPORTED'), { paragraphIndex: diagnostic.paragraphIndex });
+      };
       const supported = result => !result.failure
         && !result.diagnostics.some(d => !(d.code==='DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC' && ['DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE','DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE','DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN'].includes(d.sourceCode)) && !['w:bookmarkStart', 'w:bookmarkEnd', 'w:footnoteReference', 'w:endnoteReference','w:commentRangeStart','w:commentRangeEnd','w:commentReference'].includes(d.tagName))
         && !result.contentPreview.paragraphs.some(p => p.sectionBreakType);
+      requireSupportedColor(parsed);
       if (!supported(parsed) || parsed.sourceParagraphCount !== pendingSource.paragraphCount) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
       const rich = docxInlineCanonicalContent(parsed.contentPreview.paragraphs,{preserveCommentBreakMarks:true});
       const source = pendingTextRevisions.normalizeNode(rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(parsed.contentPreview.paragraphs.map(p => p.text).join('\n')));
@@ -11704,6 +11750,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       pendingTextRevisions.paragraphs(source).forEach(p => { p.content ||= []; });
       const canonicalParse = (xml, expectedCount = pendingSource.paragraphCount) => {
         const result = docxContentPreviewParseMainDocumentXml(xml, inlineStyles, docxNumberingCatalog(bytes));
+        requireSupportedColor(result);
         if (!supported(result) || result.sourceParagraphCount !== expectedCount) throw Error('PENDING_FORMAT_CONTENT_UNSUPPORTED');
         const rich = docxInlineCanonicalContent(result.contentPreview.paragraphs,{preserveCommentBreakMarks:true});
         const doc=rich ? parseObservablePayload(rich).doc : buildParagraphDocumentFromText(result.contentPreview.paragraphs.map(p => p.text).join('\n'));
@@ -11747,6 +11794,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       // Parse native Current independently, retaining list/table metadata and
       // rich runs. A ledger never substitutes for a checked content projection.
       const currentParsed = docxContentPreviewParseMainDocumentXml(pendingSource.currentXml, inlineStyles, docxNumberingCatalog(bytes));
+      requireSupportedColor(currentParsed);
       if (!supported(currentParsed)) throw Error('PENDING_REVISIONS_CONTENT_UNSUPPORTED');
       const currentRich = docxInlineCanonicalContent(currentParsed.contentPreview.paragraphs,{preserveCommentBreakMarks:true});
       const currentDoc = currentRich ? parseObservablePayload(currentRich).doc
@@ -11865,7 +11913,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   }
   if (!parsed.failure && oneWayManuscript) parsed.diagnostics.unshift({
     code:'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED', severity:'warning', sourcePart:'word/document.xml',
-    message:'Новый проект использует гарнитуру и кегль Ялкена. Шрифты Word и конечные параметры страницы не переносятся. Текст, поддерживаемое выделение, обсуждения, исправления и сноски сохраняются. Пустые черновики комментариев и ответов нужно удалить в Word перед импортом.',
+    message:'Новый проект использует гарнитуру и кегль Ялкена. Шрифты Word и конечные параметры страницы не переносятся. Цвета темы переводятся в RGB; возможны небольшие отличия округления оттенков Word. Текст, поддерживаемое выделение, обсуждения, исправления и сноски сохраняются. Пустые черновики комментариев и ответов нужно удалить в Word перед импортом.',
   });
   if (parsed.failure) {
     return docxContentPreviewResult({

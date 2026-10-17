@@ -16,17 +16,20 @@ const modules = Promise.all([
 ]);
 const run = (text, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${text}</w:t></w:r>`;
 const stylesXml = body => `<w:styles xmlns:w="${W}">${body}</w:styles>`;
-function pack(body, styles = '') {
+function pack(body, styles = '', { theme = '', settings = '' } = {}) {
   return buildStoredZip([
-    { name: '[Content_Types].xml', data: `<Types xmlns="${CT}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>${styles ? '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' : ''}</Types>` },
+    { name: '[Content_Types].xml', data: `<Types xmlns="${CT}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>${styles ? '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' : ''}${theme ? '<Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>' : ''}${settings ? '<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>' : ''}</Types>` },
     { name: '_rels/.rels', data: `<Relationships xmlns="${REL}"><Relationship Id="r1" Type="${OFFICE}/officeDocument" Target="word/document.xml"/></Relationships>` },
     { name: 'word/document.xml', data: `<w:document xmlns:w="${W}"><w:body>${body}</w:body></w:document>` },
-    ...(styles ? [{ name: 'word/styles.xml', data: styles }, { name: 'word/_rels/document.xml.rels', data: `<Relationships xmlns="${REL}"><Relationship Id="s" Type="${OFFICE}/styles" Target="styles.xml"/></Relationships>` }] : []),
+    ...(styles ? [{ name: 'word/styles.xml', data: styles }] : []),
+    ...(theme ? [{ name: 'word/theme/theme1.xml', data: theme }] : []),
+    ...(settings ? [{ name: 'word/settings.xml', data: `<w:settings xmlns:w="${W}">${settings}</w:settings>` }] : []),
+    ...((styles || theme || settings) ? [{ name: 'word/_rels/document.xml.rels', data: `<Relationships xmlns="${REL}">${styles ? `<Relationship Id="s" Type="${OFFICE}/styles" Target="styles.xml"/>` : ''}${theme ? `<Relationship Id="t" Type="${OFFICE}/theme" Target="theme/theme1.xml"/>` : ''}${settings ? `<Relationship Id="o" Type="${OFFICE}/settings" Target="settings.xml"/>` : ''}</Relationships>` }] : []),
   ]);
 }
-async function preview(bytes) {
+async function preview(bytes, options = {}) {
   const [bridge, envelope] = await modules;
-  const report = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+  const report = bridge.buildDocxContentPreviewFromZipBytes({ bytes, ...options });
   assert.equal(report.ok, true, JSON.stringify(report));
   const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(report);
   assert.equal(plan.ok, true, JSON.stringify(plan));
@@ -49,6 +52,74 @@ async function exportDoc(doc) {
 const text = (value, color, highlight) => ({ type: 'text', text: value, marks: [
   ...(color ? [{ type: 'textStyle', attrs: { color } }] : []), ...(highlight ? [{ type: 'highlight', attrs: { color: highlight } }] : []),
 ] });
+
+const manuscript = { manuscriptProfile: 'YALKEN_MANUSCRIPT_V1' };
+const colorTheme = (palette = '<a:accent1><a:srgbClr val="156082"/></a:accent1><a:accent2><a:srgbClr val="E97132"/></a:accent2>') => `<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:themeElements><a:clrScheme name="Fixture">${palette}</a:clrScheme><a:fontScheme name="Fixture"/></a:themeElements></a:theme>`;
+
+test('one-way theme colors: inherited shade and direct tint resolve from theme, ignoring stale cached RGB', async () => {
+  const styles = stylesXml('<w:style w:type="paragraph" w:styleId="Body"><w:rPr><w:color w:val="FF0000" w:themeColor="accent1" w:themeShade="BF"/></w:rPr></w:style>');
+  const body = '<w:p><w:pPr><w:pStyle w:val="Body"/></w:pPr>' + run('a') + run('b','<w:color w:val="000000" w:themeColor="accent1" w:themeTint="99"/>') + run('c','<w:color w:val="112233"/>') + run('d','<w:color w:val="auto"/>') + '</w:p>';
+  const value = await preview(pack(body, styles, { theme: colorTheme() }), manuscript);
+  assert.deepEqual(profile(value.doc).map(p => p.color), ['#0f4761','#45b0e1','#112233',null]);
+  assert.equal(value.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_COLOR_NOT_IMPORTED'),false);
+  assert.match(value.report.diagnostics.find(d=>d.code==='DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED').message,/округлен/u);
+  const legacy = await preview(pack(body, styles, { theme: colorTheme() }));
+  assert.equal(legacy.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_COLOR_NOT_IMPORTED'),true);
+});
+
+test('one-way theme colors: document mapping, direct slots, shading and highlight precedence stay distinct', async () => {
+  const body = '<w:p>' + run('a','<w:color w:val="000000" w:themeColor="accent1" w:themeShade="BF"/>') + run('b','<w:color w:val="000000" w:themeColor="text1"/>') + run('c','<w:color w:val="000000" w:themeColor="dark1"/>') + run('d','<w:shd w:val="clear" w:fill="000000" w:themeFill="accent1" w:themeFillTint="99"/>') + run('e','<w:shd w:val="clear" w:themeFill="accent1"/><w:highlight w:val="yellow"/>') + '</w:p>';
+  const theme = colorTheme('<a:dk1><a:srgbClr val="102030"/></a:dk1><a:lt1><a:srgbClr val="F0E0D0"/></a:lt1><a:accent2><a:srgbClr val="E97132"/></a:accent2>');
+  const value = await preview(pack(body,'',{theme,settings:'<w:clrSchemeMapping w:accent1="accent2" w:t1="light1"/>'}),manuscript);
+  assert.deepEqual(profile(value.doc).map(p=>p.color),['#bf4f14','#f0e0d0','#102030',null,null]);
+  assert.deepEqual(profile(value.doc).map(p=>p.highlight),[null,null,null,'#f1a984','#ffff00']);
+});
+
+test('one-way theme colors: luminance boundaries and tint precedence use exact integer truncation', async () => {
+  const properties = ['themeShade="00"','themeShade="FF"','themeTint="00"','themeTint="FF"','themeShade="00" w:themeTint="FF"','themeShade="BF"','themeTint="99"'];
+  const palette = '<a:accent1><a:srgbClr val="0102FE"/></a:accent1><a:accent2><a:srgbClr val="808080"/></a:accent2>';
+  const body = '<w:p>'+properties.map((pr,i)=>run(String.fromCharCode(65+i),`<w:color w:val="FF0000" w:themeColor="accent1" w:${pr}/>`)).join('')+run('H','<w:color w:val="000000" w:themeColor="accent2" w:themeTint="99"/>')+'</w:p>';
+  assert.deepEqual(profile((await preview(pack(body,'',{theme:colorTheme(palette)}),manuscript)).doc).map(p=>p.color),['#000000','#0102fe','#ffffff','#0102fe','#0102fe','#0001be','#6667fe','#b2b2b2']);
+});
+
+test('one-way theme colors: missing, transformed, system and unknown mapped definitions remain explicit losses', async () => {
+  for (const [theme,settings] of [['',''],[colorTheme('<a:accent1><a:sysClr val="windowText" lastClr="112233"/></a:accent1>'),''],[colorTheme('<a:accent1><a:srgbClr val="112233"><a:tint val="50000"/></a:srgbClr></a:accent1>'),''],[colorTheme(),'<w:clrSchemeMapping w:accent1="constructor"/>']]) {
+    const value=await preview(pack('<w:p>'+run('x','<w:color w:val="112233" w:themeColor="accent1"/>')+'</w:p>','',{theme,settings}),manuscript);
+    assert.equal(value.plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_COLOR_NOT_IMPORTED'),true);
+    assert.equal(profile(value.doc)[0]?.color??null,null);
+  }
+});
+
+test('one-way theme colors: pending unsupported color names its paragraph and never creates a partial plan', async () => {
+  const [bridge]=await modules;
+  const body='<w:p>'+run('safe')+'</w:p><w:p><w:ins w:id="1" w:author="Editor" w:date="2026-10-17T00:00:00Z">'+run('x','<w:color w:val="112233" w:themeColor="accent1"/>')+'</w:ins></w:p>';
+  const report=bridge.buildDocxContentPreviewFromZipBytes({bytes:pack(body),...manuscript});
+  assert.equal(report.ok,false);assert.equal(report.reason,'DOCX_INLINE_COLOR_UNSUPPORTED');
+  assert.equal(report.diagnostics[0].paragraphIndex,1);assert.equal(report.diagnostics[0].tagName,'w:rPr');
+  assert.match(report.diagnostics[0].message,/абзац 2/u);
+  assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(report).ok,false);
+});
+
+test('one-way theme colors: actual compute path retains pending insert/delete colors through decisions and reopen', async () => {
+  const body='<w:p>'+run('safe')+'</w:p><w:p><w:del w:id="1" w:author="Editor" w:date="2026-10-17T00:00:00Z"><w:r><w:rPr><w:color w:val="FF0000" w:themeColor="accent1" w:themeShade="BF"/></w:rPr><w:delText>old</w:delText></w:r></w:del><w:ins w:id="2" w:author="Editor" w:date="2026-10-17T00:00:00Z">'+run('new','<w:color w:val="000000" w:themeColor="accent1" w:themeTint="99"/>')+'</w:ins></w:p>';
+  const compute=require('../../src/main/docxImportComputePort.cjs').createDocxImportComputePort();
+  const response=await compute('local-preview',{requestId:'theme-pending-contract',bytesBase64:pack(body,'',{theme:colorTheme()}).toString('base64')});
+  assert.equal(response.importPreviewOk,true,JSON.stringify(response));
+  const plan=await compute('import-plan',{contentPreviewReport:response.docxContentPreviewReport});assert.equal(plan.ok,true,JSON.stringify(plan));
+  const pending=require('../../src/core/word-pending-text-revisions-v1.cjs'),envelope=require('../../src/core/document-content-envelope-v1.cjs');
+  const doc=response.docxContentPreviewReport.contentPreview.pendingRevisionDocument;
+  assert.equal(pending.readLedger(doc).revisions.length,2);
+  assert.deepEqual(profile(pending.materialize(pending.readLedger(doc))).slice(4).map(p=>p.color),['#45b0e1','#45b0e1','#45b0e1']);
+  for(const [action,expected,color]of[['acceptAll','new','#45b0e1'],['rejectAll','old','#0f4761']]) {
+    const decided=pending.decide(doc,{action}).doc;
+    const reopened=envelope.parseObservablePayload(envelope.composeObservablePayload({doc:decided})).doc;
+    const chars=profile(reopened).slice(4);assert.equal(chars.map(p=>p.ch).join(''),expected);assert.ok(chars.every(p=>p.color===color));
+    const undone=pending.decide(reopened,{action:'undo'}).doc;
+    assert.deepEqual(pending.readLedger(undone).revisions,pending.readLedger(doc).revisions);
+    assert.deepEqual(pending.materialize(pending.readLedger(undone)),pending.materialize(pending.readLedger(doc)));
+    assert.deepEqual(pending.decide(undone,{action:'redo'}).doc,reopened);
+  }
+});
 
 test('C1 colors: foreground, native and arbitrary highlight preserve plain neighbors and existing marks', async () => {
   const doc = { type: 'doc', content: [{ type: 'paragraph', content: [text('R', '#c12345'), text('plain'), text('H', null, '#12ab56'), { ...text('B', '#1255aa', '#ffff00'), marks: [...text('', '#1255aa', '#ffff00').marks, { type: 'bold' }] }] }] };
