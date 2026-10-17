@@ -2480,6 +2480,32 @@ function reviewHyperlinkRuns(record, documentXml, relationships) {
 
 // Literal namespace-aware inventory only. Numeric Word IDs pair endpoints;
 // they never become local identity or authenticated scene ownership.
+// The one-way manuscript profile may omit only unreferenced, adjacent point
+// markers. Their names are never source identities or evidence of provider origin.
+function manuscriptPointBookmarks(documentXml, scan) {
+  const starts = scan.tokens.filter(t => t.localName === 'bookmarkStart'), ends = scan.tokens.filter(t => t.localName === 'bookmarkEnd');
+  const selected = new Set(), ids = new Set(), names = new Set();
+  if (starts.length > 1024 || ends.length > 1024) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
+  for (const start of starts) {
+    const id = attr(start, 'id', W_NS), name = attr(start, 'name', W_NS);
+    if (name === '_GoBack' || /^YRTK_/u.test(name)) continue;
+    const finish = ends.filter(t => attr(t, 'id', W_NS) === id), parent = scan.tokens.find(t => (isWordToken(t, 'p') || isWordToken(t, 'body'))
+      && start.depth === t.depth + 1 && start.openStart >= t.openEnd && finish[0]?.closeEnd <= t.closeStart);
+    const permitted = (t, keys) => t.namespaceUri === W_NS && t.selfClosing && t.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
+      || a.namespaceUri === W_NS && keys.includes(a.localName));
+    if (!/^\d{1,10}$/u.test(id) || !/^[a-zA-Z0-9_]{1,40}$/u.test(name) || ids.has(id) || names.has(name.toLowerCase())
+      || starts.filter(t => attr(t, 'id', W_NS) === id).length !== 1 || finish.length !== 1 || !parent
+      || !permitted(start, ['id','name','colFirst','colLast']) || !permitted(finish[0], ['id'])
+      || finish[0].depth !== start.depth || finish[0].openStart < start.closeEnd
+      || documentXml.slice(start.closeEnd, finish[0].openStart).trim()
+      || ['colFirst','colLast'].some(k => attr(start,k,W_NS) && attr(start,k,W_NS) !== '0')
+      || scan.tokens.some(t => isWordToken(t,'hyperlink') && attr(t,'anchor',W_NS) === name || isWordToken(t,'instrText')))
+      continue; // Retain real/range/referenced or invalid bookmarks for the strict owner.
+    ids.add(id); names.add(name.toLowerCase()); selected.add(start); selected.add(finish[0]);
+  }
+  return selected;
+}
+
 export function extractUserBookmarkInventoryV1(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) throw Error('DOCX_USER_BOOKMARK_CRYPTO_REQUIRED');
@@ -2491,6 +2517,7 @@ export function extractUserBookmarkInventoryV1(documentXml, options = {}) {
   const technicalStarts = scan.tokens.filter(token => isWordToken(token, 'bookmarkStart')
     && (attr(token, 'name', W_NS) === '_GoBack' || /^YRTK_/u.test(attr(token, 'name', W_NS))));
   const technicalIds = new Set(technicalStarts.map(token => attr(token, 'id', W_NS)).filter(Boolean));
+  const omitted = options.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1' ? manuscriptPointBookmarks(documentXml,scan) : new Set();
   const location = token => {
     const index = records.findIndex(record => token.openStart >= record.token.openEnd && token.closeEnd <= record.token.closeStart);
     if (index >= 0) {
@@ -2519,13 +2546,14 @@ export function extractUserBookmarkInventoryV1(documentXml, options = {}) {
   // Technical locators have their own authenticated continuity mapper. Their
   // missing/duplicate pairs must remain analysis evidence, not user identities.
   for (const token of scan.tokens.filter(token => token.localName === 'bookmarkStart')) {
-    if (technicalStarts.includes(token)) continue;
+    if (technicalStarts.includes(token) || omitted.has(token)) continue;
     if (token.namespaceUri !== W_NS || !token.selfClosing) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE');
     const id = attr(token,'id',W_NS);
     if (!/^\d{1,10}$/u.test(id) || starts.has(id) || technicalIds.has(id)) throw Error('DOCX_USER_BOOKMARK_PAIR_INVALID');
     starts.set(id,token);
   }
   for (const token of scan.tokens.filter(token => token.localName === 'bookmarkEnd')) {
+    if (omitted.has(token)) continue;
     const id = attr(token,'id',W_NS);
     if (token.namespaceUri !== W_NS || !token.selfClosing) throw Error('DOCX_USER_BOOKMARK_ENDPOINT_NAMESPACE');
     if (technicalIds.has(id)) continue;
@@ -5131,7 +5159,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   // semantic resource admission. It is evaluated only after those guards.
   if (!blockingReason(reasons)) {
     try {
-      userBookmarkInventory = extractUserBookmarkInventoryV1(documentXml, {cryptoPort, budgets, documentScan, allowUnpairedTechnicalEnds:true});
+      userBookmarkInventory = extractUserBookmarkInventoryV1(documentXml, {cryptoPort, budgets, documentScan, allowUnpairedTechnicalEnds:true, manuscriptProfile:ports.manuscriptProfile});
       if (userBookmarkInventory.bookmarks.length || userBookmarkInventory.links.length || userBookmarkInventory.unresolvedEndpoints?.length)
         admitWorkerOutput(budgetState, reasons, 'reviewIr.userBookmarkInventory', userBookmarkInventory);
     } catch (error) { reasons.push(reason('RTK_WORD_USER_BOOKMARK_INVALID', 'word/document.xml', error.message)); }
@@ -5181,7 +5209,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       const normalizationLedger = [];
       validateCommentMetadataScans(parts, name => byPart[name]);
       const bodies = parseRichCommentBodies(parts, scans.comments, { budgets, cryptoPort,
-        readCommentRichDocument: ports.readCommentRichDocument, normalizationLedger });
+        readCommentRichDocument: ports.readCommentRichDocument, normalizationLedger, manuscriptProfile:ports.manuscriptProfile });
       for (const thread of comments.commentThreads) {
         for (const item of [thread, ...thread.replies]) {
           const id = item === thread ? item.commentId : item.rawId;
@@ -5505,11 +5533,17 @@ export function verifyAuthorityCarrierSignatureWithSecret(selectedCarrier, input
 
 // A comment part owns its own relationships. The synthetic document below is
 // only a bounded formatting projection; it never grants document identity.
-function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentRichDocument, normalizationLedger = [] }) {
+function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentRichDocument, normalizationLedger = [], manuscriptProfile }) {
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   const require = value => { if (!value) fail(); };
   let xml = parts['word/comments.xml'];
   const mirroredAliases = new Map();
+  const manuscript = manuscriptProfile === 'YALKEN_MANUSCRIPT_V1', normalized = new Set();
+  const normalize = token => {
+    normalized.add(token);
+    normalizationLedger.push({part:token.partName,path:token.path.join('/'),offset:token.openStart,
+      attribute:token.localName,value:'neutral',disposition:'NORMALIZED_NON_AUTHORING_METADATA',reason:'MANUSCRIPT_COMMENT_PRESENTATION'});
+  };
   const withoutTokens = (text,tokens,offset=0) => {
     const outer = [];
     for (const token of [...tokens].sort((a,b)=>a.openStart-b.openStart || b.closeEnd-a.closeEnd))
@@ -5546,6 +5580,24 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
     tab:['pos','val','leader'],
   };
   const property = (token, run) => {
+    if (manuscript && token.namespaceUri === W_NS) {
+      const neutral = run ? {smallCaps:'0',vertAlign:'baseline'} : {keepNext:'0',keepLines:'0',pageBreakBefore:'0',widowControl:'0'};
+      if (Object.hasOwn(neutral,token.localName)) {
+        attrs(token,['val']); scalar(token);require(attr(token,'val',W_NS) === neutral[token.localName]);normalize(token);return;
+      }
+      if (!run && token.localName === 'pBdr') {
+        attrs(token,[]);noText(token);const seen=new Set();
+        for (const edge of children(token)) {
+          require(edge.namespaceUri===W_NS&&['top','left','bottom','right','between'].includes(edge.localName)&&!seen.has(edge.localName));seen.add(edge.localName);
+          attrs(edge,['space','sz','val']);scalar(edge);
+          require(attr(edge,'space',W_NS)==='0'&&attr(edge,'sz',W_NS)==='0'&&attr(edge,'val',W_NS)==='nil');
+        }
+        normalize(token);return;
+      }
+      if (!run && token.localName === 'shd') {
+        attrs(token,['fill','val']);scalar(token);require(attr(token,'fill',W_NS)==='auto'&&attr(token,'val',W_NS)==='clear');normalize(token);return;
+      }
+    }
     if (token.namespaceUri === W14_NS && token.localName === 'ligatures') {
       require(run && ['none','standardContextual'].includes(attr(token,'val',W14_NS)));
       attrs(token,[],{[W14_NS]:['val']}); scalar(token);
@@ -5563,6 +5615,7 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
       if(token.localName==='rFonts') require(token.attributes.some(a=>a.namespaceUri===W_NS&&a.localName!=='hint'));
       if(token.localName==='kern') {require(/^\d{1,4}$/u.test(attr(token,'val',W_NS)) && Number(attr(token,'val',W_NS))<=1638);normalizationLedger.push({part:token.partName,path:token.path.join('/'),offset:token.openStart,attribute:'kern',value:attr(token,'val',W_NS),disposition:'NORMALIZED_NON_AUTHORING_METADATA',reason:'WORD_COMMENT_NON_AUTHORING_PRESENTATION',...(token.partName==='word/styles.xml'?{definitionPart:token.partName}:{})});}
       if(['bCs','iCs'].includes(token.localName)){require(['','0','1','false','true','off','on'].includes(attr(token,'val',W_NS)));const parent=scan.tokens.find(p=>isWordToken(p,'rPr')&&token.openStart>p.openEnd&&token.closeEnd<=p.closeStart);const peers=parent?children(parent):[];const sibling=peers.find(t=>isWordToken(t,token.localName.slice(0,1)));const bool=t=>!['0','false','off'].includes(attr(t,'val',W_NS));require(sibling&&bool(sibling)===bool(token));
+        if(manuscript)normalize(token);
         if (!mirroredAliases.has(token.partName)) mirroredAliases.set(token.partName,new Map());
         mirroredAliases.get(token.partName).set(token.openStart,token);
       }
@@ -5641,7 +5694,7 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
     const finalParaId=attr(paragraphs.at(-1),'paraId',W14_NS);if(finalParaId)finalParaIds.add(finalParaId);
     const removed = [];
     const validateRun = run => {
-      require(isWordToken(run,'r')); attrs(run,['rsidR','rsidRPr']); noText(run);
+      require(isWordToken(run,'r')); attrs(run,['rsidR','rsidRPr',...(manuscript?['rsidDel']:[])]); noText(run);
       const own = children(run), properties = own.filter(t=>isWordToken(t,'rPr'));
       require(properties.length <= 1 && (!properties.length || own[0] === properties[0]));
       for (const atom of own) {
@@ -5659,7 +5712,7 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
       }
     };
     for (const p of paragraphs) {
-      require(isWordToken(p,'p'));attrs(p,['rsidR','rsidRDefault','rsidP','rsidRPr'],{[W14_NS]:['paraId','textId']});noText(p);
+      require(isWordToken(p,'p'));attrs(p,['rsidR','rsidRDefault','rsidP','rsidRPr',...(manuscript?['rsidDel']:[])],{[W14_NS]:['paraId','textId']});noText(p);
       const own = children(p), properties = own.filter(t=>isWordToken(t,'pPr'));
       require(properties.length <= 1 && (!properties.length || own[0]===properties[0]));
       for (const node of own) {
@@ -5674,7 +5727,8 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
     const root=roots[0], prefix=root.prefix?`${root.prefix}:`:'';
     const opening=xml.slice(root.openStart,root.openEnd).replace(`<${root.qName}`,`<${prefix}document`);
     let content=xml.slice(paragraphs[0].openStart,paragraphs.at(-1).closeEnd);
-    for(const token of removed.sort((a,b)=>b.openStart-a.openStart)) content=content.slice(0,token.openStart-paragraphs[0].openStart)+content.slice(token.closeEnd-paragraphs[0].openStart);
+    const neutralTokens=[...normalized].filter(t=>t.partName==='word/comments.xml'&&t.openStart>=paragraphs[0].openStart&&t.closeEnd<=paragraphs.at(-1).closeEnd);
+    content=withoutTokens(content,[...removed,...neutralTokens],paragraphs[0].openStart);
     const xmlns = comment.attributes.filter(a=>a.qName==='xmlns'||a.prefix==='xmlns').map(a=>` ${a.qName}="${a.value.replaceAll('&','&amp;').replaceAll('"','&quot;')}"`).join('');
     const bodyPrefix = '__yalkenCommentBody';
     require(!comment.attributes.some(a=>a.qName===`xmlns:${bodyPrefix}`));
@@ -5686,7 +5740,7 @@ function parseRichCommentBodies(parts, scan, { budgets, cryptoPort, readCommentR
       // The generic direct parser still receives the literal original XML.
       const aliases = [...(mirroredAliases.get('word/comments.xml')?.values() || [])]
         .filter(token=>token.openStart>=paragraphs[0].openStart && token.closeEnd<=paragraphs.at(-1).closeEnd);
-      const scannerContent = withoutTokens(xml.slice(paragraphs[0].openStart,paragraphs.at(-1).closeEnd),[...removed,...aliases],paragraphs[0].openStart);
+      const scannerContent = withoutTokens(xml.slice(paragraphs[0].openStart,paragraphs.at(-1).closeEnd),[...removed,...aliases,...neutralTokens],paragraphs[0].openStart);
       const scannerXml = `${opening}<${bodyPrefix}:body xmlns:${bodyPrefix}="${W_NS}"${xmlns}>${scannerContent}</${bodyPrefix}:body></${prefix}document>`;
       const formatting = extractReviewTransportFormattingRunsV2(scannerXml,{budgets,cryptoPort,
         stylesXml:parts['word/styles.xml'] === undefined ? undefined : withoutTokens(parts['word/styles.xml'],mirroredAliases.get('word/styles.xml')?.values() || []),
@@ -6148,7 +6202,20 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
   }
   if (scan.tokens.some(t => t.namespaceUri === W_NS && unsupported.has(t.localName))) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
   const bookmarks = scan.tokens.filter(t => isWordToken(t, 'bookmarkStart'));
-  if (bookmarks.some(t => !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
+  const omitted = options.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1' ? manuscriptPointBookmarks(documentXml,scan) : new Set();
+  if (bookmarks.some(t => !omitted.has(t) && !/^(?:YRTK_[a-f0-9]{32}|_GoBack)$/u.test(attr(t, 'name', W_NS)))) throw Error('PENDING_REVISIONS_USER_BOOKMARK_UNSUPPORTED');
+  const duplicatePairs = new Set();
+  if (options.manuscriptProfile === 'YALKEN_MANUSCRIPT_V1') for(const token of tokens) {
+    const id=attr(token,'id',W_NS), pair=tokens.filter(t=>attr(t,'id',W_NS)===id).sort((a,b)=>a.openStart-b.openStart);
+    if(pair.length!==2||pair[1]!==token||[...allRevisionTokens,...propertyTokens].filter(t=>attr(t,'id',W_NS)===id).length!==2)continue;
+    const [a,b]=pair;
+    if(!/^\d{1,10}$/u.test(id)||!['ins','del'].includes(a.localName)||!['ins','del'].includes(b.localName)||a.localName===b.localName
+      || a.depth!==b.depth || documentXml.slice(a.closeEnd,b.openStart).trim()
+      || !paragraphs.some(p=>a.depth===p.depth+1&&a.openStart>=p.openEnd&&b.closeEnd<=p.closeStart)
+      || !attr(a,'author',W_NS)||!attr(a,'date',W_NS)
+      || ['author','date'].some(k=>attr(a,k,W_NS)!==attr(b,k,W_NS))||attr(a,'dateUtc',W16DU_NS)!==attr(b,'dateUtc',W16DU_NS))continue;
+    duplicatePairs.add(b);
+  }
   const edits = [], revisions = [], ids = new Set();
   const boundaryOwners = new Map();
   for (const token of boundaryTokens) {
@@ -6225,7 +6292,7 @@ export function extractPendingTextRevisionSourceV1(documentXml, options = {}) {
     const p = paragraphs[paragraphIndex];
     if (!p || token.selfClosing || token.depth !== p.depth + 1 || token.path.at(-2) !== 'p') throw Error('PENDING_REVISIONS_STRUCTURE_UNSUPPORTED');
     const nativeId = attr(token, 'id', W_NS);
-    if (!nativeId || ids.has(nativeId)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(nativeId);
+    if (!nativeId || ids.has(nativeId) && !duplicatePairs.has(token)) throw Error('PENDING_REVISIONS_ID_INVALID'); ids.add(nativeId);
     const inside = scan.tokens.filter(t => t.openStart >= token.openEnd && t.closeEnd <= token.closeStart);
     if (inside.some(t => t.namespaceUri !== W_NS || !allowed.has(t.localName))) throw Error('PENDING_REVISIONS_BODY_UNSUPPORTED');
     if (inside.some(t => isWordToken(t, 'br') && ['page', 'column'].includes(attr(t, 'type')))) throw Error('PENDING_REVISIONS_BREAK_UNSUPPORTED');

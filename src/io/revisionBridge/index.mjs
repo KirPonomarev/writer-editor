@@ -9489,7 +9489,7 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
 }
 
 // Literal semantic inventory; provider revision identifiers are inert, never authority.
-function docxSectionInventory(bytes, parsed, preserveDefault = false) {
+function docxSectionInventory(bytes, parsed, preserveDefault = false, oneWayManuscript = false) {
   const W = DOCX_WORDPROCESSINGML_MAIN_NAMESPACE, records = [], owners = new WeakMap();
   let paragraph = -1, finalSeen = false;
   docxFontVisitPart(bytes, 'word/document.xml', W, 'document', (node, stack, attr, attributes) => {
@@ -9516,6 +9516,9 @@ function docxSectionInventory(bytes, parsed, preserveDefault = false) {
     else if (node.localName === 'pgMar') { const keys=['top','right','bottom','left','header','footer','gutter']; only(keys); record.properties.margins=Object.fromEntries(keys.map(key=>[`${key}Twips`,number(key, key==='gutter'?0:undefined)])); }
     else if (['headerReference', 'footerReference', 'titlePg'].includes(node.localName)) { /* Validated with part-local story inventory below. */ }
     else if (node.localName === 'cols') { only(['num','space','equalWidth']); if (attr('equalWidth', W) && !['1','true','on'].includes(attr('equalWidth',W))) throw Error('WORD_SECTIONS_UNSUPPORTED'); record.properties.columns={count:number('num',1),spaceTwips:number('space',720)}; }
+    else if (oneWayManuscript && record.final && node.localName === 'pgNumType') {
+      only(['start']); if (!node.selfClosing || !/^\d{1,5}$/u.test(attr('start',W)) || number('start') < 1) throw Error('WORD_SECTIONS_INVALID');
+    }
     else if (node.localName === 'docGrid') {
       only(['type','linePitch','charSpace']);
       if (attr('type', W) !== undefined && attr('type', W) !== 'default') throw Error('WORD_SECTIONS_UNSUPPORTED');
@@ -11712,7 +11715,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     const defaultTabs=extractDocumentDefaultTabStopV1(docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes,'word/settings.xml',1024*1024)||new Uint8Array()),{budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
     const inlineStyles = docxInlineStyleCatalog(bytes,false,oneWayManuscript);
     namedStylesNormalized = inlineStyles.styles.size > 0;
-    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { budgets, allowCommentMarkers: true, cryptoPort: {
+    const pendingSource = extractPendingTextRevisionSourceV1(xmlText, { budgets, allowCommentMarkers: true, ...manuscriptOptions, cryptoPort: {
       sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
       byteLength: value => new TextEncoder().encode(value).length,
     } });
@@ -11720,7 +11723,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     if (!parsed.failure) {
       if(defaultTabs.explicit)parsed.contentPreview.wordDefaultTabStop=defaultTabs.effective;
       const stories = parseDocumentStoriesRichReturn(bytes, {includeParts:true});
-      const sections = docxSectionInventory(bytes, parsed, Boolean(stories));
+      const sections = docxSectionInventory(bytes, parsed, Boolean(stories), oneWayManuscript);
       if (stories) { parsed.contentPreview.wordStories = stories.registry; parsed.storyParts = stories.validatedParts; parsed.storyMediaParts = stories.storyMediaParts; }
       if (sections) {
         if (pendingSource.revisions.some(r=>!['insert','delete'].includes(r.operation)||r.boundary||r.structure||r.moveName)) throw Error('WORD_SECTIONS_PENDING_UNSUPPORTED');
@@ -11732,7 +11735,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     if (!parsed.failure && !pendingSource.revisions.length
       && (parsed.diagnostics.some(item=>['w:bookmarkStart','w:bookmarkEnd','w:instrText'].includes(item.tagName))
         || parsed.contentPreview.paragraphs.some(p=>(p.inlineRuns||[]).some(run=>run.href?.startsWith('#'))))) {
-      const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {budgets,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
+      const inventory = extractUserBookmarkInventoryV1(pendingSource.xml, {budgets,...manuscriptOptions,cryptoPort:{sha256Text:sha256Hex,sha256Json:value=>`sha256:${hashCanonicalValue(value)}`,byteLength:value=>new TextEncoder().encode(value).length}});
       if (inventory.bookmarks.length || inventory.links.length) {
         if (parsed.paragraphSourceIndexes.some((source,index)=>source !== index)) throw Error('DOCX_USER_BOOKMARK_TOPOLOGY_UNSUPPORTED');
         parsed.contentPreview.userBookmarkInventory = inventory;
@@ -11920,7 +11923,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   }
   if (!parsed.failure && oneWayManuscript) parsed.diagnostics.unshift({
     code:'DOCX_MANUSCRIPT_PRESENTATION_NORMALIZED', severity:'warning', sourcePart:'word/document.xml',
-    message:'Новый проект использует гарнитуру и кегль Ялкена. Шрифты Word и конечные параметры страницы не переносятся. Цвета темы переводятся в RGB; возможны небольшие отличия округления оттенков Word. Текст, поддерживаемое выделение, обсуждения, исправления и сноски сохраняются. Пустые черновики комментариев и ответов нужно удалить в Word перед импортом.',
+    message:'Новый проект использует гарнитуру и кегль Ялкена. Шрифты и конечные параметры страницы, включая нумерацию, не переносятся. Непривязанные точечные закладки не переносятся; оформление комментариев без визуального эффекта нормализуется. Цвета темы переводятся в RGB; возможны небольшие отличия округления оттенков Word. Текст, поддерживаемое выделение, обсуждения, исправления и сноски сохраняются. Пустые черновики комментариев и ответов нужно удалить в исходном документе перед импортом.',
   });
   if (parsed.failure) {
     return docxContentPreviewResult({

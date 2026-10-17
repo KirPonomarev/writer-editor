@@ -30,6 +30,7 @@ One bounded compatibility repair in the existing one-way manuscript parser plus 
 
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 - src/io/revisionBridge/index.mjs
+- src/io/revisionBridge/genericWordComments.mjs
 - test/contracts/docx-google-manuscript-small.contract.test.js
 - docs/tasks/2026-10-17--google-docx-small-manuscript.md
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
@@ -40,7 +41,7 @@ One bounded compatibility repair in the existing one-way manuscript parser plus 
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 
-Runtime budget220 changed lines; focused behavioral tests360 lines. Mandatory existing inventory and source-pin companions remain mechanical and preserve every prior member/predicate.
+Runtime budget240 changed lines; focused behavioral tests400 lines. Mandatory existing inventory and source-pin companions remain mechanical and preserve every prior member/predicate.
 
 ## DENYLIST
 
@@ -121,3 +122,5 @@ AGENT_FINAL_REPORT_V1; exact identities, coverage, delivery, limitations and one
 Record expected/actual, exact source and input hashes. Synthetic derivative success cannot replace original-file acceptance. No app update or heavy book run in this contour.
 
 CAUSAL_PROTOTYPES02_06: Immutable originals retain the bookmark refusal. Isolated synthetic diagnostics reveal subsequent shared replacement ID, final pgNumType start1 and neutral comment metadata guards. These altered diagnostic packages are not provider acceptance evidence. Same-contour declaration07 records the complete hypothesis before runtime implementation; the exact physical derivatives remain the required acceptance inputs.
+
+SOURCE_CHECKPOINT12: First immutable physical derivative now completes full independent Current/Original, two pending revisions, exact insertion comment and real fenced durable new-project creation. The second physical derivative has an anchor ending inside the deletion. Its full union geometry is already representable by the existing locator model; generic intake currently refuses that endpoint instead of projecting it to the deletion boundary. Same-contour completion may use the existing source-bound union locator and clipped current endpoint only in the explicit manuscript profile; exact union quote/geometry remains checked, strict behavior and Core schema remain unchanged. Both immutable derivatives remain required, with negative and decision-survival checks.
