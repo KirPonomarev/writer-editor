@@ -122,3 +122,96 @@ test('WP305 mutants fail closed on missing command and channel bindings', () => 
     'E_MINIMUM_INTERCHANGE_CHANNEL_CAPABILITY_MISMATCH',
   );
 });
+
+test('current V2 explicitly owns archive output profiles while strict V1 remains compatible', () => {
+  const core = require('../../src/core/minimum-interchange-v1.cjs');
+  assert.equal(core.MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT, core.MINIMUM_INTERCHANGE_OWNERSHIP_V2);
+  assert.equal(core.MINIMUM_INTERCHANGE_OWNERSHIP_V1.schemaVersion, 'yalken.minimum-interchange-ownership.v1');
+  const current = core.MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT;
+  assert.equal(current.schemaVersion, 'yalken.minimum-interchange-ownership.v2');
+  assert.equal(core.validateMinimumInterchangeOwnershipV2(current, runtimeFor()).ok, true);
+  assert.equal(bindMinimumInterchangeRuntime(runtimeFor()).schemaVersion, current.schemaVersion);
+  for (const formatId of ['TXT', 'MARKDOWN', 'DOCX']) {
+    assert.deepEqual(current.formats.find(row => row.formatId === formatId), MINIMUM_INTERCHANGE_OWNERSHIP_V1.formats.find(row => row.formatId === formatId));
+    const altered = structuredClone(current);
+    altered.formats.find(row => row.formatId === formatId).atomicExportRequired = false;
+    assert.equal(core.validateMinimumInterchangeOwnershipV2(altered, runtimeFor()).ok, false);
+    const legacy = cloneOwnership(); legacy.formats.find(row => row.formatId === formatId).atomicExportRequired = false;
+    assert.equal(validateMinimumInterchangeOwnership(legacy, runtimeFor()).ok, false);
+  }
+  const legacyArchive = cloneOwnership(); legacyArchive.formats.find(row => row.formatId === 'PROJECT_ARCHIVE').atomicExportRequired = false;
+  assert.equal(validateMinimumInterchangeOwnership(legacyArchive, runtimeFor()).code, 'E_MINIMUM_INTERCHANGE_FORMAT_POLICY_INVALID');
+  const archive = current.formats.find(row => row.formatId === 'PROJECT_ARCHIVE');
+  assert.equal(archive.defaultAtomicExportRequired, true);
+  assert.equal(Object.hasOwn(archive, 'atomicExportRequired'), false);
+  assert.equal(Object.isFrozen(archive.outputPolicy.profiles), true);
+  assert.deepEqual(archive.outputPolicy.profiles.map(row => [row.profileId, row.atomicPublication]), [
+    ['ATOMIC_HARDLINK', true], ['ATOMIC_REPLACE', true], ['EXCLUSIVE_CREATE', false],
+  ]);
+});
+
+test('V2 rejects mutation or deletion of every declared profile obligation', () => {
+  const core = require('../../src/core/minimum-interchange-v1.cjs'), current = core.MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT;
+  const archive = current.formats.find(row => row.formatId === 'PROJECT_ARCHIVE');
+  for (const operation of ['delete', 'mutate', 'generic']) {
+    const altered = structuredClone(current), row = altered.formats.find(format => format.formatId === 'PROJECT_ARCHIVE');
+    if (operation === 'delete') delete row.defaultAtomicExportRequired;
+    else if (operation === 'mutate') row.defaultAtomicExportRequired = false;
+    else row.atomicExportRequired = false;
+    assert.equal(core.validateMinimumInterchangeOwnershipV2(altered, runtimeFor()).ok, false, 'default:' + operation);
+  }
+  for (const key of Object.keys(archive.outputPolicy)) {
+    for (const operation of ['delete', 'mutate']) {
+      const altered = structuredClone(current), policy = altered.formats.find(row => row.formatId === 'PROJECT_ARCHIVE').outputPolicy;
+      if (operation === 'delete') delete policy[key]; else policy[key] = 'UNDECLARED';
+      assert.equal(core.validateMinimumInterchangeOwnershipV2(altered, runtimeFor()).ok, false, operation + ':' + key);
+    }
+  }
+  for (const [index, profile] of archive.outputPolicy.profiles.entries()) {
+    for (const key of Object.keys(profile)) for (const operation of ['delete', 'mutate']) {
+      const altered = structuredClone(current), row = altered.formats.find(row => row.formatId === 'PROJECT_ARCHIVE').outputPolicy.profiles[index];
+      if (operation === 'delete') delete row[key]; else row[key] = typeof row[key] === 'boolean' ? !row[key] : 'UNDECLARED';
+      assert.equal(core.validateMinimumInterchangeOwnershipV2(altered, runtimeFor()).ok, false, profile.profileId + ':' + operation + ':' + key);
+    }
+  }
+  for (const formatId of ['TXT', 'MARKDOWN', 'DOCX']) {
+    const altered = structuredClone(current); altered.formats.find(row => row.formatId === formatId).outputPolicy = structuredClone(archive.outputPolicy);
+    assert.equal(core.validateMinimumInterchangeOwnershipV2(altered, runtimeFor()).ok, false, 'cross-format:' + formatId);
+  }
+});
+
+test('Core selects only observed archive publication paths and rejects generic permission', () => {
+  const { selectProjectArchiveOutputProfile: select } = require('../../src/core/minimum-interchange-v1.cjs');
+  assert.equal(select({ targetExists: false }).profile.profileId, 'ATOMIC_HARDLINK');
+  assert.equal(select({ targetExists: true }).profile.profileId, 'ATOMIC_REPLACE');
+  const exclusive = select({ targetExists: false, hardlinkErrorCode: 'ENOTSUP', stagingVerified: true });
+  assert.equal(exclusive.ok, true); assert.equal(exclusive.profile.profileId, 'EXCLUSIVE_CREATE');
+  assert.equal(exclusive.profile.atomicPublication, false);
+  for (const input of [
+    { profileId: 'EXCLUSIVE_CREATE' }, { allowNonAtomic: true }, { targetExists: 'false' },
+    { targetExists: true, hardlinkErrorCode: 'ENOTSUP', stagingVerified: true },
+    { targetExists: false, hardlinkErrorCode: 'EIO', stagingVerified: true },
+    { targetExists: false, hardlinkErrorCode: 'ENOTSUP' },
+    { targetExists: false, hardlinkErrorCode: 'ENOTSUP', stagingVerified: false },
+  ]) assert.equal(select(input).ok, false, JSON.stringify(input));
+});
+
+test('Core receipt contract rejects false atomicity and every missing success obligation', () => {
+  const { selectProjectArchiveOutputProfile: select, validateProjectArchiveOutputReceipt: validate } = require('../../src/core/minimum-interchange-v1.cjs');
+  for (const input of [{ targetExists: false }, { targetExists: true }, { targetExists: false, hardlinkErrorCode: 'ENOTSUP', stagingVerified: true }]) {
+    const selected = select(input);
+    const receipt = { outputPolicyVersion: selected.schemaVersion, outputProfile: selected.profile.profileId,
+      atomicPublication: selected.profile.atomicPublication, bufferVerified: true, stagingVerified: true,
+      namePublished: true, publicationOutcome: 'PUBLISHED', fileSynced: true, directorySynced: true,
+      writeHandleClosed: true, finalIdentityVerified: true, readbackVerified: true,
+      recoveryRequired: false, physicalPowerLossVerified: false, phase: 'VERIFIED', durabilityProfile: selected.profile.durabilityProfile };
+    assert.equal(validate(selected.profile, receipt).ok, true);
+    for (const key of Object.keys(receipt)) for (const operation of ['delete', 'mutate']) {
+      const changed = structuredClone(receipt);
+      if (operation === 'delete') delete changed[key]; else changed[key] = typeof changed[key] === 'boolean' ? !changed[key] : 'UNDECLARED';
+      assert.equal(validate(selected.profile, changed).ok, false, selected.profile.profileId + ':' + operation + ':' + key);
+    }
+    const forged = structuredClone(selected.profile); forged.atomicPublication = !forged.atomicPublication;
+    assert.equal(validate(forged, receipt).ok, false);
+  }
+});

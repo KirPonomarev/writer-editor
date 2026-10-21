@@ -12921,6 +12921,106 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
       "sha256": "0cdc86af8a4f542fc1217eb16b84530026511ec2f1ce12cfa20e15e8a6d97330"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "3d9bcfe86eb3af1abe8d82f2c6f8c35c846b452fd2304fb41781bea6e0519f5d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "103cb854945054aa8ee511d639ba4fbf27c9d678175e762ba26cc0804e99e4e3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/core/minimum-interchange-v1.cjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "143750fca1e434ad2081ce42102c512370f07323b1e18e64d1be9ef7850dd561"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main/projectArchiveOutputPublication.cjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "dd3b5141566d81a0f4df869eb0614c48b22cadd5676603a12c0cc8112fc40532"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-correctness.test.js",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "5abbb28d77790f818f2ff4795b2b61a05b4f214fbef8316c8544690500725341"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp305-minimum-interchange.test.js",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "3450f55531dfee8800c09b117cbe3a6c51f2c66f557e49f5063e2cf08681b67e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "23700f7deab348d52d8df43d2c4c73b880f31e6054a0b25351e2f1a04144e935"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "0cab671dd79129ef2f0e9ee6894181e4ecf96d8fd27ca1fec8b3cb38ddd04c49"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "634662cc71b152e4d10a05cfbf612bf76af4d30891845a0d0afaf2d904ab7732"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "f8add5c0af13eebb8d1efe471f28b95df685850af4e673413a4fcc5ce95aa5a1"
     }
   ],
   "evidenceStampIds": [

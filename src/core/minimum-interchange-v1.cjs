@@ -209,8 +209,106 @@ function validateMinimumInterchangeOwnership(ownership = MINIMUM_INTERCHANGE_OWN
   };
 }
 
+// V1 remains the strict compatibility contract. V2 names the one permitted
+// derived archive-output exception; it never changes canonical project writes
+// or the atomic export requirement of TXT, Markdown and DOCX.
+const MINIMUM_INTERCHANGE_SCHEMA_VERSION_V2 = 'yalken.minimum-interchange-ownership.v2';
+const PROJECT_ARCHIVE_OUTPUT_POLICY = deepFreeze({
+  schemaVersion: 'yalken.project-archive-output-profiles.v1',
+  scope: 'EXTERNAL_DERIVED_ARCHIVE_FILE_ONLY',
+  defaultProfileId: 'ATOMIC_HARDLINK',
+  defaultAtomicExportRequired: true,
+  profiles: [
+    { profileId: 'ATOMIC_HARDLINK', atomicPublication: true, trigger: 'ABSENT_OUTPUT',
+      exclusiveNameRequired: true, verifiedStagingRequired: true, fileSyncRequired: true,
+      parentSyncRequired: true, sameObjectReadbackRequired: true, writeHandleCloseRequired: true,
+      lateCancel: 'FINISH_BOUNDED_FINALIZATION', incompleteOutcome: 'PRESERVE_OBSERVED_FINAL',
+      durabilityProfile: 'FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK' },
+    { profileId: 'ATOMIC_REPLACE', atomicPublication: true, trigger: 'SELECTED_EXISTING_OUTPUT',
+      exclusiveNameRequired: false, verifiedStagingRequired: true, fileSyncRequired: true,
+      parentSyncRequired: true, sameObjectReadbackRequired: true, writeHandleCloseRequired: true,
+      lateCancel: 'FINISH_BOUNDED_FINALIZATION', incompleteOutcome: 'PRESERVE_OBSERVED_FINAL',
+      durabilityProfile: 'FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK' },
+    { profileId: 'EXCLUSIVE_CREATE', atomicPublication: false, trigger: 'ACTUAL_HARDLINK_ENOTSUP',
+      exclusiveNameRequired: true, verifiedStagingRequired: true, fileSyncRequired: true,
+      parentSyncRequired: true, sameObjectReadbackRequired: true, writeHandleCloseRequired: true,
+      lateCancel: 'FINISH_BOUNDED_FINALIZATION', incompleteOutcome: 'PRESERVE_FINAL_AND_VERIFIED_STAGING',
+      durabilityProfile: 'EXCLUSIVE_NAME_FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK' },
+  ],
+});
+const MINIMUM_INTERCHANGE_OWNERSHIP_V2 = deepFreeze({
+  ...MINIMUM_INTERCHANGE_OWNERSHIP_V1,
+  schemaVersion: MINIMUM_INTERCHANGE_SCHEMA_VERSION_V2,
+  formats: MINIMUM_INTERCHANGE_OWNERSHIP_V1.formats.map(format => {
+    if (format.formatId !== 'PROJECT_ARCHIVE') return format;
+    const { atomicExportRequired, ...archive } = format;
+    return { ...archive, defaultAtomicExportRequired: true, outputPolicy: PROJECT_ARCHIVE_OUTPUT_POLICY };
+  }),
+});
+const MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT = MINIMUM_INTERCHANGE_OWNERSHIP_V2;
+const policyJson = value => {
+  if (Array.isArray(value)) return '[' + value.map(policyJson).join(',') + ']';
+  if (value && typeof value === 'object') return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + policyJson(value[key])).join(',') + '}';
+  return JSON.stringify(value);
+};
+
+function validateMinimumInterchangeOwnershipV2(ownership = MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT, runtime = {}) {
+  if (!ownership || ownership.schemaVersion !== MINIMUM_INTERCHANGE_SCHEMA_VERSION_V2 || !Array.isArray(ownership.formats)) {
+    return invalid('E_MINIMUM_INTERCHANGE_SCHEMA_INVALID');
+  }
+  const archive = ownership.formats.find(format => format?.formatId === 'PROJECT_ARCHIVE');
+  if (!archive || Object.hasOwn(archive, 'atomicExportRequired') || archive.defaultAtomicExportRequired !== true
+    || policyJson(archive.outputPolicy) !== policyJson(PROJECT_ARCHIVE_OUTPUT_POLICY)) {
+    return invalid('E_MINIMUM_INTERCHANGE_ARCHIVE_OUTPUT_POLICY_INVALID');
+  }
+  if (ownership.formats.some(format => format?.formatId !== 'PROJECT_ARCHIVE'
+    && (Object.hasOwn(format || {}, 'outputPolicy') || Object.hasOwn(format || {}, 'defaultAtomicExportRequired')))) {
+    return invalid('E_MINIMUM_INTERCHANGE_FORMAT_POLICY_INVALID');
+  }
+  // Reuse all V1 command/locality/import/atomic checks, with only the explicit
+  // archive policy represented as its strict atomic default for that validator.
+  const compatible = { ...ownership, schemaVersion: MINIMUM_INTERCHANGE_SCHEMA_VERSION,
+    formats: ownership.formats.map(format => format === archive ? { ...format, atomicExportRequired: true } : format) };
+  const verdict = validateMinimumInterchangeOwnership(compatible, runtime);
+  return verdict.ok ? { ...verdict, schemaVersion: MINIMUM_INTERCHANGE_SCHEMA_VERSION_V2 } : verdict;
+}
+
+function selectProjectArchiveOutputProfile(input = {}) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)
+    || Object.keys(input).some(key => !['targetExists', 'hardlinkErrorCode', 'stagingVerified'].includes(key))
+    || typeof input.targetExists !== 'boolean'
+    || (Object.hasOwn(input, 'stagingVerified') && typeof input.stagingVerified !== 'boolean')) {
+    return invalid('E_PROJECT_ARCHIVE_OUTPUT_PROFILE_INVALID');
+  }
+  let profileId = input.targetExists ? 'ATOMIC_REPLACE' : PROJECT_ARCHIVE_OUTPUT_POLICY.defaultProfileId;
+  if (Object.hasOwn(input, 'hardlinkErrorCode')) {
+    if (input.targetExists || input.hardlinkErrorCode !== 'ENOTSUP' || input.stagingVerified !== true) {
+      return invalid('E_PROJECT_ARCHIVE_OUTPUT_PROFILE_TRIGGER_INVALID');
+    }
+    profileId = 'EXCLUSIVE_CREATE';
+  }
+  const profile = PROJECT_ARCHIVE_OUTPUT_POLICY.profiles.find(row => row.profileId === profileId);
+  return Object.freeze({ ok: true, schemaVersion: PROJECT_ARCHIVE_OUTPUT_POLICY.schemaVersion, profile });
+}
+
+function validateProjectArchiveOutputReceipt(profile, receipt) {
+  const declared = PROJECT_ARCHIVE_OUTPUT_POLICY.profiles.find(row => row.profileId === profile?.profileId);
+  if (!declared || policyJson(profile) !== policyJson(declared)) return invalid('E_PROJECT_ARCHIVE_OUTPUT_PROFILE_INVALID');
+  if (!receipt || receipt.outputPolicyVersion !== PROJECT_ARCHIVE_OUTPUT_POLICY.schemaVersion
+    || receipt.outputProfile !== declared.profileId || receipt.atomicPublication !== declared.atomicPublication
+    || receipt.phase !== 'VERIFIED' || !['PUBLISHED', 'PUBLISHED_RECONCILED'].includes(receipt.publicationOutcome)
+    || receipt.durabilityProfile !== declared.durabilityProfile
+    || ['bufferVerified', 'stagingVerified', 'namePublished', 'fileSynced', 'directorySynced', 'writeHandleClosed',
+      'finalIdentityVerified', 'readbackVerified'].some(key => receipt[key] !== true)
+    || receipt.recoveryRequired !== false || receipt.physicalPowerLossVerified !== false) {
+    return invalid('E_PROJECT_ARCHIVE_OUTPUT_CONTRACT_INVALID');
+  }
+  return Object.freeze({ ok: true, schemaVersion: PROJECT_ARCHIVE_OUTPUT_POLICY.schemaVersion,
+    profileId: declared.profileId, atomicPublication: declared.atomicPublication });
+}
+
 function bindMinimumInterchangeRuntime(runtime = {}) {
-  const verdict = validateMinimumInterchangeOwnership(MINIMUM_INTERCHANGE_OWNERSHIP_V1, runtime);
+  const verdict = validateMinimumInterchangeOwnershipV2(MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT, runtime);
   if (!verdict.ok) {
     const error = new Error(verdict.code);
     error.code = verdict.code;
@@ -224,6 +322,12 @@ module.exports = Object.freeze({
   MINIMUM_INTERCHANGE_SCHEMA_VERSION,
   MINIMUM_INTERCHANGE_FORMAT_IDS,
   MINIMUM_INTERCHANGE_OWNERSHIP_V1,
+  MINIMUM_INTERCHANGE_SCHEMA_VERSION_V2,
+  MINIMUM_INTERCHANGE_OWNERSHIP_V2,
+  MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT,
   validateMinimumInterchangeOwnership,
+  validateMinimumInterchangeOwnershipV2,
+  selectProjectArchiveOutputProfile,
+  validateProjectArchiveOutputReceipt,
   bindMinimumInterchangeRuntime,
 });

@@ -451,3 +451,79 @@ test('process kill after exclusive final partial write retains complete readable
   assert.deepEqual(partial, source.buffer.subarray(0, 13));
   assert.throws(() => archive.verifyProjectArchiveBuffer(partial), /zip_/u);
 });
+
+// Load the unchanged adapter body with a test-only Core port. No production
+// hook, caller policy parameter, cache mutation or substituted filesystem verdict.
+function publisherWithContract(contract) {
+  const Module = require('node:module'), filename = require.resolve('../../src/main/projectArchiveOutputPublication.cjs');
+  const loaded = new Module(filename, module), originalRequire = Module.createRequire(filename);
+  loaded.filename = filename; loaded.paths = Module._nodeModulePaths(path.dirname(filename));
+  loaded.require = name => name === '../core/minimum-interchange-v1.cjs' ? contract : originalRequire(name);
+  loaded._compile(require('node:fs').readFileSync(filename, 'utf8'), filename);
+  return loaded.exports.publishProjectArchiveOutput;
+}
+test('adapter consumes current Core selection before any output write effect', async t => {
+  const { root } = await fixture(t), outPath = path.join(root, 'denied-profile.zip');
+  const core = require('../../src/core/minimum-interchange-v1.cjs');
+  let selected = 0, writerOpens = 0;
+  const publish = publisherWithContract({ ...core, selectProjectArchiveOutputProfile: input => {
+    selected++; assert.deepEqual(input, { targetExists: false });
+    return { ok: false, code: 'E_PROJECT_ARCHIVE_OUTPUT_PROFILE_INVALID' };
+  } });
+  const fsPort = { ...fs, open: async (target, flags, ...args) => {
+    if (flags & (constants.O_WRONLY | constants.O_CREAT)) writerOpens++;
+    return fs.open(target, flags, ...args);
+  } };
+  await assert.rejects(publish({ outPath, buffer: Buffer.from('payload'), fsPort }), { code: 'E_PROJECT_ARCHIVE_OUTPUT_PROFILE_INVALID' });
+  assert.equal(selected, 1); assert.equal(writerOpens, 0);
+  await assert.rejects(fs.lstat(outPath), { code: 'ENOENT' });
+  assert.equal((await fs.readdir(root)).some(name => name.includes('.archive-')), false);
+});
+test('adapter must obtain Core exclusive profile after real link refusal and before final reservation', async t => {
+  const { root } = await fixture(t), outPath = path.join(root, 'exclusive-denied.zip');
+  const core = require('../../src/core/minimum-interchange-v1.cjs');
+  let refusedLink = false, exclusiveSelections = 0, finalReservations = 0;
+  const publish = publisherWithContract({ ...core, selectProjectArchiveOutputProfile: input => {
+    if (input.hardlinkErrorCode) {
+      assert.equal(refusedLink, true); assert.equal(input.hardlinkErrorCode, 'ENOTSUP');
+      assert.equal(input.stagingVerified, true); exclusiveSelections++;
+      return { ok: false, code: 'E_PROJECT_ARCHIVE_OUTPUT_PROFILE_TRIGGER_INVALID' };
+    }
+    return core.selectProjectArchiveOutputProfile(input);
+  } });
+  const fsPort = { ...fs, link: async () => { refusedLink = true; return noHardlink(); },
+    open: async (target, flags, ...args) => {
+      if (target === outPath && flags & constants.O_WRONLY) finalReservations++;
+      return fs.open(target, flags, ...args);
+    } };
+  await assert.rejects(publish({ outPath, buffer: Buffer.from('payload'), fsPort }), { code: 'E_PROJECT_ARCHIVE_OUTPUT_PROFILE_TRIGGER_INVALID' });
+  assert.equal(exclusiveSelections, 1); assert.equal(finalReservations, 0);
+  await assert.rejects(fs.lstat(outPath), { code: 'ENOENT' });
+});
+for (const profile of ['ATOMIC_HARDLINK', 'ATOMIC_REPLACE', 'EXCLUSIVE_CREATE']) test('Core receipt refusal preserves actual published ' + profile + ' output and truthful recovery', async t => {
+  const { root } = await fixture(t), outPath = path.join(root, 'receipt-refused.zip'), bytes = Buffer.from('complete exact useful output');
+  if (profile === 'ATOMIC_REPLACE') await fs.writeFile(outPath, 'previous selected output');
+  const core = require('../../src/core/minimum-interchange-v1.cjs');
+  let validated = 0, actualReceipt;
+  const publish = publisherWithContract({ ...core, validateProjectArchiveOutputReceipt: (selected, receipt) => {
+    validated++; actualReceipt = { ...receipt };
+    assert.equal(selected.profileId, profile);
+    assert.equal(receipt.readbackVerified, true); assert.equal(receipt.fileSynced, true);
+    assert.equal(receipt.directorySynced, true); assert.equal(receipt.finalIdentityVerified, true);
+    assert.equal(receipt.writeHandleClosed, true); assert.equal(receipt.stagingVerified, true);
+    const invalid = { ...receipt, atomicPublication: !receipt.atomicPublication };
+    return core.validateProjectArchiveOutputReceipt(selected, invalid);
+  } });
+  let failed;
+  await assert.rejects(publish({ outPath, buffer: bytes, fsPort: profile === 'EXCLUSIVE_CREATE' ? { ...fs, link: noHardlink } : fs }), error => {
+    failed = error.details.publication;
+    assert.equal(error.code, 'E_PROJECT_ARCHIVE_OUTPUT_CONTRACT_INVALID');
+    assert.equal(failed.namePublished, true); assert.equal(failed.readbackVerified, true);
+    assert.equal(failed.contractVerified, false); assert.equal(failed.recoveryRequired, true);
+    assert.equal(failed.recovery.stagingVerified, profile !== 'ATOMIC_REPLACE'); return true;
+  });
+  assert.equal(validated, 1); assert.equal(actualReceipt.atomicPublication, profile !== 'EXCLUSIVE_CREATE');
+  assert.deepEqual(await fs.readFile(outPath), bytes);
+  if (profile === 'ATOMIC_REPLACE') await assert.rejects(fs.lstat(failed.recovery.stagingPath), { code: 'ENOENT' });
+  else assert.deepEqual(await fs.readFile(failed.recovery.stagingPath), bytes);
+});

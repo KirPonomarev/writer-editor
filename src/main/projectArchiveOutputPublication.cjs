@@ -4,6 +4,7 @@ const { constants } = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { assertNoFollowComponents } = require('../core/io/path-capability-v1.cjs');
+const outputContract = require('../core/minimum-interchange-v1.cjs');
 const sameObject = (a, b) => a && b && a.dev === b.dev && a.ino === b.ino;
 const sameVersion = (a, b) => sameObject(a, b) && ['size','mtimeNs','ctimeNs','nlink'].every(k => a[k] === b[k]);
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -19,8 +20,16 @@ async function publishProjectArchiveOutput({ outPath, buffer, assertCurrent = as
   const bytes = Buffer.from(buffer), expectedDigest = sha(bytes);
   const state = { phase: 'ADMIT', bufferVerified: true, namePublished: false, publicationOutcome: 'NOT_STARTED',
     atomicPublication: null, outputProfile: null, recoveryRequired: false,
+    stagingVerified: false, writeHandleClosed: false, finalIdentityVerified: false, contractVerified: false,
     fileSynced: false, directorySynced: false, readbackVerified: false, physicalPowerLossVerified: false };
-  let tempPath, tempIdentity, handle, finalHandle, finalIdentity, publishedPath, parentIdentity, directory, outgoingError;
+  let tempPath, tempIdentity, handle, finalHandle, finalIdentity, publishedPath, parentIdentity, directory, outgoingError, selectedProfile;
+  const selectProfile = input => {
+    const selection = outputContract.selectProjectArchiveOutputProfile(input);
+    if (!selection?.ok) throw failure(selection?.code || 'E_PROJECT_ARCHIVE_OUTPUT_PROFILE_INVALID', state);
+    selectedProfile = selection.profile;
+    Object.assign(state, { outputPolicyVersion: selection.schemaVersion,
+      outputProfile: selectedProfile.profileId, atomicPublication: selectedProfile.atomicPublication });
+  };
   const assertParent = async () => {
     if (!directory) return;
     assertNoFollowComponents(directory);
@@ -63,6 +72,7 @@ async function publishProjectArchiveOutput({ outPath, buffer, assertCurrent = as
     publishedPath = path.join(directory, path.basename(outPath));
     const previous = await optionalStat(fsPort, publishedPath);
     if (previous && (!previous.isFile() || previous.isSymbolicLink() || previous.nlink !== 1n)) throw failure('E_PROJECT_ARCHIVE_OUTPUT_TARGET_INVALID', state);
+    selectProfile({ targetExists: Boolean(previous) });
     tempPath = path.join(directory, `.${path.basename(outPath)}.archive-${crypto.randomUUID()}.tmp`);
     await guard(); state.phase = 'TEMP_WRITE';
     handle = await fsPort.open(tempPath, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW || 0), 0o600);
@@ -70,13 +80,13 @@ async function publishProjectArchiveOutput({ outPath, buffer, assertCurrent = as
     await handle.writeFile(bytes);
     state.phase = 'FILE_SYNC'; await handle.sync(); state.fileSynced = true;
     tempIdentity = await allocatedIdentity(handle, tempPath);
-    await handle.close(); handle = null;
+    await handle.close(); handle = null; state.writeHandleClosed = true;
     state.phase = 'STAGING_READBACK'; await readExact(tempPath, tempIdentity);
+    state.stagingVerified = true;
     await guard();
     const current = await optionalStat(fsPort, publishedPath);
     if (previous ? !sameVersion(previous, current) : current !== null) throw failure('E_PROJECT_ARCHIVE_OUTPUT_TARGET_CHANGED', state);
     state.phase = 'PUBLICATION'; state.publicationOutcome = 'IN_FLIGHT';
-    state.atomicPublication = true; state.outputProfile = previous ? 'ATOMIC_REPLACE' : 'ATOMIC_HARDLINK';
     try {
       // A new file is published with atomic create-only link. Replacement is
       // reserved for the already selected existing output, never an absent one.
@@ -95,8 +105,9 @@ async function publishProjectArchiveOutput({ outPath, buffer, assertCurrent = as
             // bytes are visible while writing. It never claims atomic complete
             // publication and never replaces a late foreign destination.
             await guard();
-            state.outputProfile = 'EXCLUSIVE_CREATE'; state.atomicPublication = false;
+            selectProfile({ targetExists: false, hardlinkErrorCode: error.code, stagingVerified: state.stagingVerified });
             state.phase = 'EXCLUSIVE_CREATE_NAME';
+            state.writeHandleClosed = false;
             finalHandle = await fsPort.open(publishedPath,
               constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW || 0), 0o600);
             state.namePublished = true; state.publicationOutcome = 'PUBLISHED_UNVERIFIED';
@@ -104,7 +115,7 @@ async function publishProjectArchiveOutput({ outPath, buffer, assertCurrent = as
             state.phase = 'EXCLUSIVE_CREATE_WRITE'; await finalHandle.writeFile(bytes);
             state.phase = 'FILE_SYNC'; await finalHandle.sync(); state.fileSynced = true;
             finalIdentity = await allocatedIdentity(finalHandle, publishedPath);
-            await finalHandle.close(); finalHandle = null;
+            await finalHandle.close(); finalHandle = null; state.writeHandleClosed = true;
           }
         }
       }
@@ -132,10 +143,16 @@ async function publishProjectArchiveOutput({ outPath, buffer, assertCurrent = as
     } finally { await parent.close(); }
     state.phase = 'FINAL_READBACK'; await readExact(publishedPath, finalIdentity || tempIdentity);
     if (!sameObject(parentIdentity, await fsPort.lstat(directory, { bigint: true }))) throw failure('E_PROJECT_ARCHIVE_OUTPUT_PARENT_CHANGED', state);
-    state.readbackVerified = true; state.phase = 'VERIFIED';
+    state.readbackVerified = true; state.finalIdentityVerified = true; state.phase = 'VERIFIED';
     Object.assign(state, { lateCancel: signal?.aborted === true,
       durabilityProfile: state.outputProfile === 'EXCLUSIVE_CREATE'
         ? 'EXCLUSIVE_NAME_FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK' : 'FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK' });
+    const contractVerdict = outputContract.validateProjectArchiveOutputReceipt(selectedProfile, state);
+    if (!contractVerdict?.ok) {
+      state.contractValidationFailed = true;
+      throw failure(contractVerdict?.code || 'E_PROJECT_ARCHIVE_OUTPUT_CONTRACT_INVALID', state);
+    }
+    state.contractVerified = true;
     return { ok: true, archiveSha256: expectedDigest, bytesWritten: bytes.length, publication: state };
   } catch (error) {
     if (state.outputProfile === 'EXCLUSIVE_CREATE' && state.namePublished) state.publicationOutcome = 'PUBLISHED_UNVERIFIED';
@@ -152,7 +169,7 @@ async function publishProjectArchiveOutput({ outPath, buffer, assertCurrent = as
       try { await finalHandle.close(); state.finalHandleCloseConfirmed = true; }
       catch { state.finalHandleCloseConfirmed = false; }
     }
-    const retainRecovery = state.outputProfile === 'EXCLUSIVE_CREATE' && !state.readbackVerified
+    const retainRecovery = (state.outputProfile === 'EXCLUSIVE_CREATE' || state.contractValidationFailed === true) && !state.contractVerified
       && (state.namePublished || state.publicationOutcome === 'UNKNOWN');
     if (retainRecovery) {
       state.recoveryRequired = true;

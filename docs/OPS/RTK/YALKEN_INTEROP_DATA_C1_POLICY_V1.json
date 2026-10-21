@@ -717,7 +717,9 @@
     "test/unit/project-archive-export-handler.test.js",
     "test/unit/sector-m-s33-full-archive-import.test.js",
     "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
-    "test/unit/sector-m-s32-full-archive-export.test.js"
+    "test/unit/sector-m-s32-full-archive-export.test.js",
+    "src/core/minimum-interchange-v1.cjs",
+    "test/unit/r24-wp305-minimum-interchange.test.js"
   ],
   "protectedFiles": [
     {
@@ -1682,7 +1684,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "4404df7af5cbadcad86254f1e3f52c4d6907ab0bcce4015ec3c2c2709dbe3892"
+        "sha256": "23700f7deab348d52d8df43d2c4c73b880f31e6054a0b25351e2f1a04144e935"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -3122,7 +3124,7 @@
       },
       {
         "path": "docs/tasks/2026-10-21--mac-archive-correctness.md",
-        "sha256": "a6f8515ff2ebd6dd33ef227df82d55b1d7a48ec89fd82c58fb4d5840c583bcfc"
+        "sha256": "b9edf6fc0c10695115d2a3083a2cf60ba08d1ba037f5c08b8201aafd42634e4a"
       },
       {
         "path": "scripts/after-pack.cjs",
@@ -3154,7 +3156,7 @@
       },
       {
         "path": "src/main/projectArchiveOutputPublication.cjs",
-        "sha256": "d38fba34a42586ed68366ae914f1a16519489ab9329139d2daf16326038ea8d8"
+        "sha256": "dd3b5141566d81a0f4df869eb0614c48b22cadd5676603a12c0cc8112fc40532"
       },
       {
         "path": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
@@ -3166,7 +3168,7 @@
       },
       {
         "path": "test/unit/project-archive-correctness.test.js",
-        "sha256": "4ce68515926bfe154d868c75da949bbe34121f632493cdcd8f7978a03107da19"
+        "sha256": "5abbb28d77790f818f2ff4795b2b61a05b4f214fbef8316c8544690500725341"
       },
       {
         "path": "test/unit/project-archive-darwin-publication.test.js",
@@ -3186,11 +3188,19 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c34228676710f40bf7442a66850fde02c0a2d8263cc6f6d979a2515a7987d618"
+        "sha256": "103cb854945054aa8ee511d639ba4fbf27c9d678175e762ba26cc0804e99e4e3"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
         "sha256": "3ad56b5496e078da5964f51e1992b3f4ddbe19ea969f72cbc6988c71cb768f26"
+      },
+      {
+        "path": "src/core/minimum-interchange-v1.cjs",
+        "sha256": "143750fca1e434ad2081ce42102c512370f07323b1e18e64d1be9ef7850dd561"
+      },
+      {
+        "path": "test/unit/r24-wp305-minimum-interchange.test.js",
+        "sha256": "3450f55531dfee8800c09b117cbe3a6c51f2c66f557e49f5063e2cf08681b67e"
       }
     ],
     "followupRepair": {
