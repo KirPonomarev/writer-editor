@@ -44,11 +44,13 @@ Necessary MR-01 disposition: repairs affect already included ordinary recovery/m
 - test/unit/project-archive-export-handler.test.js
 - test/unit/sector-m-s32-full-archive-export.test.js
 - test/unit/sector-m-s33-full-archive-import.test.js
+- test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js (existing platform-effect test seam; all Pro preservation assertions retained)
 - test/unit/project-archive-correctness.test.js
 - test/unit/project-archive-darwin-publication.test.js
 - test/unit/macos-package-network-policy.test.js
 - scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs
 - test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js
+- test/contracts/rtk-evidence-stale-green-guard.contract.test.js (B2C10 now requires executed green; other classifications unchanged)
 - docs/OPS/STATUS/B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
@@ -114,3 +116,7 @@ Exact delivery amendment: clean source checkpoint5de22ba986b40163aa8b4d8d7de60ce
 Build-integration repair admission: f90cf4278e9e06695d9e21866f2071415f5d4b06 CI reproduced package security-successor drift and an unnecessary unregistered TMPDIR input. A fresh clean PRODUCT_CODE preflight admits exactly the existing renderer-build hook and relocated build-only C source. Original package.json is restored byte-exact; package-lock, security successor and every gate predicate stay unchanged. The adapter is prepared through the already present renderer build and after-pack hooks. The obsolete incomplete local npm baseline was stopped, exit1/UNKNOWN denominator, and its failures retained; it supplies no baseline PASS. Newly untracked synthetic test receipts were preserved externally; ignored authority/fencing data was retained untouched. Final mandatory checks must use the corrected candidate.
 
 Exact source-companion admission: clean4f3b11990b6c1a26ffba86c284c5c943c9cf707e OPS preflight admits the existing DATA policy, matching digest literal and append-only certificate successor. Current Main and the three factual-doc bindings change mechanically; existing source bindings, protected inputs, independent oracles, cell denominator, native pause and every checker predicate remain. All prior certificate tuples are byte-preserved. Current correction paths are explicitly admitted by exact name. No Word/provider/cell credit, new runtime authority or full-program completion is created. The obsolete4f3 local baseline was interrupted after CI identified this missing binding and supplies no PASS.
+
+Final assurance companions were admitted at clean checkpoint b47a65dcddb4b0b742cec1d6e6c49894cdb888f3 before edits. The full101-record DATA/stale-green run had100 passes and one intentional red-to-green classification refusal: the repaired B2C10 still appeared in historical red debt. It moves to the existing executed-green registry; the same complete child contract must pass, and all other classifications and verifier predicates remain unchanged. Required Linux CI also exposed S38 calling the Darwin-only publication effect. S38 test preparation follows the existing S33 distinction: actual fixed helper on Darwin, explicit test-only publication port on other CI hosts, all original Pro/Free data assertions retained. Production platform availability and release claims do not change. Inventory, DATA source bindings and append-only certificate/approval companions bind the final bytes.
+
+Read-only actual-Main follow-up independently reproduced two existing gaps in file-only v1: four authored empty directories disappear in both transfer modes, and copy drops the authored kind registry, hiding even a populated chapter and scene. The immutable synthetic source, ZIP and independent Python expectations are retained externally. A separate subsequent MR-04 correction must declare format/clone identity semantics after this delivery closes. Fresh-profile open also requires the existing explicit trust recovery; this probe did not exercise or replace that consent path. These observations do not qualify complete archive usability, native acceptance or first-Mac readiness.

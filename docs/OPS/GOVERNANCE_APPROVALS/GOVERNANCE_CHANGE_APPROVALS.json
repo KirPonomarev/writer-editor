@@ -12631,6 +12631,56 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "sha256": "620d989a2be2b1cfe737557b245f9fe513ac9a96d22d1323c1bbac04bef67d76",
       "rationale": "Same owner-requested ordinary archive/B2C10 correction. Mechanical exact current-byte DATA companion: rebind changed Main/factual docs, explicitly admit correction paths, match policy digest, append one complete approved source tuple while preserving every former tuple and every checker predicate. Original graph, Word/provider/native pause, required oracles, portability denominator, all dependency/security/signing/release boundaries unchanged. No product/cell/release acceptance is created."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "cf7f2ca29306817ae7dd05eda040834e3bd2d0ae30111761f96e24293498f6e2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "d7f07a04bc0f32d7e3cd338b0743615bd58ab5a93732c80a64c3ac3a00cef2a0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "c3f3d9a34a616a75bda556a93aef2ac16fbb99ff670335cd7dd0dc5ed3ecd704"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "aa698569573e6ce3689616dc2491ecca7437bb1c94b2cfc7665ac2789ecdf149"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "a18bac792d48e8052a5098caaf1a28beb16718c74335340c90e34a8c747257c8"
     }
   ],
   "evidenceStampIds": [

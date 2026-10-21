@@ -715,7 +715,8 @@
     "test/unit/project-archive-correctness.test.js",
     "test/unit/project-archive-darwin-publication.test.js",
     "test/unit/project-archive-export-handler.test.js",
-    "test/unit/sector-m-s33-full-archive-import.test.js"
+    "test/unit/sector-m-s33-full-archive-import.test.js",
+    "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js"
   ],
   "protectedFiles": [
     {
@@ -3028,7 +3029,7 @@
       },
       {
         "path": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
-        "sha256": "fa81634c66b7ca65238766fa434a2ac32de3de69f96ce87e2474ebf3573e73fc"
+        "sha256": "d7f07a04bc0f32d7e3cd338b0743615bd58ab5a93732c80a64c3ac3a00cef2a0"
       },
       {
         "path": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
@@ -3120,7 +3121,7 @@
       },
       {
         "path": "docs/tasks/2026-10-21--mac-archive-correctness.md",
-        "sha256": "6e71b3afd58acc2390b906a6634cbc8dfe70ebd9ab1c4bbd430682a1d0b1a7a3"
+        "sha256": "f69a134130f57bbcf28563d5024023d4fc80bf9f4f46f1b0b7638db1ee9b480a"
       },
       {
         "path": "scripts/after-pack.cjs",
@@ -3177,6 +3178,10 @@
       {
         "path": "test/unit/sector-m-s33-full-archive-import.test.js",
         "sha256": "ff8c6af77d77dffd88c2344f3a6c5924d0d350c1b1fc210250883249c716eb21"
+      },
+      {
+        "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
+        "sha256": "0fc1c7208fff32cb3dd5764b93b4b52b6f940683156987d77593100e2709f50e"
       }
     ],
     "followupRepair": {
@@ -3397,7 +3402,12 @@
       "taskId": "YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
       "bindingBaseSha": "4a9779ae8b21d269db4ed4007c8a7ad0c553304e",
       "scope": "Ordinary Project Archive and guarded-route assurance correction only. Mechanical exact current-byte binding; no Word/native/provider/cell acceptance, denominator promotion, signing, distribution or full-program completion.",
-      "predecessorPolicySha256": "1c8d407321afbe80c7559d30aece1597495e99b58a18ce21f41a5d11d3ccf320"
+      "predecessorPolicySha256": "1c8d407321afbe80c7559d30aece1597495e99b58a18ce21f41a5d11d3ccf320",
+      "finalAssuranceCompanions": {
+        "cleanCheckpointSha": "b47a65dcddb4b0b742cec1d6e6c49894cdb888f3",
+        "predecessorPolicySha256": "43a25ac29753bb5e11f6dea076d72cc650ec098c8cb6e97e4136d974be172106",
+        "scope": "S38 existing test-port preparation and repaired B2C10 executable green classification only; every original preservation assertion, child execution and checker predicate retained."
+      }
     }
   },
   "wordTextOrderBatch": {
