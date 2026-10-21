@@ -1681,7 +1681,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "fedbb8429d419bd431ee06a93c954c053226b4bc9ed090a644c5fcd59ea0b911"
+        "sha256": "2266a1c6f55ce7796b57dd4c2890701c8e937d0ebc5e345e690902a607425a06"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1705,7 +1705,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
-        "sha256": "5e804b0696624c8cacdbd557aa953f203385d232a3fdd9467c930ccf6a97577d"
+        "sha256": "fd3511f14c438c58362a7965824ada4ca351fb30b98910b179da00d9a4df423e"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
@@ -3121,7 +3121,7 @@
       },
       {
         "path": "docs/tasks/2026-10-21--mac-archive-correctness.md",
-        "sha256": "65878d88f0a8d0405cbc715430946f18a27f600f12bd2ee24fc29ce54defcd5f"
+        "sha256": "650c61744b8384087f69ea5b6cd71c6dde24ba727a132055758531f94a9b185d"
       },
       {
         "path": "scripts/after-pack.cjs",
@@ -3185,7 +3185,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "551688678a6fe46bb0763b1b8e6ab814f7c5ead9bd0bad25fc608d8146e9ea69"
+        "sha256": "02f277b04e1f2abb57d770f1a965d39df7ac36b05bb1aa5ced26008ef7ccd781"
       }
     ],
     "followupRepair": {

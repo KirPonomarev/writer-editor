@@ -12741,6 +12741,76 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
       "sha256": "44a8d6b3033f9377cc8bbefeb907c2a8f872a01cb4ccb11bc5f15b75a17f6624"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "4353b1659d733dcf0f010055b1d84d459826f1c01825179c3d1252db51e3e579"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "02f277b04e1f2abb57d770f1a965d39df7ac36b05bb1aa5ced26008ef7ccd781"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "fd3511f14c438c58362a7965824ada4ca351fb30b98910b179da00d9a4df423e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "2266a1c6f55ce7796b57dd4c2890701c8e937d0ebc5e345e690902a607425a06"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "cfdc96e5bf8ebc8045f4c3381a2106a0c05db6bcf4b3be78a71dabc241a479d6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "f4f75c06944a4bccfe75e59ab024bf4b85de91f69f662670ecd2191b21f2b0e2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "2cadeb322bf151cced84d841440811a00792f8ca50259a0a825734b3875f8465"
     }
   ],
   "evidenceStampIds": [
