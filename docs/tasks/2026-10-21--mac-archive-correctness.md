@@ -50,6 +50,7 @@ Necessary MR-01 disposition: repairs affect already included ordinary recovery/m
 - docs/OPS/STATUS/B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
 - docs/tasks/2026-10-21--mac-archive-correctness.md
 - docs/WORKLOG.md
 - docs/CONTEXT.md
@@ -102,3 +103,5 @@ Record expected/actual, fixture/seed, exact SHA, source/artifact hashes, phase a
 Candidate proof observation: complete affected20-file chain181/181, zero fail/cancel/skip/todo; independent Python archive/file oracle8/8. B3C01 has two pre-existing freshness failures on byte-identical isolated base inputs. Required full gates and normal delivery are pending. The file-only v1 empty-directory gap and explicit archive-journal reconciliation remain unqualified.
 
 Delivery preparation found that the historical primary approval registry contains superseded exact-byte entries and is intentionally not a current-byte registry. Its full history is preserved. The existing strict detector supports a changed default secondary witness; this same corrective delivery chain therefore needs one exact companion-path amendment after a clean source checkpoint and fresh preflight. This is byte-binding metadata for the current corrections, with no gate predicate, authority, release claim or independent product outcome added.
+
+Exact delivery amendment: clean source checkpoint5de22ba986b40163aa8b4d8d7de60cee383860f4; fresh OPS_GOVERNANCE architecture preflight passed before adding the default secondary witness path. This remains one corrective PR and one rollback. Existing historical primary757 and default secondary1611 entries are retained exactly, with three new current-byte witnesses; no approval evaluator or required set changes.
