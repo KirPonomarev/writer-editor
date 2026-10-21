@@ -37,8 +37,10 @@ Necessary MR-01 disposition: repairs affect already included ordinary recovery/m
 - src/main/projectArchiveDarwinPublication.cjs
 - src/platform/darwin/projectArchiveFilesystem.c
 - scripts/build-project-archive-native.cjs
+- scripts/build-renderer.mjs (existing build-time preparation only)
+- scripts/native/projectArchiveFilesystem.c (relocated build-only source)
 - scripts/after-pack.cjs
-- package.json (native build/hooks/package content only; no dependency changes)
+- package.json (restore exact original bytes; dependency/security admission preserved)
 - test/unit/project-archive-export-handler.test.js
 - test/unit/sector-m-s32-full-archive-export.test.js
 - test/unit/sector-m-s33-full-archive-import.test.js
@@ -105,3 +107,5 @@ Candidate proof observation: complete affected20-file chain181/181, zero fail/ca
 Delivery preparation found that the historical primary approval registry contains superseded exact-byte entries and is intentionally not a current-byte registry. Its full history is preserved. The existing strict detector supports a changed default secondary witness; this same corrective delivery chain therefore needs one exact companion-path amendment after a clean source checkpoint and fresh preflight. This is byte-binding metadata for the current corrections, with no gate predicate, authority, release claim or independent product outcome added.
 
 Exact delivery amendment: clean source checkpoint5de22ba986b40163aa8b4d8d7de60cee383860f4; fresh OPS_GOVERNANCE architecture preflight passed before adding the default secondary witness path. This remains one corrective PR and one rollback. Existing historical primary757 and default secondary1611 entries are retained exactly, with three new current-byte witnesses; no approval evaluator or required set changes.
+
+Build-integration repair admission: f90cf4278e9e06695d9e21866f2071415f5d4b06 CI reproduced package security-successor drift and an unnecessary unregistered TMPDIR input. A fresh clean PRODUCT_CODE preflight admits exactly the existing renderer-build hook and relocated build-only C source. Original package.json is restored byte-exact; package-lock, security successor and every gate predicate stay unchanged. The adapter is prepared through the already present renderer build and after-pack hooks. The obsolete incomplete local npm baseline was stopped, exit1/UNKNOWN denominator, and its failures retained; it supplies no baseline PASS. Newly untracked synthetic test receipts were preserved externally; ignored authority/fencing data was retained untouched. Final mandatory checks must use the corrected candidate.

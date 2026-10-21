@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
-const SOURCE = path.join(__dirname, '..', 'src', 'platform', 'darwin', 'projectArchiveFilesystem.c');
+const SOURCE = path.join(__dirname, 'native', 'projectArchiveFilesystem.c');
 function buildProjectArchiveNative({ outputPath = path.join(__dirname, '..', 'dist', 'native', 'project-archive-fs'), arch = process.arch,
   runCommand = spawnSync } = {}) {
   if (process.platform !== 'darwin') return { available: false, reason: 'DARWIN_ONLY' };
@@ -11,7 +11,7 @@ function buildProjectArchiveNative({ outputPath = path.join(__dirname, '..', 'di
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   const result = runCommand('/usr/bin/clang', ['-std=c11', '-O2', '-Wall', '-Wextra', '-Werror', '-arch', arch === 'x64' ? 'x86_64' : arch,
     '-mmacosx-version-min=12.0', SOURCE, '-o', outputPath], { encoding: 'utf8', timeout: 60000,
-    env: { PATH: '/usr/bin:/bin', TMPDIR: process.env.TMPDIR || '/private/tmp' } });
+    env: { PATH: '/usr/bin:/bin' } });
   if (result.error || result.status !== 0) throw Error('ARCHIVE_NATIVE_BUILD_FAILED: ' + (result.error?.message || result.stderr || 'compiler failure'));
   fs.chmodSync(outputPath, 0o755);
   return { available: true, arch, outputPath, sourceSha256: crypto.createHash('sha256').update(fs.readFileSync(SOURCE)).digest('hex'),

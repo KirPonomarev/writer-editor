@@ -28,10 +28,18 @@ test('macOS package transport policy stays deny-by-default for the offline app',
 });
 
 test('macOS native archive helper is excluded as source and built into the fixed packaged resource', async t => {
-  assert.ok(packageJson.build.files.includes('!src/platform/darwin/**/*.c'));
-  assert.match(packageJson.scripts['prebuild:mac'], /build-project-archive-native\.cjs/u);
-  assert.match(packageJson.scripts.prestart, /build-project-archive-native\.cjs/u);
-  assert.match(packageJson.scripts.predev, /build-project-archive-native\.cjs/u);
+  const repoRoot = path.resolve(__dirname, '..', '..');
+  for (const hook of ['prestart', 'predev', 'prebuild:mac']) {
+    assert.equal(packageJson.scripts[hook], 'npm run build:renderer');
+  }
+  assert.equal(packageJson.scripts['build:renderer'], 'node scripts/build-renderer.mjs');
+  const rendererBuild = fs.readFileSync(path.join(repoRoot, 'scripts', 'build-renderer.mjs'), 'utf8');
+  assert.match(rendererBuild, /require\('\.\/build-project-archive-native\.cjs'\)/u);
+  assert.match(rendererBuild, /buildProjectArchiveNative\(\);/u);
+  assert.ok(fs.statSync(path.join(repoRoot, 'scripts', 'native', 'projectArchiveFilesystem.c')).isFile());
+  assert.equal(fs.existsSync(path.join(repoRoot, 'src', 'platform', 'darwin', 'projectArchiveFilesystem.c')), false);
+  assert.ok(packageJson.build.files.includes('src/**/*'));
+  assert.equal(packageJson.build.files.some(pattern => !pattern.startsWith('!') && pattern.startsWith('scripts/')), false);
   const builder = require('../../scripts/build-project-archive-native.cjs');
   if (process.platform !== 'darwin') {
     assert.deepEqual(builder.buildProjectArchiveNative(), { available: false, reason: 'DARWIN_ONLY' });

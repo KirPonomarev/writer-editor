@@ -12591,6 +12591,16 @@
       "approved": true,
       "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
       "evidenceStampIds": []
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:10:19.494628+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR build-integration repair after reproduced CI failure: original package/dependency admission restored byte-exact, existing renderer build prepares fixed helper, C source remains build-only and optional TMPDIR input removed. Mechanical exhaustive inventory refresh only; historical approval tuples, full test membership and all verifier predicates preserved. No release, native UI, signing or power-loss acceptance.",
+      "sha256": "caaaff92402cd6b3837218752cadccd98810c528d16d6d745b8c34e048c5ae69"
     }
   ],
   "evidenceStampIds": [

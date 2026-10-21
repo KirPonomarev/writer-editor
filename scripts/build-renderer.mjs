@@ -18,6 +18,11 @@ if (!fsSync.existsSync(localNodeModules)) {
   throw new Error('LOCAL_NODE_MODULES_REQUIRED: run npm ci in this exact checkout');
 }
 const esbuild = require(require.resolve('esbuild', { paths: [projectRoot] }));
+const { buildProjectArchiveNative } = require('./build-project-archive-native.cjs');
+
+// The existing prestart/predev/prebuild:mac hooks all prepare runtime assets here.
+// Compilation stays in build tooling; the product only executes the fixed helper.
+buildProjectArchiveNative();
 
 await fs.mkdir(outdir, { recursive: true });
 
