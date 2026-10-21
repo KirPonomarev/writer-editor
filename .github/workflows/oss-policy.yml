@@ -191,7 +191,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: [post-audit, rtk]
+        lane: [post-audit]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -234,9 +234,6 @@ jobs:
             cd "$wp709_checkout"
             node --test test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs
           )
-      - name: Run full maintained RTK after real build
-        if: ${{ matrix.lane == 'rtk' }}
-        run: npm run test:rtk
 
   ops-vector:
     runs-on: ubuntu-latest

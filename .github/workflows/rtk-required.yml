@@ -8,7 +8,34 @@ permissions:
   contents: read
 
 jobs:
-  rtk-required:
+  rtk-graph:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --engine-strict
+
+      - name: Verify post-build lane coverage and failure gates
+        run: node --test test/contracts/r24-postbuild-lanes.contract.test.mjs
+      - name: Build the actual shipped renderer and preload artifacts
+        run: npm run build:renderer
+      - name: Require build-to-clean-tree policy
+        run: git diff --exit-code -- src/renderer/editor.bundle.js src/preload.bundle.cjs
+      - name: Run maintained RTK graph
+        run: npm run -s test:rtk
+
+  r24-gates:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -25,9 +52,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Run maintained RTK graph
-        run: npm run -s test:rtk
 
       - name: Run R2.4 E0 runner safety quarantine gate
         run: npm run -s test:r24-e0
@@ -212,3 +236,17 @@ jobs:
 
       - name: Run Atlas V6 production negative matrix
         run: npm run -s test:atlas-v6-production
+
+  rtk-required:
+    if: ${{ always() }}
+    needs: [rtk-graph, r24-gates]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require complete post-build RTK and every additional R2.4 gate
+        env:
+          RTK_GRAPH_RESULT: ${{ needs.rtk-graph.result }}
+          R24_GATES_RESULT: ${{ needs.r24-gates.result }}
+        run: |
+          test "$RTK_GRAPH_RESULT" = success
+          test "$R24_GATES_RESULT" = success

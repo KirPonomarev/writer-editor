@@ -13281,6 +13281,116 @@
       "filePath": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
       "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
       "sha256": "a1a89206abe332a2b054007c812401d4a6f098cfb95d0be374784d08357afda2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "4346029c73ad33c75884274d1f2669cff8c5ac96addd3cf01458000193d3272d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "096b08127a3616ae2ec2a874cae8c4d8c26ace11ffccda5bec079c9acbde2d6d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": ".github/workflows/oss-policy.yml",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "6c7aed71f2953007cc8634bee6445229bff9929dcefd54887cba15d14f7d348a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": ".github/workflows/rtk-required.yml",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "9608a6af83b15a39c40dfe549647a16b749bcbb7c55cd72c38c4786df3f7ed86"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/r24-postbuild-lanes.contract.test.mjs",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "3badf4561e10b76a6db50be820cf3abf3af0b8a7abb79cd2f6e114c4fb64e952"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "8844b36feaef87427b9f9e26bababed47bc375ade4e77b55b7babb8b1ac6a24c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--ci-single-rtk.md",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "ed4e59bfc6c8c9973b69e7754f3e6bb9ec471b54c0eeb297952e7ad31b7391cd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "f02adef7e017608808dc91e0ea6a38ce841a23e137eaa11be51fcbaa7d016843"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "b37bcd9029ba7b371e8ee01a44efada0ed918153d515eb44849b02c2b9e69b68"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "73c3c14f292670a2436abaecf06dea77343c9b4494994254c31e31695be5523b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T22:58:32.380540+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CI_SINGLE_RTK_20261022",
+      "authority": "DIRECT_OWNER_CI_THROUGHPUT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
+      "sha256": "b5877080d49c5fab1cd34327811d2538faabaea1674b4a3e5f4063fd0fe83650"
     }
   ],
   "evidenceStampIds": [

@@ -1,3 +1,19 @@
+# Single complete post-build RTK — 2026-10-22
+
+TASK_ID: YALKEN_CI_SINGLE_RTK_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SOURCE_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: ba463255eedb74325bad01a302d7a20a8caabee7
+CLAIM_BOUNDARY: CI routing only; no macOS release qualification
+
+One complete RTK follows the actual build; every original extra R2.4 command
+runs independently. The existing required context rejects either incomplete or
+failed prerequisite. Exact original command-body hashes and all36status pairs
+are checked. The affected whole4-file chain passes86of86, zero exclusions.
+Product/runner/catalog591inputs remain byte-exact. Old failed assertions/logs
+remain retained; official full CI, protected merge and exact merged proof are
+still required. The following context-reading change is a separate delivery.
+
 # First supported Mac scope binding — 2026-10-22
 
 TASK_ID: YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022
