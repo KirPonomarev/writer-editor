@@ -1,3 +1,7 @@
+## 2026-10-22 — Scoped factual startup candidate
+
+Retain full law reads and history; read current and task-relevant factual sections. Startup contracts pass29of29; full current CI and merged proof remain pending. No product release claim.
+
 ## 2026-10-22 — CI single RTK candidate
 
 One complete post-build RTK plus unchanged extra gates;86affected checks pass. Official CI and exact merged delivery pending; no product release claim.

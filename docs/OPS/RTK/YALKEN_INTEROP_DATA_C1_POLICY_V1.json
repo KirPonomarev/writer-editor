@@ -727,7 +727,17 @@
     "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
     "docs/tasks/2026-10-22--mac-first-release-scope.md",
     "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
-    "docs/tasks/2026-10-22--ci-single-rtk.md"
+    "docs/tasks/2026-10-22--ci-single-rtk.md",
+    "docs/AGENT_START_PROTOCOL.md",
+    "docs/PROCESS.md",
+    "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json",
+    "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_STATUS.json",
+    "scripts/agent-guardrails-lib.mjs",
+    "scripts/agent-bootstrap.mjs",
+    "docs/architecture/AGENT_CONTEXT_PACKET_V1.schema.json",
+    "test/contracts/agent-architecture-guardrails.contract.test.js",
+    "test/contracts/agent-context-restoration.contract.test.mjs",
+    "docs/tasks/2026-10-22--agent-scoped-context.md"
   ],
   "protectedFiles": [
     {
@@ -1692,7 +1702,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "f02adef7e017608808dc91e0ea6a38ce841a23e137eaa11be51fcbaa7d016843"
+        "sha256": "43802b1be2f7c3ab18845c6aa6f1b5e997462a0d51121584a8b33de90e8d6941"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2648,15 +2658,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "88655c4d4a5d41a302b4dac432f1838d3d4e30a037e8c8bac1504756f3da287c"
+        "sha256": "6971b91c96d24faab687f961ad45d8e79916a0fa5d2048af4a1feeb091b20c59"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9c436a7e06eaaf3a60040976e31e942e7d38f13977f1173cf8b47e988eb89620"
+        "sha256": "89fa829612f27e44e91b9d403f1f6f9c5763f60f96fbc153918aa235a29f7aa1"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "7a51eb939774cc08276118e90e0e4a43b83bd9da8dada224b2f6e82ba313fdcf"
+        "sha256": "12e6bcf45b994be6923e956ad63b04dc5dc0b44f1c5e8fcd7e6ee1b05e53dd22"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3196,7 +3206,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "096b08127a3616ae2ec2a874cae8c4d8c26ace11ffccda5bec079c9acbde2d6d"
+        "sha256": "c33c92b34be1fc31340981fde5f803bcb41c895577e68f490d3c68329a376955"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3241,6 +3251,50 @@
       {
         "path": "docs/tasks/2026-10-22--ci-single-rtk.md",
         "sha256": "ed4e59bfc6c8c9973b69e7754f3e6bb9ec471b54c0eeb297952e7ad31b7391cd"
+      },
+      {
+        "path": "AGENTS.md",
+        "sha256": "3b841a744e4067293d7c55f47f58d639e1e8e3201cd8c971857d84a1a67bc8f0"
+      },
+      {
+        "path": "docs/AGENT_START_PROTOCOL.md",
+        "sha256": "3a86699d6320666c84ec1316e2e51cf78f843893759ba2d1b3eb98a9c5ee1b4f"
+      },
+      {
+        "path": "docs/PROCESS.md",
+        "sha256": "0cd4601aa777296caf5c76509541f665263f29b8c61260ad494208eed461ea13"
+      },
+      {
+        "path": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json",
+        "sha256": "54bfb9d25026d4692b3ad611e809eda4f92b03ba2df9f9628624bd5691973f75"
+      },
+      {
+        "path": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_STATUS.json",
+        "sha256": "0ed3662528b9d2a5f435681208f5ad0f8e34085f2a1fa6a3ba056b7a0be43658"
+      },
+      {
+        "path": "scripts/agent-guardrails-lib.mjs",
+        "sha256": "963268c34013dfecb9a22f1b215e8ffdd2bd69a6ec74124f4adf90444a93d5a1"
+      },
+      {
+        "path": "scripts/agent-bootstrap.mjs",
+        "sha256": "fb262985be51181c9c9d1b7e20e1e78d832f76281e156f096d2814d7940b71c8"
+      },
+      {
+        "path": "docs/architecture/AGENT_CONTEXT_PACKET_V1.schema.json",
+        "sha256": "9df153859a96e92f372f4f7730d77c89e25301f7c5eacbbd67ef1d8132764e0b"
+      },
+      {
+        "path": "test/contracts/agent-architecture-guardrails.contract.test.js",
+        "sha256": "f1fc96736335b142ec80c536d7cec4a1007e4b6ba56abf1cb8a63b8e518c962f"
+      },
+      {
+        "path": "test/contracts/agent-context-restoration.contract.test.mjs",
+        "sha256": "043be16d9452ab4573a016723f5c579196780b96e7cb4924b92087ab252c0066"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--agent-scoped-context.md",
+        "sha256": "758118a58a0fc10f4b17f97bad099367967d6671ed7f0bcfc578e955581ff2ee"
       }
     ],
     "followupRepair": {

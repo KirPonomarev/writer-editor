@@ -35,6 +35,7 @@ try {
     process.stdout.write('READING_ORDER_BEGIN\n');
     packet.readingOrder.forEach((item, index) => process.stdout.write(`${index + 1}:${item}\n`));
     process.stdout.write('READING_ORDER_END\n');
+    process.stdout.write(`FACTUAL_CONTEXT_READING=${JSON.stringify(packet.factualContextReading)}\n`);
     if (packet.contextRestoration) process.stdout.write(`CONTEXT_RESTORATION=${JSON.stringify(packet.contextRestoration)}\n`);
     process.stdout.write(`NEXT_ACTION=${packet.nextAction}\n`);
   } else {

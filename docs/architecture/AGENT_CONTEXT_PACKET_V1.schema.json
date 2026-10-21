@@ -15,6 +15,7 @@
     "currentCorex",
     "architectureManifest",
     "readingOrder",
+    "factualContextReading",
     "requiredPreflight",
     "nextAction"
   ],
@@ -213,6 +214,41 @@
           }
         }
       ]
+    },
+    "factualContextReading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "paths",
+        "protocolRef",
+        "fullReadOnAmbiguity",
+        "mutationAuthority",
+        "checkpointFullReadClaimAllowed"
+      ],
+      "properties": {
+        "mode": {
+          "const": "CURRENT_AND_TASK_RELEVANT_HISTORY"
+        },
+        "paths": {
+          "const": [
+            "docs/CONTEXT.md",
+            "docs/HANDOFF.md"
+          ]
+        },
+        "protocolRef": {
+          "const": "docs/AGENT_START_PROTOCOL.md#2b-scoped-factual-history"
+        },
+        "fullReadOnAmbiguity": {
+          "const": true
+        },
+        "mutationAuthority": {
+          "const": false
+        },
+        "checkpointFullReadClaimAllowed": {
+          "const": false
+        }
+      }
     }
   },
   "$defs": {
