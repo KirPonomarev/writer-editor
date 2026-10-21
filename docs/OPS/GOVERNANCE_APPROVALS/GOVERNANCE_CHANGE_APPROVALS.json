@@ -12601,6 +12601,36 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Same corrective PR build-integration repair after reproduced CI failure: original package/dependency admission restored byte-exact, existing renderer build prepares fixed helper, C source remains build-only and optional TMPDIR input removed. Mechanical exhaustive inventory refresh only; historical approval tuples, full test membership and all verifier predicates preserved. No release, native UI, signing or power-loss acceptance.",
       "sha256": "caaaff92402cd6b3837218752cadccd98810c528d16d6d745b8c34e048c5ae69"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:22:29.985806+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "43a25ac29753bb5e11f6dea076d72cc650ec098c8cb6e97e4136d974be172106",
+      "rationale": "Same owner-requested ordinary archive/B2C10 correction. Mechanical exact current-byte DATA companion: rebind changed Main/factual docs, explicitly admit correction paths, match policy digest, append one complete approved source tuple while preserving every former tuple and every checker predicate. Original graph, Word/provider/native pause, required oracles, portability denominator, all dependency/security/signing/release boundaries unchanged. No product/cell/release acceptance is created."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:22:29.985806+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "7490889fa8b0d7e8358767e5149b487251ce6407d38b2c6b8f326392907f8645",
+      "rationale": "Same owner-requested ordinary archive/B2C10 correction. Mechanical exact current-byte DATA companion: rebind changed Main/factual docs, explicitly admit correction paths, match policy digest, append one complete approved source tuple while preserving every former tuple and every checker predicate. Original graph, Word/provider/native pause, required oracles, portability denominator, all dependency/security/signing/release boundaries unchanged. No product/cell/release acceptance is created."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:22:29.985806+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "620d989a2be2b1cfe737557b245f9fe513ac9a96d22d1323c1bbac04bef67d76",
+      "rationale": "Same owner-requested ordinary archive/B2C10 correction. Mechanical exact current-byte DATA companion: rebind changed Main/factual docs, explicitly admit correction paths, match policy digest, append one complete approved source tuple while preserving every former tuple and every checker predicate. Original graph, Word/provider/native pause, required oracles, portability denominator, all dependency/security/signing/release boundaries unchanged. No product/cell/release acceptance is created."
     }
   ],
   "evidenceStampIds": [

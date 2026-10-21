@@ -700,7 +700,22 @@
     "docs/tasks/2026-10-17--docx-theme-colors.md",
     "docs/tasks/2026-10-17--google-docx-small-manuscript.md",
     "test/contracts/rtk-docx-google-manuscript-small.contract.test.js",
-    "docs/tasks/2026-10-18--docx-million-hardening.md"
+    "docs/tasks/2026-10-18--docx-million-hardening.md",
+    "docs/tasks/2026-10-21--mac-archive-correctness.md",
+    "scripts/after-pack.cjs",
+    "scripts/build-project-archive-native.cjs",
+    "scripts/build-renderer.mjs",
+    "scripts/native/projectArchiveFilesystem.c",
+    "scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs",
+    "src/export/archive/projectArchiveExportHandler.js",
+    "src/main/projectArchiveDarwinPublication.cjs",
+    "src/main/projectArchiveOutputPublication.cjs",
+    "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+    "test/unit/macos-package-network-policy.test.js",
+    "test/unit/project-archive-correctness.test.js",
+    "test/unit/project-archive-darwin-publication.test.js",
+    "test/unit/project-archive-export-handler.test.js",
+    "test/unit/sector-m-s33-full-archive-import.test.js"
   ],
   "protectedFiles": [
     {
@@ -929,7 +944,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "67717af1995488119e2ad75c62ebad7cb6bf3a6fd04dc3a48d383cbe16167050"
+        "sha256": "1b2dcf249f042d1964ccda2504305c68cf7fae118293374bd53edac41d6d8097"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2621,15 +2636,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "88b856806a5a94f86d2927098f9499aca1de231d3c75a2b990f323fb30d12b05"
+        "sha256": "6e3a491eb3fc83b1be3f9ca334fd5d098142a337c51b0b3fb4c9d39d7320e70a"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f5d62896d1f3c2b4792dbf533330d3e2087e65c0b00a2783d1b41161c5ede666"
+        "sha256": "90a9a2213af7caec014e34e391e5a521d743ba10bcca52fbaa40413310d1dac6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "81b6e161f3effb5f047a18f14177ed05f7f656e685c1a3f7f590bfc04f228229"
+        "sha256": "eed80b54f2a76b729df2e8bd6719de3de2c87ae51c814cfb5b9544c78f30a900"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3102,6 +3117,66 @@
       {
         "path": "docs/tasks/2026-10-18--docx-million-hardening.md",
         "sha256": "ec7ad32501477be006de02f027d0d715ae2796adbd9d55fb71e9b7c03125a461"
+      },
+      {
+        "path": "docs/tasks/2026-10-21--mac-archive-correctness.md",
+        "sha256": "6e71b3afd58acc2390b906a6634cbc8dfe70ebd9ab1c4bbd430682a1d0b1a7a3"
+      },
+      {
+        "path": "scripts/after-pack.cjs",
+        "sha256": "42e68f0987abffccaa9b0bb715910de6257e72888f35cad8849541452fb32a90"
+      },
+      {
+        "path": "scripts/build-project-archive-native.cjs",
+        "sha256": "c163114ec879805ea42cfb4290c9498ac04d2911b9773757fbde6a72ef6f76a5"
+      },
+      {
+        "path": "scripts/build-renderer.mjs",
+        "sha256": "4c0e1247773b1ce58f3ecb0de194f6502cf3de294bf173deec4b8dc8e7b33205"
+      },
+      {
+        "path": "scripts/native/projectArchiveFilesystem.c",
+        "sha256": "eca0250ac0ef1f4cf5225081c71e585c51394282951c651a80751a42f85ad379"
+      },
+      {
+        "path": "scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs",
+        "sha256": "6d2f195723cf7ea906abbb8379ccedc0f0bceb7f4bf63efa99860a18bed6c0aa"
+      },
+      {
+        "path": "src/export/archive/projectArchiveExportHandler.js",
+        "sha256": "ab7144381d04b0351f85e5a9f0379f1c01f47a8cc0b41f4a09ecfb6cf23ae586"
+      },
+      {
+        "path": "src/main/projectArchiveDarwinPublication.cjs",
+        "sha256": "534521c125495aefc701c07ad3ed41bbea2fd62bb47a37ba79b3f47c2152c987"
+      },
+      {
+        "path": "src/main/projectArchiveOutputPublication.cjs",
+        "sha256": "145baf2b9335447c6fc326a37a6ff168f16a78ab763a0bbcd227b3b63f6ed21e"
+      },
+      {
+        "path": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+        "sha256": "2abc6f92b173d80b69757de6b23da95a6f44c215f6e19eec88b63da91ec4cdd5"
+      },
+      {
+        "path": "test/unit/macos-package-network-policy.test.js",
+        "sha256": "5b8ef91112aede599272bb9777ec0a42e645226ddfbb205f148fb5fb6e5c0af9"
+      },
+      {
+        "path": "test/unit/project-archive-correctness.test.js",
+        "sha256": "e0a4066e648b8110f95094347d5d595d611cd4976b19babbb08db1baba851767"
+      },
+      {
+        "path": "test/unit/project-archive-darwin-publication.test.js",
+        "sha256": "0ec4f0df97c943ff3c3c20b5fb4c3c125dd45129141825a7b503132b4d9574e9"
+      },
+      {
+        "path": "test/unit/project-archive-export-handler.test.js",
+        "sha256": "d4b51f4c3d51ea0e577a3c46f5339a41d615d11170eb7182a3b6994ec3168295"
+      },
+      {
+        "path": "test/unit/sector-m-s33-full-archive-import.test.js",
+        "sha256": "ff8c6af77d77dffd88c2344f3a6c5924d0d350c1b1fc210250883249c716eb21"
       }
     ],
     "followupRepair": {
@@ -3317,6 +3392,12 @@
           "claimDigest": "sha256:37e96e957438c07fe3bd6282dfb6317bf82556db7d618b5b79b877fdf08b8d5c"
         }
       ]
+    },
+    "macArchiveCorrectness": {
+      "taskId": "YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "bindingBaseSha": "4a9779ae8b21d269db4ed4007c8a7ad0c553304e",
+      "scope": "Ordinary Project Archive and guarded-route assurance correction only. Mechanical exact current-byte binding; no Word/native/provider/cell acceptance, denominator promotion, signing, distribution or full-program completion.",
+      "predecessorPolicySha256": "1c8d407321afbe80c7559d30aece1597495e99b58a18ce21f41a5d11d3ccf320"
     }
   },
   "wordTextOrderBatch": {

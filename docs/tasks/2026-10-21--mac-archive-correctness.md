@@ -53,6 +53,9 @@ Necessary MR-01 disposition: repairs affect already included ordinary recovery/m
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json (current source bytes only)
+- scripts/ops/rtk-interop-data-c1.mjs (matching policy digest and exact admitted paths only)
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs (one additional exact binding tuple only)
 - docs/tasks/2026-10-21--mac-archive-correctness.md
 - docs/WORKLOG.md
 - docs/CONTEXT.md
@@ -109,3 +112,5 @@ Delivery preparation found that the historical primary approval registry contain
 Exact delivery amendment: clean source checkpoint5de22ba986b40163aa8b4d8d7de60cee383860f4; fresh OPS_GOVERNANCE architecture preflight passed before adding the default secondary witness path. This remains one corrective PR and one rollback. Existing historical primary757 and default secondary1611 entries are retained exactly, with three new current-byte witnesses; no approval evaluator or required set changes.
 
 Build-integration repair admission: f90cf4278e9e06695d9e21866f2071415f5d4b06 CI reproduced package security-successor drift and an unnecessary unregistered TMPDIR input. A fresh clean PRODUCT_CODE preflight admits exactly the existing renderer-build hook and relocated build-only C source. Original package.json is restored byte-exact; package-lock, security successor and every gate predicate stay unchanged. The adapter is prepared through the already present renderer build and after-pack hooks. The obsolete incomplete local npm baseline was stopped, exit1/UNKNOWN denominator, and its failures retained; it supplies no baseline PASS. Newly untracked synthetic test receipts were preserved externally; ignored authority/fencing data was retained untouched. Final mandatory checks must use the corrected candidate.
+
+Exact source-companion admission: clean4f3b11990b6c1a26ffba86c284c5c943c9cf707e OPS preflight admits the existing DATA policy, matching digest literal and append-only certificate successor. Current Main and the three factual-doc bindings change mechanically; existing source bindings, protected inputs, independent oracles, cell denominator, native pause and every checker predicate remain. All prior certificate tuples are byte-preserved. Current correction paths are explicitly admitted by exact name. No Word/provider/cell credit, new runtime authority or full-program completion is created. The obsolete4f3 local baseline was interrupted after CI identified this missing binding and supplies no PASS.
