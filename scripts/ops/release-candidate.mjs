@@ -4,6 +4,9 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import minimumInterchange from '../../src/core/minimum-interchange-v1.cjs';
+import writerLocal from '../../src/core/writer-local-profile-v1.cjs';
+import entitlementLaw from '../../src/core/entitlement-law-v1.cjs';
 
 const MODE_RELEASE = 'release';
 const MODE_PROMOTION = 'promotion';
@@ -677,7 +680,267 @@ function printHuman(state) {
   }
 }
 
+
+// Opt-in MR01 scope query. It cannot qualify a candidate or execute a release.
+// These pins are trusted policy, not values learned from a caller-resealed cut.
+export const FIRST_MAC_RELEASE_SOURCE_PINS = Object.freeze({
+  "AGENTS.md": "cf1bb1a8f4dd265867661b239626b91aed8ec28af202e66b842914fb50c57524",
+  "CANON.md": "99398ac898104c7a392f0e84b4bb8848212e2c5a7db6ae27cbfc549c3e070e48",
+  "docs/AGENT_START_PROTOCOL.md": "b72f6e8c1b118f614679df48b37564c48e5fc5f802d6606e80b2add3f8445351",
+  "docs/BIBLE.md": "94864b5d7cbec709ca6d7e9c6a838ff9405cfbc86443a5485acd149ccc16de93",
+  "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json": "7185d649974289e8b3a0b310203b32dbd0bac96a613adf3cf26b308ff0067df5",
+  "docs/OPS/R24/OWNER_GATE_DECISIONS/ENTITLEMENT_SEMANTICS_ADR_OR_DENY_WP206_SAFE_ENTITLEMENT_BASELINE_V1.json": "d86d4edd2faf14a4ac019a3561ce468a83c333b5112ba57490211b04cd061c0e",
+  "docs/OPS/R24/OWNER_GATE_DECISIONS/LOCAL_RELEASE_PERMIT_WP307_WRITER_LOCAL_PROFILE_V1.json": "061e5adf483ecbfbfb5278cf14da04fd332fd26dfe0b3debe006eda1a8ff68c1",
+  "docs/OPS/STATUS/CANON_STATUS.json": "0c73f3d0ed99adab897b841a8471733572e6c78970371eba751e4fe2418192be",
+  "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md": "b8e99ad1c9cd37e874d3145c79be99f6f3181a9eae7078060f9e497e0896077b",
+  "docs/corex/COREX.md": "4f4582deceb92c1b796f098b9cf87eac65317513a1bdfa3429e3d9076b3e914c",
+  "docs/corex/COREX.v2.md": "ea25f66352497e58935c673d3bf3c82d828e31dcc3cdad1ca19ef1250512f0bf",
+  "package.json": "96164dc319209209c1edf12c4d1a745b3bc0fcd38a8fc2d943ac143d87338696",
+  "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs": "21d9d8c6e0e214d3142f0d0b5f7f7f9e42ad23858adacb8519aacdea7b415504",
+  "scripts/ops/r24/effective-state-compiler.mjs": "6f7d5be6ed58afea72ee32a1145381aaed552461ec0b5d62f61dbdd945fefcf3",
+  "scripts/ops/r24/package-claim-compiler-v3.mjs": "c79ee1641b5a4339eb1b8d6a76fb8f0075c9da718e2ab8b2ba22d7d89de56f0c",
+  "scripts/ops/r24/release-security-physical-pk1.mjs": "a0b84198fe20e82edfe18c628550213ae9092c4e4a8b07f953f4ddea57140030",
+  "scripts/ops/r24/writer-claim-compiler-v0.mjs": "3a2ff7e751ae5bde079684f36e05ce11236ef706b28a94170b374f48793604eb",
+  "src/core/autosave-generation-v1.cjs": "c901970cd0b6a7d865e4af1f5f305fb04873a3397da591691c5aa43af52cf752",
+  "src/core/dirty-admission-v1.cjs": "2d1928cfc3f5b6ef669c0628578113fef5b345eb4bd3485f5e720c4d26e4362b",
+  "src/core/entitlement-law-v1.cjs": "7652d20be2aacefa9e2b94797656fd02ae7e3cd104bc70c39f50ce494c8208d3",
+  "src/core/lifecycle-recovery-v1.cjs": "57cf18f554b9b478ba1509860013cb2d54d9660f15b69ea56e2da830bdac0506",
+  "src/core/minimum-interchange-v1.cjs": "143750fca1e434ad2081ce42102c512370f07323b1e18e64d1be9ef7850dd561",
+  "src/core/recovery-ledger-v1.cjs": "f6f0ab01ee768e374f07d2e830b2b4cca3b5a5a68278ca291b46229cffbb0e25",
+  "src/core/writer-local-profile-v1.cjs": "b2c95d46ea0effd725e457fba178bdb1371164ecb97e022f0c25dfb18bf86b37",
+  "src/export/archive/projectArchiveExportHandler.js": "ab7144381d04b0351f85e5a9f0379f1c01f47a8cc0b41f4a09ecfb6cf23ae586",
+  "src/export/docx/docxMinExportHandler.js": "40e9c55d7016edb2c9b91388dee62447b52aff94ae8f7a2806cc54a03038963f",
+  "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
+  "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
+  "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
+  "src/main.js": "ce214571f40df3f44e261c13fdb2a2f9545a85c9ba82667c828196d923a29857",
+  "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
+  "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
+  "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
+  "src/renderer/index.html": "2b2d08a6ec5a33b545a4963a3e10978b6662353bc87fa555943d11a37429f60f",
+  "src/shared/productCommandRegistry.cjs": "3d6fcc76788c4a5d5599e671caa3965d6fb957bde1785ef18baa47a9d8602227",
+  "src/utils/docxImportSafeCreate.js": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70",
+  "src/utils/markdownImportSafeCreate.js": "435d0054e1d250eb84e810e6cd78fed5b6d5b2bf551950db35c8df6f562b2c97",
+  "src/utils/txtImportSafeCreate.js": "1fbdc4e1e6a4d013649a0c9625febf15a2a688b1b3bbd3b48a0b277a5cd5bb37"
+});
+const FIRST_MAC_BASE = '2564946d4cb68fc59527170b6c191e6db689dbc7';
+const FIRST_MAC_PROGRAM = 'docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json';
+const FIRST_MAC_CHOICE = 'OWNER_FIRST_SUPPORTED_MAC_P27_20261021';
+const FIRST_MAC_ROOTS = ['WP-305_MINIMUM_INTERCHANGE', 'WP-709_MIXED_CHAINS', 'WP-902_ENTITLEMENT_PRODUCT', 'WP-906_RELEASE_VERDICT'];
+const FIRST_MAC_REQUIRED = ['ORDINARY_RECOVERY', 'NO_LOSS_SAVE_REOPEN', 'BACKUP_RESTORE_MIGRATION_CONFLICT', 'FULL_HISTORY_RETENTION',
+  'MINIMUM_INTERCHANGE_ALL_EIGHT', 'CURRENT_ALLOWED_DOCX_REVIEW', 'ENTITLEMENT_OFFLINE_DOWNGRADE_NO_LOSS', 'ENABLED_CAPABILITY_COMPLETENESS',
+  'NUMERICAL_WRITER_ENVELOPE', 'PACKAGE_SECURITY_CHANNEL', 'INDEPENDENT_AUDITS', 'EXACT_OWNER_RELEASE_PERMIT', 'EXACT_TERMINAL_DELIVERY'];
+const FIRST_MAC_LEDGER = [
+  ["MAC-01", "MR-01", ["docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json", "scripts/ops/r24/effective-state-compiler.mjs", "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs"], ["ENABLED_CAPABILITY_COMPLETENESS"], "Independent original graph closure and accepted scope; bind to final immutable R"],
+  ["MAC-02", "MR-02", ["src/main.js", "src/renderer/index.html", "src/core/writer-local-profile-v1.cjs"], ["NO_LOSS_SAVE_REOPEN"], "Frozen text/order/identity oracle, independent persisted reader and actual cold reopen"],
+  ["MAC-03", "MR-03", ["src/core/autosave-generation-v1.cjs", "src/core/dirty-admission-v1.cjs", "src/core/lifecycle-recovery-v1.cjs", "src/core/recovery-ledger-v1.cjs"], ["ORDINARY_RECOVERY", "BACKUP_RESTORE_MIGRATION_CONFLICT", "FULL_HISTORY_RETENTION"], "Separate before/after whole-file roster and recovery reader, new process reopen after faults"],
+  ["MAC-04", "MR-04A", ["src/utils/txtImportSafeCreate.js", "src/core/minimum-interchange-v1.cjs", "src/main.js"], ["MINIMUM_INTERCHANGE_ALL_EIGHT"], "Independent expected Unicode/text/newline policy and unchanged donor/foreign target"],
+  ["MAC-05", "MR-04B", ["src/utils/markdownImportSafeCreate.js", "src/export/markdown/v1/parseMarkdownV1.mjs", "src/export/markdown/v1/serializeMarkdownV1.mjs"], ["MINIMUM_INTERCHANGE_ALL_EIGHT"], "Independent supported IR/text and explicit loss/refusal ledger, unchanged source"],
+  ["MAC-06", "MR-04C", ["src/export/archive/projectArchiveExportHandler.js", "src/main.js"], ["MINIMUM_INTERCHANGE_ALL_EIGHT", "FULL_HISTORY_RETENTION", "ORDINARY_RECOVERY"], "Independent raw ZIP roster/bytes before identity rebind, then actual library/open/edit/save/reopen"],
+  ["MAC-07", "MR-04D", ["src/utils/docxImportSafeCreate.js", "src/main/docxImportComputePort.cjs", "src/export/docx/docxMinExportHandler.js"], ["MINIMUM_INTERCHANGE_ALL_EIGHT", "CURRENT_ALLOWED_DOCX_REVIEW"], "Independent Current/Original/comments/anchors/decision/cold reopen on exact supported fixture"],
+  ["MAC-08", "MR-05", ["src/shared/productCommandRegistry.cjs", "src/core/entitlement-law-v1.cjs", "src/core/writer-local-profile-v1.cjs"], ["ENTITLEMENT_OFFLINE_DOWNGRADE_NO_LOSS", "CURRENT_ALLOWED_DOCX_REVIEW", "ENABLED_CAPABILITY_COMPLETENESS"], "Actual dispatch stale/revoked/downgrade/offline negatives and independent author-data reader"],
+  ["MAC-09", "MR-05", ["src/renderer/index.html", "src/main.js", "src/preload.js"], ["NO_LOSS_SAVE_REOPEN", "ENABLED_CAPABILITY_COMPLETENESS"], "Included-surface keyboard/IME/accessibility/focus/error journey against preserved UI baseline"],
+  ["MAC-10", "MR-06", ["src/main.js", "src/main/docxImportComputePort.cjs", "src/main/docxImportComputeWorker.cjs", "src/export/markdown/v1/types.mjs"], ["NUMERICAL_WRITER_ENVELOPE"], "Predeclared Mac/workload/operation numeric matrix, independent measured latency/RSS/cancel results"],
+  ["MAC-11", "MR-07/MR-08", ["package.json", "src/main.js", "src/preload.js", "scripts/ops/r24/package-claim-compiler-v3.mjs", "scripts/ops/r24/release-security-physical-pk1.mjs"], ["PACKAGE_SECURITY_CHANNEL"], "Actual artifact roster/security and selected qualified install/distribution/upgrade/rollback channel"],
+  ["MAC-12", "MR-09/MR-10", ["scripts/ops/r24/effective-state-compiler.mjs", "scripts/ops/r24/writer-claim-compiler-v0.mjs", "scripts/ops/r24/package-claim-compiler-v3.mjs", "src/main.js"], ["INDEPENDENT_AUDITS", "EXACT_OWNER_RELEASE_PERMIT", "EXACT_TERMINAL_DELIVERY"], "Independent exact-R audits, authenticated exact owner permit and terminal/delivery identity readback"]
+];
+const FIRST_MAC_SCOPE_ROWS = [
+  ['S01', ['WP-900_BBR_POLICY'], 'deferred', ['ORDINARY_RECOVERY', 'FULL_HISTORY_RETENTION', 'PACKAGE_SECURITY_CHANNEL'], 'New encrypted policy deferred; shared security, retention and ordinary recovery remain required'],
+  ['S02', ['WP-901_BBR_RESTORE', 'R24-RCV-63', 'R24-RCV-64'], 'deferred', ['ORDINARY_RECOVERY', 'BACKUP_RESTORE_MIGRATION_CONFLICT'], 'Owner-key and off-host encrypted qualification deferred; ordinary restore remains required'],
+  ['S03', ['WP-902_ENTITLEMENT_PRODUCT'], 'narrowly-replaced', ['ORDINARY_RECOVERY', 'BACKUP_RESTORE_MIGRATION_CONFLICT', 'ENTITLEMENT_OFFLINE_DOWNGRADE_NO_LOSS', 'PACKAGE_SECURITY_CHANNEL'], 'Entitlement is independent of new encrypted product; replace only scoped WP901 prerequisite with ordinary recovery/security/offline/downgrade proof'],
+  ['S04', ['WP-903_BRAND_RELEASE', 'WP-904_PACKAGE_CONTENT', 'WP-905_PACKAGE_PHYSICAL', 'WP-906_RELEASE_VERDICT'], 'inherited', ['PACKAGE_SECURITY_CHANNEL', 'EXACT_OWNER_RELEASE_PERMIT', 'EXACT_TERMINAL_DELIVERY'], 'Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility'],
+  ['S05', ['R24-RCV-01D', 'WP-709_MIXED_CHAINS'], 'narrowly-replaced', ['MINIMUM_INTERCHANGE_ALL_EIGHT', 'CURRENT_ALLOWED_DOCX_REVIEW', 'ENABLED_CAPABILITY_COMPLETENESS'], 'Current-format compatibility required; wide mixed-provider part deferred separately'],
+  ['S06', ['R24-RCV-01F', 'R24-RCV-33'], 'narrowly-replaced', ['MINIMUM_INTERCHANGE_ALL_EIGHT', 'CURRENT_ALLOWED_DOCX_REVIEW', 'ENABLED_CAPABILITY_COMPLETENESS'], 'Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained'],
+  ['S07', ['R24-RCV-14'], 'inherited', ['ORDINARY_RECOVERY', 'FULL_HISTORY_RETENTION', 'BACKUP_RESTORE_MIGRATION_CONFLICT'], 'Ordinary backup/recovery required with complete supported source/history and no truncation'],
+  ['S08', ['R24-RCV-60', 'R24-RCV-61', 'R24-RCV-62', 'R24-RCV-65..70E'], 'narrowly-replaced', ['INDEPENDENT_AUDITS', 'EXACT_OWNER_RELEASE_PERMIT', 'EXACT_TERMINAL_DELIVERY'], 'Scoped acceptance retains exact audits/permit/terminal; original full70E completion and full program remain unchanged'],
+  ['S09', ['WP-305_MINIMUM_INTERCHANGE'], 'inherited', ['MINIMUM_INTERCHANGE_ALL_EIGHT', 'CURRENT_ALLOWED_DOCX_REVIEW'], 'All supported TXT/Markdown/Archive/DOCX routes protected; wide Word/Google exclusion removes none'],
+];
+const FIRST_MAC_QUALIFICATION_POLICY = { candidateBoundRequired: true, rawIndependentEvidenceRequired: true, noSchemaOnlyReadiness: true,
+  workloadApprovalRequired: true, channelQualificationRequired: true, securityQualificationRequired: true, auditsRequired: true,
+  exactOwnerPermitRequired: true, terminalIdentitiesRequired: true, unsignedFallbackAllowed: false };
+const FIRST_MAC_AUTHORITY = { programDone: false, signingAuthority: false, notarizationAuthority: false, publicationAuthority: false };
+const FIRST_MAC_CANDIDATE = { status: 'UNFROZEN', headSha: null, treeSha: null, buildId: null, artifactSha256: null };
+const FIRST_MAC_BASIS = { admissionBaseSha: FIRST_MAC_BASE, admissionBaseTree: '2cba019197dc1063e9c766fcca51906f139ebb86',
+  repository: 'https://github.com/KirPonomarev/writer-editor.git', remoteMainAtAdmission: FIRST_MAC_BASE, ownerChoiceRef: FIRST_MAC_CHOICE,
+  dnaSha256: '22234e150dd405b101eecb613378284c01a7c9d8913cffae0dc1a374caacc017',
+  planSha256: '77301a05b3055055a7f320a809b0de09e99ac684969e7ce0a04f6ea88d64d69a' };
+const FIRST_MAC_MAX_CUT = 1024 * 1024;
+const FIRST_MAC_MAX_SOURCE = 8 * 1024 * 1024;
+function macCheck(condition, code) { if (!condition) throw new Error(code); }
+function macJson(value) {
+  if (Array.isArray(value)) return value.map(macJson);
+  if (!isObjectRecord(value)) return value;
+  return Object.fromEntries(Object.keys(value).sort().map(key => [key, macJson(value[key])]));
+}
+export function canonicalFirstMacReleaseCutV1(value) { return JSON.stringify(macJson(value), null, 2) + '\n'; }
+function macEqual(a, b) { return canonicalFirstMacReleaseCutV1(a) === canonicalFirstMacReleaseCutV1(b); }
+function macKeys(value, keys, code) { macCheck(isObjectRecord(value) && macEqual(Object.keys(value).sort(), [...keys].sort()), code); }
+function macDigest(bytes) { return createHash('sha256').update(bytes).digest('hex'); }
+function macFreeze(value) { if (value && typeof value === 'object') { Object.values(value).forEach(macFreeze); Object.freeze(value); } return value; }
+function macParse(cutBytes, expectedCutSha256) {
+  macCheck(Buffer.isBuffer(cutBytes) && cutBytes.length > 0 && cutBytes.length <= FIRST_MAC_MAX_CUT, 'E_FIRST_MAC_CUT_SIZE_TYPE');
+  macCheck(typeof expectedCutSha256 === 'string' && SHA256_HEX_RE.test(expectedCutSha256)
+    && macDigest(cutBytes) === expectedCutSha256, 'E_FIRST_MAC_CUT_PIN');
+  let text, cut;
+  try { text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(cutBytes); cut = JSON.parse(text); }
+  catch { throw new Error('E_FIRST_MAC_CUT_JSON'); }
+  const pending = [[cut, 0]]; let count = 0;
+  while (pending.length) { const [v, depth] = pending.pop(); macCheck(depth <= 32 && ++count <= 20000, 'E_FIRST_MAC_CUT_COMPLEXITY');
+    if (v && typeof v === 'object') Object.values(v).forEach(child => pending.push([child, depth + 1])); }
+  macCheck(text === canonicalFirstMacReleaseCutV1(cut), 'E_FIRST_MAC_CUT_CANONICAL'); // Also rejects duplicate JSON keys and BOM.
+  macKeys(cut, ['schemaVersion', 'cutId', 'basis', 'sourceBindings', 'traceability', 'applicability', 'minimumInterchange', 'profiles',
+    'protectedRequirements', 'entitlement', 'capabilityPolicy', 'deferredCapabilities', 'qualificationPolicy', 'qualification', 'candidate', 'authority', 'nextMaterialContour'], 'E_FIRST_MAC_CUT_FIELDS');
+  macCheck(cut.schemaVersion === 'yalken.first-mac-release-cut.v1' && cut.cutId === 'FIRST_SUPPORTED_MAC_V1', 'E_FIRST_MAC_CUT_IDENTITY');
+  // Validate the complete fixed path policy before the filesystem wrapper opens any source.
+  macCheck(macEqual(cut.sourceBindings, FIRST_MAC_RELEASE_SOURCE_PINS), 'E_FIRST_MAC_SOURCE_BINDINGS');
+  return cut;
+}
+function macClosure(program) {
+  const nodes = new Map(program.nodes.map(row => [row.id, row]));
+  macCheck(program.nodes.length === 109 && nodes.size === 109
+    && program.nodes.reduce((n, row) => n + row.dependsOn.length, 0) === 171, 'E_FIRST_MAC_ORIGINAL_GRAPH');
+  const seen = new Set(), active = new Set();
+  function visit(id) { macCheck(nodes.has(id) && !active.has(id), 'E_FIRST_MAC_GRAPH_REFERENCE_CYCLE'); if (seen.has(id)) return;
+    active.add(id); for (const dependency of nodes.get(id).dependsOn) visit(dependency); active.delete(id); seen.add(id); }
+  for (const id of nodes.keys()) visit(id); // Validate the whole original graph, not a filtered completion program.
+  seen.clear(); FIRST_MAC_ROOTS.forEach(visit);
+  const nodeIds = [...seen].sort(), edges = nodeIds.flatMap(dependent => nodes.get(dependent).dependsOn.map(prerequisite => ({ dependent, prerequisite })));
+  macCheck(nodeIds.length === 68 && edges.length === 120, 'E_FIRST_MAC_CLOSURE');
+  return { nodeIds, edges };
+}
+function macEdgePolicy(edge) {
+  let index = 6;
+  if (edge.dependent === 'WP-900_BBR_POLICY') index = 0;
+  else if (edge.dependent === 'WP-901_BBR_RESTORE') index = 1;
+  else if (edge.dependent === 'WP-902_ENTITLEMENT_PRODUCT') index = 2;
+  else if (/^WP-90[3-6]_/.test(edge.dependent) || /^(PK[01]|V3)_/.test(edge.dependent)) index = 3;
+  else if (edge.dependent === 'WP-709_MIXED_CHAINS') index = 4;
+  else if (/^WP-70[0-8]_/.test(edge.dependent) || /^(W0|V2)_/.test(edge.dependent)) index = 5;
+  else if (edge.dependent === 'WP-305_MINIMUM_INTERCHANGE') index = 8;
+  const [applicabilityId, , disposition, proofObligations, reason] = FIRST_MAC_SCOPE_ROWS[index];
+  return { ...edge, applicabilityId, disposition, proofObligations, reason, ownerChoiceRef: FIRST_MAC_CHOICE };
+}
+function macRoutes() {
+  const policy = minimumInterchange.MINIMUM_INTERCHANGE_OWNERSHIP_CURRENT;
+  macCheck(policy.schemaVersion === 'yalken.minimum-interchange-ownership.v2', 'E_FIRST_MAC_CURRENT_INTERCHANGE');
+  return { schemaVersion: policy.schemaVersion, localOnly: policy.localOnly, networkRequired: policy.networkRequired,
+    archiveOutputPolicy: policy.formats.find(row => row.formatId === 'PROJECT_ARCHIVE').outputPolicy,
+    routes: policy.formats.flatMap(row => ['IMPORT', 'EXPORT'].map(direction => ({ direction: `${row.formatId}_${direction}`,
+      commandIds: row.commands.filter(command => command.role.includes(direction)).map(command => command.commandId) }))) };
+}
+function macProfiles() {
+  const runtime = writerLocal.createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
+  return { runtime, writerOps: 'WRITER_CORE', packageOps: 'PACKAGED_RELEASE_SECURITY', rolesAreDistinct: true,
+    reviewCommandExceptions: [...writerLocal.WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS] };
+}
+function macResult(valid, cutSha256, error = '', missingQualification = []) {
+  return macFreeze({ schemaVersion: 'yalken.first-mac-release-cut-verification.v1', operation: 'verify-first-mac-cut',
+    scopeValidity: valid ? 'VALID' : 'INVALID', readiness: 'NOT_READY', cutSha256, error, missingQualification,
+    candidate: { ...FIRST_MAC_CANDIDATE }, ...FIRST_MAC_AUTHORITY, qualificationPerformed: false, releaseAuthorityGranted: false });
+}
+export function verifyFirstMacReleaseCutV1({ cutBytes, expectedCutSha256, sources } = {}) {
+  let digest = '';
+  try {
+    const cut = macParse(cutBytes, expectedCutSha256); digest = expectedCutSha256;
+    macKeys(sources, Object.keys(FIRST_MAC_RELEASE_SOURCE_PINS), 'E_FIRST_MAC_SOURCES'); let total = 0;
+    for (const [source, pin] of Object.entries(FIRST_MAC_RELEASE_SOURCE_PINS)) {
+      const bytes = sources[source];
+      macCheck(Buffer.isBuffer(bytes) && bytes.length > 0 && bytes.length <= FIRST_MAC_MAX_SOURCE
+        && (total += bytes.length) <= 32 * 1024 * 1024 && macDigest(bytes) === pin, 'E_FIRST_MAC_SOURCE_DRIFT:' + source);
+    }
+    macCheck(macEqual(cut.basis, FIRST_MAC_BASIS), 'E_FIRST_MAC_BASIS');
+    const graph = macClosure(JSON.parse(sources[FIRST_MAC_PROGRAM].toString('utf8')));
+    macCheck(macEqual(cut.traceability, { originalNodeCount: 109, originalEdgeCount: 171, roots: FIRST_MAC_ROOTS,
+      nodeIds: graph.nodeIds, edges: graph.edges.map(macEdgePolicy),
+      inheritedEvidencePolicy: 'ORIGINAL_REQUIRED_EVIDENCE_CONTRACTS_REMAIN_REQUIRED_FOR_INCLUDED_OBLIGATIONS' }), 'E_FIRST_MAC_TRACEABILITY');
+    macCheck(macEqual(cut.applicability, FIRST_MAC_SCOPE_ROWS.map(([id, subjects, disposition, proofObligations, reason]) =>
+      ({ id, subjects, disposition, proofObligations, reason, ownerChoiceRef: FIRST_MAC_CHOICE }))), 'E_FIRST_MAC_APPLICABILITY');
+    macCheck(macEqual(cut.minimumInterchange, macRoutes()), 'E_FIRST_MAC_INTERCHANGE');
+    macCheck(macEqual(cut.profiles, macProfiles()), 'E_FIRST_MAC_PROFILES');
+    macCheck(macEqual(cut.protectedRequirements, FIRST_MAC_REQUIRED), 'E_FIRST_MAC_REQUIREMENTS');
+    const law = entitlementLaw.ENTITLEMENT_AUTHORITY_MODE;
+    macCheck(law.mode === 'SAFE_DENY' && law.ownerDecision === 'DENIED' && law.entitlementDependentBehaviorEnabled === false
+      && macEqual(law.enabledTiers, ['free']) && macEqual(law.disabledTiers, ['pro']), 'E_FIRST_MAC_CURRENT_ENTITLEMENT');
+    macCheck(macEqual(cut.entitlement, { policyId: 'FREE_SAFE_DENY_PRO_DISABLED', offlineRequired: true,
+      downgradeNoLossRequired: true, pricingAuthority: false }), 'E_FIRST_MAC_ENTITLEMENT');
+    macCheck(cut.capabilityPolicy === 'ALL_ENABLED_AND_ADVERTISED_INCLUDING_PERSISTED_AUTHOR_DATA', 'E_FIRST_MAC_CAPABILITY_POLICY');
+    macCheck(macEqual(cut.deferredCapabilities, { newEncryptedProduct: { enabled: false, qualification: 'DEFERRED_POST_RELEASE' },
+      wideAllProviderFullBookRepeatedRoundtrip: 'DEFERRED_FULL_PROFILE_ONLY', newAtlasWsePulse: 'DEFERRED', newPlatformsEcosystem: 'DEFERRED' }), 'E_FIRST_MAC_DEFERRED_CAPABILITIES');
+    macCheck(macEqual(cut.qualificationPolicy, FIRST_MAC_QUALIFICATION_POLICY), 'E_FIRST_MAC_QUALIFICATION_POLICY');
+    macCheck(macEqual(cut.candidate, FIRST_MAC_CANDIDATE), 'E_FIRST_MAC_CANDIDATE_UNFROZEN');
+    macCheck(macEqual(cut.authority, FIRST_MAC_AUTHORITY), 'E_FIRST_MAC_AUTHORITY');
+    macCheck(cut.nextMaterialContour === 'MR-06', 'E_FIRST_MAC_NEXT_CONTOUR');
+    macCheck(Array.isArray(cut.qualification) && cut.qualification.length === 12, 'E_FIRST_MAC_LEDGER');
+    const missing = FIRST_MAC_LEDGER.map(([id, workItem, currentSources, proofObligations, independentOracle], index) => {
+      const row = cut.qualification[index];
+      macKeys(row, ['id', 'workItem', 'currentSources', 'proofObligations', 'independentOracle', 'owner', 'status', 'historicalProof', 'missingCurrentProof'], 'E_FIRST_MAC_LEDGER_FIELDS');
+      macCheck(row.id === id && row.workItem === workItem && macEqual(row.currentSources, currentSources)
+        && macEqual(row.proofObligations, proofObligations) && row.independentOracle === independentOracle
+        && row.owner === 'OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE' && row.status === 'UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING'
+        && typeof row.missingCurrentProof === 'string' && row.missingCurrentProof.trim().length >= 20, 'E_FIRST_MAC_LEDGER:' + id);
+      macKeys(row.historicalProof, ['classification', 'reference', 'currentCandidateAcceptance'], 'E_FIRST_MAC_HISTORY_FIELDS');
+      macCheck(row.historicalProof.classification === 'HISTORICAL_ONLY_NOT_CURRENT' && row.historicalProof.currentCandidateAcceptance === false
+        && typeof row.historicalProof.reference === 'string' && row.historicalProof.reference.length >= 10, 'E_FIRST_MAC_HISTORY:' + id);
+      return { id, workItem, proofObligations: [...proofObligations], status: row.status, missingCurrentProof: row.missingCurrentProof };
+    });
+    return macResult(true, digest, '', missing);
+  } catch (error) { return macResult(false, digest, error instanceof Error ? error.message : 'E_FIRST_MAC_INVALID'); }
+}
+function macFileVersion(stat) { return [stat.dev, stat.ino, stat.size, stat.mtimeNs, stat.ctimeNs].map(String).join(':'); }
+function macParents(filePath) {
+  const result = []; let current = path.dirname(filePath);
+  for (;;) { const stat = fs.lstatSync(current, { bigint: true }); macCheck(stat.isDirectory() && !stat.isSymbolicLink(), 'E_FIRST_MAC_PARENT_TYPE');
+    result.push([current, String(stat.dev) + ':' + String(stat.ino)]); if (current === path.dirname(current)) return result; current = path.dirname(current); }
+}
+function macReadFile(filePath, maxBytes) {
+  const parents = macParents(filePath), named = fs.lstatSync(filePath, { bigint: true });
+  macCheck(named.isFile() && !named.isSymbolicLink() && named.size > 0 && named.size <= BigInt(maxBytes), 'E_FIRST_MAC_FILE_SIZE_TYPE');
+  const fd = fs.openSync(filePath, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK);
+  try {
+    const before = fs.fstatSync(fd, { bigint: true }); macCheck(before.isFile() && macFileVersion(before) === macFileVersion(named), 'E_FIRST_MAC_FILE_IDENTITY');
+    const bytes = Buffer.alloc(Number(before.size) + 1); let offset = 0;
+    while (offset < bytes.length) { const n = fs.readSync(fd, bytes, offset, bytes.length - offset, null); if (!n) break; offset += n; }
+    macCheck(offset === Number(before.size) && macFileVersion(fs.fstatSync(fd, { bigint: true })) === macFileVersion(before)
+      && macFileVersion(fs.lstatSync(filePath, { bigint: true })) === macFileVersion(before)
+      && macEqual(macParents(filePath), parents), 'E_FIRST_MAC_FILE_CHANGED');
+    return { bytes: Buffer.from(bytes.subarray(0, offset)), version: macFileVersion(before), parents };
+  } finally { fs.closeSync(fd); }
+}
+export function readFirstMacReleaseCutV1({ repoRoot, cutPath, expectedCutSha256 } = {}) {
+  try {
+    macCheck(typeof repoRoot === 'string' && path.isAbsolute(repoRoot) && typeof cutPath === 'string' && path.isAbsolute(cutPath)
+      && repoRoot === path.resolve(repoRoot) && cutPath === path.resolve(cutPath), 'E_FIRST_MAC_INPUT_PATH');
+    const capturedCut = macReadFile(cutPath, FIRST_MAC_MAX_CUT); macParse(capturedCut.bytes, expectedCutSha256);
+    const sources = {}, captured = [];
+    for (const source of Object.keys(FIRST_MAC_RELEASE_SOURCE_PINS)) { const filePath = path.join(repoRoot, source);
+      const read = macReadFile(filePath, FIRST_MAC_MAX_SOURCE); sources[source] = read.bytes; captured.push([filePath, read]); }
+    // A final whole-input fence prevents a mixed read when a trusted source changes during capture.
+    for (const [filePath, read] of [[cutPath, capturedCut], ...captured]) macCheck(
+      macFileVersion(fs.lstatSync(filePath, { bigint: true })) === read.version && macEqual(macParents(filePath), read.parents), 'E_FIRST_MAC_SOURCE_CAPTURE_STALE');
+    return verifyFirstMacReleaseCutV1({ cutBytes: capturedCut.bytes, expectedCutSha256, sources });
+  } catch (error) { return macResult(false, '', error instanceof Error ? error.message : 'E_FIRST_MAC_READ'); }
+}
+function runFirstMacCli(argv) {
+  let state;
+  try {
+    const options = {}; const accepted = new Map([['--cut', 'cutPath'], ['--cut-sha256', 'expectedCutSha256'], ['--repo-root', 'repoRoot']]);
+    const seen = new Set();
+    for (let i = 0; i < argv.length; i += 1) { const flag = argv[i]; macCheck(!seen.has(flag), 'E_FIRST_MAC_CLI_DUPLICATE'); seen.add(flag);
+      if (flag === '--verify-first-mac-cut' || flag === '--json') continue;
+      macCheck(accepted.has(flag) && typeof argv[i + 1] === 'string' && !argv[i + 1].startsWith('--'), 'E_FIRST_MAC_CLI_USAGE');
+      options[accepted.get(flag)] = argv[++i]; }
+    macCheck(seen.has('--verify-first-mac-cut') && options.cutPath && options.expectedCutSha256, 'E_FIRST_MAC_CLI_USAGE');
+    options.repoRoot = path.resolve(options.repoRoot || process.cwd()); options.cutPath = path.resolve(options.cutPath);
+    state = readFirstMacReleaseCutV1(options);
+  } catch (error) { state = macResult(false, '', error instanceof Error ? error.message : 'E_FIRST_MAC_CLI_USAGE'); }
+  process.stdout.write(JSON.stringify(state, null, 2) + '\n');
+  process.exitCode = state.scopeValidity === 'VALID' ? 0 : 1;
+}
+
 function main() {
+  if (process.argv.slice(2).some(arg => arg.startsWith('--verify-first-mac-cut') || arg === '--cut' || arg === '--cut-sha256')) {
+    runFirstMacCli(process.argv.slice(2)); return;
+  }
   const args = parseArgs(process.argv.slice(2));
   const mode = normalizeMode(args.mode);
   const repoRoot = resolveRepoRoot(args.repoRoot);

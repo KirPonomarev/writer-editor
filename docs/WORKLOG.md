@@ -1,3 +1,35 @@
+# Worklog — 2026-10-22 — first supported Mac scope binding
+
+TASK_ID: YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SCOPE_BINDING_NOT_RELEASE_QUALIFICATION
+BINDING_BASE_SHA: 2564946d4cb68fc59527170b6c191e6db689dbc7
+CLAIM_BOUNDARY: Current MR01 implementation; no first Mac release or full-program acceptance
+
+The preceding five-findings corrective chain is fully delivered by PR2137 at
+this binding base. All19exact-candidate CI jobs succeeded. Fresh actual merged
+verification completed16commands:59interchange,225affected,116OPS and172E0cases
+passed without failure/cancel/skip/todo;40actual mutants were killed. Separate
+Python readers matched8archive and9APFS/exFAT output observations. No native app
+was launched at the merge SHA; retained actual native proof remains labelled e612.
+
+MR01 adds only an opt-in scope query to the existing release-candidate gate.
+The original109-node171-edge program, full effective-state policy and terminal
+contracts stay intact. All120raw traceability edges have explicit applicability;
+ordinary recovery,8minimum-interchange directions,14allowed DOCX review commands,
+entitlement/offline/downgrade, resource/channel/security/audit/permit duties stay
+required. Scope validity never supplies actual artifact qualification or public
+authority. Workload bounds remain unaccepted; archive empty-directory/COPY
+usability, remaining Writer journeys and install/signing remain open.
+
+The owner resumed full synthetic native testing in this task; historical pause
+statements do not override that direct reply. This OPS stage launches no app.
+New evidence uses the dated2026-10-22mac-first-release-scope T777 report folder.
+Task:2026-10-22--mac-first-release-scope.md. Required current checks/delivery and
+exact merged verification remain pending; next material stage isMR06measurement.
+
+## Historical observations retained without claim promotion
+
 # Mac archive corrective delivery — required TXT assurance amendment
 
 TASK_ID: YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021

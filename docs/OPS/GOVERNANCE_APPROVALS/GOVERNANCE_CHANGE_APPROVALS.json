@@ -13101,6 +13101,186 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
       "sha256": "479d23f971413104f401586e0c696264b15ef358ffdf8a20cebf4cbb10694d1f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "05d57adb7645ddd7aeba533c4f3bf92da47cb264b93814727d2b3b9ebcc5241f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "a50c071a47b7b2213c79e22ede5bd0a85973b1356cb28e1a82bc09932bf94369"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "e1f39fdcc4cc2f5df40cfbf285bfc1af3cbc96a77779ef1a76a03bcf73642c7d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "6478b108bf315a7cf71994efd156407bc4ca4c57d623e1754f0fc09d756f60fa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "bb1df2fe4243261f4bc8115ac829f17e1577deb174aa526a7333510c9a25adc6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--mac-first-release-scope.md",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "8672a5a275629994b931bb82ce0a54a55944088cb6b8bed32ffe2e4a488ad628"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "7466482fd5df6197cb9eaa5a25d1d7bd03a74e2f4fd0ed0793c4129ded4a32f2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "86ae0864ff4579f94dc0d67a5f2cd3a6e26ab0d71c41e1e71afff1d6e4b36c56"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "e06f15b40814a555aa7ddcd823ab0b54f56c3ee3e906d6d55bcb0bab17c3f86b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:48:59.594594+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Admitted MR01 opt-in read-only existing-gate scope binding and exact normal companions under direct owner first-supported-Mac task. Preserve original graph109nodes171edges/full effective-state semantics, every120traceability edge, ordinary recovery/all8minimum-interchange directions and14review exceptions. Scope validity is separate from current NOT_READY, no release/signing/notarization/public permit or programDone promotion. Keep all historical tuples/predicates/approval history and inventory membership/skip policy exact. Current718admitted570pins223bindingsplus1guard; every224corruption remains required.",
+      "sha256": "a6a609000b77c4f0f5d21697b2f1d1aa544228a279d873069ef70ce35c1d7bd0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "bf116bd1e21451ad61e45458496a4ec2e1d428f1eca64d9388316139ac5197f8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "fcb2a703599c60dd8635eae344e6724c363dee7617c130a6b86cb961c56d8f6b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--mac-first-release-scope.md",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "1eaf0f8a0f999bbef4bc534c5110b644ae41af4e15602b45c854be22014a99bc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "c93e1c96cf3e0a86b3e9cfb0b5db54446143c221f13b8df24b210f107f9e88b0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "8179a365cb661908b5221eeb6c381225730e429ccdec143a674011287371bfe3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "92727b53fc668088760f96e89ab180434587be37d10f609e60e1e494fd32bec9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "345c3e4be0e0ac506aa61dee3c20bc72f849380612c49779d656f6a84104948c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T21:59:19.377061+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_SCOPE_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
+      "rationale": "Same unmerged MR01 delivery: repair pre-existing historical RCV00B fixture to coherent immutable f6 candidate blobs, without production verifier or historical evidence changes. All7test bodies and all old negative checks preserved. Append-only719admitted571pins224bindingsplus1guard; every225individual corruption check remains. Preserve scope gate NOT_READY and all original program/dependency/profile/release-authority boundaries.",
+      "sha256": "a1a89206abe332a2b054007c812401d4a6f098cfb95d0be374784d08357afda2"
     }
   ],
   "evidenceStampIds": [
