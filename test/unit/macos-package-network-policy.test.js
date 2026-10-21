@@ -27,6 +27,31 @@ test('macOS package transport policy stays deny-by-default for the offline app',
   }
 });
 
+test('macOS native archive helper is excluded as source and built into the fixed packaged resource', async t => {
+  assert.ok(packageJson.build.files.includes('!src/platform/darwin/**/*.c'));
+  assert.match(packageJson.scripts['prebuild:mac'], /build-project-archive-native\.cjs/u);
+  assert.match(packageJson.scripts.prestart, /build-project-archive-native\.cjs/u);
+  assert.match(packageJson.scripts.predev, /build-project-archive-native\.cjs/u);
+  const builder = require('../../scripts/build-project-archive-native.cjs');
+  if (process.platform !== 'darwin') {
+    assert.deepEqual(builder.buildProjectArchiveNative(), { available: false, reason: 'DARWIN_ONLY' });
+    return;
+  }
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'archive-package-helper-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const plist = path.join(root, 'Yalken.app', 'Contents', 'Info.plist');
+  fs.mkdirSync(path.dirname(plist), { recursive: true });
+  fs.writeFileSync(plist, '<?xml version="1.0"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>NSAppTransportSecurity</key><dict><key>NSAllowsArbitraryLoads</key><true/><key>NSAllowsLocalNetworking</key><true/></dict></dict></plist>');
+  await afterPack({ electronPlatformName: 'darwin', arch: process.arch === 'arm64' ? 3 : 1,
+    appOutDir: root, packager: { appInfo: { productFilename: 'Yalken' } } });
+  const binary = path.join(root, 'Yalken.app', 'Contents', 'Resources', 'yalken-native', 'project-archive-fs');
+  assert.ok(fs.statSync(binary).isFile());
+  assert.ok(fs.statSync(binary).mode & 0o111);
+  const result = require('node:child_process').spawnSync(binary, [], { encoding: 'utf8' });
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).phase, 'INPUT');
+});
+
 test('macOS package hook restores ATS denial after electron-builder packaging', (t) => {
   const appOutDir = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-after-pack-'));
   t.after(() => fs.rmSync(appOutDir, { recursive: true, force: true }));

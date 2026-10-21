@@ -90,6 +90,7 @@ test('project archive verifier detects corrupted entry payload', async (t) => {
 
 test('project archive export writes verified archive atomically and rejects renderer authority', async (t) => {
   const { projectRoot } = await writeFixtureProject(t);
+  const outPath = path.join(path.dirname(projectRoot), 'project.yalken.zip');
   const calls = {
     targetChecks: 0,
     writtenPath: '',
@@ -101,7 +102,7 @@ test('project archive export writes verified archive atomically and rejects rend
     {
       confirmed: true,
       requestId: 'archive-test',
-      outPath: '/tmp/project.yalken.zip',
+      outPath,
       createdAtUtc: '2026-07-19T00:00:00.000Z',
     },
     {
@@ -128,17 +129,19 @@ test('project archive export writes verified archive atomically and rejects rend
       },
       validateProjectArchiveExportTarget(outPath, source) {
         calls.targetChecks += 1;
-        assert.equal(outPath, '/tmp/project.yalken.zip');
+        assert.equal(outPath, path.join(path.dirname(projectRoot), 'project.yalken.zip'));
         assert.equal(source.projectRoot, projectRoot);
         return { ok: true, outPath };
       },
       queueDiskOperation(operation, label) {
-        assert.equal(label, 'export project archive');
+        assert.ok(['capture project archive', 'export project archive'].includes(label));
         return operation();
       },
-      writeBufferAtomic(outPath, buffer) {
+      async publishProjectArchiveOutput(request) {
+        const { outPath, buffer } = request;
         calls.writtenPath = outPath;
         calls.writtenBuffer = buffer;
+        return require('../../src/main/projectArchiveOutputPublication.cjs').publishProjectArchiveOutput(request);
       },
       updateStatus(status) {
         calls.status = status;
@@ -152,7 +155,7 @@ test('project archive export writes verified archive atomically and rejects rend
   assert.equal(result.sourceProjectMutated, false);
   assert.equal(result.archiveManifest.schemaVersion, ARCHIVE_SCHEMA_VERSION);
   assert.equal(calls.targetChecks, 2);
-  assert.equal(calls.writtenPath, '/tmp/project.yalken.zip');
+  assert.equal(calls.writtenPath, outPath);
   assert.equal(calls.status, 'Архив проекта экспортирован');
   assert.equal(verifyProjectArchiveBuffer(calls.writtenBuffer).ok, true);
 

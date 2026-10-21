@@ -5,9 +5,9 @@
   "main": "src/main.js",
   "type": "commonjs",
   "scripts": {
-    "prestart": "npm run build:renderer",
+    "prestart": "npm run build:renderer && node scripts/build-project-archive-native.cjs",
     "start": "electron .",
-    "predev": "npm run build:renderer",
+    "predev": "npm run build:renderer && node scripts/build-project-archive-native.cjs",
     "dev": "node -e \"const { existsSync } = require('node:fs'); const { execSync, spawnSync } = require('node:child_process'); if (!existsSync('dist/renderer/editor.bundle.js')) { execSync('node scripts/build-renderer.mjs',{stdio:'inherit'}); } const electron = require('electron'); const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE; const result = spawnSync(electron, ['.', '--dev'], { stdio: 'inherit', env }); if (result.error) { console.error(result.error); process.exit(1); } const status = typeof result.status === 'number' ? result.status : 1; process.exit(status);\"",
     "build:renderer": "node scripts/build-renderer.mjs",
     "build:renderer:watch": "node scripts/build-renderer.mjs --watch",
@@ -75,7 +75,7 @@
     "brain:refs": "node scripts/brain.mjs refs",
     "icons:mac": "bash scripts/make-mac-icon.sh",
     "build": "electron-builder",
-    "prebuild:mac": "npm run build:renderer",
+    "prebuild:mac": "npm run build:renderer && node scripts/build-project-archive-native.cjs",
     "build:mac": "electron-builder --mac",
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
@@ -175,6 +175,7 @@
       "SECURITY.md",
       "src/**/*",
       "!src/**/*.ts",
+      "!src/platform/darwin/**/*.c",
       "!src/contracts/**/*"
     ],
     "appId": "com.kirpon.writereditor",
