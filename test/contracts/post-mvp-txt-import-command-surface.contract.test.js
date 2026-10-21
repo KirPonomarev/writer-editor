@@ -48,6 +48,7 @@ test('post-mvp TXT import command surface: project command registry and capabili
   const binding = readJson('docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json');
   const docsMatrix = readJson('docs/OPS/CAPABILITIES_MATRIX.json');
   const visibilityMatrix = readJson('docs/OPS/STATUS/COMMAND_VISIBILITY_MATRIX.json');
+  const menuConfig = readJson('src/menu/menu-config.v2.json');
   const capabilityPolicy = await loadCapabilityPolicy();
 
   for (const marker of [
@@ -86,5 +87,27 @@ test('post-mvp TXT import command surface: project command registry and capabili
   assert.equal(webMatrix.disabledCommands.includes('cmd.project.txt.previewLocalFile'), true);
   assert.equal(webMatrix.disabledCommands.includes('cmd.project.txt.importSafeCreate'), true);
   assert.equal(mobileMatrix.disabledCommands.includes('cmd.project.importTxtV1'), true);
-  assert.equal(visibilityMatrix.minimalProfileHiddenAllowlist.includes('cmd.project.importTxtV1'), true);
+  assert.equal(mobileMatrix.disabledCommands.includes('cmd.project.txt.previewLocalFile'), true);
+  assert.equal(mobileMatrix.disabledCommands.includes('cmd.project.txt.importSafeCreate'), true);
+
+  for (const capabilityId of [
+    'cap.project.import.txtV1',
+    'cap.project.txt.previewLocalFile',
+    'cap.project.txt.importSafeCreate',
+  ]) {
+    assert.equal(capabilityPolicy.CAPABILITY_MATRIX.node[capabilityId], true, `node: ${capabilityId}`);
+    assert.equal(capabilityPolicy.CAPABILITY_MATRIX.web[capabilityId], false, `web: ${capabilityId}`);
+    assert.equal(capabilityPolicy.CAPABILITY_MATRIX['mobile-wrapper'][capabilityId], false, `mobile: ${capabilityId}`);
+  }
+
+  const fileMenu = menuConfig.menus.find((item) => item && item.id === 'file');
+  assert.ok(fileMenu, 'file menu missing');
+  const txtImportEntries = fileMenu.items.filter((item) => item && item.command === 'cmd.project.importTxtV1');
+  assert.equal(txtImportEntries.length, 1);
+  assert.equal(txtImportEntries[0].id, 'file-import-txt-content');
+  assert.equal(txtImportEntries[0].labelKey, 'menu.file.importTxtContent');
+  assert.deepEqual(txtImportEntries[0].mode, ['offline']);
+  assert.deepEqual(txtImportEntries[0].profile, ['minimal', 'pro', 'guru']);
+  assert.equal(visibilityMatrix.coreSafetyCommandAllowlist.includes('cmd.project.importTxtV1'), true);
+  assert.equal(visibilityMatrix.minimalProfileHiddenAllowlist.includes('cmd.project.importTxtV1'), false);
 });

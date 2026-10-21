@@ -14,6 +14,7 @@ const {
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const PROJECT_MANIFEST_FILENAME = 'project.craftsman.json';
+let nativePrepared = false;
 
 function assertPathless(value, forbiddenRoot) {
   const text = JSON.stringify(value);
@@ -84,6 +85,12 @@ async function loadMainWithElectronStub(paths) {
 }
 
 async function createHarness(t, prefix = 's38-roundtrip-') {
+  // Test/build preparation only. Darwin exercises the production helper;
+  // other CI hosts cover preservation through an explicit test effect port.
+  if (process.platform === 'darwin' && !nativePrepared) {
+    require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative();
+    nativePrepared = true;
+  }
   const tempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), prefix));
   t.after(async () => fsPromises.rm(tempRoot, { recursive: true, force: true }));
   const documentsParent = path.join(tempRoot, 'Documents');
@@ -96,6 +103,15 @@ async function createHarness(t, prefix = 's38-roundtrip-') {
     documentsParent,
     userDataRoot,
   });
+  if (process.platform !== 'darwin') {
+    const importArchive = main.handleImportProjectArchive;
+    main.handleImportProjectArchive = (payload, options = {}) => importArchive(payload, { ...options,
+      publishArchiveDirectory: options.publishArchiveDirectory || (async ({ tempRoot, targetRoot, assertCurrent }) => {
+        await assertCurrent();
+        await fsPromises.rename(tempRoot, targetRoot);
+        return { namePublished: true, directorySynced: false, publicationOutcome: 'TEST_PORT_ONLY' };
+      }) });
+  }
   const originalGetDocumentsPath = fileManager.getDocumentsPath;
   fileManager.getDocumentsPath = () => documentsRoot;
   t.after(() => { fileManager.getDocumentsPath = originalGetDocumentsPath; });

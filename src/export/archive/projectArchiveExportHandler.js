@@ -2,7 +2,9 @@
 
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
+const { constants: fsConstants } = require('node:fs');
 const path = require('node:path');
+const { assertNoFollowComponents } = require('../../core/io/path-capability-v1.cjs');
 
 const ARCHIVE_SCHEMA_VERSION = 'yalken-project-archive.v1';
 const ARCHIVE_MANIFEST_PATH = 'yalken-archive-manifest.v1.json';
@@ -13,6 +15,7 @@ const ZIP_CENTRAL_DIRECTORY_SIGNATURE = 0x02014b50;
 const ZIP_LOCAL_FILE_SIGNATURE = 0x04034b50;
 
 let crc32Table = null;
+const sealedSources = new WeakMap();
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -74,11 +77,17 @@ function normalizeArchivePath(rawPath) {
   if (typeof rawPath !== 'string' || !rawPath.trim()) {
     throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid');
   }
-  const normalized = rawPath.split(path.sep).join('/').replace(/^\/+/u, '');
-  const parts = normalized.split('/').filter(Boolean);
+  // Validate external spelling before normalization can erase ambiguity.
+  if (rawPath.includes('\\') || /[\u0000-\u001f\u007f]/u.test(rawPath)
+    || rawPath.startsWith('/') || /^[a-zA-Z]:/u.test(rawPath) || rawPath.trim() !== rawPath
+    || rawPath.startsWith(PROJECT_ARCHIVE_ROOT + '/') && rawPath.slice(PROJECT_ARCHIVE_ROOT.length + 1).trim() !== rawPath.slice(PROJECT_ARCHIVE_ROOT.length + 1)) {
+    throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid');
+  }
+  const normalized = rawPath;
+  const parts = normalized.split('/');
   if (
     parts.length === 0
-    || parts.some((part) => part === '.' || part === '..' || part.includes('\0'))
+    || parts.some((part) => !part || part === '.' || part === '..')
     || path.posix.isAbsolute(normalized)
   ) {
     throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid', { archivePath: rawPath });
@@ -86,63 +95,107 @@ function normalizeArchivePath(rawPath) {
   return parts.join('/');
 }
 
+function archivePathRegistry() {
+  const spellings = new Map();
+  return raw => {
+    const name = normalizeArchivePath(raw);
+    const parts = name.split('/');
+    for (let i = 1; i <= parts.length; i += 1) {
+      const prefix = parts.slice(0, i).join('/');
+      const key = prefix.normalize('NFC').toLowerCase();
+      const previous = spellings.get(key);
+      if (previous && previous.spelling !== prefix) throw createArchiveError('E_PROJECT_ARCHIVE_PATH_COLLISION', 'archive_path_collision');
+      if (previous?.file && i === parts.length) throw createArchiveError('E_PROJECT_ARCHIVE_DUPLICATE_ENTRY', 'archive_duplicate_entry');
+      if (previous?.file || (i === parts.length && previous?.children)) throw createArchiveError('E_PROJECT_ARCHIVE_PATH_CONFLICT', 'archive_path_conflict');
+      spellings.set(key, { spelling: prefix, file: i === parts.length, children: i < parts.length || previous?.children === true });
+    }
+    return name;
+  };
+}
+
 function compareArchiveEntries(left, right) {
   return left.archivePath.localeCompare(right.archivePath, 'en');
 }
 
 async function collectProjectArchiveSourceEntries(projectRootRaw) {
-  const projectRoot = path.resolve(String(projectRootRaw || ''));
+  if (typeof projectRootRaw !== 'string' || !projectRootRaw.trim() || !path.isAbsolute(projectRootRaw)) {
+    throw createArchiveError('E_PROJECT_ARCHIVE_ROOT_INVALID', 'project_archive_root_invalid');
+  }
+  const requestedRoot = path.resolve(String(projectRootRaw || ''));
+  const projectRoot = await fs.realpath(requestedRoot);
   if (!projectRoot || projectRoot === path.parse(projectRoot).root) {
     throw createArchiveError('E_PROJECT_ARCHIVE_ROOT_INVALID', 'project_archive_root_invalid');
   }
-  const rootStat = await fs.lstat(projectRoot).catch((error) => {
+  const rootStat = await fs.lstat(requestedRoot).catch((error) => {
     throw createArchiveError('E_PROJECT_ARCHIVE_ROOT_UNREADABLE', 'project_archive_root_unreadable', {
       nestedCode: typeof error?.code === 'string' ? error.code : '',
     });
   });
-  if (!rootStat.isDirectory()) {
+  if (!rootStat.isDirectory() || rootStat.isSymbolicLink()) {
     throw createArchiveError('E_PROJECT_ARCHIVE_ROOT_INVALID', 'project_archive_root_invalid');
   }
 
-  const files = [];
-  async function visit(directoryPath, relativeParts = []) {
-    const dirents = await fs.readdir(directoryPath, { withFileTypes: true }).catch((error) => {
-      throw createArchiveError('E_PROJECT_ARCHIVE_READ_FAILED', 'project_archive_read_failed', {
-        nestedCode: typeof error?.code === 'string' ? error.code : '',
+  assertNoFollowComponents(projectRoot);
+  const identity = stat => ['dev', 'ino', 'mode', 'nlink', 'size', 'mtimeNs', 'ctimeNs'].map(key => String(stat[key])).join(':');
+  const stale = () => createArchiveError('E_PROJECT_ARCHIVE_SOURCE_CHANGED', 'project_archive_source_changed');
+  async function roster() {
+    const rows = [];
+    async function visit(directoryPath, relativeParts = []) {
+      const directoryStat = await fs.lstat(directoryPath, { bigint: true });
+      if (!directoryStat.isDirectory() || directoryStat.isSymbolicLink()) throw stale();
+      rows.push({ relativePath: relativeParts.join('/'), type: 'directory', identity: identity(directoryStat) });
+      const dirents = await fs.readdir(directoryPath, { withFileTypes: true }).catch((error) => {
+        throw createArchiveError('E_PROJECT_ARCHIVE_READ_FAILED', 'project_archive_read_failed', {
+          nestedCode: typeof error?.code === 'string' ? error.code : '',
+        });
       });
-    });
-    for (const dirent of dirents) {
-      if (dirent.name === '.' || dirent.name === '..' || dirent.name.includes('\0')) {
-        throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid');
-      }
-      const childPath = path.join(directoryPath, dirent.name);
-      const relative = [...relativeParts, dirent.name];
-      const relativePath = normalizeArchivePath(relative.join('/'));
-      const archivePath = normalizeArchivePath(`${PROJECT_ARCHIVE_ROOT}/${relativePath}`);
-      const stat = await fs.lstat(childPath);
-      if (stat.isSymbolicLink()) {
-        throw createArchiveError('E_PROJECT_ARCHIVE_SYMLINK_DENIED', 'project_archive_symlink_denied', {
-          archivePath,
-        });
-      }
-      if (stat.isDirectory()) {
-        await visit(childPath, relative);
-      } else if (stat.isFile()) {
-        const buffer = await fs.readFile(childPath);
-        files.push({
-          archivePath,
-          relativePath,
-          size: buffer.length,
-          sha256: sha256Buffer(buffer),
-          buffer,
-        });
+      for (const dirent of dirents.sort((a, b) => a.name.localeCompare(b.name, 'en'))) {
+        if (dirent.name === '.' || dirent.name === '..' || dirent.name.includes('\0')) {
+          throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid');
+        }
+        const childPath = path.join(directoryPath, dirent.name);
+        const relative = [...relativeParts, dirent.name];
+        const relativePath = normalizeArchivePath(relative.join('/'));
+        const archivePath = normalizeArchivePath(`${PROJECT_ARCHIVE_ROOT}/${relativePath}`);
+        const stat = await fs.lstat(childPath, { bigint: true });
+        if (stat.isSymbolicLink()) {
+          throw createArchiveError('E_PROJECT_ARCHIVE_SYMLINK_DENIED', 'project_archive_symlink_denied', { archivePath });
+        }
+        if (stat.isDirectory()) {
+          await visit(childPath, relative);
+        } else if (stat.isFile()) {
+          if (stat.nlink !== 1n || stat.size > 0xffffffffn) throw createArchiveError('E_PROJECT_ARCHIVE_SOURCE_UNSUPPORTED', 'project_archive_source_unsupported');
+          rows.push({ archivePath, relativePath, type: 'file', identity: identity(stat) });
+        } else throw createArchiveError('E_PROJECT_ARCHIVE_SOURCE_UNSUPPORTED', 'project_archive_source_unsupported');
       }
     }
+    await visit(projectRoot);
+    return rows;
   }
-
-  await visit(projectRoot);
+  // Finish the WHOLE initial roster before reading any content. Per-file
+  // stat/read/stat alone cannot establish a common capture interval.
+  const before = await roster(), files = [];
+  const registerPath = archivePathRegistry();
+  for (const entry of before.filter(row => row.type === 'file')) {
+    registerPath(entry.archivePath);
+    const childPath = path.join(projectRoot, entry.relativePath);
+    assertNoFollowComponents(childPath);
+    const handle = await fs.open(childPath, fsConstants.O_RDONLY | (fsConstants.O_NOFOLLOW || 0) | (fsConstants.O_NONBLOCK || 0));
+    try {
+      if (identity(await handle.stat({ bigint: true })) !== entry.identity) throw stale();
+      const buffer = await handle.readFile();
+      if (identity(await handle.stat({ bigint: true })) !== entry.identity
+        || identity(await fs.lstat(childPath, { bigint: true })) !== entry.identity) throw stale();
+      files.push({ archivePath: entry.archivePath, relativePath: entry.relativePath,
+        size: buffer.length, sha256: sha256Buffer(buffer), buffer });
+    } finally { await handle.close(); }
+  }
+  if (JSON.stringify(before) !== JSON.stringify(await roster()) || await fs.realpath(requestedRoot) !== projectRoot) throw stale();
   files.sort(compareArchiveEntries);
-  return { projectRoot, files };
+  const exposed = files.map(({ buffer, ...metadata }) => Object.freeze({ ...metadata, get buffer() { return Buffer.from(buffer); } }));
+  const snapshot = Object.freeze({ projectRoot, files: Object.freeze(exposed) });
+  sealedSources.set(snapshot, { projectRoot, files });
+  return snapshot;
 }
 
 function readManifestFile(files) {
@@ -291,6 +344,7 @@ function readZipStoredEntries(buffer) {
   }
 
   const entries = new Map();
+  const registerPath = archivePathRegistry();
   let cursor = centralOffset;
   for (let index = 0; index < count; index += 1) {
     if (cursor + 46 > buffer.length || buffer.readUInt32LE(cursor) !== ZIP_CENTRAL_DIRECTORY_SIGNATURE) {
@@ -304,8 +358,13 @@ function readZipStoredEntries(buffer) {
     const extraLength = buffer.readUInt16LE(cursor + 30);
     const commentLength = buffer.readUInt16LE(cursor + 32);
     const localOffset = buffer.readUInt32LE(cursor + 42);
-    const name = buffer.subarray(cursor + 46, cursor + 46 + nameLength).toString('utf8');
-    const archivePath = normalizeArchivePath(name);
+    if (cursor + 46 + nameLength + extraLength + commentLength > centralOffset + centralSize) {
+      throw createArchiveError('E_PROJECT_ARCHIVE_ZIP_CORRUPT', 'zip_central_entry_invalid');
+    }
+    let name;
+    try { name = new TextDecoder('utf-8', { fatal: true }).decode(buffer.subarray(cursor + 46, cursor + 46 + nameLength)); }
+    catch { throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid'); }
+    const archivePath = registerPath(name);
     if (method !== 0 || compressedSize !== uncompressedSize) {
       throw createArchiveError('E_PROJECT_ARCHIVE_ZIP_UNSUPPORTED', 'zip_entry_method_unsupported', {
         archivePath,
@@ -316,6 +375,10 @@ function readZipStoredEntries(buffer) {
     }
     const localNameLength = buffer.readUInt16LE(localOffset + 26);
     const localExtraLength = buffer.readUInt16LE(localOffset + 28);
+    if (!buffer.subarray(localOffset + 30, localOffset + 30 + localNameLength)
+      .equals(buffer.subarray(cursor + 46, cursor + 46 + nameLength))) {
+      throw createArchiveError('E_PROJECT_ARCHIVE_ZIP_CORRUPT', 'zip_local_name_mismatch');
+    }
     const dataOffset = localOffset + 30 + localNameLength + localExtraLength;
     const dataEnd = dataOffset + compressedSize;
     if (dataEnd > buffer.length) {
@@ -327,6 +390,9 @@ function readZipStoredEntries(buffer) {
     }
     entries.set(archivePath, Buffer.from(data));
     cursor += 46 + nameLength + extraLength + commentLength;
+  }
+  if (cursor !== centralOffset + centralSize) {
+    throw createArchiveError('E_PROJECT_ARCHIVE_ZIP_CORRUPT', 'zip_central_count_mismatch');
   }
   return entries;
 }
@@ -381,8 +447,9 @@ function readProjectArchivePayload(buffer) {
     throw createArchiveError('E_PROJECT_ARCHIVE_SCHEMA_UNSUPPORTED', 'archive_schema_unsupported');
   }
   const declaredEntries = Array.isArray(archiveManifest.entries) ? archiveManifest.entries : [];
+  const registerDeclared = archivePathRegistry();
   const projectEntries = declaredEntries.map((declared) => {
-    const archivePath = normalizeArchivePath(declared?.archivePath || '');
+    const archivePath = registerDeclared(declared?.archivePath || '');
     const relativePath = normalizeArchivePath(declared?.relativePath || '');
     if (archivePath !== normalizeArchivePath(`${PROJECT_ARCHIVE_ROOT}/${relativePath}`)) {
       throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid', { archivePath });
@@ -422,7 +489,12 @@ function readProjectArchivePayload(buffer) {
 }
 
 async function buildProjectArchiveBuffer(projectRoot, options = {}) {
-  const source = await collectProjectArchiveSourceEntries(projectRoot);
+  return buildProjectArchiveFromSnapshot(await collectProjectArchiveSourceEntries(projectRoot), options);
+}
+
+function buildProjectArchiveFromSnapshot(snapshot, options = {}) {
+  const source = sealedSources.get(snapshot);
+  if (!source) throw createArchiveError('E_PROJECT_ARCHIVE_SNAPSHOT_REQUIRED', 'project_archive_owned_snapshot_required');
   const projectManifest = readManifestFile(source.files);
   const archiveManifest = buildArchiveManifest(source.files, projectManifest, options);
   const archiveManifestBuffer = Buffer.from(`${JSON.stringify(archiveManifest, null, 2)}\n`, 'utf8');
@@ -525,7 +597,10 @@ async function runProjectArchiveExport(payloadRaw = {}, deps = {}) {
   }
 
   try {
-    const archive = await buildProjectArchiveBuffer(source.projectRoot, {
+    const snapshot = typeof deps.captureProjectArchiveSource === 'function'
+      ? await deps.captureProjectArchiveSource(source)
+      : await deps.queueDiskOperation(() => collectProjectArchiveSourceEntries(source.projectRoot), 'capture project archive');
+    const archive = buildProjectArchiveFromSnapshot(snapshot, {
       createdAtUtc: payload.createdAtUtc,
     });
     const writeOperation = async () => {
@@ -537,17 +612,19 @@ async function runProjectArchiveExport(payloadRaw = {}, deps = {}) {
           isPlainObject(secondTargetCheck?.details) ? secondTargetCheck.details : {},
         );
       }
-      await deps.writeBufferAtomic(secondTargetCheck.outPath, archive.buffer);
-      return true;
+      if (typeof source.assertPublication === 'function') await source.assertPublication();
+      const publish = deps.publishProjectArchiveOutput || require('../../main/projectArchiveOutputPublication.cjs').publishProjectArchiveOutput;
+      return publish({ outPath: secondTargetCheck.outPath, buffer: archive.buffer,
+        assertCurrent: source.assertPublication, signal: deps.signal });
     };
-    await deps.queueDiskOperation(writeOperation, 'export project archive');
+    const output = await deps.queueDiskOperation(writeOperation, 'export project archive');
     if (typeof deps.updateStatus === 'function') deps.updateStatus('Архив проекта экспортирован');
     return {
       ok: true,
       exported: true,
       outPath: targetCheck.outPath,
       bytesWritten: archive.buffer.length,
-      archiveSha256: archive.verification.archiveSha256,
+      archiveSha256: output.archiveSha256,
       archiveManifest: {
         schemaVersion: archive.manifest.schemaVersion,
         archiveKind: archive.manifest.archiveKind,
@@ -557,7 +634,8 @@ async function runProjectArchiveExport(payloadRaw = {}, deps = {}) {
         entryCount: archive.manifest.entries.length,
       },
       sourceProjectMutated: false,
-      verified: true,
+      verified: output.publication?.readbackVerified === true,
+      publication: output.publication,
     };
   } catch (error) {
     return makeTypedError(
@@ -575,6 +653,7 @@ module.exports = {
   ARCHIVE_MANIFEST_PATH,
   ARCHIVE_SCHEMA_VERSION,
   buildProjectArchiveBuffer,
+  buildProjectArchiveFromSnapshot,
   buildZipArchive,
   collectProjectArchiveSourceEntries,
   crc32,

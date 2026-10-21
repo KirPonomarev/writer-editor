@@ -13,6 +13,7 @@ const {
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const PROJECT_MANIFEST_FILENAME = 'project.craftsman.json';
+let nativePrepared = false;
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
@@ -83,6 +84,13 @@ async function loadMainWithElectronStub(paths) {
 }
 
 async function createHarness(t) {
+  // Test/build preparation only; the product never invokes a compiler. Darwin
+  // uses the exact production helper. Other CI hosts cover generic import
+  // semantics with a test port and do not claim directory qualification.
+  if (process.platform === 'darwin' && !nativePrepared) {
+    require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative();
+    nativePrepared = true;
+  }
   const tempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'project-archive-s33-'));
   t.after(async () => fsPromises.rm(tempRoot, { recursive: true, force: true }));
   const documentsParent = path.join(tempRoot, 'Documents');
@@ -95,6 +103,15 @@ async function createHarness(t) {
     documentsParent,
     userDataRoot,
   });
+  if (process.platform !== 'darwin') {
+    const importArchive = main.handleImportProjectArchive;
+    main.handleImportProjectArchive = (payload, options = {}) => importArchive(payload, { ...options,
+      publishArchiveDirectory: options.publishArchiveDirectory || (async ({ tempRoot, targetRoot, assertCurrent }) => {
+        await assertCurrent();
+        await fsPromises.rename(tempRoot, targetRoot);
+        return { namePublished: true, directorySynced: false, publicationOutcome: 'TEST_PORT_ONLY' };
+      }) });
+  }
   const originalGetDocumentsPath = fileManager.getDocumentsPath;
   fileManager.getDocumentsPath = () => documentsRoot;
   t.after(() => { fileManager.getDocumentsPath = originalGetDocumentsPath; });
@@ -327,4 +344,85 @@ test('S33 full archive import: corrupt and future-incompatible archives fail bef
   assert.equal(futureResult.ok, false);
   assert.equal(futureResult.error.reason, 'archive_schema_unsupported');
   assert.equal(fs.existsSync(path.join(harness.documentsRoot, 'Future Project')), false);
+});
+
+for (const kind of ['empty', 'nonempty']) test('S33 actual Main preserves a late foreign ' + kind + ' target directory', async t => {
+  const harness = await createHarness(t), input = await writeArchiveFile(t, { projectId: 'race-' + kind });
+  let paths, foreign;
+  const result = await harness.main.handleImportProjectArchive({ confirmed: true, requestId: 'race-' + kind,
+    archivePath: input.archivePath, mode: 'restore' }, {
+    afterExtractBeforeFinalMove: async selected => {
+      paths = selected; await fsPromises.mkdir(paths.targetRoot);
+      if (kind === 'nonempty') await fsPromises.writeFile(path.join(paths.targetRoot, 'foreign.txt'), 'foreign');
+      foreign = await fsPromises.lstat(paths.targetRoot, { bigint: true });
+    },
+    // Generic CI tests Main refusal/ownership semantics. Darwin deliberately
+    // uses the production adapter and actual compiled RENAME_EXCL helper.
+    ...(process.platform === 'darwin' ? {} : { publishArchiveDirectory: async () => {
+      throw Object.assign(Error('target exists'), { code: 'E_PROJECT_ARCHIVE_IMPORT_TARGET_EXISTS' });
+    } }),
+  });
+  assert.equal(result.ok, false);
+  assert.equal((await fsPromises.lstat(paths.targetRoot, { bigint: true })).ino, foreign.ino);
+  if (kind === 'nonempty') assert.equal(await fsPromises.readFile(path.join(paths.targetRoot, 'foreign.txt'), 'utf8'), 'foreign');
+  const library = await harness.main.handleWorkspaceProjectLibraryQuery({});
+  assert.equal(library.entries.some(entry => entry.projectId === input.manifest.projectId), false);
+});
+test('S33 cleanup preserves an unexpected foreign member inside staging', async t => {
+  const harness = await createHarness(t), input = await writeArchiveFile(t); let paths, foreign;
+  const result = await harness.main.handleImportProjectArchive({ confirmed: true, requestId: 'foreign-staging', archivePath: input.archivePath, mode: 'restore' }, {
+    afterExtractBeforeFinalMove: async selected => {
+      paths = selected; await fsPromises.writeFile(path.join(paths.tempRoot, 'foreign.txt'), 'foreign', { flag: 'wx' });
+      foreign = await fsPromises.lstat(path.join(paths.tempRoot, 'foreign.txt'), { bigint: true });
+    },
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.error.details.cleanup, 'STAGING_OWNERSHIP_UNCONFIRMED');
+  assert.equal((await fsPromises.lstat(path.join(paths.tempRoot, 'foreign.txt'), { bigint: true })).ino, foreign.ino);
+  assert.equal(await fsPromises.readFile(path.join(paths.tempRoot, 'foreign.txt'), 'utf8'), 'foreign');
+  await assert.rejects(fsPromises.lstat(paths.targetRoot), { code: 'ENOENT' });
+});
+test('S33 failed library registration retains published root and blocks unsafe retry cleanup', async t => {
+  const harness = await createHarness(t), input = await writeArchiveFile(t); let paths;
+  const manager = require('../../src/utils/fileManager');
+  const original = manager.writeFileAtomic;
+  let injected = false;
+  manager.writeFileAtomic = async (target, ...args) => {
+    if (String(target).includes('project-library-index')) { injected = true; return { success: false, error: 'injected registration failure' }; }
+    return original(target, ...args);
+  };
+  let result;
+  try {
+    result = await harness.main.handleImportProjectArchive({ confirmed: true, requestId: 'registration-fault', archivePath: input.archivePath, mode: 'restore' }, {
+      afterExtractBeforeFinalMove: async selected => { paths = selected; },
+    });
+  } finally { manager.writeFileAtomic = original; }
+  assert.equal(injected, true);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.reason, 'PROJECT_ARCHIVE_IMPORT_REGISTRATION_UNCONFIRMED');
+  assert.equal(result.error.details.publication.namePublished, true);
+  const before = await fsPromises.lstat(paths.targetRoot, { bigint: true });
+  const retry = await harness.main.handleImportProjectArchive({ confirmed: true, requestId: 'registration-retry', archivePath: input.archivePath, mode: 'restore' });
+  assert.equal(retry.ok, false);
+  assert.equal(retry.error.reason, 'PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED');
+  assert.equal((await fsPromises.lstat(paths.targetRoot, { bigint: true })).ino, before.ino);
+  assert.equal(await fsPromises.readFile(path.join(paths.targetRoot, 'roman', 'Imported', '01 Start.txt'), 'utf8'), 'scene text');
+});
+test('S33 a lost directory-publication return preserves the final and requires reconciliation', async t => {
+  const harness = await createHarness(t), input = await writeArchiveFile(t); let selected;
+  const publish = process.platform === 'darwin'
+    ? require('../../src/main/projectArchiveDarwinPublication.cjs').createProjectArchiveDarwinPublisher()
+    : async request => { await request.assertCurrent(); await fsPromises.rename(request.tempRoot, request.targetRoot); };
+  const result = await harness.main.handleImportProjectArchive({ confirmed: true, requestId: 'lost-publish-return', archivePath: input.archivePath, mode: 'restore' }, {
+    afterExtractBeforeFinalMove: async paths => { selected = paths; },
+    publishArchiveDirectory: async request => { await publish(request); throw Error('injected lost publication return'); },
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.error.details.publication.namePublished, true);
+  assert.equal(result.error.details.publication.publicationOutcome, 'PUBLISHED_UNVERIFIED');
+  const before = await fsPromises.lstat(selected.targetRoot, { bigint: true });
+  const retry = await harness.main.handleImportProjectArchive({ confirmed: true, requestId: 'lost-return-retry', archivePath: input.archivePath, mode: 'restore' });
+  assert.equal(retry.error.reason, 'PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED');
+  assert.equal((await fsPromises.lstat(selected.targetRoot, { bigint: true })).ino, before.ino);
+  assert.equal(await fsPromises.readFile(path.join(selected.targetRoot, 'notes.json'), 'utf8'), '{"notes":[{"id":"n1"}]}\n');
 });

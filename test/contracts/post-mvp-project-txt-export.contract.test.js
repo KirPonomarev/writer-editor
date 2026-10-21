@@ -20,8 +20,10 @@ function readJson(filePath) {
 function sliceBetween(source, startNeedle, endNeedle) {
   const start = source.indexOf(startNeedle);
   assert.notEqual(start, -1, `start marker not found: ${startNeedle}`);
+  assert.equal(source.lastIndexOf(startNeedle), start, `ambiguous start marker: ${startNeedle}`);
   const end = source.indexOf(endNeedle, start);
   assert.notEqual(end, -1, `end marker not found: ${endNeedle}`);
+  assert.equal(source.lastIndexOf(endNeedle), end, `ambiguous end marker: ${endNeedle}`);
   return source.slice(start, end);
 }
 
@@ -51,7 +53,7 @@ test('post-mvp project TXT export: main menu path stays direct and main-owned un
   const menuHandlerSource = sliceBetween(
     source,
     '[EXPORT_ALL_SCENES_TXT_COMMAND_ID]: async (payload = {}) => {',
-    "  'cmd.project.edit.undo': () => {",
+    '  [EXPORT_PDF_COMMAND_ID]: async (payload = {}) => {',
   );
 
   assert.match(source, /PROJECT_EXPORT_ALL_SCENES_TXT_V1:\s*EXPORT_ALL_SCENES_TXT_COMMAND_ID/u);
@@ -73,7 +75,7 @@ test('post-mvp project TXT export: handler reuses canonical scene traversal and 
   const normalizeSource = sliceBetween(
     source,
     'function normalizeAllScenesTxtExportPayload(payload = {}) {',
-    'function buildMarkdownExportDefaultPath(payload) {',
+    'function normalizePdfExportPayload(payload = {}) {',
   );
   const handlerSource = sliceBetween(
     source,

@@ -12561,6 +12561,546 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "evidenceStampIds": []
+    },
+    {
+      "filePath": "scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs",
+      "sha256": "6d2f195723cf7ea906abbb8379ccedc0f0bceb7f4bf63efa99860a18bed6c0aa",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "approvedAtUtc": "2026-10-21T15:57:47.647062+00:00",
+      "rationale": "Exact-byte secondary witness for the same owner-requested five DNA corrections. Actual guarded registration is behaviorally exercised with ordered mandatory guards and substantive negative mutations; inventory mechanically includes new tests without exclusions. Full historical registry tuples, detector predicates and required CI are preserved. No signing, release, native UI or power-loss authority created.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+      "sha256": "2abc6f92b173d80b69757de6b23da95a6f44c215f6e19eec88b63da91ec4cdd5",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "approvedAtUtc": "2026-10-21T15:57:47.647062+00:00",
+      "rationale": "Exact-byte secondary witness for the same owner-requested five DNA corrections. Actual guarded registration is behaviorally exercised with ordered mandatory guards and substantive negative mutations; inventory mechanically includes new tests without exclusions. Full historical registry tuples, detector predicates and required CI are preserved. No signing, release, native UI or power-loss authority created.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "7a0b6766f50b7b9a82179a99501efc4f3ad7277a7db640d15622b168dfcc339d",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "approvedAtUtc": "2026-10-21T15:57:47.647062+00:00",
+      "rationale": "Exact-byte secondary witness for the same owner-requested five DNA corrections. Actual guarded registration is behaviorally exercised with ordered mandatory guards and substantive negative mutations; inventory mechanically includes new tests without exclusions. Full historical registry tuples, detector predicates and required CI are preserved. No signing, release, native UI or power-loss authority created.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:10:19.494628+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR build-integration repair after reproduced CI failure: original package/dependency admission restored byte-exact, existing renderer build prepares fixed helper, C source remains build-only and optional TMPDIR input removed. Mechanical exhaustive inventory refresh only; historical approval tuples, full test membership and all verifier predicates preserved. No release, native UI, signing or power-loss acceptance.",
+      "sha256": "caaaff92402cd6b3837218752cadccd98810c528d16d6d745b8c34e048c5ae69"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:22:29.985806+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "43a25ac29753bb5e11f6dea076d72cc650ec098c8cb6e97e4136d974be172106",
+      "rationale": "Same owner-requested ordinary archive/B2C10 correction. Mechanical exact current-byte DATA companion: rebind changed Main/factual docs, explicitly admit correction paths, match policy digest, append one complete approved source tuple while preserving every former tuple and every checker predicate. Original graph, Word/provider/native pause, required oracles, portability denominator, all dependency/security/signing/release boundaries unchanged. No product/cell/release acceptance is created."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:22:29.985806+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "7490889fa8b0d7e8358767e5149b487251ce6407d38b2c6b8f326392907f8645",
+      "rationale": "Same owner-requested ordinary archive/B2C10 correction. Mechanical exact current-byte DATA companion: rebind changed Main/factual docs, explicitly admit correction paths, match policy digest, append one complete approved source tuple while preserving every former tuple and every checker predicate. Original graph, Word/provider/native pause, required oracles, portability denominator, all dependency/security/signing/release boundaries unchanged. No product/cell/release acceptance is created."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:22:29.985806+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "620d989a2be2b1cfe737557b245f9fe513ac9a96d22d1323c1bbac04bef67d76",
+      "rationale": "Same owner-requested ordinary archive/B2C10 correction. Mechanical exact current-byte DATA companion: rebind changed Main/factual docs, explicitly admit correction paths, match policy digest, append one complete approved source tuple while preserving every former tuple and every checker predicate. Original graph, Word/provider/native pause, required oracles, portability denominator, all dependency/security/signing/release boundaries unchanged. No product/cell/release acceptance is created."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "cf7f2ca29306817ae7dd05eda040834e3bd2d0ae30111761f96e24293498f6e2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "d7f07a04bc0f32d7e3cd338b0743615bd58ab5a93732c80a64c3ac3a00cef2a0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "c3f3d9a34a616a75bda556a93aef2ac16fbb99ff670335cd7dd0dc5ed3ecd704"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "aa698569573e6ce3689616dc2491ecca7437bb1c94b2cfc7665ac2789ecdf149"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T16:35:31.602242+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
+      "sha256": "a18bac792d48e8052a5098caaf1a28beb16718c74335340c90e34a8c747257c8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "6ab9717855990929cd0b9235a0cbfa99da9e52a2b5cd93fa2cf7faa44fc2302d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "551688678a6fe46bb0763b1b8e6ab814f7c5ead9bd0bad25fc608d8146e9ea69"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "fedbb8429d419bd431ee06a93c954c053226b4bc9ed090a644c5fcd59ea0b911"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "a45d41eb4b636b1037f0298c6813b53566aca6a04e4c2e9439b133cc8d01297a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "282435b27aa0c6e478f44d24d459979de2d97337d2e5835dd2d28b7df5c7b000"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "44a8d6b3033f9377cc8bbefeb907c2a8f872a01cb4ccb11bc5f15b75a17f6624"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "4353b1659d733dcf0f010055b1d84d459826f1c01825179c3d1252db51e3e579"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "02f277b04e1f2abb57d770f1a965d39df7ac36b05bb1aa5ced26008ef7ccd781"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "fd3511f14c438c58362a7965824ada4ca351fb30b98910b179da00d9a4df423e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "2266a1c6f55ce7796b57dd4c2890701c8e937d0ebc5e345e690902a607425a06"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "cfdc96e5bf8ebc8045f4c3381a2106a0c05db6bcf4b3be78a71dabc241a479d6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "f4f75c06944a4bccfe75e59ab024bf4b85de91f69f662670ecd2191b21f2b0e2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:42:57.791661+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
+      "sha256": "2cadeb322bf151cced84d841440811a00792f8ca50259a0a825734b3875f8465"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "97a42e69555ba14559ce3140edc504dd5d8ef731d47961b5e7ffedd0ceef169d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "c34228676710f40bf7442a66850fde02c0a2d8263cc6f6d979a2515a7987d618"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "ce214571f40df3f44e261c13fdb2a2f9545a85c9ba82667c828196d923a29857"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main/projectArchiveOutputPublication.cjs",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "d38fba34a42586ed68366ae914f1a16519489ab9329139d2daf16326038ea8d8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-correctness.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "4ce68515926bfe154d868c75da949bbe34121f632493cdcd8f7978a03107da19"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-export-handler.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "1d4eb354d214cdb0e360f0577ad4b718f7ad5af0a18e4d64bc79e1d02b59d758"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s32-full-archive-export.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "3ad56b5496e078da5964f51e1992b3f4ddbe19ea969f72cbc6988c71cb768f26"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "4404df7af5cbadcad86254f1e3f52c4d6907ab0bcce4015ec3c2c2709dbe3892"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "7c292e439487300865031e8a9e65e48656cb5e10472af7a14758b68e54b5061b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "1887b2c4023d22d132e4b07c2da288d9804941c6dff6c80cf5ef730f91a3c6ce"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "0cdc86af8a4f542fc1217eb16b84530026511ec2f1ce12cfa20e15e8a6d97330"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "3d9bcfe86eb3af1abe8d82f2c6f8c35c846b452fd2304fb41781bea6e0519f5d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "103cb854945054aa8ee511d639ba4fbf27c9d678175e762ba26cc0804e99e4e3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/core/minimum-interchange-v1.cjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "143750fca1e434ad2081ce42102c512370f07323b1e18e64d1be9ef7850dd561"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main/projectArchiveOutputPublication.cjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "dd3b5141566d81a0f4df869eb0614c48b22cadd5676603a12c0cc8112fc40532"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-correctness.test.js",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "5abbb28d77790f818f2ff4795b2b61a05b4f214fbef8316c8544690500725341"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp305-minimum-interchange.test.js",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "3450f55531dfee8800c09b117cbe3a6c51f2c66f557e49f5063e2cf08681b67e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "23700f7deab348d52d8df43d2c4c73b880f31e6054a0b25351e2f1a04144e935"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "0cab671dd79129ef2f0e9ee6894181e4ecf96d8fd27ca1fec8b3cb38ddd04c49"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "634662cc71b152e4d10a05cfbf612bf76af4d30891845a0d0afaf2d904ab7732"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T19:13:51.913747+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same coherent archive corrective PR after clean1565 preflight. Reconcile and enforce explicit current archive output profiles, retain strict V1 compatibility and atomic defaults for all other formats, truthful exclusive-create derived output only after actual ENOTSUP. Preserve canonical project persistence, useful final/staging and original tests. Exact712-path/564-pin/217-binding successor with full218corruptions; all historical tuples/predicates/approvals remain unchanged. No signing, public release, full-program or new runtime authority.",
+      "sha256": "f8add5c0af13eebb8d1efe471f28b95df685850af4e673413a4fcc5ce95aa5a1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "a192a79324f69916b8bd7cf945e36846b4d73e705c45d1f479f1537f4eecb602"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "6a5d181109f51b05954e02ce1e50c0f42a4ca9575694467c9955385261a10d08"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/post-mvp-project-txt-export.contract.test.js",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "4b965a88019ea6181dfbc098785e3758ba43e99b89c83a91a9813c443099b4dc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/post-mvp-txt-import-command-surface.contract.test.js",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "35121b3a8d3c5324e5301abb6fa12b98fe9ba9c5dfb50a89e7243bd7f6ec8039"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "7b94027a8e34617f1d1591b0414320ca6ed3264c8a943596465fba6f888cff22"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "5444f9ee61e4a7093fff8892eef3a798676f3aff3f35764afacb89ad4e28983a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "12082a80b2ca0f7c25a7226085d819178a35dd34a6f554dadf56f1d37931ec89"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T20:03:19.541965+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Required TXT assurance completion in same coherent archive corrective PR after clean e612 preflight. Correct own-function slices and current visibility expectation; preserve original capability/source-overwrite/atomic-write assertions, all6names, all runtime and policy inputs, prior tuples/predicates/approval history. Exact714path/566pin/219binding successor retains all220corruptions. No waiver, new runtime authority or release claim.",
+      "sha256": "479d23f971413104f401586e0c696264b15ef358ffdf8a20cebf4cbb10694d1f"
     }
   ],
   "evidenceStampIds": [

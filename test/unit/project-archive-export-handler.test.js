@@ -90,6 +90,7 @@ test('project archive verifier detects corrupted entry payload', async (t) => {
 
 test('project archive export writes verified archive atomically and rejects renderer authority', async (t) => {
   const { projectRoot } = await writeFixtureProject(t);
+  const outPath = path.join(path.dirname(projectRoot), 'project.yalken.zip');
   const calls = {
     targetChecks: 0,
     writtenPath: '',
@@ -101,7 +102,7 @@ test('project archive export writes verified archive atomically and rejects rend
     {
       confirmed: true,
       requestId: 'archive-test',
-      outPath: '/tmp/project.yalken.zip',
+      outPath,
       createdAtUtc: '2026-07-19T00:00:00.000Z',
     },
     {
@@ -128,17 +129,19 @@ test('project archive export writes verified archive atomically and rejects rend
       },
       validateProjectArchiveExportTarget(outPath, source) {
         calls.targetChecks += 1;
-        assert.equal(outPath, '/tmp/project.yalken.zip');
+        assert.equal(outPath, path.join(path.dirname(projectRoot), 'project.yalken.zip'));
         assert.equal(source.projectRoot, projectRoot);
         return { ok: true, outPath };
       },
       queueDiskOperation(operation, label) {
-        assert.equal(label, 'export project archive');
+        assert.ok(['capture project archive', 'export project archive'].includes(label));
         return operation();
       },
-      writeBufferAtomic(outPath, buffer) {
+      async publishProjectArchiveOutput(request) {
+        const { outPath, buffer } = request;
         calls.writtenPath = outPath;
         calls.writtenBuffer = buffer;
+        return require('../../src/main/projectArchiveOutputPublication.cjs').publishProjectArchiveOutput(request);
       },
       updateStatus(status) {
         calls.status = status;
@@ -152,7 +155,7 @@ test('project archive export writes verified archive atomically and rejects rend
   assert.equal(result.sourceProjectMutated, false);
   assert.equal(result.archiveManifest.schemaVersion, ARCHIVE_SCHEMA_VERSION);
   assert.equal(calls.targetChecks, 2);
-  assert.equal(calls.writtenPath, '/tmp/project.yalken.zip');
+  assert.equal(calls.writtenPath, outPath);
   assert.equal(calls.status, 'Архив проекта экспортирован');
   assert.equal(verifyProjectArchiveBuffer(calls.writtenBuffer).ok, true);
 
@@ -178,4 +181,40 @@ test('project archive export writes verified archive atomically and rejects rend
   assert.equal(rejected.ok, false);
   assert.equal(rejected.error.reason, 'project_archive_export_renderer_authority_denied');
   assert.deepEqual(rejected.error.details.fields, ['projectRoot']);
+});
+
+for (const failReadback of [false, true]) test('archive handler reports the exclusive-create profile' + (failReadback ? ' and incomplete publication' : ' with verified bytes'), async t => {
+  const { projectRoot } = await writeFixtureProject(t);
+  const outPath = path.join(await fs.realpath(path.dirname(projectRoot)), 'exclusive.yalken.zip');
+  const fsPort = { ...fs, link: async () => { throw Object.assign(Error('unsupported hardlink'), { code: 'ENOTSUP' }); },
+    open: async (target, flags, ...args) => {
+      const handle = await fs.open(target, flags, ...args);
+      if (failReadback && target === outPath && !(flags & require('node:fs').constants.O_WRONLY)) {
+        handle.readFile = async () => { throw Error('final readback failed'); };
+      }
+      return handle;
+    } };
+  const result = await runProjectArchiveExport({ confirmed: true, requestId: 'exclusive-handler', outPath }, {
+    normalizeProjectArchiveExportPayload: value => value,
+    makeTypedProjectArchiveExportError: (code, reason, details) => ({ ok: false, error: { code, reason, details } }),
+    readProjectArchiveExportSource: () => ({ projectRoot }),
+    resolveProjectArchiveExportPath: value => ({ outPath: value.outPath }),
+    validateProjectArchiveExportTarget: value => ({ ok: true, outPath: value }),
+    queueDiskOperation: operation => operation(),
+    publishProjectArchiveOutput: request => require('../../src/main/projectArchiveOutputPublication.cjs').publishProjectArchiveOutput({ ...request, fsPort }),
+  });
+  const publication = failReadback ? result.error.details.publication : result.publication;
+  assert.equal(publication.outputProfile, 'EXCLUSIVE_CREATE');
+  assert.equal(publication.atomicPublication, false);
+  assert.equal(publication.namePublished, true);
+  assert.equal(publication.readbackVerified, !failReadback);
+  assert.equal(publication.recoveryRequired, failReadback);
+  assert.equal(result.ok, !failReadback);
+  if (failReadback) {
+    assert.equal(publication.publicationOutcome, 'PUBLISHED_UNVERIFIED');
+    assert.equal(publication.recovery.stagingVerified, true);
+    assert.deepEqual(await fs.readFile(publication.recovery.stagingPath), await fs.readFile(outPath));
+  } else assert.equal(result.verified, true);
+  const bytes = await fs.readFile(outPath);
+  assert.equal(verifyProjectArchiveBuffer(bytes).manifest.project.projectId, 'project-alpha');
 });

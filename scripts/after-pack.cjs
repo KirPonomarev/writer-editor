@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const { buildProjectArchiveNative } = require('./build-project-archive-native.cjs');
 
 const PLUTIL_PATH = '/usr/bin/plutil';
 const ATS_BOOLEAN_KEYS = [
@@ -50,6 +51,10 @@ function hardenMacTransportSecurity(context, runCommand = spawnSync) {
 async function afterPack(context) {
   if (context.electronPlatformName !== 'darwin') return;
   hardenMacTransportSecurity(context);
+  const productFilename = context.packager.appInfo.productFilename;
+  const arch = context.arch === 3 ? 'arm64' : context.arch === 1 ? 'x64' : '';
+  buildProjectArchiveNative({ arch, outputPath: path.join(context.appOutDir, `${productFilename}.app`,
+    'Contents', 'Resources', 'yalken-native', 'project-archive-fs') });
 }
 
 module.exports = afterPack;

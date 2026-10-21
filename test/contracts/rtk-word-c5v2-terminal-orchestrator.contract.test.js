@@ -174,9 +174,10 @@ function leaseTest(name, options, fn) {
     try {
       return await fn(t);
     } finally {
-      t.after(() => {
+      t.after(async () => {
         tempLeases.cleanupAll();
         assert.equal(tempLeases.count(), 0, `C5V2_TEMP_LEASES_UNCLEANED:${JSON.stringify(tempLeases.snapshot())}`);
+        await new Promise(setImmediate);
       });
     }
   });

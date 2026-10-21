@@ -2,6 +2,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import vm from 'node:vm';
 import { evaluateCommandSurfaceState } from './command-surface-state.mjs';
 import { evaluateCommandSurfaceCallerTrustPhase2State } from './command-surface-caller-trust-state.mjs';
 
@@ -56,7 +58,122 @@ function hasAll(text, markers) {
   return markers.every((marker) => text.includes(marker));
 }
 
-function collectMatrixRows({ commandState, callerTrustState, texts }) {
+// Execute the current Main registration/handler in a bounded, inert host.
+// The real caller and envelope laws run; product dispatch is an observation,
+// never a product writer. This proves this named route, not arbitrary JS safety
+// or a native application journey. Unknown source shapes fail closed.
+export function evaluateCommandBridgeRegistration({ mainText, repoRoot }) {
+  if (typeof mainText !== 'string') return { ok: false, sourceBound: false, cases: [] };
+  const channel = 'ui:command-bridge';
+  const begin = "guardedProtocolHandle('ui:command-bridge', async (_, request) => {";
+  const start = mainText.indexOf(begin);
+  const end = mainText.indexOf('\nconst WORKSPACE_QUERY_BRIDGE_HANDLERS = ', start);
+  const policyStart = mainText.indexOf('const IPC_CALLER_IDENTITY_POLICY = {');
+  const protocolStart = mainText.indexOf('const guardedProtocolHandle = ');
+  const policyEnd = mainText.indexOf('\n});', protocolStart) + '\n});'.length;
+  const registrations = mainText.match(/\b(?:ipcMain\.handle|guarded(?:Protocol)?Handle)\(\s*(['"])ui:command-bridge\1/gu) || [];
+  const sourceBound = start >= 0 && end > start && end - start < 16000
+    && policyStart >= 0 && protocolStart > policyStart && policyEnd > protocolStart
+    && policyEnd - policyStart < 16000 && registrations.length === 1
+    && /const\s*\{\s*createCapabilityBoundRegistration,\s*createGuardedIpcRegistration,\s*\}\s*=\s*require\('\.\/core\/ipc-caller-identity-v1\.cjs'\)/u.test(mainText)
+    && /const\s*\{\s*validateIpcEnvelope,\s*\}\s*=\s*require\('\.\/core\/ipc-envelope-v1\.cjs'\)/u.test(mainText)
+    && mainText.includes("const COMMAND_BUS_ROUTE = 'command.bus';");
+  if (!sourceBound) return { ok: false, sourceBound: false, cases: [] };
+
+  let createGuardedIpcRegistration;
+  let createCapabilityBoundRegistration;
+  let validateIpcEnvelope;
+  try {
+    const requireFromRepo = createRequire(path.join(repoRoot, 'package.json'));
+    ({ createGuardedIpcRegistration, createCapabilityBoundRegistration } = requireFromRepo('./src/core/ipc-caller-identity-v1.cjs'));
+    ({ validateIpcEnvelope } = requireFromRepo('./src/core/ipc-envelope-v1.cjs'));
+  } catch {
+    return { ok: false, sourceBound: true, cases: [] };
+  }
+  const policySource = mainText.slice(policyStart, policyEnd);
+  const handlerSource = mainText.slice(start, end);
+  const definitions = [
+    ['product.allowed', 'product', '', true],
+    ['menu.allowed', 'menu', '', true],
+    ['caller.sender', 'product', 'sender', false],
+    ['caller.session', 'product', 'session', false],
+    ['caller.frame', 'product', 'frame', false],
+    ['caller.destroyed', 'product', 'destroyed', false],
+    ['caller.revoked', 'product', 'revoked', false],
+    ['envelope.invalid', 'product', 'envelope', false],
+    ['route.invalid', 'product', 'route', false],
+    ['command.denied', 'unknown', '', false],
+    ['profile.denied', 'product', 'profile', false],
+  ];
+  const cases = definitions.map(([id, command, fault, allowed]) => {
+    const trace = [];
+    const handlers = new Map();
+    const expectedUrl = 'file:///yalken/renderer/index.html?USE_TIPTAP=1&PRODUCT_PROFILE=WRITER_LOCAL_V1&BRAND_IDENTITY=YALKEN';
+    const session = {};
+    const shell = { id: 7, session, getURL: () => expectedUrl, isDestroyed: () => fault === 'destroyed' };
+    const mainWindow = { webContents: shell, isDestroyed: () => fault === 'revoked' };
+    const event = { sender: { id: fault === 'sender' ? 8 : 7, session: fault === 'session' ? {} : session },
+      senderFrame: { url: fault === 'frame' ? expectedUrl.replace('USE_TIPTAP=1', 'USE_TIPTAP=0') : expectedUrl } };
+    const request = { v: fault === 'envelope' ? 0 : 1, correlationId: 'b2c10-proof', issuedAt: '2026-01-01T00:00:00.000Z',
+      route: fault === 'route' ? 'direct' : 'command.bus', commandId: `cmd.${command}`, payload: {} };
+    // Invalid envelope must be rejected before interpretation of its route.
+    if (fault === 'envelope') Object.defineProperty(request, 'route', {
+      enumerable: true, get() { trace.push('interpret-before-envelope-refusal'); return 'command.bus'; },
+    });
+    const dispatch = (kind, commandId, payload, options) => {
+      trace.push(`dispatch.${kind}`);
+      if (kind === 'menu' && options?.route !== 'command.bus') trace.push('dispatch.wrong-route');
+      return { ok: true, commandId };
+    };
+    const sandbox = {
+      createGuardedIpcRegistration, createCapabilityBoundRegistration, mainWindow,
+      getExpectedIpcShellUrl: () => expectedUrl,
+      ipcMain: { handle: (name, handler) => { if (handlers.has(name)) throw new Error('DUPLICATE_REGISTRATION'); handlers.set(name, handler); }, on() {} },
+      validateIpcEnvelope: (value, name) => {
+        trace.push(value === request && name === channel ? 'envelope' : 'envelope.wrong-input');
+        return validateIpcEnvelope(value, name);
+      },
+      normalizeProtocolResult: value => value,
+      COMMAND_BUS_ROUTE: 'command.bus',
+      UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set(['cmd.product', 'cmd.menu']),
+      PRODUCT_COMMAND_ID_SET: new Set(['cmd.product']),
+      getWriterLocalRuntimeProfile: () => ({}), getProductCommandRecord: () => ({}),
+      evaluateWriterLocalCommandAccess: value => {
+        trace.push(value?.commandId === request.commandId ? 'profile' : 'profile.wrong-command');
+        return { allowed: fault !== 'profile', reason: 'PROFILE_DENIED' };
+      },
+      dispatchProductCommandBridge: (...args) => dispatch('product', ...args),
+      dispatchMenuCommand: (...args) => dispatch('menu', ...args),
+      makeCommandBridgeSuccess: result => result,
+      makeCommandBridgeFailure: reason => ({ ok: false, reason }),
+      findCommandBridgeFailureReason: result => result?.reason || '',
+      makeCommandBridgeException: error => ({ ok: false, reason: error.code || 'EXCEPTION' }),
+      handlers, event, request,
+    };
+    try {
+      vm.runInNewContext(`${policySource}\n${handlerSource}\ntry {
+        const pending = handlers.get('ui:command-bridge')(event, request);
+        Promise.resolve(pending).then(value => { globalThis.observed = value; }, error => { globalThis.refused = true; });
+      } catch (error) { globalThis.refused = true; }`, sandbox,
+      { timeout: 100, microtaskMode: 'afterEvaluate', contextCodeGeneration: { strings: false, wasm: false } });
+      const dispatches = trace.filter(value => value.startsWith('dispatch.'));
+      const expectedTrace = ['envelope', 'profile', `dispatch.${command}`];
+      const refused = sandbox.refused === true || sandbox.observed?.ok === false;
+      const pass = allowed
+        ? sandbox.observed?.ok === true && JSON.stringify(trace) === JSON.stringify(expectedTrace)
+        : refused && dispatches.length === 0
+          && (fault === 'profile' ? JSON.stringify(trace) === '["envelope","profile"]'
+            : ['sender', 'session', 'frame', 'destroyed', 'revoked'].includes(fault) ? trace.length === 0
+              : JSON.stringify(trace) === '["envelope"]');
+      return { id, pass };
+    } catch {
+      return { id, pass: false };
+    }
+  });
+  return { ok: cases.every(row => row.pass), sourceBound, cases };
+}
+
+function collectMatrixRows({ commandState, callerTrustState, registrationState, texts }) {
   const bypassCaseById = new Map(
     (commandState?.bypassSuite?.cases || []).map((entry) => [entry.scenarioId, entry]),
   );
@@ -67,7 +184,7 @@ function collectMatrixRows({ commandState, callerTrustState, texts }) {
       surfaceClass: 'canonical-entry',
       status: hasAll(texts.editor, ['runCommandThroughBus(', 'route: COMMAND_BUS_ROUTE'])
         && hasAll(texts.preload, ['const UI_COMMAND_BRIDGE_CHANNEL = \'ui:command-bridge\';', 'function invokeUiCommand(commandId, payload = {}) {'])
-        && hasAll(texts.main, ["ipcMain.handle('ui:command-bridge', async (_, request) => {", 'dispatchMenuCommand('])
+        && registrationState.ok === true
         ? ROW_STATUS.PROVED_APPROVED_ENTRY
         : ROW_STATUS.FAIL,
       evidence: ['editor-dispatch-through-bus', 'preload-ui-command-bridge', 'main-ui-command-bridge'],
@@ -226,7 +343,8 @@ export function evaluateB2C10CommandBypassNegativeMatrixState(input = {}) {
     failsignalRegistryPath: path.join(repoRoot, FILES.failsignalRegistry),
   });
 
-  const coverageMatrix = collectMatrixRows({ commandState, callerTrustState, texts });
+  const registrationState = evaluateCommandBridgeRegistration({ mainText: texts.main, repoRoot });
+  const coverageMatrix = collectMatrixRows({ commandState, callerTrustState, registrationState, texts });
   const failRows = coverageMatrix.filter((row) => row.status === ROW_STATUS.FAIL);
   const provedRejectedRows = coverageMatrix.filter((row) => row.status === ROW_STATUS.PROVED_REJECTED);
   const advisoryGapRows = coverageMatrix.filter((row) => row.status === ROW_STATUS.ADVISORY_GAP);
