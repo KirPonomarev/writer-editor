@@ -9,8 +9,12 @@ import {
   verifyRcv00bCurrentHeadEffectiveStateCompiler,
 } from '../../scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs';
 
+// Historical fixture inputs come from one immutable admitted candidate.
+// Synthetic candidate IDs below do not qualify the current checkout or product.
+const ORIGINAL_RCV00B_CANDIDATE_SHA = 'f6bb2126c19abb04e180c8abb6d206cc39b8a2a2';
+
 function fileBytes(repoPath) {
-  return fs.readFileSync(repoPath);
+  return objectFromCommit(ORIGINAL_RCV00B_CANDIDATE_SHA, repoPath);
 }
 
 function objectFromCommit(sha, repoPath) {

@@ -50,6 +50,7 @@ Original program SHA256:7185d649974289e8b3a0b310203b32dbd0bac96a613adf3cf26b308f
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
+- test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs
 
 ## DENYLIST
 
@@ -73,7 +74,8 @@ Budget: at most500new/changed gate lines,450test lines,2500cut-data lines,250fac
 2. Root writes this exact task and executor ticket. Execute OPS gate before implementation. Executor changes only the3explicit gate/test/proposed-cut paths; all root WIP is protected.
 3. Implement semantic bounded opt-in scope verification; preserve legacy defaults. Add adversarial exercised counterexamples and finite honest qualification output.
 4. Root independently verifies every edge/required obligation against the pre-edit source map and P27, inspects source/protected bytes and actual results, then prepares only exact mechanical inventory/C2A/DATA/complete-certificate/approval companions. No existing tuple, predicate or source denominator is weakened.
-5. Complete focused/affected and mandatory checks, review diff and clean scope, commit/push/attachedPR/requiredCI/merge and fresh exact merged verification. Only then proceed toMR06measurement admission.
+5. A clean committed-candidate proof exposed a pre-existing RCV00B fixture that mixes immutable historical evidence with the current inventory and verifier. The same two failures were independently reproduced on the prior corrective tree, equal to the actual merged base. Amendment preflight passed on clean e17bbd967 before this edit. Repair only its fixture input loader to coherent immutable original-candidate Git bytes; all7existing test bodies and negative assertions, production verifier, status and evidence remain exact. Root separately invokes the unmodified verifier on the actual current candidate with real Git. Append the single fixture path and normal exact companions to this same unmerged delivery; keep old failed results. Full dependency audit now reports one moderate Electron advisory; required production high-level policy audit remains clean, and MR07 must assess actual reachability.
+6. Complete focused/affected and mandatory checks, review diff and clean scope, commit/push/attachedPR/requiredCI/merge and fresh exact merged verification. Only then proceed toMR06measurement admission.
 
 ## CHECKS
 

@@ -725,7 +725,8 @@
     "scripts/ops/release-candidate.mjs",
     "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
     "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
-    "docs/tasks/2026-10-22--mac-first-release-scope.md"
+    "docs/tasks/2026-10-22--mac-first-release-scope.md",
+    "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -1690,7 +1691,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "7466482fd5df6197cb9eaa5a25d1d7bd03a74e2f4fd0ed0793c4129ded4a32f2"
+        "sha256": "c93e1c96cf3e0a86b3e9cfb0b5db54446143c221f13b8df24b210f107f9e88b0"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -3194,7 +3195,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a50c071a47b7b2213c79e22ede5bd0a85973b1356cb28e1a82bc09932bf94369"
+        "sha256": "fcb2a703599c60dd8635eae344e6724c363dee7617c130a6b86cb961c56d8f6b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3230,7 +3231,11 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-first-release-scope.md",
-        "sha256": "8672a5a275629994b931bb82ce0a54a55944088cb6b8bed32ffe2e4a488ad628"
+        "sha256": "1eaf0f8a0f999bbef4bc534c5110b644ae41af4e15602b45c854be22014a99bc"
+      },
+      {
+        "path": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
+        "sha256": "a1a89206abe332a2b054007c812401d4a6f098cfb95d0be374784d08357afda2"
       }
     ],
     "followupRepair": {
