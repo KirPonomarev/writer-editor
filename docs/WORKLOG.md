@@ -1,3 +1,7 @@
+## 2026-10-22 — CI single RTK candidate
+
+One complete post-build RTK plus unchanged extra gates;86affected checks pass. Official CI and exact merged delivery pending; no product release claim.
+
 # Worklog — 2026-10-22 — first supported Mac scope binding
 
 TASK_ID: YALKEN_FIRST_MAC_RELEASE_SCOPE_20261022

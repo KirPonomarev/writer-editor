@@ -726,7 +726,8 @@
     "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
     "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
     "docs/tasks/2026-10-22--mac-first-release-scope.md",
-    "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs"
+    "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
+    "docs/tasks/2026-10-22--ci-single-rtk.md"
   ],
   "protectedFiles": [
     {
@@ -1023,11 +1024,11 @@
       },
       {
         "path": ".github/workflows/oss-policy.yml",
-        "sha256": "cfffc518c0280219b4607236f0c4ec87df706c1dcbb8eca17d62c512b5a8a4eb"
+        "sha256": "6c7aed71f2953007cc8634bee6445229bff9929dcefd54887cba15d14f7d348a"
       },
       {
         "path": "test/contracts/r24-postbuild-lanes.contract.test.mjs",
-        "sha256": "4d6369b53962a88fc55f9701c2332773edd0945ef1246f11b27010ef81331e17"
+        "sha256": "3badf4561e10b76a6db50be820cf3abf3af0b8a7abb79cd2f6e114c4fb64e952"
       },
       {
         "path": "docs/tasks/2026-09-16--parallel-postbuild-ci-lanes.md",
@@ -1691,7 +1692,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "c93e1c96cf3e0a86b3e9cfb0b5db54446143c221f13b8df24b210f107f9e88b0"
+        "sha256": "f02adef7e017608808dc91e0ea6a38ce841a23e137eaa11be51fcbaa7d016843"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2471,7 +2472,7 @@
       },
       {
         "path": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
-        "sha256": "6101fe24fdbc32111e286c6f3a3a264747b15e694ac70d8193067d1908391080"
+        "sha256": "8844b36feaef87427b9f9e26bababed47bc375ade4e77b55b7babb8b1ac6a24c"
       },
       {
         "path": "src/core/electron-pdf-profile-port-v1.cjs",
@@ -2647,15 +2648,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5005475292621c7b701184b0471693ec9ffd6a045531577a0b66cdd0a55f9eb9"
+        "sha256": "88655c4d4a5d41a302b4dac432f1838d3d4e30a037e8c8bac1504756f3da287c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "afc2657063697f6d55376bcc5d1c42185ed320d5c811769a5b7b562d090363cc"
+        "sha256": "9c436a7e06eaaf3a60040976e31e942e7d38f13977f1173cf8b47e988eb89620"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4a36ebc5283b8637d665a19ea9dd7a0391be66613c357d692be96ab6730d0907"
+        "sha256": "7a51eb939774cc08276118e90e0e4a43b83bd9da8dada224b2f6e82ba313fdcf"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3083,7 +3084,7 @@
       },
       {
         "path": ".github/workflows/rtk-required.yml",
-        "sha256": "5ec3beaa3589bed1d5d940800be538eaac051095808abaee1b4eac7570237b5c"
+        "sha256": "9608a6af83b15a39c40dfe549647a16b749bcbb7c55cd72c38c4786df3f7ed86"
       },
       {
         "path": "docs/tasks/2026-10-17--docx-new-project-source-guard.md",
@@ -3195,7 +3196,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "fcb2a703599c60dd8635eae344e6724c363dee7617c130a6b86cb961c56d8f6b"
+        "sha256": "096b08127a3616ae2ec2a874cae8c4d8c26ace11ffccda5bec079c9acbde2d6d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3236,6 +3237,10 @@
       {
         "path": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
         "sha256": "a1a89206abe332a2b054007c812401d4a6f098cfb95d0be374784d08357afda2"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--ci-single-rtk.md",
+        "sha256": "ed4e59bfc6c8c9973b69e7754f3e6bb9ec471b54c0eeb297952e7ad31b7391cd"
       }
     ],
     "followupRepair": {
