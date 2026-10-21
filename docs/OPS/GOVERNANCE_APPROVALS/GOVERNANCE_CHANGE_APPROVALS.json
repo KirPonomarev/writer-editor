@@ -12681,6 +12681,66 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same owner-requested archive correction delivery, clean b47 companion amendment. S38 test preparation uses the existing explicit test effect port on non-Darwin, retaining every original test body; repaired B2C10 moves from historical red debt to actual executed green requirement. Mechanical exhaustive inventory/source-pin refresh and one complete appended certificate tuple only. Preserve all prior history, child executions, required tests, predicates, source/program/security boundaries, native pause and release non-claims. No runtime or project format change.",
       "sha256": "a18bac792d48e8052a5098caaf1a28beb16718c74335340c90e34a8c747257c8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "6ab9717855990929cd0b9235a0cbfa99da9e52a2b5cd93fa2cf7faa44fc2302d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "551688678a6fe46bb0763b1b8e6ab814f7c5ead9bd0bad25fc608d8146e9ea69"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "fedbb8429d419bd431ee06a93c954c053226b4bc9ed090a644c5fcd59ea0b911"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "a45d41eb4b636b1037f0298c6813b53566aca6a04e4c2e9439b133cc8d01297a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "282435b27aa0c6e478f44d24d459979de2d97337d2e5835dd2d28b7df5c7b000"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T17:09:30.914688+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same corrective PR at clean5b0 companion admission. Bind explicit committed archive successor expectation while preserving every binding/guard corruption, mixed-predecessor and unrelated-ancestry assertion. Normal exhaustive inventory and C2A generated approval companion, exact source pins and one complete appended213-binding tuple. Preserve historical approvals/tuples and every verifier predicate; no runtime/build/native/release authority change.",
+      "sha256": "44a8d6b3033f9377cc8bbefeb907c2a8f872a01cb4ccb11bc5f15b75a17f6624"
     }
   ],
   "evidenceStampIds": [

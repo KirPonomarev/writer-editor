@@ -1681,7 +1681,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "233900af1171fd0d69ee57f7aa7c305e7e4b9a1573a745bd1b1f22ccaa992d3c"
+        "sha256": "fedbb8429d419bd431ee06a93c954c053226b4bc9ed090a644c5fcd59ea0b911"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -3121,7 +3121,7 @@
       },
       {
         "path": "docs/tasks/2026-10-21--mac-archive-correctness.md",
-        "sha256": "f69a134130f57bbcf28563d5024023d4fc80bf9f4f46f1b0b7638db1ee9b480a"
+        "sha256": "65878d88f0a8d0405cbc715430946f18a27f600f12bd2ee24fc29ce54defcd5f"
       },
       {
         "path": "scripts/after-pack.cjs",
@@ -3182,6 +3182,10 @@
       {
         "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
         "sha256": "0fc1c7208fff32cb3dd5764b93b4b52b6f940683156987d77593100e2709f50e"
+      },
+      {
+        "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+        "sha256": "551688678a6fe46bb0763b1b8e6ab814f7c5ead9bd0bad25fc608d8146e9ea69"
       }
     ],
     "followupRepair": {
