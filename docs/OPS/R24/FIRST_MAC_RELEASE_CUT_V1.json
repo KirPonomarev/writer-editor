@@ -1,0 +1,2309 @@
+{
+  "applicability": [
+    {
+      "disposition": "deferred",
+      "id": "S01",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "ORDINARY_RECOVERY",
+        "FULL_HISTORY_RETENTION",
+        "PACKAGE_SECURITY_CHANNEL"
+      ],
+      "reason": "New encrypted policy deferred; shared security, retention and ordinary recovery remain required",
+      "subjects": [
+        "WP-900_BBR_POLICY"
+      ]
+    },
+    {
+      "disposition": "deferred",
+      "id": "S02",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "ORDINARY_RECOVERY",
+        "BACKUP_RESTORE_MIGRATION_CONFLICT"
+      ],
+      "reason": "Owner-key and off-host encrypted qualification deferred; ordinary restore remains required",
+      "subjects": [
+        "WP-901_BBR_RESTORE",
+        "R24-RCV-63",
+        "R24-RCV-64"
+      ]
+    },
+    {
+      "disposition": "narrowly-replaced",
+      "id": "S03",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "ORDINARY_RECOVERY",
+        "BACKUP_RESTORE_MIGRATION_CONFLICT",
+        "ENTITLEMENT_OFFLINE_DOWNGRADE_NO_LOSS",
+        "PACKAGE_SECURITY_CHANNEL"
+      ],
+      "reason": "Entitlement is independent of new encrypted product; replace only scoped WP901 prerequisite with ordinary recovery/security/offline/downgrade proof",
+      "subjects": [
+        "WP-902_ENTITLEMENT_PRODUCT"
+      ]
+    },
+    {
+      "disposition": "inherited",
+      "id": "S04",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "PACKAGE_SECURITY_CHANNEL",
+        "EXACT_OWNER_RELEASE_PERMIT",
+        "EXACT_TERMINAL_DELIVERY"
+      ],
+      "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility",
+      "subjects": [
+        "WP-903_BRAND_RELEASE",
+        "WP-904_PACKAGE_CONTENT",
+        "WP-905_PACKAGE_PHYSICAL",
+        "WP-906_RELEASE_VERDICT"
+      ]
+    },
+    {
+      "disposition": "narrowly-replaced",
+      "id": "S05",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "MINIMUM_INTERCHANGE_ALL_EIGHT",
+        "CURRENT_ALLOWED_DOCX_REVIEW",
+        "ENABLED_CAPABILITY_COMPLETENESS"
+      ],
+      "reason": "Current-format compatibility required; wide mixed-provider part deferred separately",
+      "subjects": [
+        "R24-RCV-01D",
+        "WP-709_MIXED_CHAINS"
+      ]
+    },
+    {
+      "disposition": "narrowly-replaced",
+      "id": "S06",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "MINIMUM_INTERCHANGE_ALL_EIGHT",
+        "CURRENT_ALLOWED_DOCX_REVIEW",
+        "ENABLED_CAPABILITY_COMPLETENESS"
+      ],
+      "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained",
+      "subjects": [
+        "R24-RCV-01F",
+        "R24-RCV-33"
+      ]
+    },
+    {
+      "disposition": "inherited",
+      "id": "S07",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "ORDINARY_RECOVERY",
+        "FULL_HISTORY_RETENTION",
+        "BACKUP_RESTORE_MIGRATION_CONFLICT"
+      ],
+      "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation",
+      "subjects": [
+        "R24-RCV-14"
+      ]
+    },
+    {
+      "disposition": "narrowly-replaced",
+      "id": "S08",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "INDEPENDENT_AUDITS",
+        "EXACT_OWNER_RELEASE_PERMIT",
+        "EXACT_TERMINAL_DELIVERY"
+      ],
+      "reason": "Scoped acceptance retains exact audits/permit/terminal; original full70E completion and full program remain unchanged",
+      "subjects": [
+        "R24-RCV-60",
+        "R24-RCV-61",
+        "R24-RCV-62",
+        "R24-RCV-65..70E"
+      ]
+    },
+    {
+      "disposition": "inherited",
+      "id": "S09",
+      "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+      "proofObligations": [
+        "MINIMUM_INTERCHANGE_ALL_EIGHT",
+        "CURRENT_ALLOWED_DOCX_REVIEW"
+      ],
+      "reason": "All supported TXT/Markdown/Archive/DOCX routes protected; wide Word/Google exclusion removes none",
+      "subjects": [
+        "WP-305_MINIMUM_INTERCHANGE"
+      ]
+    }
+  ],
+  "authority": {
+    "notarizationAuthority": false,
+    "programDone": false,
+    "publicationAuthority": false,
+    "signingAuthority": false
+  },
+  "basis": {
+    "admissionBaseSha": "2564946d4cb68fc59527170b6c191e6db689dbc7",
+    "admissionBaseTree": "2cba019197dc1063e9c766fcca51906f139ebb86",
+    "dnaSha256": "22234e150dd405b101eecb613378284c01a7c9d8913cffae0dc1a374caacc017",
+    "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+    "planSha256": "77301a05b3055055a7f320a809b0de09e99ac684969e7ce0a04f6ea88d64d69a",
+    "remoteMainAtAdmission": "2564946d4cb68fc59527170b6c191e6db689dbc7",
+    "repository": "https://github.com/KirPonomarev/writer-editor.git"
+  },
+  "candidate": {
+    "artifactSha256": null,
+    "buildId": null,
+    "headSha": null,
+    "status": "UNFROZEN",
+    "treeSha": null
+  },
+  "capabilityPolicy": "ALL_ENABLED_AND_ADVERTISED_INCLUDING_PERSISTED_AUTHOR_DATA",
+  "cutId": "FIRST_SUPPORTED_MAC_V1",
+  "deferredCapabilities": {
+    "newAtlasWsePulse": "DEFERRED",
+    "newEncryptedProduct": {
+      "enabled": false,
+      "qualification": "DEFERRED_POST_RELEASE"
+    },
+    "newPlatformsEcosystem": "DEFERRED",
+    "wideAllProviderFullBookRepeatedRoundtrip": "DEFERRED_FULL_PROFILE_ONLY"
+  },
+  "entitlement": {
+    "downgradeNoLossRequired": true,
+    "offlineRequired": true,
+    "policyId": "FREE_SAFE_DENY_PRO_DISABLED",
+    "pricingAuthority": false
+  },
+  "minimumInterchange": {
+    "archiveOutputPolicy": {
+      "defaultAtomicExportRequired": true,
+      "defaultProfileId": "ATOMIC_HARDLINK",
+      "profiles": [
+        {
+          "atomicPublication": true,
+          "durabilityProfile": "FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK",
+          "exclusiveNameRequired": true,
+          "fileSyncRequired": true,
+          "incompleteOutcome": "PRESERVE_OBSERVED_FINAL",
+          "lateCancel": "FINISH_BOUNDED_FINALIZATION",
+          "parentSyncRequired": true,
+          "profileId": "ATOMIC_HARDLINK",
+          "sameObjectReadbackRequired": true,
+          "trigger": "ABSENT_OUTPUT",
+          "verifiedStagingRequired": true,
+          "writeHandleCloseRequired": true
+        },
+        {
+          "atomicPublication": true,
+          "durabilityProfile": "FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK",
+          "exclusiveNameRequired": false,
+          "fileSyncRequired": true,
+          "incompleteOutcome": "PRESERVE_OBSERVED_FINAL",
+          "lateCancel": "FINISH_BOUNDED_FINALIZATION",
+          "parentSyncRequired": true,
+          "profileId": "ATOMIC_REPLACE",
+          "sameObjectReadbackRequired": true,
+          "trigger": "SELECTED_EXISTING_OUTPUT",
+          "verifiedStagingRequired": true,
+          "writeHandleCloseRequired": true
+        },
+        {
+          "atomicPublication": false,
+          "durabilityProfile": "EXCLUSIVE_NAME_FILE_FSYNC_PARENT_FSYNC_SAME_OBJECT_FULL_READBACK",
+          "exclusiveNameRequired": true,
+          "fileSyncRequired": true,
+          "incompleteOutcome": "PRESERVE_FINAL_AND_VERIFIED_STAGING",
+          "lateCancel": "FINISH_BOUNDED_FINALIZATION",
+          "parentSyncRequired": true,
+          "profileId": "EXCLUSIVE_CREATE",
+          "sameObjectReadbackRequired": true,
+          "trigger": "ACTUAL_HARDLINK_ENOTSUP",
+          "verifiedStagingRequired": true,
+          "writeHandleCloseRequired": true
+        }
+      ],
+      "schemaVersion": "yalken.project-archive-output-profiles.v1",
+      "scope": "EXTERNAL_DERIVED_ARCHIVE_FILE_ONLY"
+    },
+    "localOnly": true,
+    "networkRequired": false,
+    "routes": [
+      {
+        "commandIds": [
+          "cmd.project.importTxtV1",
+          "cmd.project.txt.previewLocalFile",
+          "cmd.project.txt.importSafeCreate"
+        ],
+        "direction": "TXT_IMPORT"
+      },
+      {
+        "commandIds": [
+          "cmd.project.exportCurrentSceneTxtV1",
+          "cmd.project.exportSelectedScenesTxtV1",
+          "cmd.project.exportAllScenesTxtV1"
+        ],
+        "direction": "TXT_EXPORT"
+      },
+      {
+        "commandIds": [
+          "cmd.project.importMarkdownV1",
+          "cmd.project.markdown.previewLocalFile",
+          "cmd.project.markdown.acceptLocalPreview"
+        ],
+        "direction": "MARKDOWN_IMPORT"
+      },
+      {
+        "commandIds": [
+          "cmd.project.exportMarkdownV1",
+          "cmd.project.markdown.exportLocalFile"
+        ],
+        "direction": "MARKDOWN_EXPORT"
+      },
+      {
+        "commandIds": [
+          "cmd.project.importFullArchiveV1"
+        ],
+        "direction": "PROJECT_ARCHIVE_IMPORT"
+      },
+      {
+        "commandIds": [
+          "cmd.project.exportFullArchiveV1"
+        ],
+        "direction": "PROJECT_ARCHIVE_EXPORT"
+      },
+      {
+        "commandIds": [
+          "cmd.project.importDocxV1",
+          "cmd.project.docx.previewContent",
+          "cmd.project.docx.previewImportPlan",
+          "cmd.project.docx.previewLocalFile",
+          "cmd.project.docx.importSafeCreate"
+        ],
+        "direction": "DOCX_IMPORT"
+      },
+      {
+        "commandIds": [
+          "cmd.project.export.docxMin"
+        ],
+        "direction": "DOCX_EXPORT"
+      }
+    ],
+    "schemaVersion": "yalken.minimum-interchange-ownership.v2"
+  },
+  "nextMaterialContour": "MR-06",
+  "profiles": {
+    "packageOps": "PACKAGED_RELEASE_SECURITY",
+    "reviewCommandExceptions": [
+      "cmd.project.review.openComments",
+      "cmd.project.review.openDocxReviewPreviewSession",
+      "cmd.project.review.exportDocxReviewPacket",
+      "cmd.project.review.exportFullManuscriptDocxReviewPacket",
+      "cmd.project.review.editComment",
+      "cmd.project.review.decidePendingRevision",
+      "cmd.project.review.recordTextRevisions",
+      "cmd.project.review.activateDocxReviewPreviewSession",
+      "cmd.project.review.applyExactTextChangesBatch",
+      "cmd.project.review.applyFormattingReturn",
+      "cmd.project.review.applyStructuralReturn",
+      "cmd.project.review.inspectFormattingReturnReplay",
+      "cmd.project.review.inspectStructuralReturnReplay",
+      "cmd.project.review.reloadReconciledScene"
+    ],
+    "rolesAreDistinct": true,
+    "runtime": {
+      "active": true,
+      "cloudAuthority": false,
+      "dependencyAdoption": false,
+      "localPackagingAndCertificationOnly": true,
+      "notarization": false,
+      "optionalSystemsEnabled": false,
+      "packaged": true,
+      "platform": "darwin",
+      "profileId": "WRITER_LOCAL_V1",
+      "publicDistribution": false,
+      "schemaVersion": "writer-local-profile.v1",
+      "signing": false,
+      "userDataMutation": false
+    },
+    "writerOps": "WRITER_CORE"
+  },
+  "protectedRequirements": [
+    "ORDINARY_RECOVERY",
+    "NO_LOSS_SAVE_REOPEN",
+    "BACKUP_RESTORE_MIGRATION_CONFLICT",
+    "FULL_HISTORY_RETENTION",
+    "MINIMUM_INTERCHANGE_ALL_EIGHT",
+    "CURRENT_ALLOWED_DOCX_REVIEW",
+    "ENTITLEMENT_OFFLINE_DOWNGRADE_NO_LOSS",
+    "ENABLED_CAPABILITY_COMPLETENESS",
+    "NUMERICAL_WRITER_ENVELOPE",
+    "PACKAGE_SECURITY_CHANNEL",
+    "INDEPENDENT_AUDITS",
+    "EXACT_OWNER_RELEASE_PERMIT",
+    "EXACT_TERMINAL_DELIVERY"
+  ],
+  "qualification": [
+    {
+      "currentSources": [
+        "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json",
+        "scripts/ops/r24/effective-state-compiler.mjs",
+        "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Original109/171 graph and pre-edit independent68/120 closure at admission base; scope proposal is not final candidate qualification"
+      },
+      "id": "MAC-01",
+      "independentOracle": "Independent original graph closure and accepted scope; bind to final immutable R",
+      "missingCurrentProof": "Current scope validity must still be accepted independently and rebound with terminal identities to an immutable final candidate R",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "ENABLED_CAPABILITY_COMPLETENESS"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-01"
+    },
+    {
+      "currentSources": [
+        "src/main.js",
+        "src/renderer/index.html",
+        "src/core/writer-local-profile-v1.cjs"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "PR2137 historical synthetic packaged Writer save/cold-reopen; earlier artifact/profile, not new final R acceptance"
+      },
+      "id": "MAC-02",
+      "independentOracle": "Frozen text/order/identity oracle, independent persisted reader and actual cold reopen",
+      "missingCurrentProof": "Missing final-R complete create/open/edit/IME/undo/save/close/reopen/context journey and persisted independent expected readback",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "NO_LOSS_SAVE_REOPEN"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-02"
+    },
+    {
+      "currentSources": [
+        "src/core/autosave-generation-v1.cjs",
+        "src/core/dirty-admission-v1.cjs",
+        "src/core/lifecycle-recovery-v1.cjs",
+        "src/core/recovery-ledger-v1.cjs"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical R24 durable-save, dirty-admission and recovery model/fault contracts; exact new candidate missing"
+      },
+      "id": "MAC-03",
+      "independentOracle": "Separate before/after whole-file roster and recovery reader, new process reopen after faults",
+      "missingCurrentProof": "Missing final-R whole-roster disk-full/EIO/permission/sync/close/conflict/retry/recovery and no-false-ACK proof",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "ORDINARY_RECOVERY",
+        "BACKUP_RESTORE_MIGRATION_CONFLICT",
+        "FULL_HISTORY_RETENTION"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-03"
+    },
+    {
+      "currentSources": [
+        "src/utils/txtImportSafeCreate.js",
+        "src/core/minimum-interchange-v1.cjs",
+        "src/main.js"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical WP305 and maintained TXT import/export contracts; clean merged contract pack59/59 is not final installed route proof"
+      },
+      "id": "MAC-04",
+      "independentOracle": "Independent expected Unicode/text/newline policy and unchanged donor/foreign target",
+      "missingCurrentProof": "Missing final-R supported TXT import-as-new and scene/selection/book Unicode/newline/limits/refusal/no-overwrite binding",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "MINIMUM_INTERCHANGE_ALL_EIGHT"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-04A"
+    },
+    {
+      "currentSources": [
+        "src/utils/markdownImportSafeCreate.js",
+        "src/export/markdown/v1/parseMarkdownV1.mjs",
+        "src/export/markdown/v1/serializeMarkdownV1.mjs"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical Markdown product/file-authority contracts; no fresh final-R loss/refusal ledger"
+      },
+      "id": "MAC-05",
+      "independentOracle": "Independent supported IR/text and explicit loss/refusal ledger, unchanged source",
+      "missingCurrentProof": "Missing final-R supported Markdown IR/text/loss/refusal/scene-document route and source-preservation binding",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "MINIMUM_INTERCHANGE_ALL_EIGHT"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-04B"
+    },
+    {
+      "currentSources": [
+        "src/export/archive/projectArchiveExportHandler.js",
+        "src/main.js"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "PR2137 historical archive source/APFS/exFAT/packaged routes; authored empty-directory and COPY visibility gaps remain tracked for next contour"
+      },
+      "id": "MAC-06",
+      "independentOracle": "Independent raw ZIP roster/bytes before identity rebind, then actual library/open/edit/save/reopen",
+      "missingCurrentProof": "Missing final-R archive authored topology/COPY identity/library/open/edit/save/reopen and complete history/roster qualification",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "MINIMUM_INTERCHANGE_ALL_EIGHT",
+        "FULL_HISTORY_RETENTION",
+        "ORDINARY_RECOVERY"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-04C"
+    },
+    {
+      "currentSources": [
+        "src/utils/docxImportSafeCreate.js",
+        "src/main/docxImportComputePort.cjs",
+        "src/export/docx/docxMinExportHandler.js"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical Word four component files and one native clusters case at earlier artifact; not full-book/repeated/provider or installation acceptance"
+      },
+      "id": "MAC-07",
+      "independentOracle": "Independent Current/Original/comments/anchors/decision/cold reopen on exact supported fixture",
+      "missingCurrentProof": "Missing final-R supported DOCX import/export Current/Original/comments/anchors/decisions/cold-reopen and14review-command binding",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "MINIMUM_INTERCHANGE_ALL_EIGHT",
+        "CURRENT_ALLOWED_DOCX_REVIEW"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-04D"
+    },
+    {
+      "currentSources": [
+        "src/shared/productCommandRegistry.cjs",
+        "src/core/entitlement-law-v1.cjs",
+        "src/core/writer-local-profile-v1.cjs"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical ENT0/WP206 safe-deny and Writer profile exceptions; no new pricing authority or candidate-bound capability qualification"
+      },
+      "id": "MAC-08",
+      "independentOracle": "Actual dispatch stale/revoked/downgrade/offline negatives and independent author-data reader",
+      "missingCurrentProof": "Missing final-R actual current dispatch/capability/stale/revoked/offline/downgrade no-loss and safe-deny proof",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "ENTITLEMENT_OFFLINE_DOWNGRADE_NO_LOSS",
+        "CURRENT_ALLOWED_DOCX_REVIEW",
+        "ENABLED_CAPABILITY_COMPLETENESS"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-05"
+    },
+    {
+      "currentSources": [
+        "src/renderer/index.html",
+        "src/main.js",
+        "src/preload.js"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical retained Writer UI and command-surface contracts; no fresh included-surface a11y/IME final-R qualification"
+      },
+      "id": "MAC-09",
+      "independentOracle": "Included-surface keyboard/IME/accessibility/focus/error journey against preserved UI baseline",
+      "missingCurrentProof": "Missing final-R keyboard/IME/focus/screen-reader/error/cancel proof on included surfaces without redesign",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "NO_LOSS_SAVE_REOPEN",
+        "ENABLED_CAPABILITY_COMPLETENESS"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-05"
+    },
+    {
+      "currentSources": [
+        "src/main.js",
+        "src/main/docxImportComputePort.cjs",
+        "src/main/docxImportComputeWorker.cjs",
+        "src/export/markdown/v1/types.mjs"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical preview43.5s/Main gap1.334s/RSS~2.1GiB observations are context only; no accepted numerical workload matrix"
+      },
+      "id": "MAC-10",
+      "independentOracle": "Predeclared Mac/workload/operation numeric matrix, independent measured latency/RSS/cancel results",
+      "missingCurrentProof": "Missing owner-accepted measured Mac/OS/architecture/filesystem/workload/operation numerical latency/RSS/cancel envelope",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "NUMERICAL_WRITER_ENVELOPE"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-06"
+    },
+    {
+      "currentSources": [
+        "package.json",
+        "src/main.js",
+        "src/preload.js",
+        "scripts/ops/r24/package-claim-compiler-v3.mjs",
+        "scripts/ops/r24/release-security-physical-pk1.mjs"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Historical local unsigned package inspection and bounded V3/PK1; not signing, shipping, install/upgrade/rollback qualification"
+      },
+      "id": "MAC-11",
+      "independentOracle": "Actual artifact roster/security and selected qualified install/distribution/upgrade/rollback channel",
+      "missingCurrentProof": "Missing final-R actual package/security and selected signing/install/distribution/upgrade/rollback channel qualification",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "PACKAGE_SECURITY_CHANNEL"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-07/MR-08"
+    },
+    {
+      "currentSources": [
+        "scripts/ops/r24/effective-state-compiler.mjs",
+        "scripts/ops/r24/writer-claim-compiler-v0.mjs",
+        "scripts/ops/r24/package-claim-compiler-v3.mjs",
+        "src/main.js"
+      ],
+      "historicalProof": {
+        "classification": "HISTORICAL_ONLY_NOT_CURRENT",
+        "currentCandidateAcceptance": false,
+        "reference": "Existing full-program and bounded profile compilers retain no-release/no-program promotion; no exact public owner permit"
+      },
+      "id": "MAC-12",
+      "independentOracle": "Independent exact-R audits, authenticated exact owner permit and terminal/delivery identity readback",
+      "missingCurrentProof": "Missing exact immutable candidate, independent audits, authenticated exact owner release permit, terminal and delivered identities",
+      "owner": "OWNER_ADMITTED_EXECUTOR_WITH_INDEPENDENT_ACCEPTANCE",
+      "proofObligations": [
+        "INDEPENDENT_AUDITS",
+        "EXACT_OWNER_RELEASE_PERMIT",
+        "EXACT_TERMINAL_DELIVERY"
+      ],
+      "status": "UNKNOWN_REQUIRES_EXACT_CANDIDATE_BINDING",
+      "workItem": "MR-09/MR-10"
+    }
+  ],
+  "qualificationPolicy": {
+    "auditsRequired": true,
+    "candidateBoundRequired": true,
+    "channelQualificationRequired": true,
+    "exactOwnerPermitRequired": true,
+    "noSchemaOnlyReadiness": true,
+    "rawIndependentEvidenceRequired": true,
+    "securityQualificationRequired": true,
+    "terminalIdentitiesRequired": true,
+    "unsignedFallbackAllowed": false,
+    "workloadApprovalRequired": true
+  },
+  "schemaVersion": "yalken.first-mac-release-cut.v1",
+  "sourceBindings": {
+    "AGENTS.md": "cf1bb1a8f4dd265867661b239626b91aed8ec28af202e66b842914fb50c57524",
+    "CANON.md": "99398ac898104c7a392f0e84b4bb8848212e2c5a7db6ae27cbfc549c3e070e48",
+    "docs/AGENT_START_PROTOCOL.md": "b72f6e8c1b118f614679df48b37564c48e5fc5f802d6606e80b2add3f8445351",
+    "docs/BIBLE.md": "94864b5d7cbec709ca6d7e9c6a838ff9405cfbc86443a5485acd149ccc16de93",
+    "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json": "7185d649974289e8b3a0b310203b32dbd0bac96a613adf3cf26b308ff0067df5",
+    "docs/OPS/R24/OWNER_GATE_DECISIONS/ENTITLEMENT_SEMANTICS_ADR_OR_DENY_WP206_SAFE_ENTITLEMENT_BASELINE_V1.json": "d86d4edd2faf14a4ac019a3561ce468a83c333b5112ba57490211b04cd061c0e",
+    "docs/OPS/R24/OWNER_GATE_DECISIONS/LOCAL_RELEASE_PERMIT_WP307_WRITER_LOCAL_PROFILE_V1.json": "061e5adf483ecbfbfb5278cf14da04fd332fd26dfe0b3debe006eda1a8ff68c1",
+    "docs/OPS/STATUS/CANON_STATUS.json": "0c73f3d0ed99adab897b841a8471733572e6c78970371eba751e4fe2418192be",
+    "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md": "b8e99ad1c9cd37e874d3145c79be99f6f3181a9eae7078060f9e497e0896077b",
+    "docs/corex/COREX.md": "4f4582deceb92c1b796f098b9cf87eac65317513a1bdfa3429e3d9076b3e914c",
+    "docs/corex/COREX.v2.md": "ea25f66352497e58935c673d3bf3c82d828e31dcc3cdad1ca19ef1250512f0bf",
+    "package.json": "96164dc319209209c1edf12c4d1a745b3bc0fcd38a8fc2d943ac143d87338696",
+    "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs": "21d9d8c6e0e214d3142f0d0b5f7f7f9e42ad23858adacb8519aacdea7b415504",
+    "scripts/ops/r24/effective-state-compiler.mjs": "6f7d5be6ed58afea72ee32a1145381aaed552461ec0b5d62f61dbdd945fefcf3",
+    "scripts/ops/r24/package-claim-compiler-v3.mjs": "c79ee1641b5a4339eb1b8d6a76fb8f0075c9da718e2ab8b2ba22d7d89de56f0c",
+    "scripts/ops/r24/release-security-physical-pk1.mjs": "a0b84198fe20e82edfe18c628550213ae9092c4e4a8b07f953f4ddea57140030",
+    "scripts/ops/r24/writer-claim-compiler-v0.mjs": "3a2ff7e751ae5bde079684f36e05ce11236ef706b28a94170b374f48793604eb",
+    "src/core/autosave-generation-v1.cjs": "c901970cd0b6a7d865e4af1f5f305fb04873a3397da591691c5aa43af52cf752",
+    "src/core/dirty-admission-v1.cjs": "2d1928cfc3f5b6ef669c0628578113fef5b345eb4bd3485f5e720c4d26e4362b",
+    "src/core/entitlement-law-v1.cjs": "7652d20be2aacefa9e2b94797656fd02ae7e3cd104bc70c39f50ce494c8208d3",
+    "src/core/lifecycle-recovery-v1.cjs": "57cf18f554b9b478ba1509860013cb2d54d9660f15b69ea56e2da830bdac0506",
+    "src/core/minimum-interchange-v1.cjs": "143750fca1e434ad2081ce42102c512370f07323b1e18e64d1be9ef7850dd561",
+    "src/core/recovery-ledger-v1.cjs": "f6f0ab01ee768e374f07d2e830b2b4cca3b5a5a68278ca291b46229cffbb0e25",
+    "src/core/writer-local-profile-v1.cjs": "b2c95d46ea0effd725e457fba178bdb1371164ecb97e022f0c25dfb18bf86b37",
+    "src/export/archive/projectArchiveExportHandler.js": "ab7144381d04b0351f85e5a9f0379f1c01f47a8cc0b41f4a09ecfb6cf23ae586",
+    "src/export/docx/docxMinExportHandler.js": "40e9c55d7016edb2c9b91388dee62447b52aff94ae8f7a2806cc54a03038963f",
+    "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
+    "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
+    "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
+    "src/main.js": "ce214571f40df3f44e261c13fdb2a2f9545a85c9ba82667c828196d923a29857",
+    "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
+    "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
+    "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
+    "src/renderer/index.html": "2b2d08a6ec5a33b545a4963a3e10978b6662353bc87fa555943d11a37429f60f",
+    "src/shared/productCommandRegistry.cjs": "3d6fcc76788c4a5d5599e671caa3965d6fb957bde1785ef18baa47a9d8602227",
+    "src/utils/docxImportSafeCreate.js": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70",
+    "src/utils/markdownImportSafeCreate.js": "435d0054e1d250eb84e810e6cd78fed5b6d5b2bf551950db35c8df6f562b2c97",
+    "src/utils/txtImportSafeCreate.js": "1fbdc4e1e6a4d013649a0c9625febf15a2a688b1b3bbd3b48a0b277a5cd5bb37"
+  },
+  "traceability": {
+    "edges": [
+      {
+        "applicabilityId": "S07",
+        "dependent": "E0_RUNNER_SAFETY_QUARANTINE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R24C0_SEMANTIC_PACKAGE_CLOSURE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "ENT0_ENTITLEMENT_CONFORMANCE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "K0_COMMAND_PROTOCOL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "F0_WRITER_REFINEMENT_CONFORMANCE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "K1_AUTHORITY_DECOMPOSITION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "F0_WRITER_REFINEMENT_CONFORMANCE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R6_MIGRATION_HISTORY_BACKUP_GC",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "F0_WRITER_REFINEMENT_CONFORMANCE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "SEC0_PATH_CAPABILITY",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "F0_WRITER_REFINEMENT_CONFORMANCE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "T0_TEXT_COORDINATE_ALGEBRA",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "F0_WRITER_REFINEMENT_CONFORMANCE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "ENT0_ENTITLEMENT_CONFORMANCE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "K0_COMMAND_PROTOCOL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "S1_IPC_ENVELOPE_BUDGETS",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "K1_AUTHORITY_DECOMPOSITION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "K0_COMMAND_PROTOCOL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "K1_AUTHORITY_DECOMPOSITION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P3_TRANSACTIONAL_PROJECT_COMMIT",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "P0_AUTOSAVE_GENERATION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "E0_RUNNER_SAFETY_QUARANTINE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "P1_DIRTY_ADMISSION_ACK",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P0_AUTOSAVE_GENERATION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "P2_DURABLE_SAVE_COORDINATOR",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P1_DIRTY_ADMISSION_ACK",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "P3_TRANSACTIONAL_PROJECT_COMMIT",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P2_DURABLE_SAVE_COORDINATOR",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "PK0_PACKAGE_CONTENT_TRUST",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "Q0_TOOLCHAIN_HYGIENE",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "PK0_PACKAGE_CONTENT_TRUST",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "SEC0_PATH_CAPABILITY",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "PK1_RELEASE_SECURITY_PHYSICAL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V0_WRITER_CLAIM_COMPILER",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "PK1_RELEASE_SECURITY_PHYSICAL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "PK0_PACKAGE_CONTENT_TRUST",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "PK1_RELEASE_SECURITY_PHYSICAL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R6_MIGRATION_HISTORY_BACKUP_GC",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "Q0_TOOLCHAIN_HYGIENE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "E0_RUNNER_SAFETY_QUARANTINE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R0_REVISION_ALGEBRA",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P1_DIRTY_ADMISSION_ACK",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R0_REVISION_ALGEBRA",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "K0_COMMAND_PROTOCOL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R1_SHADOW_PROJECT_AUTHORITY_CELL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R0_REVISION_ALGEBRA",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R1_SHADOW_PROJECT_AUTHORITY_CELL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "K0_COMMAND_PROTOCOL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R2_STORAGE_BAKEOFF",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P2_DURABLE_SAVE_COORDINATOR",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R2_STORAGE_BAKEOFF",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R1_SHADOW_PROJECT_AUTHORITY_CELL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R3_DURABLE_RECOVERY_LEDGER",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R2_STORAGE_BAKEOFF",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R4_TRANSACTIONAL_INBOX_OUTBOX",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R3_DURABLE_RECOVERY_LEDGER",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R5_LIFECYCLE_EXTERNAL_CONFLICT",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R4_TRANSACTIONAL_INBOX_OUTBOX",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R5_LIFECYCLE_EXTERNAL_CONFLICT",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P3_TRANSACTIONAL_PROJECT_COMMIT",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "R6_MIGRATION_HISTORY_BACKUP_GC",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R5_LIFECYCLE_EXTERNAL_CONFLICT",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "S0_IPC_CALLER_IDENTITY",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "E0_RUNNER_SAFETY_QUARANTINE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "S1_IPC_ENVELOPE_BUDGETS",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "S0_IPC_CALLER_IDENTITY",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "SEC0_PATH_CAPABILITY",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "S1_IPC_ENVELOPE_BUDGETS",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "SEC0_PATH_CAPABILITY",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P2_DURABLE_SAVE_COORDINATOR",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "T0_TEXT_COORDINATE_ALGEBRA",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R0_REVISION_ALGEBRA",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "T0_TEXT_COORDINATE_ALGEBRA",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "E0_RUNNER_SAFETY_QUARANTINE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "T1_ANCHOR_LINEAGE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "T0_TEXT_COORDINATE_ALGEBRA",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "T1_ANCHOR_LINEAGE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R0_REVISION_ALGEBRA",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "V0_WRITER_CLAIM_COMPILER",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "F0_WRITER_REFINEMENT_CONFORMANCE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "V2_WORD_CLAIM_COMPILER",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V0_WRITER_CLAIM_COMPILER",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "V2_WORD_CLAIM_COMPILER",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "W0_WORD_PHYSICAL_RECERTIFICATION",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "V3_PACKAGE_CLAIM_COMPILER",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V0_WRITER_CLAIM_COMPILER",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "V3_PACKAGE_CLAIM_COMPILER",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "PK1_RELEASE_SECURITY_PHYSICAL",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "W0_WORD_PHYSICAL_RECERTIFICATION",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V0_WRITER_CLAIM_COMPILER",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "W0_WORD_PHYSICAL_RECERTIFICATION",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P2_DURABLE_SAVE_COORDINATOR",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "W0_WORD_PHYSICAL_RECERTIFICATION",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "T1_ANCHOR_LINEAGE",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-100_GENERATION_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "Q0_TOOLCHAIN_HYGIENE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-100_GENERATION_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P0_AUTOSAVE_GENERATION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-100_GENERATION_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P1_DIRTY_ADMISSION_ACK",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-100_GENERATION_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "S0_IPC_CALLER_IDENTITY",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-100_GENERATION_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "S1_IPC_ENVELOPE_BUDGETS",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-100_GENERATION_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "K0_COMMAND_PROTOCOL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-100_GENERATION_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R0_REVISION_ALGEBRA",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-101_IPC_ADMISSION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-100_GENERATION_ADMISSION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-102_OPERATION_PROTOCOL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-101_IPC_ADMISSION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-103_REVISION_PRODUCT_ORDER",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-102_OPERATION_PROTOCOL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-104_BOUNDARY_FALSIFICATION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-103_REVISION_PRODUCT_ORDER",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-104_BOUNDARY_FALSIFICATION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P2_DURABLE_SAVE_COORDINATOR",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "P3_TRANSACTIONAL_PROJECT_COMMIT",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "K1_AUTHORITY_DECOMPOSITION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R1_SHADOW_PROJECT_AUTHORITY_CELL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R2_STORAGE_BAKEOFF",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R3_DURABLE_RECOVERY_LEDGER",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R4_TRANSACTIONAL_INBOX_OUTBOX",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R5_LIFECYCLE_EXTERNAL_CONFLICT",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "R6_MIGRATION_HISTORY_BACKUP_GC",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "SEC0_PATH_CAPABILITY",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "T0_TEXT_COORDINATE_ALGEBRA",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "ENT0_ENTITLEMENT_CONFORMANCE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "F0_WRITER_REFINEMENT_CONFORMANCE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-200_DURABLE_SAVE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V0_WRITER_CLAIM_COMPILER",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-201_PROJECT_TRANSACTION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-200_DURABLE_SAVE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-202_LEGACY_STRANGLER",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-201_PROJECT_TRANSACTION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-203_STORAGE_SELECTION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-202_LEGACY_STRANGLER",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-204_LIFECYCLE_RECOVERY",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-203_STORAGE_SELECTION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-205_PATH_AND_TEXT",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-204_LIFECYCLE_RECOVERY",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-206_SAFE_ENTITLEMENT_BASELINE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-205_PATH_AND_TEXT",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-207_WRITER_REFINEMENT",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-206_SAFE_ENTITLEMENT_BASELINE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-300_WRITER_HOME",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-207_WRITER_REFINEMENT",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-301_AUTHORING_SURFACES",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-300_WRITER_HOME",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-302_SESSION_CONTINUITY",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-301_AUTHORING_SURFACES",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-303_DESIGN_OS_CUSTOMIZATION",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-302_SESSION_CONTINUITY",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-304_A11Y_PERFORMANCE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-303_DESIGN_OS_CUSTOMIZATION",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S09",
+        "dependent": "WP-305_MINIMUM_INTERCHANGE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-304_A11Y_PERFORMANCE",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW"
+        ],
+        "reason": "All supported TXT/Markdown/Archive/DOCX routes protected; wide Word/Google exclusion removes none"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-306_LOCAL_HISTORY_RECOVERY_UI",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-305_MINIMUM_INTERCHANGE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-307_WRITER_LOCAL_PROFILE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-306_LOCAL_HISTORY_RECOVERY_UI",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S07",
+        "dependent": "WP-308_BRAND_BASELINE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-307_WRITER_LOCAL_PROFILE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Ordinary backup/recovery required with complete supported source/history and no truncation"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-700_INTERCHANGE_IR",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-207_WRITER_REFINEMENT",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-701_PARSER_QUARANTINE",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-700_INTERCHANGE_IR",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-702_TEXT_FORMATS",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-701_PARSER_QUARANTINE",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-703_DOCX_PROFILE",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-702_TEXT_FORMATS",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-704_PDF_ARCHIVE_REVIEW",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-703_DOCX_PROFILE",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-705_NEGOTIATION_CORPUS",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-704_PDF_ARCHIVE_REVIEW",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-706_WORD_REPORT",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-705_NEGOTIATION_CORPUS",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-706_WORD_REPORT",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V2_WORD_CLAIM_COMPILER",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-706_WORD_REPORT",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-207_WRITER_REFINEMENT",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-706_WORD_REPORT",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "W0_WORD_PHYSICAL_RECERTIFICATION",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-707_WORD_APPLY",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-706_WORD_REPORT",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-707_WORD_APPLY",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-207_WRITER_REFINEMENT",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-707_WORD_APPLY",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "W0_WORD_PHYSICAL_RECERTIFICATION",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-707_WORD_APPLY",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V2_WORD_CLAIM_COMPILER",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-708_GOOGLE_PROVIDER",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-705_NEGOTIATION_CORPUS",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S06",
+        "dependent": "WP-708_GOOGLE_PROVIDER",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-207_WRITER_REFINEMENT",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Full W7/C1-C8/full-book/repeated portability remains full-profile duty; current routes and review safety retained"
+      },
+      {
+        "applicabilityId": "S05",
+        "dependent": "WP-709_MIXED_CHAINS",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-707_WORD_APPLY",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Current-format compatibility required; wide mixed-provider part deferred separately"
+      },
+      {
+        "applicabilityId": "S05",
+        "dependent": "WP-709_MIXED_CHAINS",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-708_GOOGLE_PROVIDER",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Current-format compatibility required; wide mixed-provider part deferred separately"
+      },
+      {
+        "applicabilityId": "S05",
+        "dependent": "WP-709_MIXED_CHAINS",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-207_WRITER_REFINEMENT",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Current-format compatibility required; wide mixed-provider part deferred separately"
+      },
+      {
+        "applicabilityId": "S05",
+        "dependent": "WP-709_MIXED_CHAINS",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "W0_WORD_PHYSICAL_RECERTIFICATION",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Current-format compatibility required; wide mixed-provider part deferred separately"
+      },
+      {
+        "applicabilityId": "S05",
+        "dependent": "WP-709_MIXED_CHAINS",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V2_WORD_CLAIM_COMPILER",
+        "proofObligations": [
+          "MINIMUM_INTERCHANGE_ALL_EIGHT",
+          "CURRENT_ALLOWED_DOCX_REVIEW",
+          "ENABLED_CAPABILITY_COMPLETENESS"
+        ],
+        "reason": "Current-format compatibility required; wide mixed-provider part deferred separately"
+      },
+      {
+        "applicabilityId": "S01",
+        "dependent": "WP-900_BBR_POLICY",
+        "disposition": "deferred",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-308_BRAND_BASELINE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "PACKAGE_SECURITY_CHANNEL"
+        ],
+        "reason": "New encrypted policy deferred; shared security, retention and ordinary recovery remain required"
+      },
+      {
+        "applicabilityId": "S01",
+        "dependent": "WP-900_BBR_POLICY",
+        "disposition": "deferred",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "PK0_PACKAGE_CONTENT_TRUST",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "PACKAGE_SECURITY_CHANNEL"
+        ],
+        "reason": "New encrypted policy deferred; shared security, retention and ordinary recovery remain required"
+      },
+      {
+        "applicabilityId": "S01",
+        "dependent": "WP-900_BBR_POLICY",
+        "disposition": "deferred",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "PK1_RELEASE_SECURITY_PHYSICAL",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "PACKAGE_SECURITY_CHANNEL"
+        ],
+        "reason": "New encrypted policy deferred; shared security, retention and ordinary recovery remain required"
+      },
+      {
+        "applicabilityId": "S01",
+        "dependent": "WP-900_BBR_POLICY",
+        "disposition": "deferred",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "V3_PACKAGE_CLAIM_COMPILER",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "FULL_HISTORY_RETENTION",
+          "PACKAGE_SECURITY_CHANNEL"
+        ],
+        "reason": "New encrypted policy deferred; shared security, retention and ordinary recovery remain required"
+      },
+      {
+        "applicabilityId": "S02",
+        "dependent": "WP-901_BBR_RESTORE",
+        "disposition": "deferred",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-900_BBR_POLICY",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT"
+        ],
+        "reason": "Owner-key and off-host encrypted qualification deferred; ordinary restore remains required"
+      },
+      {
+        "applicabilityId": "S03",
+        "dependent": "WP-902_ENTITLEMENT_PRODUCT",
+        "disposition": "narrowly-replaced",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-901_BBR_RESTORE",
+        "proofObligations": [
+          "ORDINARY_RECOVERY",
+          "BACKUP_RESTORE_MIGRATION_CONFLICT",
+          "ENTITLEMENT_OFFLINE_DOWNGRADE_NO_LOSS",
+          "PACKAGE_SECURITY_CHANNEL"
+        ],
+        "reason": "Entitlement is independent of new encrypted product; replace only scoped WP901 prerequisite with ordinary recovery/security/offline/downgrade proof"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "WP-903_BRAND_RELEASE",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-902_ENTITLEMENT_PRODUCT",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "WP-904_PACKAGE_CONTENT",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-903_BRAND_RELEASE",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "WP-905_PACKAGE_PHYSICAL",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-904_PACKAGE_CONTENT",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      },
+      {
+        "applicabilityId": "S04",
+        "dependent": "WP-906_RELEASE_VERDICT",
+        "disposition": "inherited",
+        "ownerChoiceRef": "OWNER_FIRST_SUPPORTED_MAC_P27_20261021",
+        "prerequisite": "WP-905_PACKAGE_PHYSICAL",
+        "proofObligations": [
+          "PACKAGE_SECURITY_CHANNEL",
+          "EXACT_OWNER_RELEASE_PERMIT",
+          "EXACT_TERMINAL_DELIVERY"
+        ],
+        "reason": "Applicable brand/license/package/physical/terminal duties retained without changing full-graph eligibility"
+      }
+    ],
+    "inheritedEvidencePolicy": "ORIGINAL_REQUIRED_EVIDENCE_CONTRACTS_REMAIN_REQUIRED_FOR_INCLUDED_OBLIGATIONS",
+    "nodeIds": [
+      "E0_RUNNER_SAFETY_QUARANTINE",
+      "ENT0_ENTITLEMENT_CONFORMANCE",
+      "F0_WRITER_REFINEMENT_CONFORMANCE",
+      "K0_COMMAND_PROTOCOL",
+      "K1_AUTHORITY_DECOMPOSITION",
+      "P0_AUTOSAVE_GENERATION",
+      "P1_DIRTY_ADMISSION_ACK",
+      "P2_DURABLE_SAVE_COORDINATOR",
+      "P3_TRANSACTIONAL_PROJECT_COMMIT",
+      "PK0_PACKAGE_CONTENT_TRUST",
+      "PK1_RELEASE_SECURITY_PHYSICAL",
+      "Q0_TOOLCHAIN_HYGIENE",
+      "R0_REVISION_ALGEBRA",
+      "R1_SHADOW_PROJECT_AUTHORITY_CELL",
+      "R24C0_SEMANTIC_PACKAGE_CLOSURE",
+      "R2_STORAGE_BAKEOFF",
+      "R3_DURABLE_RECOVERY_LEDGER",
+      "R4_TRANSACTIONAL_INBOX_OUTBOX",
+      "R5_LIFECYCLE_EXTERNAL_CONFLICT",
+      "R6_MIGRATION_HISTORY_BACKUP_GC",
+      "S0_IPC_CALLER_IDENTITY",
+      "S1_IPC_ENVELOPE_BUDGETS",
+      "SEC0_PATH_CAPABILITY",
+      "T0_TEXT_COORDINATE_ALGEBRA",
+      "T1_ANCHOR_LINEAGE",
+      "V0_WRITER_CLAIM_COMPILER",
+      "V2_WORD_CLAIM_COMPILER",
+      "V3_PACKAGE_CLAIM_COMPILER",
+      "W0_WORD_PHYSICAL_RECERTIFICATION",
+      "WP-100_GENERATION_ADMISSION",
+      "WP-101_IPC_ADMISSION",
+      "WP-102_OPERATION_PROTOCOL",
+      "WP-103_REVISION_PRODUCT_ORDER",
+      "WP-104_BOUNDARY_FALSIFICATION",
+      "WP-200_DURABLE_SAVE",
+      "WP-201_PROJECT_TRANSACTION",
+      "WP-202_LEGACY_STRANGLER",
+      "WP-203_STORAGE_SELECTION",
+      "WP-204_LIFECYCLE_RECOVERY",
+      "WP-205_PATH_AND_TEXT",
+      "WP-206_SAFE_ENTITLEMENT_BASELINE",
+      "WP-207_WRITER_REFINEMENT",
+      "WP-300_WRITER_HOME",
+      "WP-301_AUTHORING_SURFACES",
+      "WP-302_SESSION_CONTINUITY",
+      "WP-303_DESIGN_OS_CUSTOMIZATION",
+      "WP-304_A11Y_PERFORMANCE",
+      "WP-305_MINIMUM_INTERCHANGE",
+      "WP-306_LOCAL_HISTORY_RECOVERY_UI",
+      "WP-307_WRITER_LOCAL_PROFILE",
+      "WP-308_BRAND_BASELINE",
+      "WP-700_INTERCHANGE_IR",
+      "WP-701_PARSER_QUARANTINE",
+      "WP-702_TEXT_FORMATS",
+      "WP-703_DOCX_PROFILE",
+      "WP-704_PDF_ARCHIVE_REVIEW",
+      "WP-705_NEGOTIATION_CORPUS",
+      "WP-706_WORD_REPORT",
+      "WP-707_WORD_APPLY",
+      "WP-708_GOOGLE_PROVIDER",
+      "WP-709_MIXED_CHAINS",
+      "WP-900_BBR_POLICY",
+      "WP-901_BBR_RESTORE",
+      "WP-902_ENTITLEMENT_PRODUCT",
+      "WP-903_BRAND_RELEASE",
+      "WP-904_PACKAGE_CONTENT",
+      "WP-905_PACKAGE_PHYSICAL",
+      "WP-906_RELEASE_VERDICT"
+    ],
+    "originalEdgeCount": 171,
+    "originalNodeCount": 109,
+    "roots": [
+      "WP-305_MINIMUM_INTERCHANGE",
+      "WP-709_MIXED_CHAINS",
+      "WP-902_ENTITLEMENT_PRODUCT",
+      "WP-906_RELEASE_VERDICT"
+    ]
+  }
+}

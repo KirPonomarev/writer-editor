@@ -721,7 +721,11 @@
     "src/core/minimum-interchange-v1.cjs",
     "test/unit/r24-wp305-minimum-interchange.test.js",
     "test/contracts/post-mvp-project-txt-export.contract.test.js",
-    "test/contracts/post-mvp-txt-import-command-surface.contract.test.js"
+    "test/contracts/post-mvp-txt-import-command-surface.contract.test.js",
+    "scripts/ops/release-candidate.mjs",
+    "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+    "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
+    "docs/tasks/2026-10-22--mac-first-release-scope.md"
   ],
   "protectedFiles": [
     {
@@ -1686,7 +1690,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "7b94027a8e34617f1d1591b0414320ca6ed3264c8a943596465fba6f888cff22"
+        "sha256": "7466482fd5df6197cb9eaa5a25d1d7bd03a74e2f4fd0ed0793c4129ded4a32f2"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2642,15 +2646,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3e117c12d45c4e410ddb59c98d9fb4664a04d9cac9b149dd9a034d811ac9febc"
+        "sha256": "5005475292621c7b701184b0471693ec9ffd6a045531577a0b66cdd0a55f9eb9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d0e677f22588308cc6d4adf6d26f1629ca15328653fa61e049d0fb65da427fd9"
+        "sha256": "afc2657063697f6d55376bcc5d1c42185ed320d5c811769a5b7b562d090363cc"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c8b89601e7e3105b33799bfdf3559917c796610b6cbab0d0f18eb84587f13939"
+        "sha256": "4a36ebc5283b8637d665a19ea9dd7a0391be66613c357d692be96ab6730d0907"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3190,7 +3194,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "6a5d181109f51b05954e02ce1e50c0f42a4ca9575694467c9955385261a10d08"
+        "sha256": "a50c071a47b7b2213c79e22ede5bd0a85973b1356cb28e1a82bc09932bf94369"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3211,6 +3215,22 @@
       {
         "path": "test/contracts/post-mvp-txt-import-command-surface.contract.test.js",
         "sha256": "35121b3a8d3c5324e5301abb6fa12b98fe9ba9c5dfb50a89e7243bd7f6ec8039"
+      },
+      {
+        "path": "scripts/ops/release-candidate.mjs",
+        "sha256": "e1f39fdcc4cc2f5df40cfbf285bfc1af3cbc96a77779ef1a76a03bcf73642c7d"
+      },
+      {
+        "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+        "sha256": "6478b108bf315a7cf71994efd156407bc4ca4c57d623e1754f0fc09d756f60fa"
+      },
+      {
+        "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
+        "sha256": "bb1df2fe4243261f4bc8115ac829f17e1577deb174aa526a7333510c9a25adc6"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--mac-first-release-scope.md",
+        "sha256": "8672a5a275629994b931bb82ce0a54a55944088cb6b8bed32ffe2e4a488ad628"
       }
     ],
     "followupRepair": {
