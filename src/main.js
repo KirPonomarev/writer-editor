@@ -29862,32 +29862,38 @@ async function readProjectArchiveExportSource() {
     error.reason = 'project_archive_dirty_state_denied';
     throw error;
   }
-  const projectRoot = getProjectRootPath();
+  const selectedProjectName = currentProjectName || DEFAULT_PROJECT_NAME;
+  const projectRoot = getProjectRootPath(selectedProjectName);
+  const owner = activeStage10ApplicationBootstrap, session = commentAuthoringSessionId;
+  const file = currentFilePath, generation = lastSignaledEditGeneration;
   if (typeof projectRoot !== 'string' || !projectRoot.trim()) {
     const error = new Error('Project root is unavailable for archive export');
     error.reason = 'project_archive_root_unavailable';
     throw error;
   }
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const manifestRecord = await readProjectManifest(selectedProjectName);
   const manifest = manifestRecord && isPlainObjectValue(manifestRecord.manifest)
     ? manifestRecord.manifest
     : {};
   const projectId = typeof manifest.projectId === 'string' ? manifest.projectId : '';
   const projectName = typeof manifest.projectName === 'string' ? manifest.projectName : '';
   const rootIdentity = await fs.lstat(projectRoot, { bigint: true });
-  const owner = activeStage10ApplicationBootstrap, session = commentAuthoringSessionId;
-  const file = currentFilePath, generation = lastSignaledEditGeneration;
-  const assertPublication = async () => {
+  const assertContext = () => {
     const access = evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(),
       commandId: EXPORT_PROJECT_ARCHIVE_COMMAND_ID, productCommandRecord: getProductCommandRecord(EXPORT_PROJECT_ARCHIVE_COMMAND_ID) });
-    if (!access.allowed || getProjectRootPath() !== projectRoot || currentFilePath !== file
+    if (!access.allowed || (currentProjectName || DEFAULT_PROJECT_NAME) !== selectedProjectName
+      || getProjectRootPath() !== projectRoot || currentFilePath !== file
       || activeStage10ApplicationBootstrap !== owner || commentAuthoringSessionId !== session) {
       throw Object.assign(new Error('project_archive_context_stale'), { code: 'E_PROJECT_ARCHIVE_CONTEXT_STALE' });
     }
+  };
+  const assertPublication = async () => {
+    assertContext();
     const rootNow = await fs.lstat(projectRoot, { bigint: true });
     if (!rootNow.isDirectory() || rootNow.isSymbolicLink() || rootNow.dev !== rootIdentity.dev || rootNow.ino !== rootIdentity.ino) {
       throw Object.assign(new Error('project_archive_context_stale'), { code: 'E_PROJECT_ARCHIVE_CONTEXT_STALE' });
     }
+    assertContext();
   };
   const assertCapture = async () => {
     await assertPublication();
@@ -29895,11 +29901,14 @@ async function readProjectArchiveExportSource() {
       throw Object.assign(new Error('project_archive_snapshot_stale'), { code: 'E_PROJECT_ARCHIVE_SNAPSHOT_STALE' });
     }
   };
+  await assertCapture();
+  const sourcePaths = await collectProjectArchiveSourcePaths(projectRoot);
+  await assertCapture();
   return {
     projectId,
     projectName,
     projectRoot,
-    sourcePaths: await collectProjectArchiveSourcePaths(projectRoot),
+    sourcePaths,
     assertCapture,
     assertPublication,
   };

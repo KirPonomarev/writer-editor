@@ -12811,6 +12811,116 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same corrective PR after fresh clean ea0 scheduling admission. Yield one real event-loop turn only after completed C5V2 cleanup; preserve all78 bodies, assertions, fixtures, graph membership and original deadlines. Independent full-file before/after real-output proof; no fake progress or cached verdict. Normal inventory/C2A companions and exact source pins, one complete appended214-binding successor and committed fixed expectation. All prior approval histories, tuples and verifier predicates remain. No runtime, native, package or release authority change.",
       "sha256": "2cadeb322bf151cced84d841440811a00792f8ca50259a0a825734b3875f8465"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "97a42e69555ba14559ce3140edc504dd5d8ef731d47961b5e7ffedd0ceef169d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "c34228676710f40bf7442a66850fde02c0a2d8263cc6f6d979a2515a7987d618"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "ce214571f40df3f44e261c13fdb2a2f9545a85c9ba82667c828196d923a29857"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main/projectArchiveOutputPublication.cjs",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "d38fba34a42586ed68366ae914f1a16519489ab9329139d2daf16326038ea8d8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-correctness.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "4ce68515926bfe154d868c75da949bbe34121f632493cdcd8f7978a03107da19"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-export-handler.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "1d4eb354d214cdb0e360f0577ad4b718f7ad5af0a18e4d64bc79e1d02b59d758"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s32-full-archive-export.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "3ad56b5496e078da5964f51e1992b3f4ddbe19ea969f72cbc6988c71cb768f26"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "4404df7af5cbadcad86254f1e3f52c4d6907ab0bcce4015ec3c2c2709dbe3892"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "7c292e439487300865031e8a9e65e48656cb5e10472af7a14758b68e54b5061b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "1887b2c4023d22d132e4b07c2da288d9804941c6dff6c80cf5ef730f91a3c6ce"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T18:41:56.402122+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021",
+      "authority": "DIRECT_OWNER_MAC_ARCHIVE_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same corrective PR after fresh clean6172 native-integration admission. Bind selected manifest/root and allocated staging FD identity; preserve original APFS atomic profile, add explicitly non-atomic exclusive-create verified external output only after actual hardlink ENOTSUP, retain foreign objects and useful final/full owned staging on failure. Complete maintained cases, actual native RED and filesystem observations retained. Exact710-path/562-pin/215-binding successor and fixed committed expectation; all prior histories, tuples, verifier predicates and negative loops unchanged. No release/publication/signing or full-program authority.",
+      "sha256": "0cdc86af8a4f542fc1217eb16b84530026511ec2f1ce12cfa20e15e8a6d97330"
     }
   ],
   "evidenceStampIds": [

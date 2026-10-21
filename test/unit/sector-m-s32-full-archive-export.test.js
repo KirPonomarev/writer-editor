@@ -9,6 +9,7 @@ const path = require('node:path');
 
 const {
   ARCHIVE_SCHEMA_VERSION,
+  readProjectArchivePayload,
   verifyProjectArchiveBuffer,
 } = require('../../src/export/archive/projectArchiveExportHandler');
 
@@ -35,6 +36,21 @@ async function loadMainWithElectronStub(paths) {
   const mainPath = path.join(ROOT, 'src', 'main.js');
   const fileManagerPath = path.join(ROOT, 'src', 'utils', 'fileManager.js');
   const originalLoad = Module._load;
+  let saveDialog = async () => ({ canceled: true });
+  let inertWindow;
+  // This is an inert JS host, never an Electron window or rendered application.
+  function InertWindow() {
+    inertWindow = this;
+    const listeners = new Map();
+    this.webContents = { setWindowOpenHandler() {}, on() {}, send() {}, setZoomFactor() {} };
+    this.on = (name, callback) => { listeners.set(name, callback); };
+    this.close = () => listeners.get('closed')?.();
+    this.loadFile = () => new Promise(() => {});
+    this.isDestroyed = () => false;
+    this.setTitle = () => {};
+  }
+  InertWindow.getFocusedWindow = () => null;
+  InertWindow.getAllWindows = () => [];
   const electronStub = {
     app: {
       getPath: (name) => {
@@ -51,17 +67,15 @@ async function loadMainWithElectronStub(paths) {
       setName: () => {},
       requestSingleInstanceLock: () => true,
     },
-    BrowserWindow: {
-      getFocusedWindow: () => null,
-      getAllWindows: () => [],
-    },
+    BrowserWindow: InertWindow,
+    screen: { getPrimaryDisplay: () => ({ workAreaSize: { width: 1280, height: 800 } }) },
     Menu: {
       buildFromTemplate: () => ({}),
       setApplicationMenu: () => {},
     },
     dialog: {
       showMessageBox: async () => ({}),
-      showSaveDialog: async () => ({ canceled: true }),
+      showSaveDialog: (...args) => saveDialog(...args),
       showOpenDialog: async () => ({ canceled: true }),
     },
     ipcMain: {
@@ -80,9 +94,18 @@ async function loadMainWithElectronStub(paths) {
   delete require.cache[mainPath];
   delete require.cache[fileManagerPath];
   try {
+    const main = require(mainPath);
     return {
-      main: require(mainPath),
+      main,
       fileManager: require(fileManagerPath),
+      setSaveDialog: handler => { saveDialog = handler; },
+      createInertWindow: () => {
+        const load = Module._load;
+        Module._load = function(request, ...args) {
+          return request === 'electron' ? electronStub : load.call(this, request, ...args);
+        };
+        try { main.createWindow(); return inertWindow; } finally { Module._load = load; }
+      },
     };
   } finally {
     Module._load = originalLoad;
@@ -90,14 +113,14 @@ async function loadMainWithElectronStub(paths) {
 }
 
 async function createHarness(t) {
-  const tempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'project-archive-s32-'));
+  const tempRoot = await fsPromises.realpath(await fsPromises.mkdtemp(path.join(os.tmpdir(), 'project-archive-s32-')));
   t.after(async () => fsPromises.rm(tempRoot, { recursive: true, force: true }));
   const documentsParent = path.join(tempRoot, 'Documents');
   const documentsRoot = path.join(documentsParent, 'craftsman');
   const userDataRoot = path.join(tempRoot, 'userData');
   await fsPromises.mkdir(documentsRoot, { recursive: true });
   await fsPromises.mkdir(userDataRoot, { recursive: true });
-  const { main, fileManager } = await loadMainWithElectronStub({
+  const { main, fileManager, setSaveDialog, createInertWindow } = await loadMainWithElectronStub({
     tempRoot,
     documentsParent,
     userDataRoot,
@@ -109,19 +132,22 @@ async function createHarness(t) {
     main,
     tempRoot,
     documentsRoot,
+    userDataRoot,
+    setSaveDialog,
+    createInertWindow,
   };
 }
 
-async function writeDefaultProject(root) {
-  const projectRoot = path.join(root, 'Роман');
+async function writeDefaultProject(root, { projectName = 'Роман', projectId = 'project-s32', sceneText = 'scene text' } = {}) {
+  const projectRoot = path.join(root, projectName);
   await fsPromises.mkdir(path.join(projectRoot, 'roman', 'Imported'), { recursive: true });
   await fsPromises.mkdir(path.join(projectRoot, 'assets'), { recursive: true });
   await fsPromises.mkdir(path.join(projectRoot, 'backups'), { recursive: true });
   await fsPromises.mkdir(path.join(projectRoot, 'recovery'), { recursive: true });
   const manifest = {
     schemaVersion: 1,
-    projectId: 'project-s32',
-    projectName: 'Роман',
+    projectId,
+    projectName,
     proUnknown: {
       entities: [{ id: 'entity-1', kind: 'character' }],
       timeline: { preserved: true },
@@ -132,7 +158,7 @@ async function writeDefaultProject(root) {
     `${JSON.stringify(manifest, null, 2)}\n`,
     'utf8',
   );
-  await fsPromises.writeFile(path.join(projectRoot, 'roman', 'Imported', '01 Start.txt'), 'scene text', 'utf8');
+  await fsPromises.writeFile(path.join(projectRoot, 'roman', 'Imported', '01 Start.txt'), sceneText, 'utf8');
   await fsPromises.writeFile(path.join(projectRoot, 'notes.json'), '{"notes":[{"id":"n1"}]}\n', 'utf8');
   await fsPromises.writeFile(path.join(projectRoot, 'assets', 'image.bin'), Buffer.from([4, 5, 6]));
   await fsPromises.writeFile(path.join(projectRoot, 'backups', '01 Start.txt.bak'), 'backup text', 'utf8');
@@ -155,6 +181,47 @@ async function hashProjectFiles(projectRoot) {
   }
   await visit(projectRoot);
   return hashes;
+}
+
+async function readLeaseFences(userDataRoot) {
+  const fences = new Map();
+  async function visit(directory) {
+    let entries;
+    try { entries = await fsPromises.readdir(directory, { withFileTypes: true }); }
+    catch (error) { if (error.code === 'ENOENT') return; throw error; }
+    for (const entry of entries) {
+      const target = path.join(directory, entry.name);
+      if (entry.isDirectory()) await visit(target);
+      else if (entry.name === 'fencing-generation.v1.json') {
+        const raw = await fsPromises.readFile(target, 'utf8'), record = JSON.parse(raw);
+        fences.set(record.projectId, { generation: record.fencingGeneration, raw });
+      }
+    }
+  }
+  await visit(path.join(userDataRoot, 'stage10-integrity-anchors'));
+  return fences;
+}
+
+async function assertExactArchive(outPath, projectRoot, manifest) {
+  const bytes = await fsPromises.readFile(outPath), verified = verifyProjectArchiveBuffer(bytes);
+  assert.equal(verified.manifest.project.projectId, manifest.projectId);
+  assert.equal(verified.manifest.project.projectName, manifest.projectName);
+  const payload = readProjectArchivePayload(bytes), source = await hashProjectFiles(projectRoot);
+  assert.equal(payload.entries.length, source.size);
+  assert.deepEqual(payload.entries.map(entry => [entry.relativePath, sha256(entry.buffer)]).sort(), [...source].sort());
+  assert.deepEqual(payload.entries.find(entry => entry.relativePath === PROJECT_MANIFEST_FILENAME).buffer,
+    await fsPromises.readFile(path.join(projectRoot, PROJECT_MANIFEST_FILENAME)));
+}
+
+async function twoProjects(t) {
+  const harness = await createHarness(t);
+  const original = await writeDefaultProject(harness.documentsRoot);
+  const selected = await writeDefaultProject(harness.documentsRoot, {
+    projectName: 'Выбранный роман', projectId: 'project-s32-selected', sceneText: 'selected only 🧭',
+  });
+  const opened = await harness.main.handleProjectLifecycleOpenCommand({ projectId: selected.manifest.projectId });
+  assert.equal(opened.ok, true, JSON.stringify(opened));
+  return { ...harness, original, selected };
 }
 
 test('S32 full archive export: command is admitted through catalog, capability, menu, and kernel', () => {
@@ -255,6 +322,65 @@ test('S32 full archive export: main exports complete project archive without sou
 
   const after = await hashProjectFiles(projectRoot);
   assert.deepEqual([...after.entries()].sort(), [...before.entries()].sort());
+  await assertExactArchive(outPath, projectRoot, manifest);
+  assert.deepEqual([...(await readLeaseFences(harness.userDataRoot)).keys()], [manifest.projectId]);
+});
+
+test('S32 named export binds manifest, raw bytes and lease to the selected project only', async t => {
+  const harness = await twoProjects(t), { original, selected } = harness;
+  const before = await hashProjectFiles(original.projectRoot), selectedBefore = await hashProjectFiles(selected.projectRoot);
+  const fencesBefore = await readLeaseFences(harness.userDataRoot), outPath = path.join(harness.tempRoot, 'Selected.zip');
+  const result = await harness.main.handleExportProjectArchive({ confirmed: true, requestId: 's32-named', outPath });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.verified, true);
+  assert.equal(result.archiveManifest.projectId, selected.manifest.projectId);
+  await assertExactArchive(outPath, selected.projectRoot, selected.manifest);
+  assert.deepEqual([...(await hashProjectFiles(original.projectRoot))].sort(), [...before].sort());
+  assert.deepEqual([...(await hashProjectFiles(selected.projectRoot))].sort(), [...selectedBefore].sort());
+  const fencesAfter = await readLeaseFences(harness.userDataRoot);
+  assert.deepEqual(fencesAfter.get(original.manifest.projectId), fencesBefore.get(original.manifest.projectId));
+  assert.equal(fencesAfter.get(selected.manifest.projectId).generation, fencesBefore.get(selected.manifest.projectId).generation + 1);
+});
+
+for (const roundTrip of [false, true]) test('S32 initial manifest read refuses a project switch' + (roundTrip ? ' away and back' : ''), async t => {
+  const harness = await twoProjects(t), { original, selected } = harness;
+  const readFile = fsPromises.readFile;
+  let switched = false, dialogs = 0;
+  harness.setSaveDialog(async () => { dialogs++; return { canceled: false, filePath: path.join(harness.tempRoot, 'Stale.zip') }; });
+  fsPromises.readFile = async (target, ...args) => {
+    const bytes = await readFile(target, ...args);
+    if (!switched && String(target).endsWith(PROJECT_MANIFEST_FILENAME)) {
+      switched = true;
+      assert.equal((await harness.main.handleProjectLifecycleOpenCommand({ projectId: original.manifest.projectId })).ok, true);
+      if (roundTrip) assert.equal((await harness.main.handleProjectLifecycleOpenCommand({ projectId: selected.manifest.projectId })).ok, true);
+    }
+    return bytes;
+  };
+  let result;
+  try { result = await harness.main.handleExportProjectArchive({ confirmed: true, requestId: 's32-initial-stale', outPath: path.join(harness.tempRoot, 'Stale.zip') }); }
+  finally { fsPromises.readFile = readFile; }
+  assert.equal(switched, true);
+  assert.equal(result.ok, false);
+  assert.match(result.error.details.message, /project_archive_context_stale/u);
+  assert.equal(dialogs, 0);
+  assert.equal(fs.existsSync(path.join(harness.tempRoot, 'Stale.zip')), false);
+});
+
+test('S32 actual Main save-dialog continuation refuses a window close and project switch', async t => {
+  const harness = await twoProjects(t), outPath = path.join(harness.tempRoot, 'Dialog-stale.zip');
+  const window = harness.createInertWindow();
+  let dialogs = 0;
+  harness.setSaveDialog(async () => {
+    dialogs++;
+    window.close();
+    assert.equal((await harness.main.handleProjectLifecycleOpenCommand({ projectId: harness.original.manifest.projectId })).ok, true);
+    return { canceled: false, filePath: outPath };
+  });
+  const result = await harness.main.handleExportProjectArchive({ confirmed: true, requestId: 's32-dialog-stale' });
+  assert.equal(dialogs, 1);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_PROJECT_ARCHIVE_CONTEXT_STALE', JSON.stringify(result));
+  assert.equal(fs.existsSync(outPath), false);
 });
 
 test('S32 full archive export: main rejects renderer-owned archive fields and project-root targets', async (t) => {
