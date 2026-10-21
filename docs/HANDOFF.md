@@ -1,3 +1,43 @@
+# Mac archive corrective delivery — required TXT assurance amendment
+
+TASK_ID: YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: ASSURANCE_CANDIDATE_DELIVERY_PENDING
+BASE_CHECKPOINT: e6129dbf3eb61be6b681a27b4f008b5f42bcb530
+CLAIM_BOUNDARY: Current test-only amendment; no merged or Mac release acceptance
+
+The exact e612 full npm baseline passed2320of2379unit cases with59unchanged
+skips and0failures; its other groups passed3of3and20of20. Fresh E0 passed
+172of172and killed40of40mutants. These are retained checkpoint executions.
+Its actual unsigned app cold-opened the named synthetic project, exported via
+the real SavePanel to T777, and an independent Python ZIP reader matched all
+10frozen raw files across11physical members. Source bytes stayed unchanged;
+selected fence23to24and default8to8, followed by normal app exit0. The exact
+retained e612 artifact does not qualify workloads, installation or public release.
+
+The additional required interchange run exposed3pre-existing TXT assertion
+failures: two source slices included neighboring functions and one visibility
+expectation disagreed with the unchanged canonical policy. Original4a parity
+and independent review confirm attribution but give no waiver. The two-file
+assurance repair preserves6original test names and semantic protection, scopes
+each TXT region precisely, and checks visibility separately from actual
+capabilities. The repaired two-file proof passes6of6; the first full10-file run is57of59
+because two unchanged scope checks refuse the two uncommitted test paths.
+Their allowlists stay unchanged. Independent negative mutations are recorded
+externally before this update; clean-commit59of59, current CI and exact merged
+verification remain required.
+
+This amendment leaves every production/package input byte-exact e612. The
+complete source companion adds only2test paths:714admitted/566pins and
+219bindings plus1guard, with all220individual corruption checks retained.
+All previous tuples, verifier predicates, approval history and inventory
+membership/classification/skip policy remain. CI observation currently needs
+the owner's GitHub connection restored; there is no CLI diagnostic fallback
+or merge from unknown checks. This does not close the actual empty-directory/
+COPY identity gaps, MR01 scope binding, MR06 envelope, signing or first release.
+
+## Previous task observations retained as historical checkpoints
+
 # Ordinary Project Archive correctness — 2026-10-21
 
 TASK_ID: YALKEN_MAC_ARCHIVE_CORRECTNESS_20261021
