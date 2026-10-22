@@ -25,6 +25,10 @@ function readMainSource() {
   return fs.readFileSync(MAIN_PATH, 'utf8');
 }
 
+function containsForbiddenRuntimeAccess(source, forbidden) {
+  return forbidden === 'fs.' ? /(?<![\p{ID_Continue}$\u200c\u200d])fs\s*(?:\.|\?\.|\[)/u.test(source) : source.includes(forbidden);
+}
+
 function extractMarkedSection(text, startMarker, endMarker) {
   const start = text.indexOf(startMarker);
   const end = text.indexOf(endMarker);
@@ -426,6 +430,7 @@ function instantiateReviewMutatePort(options = {}) {
   const sandbox = {
     activeReviewSessionStore: null,
     activeReviewSessionLifecycle: 'passive',
+    activeDocxActivationRequestDigestGuard: require('../../src/main/rtkDocxActivationGuards.cjs').createDocxActivationRequestDigestGuard({ maxEntries: 128 }),
     currentReviewSurfacePayload: {},
     currentReviewSurfacePayloadSource: 'none',
     currentReviewSurfacePayloadContentHash: '',
@@ -1800,7 +1805,7 @@ test('review mutate port contract: preview import path stays storage-free while 
   ];
 
   for (const forbidden of forbiddenRuntimeCalls) {
-    assert.equal(previewOnlySection.includes(forbidden), false, `${forbidden} must stay out of review packet preview import`);
+    assert.equal(containsForbiddenRuntimeAccess(previewOnlySection, forbidden), false, `${forbidden} must stay out of review packet preview import`);
   }
 
   const forbiddenDirectWriteCalls = [
@@ -1813,7 +1818,13 @@ test('review mutate port contract: preview import path stays storage-free while 
     'writeFile',
   ];
   for (const forbidden of forbiddenDirectWriteCalls) {
-    assert.equal(section.includes(forbidden), false, `${forbidden} must stay out of review mutate port section`);
+    assert.equal(containsForbiddenRuntimeAccess(section, forbidden), false, `${forbidden} must stay out of review mutate port section`);
+  }
+  for (const access of ['fs.readFile(path)', 'fs . readFile(path)', 'fs?.readFile(path)', 'fs[operation](path)', 'fs?.[operation](path)']) {
+    assert.equal(containsForbiddenRuntimeAccess(`${section}\n${access}`, 'fs.'), true, `actual source plus forbidden access must refuse: ${access}`);
+  }
+  for (const identifier of ['commentProofs.push(value)', 'noteProofs.push(value)', '$fs.push(value)', 'øfs.push(value)']) {
+    assert.equal(containsForbiddenRuntimeAccess(identifier, 'fs.'), false, `unrelated identifier is not fs access: ${identifier}`);
   }
 
   for (const forbiddenPayloadAccess of [
@@ -1833,9 +1844,10 @@ test('review mutate port contract: preview import path stays storage-free while 
 test('review mutate port contract: main apply context is main-owned and never renderer snapshot-owned', () => {
   const source = readMainSource();
   const start = source.indexOf('async function buildReviewExactTextApplyInputFromMainState');
-  const end = source.indexOf('function mapMarkdownErrorCode', start);
+  const end = source.indexOf('async function publishReviewSceneWithProjectTransaction', start);
   assert.ok(start > -1 && end > start, 'main-owned apply context builder must exist');
   const snippet = source.slice(start, end);
+  assert.deepEqual([...snippet.matchAll(/^async function (\w+)\(/gmu)].map(match => match[1]), ['buildReviewExactTextApplyInputFromMainState', 'buildReviewExactTextApplyBatchInputFromMainState']);
 
   assert.equal(snippet.includes('requestEditorSnapshot'), false);
   assert.equal(snippet.includes('readCurrentReviewSurfaceSourceText'), false);

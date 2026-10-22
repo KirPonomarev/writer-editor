@@ -14,12 +14,13 @@ async function harness(t,options={}){
   fixtureModule.filename=filename;fixtureModule.paths=Module._nodeModulePaths(path.dirname(filename));fixtureModule.require=createRequire(filename);
   // Only the existing fixture definition is compiled. No test registration is
   // copied or suppressed; its real parser, planner and writer remain in use.
-  fixtureModule._compile("const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),assert=require('node:assert/strict');const envelope=require('../../src/core/document-content-envelope-v1.cjs');\n"+named(fs.readFileSync(filename,'utf8'),'notesBookDiskFixture')+'\nmodule.exports=notesBookDiskFixture;',filename);
+  fixtureModule._compile("const fs=require('node:fs'),os={...require('node:os'),tmpdir:()=>fs.realpathSync(require('node:os').tmpdir())},path=require('node:path'),assert=require('node:assert/strict');const envelope=require('../../src/core/document-content-envelope-v1.cjs');\n"+named(fs.readFileSync(filename,'utf8'),'notesBookDiskFixture')+'\nmodule.exports=notesBookDiskFixture;',filename);
   const f=await fixtureModule.exports(t),projectId=f.input.projectId;
+  assert.equal(f.root,fs.realpathSync(f.root));
   const manifest={schemaVersion:1,projectId,projectName:path.basename(f.root),treeIdentity:{schemaVersion:1,nodes:Object.fromEntries(f.ids.map(id=>['tree-node-'+sha(id).slice(0,32),{kind:'scene',present:true,bindingKey:'file:'+id}]))}};
   json(f.manifestPath,manifest);f.input.beforeManifestText=fs.readFileSync(f.manifestPath,'utf8');
   const proof=JSON.parse(f.input.returnProofJson);proof.schemaVersion=5;proof.now='2026-10-16T00:00:00.000Z';proof.noteContext.schemaVersion=2;f.input.returnProofJson=JSON.stringify(proof);
-  const userData=fs.mkdtempSync(path.join(os.tmpdir(),'yalken-recovery-userdata-'));t.after(()=>fs.rmSync(userData,{recursive:true,force:true}));
+  const userData=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'yalken-recovery-userdata-'));t.after(()=>fs.rmSync(userData,{recursive:true,force:true}));
   const anchorRoot=path.join(userData,'stage10-integrity-anchors');
   const {createMainProjectManifestAuthority}=await import('../../src/product/mainProjectManifestAuthority.mjs');
   const transactionAuthority=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false});
@@ -62,7 +63,8 @@ function mainPort(f,{choice=0,onDialog,adapter=f.adapter}={}){
 async function ordinaryStartupPort(f){
   const main=mainPort(f,{choice:1}),c=main.sandbox,source=fs.readFileSync(path.join(ROOT,'src/main.js'),'utf8'),order=[];
   const early=c.recoverMissingIntegrityAnchorAtStartup;c.recoverMissingIntegrityAnchorAtStartup=async()=>{order.push('integrity');return early();};
-  Object.assign(c,{fsSync:fs,STAGE10_LOCAL_STATE_DIRNAME:'.stage10-local',STAGE10_LEGACY_PRODUCT_SESSION_FILENAME:'product-session.v1.json',
+  Object.assign(c,{process,createDarwinExclusiveFilePublisher:require('../../src/main/projectArchiveDarwinPublication.cjs').createDarwinExclusiveFilePublisher,
+    fsSync:fs,STAGE10_LOCAL_STATE_DIRNAME:'.stage10-local',STAGE10_LEGACY_PRODUCT_SESSION_FILENAME:'product-session.v1.json',
     STAGE10_LEGACY_RECEIPT_AUTHORITY_HEAD_FILENAME:'command-receipt-authority-head.v1.json',PROJECT_MANIFEST_SCHEMA_VERSION:1,
     joinPathSegmentsWithinRoot:(root,segments)=>path.join(root,...segments),getProjectManifestPath:()=>f.manifestPath,
     ensureProjectManifest:async()=>({manifestPath:f.manifestPath,manifest:JSON.parse(await fsp.readFile(f.manifestPath,'utf8'))}),
@@ -290,7 +292,7 @@ console.log(JSON.stringify({pid:process.pid,beforeMissingRefused,explicitRetry,o
 });
 
 async function wordOriginHarness(t){
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'yalken-recovery-word-origin-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const root=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'yalken-recovery-word-origin-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const projectRoot=path.join(root,'project'),romanRoot=path.join(projectRoot,'roman'),manifestPath=path.join(projectRoot,'project.craftsman.json'),projectId='word-origin-recovery';
   fs.mkdirSync(romanRoot,{recursive:true});json(manifestPath,{schemaVersion:1,projectId,projectName:'Word',treeIdentity:{schemaVersion:1,nodes:{}}});
   const fixtureFile=require.resolve('./rtk-word-novel-import-partition.contract.test.js'),fixtureSource=fs.readFileSync(fixtureFile,'utf8');

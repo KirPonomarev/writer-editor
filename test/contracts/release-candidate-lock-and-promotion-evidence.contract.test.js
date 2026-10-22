@@ -534,8 +534,15 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
-  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_V2'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.deepEqual(cut.profiles.runtime.admittedCommandIds, ['manualMap.create', 'manualMap.node.add']);
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_MANUAL_MAP_V3'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v3');
+  assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
+    'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
+    'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
+    'manualMap.group.create', 'manualMap.group.update', 'manualMap.group.delete',
+    'manualMap.attachment.add', 'manualMap.portal.add', 'manualMap.template.apply',
+    'manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.import.jsonRepeat',
+  ]);
   const result = fullMacVerify(input);
   assert.equal(result.scopeValidity, 'VALID', JSON.stringify(result)); assert.equal(result.readiness, 'NOT_READY');
   assert.equal(result.missingQualification.length, 17); assert.equal(result.candidate.status, 'UNFROZEN');
@@ -595,6 +602,7 @@ test('full Mac V2 protects all ordinary safety interchange review and unknown qu
   for (const key of Object.keys(input.cut.qualificationPolicy)) await t.test(key, child => fullMacRefused(child, input, key, c => { delete c.qualificationPolicy[key]; }, /^E_FULL_MAC_QUALIFICATION_POLICY$/));
   const mutations = [
     ['V1 profile substitute', c => { c.profiles.runtime = require('../../src/core/writer-local-profile-v1.cjs').createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' }); }],
+    ['legacy V2 profile substitute', c => { c.profiles.runtime = require('../../src/core/writer-local-profile-v1.cjs').createWriterAtlasProfileProjection({ isPackaged: true, platform: 'darwin' }); }],
     ['blanket optional admission', c => { c.profiles.runtime.optionalSystemsEnabled = true; }],
     ['old OPS PASS', c => { c.profiles.writerOps = 'WRITER_CORE_PASS'; }],
     ['all green without current evidence', c => c.qualification.forEach(row => { row.status = 'PASS'; })],

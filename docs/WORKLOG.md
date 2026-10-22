@@ -4874,3 +4874,11 @@ whole6/affected/required gates, native package, CI/normal merge remain pending.
 Actual T777 read-only capability refusal preserves existing export; positive
 T777 publication stays blocked pending owner reply, never counted as success.
 Full first Mac, true PDF, remaining Atlas/WSE/Pulse/epochs remains active.
+
+## 2026-10-23 — Same manual-map delivery integration correction
+
+- Task YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023 continues on clean82db after fresh fetch/preflight and amended task E0.
+- Full89 remains actual FAIL:3046 tests,2665 pass,381 fail,0 cancelled/skipped/TODO; failures are limited to three known files. Three owned generated files/11members were archived and atomically isolated without deleting evidence.
+- Minimal current V3/four-pin binding and real fixture dependencies/canonical roots are corrected; whole3 executes800/800 with zero fail/cancel/skip/TODO. Runtime14 and169 protected hashes remain exact; no general FS/Review/recovery repair.
+- Owner T777 ordinary completed-artifact save decision is settled; verify complete bytes/hashes after APFS app export. Project/manuscript persistence is unchanged.
+- Current bindings, actually rebuilt app map/save/normal Quit/cold/JSON-SVG, required baseline/CI and normal merged delivery remain pending. Full first Mac remains open; Black Box later.

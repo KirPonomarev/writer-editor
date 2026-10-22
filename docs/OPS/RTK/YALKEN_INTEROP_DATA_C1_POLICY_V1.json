@@ -758,7 +758,8 @@
     "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
     "test/contracts/yalken-atlas-v5-e05-c06-atlas-reports-saved-queries-boundary.contract.test.js",
     "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
-    "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js"
+    "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
+    "test/contracts/revision-bridge-review-mutate-port.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1723,7 +1724,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "551538d285ff8b38143638e44b1dd031fbf060b4a43596f638d437485caf0fd1"
+        "sha256": "93975415698deba9ced42613f31ad358f13bc7f6f0cbf0be6f13b88327596190"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2679,15 +2680,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "edbbca05d42327392daacebb59ec64de1a6d90ee52eb7b3360f2a3e7806295a0"
+        "sha256": "4e636b1ea104bea76940be1aaf7eb553dd958347d7fb67326b4eadf8686d383c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "fc0f4433fbd6554d758a219bc19ef8158d8c0fca468fea2bc65ea9a2907e4101"
+        "sha256": "d93552083aefaa80958d773c1a0b9913e349632717555753347e6627e0307032"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "421462457673f4acece5691f65b75b1da29fbdc0a50529c8410198275e94781c"
+        "sha256": "20812f9aa4c48d9c5d4bc96010e3d352f72bcaaab91848a343aca6d0f53015cd"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3055,7 +3056,7 @@
       },
       {
         "path": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
-        "sha256": "aee3bf969d513875827e28f9e45f061001fb644b552eb4d7cb75cb51ee4c2164"
+        "sha256": "1f06703827391d400777e0a916db4aac816ebe204493b18d207e5b28af904a84"
       },
       {
         "path": "test/contracts/b2c09-command-surface-kernel.contract.test.js",
@@ -3227,7 +3228,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "28ce2dcd8d643928df5e5d91a05f8641d8ff46d770152da5399865de9012e438"
+        "sha256": "0b72320461b8993ec1c4a5f9bdacec3e185efea1d6967a96612761476994ecea"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3251,11 +3252,11 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "efb9d5d1d3b34a08a53344502403c922803e7e4effe45970f411fc7e0d98cb94"
+        "sha256": "f8bbeff10c51eb044a4b098ecfd53e82959c92efd77d959cf203d0e29eff4ed1"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "095a981a2f55cd3bc69342fe4a4cfb367465f1a569014a1e58b659a436131aa5"
+        "sha256": "3068a0ab7349ac85214c715c2e4d3746d565662e073ce6255dafd6cca89f7ff8"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
@@ -3343,7 +3344,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "8d70e6e310846431ea87bcc4fd4bbe515cfabff45d10ff7ad37bcb04448ab8db"
+        "sha256": "3f1da960c2c31e1107a9673523f4ea3845c53c03b3abf3366370b00e06e89307"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3395,11 +3396,15 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
-        "sha256": "7f986cfa33f67cea9cc590a833fa492c4701bd5ff1e4837916792b9421c210d2"
+        "sha256": "44521ac1c9d8636b1d455aec81ecdeeb5b8c09e801d24ec9eab6cae004d48300"
       },
       {
         "path": "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
         "sha256": "28f5a7197b7e6b83aaa75f420bf9c17f3a688f05b643ac1050f7032295028a30"
+      },
+      {
+        "path": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+        "sha256": "699ed0c089ecb07f97c49a82f3b6920352534a7d4e1bcb5a179dd902c4f9ecb6"
       }
     ],
     "followupRepair": {

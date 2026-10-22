@@ -1,3 +1,30 @@
+# Same manual-map delivery — integration correction, 2026-10-23
+
+TASK_ID: YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023
+STATUS: CURRENT_BINDING_AND_FIXTURE_CORRECTION_NATIVE_AND_DELIVERY_PENDING
+CORRECTION_BASE_SHA: 82db09bd2bd91d260dfb9a2374c4accf35e92b30
+ORIGINAL_DELIVERY_BASE_SHA: ba42e0c1925a6d536b18c445fdfcaf523c4864db
+
+The retained full89 affected run exposed current release-cut binding drift and
+three fixture causes: inherited Review dependencies/lexical/slice errors,
+inherited noncanonical temp roots, and newly added Darwin bootstrap dependencies.
+This dependent correction is limited to current pins/profile and actual fixture
+dependencies; all14 frozen runtime/test/bundle hashes remain exact. Historical
+certificates, predicates, inventory classes/lanes/skips and169 protected files stay.
+
+Owner T777 decision is settled: ordinary completed JSON/SVG artifact save with
+full bytes/hash/content readback is allowed. Positive app export uses declared
+APFS runtime; direct app T777 publication remains unsupported and is not credited.
+Project/manuscript persistence is unchanged. See current MM-FS-01 in the task;
+earlier pending-reply text below is historical. No additional FS portability work.
+
+Next: qualify the actually rebuilt app's selected-map authoring, attachments and
+portal, Save, normal Quit, cold reopen and JSON/SVG artifacts. Required baseline,
+CI, normal merge and fresh merged verification remain. No native/full-Mac/release
+acceptance is asserted. Black Box remains later.
+
+---
+
 # Current bounded task — Mac manual-map authoring and portability, 2026-10-23
 
 TASK_ID: YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023
