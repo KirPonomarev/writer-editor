@@ -4882,3 +4882,7 @@ Full first Mac, true PDF, remaining Atlas/WSE/Pulse/epochs remains active.
 - Minimal current V3/four-pin binding and real fixture dependencies/canonical roots are corrected; whole3 executes800/800 with zero fail/cancel/skip/TODO. Runtime14 and169 protected hashes remain exact; no general FS/Review/recovery repair.
 - Owner T777 ordinary completed-artifact save decision is settled; verify complete bytes/hashes after APFS app export. Project/manuscript persistence is unchanged.
 - Current bindings, actually rebuilt app map/save/normal Quit/cold/JSON-SVG, required baseline/CI and normal merged delivery remain pending. Full first Mac remains open; Black Box later.
+
+## 2026-10-23 — same manual-map native keyboard correction
+
+406be native draft arrows caused graph PAN/control replacement; all raw failures and failed profile153-member archive are preserved. Minimal renderer guard plus existing R2 actual-function coverage: RED164/138pass/26fail -> GREEN164/164, zero skips; all prior cases retained. Normal bundle/current companions/native/cold/export/full required delivery remain pending; full Mac remains open.

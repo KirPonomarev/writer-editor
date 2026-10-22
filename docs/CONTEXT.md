@@ -1,3 +1,11 @@
+## 2026-10-23 — native manual-map draft keys, same delivery still open
+
+Exact406be unsigned V3 native run created a synthetic project and preserved Unicode through Paste, ordinary keys, Cut, Undo, Redo and Save. Raw manuscript text remains exact. Focused draft arrows instead panned the graph and replaced the input; the journey failed before all16/export/cold. Normal Quit root86732 exit0 and all153 failed profile archive members are retained/readmatched on T777.
+
+The same-task C2 admission/preflight on clean406be precedes the minimal three-line renderer editable-target guard. Whole actual R2 unchanged-runtime RED164:138pass/26fail became GREEN164/164 on identical test bytes; every prior case remains. Root review, normal bundle, current companions, required source/full baseline/RTK/CI, rebuilt genuine native/cold/export and normal delivery remain pending. Current menu Select All limitation is recorded with native line-selection workaround pending proof; no global menu repair is included.
+
+Full first Mac product remains open, including true binary PDF and remaining Atlas/WSE/Pulse/epochs; Black Box later. MM-FS-01 owner T777 ordinary completed-artifact save/readback decision remains settled. Owner checkout, installed app/private profile and previous evidence are preserved.
+
 # Same manual-map delivery — integration correction, 2026-10-23
 
 TASK_ID: YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023

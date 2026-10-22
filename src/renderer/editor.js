@@ -16732,6 +16732,9 @@ function handleManualMapWorkbenchDoubleClick(event) {
 function handleManualMapWorkbenchKeydown(event) {
   const target = event.target instanceof Element ? event.target : null;
   if (!target?.closest('[data-manual-map-plan-host], [data-manual-map-workbench-host]')) return;
+  // Graph list rows are buttons; other controls keep their native keys.
+  if (target.isContentEditable || target.closest('input, textarea, select')
+    || (target.closest('button') && !target.closest('[data-manual-map-row-id]'))) return;
   const graph = getManualMapEventGraph();
   const rowScope = target.closest('[role="listbox"], [data-manual-map-row-id]');
   if (rowScope) {

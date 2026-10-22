@@ -74,6 +74,25 @@ function draftDomHarness(transform = text => text) {
       this.dataset = {}; this.listeners = {}; this._value = ''; this.valueWrites = 0;
       this._text = ''; this.checked = false; this.hidden = false; this.disabled = false;
       this.selectionStart = 0; this.selectionEnd = 0; this.selectionDirection = 'none';
+      this.attributes = {}; this.style = {};
+      this.classList = { add: name => { this.className = `${this.className || ''} ${name}`.trim(); } };
+    }
+    get isContentEditable() {
+      const value = this.attributes.contenteditable;
+      return value === 'false' ? false : ['', 'true', 'plaintext-only'].includes(value) || !!this.parentElement?.isContentEditable;
+    }
+    closest(selector) {
+      for (let node = this; node; node = node.parentElement) {
+        if (selector.split(',').some(part => {
+          part = part.trim();
+          if (/^[a-z]+$/.test(part)) return node.tagName === part.toUpperCase();
+          const match = /^\[([a-z-]+)(?:="([^"]*)")?\]$/.exec(part);
+          assert.ok(match, 'finite DOM closest selector must be explicit: ' + part);
+          const value = match[1].startsWith('data-') ? node.dataset[dataName(match[1].slice(5))] : node.attributes[match[1]];
+          return value !== undefined && (match[2] === undefined || value === match[2]);
+        })) return node;
+      }
+      return null;
     }
     get isConnected() { return this === document.body || !!this.parentElement?.isConnected; }
     contains(node) { return this === node || this.children.some((child) => child.contains(node)); }
@@ -101,6 +120,7 @@ function draftDomHarness(transform = text => text) {
     }
     focus() { document.activeElement = this; }
     setAttribute(name, value) {
+      this.attributes[name] = String(value);
       if (name.startsWith('data-')) this.dataset[dataName(name.slice(5))] = String(value);
     }
     addEventListener(name, fn) { (this.listeners[name] ||= []).push(fn); }
@@ -124,6 +144,7 @@ function draftDomHarness(transform = text => text) {
   }
   document.body = new Element('body'); document.activeElement = document.body;
   document.createElement = (tag) => new Element(tag);
+  document.createElementNS = (namespace, tag) => new Element(tag);
   const rail = new Element('div'), plan = new Element('div'), workspace = new Element('section');
   document.body.append(rail, workspace); workspace.append(plan);
   const calls = [], counters = { renders: 0, queries: 0 };
@@ -935,4 +956,101 @@ test('manual-map authoring refuses missing secure identity generation without a 
   const h = manualAuthoringDomHarness(); h.toolbar(); h.context.crypto = undefined;
   await assert.rejects(async () => h.button('Create map').emit('click'), { code: 'E_MANUAL_MAP_IDENTITY_UNAVAILABLE' });
   assert.equal(h.draft(), null); assert.equal(h.calls.length, 0);
+});
+
+// Actual key handler, reducers, draft rebuild, list and canvas rendering. The
+// finite DOM does not implement native caret movement or macOS accelerators.
+async function manualMapKeyboardDomHarness() {
+  const h = draftDomHarness(), c = h.context, { pathToFileURL } = require('node:url');
+  const interaction = await import(pathToFileURL(path.join(repoRoot, 'src/derived/mindmap/manualMapInteraction.mjs')).href);
+  const parity = await import(pathToFileURL(path.join(repoRoot, 'src/derived/mindmap/manualMapListKeyboardParity.mjs')).href);
+  const graph = { nodes: [{ id: 'a', label: 'Alpha' }, { id: 'b', label: 'Beta' }], edges: [], groups: [] };
+  Object.assign(c, interaction, parity, { MANUAL_MAP_SVG_NS: 'http://www.w3.org/2000/svg',
+    manualMapPinnedNodeIds: new Set(), manualMapListState: { activeRowId: 'node:a' },
+    manualMapTransientViewState: interaction.normalizeManualMapViewState({}, graph) });
+  c.buildManualMapWorkbenchRuntimeModel = () => ({ sourceGraph: graph, presentationGraph: graph,
+    listParity: parity.buildManualMapListParityModel({ graph, viewState: c.manualMapTransientViewState, listState: c.manualMapListState }),
+    viewportPlan: { viewState: c.manualMapTransientViewState, nodes: graph.nodes, edges: [] }, resourceBudgetProof: {} });
+  h.rail.dataset.manualMapWorkbenchHost = 'true'; h.plan.dataset.manualMapPlanHost = 'true';
+  h.loadActual('manualMapNumber', 'manualMapNodePosition', 'getManualMapEdgeById', 'getManualMapEventGraph',
+    'setManualMapViewIntent', 'handleManualMapWorkbenchKeydown', 'renderManualMapList', 'renderManualMapGraphCanvas');
+  const key = (target, key) => {
+    const event = { target, key, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+    c.handleManualMapWorkbenchKeydown(event); return event;
+  };
+  return { ...h, c, key };
+}
+
+for (const placement of ['rail', 'plan']) for (const kind of ['title', 'label']) {
+  for (const key of ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']) {
+    test(`manual-map actual ${placement} ${kind} ${key} leaves the focused draft connected`, async () => {
+      const h = await manualMapKeyboardDomHarness(); h.open(kind);
+      const host = h[placement], input = h.field(host); input.focus(); input.setSelectionRange(2, 4, 'backward');
+      const renders = h.counters.renders, view = JSON.stringify(h.c.manualMapTransientViewState), draft = h.draft();
+      const event = h.key(input, key);
+      assert.deepEqual({ prevented: event.defaultPrevented, sameInput: h.field(host) === input,
+        connected: input.isConnected, focused: h.document.activeElement === input, renders: h.counters.renders - renders },
+      { prevented: false, sameInput: true, connected: true, focused: true, renders: 0 });
+      assert.equal(input.selectionStart, 2); assert.equal(input.selectionEnd, 4); assert.equal(input.selectionDirection, 'backward');
+      assert.equal(JSON.stringify(h.c.manualMapTransientViewState), view); assert.deepEqual(h.draft(), draft);
+      await h.edit(input, '🧭'); assert.equal(h.draft().payload[kind], input.value);
+      assert.equal(h.field(host), input); assert.equal(h.counters.queries, 0); assert.equal(h.calls.length, 0);
+    });
+  }
+}
+
+for (const placement of ['rail', 'plan']) for (const kind of ['textarea', 'select', 'button-child', 'editable-child', 'plaintext-child']) {
+  test(`manual-map actual ${placement} ${kind} keeps all four arrows out of graph handling`, async () => {
+    for (const key of ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']) {
+      const h = await manualMapKeyboardDomHarness(); h.open(); const host = h[placement], input = h.field(host);
+      const control = kind === 'button-child' ? h.form(host).querySelector('[data-manual-map-command-cancel]')
+        : h.document.createElement(kind.endsWith('-child') ? 'div' : kind);
+      if (kind !== 'button-child') host.append(control);
+      if (kind === 'editable-child' || kind === 'plaintext-child') control.setAttribute('contenteditable', kind === 'plaintext-child' ? 'plaintext-only' : 'true');
+      const target = kind.endsWith('-child') ? h.document.createElement('span') : control;
+      if (target !== control) control.append(target);
+      control.value = 'draft 🧭'; control.focus();
+      if (kind === 'textarea') control.setSelectionRange(1, 3, 'backward');
+      const renders = h.counters.renders, view = JSON.stringify(h.c.manualMapTransientViewState), draft = h.draft();
+      assert.equal(h.key(target, key).defaultPrevented, false);
+      assert.equal(h.document.activeElement, control); assert.equal(control.isConnected, true); assert.equal(h.field(host), input);
+      if (kind === 'textarea') {
+        assert.equal(control.selectionStart, 1); assert.equal(control.selectionEnd, 3); assert.equal(control.selectionDirection, 'backward');
+      }
+      assert.equal(h.counters.renders, renders); assert.equal(JSON.stringify(h.c.manualMapTransientViewState), view);
+      assert.deepEqual(h.draft(), draft); assert.equal(h.counters.queries, 0); assert.equal(h.calls.length, 0);
+    }
+  });
+}
+
+for (const placement of ['rail', 'plan']) test(`manual-map actual ${placement} canvas still pans in all four directions`, async () => {
+  const h = await manualMapKeyboardDomHarness(), host = h[placement];
+  for (const [key, dx, dy] of [['ArrowLeft', -64, 0], ['ArrowRight', 64, 0], ['ArrowUp', 0, -64], ['ArrowDown', 0, 64]]) {
+    h.c.renderManualMapWorkbenchState();
+    if (placement === 'rail') h.c.renderManualMapGraphCanvas(host, h.c.manualMapWorkbenchState, h.c.buildManualMapWorkbenchRuntimeModel());
+    const canvas = host.querySelector('[data-manual-map-canvas]'), before = h.c.manualMapTransientViewState.viewport, renders = h.counters.renders;
+    assert.ok(canvas); assert.equal(h.key(canvas, key).defaultPrevented, true);
+    assert.equal(h.c.manualMapTransientViewState.viewport.x, before.x + dx); assert.equal(h.c.manualMapTransientViewState.viewport.y, before.y + dy);
+    assert.ok(h.counters.renders > renders); assert.equal(h.calls.length, 0); assert.equal(h.counters.queries, 0);
+  }
+});
+
+for (const placement of ['rail', 'plan']) test(`manual-map actual ${placement} BUTTON graph rows retain navigation and activation`, async () => {
+  const h = await manualMapKeyboardDomHarness(), host = h[placement]; h.c.renderManualMapWorkbenchState();
+  let row = host.querySelectorAll('[data-manual-map-row-id]')[0]; assert.equal(row.tagName, 'BUTTON');
+  assert.equal(h.key(row.children[0], 'ArrowDown').defaultPrevented, true); assert.equal(h.c.manualMapListState.activeRowId, 'node:b');
+  row = host.querySelectorAll('[data-manual-map-row-id]').find(row => row.dataset.manualMapRowId === 'node:b');
+  assert.equal(h.key(row, 'Enter').defaultPrevented, true); assert.deepEqual([...h.c.manualMapTransientViewState.selection.nodeIds], ['b']);
+  assert.equal(h.c.manualMapTransientViewState.viewport.x, 0); assert.equal(h.c.manualMapTransientViewState.viewport.y, 0);
+  assert.equal(h.calls.length, 0); assert.equal(h.counters.queries, 0);
+});
+
+test('manual-map actual keyboard ignores non-host targets but keeps noneditable graph descendants active', async () => {
+  const h = await manualMapKeyboardDomHarness(), before = JSON.stringify(h.c.manualMapTransientViewState);
+  assert.equal(h.key(h.document.body, 'ArrowRight').defaultPrevented, false);
+  assert.equal(JSON.stringify(h.c.manualMapTransientViewState), before); assert.equal(h.counters.renders, 0);
+  h.c.renderManualMapWorkbenchState(); const child = h.document.createElement('span'); child.setAttribute('contenteditable', 'false');
+  h.plan.querySelector('[data-manual-map-canvas]').append(child); assert.equal(child.isContentEditable, false);
+  assert.equal(h.key(child, 'ArrowRight').defaultPrevented, true); assert.equal(h.c.manualMapTransientViewState.viewport.x, 64);
+  assert.equal(h.calls.length, 0); assert.equal(h.counters.queries, 0);
 });

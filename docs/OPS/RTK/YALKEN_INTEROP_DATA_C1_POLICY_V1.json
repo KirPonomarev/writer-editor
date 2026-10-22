@@ -1000,7 +1000,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "f5d4fb7ab6b3b2394970cf1020f58c0a29c05205ddf800935969e193d555bd2a"
+        "sha256": "70f0ff8df3d71b00919322d2db2a2834e08bc05bf94d1ac02ffe079ba5d9b9f1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1164,7 +1164,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "2606040759aa163ccd5e74b7e893a9b55530416d7e31445bcbc89af79478d90a"
+        "sha256": "d854043aeeba9040616db5f503f95caba9383ad436478091e28c0f73e19ceed4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1724,7 +1724,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "93975415698deba9ced42613f31ad358f13bc7f6f0cbf0be6f13b88327596190"
+        "sha256": "abfa96942fb5c40ecb6ad9974b1085b8eb4dde60a08c115c14c35440ffb67174"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2680,15 +2680,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "4e636b1ea104bea76940be1aaf7eb553dd958347d7fb67326b4eadf8686d383c"
+        "sha256": "7a041b9a17c31e9fe6a6e86c1f4a2089074ce716ce25b69add9844834efb6246"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d93552083aefaa80958d773c1a0b9913e349632717555753347e6627e0307032"
+        "sha256": "361e1a74dae36301fba3442104f4d9b4230656e5d3d708398390e06c5ae2351e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "20812f9aa4c48d9c5d4bc96010e3d352f72bcaaab91848a343aca6d0f53015cd"
+        "sha256": "2def0e039e59f98ca05f829c4129cb61ce8257c65db383bf8899efab28e11b34"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3228,7 +3228,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "0b72320461b8993ec1c4a5f9bdacec3e185efea1d6967a96612761476994ecea"
+        "sha256": "b93267dde69078eed717ae9ea34d49f13452bd24624473b42ec8e7ed6d90c8e6"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3364,7 +3364,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "4c59e22583838f8076073fc854378842de705fa490d7cf613dfa9cc1a91d5577"
+        "sha256": "fffea29dff394c0f14c23813b2857011e93f54780e679c6948575dd5aa002b12"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3396,7 +3396,7 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
-        "sha256": "44521ac1c9d8636b1d455aec81ecdeeb5b8c09e801d24ec9eab6cae004d48300"
+        "sha256": "ba1b2165845780fe889b83e8f1062ecaaba58b7f770cac174796709a9be2d437"
       },
       {
         "path": "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
