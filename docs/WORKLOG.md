@@ -1,3 +1,57 @@
+# Native text-control clipboard correction — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FROZEN_COMPONENT_PROOF_CURRENT_BINDINGS_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Existing focus seam correction only; no new candidate/native/full Mac release acceptance.
+
+PR2144 is closed at actual merged4fa8c6df, candidate550deae7 and identical Git tree.
+All20official candidate checks passed; full maintained post-build RTK executed4414of4414
+on GitHub synthetic mergee04040d7 with the same tree. Candidate npm actually exits0
+with2453of2512unit passes and59unchanged sanctioned skips; wrapper91only retained
+six owned synthetic runtime files, independently archived then inode-preserving
+isolated. Fresh merged12gates and869of869affected cases passed. The exact merged
+unsigned app genuinely createdКарта12/Узел34, edited/UndoRedo/Saved Unicode scene,
+Quit and cold reopened. All11project files matched warm/cold, whole153warm and166cold
+profile members were independently readmatched. No full merged npm or CI process
+HEAD was relabeled. Closure SHA027fbe1b6b377094d764be6405d860bb35b344f65008d0ec6ed36a980fa4ce61.
+
+Actual550 ordinary INPUT Paste failed with trusted keydown but no paste/input/value
+change while scene Paste worked. On unchanged4fa renderer, actual-function RED
+executes4of12pass/8fail and exposes native text controls excluded by the PM-only
+classifier, unsupported native controls borrowing a PM ancestor, and stale deferred
+focusout publication after blur/refocus. Those failures remain retained as their own
+source/fixture. The existing Main/preload narrow boolean and clipboard guards remain.
+
+The correction changes29renderer lines only in the existing focus fragment: current
+connected document focus, writable text/search/email/url/tel/password INPUT or
+TEXTAREA, browser disabled/fieldset semantics, editable connected PM target and a
+transient generation fence for pending focusout. It does not change product write,
+Main/preload/IPC/capability/Stage10/CAS/persistence or visual form. The209appended test
+lines preserve every original3case/helper byte. Four truthful finite DOM fixture
+literal replacements retain every old note-table assertion and all other bytes.
+All three complete focused files execute29of29, zero fail/cancel/skip/todo. Normal
+qualified renderer build exits0; only the admitted editor bundle changes, preload
+and native helper stay exact. Node finite effect-port calls are not native clipboard.
+
+Root independently reviewed/froze the4source paths. Exact2new task/test memberships
+and2DONEscope entries, current source/certificate bindings, normal inventory/C2A
+and append-only path witnesses retain every historical tuple/predicate/graph/V1/V2,
+classification/skip and prior record. Forecast744DATA/597source/254certificate plus
+one guard is not a success claim until actual committed checks. No new framework,
+writer, port, registry, dependency, runtime network or stage/lease is created.
+
+Native Clipboard expectations were frozen before build/app: Library, Unicode map
+and node fields, native Cut/Paste selection, synopsis TEXTAREA and scene Save,
+normalQuit/cold reopen, independent full raw/history and whole artifact/profile
+readback. Exact final-source gates, full baseline/audit truth, official CI including
+terminal maintained RTK, normal merge and fresh merged verification remain required.
+Input Paste/full IME/numeric MR06 are separate claims. Electron advisory and release
+lock limitations stay open. All17full-Mac qualification rows remain UNKNOWN; continue
+the complete agreed Mac product after this one bounded correction. New reports and
+materials use dated T777 task folders and owned declared temporary APFS runtime.
+
 # Manual-map input correction and retained failures — 2026-10-22
 
 TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022

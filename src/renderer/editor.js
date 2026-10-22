@@ -243,12 +243,22 @@ if (isTiptapMode) {
 
 function isEditorPasteTargetFocused() {
   const activeElement = document.activeElement;
-  if (!(activeElement instanceof HTMLElement) || typeof activeElement.closest !== 'function') {
+  if (!document.hasFocus() || !(activeElement instanceof HTMLElement)
+    || !activeElement.isConnected || typeof activeElement.closest !== 'function') {
     return false;
   }
+  if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+    const isTextControl = activeElement.tagName === 'TEXTAREA'
+      || ['text', 'search', 'email', 'url', 'tel', 'password'].includes(activeElement.type);
+    return isTextControl && !activeElement.readOnly && !activeElement.matches(':disabled');
+  }
+  if (activeElement.tagName === 'BUTTON' || activeElement.tagName === 'SELECT') return false;
   const proseMirror = activeElement.closest('.ProseMirror');
-  return Boolean(proseMirror instanceof HTMLElement && proseMirror.isContentEditable && proseMirror.contains(activeElement));
+  return Boolean(proseMirror instanceof HTMLElement && proseMirror.isConnected
+    && proseMirror.isContentEditable && activeElement.isContentEditable && proseMirror.contains(activeElement));
 }
+
+let editorPasteFocusGeneration = 0;
 
 function notifyEditorPasteFocusState() {
   if (!window.electronAPI || typeof window.electronAPI.notifyEditorPasteFocusState !== 'function') {
@@ -257,13 +267,22 @@ function notifyEditorPasteFocusState() {
   window.electronAPI.notifyEditorPasteFocusState(isEditorPasteTargetFocused());
 }
 
+function refreshEditorPasteFocusState() {
+  editorPasteFocusGeneration += 1;
+  notifyEditorPasteFocusState();
+}
+
 if (window.electronAPI && typeof window.electronAPI.notifyEditorPasteFocusState === 'function') {
-  document.addEventListener('focusin', notifyEditorPasteFocusState);
-  window.addEventListener('focus', notifyEditorPasteFocusState);
+  document.addEventListener('focusin', refreshEditorPasteFocusState);
+  window.addEventListener('focus', refreshEditorPasteFocusState);
   document.addEventListener('focusout', () => {
-    window.requestAnimationFrame(notifyEditorPasteFocusState);
+    const generation = ++editorPasteFocusGeneration;
+    window.requestAnimationFrame(() => {
+      if (generation === editorPasteFocusGeneration) notifyEditorPasteFocusState();
+    });
   });
   window.addEventListener('blur', () => {
+    editorPasteFocusGeneration += 1;
     window.electronAPI.notifyEditorPasteFocusState(false);
   });
   notifyEditorPasteFocusState();

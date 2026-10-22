@@ -427,7 +427,9 @@
       "src/renderer/flags.js",
       "test/unit/r24-wp307-writer-local-profile.test.js",
       "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "test/unit/r24-wp307-writer-local-profile-mutants.test.js"
+      "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
+      "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
+      "test/unit/paste-focus-signal.test.js"
     ]
   },
   "allowPrefixByPhase": {
