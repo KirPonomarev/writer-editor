@@ -1,3 +1,50 @@
+# Canonical project document selection — 2026-10-22
+
+TASK_ID: YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 6ccfb09128b07c79e816352296f55f896e9bde8e
+CLAIM_BOUNDARY: Existing project-open/startup eligibility only; native workload and Mac release remain open.
+
+Actual rebuilt6cc Library/Open on the frozen32-scene synthetic longform chose an
+AppleDouble resource fork and persisted that wrong target. All32canonical scene
+bytes remained exact. The separate actual-Main causal runner reproduced the
+wrong read/identity/continuity/startup path before edits and the correct canonical
+scene/existing identity/continuity plus metadata startup refusal after the fix.
+Its frozen oracle/runner bytes are unchanged. Independent Python and root readers
+matched both protected document/metadata payloads; ordinary manifest/Stage10
+lifecycle writes are separately listed, never claimed whole-project byte equality.
+
+Main applies the existing non-dot component policy before fallback selection and
+bound continuation/startup. Actual materials/reference category .index.txt and
+case variants remain supported, with identity/cursor preserved. Hidden ancestors,
+metadata-only projects and forged legacy mirrors refuse safely; visible Unicode,
+internal-dot/underscore/TXT names, legacy Imported and zero-byte scenes remain.
+No tree builder, Core/schema, explicit external Open, raw archive roster, renderer,
+capability/no-loss guard, dependency or network boundary changes.
+
+Maintained WP302 passes43of43: all original29406bytes and21executed cases remain,
+with22appended cases. Full8-file affected pack passes125of125; separate complete
+S32/S33 passes18of18, all zero fail/cancel/skip/todo. Original41of43new-fixture
+preparation failure is retained. The existing tree-identity harness generated
+3synthetic Stage10 files in the task checkout; exact source/timestamp/project
+provenance, independent tar readback and same-device owned-runtime isolation are
+recorded externally. No foreign authority, cleanup command or test exclusion used.
+
+MR01 had two pre-existing stale startup-source pins after delivered process
+PR2139/2140. Actual6cc scope query refused AGENTS drift. Only those existing pins
+and changed Main rebind in the declared cut/gate; all graph/ledger/default and
+NOT_READY semantics remain. Normal inventory/C2A/DATA/complete239binding successor
+plus unchanged guard and append-only approval companions retain prior tuples,
+predicates, classifications and history. Full dependency audit still reports one
+moderate Electron advisory; required production high-level audit passes.
+
+Commit/push/official exact-head CI/protected merge/clean merged verification and
+fresh rebuilt native Library/Open/cold reopen are still required. No accepted
+numerical Writer envelope, signing/notary/channel/publication/owner release
+permit, final Mac readiness or full-program completion follows from this source
+proof. Continue MR06 after this bounded correction's delivery and native repeat.
+
 # Scoped factual context — 2026-10-22
 
 TASK_ID: YALKEN_AGENT_SCOPED_CONTEXT_20261022

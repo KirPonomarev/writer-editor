@@ -13641,6 +13641,146 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
       "sha256": "78a505060b72d7b649af0bf5c17dbd678aecebf3a1c818387edf88678f2213b0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "ab3babb81fc04432b475f1383bc8adf53da11c800f07930217dfed097a6e1046"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp302-session-continuity.test.mjs",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "16b4295febd49f7a735f91ecc2eb9fee4108c1280e8e4977c62ffa1e70a3a0f5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "6e6b034d89b680b5ee605c2eb01a7d1bf4dd5e374383a18867218a1471dfe30b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "6c29bd28bde708df484dbb20056fff2b633fa0ed67028680ba389bc80dccc76e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--mac-project-open-content.md",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "aa4d99e29d14645b9a4856dfd497b64e09813d18af6caaf16f85413162ec0219"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "a8e0bc4658f2ad32e94974547654f91f1b08ac6b733a594e47bfd32e4a99befe"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "288075ab60133f5986fe738778b59caa563090fa276c199b8a6ed5073ce7ddcd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "228dcea8cb499b1ec454800a6c61cb036f2deed2801dcffc5ec6cae3dbc15ae0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "f4e2ed48ce8b049724f17436043f33f3a507a21a583483d263a695ab35700492"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "c4258fba9aa2a382dd27206261734696f3ef99b6c286f1343183bc0f74716b6d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "c0a1ff7a1bf480c0101f28bd6512b795b04139ca594b855576004c130c8a9508"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "3cd931115ee54fcdbb03e129d9334805f1294967dd0e237e979ced98cbc39a11"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "03f2824e7092ee1f235fece4b2b2259357cf8b9268090e21ac794498699d685c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T01:40:09.782824+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Bounded existing Main project-document eligibility correction under direct first-Mac task; existing source and maintained test proof plus exact mechanical companions. Preserve raw documents/transport metadata, valid category carriers and every old tuple, predicate, graph, inventory policy and release-authority boundary. Source contract only, no native workload or release acceptance.",
+      "sha256": "9159411cb60889b7d1bc6bfd85ccee2c71d2e8a2619d96ec6225c9de49cb7376"
     }
   ],
   "evidenceStampIds": [
