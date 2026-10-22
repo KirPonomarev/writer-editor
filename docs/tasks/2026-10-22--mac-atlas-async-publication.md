@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_ATLAS_ASYNC_PUBLICATION_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 2b99f40394eca2077690d047a16f73b388d74e40
-HEAD_SHA_AT_START: 2b99f40394eca2077690d047a16f73b388d74e40
+BINDING_BASE_SHA: 71e4e869e27132e5ff2b173b9d8dd578eef2488b
+HEAD_SHA_AT_START: 71e4e869e27132e5ff2b173b9d8dd578eef2488b
 ORIGINAL_DELIVERY_BASE_SHA: b113069233521b4b1288d7e9ca3849aa03e4cf27
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-atlas-async-publication-20261022
@@ -45,7 +45,7 @@ Five delegated files: editor.js, normal generated editor.bundle.js, existing R2 
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/sector-m-scope-map.json
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
-- test/contracts/rtk-word-list-pattern-renderer.contract.test.js
+- test/contracts/yalken-atlas-v5-e05-c06-atlas-reports-saved-queries-boundary.contract.test.js
 
 ## DENYLIST
 
@@ -53,7 +53,11 @@ Everything outside the exact allowlist. No Main/Core/preload/IPC/command policy/
 
 ## CONTRACT / SHAPES
 
-Current clean checkpoint amendment03: exact2b99 draftPR2146 official RTK run39837760346 executed4414 tests,4413 pass and one missing-helper ReferenceError in the maintained active-scene VM. Root whole unchanged list-pattern file independently executed29of30 with the same error. Raw failures remain; this is fixture omission, not causal runtime RED. Clean2b99 declaration/preflight passed before this task edit. The separate code agent may change only the existing active-scene test in rtk-word-list-pattern-renderer.contract.test.js, at most30 added+deleted lines: extract actual production invalidateAtlasPublications and epoch declaration; execute them alongside the unchanged incoming body; assert increment for accepted scene/project/same/tree and no change for failed publication. All30 tests, five scenarios, prior assertions and every unrelated byte stay exact. No no-op replacement, model or runtime edit.
+Current clean checkpoint amendment04: supplementary direct-caller search covered2754 tracked maintained test and harness files. Eight additional whole files executed61cases:60pass and one pre-existing obsolete literal assertion in E05 C06 reports. That assertion and its policy/registry bytes are identical to original b113; this is not a causal runtime regression. Required inventory classification stays intact. Clean71e4 declaration/preflight passed before this edit. The separate code agent may change only the last reports wiring case (at most12 added+deleted lines): execute the existing capabilityPolicy export, require exact atlas.savedQuery.save→cap.atlas.savedQuery.save, and retain its shared-registry import/spread implementation. All four case names, all other assertions and negative checks remain exact. No runtime, fixture, skip, test removal or false success.
+
+All runtime/bundles and all prior repaired tests are frozen at71e4. Root updates exact task/factual/current binding companions. The reports test was not yet DATA/source-admitted: add exactly its maintained path to DATA/source/current certificate/DONE. Preserve every other membership; derive DATA749/source602 and full certificate count from bytes. Derive actual complete counts. Historical certificates, predicates and inventory memberships/class/lane/skips stay exact. Existing41wholefiles plus8direct caller files form49 complete affected files. Current71e4 native proof is historical identity:12project files exact,2normal exits,262ms immediateSave; no fullMac claim. New candidate fresh gates/build/native/fullbaseline/officialRTK/CI/normalmerge/freshmerged verification remain required in this same PR2146, original b113 rollback. No next contour opens.
+
+Historical amendment03:  exact2b99 draftPR2146 official RTK run39837760346 executed4414 tests,4413 pass and one missing-helper ReferenceError in the maintained active-scene VM. Root whole unchanged list-pattern file independently executed29of30 with the same error. Raw failures remain; this is fixture omission, not causal runtime RED. Clean2b99 declaration/preflight passed before this task edit. The separate code agent may change only the existing active-scene test in rtk-word-list-pattern-renderer.contract.test.js, at most30 added+deleted lines: extract actual production invalidateAtlasPublications and epoch declaration; execute them alongside the unchanged incoming body; assert increment for accepted scene/project/same/tree and no change for failed publication. All30 tests, five scenarios, prior assertions and every unrelated byte stay exact. No no-op replacement, model or runtime edit.
 
 All application/runtime/bundle and prior R2, metadata, pathless and ER contract sources are frozen at2b99. Root updates this task, factual prefixes and exact current pins; DATA748/source601 memberships stay exact. Append only this already-required list contract to successor certificate and DONE, deriving actual counts. Inventory1603 membership/classification/lane/skips and historical certificates/verifier predicates remain exact. Same PR and original b113 rollback; complete branch denominator20 and this amendment14. Prior2b99 native/source/baseline evidence remains historical on that identity; new candidate source/affected41/build/native/baseline/official CI/fullRTK and fresh merged checks are required. No new full-Mac contour opens.
 
@@ -152,7 +156,7 @@ Internal references: brain:refs executed read-only; current R2 C02 source/contra
 ## IMPLEMENTATION_STEPS
 
 CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
-Current amendment03: clean2b99 bootstrap/preflight precede this edit; taskE0 precedes delegated test repair. Whole30 list contract and prior40 affected files form41 complete files. Root reviews preservation and all exact companion bindings; new candidate gates, native, baseline, official CI and merged verification remain required.
+Current amendment04: clean71e4 bootstrap/preflight precede this edit; taskE0 precedes delegated reports contract repair. Whole49 affected files without filters or skips. Root reviews complete preserved tests and source/binding companions; new candidate source/build/native/baseline/CI and merged proof remain required.
 1. Original clean b113 preflight admitted the task-only checkpoint5c0ee35c4. Expanded clean checkpoint preflight admits the finite existing lifecycle/fanout and two fixture wiring paths before first runtime/test edit; original failure and receipts retained. Root clean exact-base bootstrap, ordered reads, current scope/source/authority checks, declaration/preflight before first repo edit; task E0 before separate code agent.
 2. Agent builds minimal unchanged-runtime RED. Freeze failure/source identities. Only after causal failure, surgical ownership correction and preserved whole R2 acceptance. Report any fixture-method failures separately.
 3. Root independently reviews source diff, preservation, schedules and affected-chain selection. Normal bundle and exact current binding companions; commit semantic checkpoint after verification, not full acceptance.
