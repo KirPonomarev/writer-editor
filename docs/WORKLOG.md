@@ -1,3 +1,304 @@
+# 2026-10-22 — Current clipboard certificate count corrected; acceptance pending
+
+Same unfinished PR2145; original rollback4fa. Root count preparation on fd2 left257 in the mandatory Apply guard although its existing required caller brought the actual certificate to258. The actual258!=257 failure remains preserved. Cleanfd2 bootstrap/declaration/preflight admit only the exact count/current-successor and mechanical pin companions; all604application/build/caller/earlier test bytes held. No new membership, predicate, lane, classification or skip. Complete affected25files400of400 on fd2 passed; separate Apply guard failed and is not promoted. Whole final source/guard/native immediate Paste+Save, normal Quit/cold/raw/profile, baseline, official CI/maintained RTK, merge and fresh merged verification remain required. Full Mac, IME/numeric and public release stay open.
+
+# 2026-10-22 — Native clipboard caller contract aligned; final acceptance pending
+
+Same unfinished PR2145, original rollback4fa. Fresh cleanf73 declaration/preflight/taskE0 admitted exactly one stale caller assertion literal; every other caller byte and all603held application/build/earlier test inputs remain identical. Complete caller8of8 and unchanged11file selection128of128 executed with zero skips. Prior R9 metadata77of77 and all retained failures remain source-scoped evidence, not this candidate native acceptance. Root independently reversed the literal to original bytes and checked actual execution receipts.
+
+The required caller was already in DATA746/source599; append this exact test to successor certificate258 and existing DONE174 while keeping all old tuples, predicates, classifications, lanes and skips. Inventory1603 only current hashes, append-only exact witnesses and existing factual histories. No product source, bundle, dependency, design or persistence change in this amendment. Final candidate source gates, affected25, rebuilt genuine immediate synopsis Paste+Save, normal Quit/cold reopen/raw/profile, full baseline, official exact CI/maintained RTK, merge and fresh merged checks remain mandatory. No full Mac, IME, numeric or public release claim.
+
+# Metadata Save reconciliation checkpoint in PR2145 — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: UNACCEPTED_SOURCE_CHECKPOINT_REQUIRED_CALLER_CONTRACT_OPEN
+BINDING_BASE_SHA: 0e8b97f689e7b477456053392fd59f12745b5996
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Same unfinished native clipboard outcome; source tests only, no native or delivery acceptance.
+
+Actual0e8 warm/cold processes exit0, canonical scene/metadata/map/node survive,
+and all14 prior project files are byte-exact on cold reopen with11 additional
+empty directories. Whole162warm175cold profiles are retained. Immediate synopsis
+Paste then Save nevertheless leaves a generic command error after durable Save.
+Diagnostic03 on actual renderer/commands/Main/Core reproduces Save before delayed
+metadata strictCAS refusal; reverse order succeeds. Exact native failing command
+was not captured, so its attribution remains an explicitly causal inference.
+Full0e8 npm baseline actual0 executes2518pass and59existing skips among2577cases;
+its wrapper91 only reflects six proven new synthetic harness files, preserved,
+readmatched and isolated with same-device inode retention. It is old-head evidence.
+
+Fresh clean0e8 declaration/preflight/taskE0 precede the renderer amendment. The
+unchanged-runtime acceptance RED preserves37old passing cases and fails exactly
+the false generic status. Current renderer defers only the exact typed metadata
+stale result and observes full already-persisted metadata through the existing
+read-only query, with project/document/form/request/order and raw schema guards.
+It never manufactures a receipt, Save acknowledgement, writer retry or dirty clear.
+Different metadata retains refusal and pending working text; it cannot adopt a
+foreign baseline and automatically overwrite it. Newer B retains raw caret and
+whitespace and persists by its own real strictCAS transaction after A completes.
+Main/Core/preload/IPC/command wrappers/normalizers and593 held source inputs remain.
+
+The complete metadata file executes77of77,0fail/cancel/skip/todo. Original1009lines
+and all37old cases remain byte-exact;252lines appended,103renderer lines changed.
+Whole11file focused pack executes127of128: the sole remaining failure is the
+preload bridge contract's exact old two-argument metadata-call literal. Its
+pathless payload and forbidden-path assertions remain untouched. The new private
+third presentation option changes no transport authority. The extra test is not
+admitted by the original21path declaration and has not been edited. A supplemental
+preflight correctly refused the dirty worktree; its nonzero receipt remains.
+This normal local checkpoint preserves the originally admitted source and current
+bindings, with that required finding OPEN; a fresh clean exact-base declaration
+and task amendment are required before editing the additional test. No source is
+retagged, no failed gate is bypassed, and no push/native/merge acceptance is claimed.
+
+Actual normal bundle build exits0; read-only wrapper91 reflects only the expected
+editor bundle delta. Original build receipt and independent bundle readback remain.
+Initial missing-helper, Core-success-shape/caret-helper and invalid-command fixture
+failures are preserved separately from the causal RED and final77case execution.
+DATA746/source599/certificate257plus1guard/inventory1603 memberships, historical
+certificate tuples/predicates, graph/V1/V2, classifications/lanes/skips remain.
+Root current hashes/witnesses and factual prefix do not create stage or release authority.
+
+Next: close the explicitly bounded caller contract on a freshly admitted clean
+checkpoint, then complete final25file affected/gates and rebuilt native immediate
+Paste+Save/normalQuit/cold/raw/full-profile journey before next push. Full baseline,
+official CI/full maintained RTK, normal merge and exact merged proof remain required.
+Full Mac Atlas/maps/WSE/Pulse/epochs, input CmdA/fullIME/numeric metrics and release
+qualification remain open. Black Box follows release. Preserve owner app and all
+old profiles; only fresh owned synthetic APFS runtime with final T777 preservation.
+
+# Native metadata transaction correction in PR2145 — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FROZEN_REQUIRED_GATES_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 0bd28bf050d07793066801a6e974c99f8875f044
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Existing metadata/Save transaction coherence within unfinished PR2145; no native, full Mac or release acceptance.
+
+Actual0bd native clipboard/caret input reached the expected synopsis, but subsequent
+ordinary Save refused COMMIT_RECORD_SCENE_DIGEST_MISMATCH. The old metadata handler
+changed the scene independently of its retained WP201 commit. Five real recovery
+packets, complete185member failed profile, raw18file project and exact artifact
+remain preserved. Normal Quit refused; exact owned process required SIGKILL after
+preserving unsaved bytes. That failed profile is never repaired or reused as fresh;
+0bd is local/unaccepted and its native journey has no cold-reopen acceptance.
+
+Fresh clean0bd bootstrap, full normative/scoped factual/code/evidence reads, current
+main4fa, architecture preflight and taskE0 precede this same-chain correction.
+Unchanged0bd actual Main first Save → metadata → second Save produced one causal
+failure among13cases: E_PROJECT_COMMIT_CORRUPT at RECOVER with the same raw/commit
+scene digest mismatch. The new handler uses existing queued commitWriterProjectSnapshot,
+current manifest authority lease and Core scene/manifest transaction. Canonical
+bookProfile is retained; Main captures its generation without advancing it or
+acknowledging unsaved text. Read-only raw manifest, exact scene CAS, node/path,
+capability, lifecycle/session/window/owner and generation guards reject late changes.
+A committed effect with stale session reports committed:true without shared-state
+publication. Genuine integrity corruption still refuses; no retained commit is resealed.
+
+Root review also found and reproduced a successful transaction with a wrong metadata
+receipt hash for valid compact V3 wire containing a real bookmark. Canonical continuation
+passed; compact wire persisted the same semantic document but the existing helper
+recomposed its bytes. Returned proposed-text hash differed from actual Core commit.
+The handler now consumes the actual transaction sceneDigest. Core, helper and envelope
+remain byte-exact. The maintained test exercises the valid raw baseline through real
+Core/lease, non-null registry, ordinary Save continuation and the next metadata CAS.
+Unknown document/manifest fields, profile, resources and protected history remain.
+
+The complete maintained metadata file executes 37of37 with0fail/cancel/skip/todo
+on the frozen source. Original603line/30486byte prefix stays exact. Tests cover actual
+Save → metadata → Save/reopen, dirty/generation acknowledgement separation, inactive
+scene, queued source/manifest/profile/node and lifecycle refusal, late publication guards,
+real interrupted-journal recovery and corrupt commit refusal. Finite Electron/transport
+hosts surround actual Main/Core/FS; these are source correctness, not native input proof.
+Earlier finite-host probe preparation failures remain separate from causal failures.
+
+The first complete25-file affected run executes357cases:340pass17fail, all17 blocked
+by DATA_RUNTIME_REPAIR_PIN before updated companion bindings. Its actual1 remains;
+source bytes were unchanged. Three newly born book-profile synthetic harness files
+were independently attributed, archived/read back across11members and isolated by
+same-device inode-preserving rename. No existing authority or user data moved.
+The final exact-commit25-file affected pack and all mandatory gates remain required.
+
+Only the admitted Main handler and appended metadata test change product/test behavior.
+Renderer, previous clipboard/caret fix, generated bundles, Core/preload/IPC/security,
+package/build inputs and all593 held source pins stay exact0bd. DATA746/source599,
+certificate257plus1guard and inventory1603 membership/classification/lane/skip policy
+remain. Root updates current hashes, appends a complete successor and append-only
+witnesses; historical certificate bytes/predicates, factual history, graph/V1/V2 and
+PlanState remain. Source review and these records create no stage or release authority.
+
+Next push follows complete focused/affected gates and an actual newly built packaged
+Library/map/node/synopsis/scene Save/normalQuit/cold/raw journey on a new owned profile.
+Full baseline/audit truth, exact official CI/full maintained RTK, normal merge and fresh
+merged verification remain mandatory. Previous earlyb83push deviation remains retained.
+Native INPUT CmdA, full IME/numeric MR06, Electron advisory and release locks remain open.
+Continue full Atlas/maps/WSE/Pulse/configuration epochs after this bounded delivery;
+Black Box follows release. Final material/evidence is T777, declared temporary runtime
+is owned APFS; no old evidence or synthetic counter is promoted to full Mac completion.
+
+# Native synopsis caret correction in PR2145 — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FROZEN_REQUIRED_GATES_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: b83f363ee117234cc46386daaf08298be7c2c444
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Existing metadata working-value/caret correctness in the same unfinished clipboard delivery; no native, full Mac or release acceptance.
+
+PR2145 remains DRAFT. Exactb83 passes12local source gates and240of240affected,
+but genuine synopsis Cut/Paste FAILED. The same active connected textarea116
+changed from raw leading-space value/caret0 to canonical trimmed value/caret5
+before Paste; it saved é 🧭Замысел instead of expected Замысел é 🧭. The complete
+failed profile152members, raw project, source/build and expectations are retained;
+it is neither corrected in place nor reused as a fresh profile. Other Library/map/
+node successes are scoped b83 observations only. Its push before rebuilt native
+violated the owner delivery order; that deviation is retained, DRAFT was no exception.
+
+Fresh cleanb83 full normative/scoped factual/code/native startup, fresh main4fa,
+declaration/preflight and amended taskE0 precede this correction. The exact real
+input/sync/debounce/command/Main/Core CAS persistence/query/render chain reproduces
+leading-space/caret loss on unchanged runtime. Existing Core normalization remains.
+Renderer readback retains writable active same-document raw working value/selection;
+explicit incoming payloads force new form values even with same IDs. Local form/edit
+coordinates, ordered queries and one existing in-flight update fence stale followups.
+A same-session receipt advances CAS for pending newer input without claiming it saved.
+
+The complete maintained metadata file executes12of12 with0fail/cancel/skip/todo.
+Its final oracle on captured unchangedb83 runtime executes12 with causal failures,
+including exact whitespace/caret5 loss through real saved metadata/body readback.
+Middle selection/direction, tags/composition-style input, inactive canonical mirrors,
+newer input eventual persistence, same-ID replacement, other-document/away-and-back,
+wrong project/node projection and independently released stale query/ack are covered.
+Original12275byte four-case/helper prefix stays exact. Initial RED and first finite
+fixture initialization failure remain separate; no old assertion is weakened or skipped.
+The initial complete11-file affected run executes264tests:263pass,1failure in the
+new finite wait helper before the second save/query barrier. Its raw log and nonzero
+exit remain retained. A bounded real-time wait replaces iteration counting without
+weakening the awaited predicate; the final12 metadata cases and unchanged-runtime control
+use the updated test bytes. The complete final20-file pack remains mandatory below.
+These finite ports are source correctness, not native input, IME or performance proof.
+
+Root independently verifies only named metadata fragments changed; all other renderer
+bytes, clipboard focus route, previous clipboard/assurance tests, Main/Core/preload/
+IPC/normalization/security and protected application inputs stay exactb83. Normal
+build produces only editor.bundle.js; preload/helper remain. One existing required
+metadata test is added to certificate and DONE scope; DATA746/source599 and inventory
+1603members/classes/lanes/skips stay. A complete257binding successor plus one guard,
+current hashes and append-only witnesses must pass exact committed checks. Historical
+certificate tuples/predicates/graph/V1/V2/PlanState and previous evidence remain.
+
+Next push and CI follow complete focused/affected checks and an actual rebuilt native
+clipboard/Apply/Save/Quit/cold/raw journey on a new owned profile, with complete artifact/
+profile preservation. Full baseline/audit truth, exact official CI and full maintained
+RTK, normal merge and fresh merged checks remain mandatory. Native INPUT CmdA finding,
+Electron advisory/release locks, full IME/numeric MR06 and all17full-Mac rows stay open.
+Continue complete Atlas/maps/WSE/Pulse/configuration epochs after this bounded delivery;
+Black Box follows release. New materials/evidence stay on T777 with declared owned APFS
+runtime. No stage/lease/publication permit or broader release readiness is manufactured.
+
+# Native clipboard delivery — required editor assurance — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SAME_CHAIN_ASSURANCE_SOURCE_FROZEN_FINAL_GATES_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 50d9e10d793ce65459ea92ba15a0d5e800544d01
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Two required stale contract corrections in the same unfinished clipboard delivery; no additional runtime, native or full Mac acceptance.
+
+Unaccepted clipboard checkpoint50d9 passes eleven short mandatory gates, but its
+complete17file affected run actually executes236of238. Independent unchanged4fa
+whole-two-file control executes4of6 with the same two failures. Both RED executions
+remain retained; neither is relabeled a clipboard regression or dropped from coverage.
+Fresh clean50d9 full normative/scoped factual startup, fetch, architecture preflight
+and amended taskE0 precede the two additional delegated test edits. Original4fa
+prewrite evidence and original delivery rollback remain their separate identities.
+
+The historical retired proof still detects a removed raw IPC listener. Its contract
+now consumes false plus the exact missing-check and independently verifies the real
+guardedOn listener. Retired status, token0, inactive admission, true autosave/UI
+recovery seams and both forced-negative bodies remain. The proofhook is byte-exact.
+The hotpath test selects the actual paired legacy branch and preserves all8original
+assertions and other2case bodies. Actual Tiptap registration/onUpdate/update/sync/
+dirty-generation/deferred guards execute in finite ports. PM DOM input cannot
+duplicate a transaction; active fallback DOM input uses its existing working buffer.
+Four compiling guard/update/direct-render/DOM-replacement mutants fail the same
+semantic oracle. No native clipboard/recovery/performance proof follows from this VM.
+
+The complete2files execute8of8 and original3clipboard files29of29, all zero fail,
+cancel, skip and todo. Initial new-oracle7of8 and exact source remain retained;
+only the finite trap message was corrected to carry its stable semantic reason.
+Root independently reverse-verified every original byte outside admitted assertion
+and extraction changes,136added lines within260. Original4clipboard source paths
+and every application/build input are exact50d9; no renderer build is performed.
+
+Only2exact required contract memberships and current mechanical/factual companions
+are added. Normal inventory/C2A, a complete256binding successor with one guard,
+746DATApaths/599source pins and append-only exact-path witnesses must be checked on
+the final commit; historical tuples/predicates/graph/V1/V2/PlanState/lanes/skips and
+current SectorMscope map remain. Final whole17file affected, baseline/audit truth,
+official full maintained RTK/CI, genuine packaged clipboard/Apply/Save/Quit/cold/raw
+and whole artifact/profile proof, normal merge and fresh merged checks remain required.
+Electron advisory/release locks, full IME/numeric MR06 and all17full-Mac rows remain
+open. Continue complete Atlas/maps/WSE/Pulse/configuration epochs after this delivery;
+Black Box follows release. New evidence/materials stay on T777 and owned declared
+temporary APFS runtime; no profile/evidence identity is retagged.
+
+# Native text-control clipboard correction — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FROZEN_COMPONENT_PROOF_CURRENT_BINDINGS_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Existing focus seam correction only; no new candidate/native/full Mac release acceptance.
+
+PR2144 is closed at actual merged4fa8c6df, candidate550deae7 and identical Git tree.
+All20official candidate checks passed; full maintained post-build RTK executed4414of4414
+on GitHub synthetic mergee04040d7 with the same tree. Candidate npm actually exits0
+with2453of2512unit passes and59unchanged sanctioned skips; wrapper91only retained
+six owned synthetic runtime files, independently archived then inode-preserving
+isolated. Fresh merged12gates and869of869affected cases passed. The exact merged
+unsigned app genuinely createdКарта12/Узел34, edited/UndoRedo/Saved Unicode scene,
+Quit and cold reopened. All11project files matched warm/cold, whole153warm and166cold
+profile members were independently readmatched. No full merged npm or CI process
+HEAD was relabeled. Closure SHA027fbe1b6b377094d764be6405d860bb35b344f65008d0ec6ed36a980fa4ce61.
+
+Actual550 ordinary INPUT Paste failed with trusted keydown but no paste/input/value
+change while scene Paste worked. On unchanged4fa renderer, actual-function RED
+executes4of12pass/8fail and exposes native text controls excluded by the PM-only
+classifier, unsupported native controls borrowing a PM ancestor, and stale deferred
+focusout publication after blur/refocus. Those failures remain retained as their own
+source/fixture. The existing Main/preload narrow boolean and clipboard guards remain.
+
+The correction changes29renderer lines only in the existing focus fragment: current
+connected document focus, writable text/search/email/url/tel/password INPUT or
+TEXTAREA, browser disabled/fieldset semantics, editable connected PM target and a
+transient generation fence for pending focusout. It does not change product write,
+Main/preload/IPC/capability/Stage10/CAS/persistence or visual form. The209appended test
+lines preserve every original3case/helper byte. Four truthful finite DOM fixture
+literal replacements retain every old note-table assertion and all other bytes.
+All three complete focused files execute29of29, zero fail/cancel/skip/todo. Normal
+qualified renderer build exits0; only the admitted editor bundle changes, preload
+and native helper stay exact. Node finite effect-port calls are not native clipboard.
+
+Root independently reviewed/froze the4source paths. Exact2new task/test memberships
+and2DONEscope entries, current source/certificate bindings, normal inventory/C2A
+and append-only path witnesses retain every historical tuple/predicate/graph/V1/V2,
+classification/skip and prior record. Forecast744DATA/597source/254certificate plus
+one guard is not a success claim until actual committed checks. No new framework,
+writer, port, registry, dependency, runtime network or stage/lease is created.
+
+Native Clipboard expectations were frozen before build/app: Library, Unicode map
+and node fields, native Cut/Paste selection, synopsis TEXTAREA and scene Save,
+normalQuit/cold reopen, independent full raw/history and whole artifact/profile
+readback. Exact final-source gates, full baseline/audit truth, official CI including
+terminal maintained RTK, normal merge and fresh merged verification remain required.
+Input Paste/full IME/numeric MR06 are separate claims. Electron advisory and release
+lock limitations stay open. All17full-Mac qualification rows remain UNKNOWN; continue
+the complete agreed Mac product after this one bounded correction. New reports and
+materials use dated T777 task folders and owned declared temporary APFS runtime.
+
 # Manual-map input correction and retained failures — 2026-10-22
 
 TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022

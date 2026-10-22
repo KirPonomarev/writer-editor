@@ -153,3 +153,212 @@ test('main process paste handler behavior follows renderer focus signal', () => 
   assert.equal(module.exports.handlePrimaryPasteShortcut({}, { ...shortcut, key: 'x' }, nonShortcutWindow), false);
   assert.equal(nonShortcutWindow.pasteCount, 0);
 });
+
+// Finite DOM/browser-effect ports: production classifier, listeners, preload
+// serialization and Main decisions execute unchanged. This is not native input.
+function clipboardFocusHarness(platform = 'darwin') {
+  class Element {
+    constructor(tagName = 'DIV', properties = {}) {
+      Object.assign(this, { tagName, type: 'text', connected: true, readOnly: false,
+        disabled: false, parentElement: null, children: [], editable: undefined,
+        proseMirror: false, value: 'Aе\u0301🧭Z', selectionStart: 1, selectionEnd: 4 }, properties);
+    }
+    append(child) { child.parentElement = this; this.children.push(child); return child; }
+    get isConnected() { return this.connected && (!this.parentElement || this.parentElement.isConnected); }
+    get isContentEditable() { return this.editable ?? this.parentElement?.isContentEditable ?? false; }
+    closest(selector) {
+      assert.equal(selector, '.ProseMirror');
+      for (let node = this; node; node = node.parentElement) if (node.proseMirror) return node;
+      return null;
+    }
+    contains(value) {
+      for (let node = value; node; node = node.parentElement) if (node === this) return true;
+      return false;
+    }
+    matches(selector) {
+      assert.equal(selector, ':disabled');
+      if (this.disabled) return true;
+      for (let node = this.parentElement; node; node = node.parentElement) {
+        if (node.tagName !== 'FIELDSET' || !node.disabled) continue;
+        const firstLegend = node.children.find(child => child.tagName === 'LEGEND');
+        if (!firstLegend || !firstLegend.contains(this)) return true;
+      }
+      return false;
+    }
+  }
+  let focused = true;
+  const calls = [], effects = [], frames = [], documentHandlers = {}, windowHandlers = {};
+  const mainSource = read('src/main.js'), preloadSource = read('src/preload.js');
+  const context = vm.createContext({ process: { platform } });
+  vm.runInContext('let isEditorPasteTargetFocused = false;\n' + [
+    'normalizeEditorPasteFocusState', 'isPrimaryPasteShortcut',
+    'handlePrimaryPasteShortcut', 'handlePrimaryCutShortcut',
+  ].map(name => extractFunctionSource(mainSource, name)).join('\n'), context);
+  context.ipcRenderer = { send(channel, payload) {
+    assert.equal(channel, 'editor:paste-focus-state');
+    assert.deepEqual(Object.keys(payload), ['focused']);
+    const state = context.normalizeEditorPasteFocusState(payload);
+    assert.equal(typeof state, 'boolean');
+    calls.push(state); context.focusSignal = state;
+    vm.runInContext('isEditorPasteTargetFocused = focusSignal;', context);
+  } };
+  const preloadMethod = preloadSource.match(/notifyEditorPasteFocusState:\s*(\(focused\)\s*=>\s*\{[\s\S]*?\n  \}),/);
+  assert.ok(preloadMethod, 'actual narrow preload method');
+  vm.runInContext("const EDITOR_PASTE_FOCUS_STATE_CHANNEL = 'editor:paste-focus-state';\n"
+    + 'this.preloadNotify = ' + preloadMethod[1] + ';', context);
+  const document = { activeElement: new Element('BODY'), hasFocus: () => focused,
+    addEventListener(type, callback) { documentHandlers[type] = callback; } };
+  const window = { electronAPI: { notifyEditorPasteFocusState: context.preloadNotify },
+    addEventListener(type, callback) { windowHandlers[type] = callback; },
+    requestAnimationFrame(callback) { frames.push(callback); } };
+  const renderer = read('src/renderer/editor.js');
+  vm.runInContext(renderer.slice(renderer.indexOf('function isEditorPasteTargetFocused()'),
+    renderer.indexOf("const statusElement = document.getElementById('status');")),
+  vm.createContext({ window, document, HTMLElement: Element }));
+  let prevented = 0;
+  const event = { preventDefault() { prevented++; } };
+  const nativeWindow = { isDestroyed: () => false, isFocused: () => focused,
+    webContents: { isDestroyed: () => false,
+      paste() { effects.push({ kind: 'paste', target: document.activeElement }); },
+      cut() { effects.push({ kind: 'cut', target: document.activeElement }); } } };
+  return { Element, document, window, calls, effects, frames, context, nativeWindow,
+    get prevented() { return prevented; },
+    focus(element) { document.activeElement = element; documentHandlers.focusin(); },
+    focusout() { documentHandlers.focusout(); },
+    blur() { focused = false; windowHandlers.blur(); },
+    refocus() { focused = true; windowHandlers.focus(); },
+    flush() { for (const callback of frames.splice(0)) callback(); },
+    invoke(kind, overrides = {}, win = nativeWindow) {
+      const input = { type: 'keyDown', key: kind === 'paste' ? 'v' : 'x',
+        meta: platform === 'darwin', control: platform !== 'darwin',
+        alt: false, shift: false, isAutoRepeat: false, ...overrides };
+      return context[kind === 'paste' ? 'handlePrimaryPasteShortcut' : 'handlePrimaryCutShortcut'](event, input, win);
+    } };
+}
+
+test('current writable native text inputs and textarea route actual Main Paste and Cut once without touching selection', () => {
+  for (const [tagName, type] of [['TEXTAREA', 'textarea'], ...['text', 'search', 'email', 'url', 'tel', 'password'].map(type => ['INPUT', type])]) {
+    const h = clipboardFocusHarness(), target = new h.Element(tagName, { type });
+    const before = [target.value, target.selectionStart, target.selectionEnd];
+    h.focus(target);
+    assert.equal(h.calls.at(-1), true, tagName + ':' + type);
+    assert.equal(h.invoke('paste'), true); assert.equal(h.invoke('cut'), true);
+    assert.deepEqual(h.effects.map(effect => effect.kind), ['paste', 'cut']);
+    assert.ok(h.effects.every(effect => effect.target === target));
+    assert.equal(h.prevented, 1, 'only existing Cut prevents native default');
+    assert.deepEqual([target.value, target.selectionStart, target.selectionEnd], before);
+  }
+});
+
+test('non-text native controls cannot borrow an enclosing ProseMirror paste target', () => {
+  for (const type of ['button', 'submit', 'reset', 'checkbox', 'radio', 'file', 'hidden', 'number', 'range', 'color', 'date', 'datetime-local', 'month', 'time', 'week']) {
+    const h = clipboardFocusHarness(), pm = new h.Element('DIV', { proseMirror: true, editable: true });
+    const target = pm.append(new h.Element('INPUT', { type }));
+    h.focus(target); assert.equal(h.calls.at(-1), false, type);
+    h.invoke('paste'); h.invoke('cut'); assert.deepEqual(h.effects, [], type);
+  }
+});
+
+test('readonly disabled and inherited-disabled native fields refuse clipboard while first legend remains writable', () => {
+  for (const tagName of ['INPUT', 'TEXTAREA']) {
+    for (const properties of [{ disabled: true }, { readOnly: true }, { connected: false }]) {
+      const h = clipboardFocusHarness(); h.focus(new h.Element(tagName, properties));
+      assert.equal(h.calls.at(-1), false); h.invoke('paste'); h.invoke('cut');
+      assert.deepEqual(h.effects, []);
+    }
+    const h = clipboardFocusHarness(), fieldset = new h.Element('FIELDSET', { disabled: true });
+    const legend = fieldset.append(new h.Element('LEGEND'));
+    const allowed = legend.append(new h.Element(tagName));
+    h.focus(allowed); assert.equal(h.calls.at(-1), true, 'browser first-legend exemption');
+    const refused = fieldset.append(new h.Element(tagName));
+    h.focus(refused); assert.equal(h.calls.at(-1), false, 'inherited disabled outside first legend');
+    const secondLegend = fieldset.append(new h.Element('LEGEND'));
+    h.focus(secondLegend.append(new h.Element(tagName))); assert.equal(h.calls.at(-1), false);
+    const outer = new h.Element('FIELDSET', { disabled: true }); outer.append(fieldset);
+    h.focus(allowed); assert.equal(h.calls.at(-1), false, 'inner legend does not escape disabled outer fieldset');
+  }
+});
+
+test('ProseMirror roots and editable descendants remain eligible but disconnected or noneditable focus does not', () => {
+  const h = clipboardFocusHarness(), pm = new h.Element('DIV', { proseMirror: true, editable: true });
+  for (const target of [pm, pm.append(new h.Element('SPAN'))]) {
+    h.focus(target); assert.equal(h.calls.at(-1), true); h.invoke('paste'); h.invoke('cut');
+    assert.equal(h.effects.at(-1).target, target);
+  }
+  for (const target of [new h.Element('DIV', { editable: true }), new h.Element('BUTTON'), new h.Element('SELECT'),
+    pm.append(new h.Element('BUTTON')), pm.append(new h.Element('SELECT')),
+    pm.append(new h.Element('SPAN', { editable: false })), new h.Element('DIV', { proseMirror: true, editable: false }),
+    new h.Element('DIV', { proseMirror: true, editable: true, connected: false }), null, {}]) {
+    const count = h.effects.length;
+    h.focus(target); assert.equal(h.calls.at(-1), false); h.invoke('paste'); h.invoke('cut');
+    assert.equal(h.effects.length, count);
+  }
+});
+
+test('deferred focusout cannot reassert routing after blur even when DOM activeElement remains editable', () => {
+  const h = clipboardFocusHarness(), pm = new h.Element('DIV', { proseMirror: true, editable: true });
+  h.focus(pm); assert.equal(h.calls.at(-1), true);
+  h.focusout(); assert.equal(h.frames.length, 1); h.blur();
+  assert.equal(h.calls.at(-1), false);
+  const afterBlur = h.calls.length; h.flush();
+  assert.equal(h.calls.length, afterBlur, 'old frame must not publish after window blur');
+  h.invoke('paste'); h.invoke('cut'); assert.deepEqual(h.effects, []);
+  h.refocus(); assert.equal(h.calls.at(-1), true); h.invoke('paste');
+  assert.equal(h.effects.length, 1); assert.equal(h.effects[0].target, pm);
+});
+
+test('refocus and newer focus transitions invalidate each pending older focusout publication', () => {
+  const h = clipboardFocusHarness(), pm = new h.Element('DIV', { proseMirror: true, editable: true });
+  h.focus(pm); h.focusout(); h.blur(); h.refocus();
+  const current = h.calls.length; h.flush(); assert.equal(h.calls.length, current);
+  h.focusout(); h.focus(new h.Element('INPUT')); const newer = h.calls.length;
+  assert.equal(h.calls.at(-1), true); h.flush(); assert.equal(h.calls.length, newer);
+  h.focusout(); h.document.activeElement = new h.Element('BODY'); h.flush();
+  assert.equal(h.calls.at(-1), false, 'current frame re-reads the actual target');
+  h.invoke('paste'); h.invoke('cut'); assert.deepEqual(h.effects, []);
+});
+
+test('current deferred publication rechecks live connection writability and document focus', () => {
+  for (const change of [target => { target.connected = false; }, target => { target.readOnly = true; }, target => { target.disabled = true; }]) {
+    const h = clipboardFocusHarness(), target = new h.Element('TEXTAREA');
+    h.focus(target); assert.equal(h.calls.at(-1), true); h.focusout(); change(target); h.flush();
+    assert.equal(h.calls.at(-1), false); h.invoke('paste'); h.invoke('cut'); assert.deepEqual(h.effects, []);
+  }
+  const h = clipboardFocusHarness(), pm = new h.Element('DIV', { proseMirror: true, editable: true });
+  h.focus(pm); h.document.hasFocus = () => false; h.focusout(); h.flush();
+  assert.equal(h.calls.at(-1), false, 'DOM activeElement does not prove focused document');
+  h.invoke('paste'); h.invoke('cut'); assert.deepEqual(h.effects, []);
+});
+
+test('actual Main clipboard modifiers liveness and focused-window guards remain enforced for native inputs', () => {
+  for (const platform of ['darwin', 'linux']) {
+    const h = clipboardFocusHarness(platform); h.focus(new h.Element('INPUT'));
+    assert.equal(h.calls.at(-1), true);
+    for (const kind of ['paste', 'cut']) {
+      const modifiers = [{ type: 'keyUp' }, { key: 'a' }, { alt: true }, { shift: true }, { isAutoRepeat: true },
+        platform === 'darwin' ? { meta: false } : { control: false },
+        platform === 'darwin' ? { control: true } : { meta: true }];
+      for (const input of modifiers) h.invoke(kind, input);
+      for (const win of [null, { ...h.nativeWindow, isDestroyed: () => true },
+        { ...h.nativeWindow, isFocused: () => false }, { ...h.nativeWindow, webContents: null },
+        { ...h.nativeWindow, webContents: { isDestroyed: () => true } }]) h.invoke(kind, {}, win);
+    }
+    assert.deepEqual(h.effects, []); assert.equal(h.prevented, 0);
+    h.invoke('paste'); h.invoke('cut');
+    assert.deepEqual(h.effects.map(effect => effect.kind), platform === 'darwin' ? ['paste', 'cut'] : ['paste']);
+    h.focus(new h.Element('BODY')); const count = h.effects.length;
+    h.invoke('paste'); h.invoke('cut'); assert.equal(h.effects.length, count);
+  }
+});
+
+test('actual preload remains boolean-only and rejects truthy non-booleans without clipboard effects', () => {
+  const h = clipboardFocusHarness();
+  for (const value of ['true', 1, {}, [], null, undefined, false]) {
+    h.context.preloadNotify(value); assert.equal(h.calls.at(-1), false);
+    h.invoke('paste'); h.invoke('cut');
+  }
+  assert.deepEqual(h.effects, []);
+  for (const payload of [null, [], {}, { focused: 1 }, { focused: 'true' }]) {
+    assert.equal(h.context.normalizeEditorPasteFocusState(payload), null);
+  }
+});

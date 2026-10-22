@@ -66,7 +66,12 @@ test('contour-01 primary editor save/recovery proofhook: historical admitted cla
   assert.deepEqual(payload.coveredSeams, SEAM_IDS);
   assert.deepEqual(payload.provenOutOfScopeClaims, []);
   assert.deepEqual(payload.outOfScopeNotClaimed, OUT_OF_SCOPE_IDS);
-  assert.equal(payload.seamResults['boundary-read-seam'], true);
+  assert.equal(payload.seamResults['boundary-read-seam'], false);
+  assert.equal(payload.checkResults.mainEditorTextResponseListener, false);
+  assert.ok(payload.missingChecks.includes('boundary-read-seam:mainEditorTextResponseListener'));
+  const mainSource = require('node:fs').readFileSync(path.join(process.cwd(), 'src/main.js'), 'utf8');
+  assert.ok(mainSource.includes("guardedOn('editor:text-response', (_, payload) => {"));
+  assert.equal(mainSource.includes("ipcMain.on('editor:text-response', (_, payload) => {"), false);
   assert.equal(payload.seamResults['autosave-reopen-recovery-path'], true);
   assert.equal(payload.seamResults['ui-recovery-restored-channel'], true);
   assert.equal(payload.seamResults['menu-save-command-path'], false);

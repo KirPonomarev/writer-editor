@@ -63,7 +63,7 @@ test('preload ui command bridge: metadata edits dispatch pathless stable-id comm
   assert.ok(payloadHelper.includes('nodeId: currentDocumentId'))
   assert.ok(payloadHelper.includes('baselineHash: currentMetadataBaselineHash'))
   assert.ok(payloadHelper.includes('metadata: {'))
-  assert.ok(flushHelper.includes('dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload)'))
+  assert.ok(flushHelper.includes('dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload, { deferMetadataError: true })'))
   assert.ok(flushHelper.includes('receipt.contentHashAfter'))
   assert.ok(source.includes('scheduleMetadataUpdate();'))
 

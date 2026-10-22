@@ -147,13 +147,13 @@ test('paste target is revalidated after returning from Word without changing DOM
   const fs = require('node:fs'), vm = require('node:vm');
   const source = fs.readFileSync(require.resolve('../../src/renderer/editor.js'), 'utf8');
   const fragment = source.slice(source.indexOf('function isEditorPasteTargetFocused()'), source.indexOf("const statusElement = document.getElementById('status');"));
-  const handlers = {}, calls = [];
-  class Element { closest() { return this; } contains(value) { return value === this; } }
+  const handlers = {}, calls = []; let focused = true;
+  class Element { constructor() { this.isConnected = true; } closest() { return this; } contains(value) { return value === this; } }
   const editable = new Element(); editable.isContentEditable = true;
-  const document = { activeElement: editable, addEventListener() {} };
+  const document = { activeElement: editable, hasFocus: () => focused, addEventListener() {} };
   const window = { addEventListener: (type, fn) => { handlers[type] = fn; }, requestAnimationFrame: fn => fn(), electronAPI: { notifyEditorPasteFocusState: state => calls.push(state) } };
   vm.runInNewContext(fragment, { window, document, HTMLElement: Element });
-  handlers.blur(); handlers.focus();
+  focused = false; handlers.blur(); focused = true; handlers.focus();
   assert.deepEqual(calls, [true, false, true]);
   editable.isContentEditable = false; handlers.focus();
   assert.equal(calls.at(-1), false);

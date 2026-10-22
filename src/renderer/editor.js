@@ -243,12 +243,22 @@ if (isTiptapMode) {
 
 function isEditorPasteTargetFocused() {
   const activeElement = document.activeElement;
-  if (!(activeElement instanceof HTMLElement) || typeof activeElement.closest !== 'function') {
+  if (!document.hasFocus() || !(activeElement instanceof HTMLElement)
+    || !activeElement.isConnected || typeof activeElement.closest !== 'function') {
     return false;
   }
+  if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+    const isTextControl = activeElement.tagName === 'TEXTAREA'
+      || ['text', 'search', 'email', 'url', 'tel', 'password'].includes(activeElement.type);
+    return isTextControl && !activeElement.readOnly && !activeElement.matches(':disabled');
+  }
+  if (activeElement.tagName === 'BUTTON' || activeElement.tagName === 'SELECT') return false;
   const proseMirror = activeElement.closest('.ProseMirror');
-  return Boolean(proseMirror instanceof HTMLElement && proseMirror.isContentEditable && proseMirror.contains(activeElement));
+  return Boolean(proseMirror instanceof HTMLElement && proseMirror.isConnected
+    && proseMirror.isContentEditable && activeElement.isContentEditable && proseMirror.contains(activeElement));
 }
+
+let editorPasteFocusGeneration = 0;
 
 function notifyEditorPasteFocusState() {
   if (!window.electronAPI || typeof window.electronAPI.notifyEditorPasteFocusState !== 'function') {
@@ -257,13 +267,22 @@ function notifyEditorPasteFocusState() {
   window.electronAPI.notifyEditorPasteFocusState(isEditorPasteTargetFocused());
 }
 
+function refreshEditorPasteFocusState() {
+  editorPasteFocusGeneration += 1;
+  notifyEditorPasteFocusState();
+}
+
 if (window.electronAPI && typeof window.electronAPI.notifyEditorPasteFocusState === 'function') {
-  document.addEventListener('focusin', notifyEditorPasteFocusState);
-  window.addEventListener('focus', notifyEditorPasteFocusState);
+  document.addEventListener('focusin', refreshEditorPasteFocusState);
+  window.addEventListener('focus', refreshEditorPasteFocusState);
   document.addEventListener('focusout', () => {
-    window.requestAnimationFrame(notifyEditorPasteFocusState);
+    const generation = ++editorPasteFocusGeneration;
+    window.requestAnimationFrame(() => {
+      if (generation === editorPasteFocusGeneration) notifyEditorPasteFocusState();
+    });
   });
   window.addEventListener('blur', () => {
+    editorPasteFocusGeneration += 1;
     window.electronAPI.notifyEditorPasteFocusState(false);
   });
   notifyEditorPasteFocusState();
@@ -1195,6 +1214,10 @@ let currentMeta = {
 let currentMetadataBaselineHash = '';
 let metadataUpdateDebounceId = null;
 let metadataUpdatePending = false;
+let metadataFormGeneration = 0;
+let metadataEditGeneration = 0;
+let metadataQuerySequence = 0;
+let metadataUpdateInFlight = null;
 let expandedNodesByTab = new Map();
 let autoSaveTimerId = null;
 let floatingToolbarState = {
@@ -8071,12 +8094,14 @@ function withEditorModeCommandPayload(payload = {}) {
   };
 }
 
-async function dispatchUiCommand(commandId, payload = {}) {
+async function dispatchUiCommand(commandId, payload = {}, options = {}) {
   updateStatusText('', { clear: true });
   const result = await runCommandThroughBus(runCommand, commandId, withEditorModeCommandPayload(payload), {
     route: COMMAND_BUS_ROUTE,
   });
-  if (!result.ok) {
+  const deferredMetadataError = options.deferMetadataError === true
+    && commandId === METADATA_UPDATE_COMMAND_ID && isMetadataUpdateStaleResult(result);
+  if (!result.ok && !deferredMetadataError) {
     const mapped = mapCommandErrorToUi(result.error);
     updateStatusText(mapped.userMessage, { visible: true });
     if (mapped.severity === 'ERROR') {
@@ -9914,6 +9939,9 @@ function collapseSelection() {
   currentDocumentTitle = '';
   currentMetadataBaselineHash = '';
   metadataUpdatePending = false;
+  metadataFormGeneration += 1;
+  metadataQuerySequence += 1;
+  metadataUpdateInFlight = null;
   clearPendingMetadataUpdate();
   currentMeta = { synopsis: '', status: 'черновик', tags: { pov: '', line: '', place: '' } };
   currentCards = [];
@@ -9927,19 +9955,32 @@ function collapseSelection() {
   showWriterHomeSurface();
 }
 
-function updateMetaInputs() {
+function updateMetaInputs(preserveActive = false) {
+  // Explicit incoming payloads replace the form even with the same entity IDs.
+  if (!preserveActive) {
+    metadataFormGeneration += 1;
+    metadataQuerySequence += 1;
+    metadataUpdateInFlight = null;
+    metadataUpdatePending = false;
+    clearPendingMetadataUpdate();
+  }
   if (!metaSynopsis || !metaStatus || !metaTagPov || !metaTagLine || !metaTagPlace) return;
-  metaSynopsis.value = currentMeta.synopsis || '';
+  const setValue = (control, value) => {
+    if (preserveActive && document.activeElement === control && !control.disabled && !control.readOnly) return;
+    if (control.value !== value) control.value = value;
+  };
+  setValue(metaSynopsis, currentMeta.synopsis || '');
   const status = currentMeta.status || 'черновик';
   ensureSelectHasOption(metaStatus, status, status);
-  metaStatus.value = status;
-  metaTagPov.value = currentMeta.tags.pov || '';
-  metaTagLine.value = currentMeta.tags.line || '';
-  metaTagPlace.value = currentMeta.tags.place || '';
+  setValue(metaStatus, status);
+  setValue(metaTagPov, currentMeta.tags.pov || '');
+  setValue(metaTagLine, currentMeta.tags.line || '');
+  setValue(metaTagPlace, currentMeta.tags.place || '');
 }
 
-function syncMetaFromInputs() {
+function syncMetaFromInputs(markEdit = true) {
   if (!metaSynopsis || !metaStatus || !metaTagPov || !metaTagLine || !metaTagPlace) return;
+  if (markEdit) metadataEditGeneration += 1;
   currentMeta = {
     synopsis: metaSynopsis.value || '',
     status: metaStatus.value || 'черновик',
@@ -11983,6 +12024,7 @@ function normalizeMetadataInspectorPayload(result) {
     unavailableReason: typeof result?.unavailableReason === 'string' ? result.unavailableReason : '',
     context: context
       ? {
+        projectId: typeof context.projectId === 'string' ? context.projectId : '',
         nodeId: typeof context.nodeId === 'string' ? context.nodeId : '',
         kind: typeof context.kind === 'string' ? context.kind : '',
         title: typeof context.title === 'string' ? context.title : '',
@@ -12097,6 +12139,8 @@ function setMetadataInspectorContextPresentation(state, contextAvailable) {
 
 function renderMetadataInspectorState(rawState = {}) {
   const state = normalizeMetadataInspectorPayload(rawState);
+  const sameDocument = state.context?.projectId === currentProjectId && state.context?.nodeId === currentDocumentId;
+  if (state.context && !sameDocument) return;
   const hasWritableBaseline = typeof rawState?.contentHash === 'string' && /^[a-f0-9]{64}$/u.test(rawState.contentHash);
   if (hasWritableBaseline) {
     currentMetadataBaselineHash = rawState.contentHash;
@@ -12119,7 +12163,8 @@ function renderMetadataInspectorState(rawState = {}) {
       status: state.metadata.status,
       tags: { ...state.metadata.tags },
     };
-    updateMetaInputs();
+    updateMetaInputs(sameDocument);
+    if (sameDocument) syncMetaFromInputs(false);
   }
 
   const unavailable = presentMetadataInspectorUnavailable(state.unavailableReason);
@@ -12184,25 +12229,98 @@ function getMetadataUpdatePayload() {
   };
 }
 
+function presentUiCommandError(error) {
+  const mapped = mapCommandErrorToUi(error);
+  updateStatusText(mapped.userMessage, { visible: true });
+  if (mapped.severity === 'ERROR') {
+    const opSuffix = mapped.op ? ` op=${mapped.op}` : '';
+    console.error(`UI_COMMAND_ERROR code=${mapped.code}${opSuffix}`);
+  }
+}
+
+
+function isMetadataUpdateStaleResult(result) {
+  return result?.ok === false && result.error?.code === 'E_COMMAND_FAILED'
+    && result.error?.op === METADATA_UPDATE_COMMAND_ID && result.error?.reason === 'METADATA_UPDATE_STALE_CONTEXT';
+}
+
+function observeCanonicalMetadataIntent(raw, payload) {
+  const record = (value) => value && typeof value === 'object' && !Array.isArray(value);
+  if (!record(raw) || raw.ok !== true || raw.state !== 'ready'
+    || !record(raw.context) || raw.context.projectId !== payload.projectId || raw.context.nodeId !== payload.nodeId
+    || !['scene', 'chapter-file'].includes(raw.context.kind) || raw.context.metaEnabled !== true
+    || typeof raw.context.title !== 'string' || typeof raw.contentHash !== 'string' || !/^[a-f0-9]{64}$/u.test(raw.contentHash)
+    || !record(raw.metadata) || !record(raw.metadata.tags)
+    || !['synopsis', 'status'].every((key) => typeof raw.metadata[key] === 'string')
+    || !['pov', 'line', 'place'].every((key) => typeof raw.metadata.tags[key] === 'string')) return null;
+  const desired = parseObservablePayload(composeObservablePayload({ metaEnabled: true, meta: payload.metadata })).meta;
+  const sameMetadata = raw.metadata.synopsis === desired.synopsis && raw.metadata.status === desired.status
+    && ['pov', 'line', 'place'].every((key) => raw.metadata.tags[key] === desired.tags[key]);
+  return sameMetadata ? { kind: 'CANONICAL_METADATA_ALREADY_CURRENT', contentHash: raw.contentHash } : null;
+}
+
 async function flushMetadataUpdate() {
   clearPendingMetadataUpdate();
+  if (metadataUpdateInFlight) return;
   const payload = getMetadataUpdatePayload();
   if (!payload) return;
+  const generation = metadataFormGeneration;
+  const editGeneration = metadataEditGeneration;
+  const request = { generation, projectId: payload.projectId, nodeId: payload.nodeId };
+  const isCurrent = () => metadataUpdateInFlight === request && generation === metadataFormGeneration
+    && payload.projectId === currentProjectId && payload.nodeId === currentDocumentId;
+  metadataUpdateInFlight = request;
+  metadataQuerySequence += 1;
   metadataUpdatePending = false;
-  const result = await dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload);
-  if (!result || result.ok !== true) {
-    updateStatusText('Метаданные не сохранены');
+  let reschedulePending = false;
+  try {
+    const result = await dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload, { deferMetadataError: true });
+    if (!isCurrent()) return;
+    if (!result || result.ok !== true) {
+      if (isMetadataUpdateStaleResult(result)) {
+        const sequence = ++metadataQuerySequence;
+        let projection;
+        try {
+          projection = await invokeWorkspaceQueryBridge(METADATA_INSPECTOR_QUERY_ID, {
+            projectId: payload.projectId, nodeId: payload.nodeId,
+          });
+        } catch { /* Keep the original typed refusal when readback is unavailable. */ }
+        if (!isCurrent() || sequence !== metadataQuerySequence) return;
+        const observation = observeCanonicalMetadataIntent(projection, payload);
+        if (observation) {
+          // This is readback, never a write receipt or a scene-save acknowledgement.
+          currentMetadataBaselineHash = observation.contentHash;
+          if (editGeneration === metadataEditGeneration) updateStatusText('Метаданные сохранены');
+          if (metadataUpdatePending) reschedulePending = true;
+        } else {
+          // Do not adopt a foreign CAS baseline or schedule a pending edit over it.
+          clearPendingMetadataUpdate();
+          metadataUpdatePending = true;
+          presentUiCommandError(result.error);
+        }
+        return;
+      }
+      updateStatusText('Метаданные не сохранены');
+      await refreshMetadataInspector();
+      return;
+    }
+    const receipt = result.value?.receipt && typeof result.value.receipt === 'object' && !Array.isArray(result.value.receipt)
+      ? result.value.receipt
+      : null;
+    if (receipt && typeof receipt.contentHashAfter === 'string' && /^[a-f0-9]{64}$/u.test(receipt.contentHashAfter)) {
+      currentMetadataBaselineHash = receipt.contentHashAfter;
+    }
+    // A valid same-session receipt rebases a newer pending edit's CAS; it must
+    // not acknowledge that newer working value as already saved.
+    if (editGeneration === metadataEditGeneration) updateStatusText('Метаданные сохранены');
     await refreshMetadataInspector();
-    return;
+  } finally {
+    if (metadataUpdateInFlight === request) {
+      const scheduleCurrent = reschedulePending && isCurrent() && metadataUpdatePending;
+      metadataUpdateInFlight = null;
+      if (scheduleCurrent) scheduleMetadataUpdate();
+    }
   }
-  const receipt = result.value?.receipt && typeof result.value.receipt === 'object' && !Array.isArray(result.value.receipt)
-    ? result.value.receipt
-    : null;
-  if (receipt && typeof receipt.contentHashAfter === 'string' && /^[a-f0-9]{64}$/u.test(receipt.contentHashAfter)) {
-    currentMetadataBaselineHash = receipt.contentHashAfter;
-  }
-  updateStatusText('Метаданные сохранены');
-  await refreshMetadataInspector();
 }
 
 function scheduleMetadataUpdate() {
@@ -12215,14 +12333,21 @@ function scheduleMetadataUpdate() {
 }
 
 async function refreshMetadataInspector() {
+  const sequence = ++metadataQuerySequence;
+  const generation = metadataFormGeneration;
+  const editGeneration = metadataEditGeneration;
+  const projectId = currentProjectId;
+  const nodeId = currentDocumentId || '';
   if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') {
     renderMetadataInspectorState({ state: 'unavailable', unavailableReason: 'QUERY_BRIDGE_UNAVAILABLE' });
     return;
   }
   const result = await invokeWorkspaceQueryBridge(METADATA_INSPECTOR_QUERY_ID, {
-    projectId: currentProjectId,
-    nodeId: currentDocumentId || '',
+    projectId,
+    nodeId,
   });
+  if (sequence !== metadataQuerySequence || generation !== metadataFormGeneration || editGeneration !== metadataEditGeneration
+    || projectId !== currentProjectId || nodeId !== (currentDocumentId || '')) return;
   if (!result || result.ok === false) {
     renderMetadataInspectorState({ state: 'unavailable', unavailableReason: 'METADATA_QUERY_FAILED' });
     return;
