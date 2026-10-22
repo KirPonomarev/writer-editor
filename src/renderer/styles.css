@@ -9682,6 +9682,14 @@ body.dark-theme .manual-map-workspace__minimap {
   opacity: 0.9;
 }
 
+/* Invalid paginated extent uses the same complete continuous editor page. */
+.main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="editable-extent-continuous"] > .tiptap-page-wrap,
+.main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="editable-extent-continuous"] .tiptap-page,
+.main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="editable-extent-continuous"] .tiptap-page__content {
+  height: auto;
+  overflow: visible;
+}
+
 /* Authored document tables stay inside the existing editor page. */
 .main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="table-layout-continuous"] > .tiptap-page-wrap,
 .main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="table-layout-continuous"] .tiptap-page,

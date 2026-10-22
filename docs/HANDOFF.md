@@ -1,3 +1,98 @@
+# Longform editor — same PR contract closure — 2026-10-22
+
+TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: AMENDMENT_COMPONENT_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 5b3908e60a32ec97670ec4e2c0c8498a49e4068e
+CLAIM_BOUNDARY: Same open PR2142; finite editor/test proof, no numerical workload or first Mac acceptance.
+
+The actual unsigned5b app retained all800paragraphs and exposed the terminal caret
+inside the viewport after native end navigation. All500additional native keys
+were observed and independently matched exact saved/reopened1350symbol suffix.
+Native Undo/Redo/save and cold reopen retained the expected text. Complete closed
+profiles and raw timing/resource populations remain labelled5b and its ASAR;
+timing observations do not accept a numerical envelope. Short54character and
+empty scenes retain fitting pagination. Native ABC deadkey produced exact e-acute,
+with Undo/Redo/save and cold reopen; compositionend trust remains UNKNOWN after
+two distinct controls. No full IME qualification follows.
+
+Official exact5b CI executed the complete4414case RTK graph:4412passed, two
+failed with ReferenceError. Root reproduced both entire table/media contract
+files14of16. Their isolated VM omitted the new actual current-fallback dependency;
+this did not establish a new production defect. Dependent RTK/merge/OSS aggregate
+jobs failed honestly; the separate OSS core job succeeded. No failed job is waived.
+
+A fresh clean5b amendment declaration/preflight admitted only those two existing
+contract fixtures and required factual/mechanical companions in this same chain.
+Stable finite PM/clip/terminal ports now feed the actual source-extracted identity,
+latch, extent, transition and refresh functions. The counted existing rendering
+port consumes the real extent verdict. Clipped geometry must refuse; repeated
+current-identity refresh must not apply again. All original16names/assertions and
+the other14case bodies remain; the original six application/unit/bundle files are
+byte-exact5b. Both executor and root executed complete16of16contracts and76of76
+related cases with zero failure/cancel/skip/todo. The amendment is72manual lines.
+
+Normal inventory/C2A generation retains1603members/classes/skip policy. DATA keeps
+735paths/588source pins; a complete245binding successor plus the unchanged guard
+and append-only exact-path approvals preserve historical tuples and predicates.
+The full old5b baseline process passed2355of2414unit cases with59unchanged
+sanctioned skips, plus3of3OPS and20of20contracts. Its six newly generated synthetic
+harness files were independently preserved and isolated on the same device.
+New final-source baseline, full corruption/gate proof and all official checks
+on the additional normal commit remain required; old results are not relabelled.
+
+This PR still requires normal merge, fresh exact merged verification and actual
+rebuilt merged native repeat. Total scope is20paths; amendment writes14 and freezes
+six. No source/dependency/UI/security/release-scope expansion, signing/notary,
+publication permit, numerical workload or first supported Mac readiness is claimed.
+Continue the owner-authorized release work after this delivery closes.
+
+# Reachable canonical longform editor — 2026-10-22
+
+TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 25e6247541f0fe4ce36aa96c08b05bc89aa4f6ee
+CLAIM_BOUNDARY: Existing editor geometry correctness only; native workload and first Mac release remain open.
+
+The preceding project-open correction is fully delivered in PR2141. All20official
+candidate CI jobs succeeded;15fresh merged commands and an actual rebuilt25e
+native Library/Open/cold reopen selected the canonical scene correctly. The same
+preserved synthetic800-paragraph scene then exposed a separate editor defect:
+actual terminal extent272501px exceeded clip261277px. Native end navigation
+reached maximum scroll while the terminal caret remained outside the viewport.
+Three retained timing populations also show queue stalls; they do not isolate
+all causes or establish a numerical workload envelope.
+
+This bounded correction compares finite actual canonical terminal/clip geometry
+after applying existing pagination. Unsupported geometry reuses the same live
+continuous editor with autoheight wrappers. A project/document/editor/layout-bound
+latch prevents ordinary input/scroll from repeatedly retrying failed pagination;
+actual incoming payload/layout changes invalidate it, while old scheduled work
+cannot publish. Fitting pagination, table/media behavior and the separate large
+single-paragraph path remain. No authoring, selection, history, dirty/save/Core,
+Main/preload, dependency, visual language or product authority change is made.
+
+Separate executor preserved meaningful RED12of19 before runtime edits, then
+completed all9affected maintained files76of76. Root independently repeated the
+same complete76cases with zero failure/cancel/skip/todo. Both original changed-test
+prefixes and seven authoring functions remain byte-exact. The existing builder
+regenerated the renderer bundle. These are finite source/model proofs; browser
+geometry, native input/Undo/Redo/save/cold reopen and performance remain required.
+
+Only maintained inventory hashes, normal C2A generation, complete DATA735path/
+588source successor,243binding certificate with unchanged guard and append-only
+approval companions accompany the correction. Historical tuples/predicates,
+inventory1603members/classifications, release scope/graph/ledger and authority
+semantics remain. Full audit still reports one unchanged moderate Electron
+advisory; production high-level policy audit passes.
+
+Commit/push/exact official CI/normal merge/clean merged verification and actual
+rebuilt native proof are pending. No numerical Writer envelope, IME qualification,
+signing/notary/channel/publication permit or first Mac readiness follows. Continue
+the owner-authorized release task after this delivery closes; retain every native
+failure and the original profile/build identities separately.
+
 # Canonical project document selection — 2026-10-22
 
 TASK_ID: YALKEN_MAC_PROJECT_OPEN_CONTENT_20261022

@@ -5,20 +5,48 @@ const path = require('node:path');
 const vm = require('node:vm');
 test('table editor: actual sheet refresh keeps table content visible and restores ordinary pagination', () => {
   const source = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
-  const fn = source.slice(source.indexOf('function refreshCentralSheetStripProof('), source.indexOf('function scheduleCentralSheetStripProofRefreshOnScroll('));
-  class Element { querySelector(selector) { return selector === 'table' ? (hasTable ? {} : null) : selector === 'img' ? null : new Element(); } }
+  const fn = ['readCentralSheetStripPresentationIdentity', 'isCentralSheetStripContinuousFallbackCurrent',
+    'validateCentralSheetStripEditableExtent', 'finishCentralSheetStripStructuralTransition',
+    'resetCentralSheetStripStructuralSettleState', 'refreshCentralSheetStripProof'].map(name => {
+    const start = source.indexOf(`function ${name}(`), end = source.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start, `Missing actual dependency ${name}`);
+    return source.slice(start, end + 2);
+  }).join('\n');
+  class Element {
+    constructor(top = 0, bottom = 400) { this.rect = { top, bottom }; this.style = {}; }
+    getBoundingClientRect() { return this.rect; }
+    querySelector(selector) { return selector === 'table' && hasTable ? {} : null; }
+  }
   let hasTable = true, fallback = '', paginationCalls = 0;
-  const context = { HTMLElement: Element, isTiptapMode: true, editor: new Element(),
+  const editor = new Element(), proseMirror = new Element(), clip = new Element(0, 500), terminal = new Element(380, 400);
+  proseMirror.lastElementChild = terminal;
+  editor.querySelector = selector => selector === '.ProseMirror' ? proseMirror : selector === '.tiptap-editor' ? clip : null;
+  const context = { HTMLElement: Element, isTiptapMode: true, editor,
+    currentProjectId: 'table-project', currentDocumentId: 'table-scene', editorZoom: 1,
+    activeBookProfileState: Object.freeze({ formatId: 'fixture' }),
+    centralSheetStripContinuousFallbackIdentity: null, centralSheetStripLayoutGeneration: 0,
+    centralSheetStripCachedRuntimeState: null, centralSheetStripCacheDirty: false,
+    centralSheetStripPendingStructuralInput: false, centralSheetStripStructuralSettleFrameId: null,
+    centralSheetStripStructuralSettleSignature: '', centralSheetStripStructuralStablePassCount: 0,
+    document: { documentElement: { style: { getPropertyValue: () => '' } } },
+    window: { cancelAnimationFrame: () => {} },
+    resolveCentralSheetEditableExtentDecision: require('../../src/renderer/centralSheetStripProofDecision.js').resolveCentralSheetEditableExtentDecision,
     clearCentralSheetStripProof: value => { fallback = value?.overflowReason || ''; },
     centralSheetStripLargePayloadFastPathActive: false, centralSheetStripStructuralGuardActive: false,
     buildCentralSheetStripRuntimeState: () => ({ shouldRender: true }),
-    applyCentralSheetStripRuntimeState: () => { paginationCalls++; return true; } };
+    // Count the existing render port, but consume the production extent verdict.
+    applyCentralSheetStripRuntimeState: () => { paginationCalls++; return context.validateCentralSheetStripEditableExtent(); } };
   vm.createContext(context); vm.runInContext(fn, context);
   assert.equal(context.refreshCentralSheetStripProof(), false);
   assert.equal(fallback, 'table-layout-continuous'); assert.equal(paginationCalls, 0);
   hasTable = false;
   assert.equal(context.refreshCentralSheetStripProof(), true);
   assert.equal(paginationCalls, 1);
+  terminal.rect.bottom = 600;
+  assert.equal(context.refreshCentralSheetStripProof(), false);
+  assert.equal(fallback, 'editable-extent-continuous'); assert.equal(paginationCalls, 2);
+  assert.equal(context.refreshCentralSheetStripProof(), false);
+  assert.equal(paginationCalls, 2, 'The actual current-identity latch must prevent another apply');
 });
 test('table editor: actual ProseMirror schema retains merged cells and supports keyboard cell movement', async () => {
   const [{ getSchema }, { default: StarterKit }, { DocumentTables }, { TableMap, goToNextCell }, { EditorState, TextSelection }] = await Promise.all([

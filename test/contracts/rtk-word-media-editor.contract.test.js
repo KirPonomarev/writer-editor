@@ -47,14 +47,37 @@ test('JPEG editor: real canonical bytes survive schema persistence and render on
 test('Word media editor: sheet refresh prevents clipping every image and restores text pagination after removal', () => {
   const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
   const source = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
-  const fn = source.slice(source.indexOf('function refreshCentralSheetStripProof('), source.indexOf('function scheduleCentralSheetStripProofRefreshOnScroll('));
+  const fn = ['readCentralSheetStripPresentationIdentity', 'isCentralSheetStripContinuousFallbackCurrent',
+    'validateCentralSheetStripEditableExtent', 'finishCentralSheetStripStructuralTransition',
+    'resetCentralSheetStripStructuralSettleState', 'refreshCentralSheetStripProof'].map(name => {
+    const start = source.indexOf(`function ${name}(`), end = source.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start, `Missing actual dependency ${name}`);
+    return source.slice(start, end + 2);
+  }).join('\n');
   let hasImage = true, fallback = '', calls = 0;
-  class Element { querySelector(selector) { return selector === 'table' ? null : selector === 'img' ? (hasImage ? {} : null) : new Element(); } }
-  const context = { HTMLElement: Element, isTiptapMode: true, editor: new Element(),
+  class Element {
+    constructor(top = 0, bottom = 400) { this.rect = { top, bottom }; this.style = {}; }
+    getBoundingClientRect() { return this.rect; }
+    querySelector(selector) { return selector === 'img' && hasImage ? {} : null; }
+  }
+  const editor = new Element(), proseMirror = new Element(), clip = new Element(0, 500), terminal = new Element(380, 400);
+  proseMirror.lastElementChild = terminal;
+  editor.querySelector = selector => selector === '.ProseMirror' ? proseMirror : selector === '.tiptap-editor' ? clip : null;
+  const context = { HTMLElement: Element, isTiptapMode: true, editor,
+    currentProjectId: 'media-project', currentDocumentId: 'media-scene', editorZoom: 1,
+    activeBookProfileState: Object.freeze({ formatId: 'fixture' }),
+    centralSheetStripContinuousFallbackIdentity: null, centralSheetStripLayoutGeneration: 0,
+    centralSheetStripCachedRuntimeState: null, centralSheetStripCacheDirty: false,
+    centralSheetStripPendingStructuralInput: false, centralSheetStripStructuralSettleFrameId: null,
+    centralSheetStripStructuralSettleSignature: '', centralSheetStripStructuralStablePassCount: 0,
+    document: { documentElement: { style: { getPropertyValue: () => '' } } },
+    window: { cancelAnimationFrame: () => {} },
+    resolveCentralSheetEditableExtentDecision: require('../../src/renderer/centralSheetStripProofDecision.js').resolveCentralSheetEditableExtentDecision,
     clearCentralSheetStripProof: value => { fallback = value?.overflowReason || ''; },
     centralSheetStripLargePayloadFastPathActive: false, centralSheetStripStructuralGuardActive: false,
     buildCentralSheetStripRuntimeState: () => ({ shouldRender: true }),
-    applyCentralSheetStripRuntimeState: () => { calls++; return true; } };
+    // Count the existing render port, but consume the production extent verdict.
+    applyCentralSheetStripRuntimeState: () => { calls++; return context.validateCentralSheetStripEditableExtent(); } };
   vm.createContext(context); vm.runInContext(fn, context);
   for (const fast of [false, true]) {
     context.centralSheetStripLargePayloadFastPathActive = fast;
@@ -63,6 +86,11 @@ test('Word media editor: sheet refresh prevents clipping every image and restore
   }
   hasImage = false; context.centralSheetStripLargePayloadFastPathActive = false;
   assert.equal(context.refreshCentralSheetStripProof(), true); assert.equal(calls, 1);
+  terminal.rect.bottom = 600;
+  assert.equal(context.refreshCentralSheetStripProof(), false);
+  assert.equal(fallback, 'editable-extent-continuous'); assert.equal(calls, 2);
+  assert.equal(context.refreshCentralSheetStripProof(), false);
+  assert.equal(calls, 2, 'The actual current-identity latch must prevent another apply');
 });
 
 test('W3: editor history, JSON persistence and schema copy retain exact display EMU; paste cannot invent media',async()=>{

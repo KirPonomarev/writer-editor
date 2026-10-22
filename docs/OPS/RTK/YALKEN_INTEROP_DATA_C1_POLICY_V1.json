@@ -738,7 +738,11 @@
     "test/contracts/agent-architecture-guardrails.contract.test.js",
     "test/contracts/agent-context-restoration.contract.test.mjs",
     "docs/tasks/2026-10-22--agent-scoped-context.md",
-    "docs/tasks/2026-10-22--mac-project-open-content.md"
+    "docs/tasks/2026-10-22--mac-project-open-content.md",
+    "src/renderer/centralSheetStripProofDecision.js",
+    "test/unit/central-sheet-strip-proof-decision.test.js",
+    "test/unit/central-sheet-strip-proof.test.js",
+    "docs/tasks/2026-10-22--mac-longform-visible-editor.md"
   ],
   "protectedFiles": [
     {
@@ -979,7 +983,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "a4a860a5c380a7ad81777f8a1ed85b88cc8b134637f0af7e867db5ab954a8568"
+        "sha256": "557121c1d66cf9047a82936b1b250e8c0e0caac9f695112a73bbc028c827e890"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1067,7 +1071,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "2d887319ae60a48cb20f14bafb45032e3eaa8efaca0f9d695648cbd2d953bf3a"
+        "sha256": "743d9166eacbd6d05d06960b87cc9a830cf8e5abed401b00ec57459f46a3e17a"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -1143,7 +1147,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "41a84a7e7af0cf33045b6ca74147e934886e277f2f803f8d6560db770fc6bdfe"
+        "sha256": "fc1fb114433a11824093eb4c5a7afa5b988f69fafb5730584bb81973bf914d25"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1471,7 +1475,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media-editor.contract.test.js",
-        "sha256": "9040de413fb1961f2a027bacca7f501bf61b746bcb846ec256922c1fa2a56113"
+        "sha256": "92d1839c1b27a2abe5ef9feac3ade0ee204bbeed3a96428e594e63109f1ee1d4"
       },
       {
         "path": "docs/tasks/2026-09-25--word-media-text-offset.md",
@@ -1503,7 +1507,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
-        "sha256": "f9ace3bbddda4b178ef26d41c6f7a478428208ef958ebbb38c9855dc7f692714"
+        "sha256": "0a705c7739a4fb1a8e2aa96aaab988a9262c735f617c10a411fc2894f32844b7"
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
@@ -1703,7 +1707,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "9159411cb60889b7d1bc6bfd85ccee2c71d2e8a2619d96ec6225c9de49cb7376"
+        "sha256": "02dbcfdb3e591587689a11fb59d20d16ba78100fa9dbfd5d005266148ec97c86"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2659,15 +2663,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "a8e0bc4658f2ad32e94974547654f91f1b08ac6b733a594e47bfd32e4a99befe"
+        "sha256": "9c37e02cb69750546cb5b0656988ef7d58ebd938e4a5b9eec697deeb5858607a"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "288075ab60133f5986fe738778b59caa563090fa276c199b8a6ed5073ce7ddcd"
+        "sha256": "0b228af170f1d22acb01fb6cf85f55e1c73c0cccae1d009b20fb92253f85e6b1"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "228dcea8cb499b1ec454800a6c61cb036f2deed2801dcffc5ec6cae3dbc15ae0"
+        "sha256": "f0e5f1ab03b03e1adf382ecd122f03837dc4118e1eff68f39d9b6912efe996ea"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3207,7 +3211,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c4258fba9aa2a382dd27206261734696f3ef99b6c286f1343183bc0f74716b6d"
+        "sha256": "c982128c6fddccc2e21afb11e53fe073c5f5ba7dae12cf31a266dedbdaa457e6"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3300,6 +3304,22 @@
       {
         "path": "docs/tasks/2026-10-22--mac-project-open-content.md",
         "sha256": "aa4d99e29d14645b9a4856dfd497b64e09813d18af6caaf16f85413162ec0219"
+      },
+      {
+        "path": "src/renderer/centralSheetStripProofDecision.js",
+        "sha256": "d8d95a42da7ac60aaade90e569e5e9d7c259a0c6128d610fe570dfcdbb951888"
+      },
+      {
+        "path": "test/unit/central-sheet-strip-proof-decision.test.js",
+        "sha256": "27bdf738ea15cd1cd0cb9a4b8b87e320dc9f7882b44708f9c200fa8d584cc454"
+      },
+      {
+        "path": "test/unit/central-sheet-strip-proof.test.js",
+        "sha256": "918721b452530111ecc6aa8dce47cd52cb38210f2e41965f29a90637f202f840"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--mac-longform-visible-editor.md",
+        "sha256": "b49e583450c7e00f760d26e0a35ce272ecfc72672458522a5634cf5b49303423"
       }
     ],
     "followupRepair": {
