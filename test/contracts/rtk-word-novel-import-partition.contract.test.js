@@ -342,7 +342,7 @@ function snapshotFiles(root) {
 }
 async function projectFixture(t,name='project',fixtureOptions={}) {
   const evidence=process.env.YALKEN_NOVEL_PARTITION_EVIDENCE_DIR;
-  const root=fs.mkdtempSync(path.join(evidence || os.tmpdir(),name+'-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const root=fs.realpathSync(fs.mkdtempSync(path.join(evidence || os.tmpdir(),name+'-')));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const romanRoot=path.join(root,'roman');fs.mkdirSync(romanRoot);
   const manifestPath=path.join(root,'project.craftsman.json'), projectId='novel-test-project';
   const manifest={schemaVersion:'yalken.projectManifest.v1',projectId,projectName:'Novel',createdAtUtc:'2026-10-09T00:00:00.000Z',lastCommandId:0,
@@ -1621,7 +1621,7 @@ async function actualRichRecordingSavePort(t,f,scene,options={}) {
   const port=await authenticatedBookNoteReturn(t,f,null,null,{historyOnly:true,scene}),c=port.sandbox;
   const h={editor,content:raw,generation:0,acks:[],snapshots:[],receipts:[],noWriteHistoryAdmissions:[],errors:[],publications:[],lifecycle:'owned'};
   const requests=new Map(),gateway=require('../../src/core/legacy-strangler-v1.cjs');
-  Object.assign(c,{setTimeout,clearTimeout,pendingSnapshotRequests:requests,activeAutoSavePromise:null,lastAcknowledgedEditGeneration:0,
+  Object.assign(c,{setTimeout,clearTimeout,pendingSnapshotRequests:requests,activeAutoSavePromise:null,projectArchiveOpenCapture:null,lastAcknowledgedEditGeneration:0,
     currentLifecycleSubjectId:()=>h.lifecycle,lastAutosaveHash:sha(raw),userBookmarkSaveContinuation:null,userBookmarkRenameLineage:null,
     normalizeSelectionRangeForSettings:()=>null,logDevError:(name,error)=>h.errors.push({name,code:error?.code,message:error?.message}),
     getProjectDocumentIdentityPayload:async()=>({documentId:scene.relativeFile,projectId:f.projectId}),

@@ -68,6 +68,18 @@ The meaningful unchanged Main lease RED30of31 and queued/completed-save RED54of5
 
 After the single property edit execute the complete61-file affected pack including all87lifecycle cases on the frozen source. Root verifies the exact mechanical diff, original test predicates, runtime source/budgets and full executor receipt. Actual build-bound native import/open/edit/save/cold reopen and every final-source mandatory gate/baseline/official CI/merge/clean merged proof remain required. CHECK_01 executes before edits; CHECK_02+ afterward. Do not rerun PRE after this write or promote the checkpoint to final acceptance.
 
+### Same open PR2143 followup — complete known VM fixture dependencies
+
+FIXTURE_DEPENDENCY_BINDING_BASE_SHA: d5c1627bebd0d983c6a51296d597ffbfb6ff5c2d. This second normal local checkpoint preserves the first explicit lifecycle fixture and task; it remains unaccepted and unpushed. Same original69be91c base, PR2143 and one rollback. Fresh clean bootstrap/fetch, complete normative/scoped factual reads and actual architecture preflight0 precede this edit. Followup scope17paths; delivery union23. Executor has only two new fixture paths; Main ca09b351, S33 c9beab32, first lifecycle fixture192c59f8 and six original source/test paths are frozen. Root retains twelve companions.
+
+The complete61-file pack actually passed876of876 with0fail/cancel/skip/todo on sourceHead99993193. Early exact-digest7a0563a77136/ASAR4836f096 diagnostic passed real native picker/preview/import/open, trusted edit, Undo/Redo, durable Save and cold reopen. Its warm139-member and cold168-member complete profiles were preserved and readmatched. Original9directories/4opaque files and five pre-existing document files survive; saved scene bytes are exact across cold startup. Ordinary manifest/Stage10/cache additions and the removed previously empty Electron blob directory are fully enumerated. This is unaccepted diagnostic evidence at its actual source identity, never final-candidate/merged/numeric/release qualification. Original terminal LF to paragraph projection remains an explicit observation.
+
+A full caller scan found two more source-extracted VM dependencies outside that61-file pack. Complete rtk-word-user-bookmarks-runtime.contract.test.js is actual124of136: backupHarness lacks the finite capture variable read by actual createBackup. Complete rtk-word-novel-import-partition.contract.test.js is actual47of54: actualRichRecordingSavePort lacks the same variable; projectFixture uses macOS var tmp alias while the unchanged canonical writer compares private real paths. Retain both RED logs and exact source pins. Make exactly three fixture-only changes: projectArchiveOpenCapture:null in those two existing contexts; fs.realpathSync around the existing projectFixture mkdtempSync result. Preserve every other byte, input, assertion, cleanup and predicate. No production typeof/fallback, path-guard weakening, test exclusion or denominator growth.
+
+Execute both complete existing files with no skips/todo. Root reviews reverse-byte equivalence and all five source pins. The earlier complete61 execution remains bound to its actual source and input equality; do not rerun it solely for two unrelated fixture edits or relabel it as this checkpoint. Full final baseline and official exact-candidate CI remain mandatory. DATA736/589, certificate246plusguard, inventory1603 and all historical tuples/predicates stay fixed; only current byte pins and normal generated digests change.
+
+The earlier old-project Navigator inference is refuted: row IDs belong to the imported project. This physical schema1 input omits authored treeIdentity; arbitrary nested folders do not establish scene/part semantics, and Inspector fallback is not full authored-topology qualification. No speculative registry or refresh fix is admitted. A genuine ordinarily authored project remains required for the later complete archive/COPY matrix. CHECK_01 is before edits; CHECK_02+ after. Complete final-source required gates/baseline/native/delivery/merged proof remains open.
+
 ## ALLOWLIST
 
 - src/export/archive/projectArchiveExportHandler.js
@@ -79,6 +91,8 @@ After the single property edit execute the complete61-file affected pack includi
 - test/unit/sector-m-preload-ui-command-bridge.test.js
 - test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
+- test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js
+- test/contracts/rtk-word-novel-import-partition.contract.test.js
 - docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md

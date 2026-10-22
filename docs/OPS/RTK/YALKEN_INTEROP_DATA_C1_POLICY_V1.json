@@ -972,7 +972,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "48e45aecccbe5b12d0aca030f96a6f81f2e1e8d6b7387a0225faa66fd266e82e"
+        "sha256": "ca09b35152547c7259821a1a2dffd037fc6c66942cbed40df47b899398c6de90"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1708,7 +1708,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "0bdf4d087a1b6eb9bf214162812c435262737632cd38c05d94bffdc48bfb6122"
+        "sha256": "94fca2cec2629a392bfb1c3b0479d2a9e2277f2205589a4e3d2678fc92b31436"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1976,7 +1976,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "10a0477469930a4d5a26a345c4f6183fdcb115c4cf396fa57f1a2eba01870bb7"
+        "sha256": "922caf08f8188d484da7fd87e8d1f08a9aef11d6a2260e68fc1d3c951c5426cd"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -2160,7 +2160,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "c6d9e3d0cd0cb3498d2c251b43dac462039ef7f402329dddb6389098d374bbfb"
+        "sha256": "192c59f8b173a264bd6e46f02d9779c7b0cc11a6e6605e21df61f59bf2abb1b8"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2664,15 +2664,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9f017557abbec9cb9b07f7088e77d0f993fe2d94991ad13464b06d59ff345cea"
+        "sha256": "52b587d299c58f126545a0495fda23ee2e553c37c9a4dd6c1f9d9220bf205e2e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9a39a11090146fca6a073990c9733622f58f4f2f181a4d3892dd95f6b910cb87"
+        "sha256": "47c6f412320438f2b75dd2bd597c8f49f03e66566795e0274aec86796d090263"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "39b9ead8fb43ac74f603716081ecdde6204fe5f4afba9bdb51725c5f54a8648d"
+        "sha256": "265b6fe98f161884fea12f0a3fa0894055558b8d3e92a1d360178a9ee1b5f3c0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2932,7 +2932,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "0ff5da02d22ea29eca9b481f526e2484f517939cf064616f2be3660d31ff38f4"
+        "sha256": "9be52467e9fbc2f2ba1a418ea47ac36d8ab6c1672731b287d4bd458e107debd7"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -3204,7 +3204,7 @@
       },
       {
         "path": "test/unit/sector-m-s33-full-archive-import.test.js",
-        "sha256": "0300e236f0c35a04a9d3e7656a43f534dee11f7752fe9d0d934bf3918850752d"
+        "sha256": "c9beab32d88ecebb1d1d06ce2dd846cfecbb8a323e9cd3346507bddc95a18b9e"
       },
       {
         "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -3212,7 +3212,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "424a3d54dfb868d4e34444b170bd0b1e7869358ed9d7203b836fe882c35cc4af"
+        "sha256": "ee223f1413e195f7f7c0a2c6294ee41c94e8d25b75631a23bbba848627ea917d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3324,7 +3324,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
-        "sha256": "29d008bf553f1512efc0f0ad1cd217018ba214b52967b10a8704c3bdecb08eaf"
+        "sha256": "c85ed97826071353a58cecbc4ae5ffcc29464912f21ffc135e4632c740f7bc8b"
       }
     ],
     "followupRepair": {

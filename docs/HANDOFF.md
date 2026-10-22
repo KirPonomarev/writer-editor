@@ -1,3 +1,67 @@
+# Imported archive authoring handoff — source and early native proof — 2026-10-22
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_PROOF_COMPLETE_FINAL_DELIVERY_PENDING
+BINDING_BASE_SHA: d5c1627bebd0d983c6a51296d597ffbfb6ff5c2d
+CLAIM_BOUNDARY: Same unfinished PR2143 and original69be91c rollback; current source/component and exact-digest diagnostic observations, not candidate/merged/release acceptance.
+
+The rebuilt944 picker/preview restored the physical archive but normal opening failed
+on a nested manifest lease, before imported editor publication. A backup captured
+the prior empty renderer under the imported scene path. That complete failure
+profile/artifact and actual unchanged-Main lease RED30of31 remain preserved. The
+subsequent queued/completed SaveAs and untitled Save RED54of58 also remains.
+
+Main now exits the import lease only after verified physical publication/readback
+and strict library registration, then performs ordinary guarded transactional open.
+A finite transition capture excludes wrong-context save/autosave/backup, checks
+prior project/file/window/lifecycle/Stage10/capability at delayed boundaries, prepares
+fallible identity/content before publication, and restores only still-owned context
+on refusal. Verified final/library and newer foreign switches survive. COPY, Core,
+renderer/preload, fixed helper, physical codec and security boundaries stay unchanged.
+
+Exact Mainca09b351 and S33c9beab32 pass58of58. Full61-file affected execution at its
+actual99993193 source identity passed876of876,zero fail/cancel/skip/todo. Three known
+source-extracted VM contexts now explicitly supply the finite capture state; the
+novel fixture canonicalizes its owned macOS temporary root. All original predicates,
+arguments, cleanup and other bytes remain exact. Full two additional contract files
+at actuald5c1627b source identity pass190of190,zero fail/cancel/skip/todo. Root
+independently reviews actual argv/raw TAP/hashes and the three exact fixture deltas;
+it does not claim another execution or relabel earlier61 as a newer-head result.
+Runtime amendment145lines and S33339 stay within220/500; whole runtime435 and
+behavior948 stay within900/1200. Six original source/test paths remain exact944.
+
+Early diagnostic sourceInput7a0563a77136/ASAR4836f096 passes actual native picker,
+zero-write preview, import, imported text, trusted typing, Undo/Redo, durable Save
+and normal Quit/cold reopen. Saved scene SHA3c7e0c4e9d82fdbe0fca1dcec7d25d06cf2926e713eb7c62b0da7f887d1d2fed
+is exact across restart. All9physical directories,4opaque input files and5prior
+document files survive. Complete warm139/cold168 profile members and530application
+members were preserved and readmatched. Normal manifest/Stage10/cache additions
+and one removed previously empty Electron blob directory are fully enumerated.
+This unsigned diagnostic is bound to actual999 plus its admitted source digest;
+it never becomes committed/merged/native-release qualification by renaming it.
+The original terminal-LF to paragraph representation remains an explicit observation.
+
+Earlier old-project Navigator inference was refuted: independently derived row IDs
+belong to the imported project. The original physical schema1 manifest omits authored
+treeIdentity; arbitrary nested folders cannot establish authored part/scene roles.
+Inspector fallback and full authored topology/Stage10/COPY qualification remain
+separate. No speculative refresh or registry fabrication was added.
+
+Final-source normal inventory/C2A keeps1603members/classes/skip policy. DATA736/589,
+append-only246-binding certificate plus unchanged guard and every historical tuple
+and predicate remain fixed. Exact-path governance witnesses are mechanical byte
+bindings, not product authority or release acceptance. Required final baseline,
+all final-source gates, committed candidate/push/official exactCI/final native proof,
+normal merge and fresh clean merged verification still close this delivery.
+
+Owner clarified that the intended macOS release includes complete agreed Atlas and
+product functionality; Black Box follows later. The older narrow release cut cannot
+establish that outcome. After PR2143 closure, reconcile the separately updated full
+master-plan/Atlas plan and repo scope through normal admission, never a competing
+writer. COPY, full authored archive matrix, numerical workloads, complete Atlas,
+signing/notary/channel/distribution and overall macOS readiness remain open.
+
 # Native archive preview bridge — same PR correction — 2026-10-22
 
 TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
