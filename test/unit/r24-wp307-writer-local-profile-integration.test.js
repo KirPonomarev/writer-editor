@@ -245,3 +245,179 @@ test('WP307 profile contract carries no persistence, network or external authori
     assert.equal(source.includes(forbidden), false, forbidden);
   }
 });
+
+// Actual Main under an inert Electron host: no app/renderer/native launch.
+// Only the host platform is explicit so the packaged-Darwin policy is also
+// exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = {}) {
+  const os = require('node:os'), Module = require('node:module');
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
+  const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
+  fs.writeFileSync(markerPath, marker, { flag: 'wx' }); const identity = fs.lstatSync(root);
+  const documents = path.join(root, 'Documents'), userData = path.join(root, 'userData');
+  fs.mkdirSync(path.join(documents, 'craftsman'), { recursive: true }); fs.mkdirSync(userData);
+  const h = { root, documents, userData, handlers: new Map(), listeners: new Map(), sent: [], shellUrl: '', editor: { content: '', generation: 0 } };
+  function InertWindow() {
+    h.window = this; this.isDestroyed = () => false; this.on = () => {};
+    this.webContents = { id: 713, session: {}, isDestroyed: () => false, on() {}, setWindowOpenHandler() {},
+      getURL: () => h.shellUrl, send: (channel, payload) => {
+        h.sent.push([channel, payload]);
+        if (channel === 'editor:set-text') h.editor = { ...payload, generation: 0 };
+        if (channel === 'editor:snapshot-request') queueMicrotask(() => h.listeners.get('editor:snapshot-response')(
+          h.event(), { requestId: payload.requestId, snapshot: h.editor }));
+      } };
+    this.loadFile = (file, { query }) => {
+      const url = require('node:url').pathToFileURL(file);
+      for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
+      h.shellUrl = url.href; return new Promise(() => {}); // No renderer/startup.
+    };
+  }
+  InertWindow.getAllWindows = () => [h.window]; InertWindow.getFocusedWindow = () => h.window;
+  const electron = { app: { isPackaged: packaged, whenReady: () => new Promise(() => {}), on() {}, setPath() {},
+    getPath: key => key === 'documents' ? documents : key === 'userData' ? userData : root,
+    quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true }, BrowserWindow: InertWindow,
+    screen: { getPrimaryDisplay: () => ({ workAreaSize: { width: 1280, height: 800 } }) },
+    Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
+    dialog: { showMessageBox: async () => ({ response: 0 }), showOpenDialog: async () => ({ canceled: true }),
+      showSaveDialog: async () => ({ canceled: true }) },
+    ipcMain: { on: (name, handler) => h.listeners.set(name, handler), handle: (name, handler) => h.handlers.set(name, handler) },
+    session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
+  const mainPath = path.join(ROOT, 'src/main.js'), filePath = path.join(ROOT, 'src/utils/fileManager.js');
+  const originalLoad = Module._load; delete require.cache[filePath];
+  try {
+    Module._load = function(request, ...args) { return request === 'electron' ? electron : originalLoad.call(this, request, ...args); };
+    const compiled = new Module(mainPath, module); compiled.filename = mainPath;
+    compiled.paths = Module._nodeModulePaths(path.dirname(mainPath));
+    const host = `const process = new Proxy(global.process, {get(t,k){return k==='platform'?${JSON.stringify(platform)}:Reflect.get(t,k)}});\n`;
+    compiled._compile(host + read('src/main.js') + `\nmodule.exports.__profile = () => getWriterLocalRuntimeProfile();
+      module.exports.__host = {
+        revokeOwner() { activeStage10ApplicationBootstrap = null; },
+        denyCapability() { const read = readAuthorityCapabilityMatrixDoc; readAuthorityCapabilityMatrixDoc = () => {
+          const matrix = read(); matrix.items.find(row => row.platformId === 'node').capabilities['cap.manualMap.edit'] = false; return matrix; }; },
+        afterTruth(callback) { const prepare = prepareCanonicalProjectTruthCommand; prepareCanonicalProjectTruthCommand = async (...args) => {
+          const result = await prepare(...args); await callback(); return result; }; }
+      };`, mainPath);
+    h.main = compiled.exports; h.main.createWindow();
+    const manager = require(filePath), previous = manager.getDocumentsPath;
+    manager.getDocumentsPath = () => path.join(documents, 'craftsman');
+    t.after(() => { manager.getDocumentsPath = previous; delete require.cache[filePath]; });
+  } finally { Module._load = originalLoad; }
+  t.after(() => {
+    const now = fs.lstatSync(root); assert.equal(now.dev, identity.dev); assert.equal(now.ino, identity.ino);
+    assert.equal(fs.readFileSync(markerPath, 'utf8'), marker); fs.rmSync(root, { recursive: true });
+  });
+  h.event = () => ({ sender: h.window.webContents, senderFrame: { url: h.shellUrl } });
+  h.command = async (id, payload, event = h.event()) => h.handlers.get('ui:command-bridge')(event,
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:command-bridge', id, payload));
+  h.query = (id, payload = {}) => h.handlers.get('ui:workspace-query-bridge')(h.event(),
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:workspace-query-bridge', id, payload));
+  h.roster = () => { const rows = []; function visit(dir) { for (const name of fs.readdirSync(dir).sort()) {
+    const file = path.join(dir, name), s = fs.lstatSync(file); assert.equal(s.isSymbolicLink(), false);
+    rows.push([path.relative(documents, file), s.isDirectory() ? 'directory' : crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')]);
+    if (s.isDirectory()) visit(file);
+  } } visit(documents); return rows; };
+  return h;
+}
+
+test('full Mac actual guarded Main admits FREE map create add and queries under the ordinary project owner', async t => {
+  const h = await fullMacMainFixture(t);
+  const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Full Mac Map' });
+  assert.equal(created.ok, true, JSON.stringify(created)); assert.equal(created.stage10Bootstrap.productLifecycleReachable, true);
+  const projectRoot = path.join(h.documents, 'craftsman', 'Full Mac Map');
+  const manifestPath = path.join(projectRoot, 'project.craftsman.json');
+  const originalManifest = JSON.parse(fs.readFileSync(manifestPath));
+  const before = h.roster(), projectId = created.projectId;
+  const create = await h.command('manualMap.create', { projectId, mapId: 'map-full-mac', title: 'Карта e\u0301 🧭' });
+  const add = await h.command('manualMap.node.add', { projectId, mapId: 'map-full-mac', nodeId: 'node-full-mac', label: 'Узел', nodeKind: 'note' });
+  const currentScene = await h.query('query.atlasCurrentScene', { projectId });
+  const workbench = await h.query('query.manualMapWorkbench', { projectId, mapId: 'map-full-mac' });
+  t.diagnostic('FULL_MAC_ACTUAL_MAIN ' + JSON.stringify({ profile: h.main.__profile(), create, add, currentScene, workbench,
+    before, after: h.roster(), manifest: JSON.parse(fs.readFileSync(manifestPath)) }));
+  assert.equal(create.ok, true, JSON.stringify(create)); assert.equal(add.ok, true, JSON.stringify(add));
+  assert.equal(currentScene.ok, true, JSON.stringify(currentScene)); assert.equal(workbench.ok, true, JSON.stringify(workbench));
+  const manifest = JSON.parse(fs.readFileSync(manifestPath));
+  assert.equal(manifest.manualMaps.schemaVersion, 'manualMap.author.v1');
+  assert.equal(manifest.manualMaps.maps['map-full-mac'].nodes['node-full-mac'].label, 'Узел');
+  const protectedManifest = { ...manifest }; delete protectedManifest.manualMaps; delete protectedManifest.lastCommandId;
+  assert.deepEqual(protectedManifest, originalManifest);
+  for (const row of before.filter(([name]) => !name.includes('/.stage10-local') && !name.endsWith('/project.craftsman.json')))
+    assert.deepEqual(h.roster().find(([name]) => name === row[0]), row, row[0]);
+  assert.equal(workbench.manualMapWorkbench.graph.nodes[0].label, 'Узел');
+  assert.equal(workbench.manualMapWorkbench.listParity.rows[0].itemId, 'node-full-mac');
+  const reopened = await h.main.handleProjectLifecycleOpenCommand({ projectId });
+  assert.equal(reopened.ok, true, JSON.stringify(reopened));
+  assert.deepEqual(JSON.parse(fs.readFileSync(manifestPath)).manualMaps, manifest.manualMaps);
+  assert.equal((await h.query('query.manualMapWorkbench', { projectId })).manualMapWorkbench.graph.nodes[0].id, 'node-full-mac');
+});
+
+test('full Mac actual Main keeps profile caller entitlement and optional refusals before effects', async t => {
+  const h = await fullMacMainFixture(t), before = h.roster();
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_V2');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_V2');
+  const unselected = ['manualMap', 'atlas', 'idea', 'meaning', 'blackBox', 'stage10'].map(domain =>
+    productRegistry.PRODUCT_COMMAND_RECORDS.find(row => row.domain === domain && !['manualMap.create', 'manualMap.node.add'].includes(row.id)).id);
+  for (const id of unselected) {
+    const result = await h.command(id, { projectId: 'forged', profileId: 'WRITER_LOCAL_ATLAS_V2', tier: 'pro', optionalSystemsEnabled: true });
+    assert.equal(result.ok, false, id); assert.equal(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED', JSON.stringify(result));
+  }
+  for (const id of ['query.collabScopeLocal', 'query.stage10ProductState', 'query.atlasOverview', 'query.projectionInspector'])
+    assert.equal((await h.query(id)).error, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED', id);
+  for (const id of ['manualMap.create.extra', ' manualMap.create', 'manualMap.node.add ']) assert.equal((await h.command(id, {})).ok, false, id);
+  for (const id of ['query.atlasCurrentScene.extra', 'query.manualMapWorkbench ']) assert.equal((await h.query(id)).ok, false, id);
+  const event = h.event();
+  for (const forged of [{ ...event, sender: { ...event.sender, id: 999 } }, { ...event, sender: { ...event.sender, session: {} } },
+    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_V1') } }])
+    await assert.rejects(h.command('manualMap.create', {}, forged), /E_IPC_/u);
+  assert.deepEqual(h.roster(), before);
+  const source = await fullMacMainFixture(t, { packaged: false });
+  const unentitled = await source.command('cmd.project.review.applyExactTextChange', { tier: 'pro', profileId: 'WRITER_LOCAL_ATLAS_V2' });
+  assert.equal(unentitled.ok, false); assert.equal(unentitled.value.code, 'E_COMMAND_DISABLED_FOR_ENTITLEMENT');
+  assert.equal(source.main.__profile().active, false);
+  const forged = source.event(); forged.senderFrame.url = source.shellUrl.replace('PRODUCT_PROFILE=', 'PRODUCT_PROFILE=WRITER_LOCAL_ATLAS_V2');
+  await assert.rejects(source.command('manualMap.create', {}, forged), /E_IPC_/u);
+});
+
+test('full Mac actual Main consumes current project capability owner and source revision at commit', async t => {
+  for (const fault of ['foreign-project', 'capability', 'owner', 'revision']) await t.test(fault, async t => {
+    const h = await fullMacMainFixture(t);
+    let expected, manifestPath, exercised = fault !== 'revision';
+    // Install before bootstrap captures the actual prepare function. Installing
+    // after Create would leave the transparent observer outside the real port.
+    if (fault === 'revision') h.main.__host.afterTruth(async () => {
+      const next = JSON.parse(expected); next.foreignRevisionMarker = 'preserve-newer'; next.lastCommandId = 77;
+      expected = Buffer.from(JSON.stringify(next)); fs.writeFileSync(manifestPath, expected); exercised = true;
+    });
+    const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Guarded Map' }); assert.equal(created.ok, true);
+    manifestPath = path.join(h.documents, 'craftsman', 'Guarded Map', 'project.craftsman.json');
+    expected = fs.readFileSync(manifestPath);
+    if (fault === 'capability') h.main.__host.denyCapability();
+    if (fault === 'owner') h.main.__host.revokeOwner();
+    const result = await h.command('manualMap.create', { projectId: fault === 'foreign-project' ? 'foreign' : created.projectId,
+      mapId: 'must-not-publish', title: 'Refused' });
+    t.diagnostic(JSON.stringify({ fault, result })); assert.equal(exercised, true);
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(fs.readFileSync(manifestPath).equals(expected), true);
+    assert.equal(JSON.parse(expected).manualMaps, undefined);
+  });
+});
+
+test('full Mac flags preserve the old cut and expose only the existing Atlas tab for the new hint', () => {
+  const vm = require('node:vm'), selectors = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]',
+    '[data-right-tab="atlas"]', '[data-toolbar-item-key="review-comment"]', '[data-atlas-reachability-opener]'];
+  for (const id of ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_ATLAS_V2.extra', '']) {
+    const elements = Object.fromEntries(selectors.map(selector => [selector, { hidden: false, disabled: false, tabIndex: 0,
+      attrs: {}, style: { setProperty(name, value, priority) { this[name] = [value, priority]; } },
+      setAttribute(name, value) { this.attrs[name] = value; } }]));
+    const callbacks = [], window = { location: { search: '?USE_TIPTAP=1&PRODUCT_PROFILE=' + id } };
+    const document = { body: { dataset: {} }, querySelectorAll: selector => selector.split(',').map(key => elements[key]),
+      addEventListener: (name, callback) => callbacks.push(callback) };
+    vm.runInNewContext(read('src/renderer/flags.js'), { window, document, URLSearchParams, console: { log() {} } });
+    callbacks.forEach(callback => callback());
+    for (const selector of selectors) {
+      const hidden = id === 'WRITER_LOCAL_V1' || id === 'WRITER_LOCAL_ATLAS_V2' && selector !== '[data-right-tab="atlas"]';
+      assert.equal(elements[selector].hidden, hidden, id + selector); assert.equal(elements[selector].disabled, hidden);
+      assert.equal(elements[selector].tabIndex, hidden ? -1 : 0);
+      if (hidden) { assert.equal(elements[selector].attrs['aria-hidden'], 'true'); assert.deepEqual(elements[selector].style.display, ['none', 'important']); }
+    }
+    assert.equal(window.__PRODUCT_PROFILE, ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2'].includes(id) ? id : '');
+  }
+});

@@ -156,3 +156,36 @@ test('WP307 independent oracles kill activation and optional-system mutants', (t
   assert.equal(killed, mutants.length);
   console.log(`R24_WP307_IMPLEMENTATION_MUTANTS=${killed}/${mutants.length}`);
 });
+
+test('full Mac profile independent oracles kill broadened admission and lost denial mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8');
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'full-mac-profile-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mutants = [
+    ['blanket manual maps', s => s.replace('(!optional || selected)', "(!optional || productCommandRecord?.domain === 'manualMap')"), m => {
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile: m.createWriterAtlasProfileProjection({ isPackaged: true, platform: 'darwin' }),
+        commandId: 'manualMap.node.delete', productCommandRecord: { id: 'manualMap.node.delete', domain: 'manualMap' } }).allowed, false);
+    }],
+    ['any optional query', s => s.replace('(!optional || WRITER_ATLAS_QUERY_SET.has(queryId))', 'true'), m => {
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile: m.createWriterAtlasProfileProjection({ isPackaged: true, platform: 'darwin' }), queryId: 'query.collabScopeLocal' }).allowed, false);
+    }],
+    ['invalid v2 profile', s => s.replace('if (!isWriterAtlasProfileCandidate(profile)) return false;', 'if (!isWriterAtlasProfileCandidate(profile)) return false; return true;'), m => {
+      const profile = { ...m.createWriterAtlasProfileProjection({ isPackaged: true, platform: 'darwin' }), optionalSystemsEnabled: true };
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.manualMapWorkbench' }).allowed, false);
+    }],
+    ['lost create', s => s.replace("Object.freeze(['manualMap.create', 'manualMap.node.add'])", "Object.freeze(['manualMap.create.disabled', 'manualMap.node.add'])"), m => {
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile: m.createWriterAtlasProfileProjection({ isPackaged: true, platform: 'darwin' }), commandId: 'manualMap.create',
+        productCommandRecord: { id: 'manualMap.create', domain: 'manualMap' } }).allowed, true);
+    }],
+    ['wrong selected domain', s => s.replace("&& productCommandRecord.id === commandId && productCommandRecord.domain === 'manualMap'", '&& productCommandRecord.id === commandId'), m => {
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile: m.createWriterAtlasProfileProjection({ isPackaged: true, platform: 'darwin' }), commandId: 'manualMap.create',
+        productCommandRecord: { id: 'manualMap.create', domain: 'blackBox' } }).allowed, false);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    const changed = transform(source); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(' ', '-') + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic(`FULL_MAC_PROFILE_MUTANTS=${mutants.length}/${mutants.length}`);
+});

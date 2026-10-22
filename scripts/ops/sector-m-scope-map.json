@@ -421,7 +421,13 @@
       "test/unit/sector-u-doctor-tokens.test.js",
       "test/unit/sector-u-run-artifacts.test.js",
       "test/unit/sector-u-u2-doctor-tokens.test.js",
-      "test/unit/sector-u-u4-doctor-tokens.test.js"
+      "test/unit/sector-u-u4-doctor-tokens.test.js",
+      "docs/tasks/2026-10-22--full-mac-atlas-map.md",
+      "src/core/writer-local-profile-v1.cjs",
+      "src/renderer/flags.js",
+      "test/unit/r24-wp307-writer-local-profile.test.js",
+      "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "test/unit/r24-wp307-writer-local-profile-mutants.test.js"
     ]
   },
   "allowPrefixByPhase": {

@@ -1,3 +1,133 @@
+# Manual-map input correction and retained failures — 2026-10-22
+
+TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FROZEN_CURRENT_BINDING_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 87baac4449d544cc6afc9c622cba1d89cd86aaed
+ORIGINAL_DELIVERY_BASE_SHA: 4bc78a775df9476877add40f62a1fcb1932ed7a7
+CLAIM_BOUNDARY: Four frozen same-PR2144 correction paths and exact six-path scope companion on87; no final candidate, native, full Atlas or Mac release acceptance.
+
+Actual87 native ordinary Library/Create, default Map/create/add, Unicode text Save,
+Undo/Redo, normal Quit and same-artifact/profile cold reopening were independently
+observed. Raw authored maps preserved scene and old backup bytes. The complete
+unsigned bundle530members and warm153/cold167profile members are independently
+readmatched. However sequential native title input expected01 Начало12 produced
+01 Начало1 and sent focus to BODY; the second trusted digit targeted BODY. Cancel
+changed none of10existing project files. That failed input and the separate
+successful default-label/persistence observations remain their own source facts.
+
+The complete87baseline actually exits1:2451pass of2512,2exact SectorMscope failures,
+59unchanged sanctioned skips; default20contracts were not reached. Official full
+maintained post-build RTK actually executes4413pass of4414,1fail,zero cancel/skip/todo;
+the old C1 negative fixture names newly admitted flags.js as unadmitted. Official
+CI has16successes and4failures including dependent aggregates. None is greened by
+narrative. Fresh clean87bootstrap/startup/fetch/architecture preflight and amended
+task E0 precede every correction source edit; the original4bc rollback is unchanged.
+
+Only the exact six omitted task/profile/test DONE entries are added to the existing
+SectorMmap. Its unchanged complete two files now execute12of12; the actual existing
+production reader also consumes10external schedules covering all27future paths,
+original six-path refusal, removing each exact member and unrelated/near-miss refusal.
+No classifier/prefix/carveout/runner/test predicate is widened. C1 changes exactly
+one control-path literal to existing unadmitted theme-config-validator.js, preserving
+all other bytes and refusal predicates.
+
+The renderer correction updates existing map draft controls in place and retains
+the active input node/caret. Connected-form/current-project/command/target/state
+guards refuse old detached callbacks before editing, confirmation, Apply or Cancel.
+The unchanged canonical Apply/Kernel/Stage10/capability path retains all product
+mutation authority. Forty-five renderer lines and228appended R2test lines preserve
+the original five R2cases, every other renderer byte and all prior ten source hashes.
+Normal build changes only the admitted editor bundle; preload/helper remain exact.
+
+Meaningful actual-function/actual-clear-path R2REDexecutes6of12 on unchanged editor.
+Prebuild whole R2pair executes17of17. After the final same-command/same-target stale
+schedule the complete R2file executes13of13. The intervening18file run remains
+actual855of856: its sole refusal is the intentionally not-yet-rebound current DATA
+editor-bundle pin. Historical wording/WP307/carriers and test predicates stay exact.
+Final18and complete C1 remain required after normal current binding regeneration.
+These Node/finite-DOM/composition-style cases are not native IME or numerical proof.
+
+Root source review SHAd12e5aac0ec68edf33a1ec80d01c8b8d4c15435e8d04bff065ab9f470e5c0e64 binds the four frozen paths and exact
+preservation. Normal DATA/certificate/inventory/C2A/current exact-path witnesses are
+still required;742DATApaths/595source pins/252certificate bindings plus guard is a
+forecast until actual committed verification. Every old tuple, predicate, lane,
+classification and skip remains. A new exact-build genuine native custom multi-char
+title and node label with caret, Apply, protected scene/history/presets, text
+Undo/Redo/Save/Quit and untouched same-profile cold reopen precedes corrective push.
+Full local baseline/official CI/normal merge/fresh merged verification are required.
+All17full-Mac qualification rows remain UNKNOWN; continue the owner's complete Mac
+objective after this one bounded delivery. Unrestricted synthetic native testing
+remains authorized; new reports/materials use T777 and declared owned APFS runtime.
+
+# Full Mac scope and first ordinary Atlas map — 2026-10-22
+
+TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_SOURCE_PROOF_COMPLETE_DELIVERY_AND_NATIVE_PENDING
+BINDING_BASE_SHA: 310182192c6d99aa3460c53797bc5f7ba55d1705
+ORIGINAL_DELIVERY_BASE_SHA: 4bc78a775df9476877add40f62a1fcb1932ed7a7
+CLAIM_BOUNDARY: Same single full-Mac scope and first manual-map availability delivery; no complete Atlas or Mac release acceptance.
+
+PR2143 is closed at actual merge4bc78a77 with identical candidate tree, all20official
+candidate checks, fresh merged805of805 and required gates. Its rebuilt merged native
+archive/import/edit/UndoRedo/Save/cold reopen and complete profile/bundle readback
+close only that source correction. Authored COPY, numerical/full-product qualification,
+signing/notary/channel and final release obligations remain separate.
+
+The owner requires the complete agreed Mac product, including Atlas/maps, WSE, Pulse
+and configuration epochs; Black Box follows release. The frozen V6 reference SHAeb2b
+is scope context, not stage admission, current lease, evidence or public permission.
+FIRST_MAC_RELEASE_CUT_V2 separately versions that scope with17UNKNOWN qualification
+rows, all12Atlas stages,15scope/dimension cells, four distinct graph projections,
+WSE/Pulse and epoch duties. The original109-node171-edge program and V1 cut/API remain
+exact. Derived99-node159-edge dependency closure never replaces the full denominator.
+All120inherited raw-edge obligations and ordinary recovery/history/backup/conflict
+requirements remain. V2 scope validity always leaves readiness NOT_READY and release,
+public distribution and program-completion authority false.
+
+Only trusted packaged Darwin selects WRITER_LOCAL_ATLAS_V2. It admits the existing
+FREE manualMap.create and manualMap.node.add commands plus query.atlasCurrentScene
+and query.manualMapWorkbench. The existing Atlas rail is visible; Plan/Review and
+other optional systems retain their policy. Legacy WRITER_LOCAL_V1, dev/non-Mac,
+current14DOCX exceptions and entitlement/IPC/Kernel/real Stage10 owner/project/source
+CAS/atomic persistence remain. No Core/editor/preload/bundle, dependency, visual
+language, security boundary, private writer or runtime network change is introduced.
+
+Meaningful unchanged actual-Main RED6of7 first showed the profile refusing both map
+commands and queries after successful ordinary project creation. Current complete
+sixteen-file execution at310 plus the exact ER/task amendment passes839of839 with
+zero fail/cancel/skip/todo. Original13caller execution remains937of937 at original4bc
+plus its independently frozen nine source bytes; root archive58of58 retains that
+actual source identity. Neither is relabelled a newer-head/native execution. All
+initial fixture/method failures and the pre-union736run remain preserved separately.
+
+The old ER C03 oracle also fails4of5 on clean unchanged4bc because a legitimate local
+command precedes the product registry spread. Fresh clean310 bootstrap/startup/fetch,
+architecture preflight and amended task E0 precede its only additional delegated
+edit. The correction scopes membership to the exact named guarded allowlist; every
+other assertion and body reconstructs byte-exact. Prepared external5of5 and consumed
+missing-spread4of5 diagnostics precede the edit; maintained whole ER now passes5of5.
+All nine implementation paths stay exact. The normal310 implementation checkpoint
+is explicitly unaccepted and starts no new independent delivery contour.
+
+Normal inventory/C2A regeneration and current DATA/certificate/exact-path witnesses
+must retain1603members/classes/skip policy, every historical tuple and verifier
+predicate. The declared additional four source memberships derive740DATApaths,
+593source pins and250certificate bindings plus the unchanged guard; exact committed
+verification and every corruption oracle remain mandatory. Witnesses create no
+product, native-stage or release authority. Root review SHA89434a41b16f945ddbddda350139e0b7cc12cb3c3f172695edc872c993696ee2
+binds the ten frozen source paths and preservation; it is not self-acceptance.
+
+Full final-source baseline and required gates, exact commit/push/official CI/normal
+merge, fresh clean merged verification, and a newly built packaged native ordinary
+Create/Map/create/add/Save/Quit/cold reopen with independent raw map/manuscript
+readback remain required. No app is launched by this source observation. All17full
+Mac rows remain UNKNOWN; after this bounded delivery, continue the owner's complete
+Mac objective. Unrestricted synthetic native testing remains authorized. New reports
+and materials use the matching dated T777 folders and declared owned temporary APFS
+build/profile runtime, with complete final artifact/profile preservation.
+
 # Imported archive authoring handoff — source and early native proof — 2026-10-22
 
 TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
