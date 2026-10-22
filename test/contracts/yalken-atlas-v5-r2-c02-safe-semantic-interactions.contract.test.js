@@ -64,7 +64,7 @@ test('R2 C02 styles command forms without adding a new UI framework or dependenc
 
 // Execute the actual draft listeners and actual workbench clear/rebuild path.
 // The finite DOM port models focused-subtree removal; it is not native/IME proof.
-function draftDomHarness() {
+function draftDomHarness(transform = text => text) {
   const vm = require('node:vm');
   const document = { activeElement: null };
   const dataName = (name) => name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -131,7 +131,9 @@ function draftDomHarness() {
   const context = {
     document, HTMLElement: Element, Element, counters,
     manualMapWorkbenchHost: rail, manualMapPlanHost: plan, manualMapPlanWorkspace: workspace,
-    currentProjectId: 'project-a', manualMapCommandDraft: null, manualMapSearchQuery: '',
+    currentProjectId: 'project-a', currentDocumentId: 'scene-a', currentTreeContentPublicationId: 'publication-a',
+    localEditGeneration: 1, currentRightTab: 'atlas', currentAtlasSurface: 'manualMap',
+    atlasJourneyState: { commandSeq: 0 }, manualMapCommandDraft: null, manualMapSearchQuery: '',
     manualMapWorkbenchState: { state: 'ready', projectId: 'project-a', mapId: 'map-a',
       graph: {}, summary: { mapCount: 1, nodeCount: 0, edgeCount: 0, groupCount: 0 } },
     normalizeManualMapWorkbench: (value) => value,
@@ -153,14 +155,18 @@ function draftDomHarness() {
     if (start < 0) start = editor.indexOf('function ' + name + '(');
     assert.notEqual(start, -1, 'actual function missing: ' + name);
     const end = editor.indexOf('\n}\n', start); assert.ok(end > start);
-    return editor.slice(start, end + 2);
+    return transform(editor.slice(start, end + 2));
   }
   const names = ['manualMapText', 'createManualMapCommandDraft', 'openManualMapCommandDraft',
     'cancelManualMapCommandDraft', 'updateManualMapCommandDraftField', 'setManualMapCommandDraftConfirmation',
     'applyManualMapCommandDraft', 'renderManualMapCommandDraft', 'renderManualMapWorkbenchInto',
     'renderManualMapWorkbenchState'];
   if (editor.includes('function syncManualMapCommandDraftControls(')) names.push('syncManualMapCommandDraftControls');
-  vm.runInContext(names.map(sourceFunction).join('\n') + '\n' +
+  names.push('invalidateAtlasPublications', 'captureAtlasPublication', 'beginAtlasQueryPublication', 'readAtlasQueryProjection');
+  const stateStart = editor.indexOf('let atlasPublicationEpoch =');
+  const stateEnd = editor.indexOf('let manualMapPortabilityCommandState =', stateStart);
+  assert.ok(stateStart >= 0 && stateEnd > stateStart);
+  vm.runInContext(editor.slice(stateStart, stateEnd) + names.map(sourceFunction).join('\n') + '\n' +
     'const actualWorkbenchRender = renderManualMapWorkbenchInto;\n' +
     'renderManualMapWorkbenchInto = (...args) => { counters.renders++; return actualWorkbenchRender(...args); };\n' +
     'globalThis.port = { open: openManualMapCommandDraft, draft: () => manualMapCommandDraft };', context);
@@ -288,4 +294,480 @@ test('R2 C02 detached controls cannot alter a replacement with identical command
   await oldForm.querySelector('[data-manual-map-command-cancel]').emit('click'); await h.settle();
   assert.deepEqual(h.draft(), before); assert.equal(h.calls.length, 0);
   assert.equal(h.field(), current); assert.equal(h.document.activeElement, current);
+});
+
+// Deferred ports retain actual renderer decisions, normalizers and DOM rebuilds.
+// They are typed transport fixtures, not a claim of real Core/native execution.
+function publicationHarness(transform) {
+  const h = draftDomHarness(transform), vm = require('node:vm'), c = h.context;
+  const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
+  const text = name => {
+    const start = editor.indexOf('async function ' + name + '(') >= 0
+      ? editor.indexOf('async function ' + name + '(') : editor.indexOf('function ' + name + '(');
+    assert.ok(start >= 0, 'actual function exists: ' + name);
+    const end = editor.indexOf('\n}\n', start); assert.ok(end > start);
+    const value = editor.slice(start, end + 2);
+    return transform ? transform(value) : value;
+  };
+  const leaves = [
+    ['refreshManualMapWorkbench', 'MANUAL_MAP_WORKBENCH_QUERY_ID', 'manualMapWorkbench', 'normalizeManualMapWorkbench', 'manualMapWorkbenchState', 'renderManualMapWorkbenchState'],
+    ['refreshAtlasCurrentScene', 'ATLAS_CURRENT_SCENE_QUERY_ID', 'atlasCurrentScene', 'normalizeAtlasCurrentSceneDossier', 'atlasCurrentSceneState', 'renderAtlasCurrentSceneState'],
+    ['refreshProjectionInspector', 'PROJECTION_INSPECTOR_QUERY_ID', 'projectionInspector', 'normalizeProjectionInspector', 'projectionInspectorState', 'renderProjectionInspectorState'],
+    ['refreshAtlasOverview', 'ATLAS_OVERVIEW_QUERY_ID', 'atlasOverview', 'normalizeAtlasOverview', 'atlasOverviewState', 'renderAtlasOverviewState'],
+    ['refreshAtlasEntityDossier', 'ATLAS_ENTITY_DOSSIER_QUERY_ID', 'atlasEntityDossier', 'normalizeAtlasEntityDossier', 'atlasEntityDossierState', 'renderAtlasEntityDossierState'],
+    ['refreshAtlasRelationDossier', 'ATLAS_RELATION_DOSSIER_QUERY_ID', 'atlasRelationDossier', 'normalizeAtlasRelationDossier', 'atlasRelationDossierState', 'renderAtlasRelationDossierState'],
+    ['refreshAtlasMatrices', 'ATLAS_MATRICES_QUERY_ID', 'atlasMatrices', 'normalizeAtlasMatrices', 'atlasMatricesState', 'renderAtlasMatricesState'],
+    ['refreshAtlasHeatmap', 'ATLAS_HEATMAP_QUERY_ID', 'atlasHeatmap', 'normalizeAtlasHeatmap', 'atlasHeatmapState', 'renderAtlasHeatmapState'],
+    ['refreshAtlasTemporalLayout', 'ATLAS_TEMPORAL_LAYOUT_QUERY_ID', 'atlasTemporalLayout', 'normalizeAtlasTemporalLayout', 'atlasTemporalLayoutState', 'renderAtlasTemporalLayoutState'],
+    ['refreshAtlasContinuityLedgerSurface', 'ATLAS_CONTINUITY_LEDGER_SURFACE_QUERY_ID', 'atlasContinuityLedgerSurface', 'normalizeAtlasContinuityLedgerSurface', 'atlasContinuityLedgerState', 'renderAtlasContinuityLedgerState'],
+    ['refreshAtlasReportsSavedQueries', 'ATLAS_REPORTS_SAVED_QUERIES_QUERY_ID', 'atlasReportsSavedQueries', 'normalizeAtlasReportsSavedQueries', 'atlasReportsState', 'renderAtlasReportsSavedQueriesState'],
+    ['refreshAtlasDiagnosticsStageAcceptance', 'ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_ID', 'atlasDiagnosticsStageAcceptance', 'normalizeAtlasDiagnosticsStageAcceptance', 'atlasDiagnosticsState', 'renderAtlasDiagnosticsStageAcceptanceState'],
+  ];
+  const statuses = [], errors = [], queries = [], commands = [], delivered = [], renders = [];
+  let incoming, working = 'manuscript é 🧭';
+  Object.assign(c, { currentDocumentId: 'scene-a', currentDocumentTitle: 'A', currentRightTab: 'atlas',
+    isTiptapMode: false, COMMAND_BUS_ROUTE: 'command.bus', METADATA_UPDATE_COMMAND_ID: 'cmd.project.metadata.update',
+    atlasJourneyState: { status: 'idle', commandSeq: 0 }, atlasJourneyDraft: {}, atlasSelectedEntityId: '', atlasSelectedRelation: {},
+    atlasHeatmapExplicitOpen: true, atlasTemporalLayoutExplicitOpen: true, atlasContinuityLedgerExplicitOpen: true,
+    atlasContinuityRequestEpoch: 0, runCommand: {},
+    manualMapPortabilityCommandState: { status: '' },
+    syncAtlasSurfaceCompositionState() {}, normalizeAtlasSurface: value => value,
+    updateStatusText: (value, options = {}) => statuses.push({ value, clear: options.clear === true }),
+    mapCommandErrorToUi: error => ({ userMessage: 'visible:' + error.reason, code: error.code, severity: 'ERROR' }),
+    console: { error: value => errors.push(value), warn: value => errors.push(value) },
+    isMetadataUpdateStaleResult: () => false, renderAtlasWorkspaceState() {},
+    renderAtlasJourneyState: () => renders.push(['journey', JSON.stringify(c.atlasJourneyState)]),
+    logDevError: (...args) => errors.push(args),
+    activeTab: 'notes', treeQueryGeneration: 0, treeContainer: null, treeRoot: null, treeMutationProjection: null,
+    activeDocumentRevealRequested: false, currentDocumentKind: 'scene', metaEnabled: true,
+    EXTRA_COMMAND_IDS: { PROJECT_DOCUMENT_OPEN: 'project.open', TREE_DELETE_NODE: 'tree.delete' },
+    PROJECT_TREE_QUERY_ID: 'query.projectTree', normalizeProjectId: value => value,
+    getEffectiveDocumentId: node => node.nodeId, getEffectiveDocumentKind: node => node.kind,
+    createNavigatorSelectionState: projectId => ({ projectId }), isProjectTreeDocumentId: () => false,
+    wordCommentDraft: null, wordCommentBusy: false, storyDrafts: new Map(), storyMutationPending: false,
+    manuscriptDrafts: new Map(), notesMutationPending: false, flowModeState: { active: false },
+    localDirty: false, lastAckedGeneration: 1, currentMetadataBaselineHash: '', metadataUpdatePending: false,
+    composeDocumentContent: () => working,
+    parseDocumentContent: value => ({ text: value, meta: {}, cards: [] }),
+    shouldUseCentralSheetLargePayloadFastPath: () => false, reviewSurfaceResolveIncomingPayload: () => null,
+    revealActiveDocumentAncestors: () => ({ found: false }), requestAnimationFrame() {},
+    setPlainText: value => { working = value; }, showEditorPanelFor: value => { c.currentDocumentTitle = value; },
+    localStorage: { setItem() {} }, getActiveDocumentTitleStorageKey: () => 'active-title',
+  });
+  for (const name of ['updateMetaVisibility', 'updateInspectorSnapshot', 'refreshMetadataInspector', 'renderTree',
+    'invalidateDocxImportAttempt', 'collapseSelection', 'cancelLinkDialog', 'clearFlowModeState', 'clearPendingMetadataUpdate',
+    'applyIncomingBookProfile', 'setReviewSurfaceState', 'clearCentralSheetLargePayloadFastPath', 'updateMetaInputs',
+    'updateCardsList', 'updateWordCount', 'scheduleCentralSheetStripProofRefresh', 'updateSaveStateText',
+    'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection', 'updatePerfHintText', 'applyPendingProjectSearchJump',
+    'restoreSpatialLayoutState', 'adoptToolbarConfiguratorState', 'refreshTreeForProjectPublication', 'syncVisibleAuthoringSurfacesSurface']) c[name] = () => {};
+  const projection = (row, projectId = c.currentProjectId, marker = 'current') => ({ ok: true, [row[2]]: {
+    state: 'ready', projectId, sceneId: c.currentDocumentId, mapId: 'map-a', marker,
+    requestedEntityId: c.atlasSelectedEntityId || '', requestedPairId: c.atlasSelectedRelation.pairId || '',
+    requestedLeftEntityId: c.atlasSelectedRelation.leftEntityId || '', requestedRightEntityId: c.atlasSelectedRelation.rightEntityId || '',
+    entities: [], mentions: [], graph: { projectId, mapId: 'map-a', nodes: [], edges: [], groups: [], meta: { marker } },
+    summary: { mapCount: 1, workbenchHash: marker },
+  } });
+  for (const row of leaves) {
+    c[row[1]] = 'query.' + row[2]; c[row[4]] = projection(row)[row[2]];
+    if (row[5] !== 'renderManualMapWorkbenchState') c[row[5]] = () => renders.push([row[2], JSON.stringify(c[row[4]])]);
+  }
+  c.WORKSPACE_QUERY_ID_SET = new Set([...leaves.map(row => c[row[1]]), c.PROJECT_TREE_QUERY_ID]);
+  c.window = { confirm: () => true, electronAPI: { onEditorSetText: fn => { incoming = fn; }, invokeWorkspaceQueryBridge: async ({ queryId, payload }) => {
+    if (queryId === c.PROJECT_TREE_QUERY_ID) return c.treePort(payload);
+    const row = leaves.find(row => c[row[1]] === queryId); assert.ok(row);
+    const request = { queryId, payload: JSON.parse(JSON.stringify(payload)), row };
+    queries.push(request);
+    return c.queryPort ? c.queryPort(request) : projection(row, payload.projectId);
+  } } };
+  c.runCommandThroughBus = async (_runner, id, payload) => {
+    commands.push({ id, payload: JSON.parse(JSON.stringify(payload)) });
+    return c.commandPort ? c.commandPort(id, payload) : { ok: true, value: { status: 'APPLIED' } };
+  };
+  const names = ['withEditorModeCommandPayload', 'dispatchUiCommand', 'invokeWorkspaceQueryBridge',
+    'runProductJourneyCommand', 'refreshAtlasProductSurfaces', 'refreshActiveAtlasSurface',
+    'runManualMapWorkbenchCommand', 'runManualMapExportCommand', 'unwrapManualMapProductCommandReceipt',
+    'runAtlasSurfaceProductCommand', 'appendAtlasJourneyField', 'appendAtlasJourneySelect',
+    'openDocumentNode', 'handleDeleteNode', 'loadTree',
+    'applyTreeDetachedPublication', 'applyTreeContextPublication', ...leaves.map(row => row[0]),
+    ...new Set(leaves.map(row => row[3])), 'reviewSurfaceIsPlainObject'];
+  for (const match of editor.matchAll(/^function (normalizeAtlas\w+)\(/gm)) if (!names.includes(match[1])) names.push(match[1]);
+  const constantsStart = editor.indexOf('const ATLAS_SURFACE_IDS = Object.freeze([');
+  const constantsEnd = editor.indexOf('const ATLAS_DEFERRED_SURFACE_IDS =', constantsStart);
+  assert.ok(constantsStart >= 0 && constantsEnd > constantsStart);
+  vm.runInContext(editor.slice(constantsStart, constantsEnd) + names.map(text).join('\n'), c);
+  const listenerStart = editor.indexOf('window.electronAPI.onEditorSetText((payload) => {');
+  const listenerEnd = editor.indexOf('  window.electronAPI.onEditorTextRequest(', listenerStart);
+  assert.ok(listenerStart >= 0 && listenerEnd > listenerStart);
+  vm.runInContext(transform ? transform(editor.slice(listenerStart, listenerEnd)) : editor.slice(listenerStart, listenerEnd), c);
+  const dispatch = c.dispatchUiCommand;
+  c.dispatchUiCommand = async (...args) => { const result = await dispatch(...args); delivered.push(result); return result; };
+  return { ...h, c, deferred, leaves, projection, statuses, errors, queries, commands, delivered, renders,
+    incoming: payload => incoming(payload), working: () => working };
+}
+
+test('R2 C02 delayed actual Apply and Journey cannot replace a same-target newer draft', async () => {
+  const h = publicationHarness(), response = h.deferred();
+  h.c.commandPort = () => response.promise;
+  h.open('label'); const pending = h.c.applyManualMapCommandDraft();
+  assert.equal(h.commands.length, 1);
+  const current = h.open('label'); current.focus(); current.setSelectionRange(2, 5, 'backward');
+  await h.edit(current, 'B e\u0301 🧭');
+  const expected = h.draft(), form = h.form(), selection = [current.selectionStart, current.selectionEnd, current.selectionDirection];
+  const actualReceipt = { ok: true, value: { status: 'APPLIED', receiptId: 'typed-port-A' } };
+  response.resolve(actualReceipt); await pending;
+  assert.deepEqual(h.draft(), expected, 'old actual completion must not restore draft A over B');
+  assert.equal(h.form(), form); assert.equal(h.field(), current); assert.equal(h.document.activeElement, current);
+  assert.deepEqual([current.selectionStart, current.selectionEnd, current.selectionDirection], selection);
+  assert.equal(h.commands.length, 1, 'no retry or rollback dispatch');
+  assert.equal(h.delivered[0], actualReceipt, 'retain actual transport result without relabelling it cancellation');
+});
+
+test('R2 C02 stale actual dispatch refusal cannot overwrite the newer draft status', async () => {
+  const h = publicationHarness(), response = h.deferred(); h.c.commandPort = () => response.promise;
+  h.open('label'); const pending = h.c.applyManualMapCommandDraft();
+  h.open('label'); h.statuses.push({ value: 'B current', clear: false });
+  response.resolve({ ok: false, error: { code: 'E_COMMAND_FAILED', op: 'manualMap.node.add', reason: 'CAPABILITY_DISABLED_FOR_COMMAND' } });
+  await pending;
+  assert.equal(h.statuses.at(-1).value, 'B current', 'late failure has no current presentation ownership');
+  assert.equal(h.errors.length, 0); assert.equal(h.commands.length, 1);
+});
+
+function callPublicationLeaf(h, row, options = {}) {
+  return row[0] === 'refreshAtlasTemporalLayout' ? h.c[row[0]](null, options) : h.c[row[0]](options);
+}
+function focusedDraftWitness(h) {
+  const input = h.field(); assert.ok(input); input.focus(); input.setSelectionRange(2, 4, 'backward');
+  return { input, form: h.form(), value: input.value, selection: [input.selectionStart, input.selectionEnd, input.selectionDirection], draft: h.draft() };
+}
+function assertDraftWitness(h, witness) {
+  assert.equal(h.field(), witness.input); assert.equal(h.form(), witness.form);
+  assert.equal(h.document.activeElement, witness.input); assert.equal(witness.input.value, witness.value);
+  assert.deepEqual([witness.input.selectionStart, witness.input.selectionEnd, witness.input.selectionDirection], witness.selection);
+  assert.deepEqual(h.draft(), witness.draft);
+}
+
+for (let index = 0; index < 12; index++) {
+  test('R2 C02 actual reader ' + index + ' retains Q2 when Q1 completes later', async () => {
+    const h = publicationHarness(), row = h.leaves[index], first = h.deferred(), second = h.deferred();
+    h.c.queryPort = () => h.queries.length === 1 ? first.promise : second.promise;
+    const q1 = callPublicationLeaf(h, row), q2 = callPublicationLeaf(h, row);
+    assert.equal(h.queries.length, 2);
+    second.resolve(h.projection(row, 'project-a', 'Q2')); await q2;
+    const expected = JSON.stringify(h.c[row[4]]), renders = h.renders.length, domRenders = h.counters.renders;
+    first.resolve(h.projection(row, 'project-a', 'Q1')); await q1;
+    assert.equal(JSON.stringify(h.c[row[4]]), expected); assert.equal(h.renders.length, renders);
+    assert.equal(h.counters.renders, domRenders); assert.equal(h.c[row[4]].state, 'ready');
+  });
+  test('R2 C02 actual reader ' + index + ' cannot republish over a newer field edit', async () => {
+    const h = publicationHarness(), row = h.leaves[index], response = h.deferred(); h.open('label');
+    h.c.queryPort = () => response.promise;
+    const pending = callPublicationLeaf(h, row);
+    if (index === 0) { // Loading intentionally hides the form; a newer real projection restores it.
+      h.c.queryPort = request => h.projection(request.row); await callPublicationLeaf(h, row);
+    }
+    const input = h.field(); assert.ok(input); input.focus(); input.setSelectionRange(2, 2);
+    await h.edit(input, 'B é 🧭'); const witness = focusedDraftWitness(h);
+    const expected = JSON.stringify(h.c[row[4]]), renders = h.renders.length, domRenders = h.counters.renders;
+    response.resolve(h.projection(row, 'project-a', 'old')); await pending;
+    assertDraftWitness(h, witness); assert.equal(JSON.stringify(h.c[row[4]]), expected);
+    assert.equal(h.renders.length, renders); assert.equal(h.counters.renders, domRenders);
+  });
+  test('R2 C02 actual reader ' + index + ' refuses stale parent before loading render', async () => {
+    const h = publicationHarness(), row = h.leaves[index], current = h.c.captureAtlasPublication();
+    h.open('label'); const witness = focusedDraftWitness(h), state = JSON.stringify(h.c[row[4]]);
+    const renders = h.renders.length, domRenders = h.counters.renders;
+    await callPublicationLeaf(h, row, { isCurrent: current });
+    assert.equal(h.queries.length, 0); assert.equal(JSON.stringify(h.c[row[4]]), state);
+    assert.equal(h.renders.length, renders); assert.equal(h.counters.renders, domRenders); assertDraftWitness(h, witness);
+  });
+  for (const malformed of ['foreign-project', 'array', 'missing-project']) test('R2 C02 actual reader ' + index + ' rejects ' + malformed, async () => {
+    const h = publicationHarness(), row = h.leaves[index], result = h.projection(row);
+    if (malformed === 'foreign-project') result[row[2]].projectId = 'project-foreign';
+    if (malformed === 'array') result[row[2]] = [];
+    if (malformed === 'missing-project') delete result[row[2]].projectId;
+    h.c.queryPort = () => result; await callPublicationLeaf(h, row);
+    assert.equal(h.c[row[4]].state, 'unavailable'); assert.equal(h.c[row[4]].projectId, 'project-a');
+    assert.equal(h.commands.length, 0);
+  });
+}
+
+test('R2 C02 real query echoes reject foreign entity coordinates while allowing canonical selected fallbacks', async () => {
+  const h = publicationHarness(); h.c.atlasSelectedEntityId = 'missing-entity';
+  h.c.atlasSelectedRelation = { pairId: 'missing-pair', leftEntityId: 'left', rightEntityId: 'right' };
+  for (const index of [4, 5]) {
+    const row = h.leaves[index], valid = h.projection(row);
+    Object.assign(valid[row[2]], index === 4 ? { selectedEntityId: 'existing-entity' } : {
+      selectedPairId: 'existing-pair', relation: { leftEntityId: 'existing-left', rightEntityId: 'existing-right' } });
+    const fields = index === 4 ? ['requestedEntityId'] : ['requestedPairId', 'requestedLeftEntityId', 'requestedRightEntityId'];
+    for (const field of fields) {
+      const wrong = JSON.parse(JSON.stringify(valid)); wrong[row[2]][field] = 'foreign-coordinate';
+      h.c.queryPort = () => wrong; await callPublicationLeaf(h, row);
+      assert.equal(h.c[row[4]].state, 'unavailable');
+      assert.equal(index === 4 ? h.c.atlasSelectedEntityId : h.c.atlasSelectedRelation.pairId, index === 4 ? 'missing-entity' : 'missing-pair');
+    }
+    h.c.queryPort = () => valid; await callPublicationLeaf(h, row);
+    assert.equal(h.c[row[4]].state, 'ready');
+    assert.equal(index === 4 ? h.c.atlasSelectedEntityId : h.c.atlasSelectedRelation.pairId, index === 4 ? 'existing-entity' : 'existing-pair');
+  }
+});
+
+test('R2 C02 current Map query keeps the supported first-map fallback and rejects changed current selection', async () => {
+  const h = publicationHarness(), row = h.leaves[0]; h.c.manualMapWorkbenchState.mapId = 'vanished';
+  h.c.queryPort = () => h.projection(row); await h.c.refreshManualMapWorkbench();
+  assert.equal(h.c.manualMapWorkbenchState.mapId, 'map-a'); assert.equal(h.c.manualMapWorkbenchState.state, 'ready');
+  const response = h.deferred(); h.c.queryPort = () => response.promise;
+  const pending = h.c.refreshManualMapWorkbench(); h.c.manualMapWorkbenchState.mapId = 'user-selected-b';
+  const expected = JSON.stringify(h.c.manualMapWorkbenchState); response.resolve(h.projection(row)); await pending;
+  assert.equal(JSON.stringify(h.c.manualMapWorkbenchState), expected);
+});
+
+test('R2 C02 currentScene requires the requested scene even for an explicitly empty selection', async () => {
+  for (const sceneId of ['scene-a', '']) {
+    const h = publicationHarness(), row = h.leaves[1]; h.c.currentDocumentId = sceneId;
+    const wrong = h.projection(row); wrong.atlasCurrentScene.sceneId = 'foreign-scene';
+    h.c.queryPort = () => wrong; await h.c.refreshAtlasCurrentScene();
+    assert.equal(h.c.atlasCurrentSceneState.state, 'unavailable');
+    h.c.queryPort = () => h.projection(row); await h.c.refreshAtlasCurrentScene();
+    assert.equal(h.c.atlasCurrentSceneState.state, 'ready'); assert.equal(h.c.atlasCurrentSceneState.sceneId, sceneId);
+  }
+});
+
+test('R2 C02 current failure remains visible and cannot be converted into an applied receipt', async () => {
+  const h = publicationHarness(); h.open('label');
+  const receipt = { ok: false, error: { code: 'E_COMMAND_FAILED', reason: 'CAPABILITY_DISABLED_FOR_COMMAND' } };
+  h.c.commandPort = () => receipt; await h.c.applyManualMapCommandDraft();
+  assert.equal(h.draft().state, 'failed'); assert.equal(h.draft().result.status, 'FAILED');
+  assert.equal(h.statuses.filter(value => value.value === 'visible:CAPABILITY_DISABLED_FOR_COMMAND').length, 1);
+  assert.equal(h.errors.length, 1); assert.equal(h.commands.length, 1); assert.equal(h.delivered[0], receipt);
+});
+
+test('R2 C02 a released command cannot publish its independently delayed child after B is current', async () => {
+  const h = publicationHarness(), command = h.deferred(), scene = h.deferred(); h.open('label');
+  h.c.commandPort = () => command.promise;
+  h.c.queryPort = request => request.row[0] === 'refreshAtlasCurrentScene' ? scene.promise : h.projection(request.row);
+  const pending = h.c.applyManualMapCommandDraft(), receipt = { ok: true, value: { status: 'APPLIED', receiptId: 'A' } };
+  command.resolve(receipt); await h.settle();
+  assert.equal(h.queries.length, 1); assert.equal(h.queries[0].row[0], 'refreshAtlasCurrentScene');
+  h.open('label'); const witness = focusedDraftWitness(h), state = JSON.stringify(h.c.atlasCurrentSceneState);
+  scene.resolve(h.projection(h.leaves[1])); await pending;
+  assertDraftWitness(h, witness); assert.equal(JSON.stringify(h.c.atlasCurrentSceneState), state);
+  assert.equal(h.queries.length, 1, 'stale parent must not start its later fanout/manual refresh');
+  assert.equal(h.delivered[0], receipt);
+});
+
+test('R2 C02 all eight real Journey fanout replies are fenced independently after parent completion', async () => {
+  const h = publicationHarness(), gates = [];
+  h.c.queryPort = request => {
+    if (request.row[0] === 'refreshAtlasCurrentScene') return h.projection(request.row);
+    const gate = h.deferred(); gates.push({ ...gate, row: request.row }); return gate.promise;
+  };
+  const receipt = { ok: true, value: { status: 'APPLIED' } }; h.c.commandPort = () => receipt;
+  assert.equal(await h.c.runProductJourneyCommand('manualMap.node.add', { mapId: 'map-a', label: 'A' }), receipt);
+  assert.equal(gates.length, 8); assert.deepEqual(gates.map(g => g.row[0]).sort(), [
+    'refreshAtlasOverview', 'refreshAtlasEntityDossier', 'refreshAtlasRelationDossier', 'refreshAtlasMatrices',
+    'refreshAtlasReportsSavedQueries', 'refreshAtlasDiagnosticsStageAcceptance', 'refreshManualMapWorkbench', 'refreshProjectionInspector'].sort());
+  h.c.queryPort = request => h.projection(request.row);
+  await h.c.refreshManualMapWorkbench(); h.open('label'); const witness = focusedDraftWitness(h);
+  const states = h.leaves.map(row => JSON.stringify(h.c[row[4]])), renders = h.renders.length, domRenders = h.counters.renders;
+  for (const gate of gates) {
+    gate.resolve(h.projection(gate.row, 'project-a', 'A')); await h.settle();
+    assert.deepEqual(h.leaves.map(row => JSON.stringify(h.c[row[4]])), states); assertDraftWitness(h, witness);
+    assert.equal(h.renders.length, renders); assert.equal(h.counters.renders, domRenders);
+  }
+});
+
+for (const wrapper of ['runManualMapWorkbenchCommand', 'runManualMapExportCommand', 'runAtlasSurfaceProductCommand']) {
+  test('R2 C02 ' + wrapper + ' retains B presentation when same-context A completes last', async () => {
+    const h = publicationHarness(), a = h.deferred(), b = h.deferred();
+    h.c.commandPort = () => h.commands.length === 1 ? a.promise : b.promise;
+    const pendingA = h.c[wrapper]('manualMap.export.json', { mapId: 'map-a' });
+    const pendingB = h.c[wrapper]('manualMap.export.json', { mapId: 'map-a' });
+    const receiptB = { ok: true, value: { mapId: 'map-b', export: { jsonSha256: 'B' } } };
+    b.resolve(receiptB); assert.equal(await pendingB, receiptB); await h.settle();
+    const state = JSON.stringify({ journey: h.c.atlasJourneyState, portability: h.c.manualMapPortabilityCommandState });
+    const counts = [h.queries.length, h.counters.renders, h.renders.length, h.statuses.length];
+    const receiptA = { ok: true, value: { mapId: 'map-a', export: { jsonSha256: 'A' } } };
+    a.resolve(receiptA); assert.equal(await pendingA, receiptA); await h.settle();
+    assert.equal(JSON.stringify({ journey: h.c.atlasJourneyState, portability: h.c.manualMapPortabilityCommandState }), state);
+    assert.deepEqual([h.queries.length, h.counters.renders, h.renders.length, h.statuses.length], counts);
+    assert.equal(h.commands.length, 2);
+  });
+}
+
+test('R2 C02 editing the same live draft while Apply waits retains working text without retrying the actual effect', async () => {
+  const h = publicationHarness(), gate = h.deferred(); h.open('label'); h.c.commandPort = () => gate.promise;
+  const pending = h.c.applyManualMapCommandDraft();
+  // The current form's native field can still deliver its already queued input.
+  h.c.updateManualMapCommandDraftField('label', 'B exact é 🧭');
+  const expected = h.draft(), count = h.counters.renders;
+  const receipt = { ok: true, value: { status: 'APPLIED' } }; gate.resolve(receipt); await pending;
+  assert.deepEqual(h.draft(), expected); assert.equal(h.counters.renders, count);
+  assert.equal(h.delivered[0], receipt); assert.equal(h.commands.length, 1);
+});
+
+for (const lifecycle of ['same-id-payload', 'away-back-payload', 'context', 'detach', 'open-away-back', 'tree-away-back', 'delete']) {
+  test('R2 C02 actual ' + lifecycle + ' invalidates old command publication', async () => {
+    const h = publicationHarness(), gate = h.deferred(); h.c.currentTreeContentPublicationId = '';
+    h.open('label'); h.c.commandPort = () => gate.promise; const pending = h.c.applyManualMapCommandDraft();
+    const payload = { projectId: 'project-a', documentId: 'scene-a', kind: 'scene', metaEnabled: true,
+      title: 'Current', content: h.working(), expectedContent: h.working(), expectedGeneration: 1 };
+    if (lifecycle === 'same-id-payload') h.incoming(payload);
+    if (lifecycle === 'away-back-payload') { h.incoming({ ...payload, projectId: 'project-b' }); h.incoming(payload); }
+    if (lifecycle === 'context') assert.equal(h.c.applyTreeContextPublication({ ...payload, treePublication: true }), true);
+    if (lifecycle === 'detach') assert.equal(h.c.applyTreeDetachedPublication({ ...payload, treeDetached: true,
+      expectedDocumentId: 'scene-a', documentId: '' }), true);
+    if (lifecycle === 'open-away-back') {
+      h.c.commandPort = (_id, value) => ({ ok: true, value: { documentId: value.nodeId } });
+      assert.equal(await h.c.openDocumentNode({ nodeId: 'scene-b', kind: 'scene' }), true);
+      assert.equal(await h.c.openDocumentNode({ nodeId: 'scene-a', kind: 'scene' }), true);
+    }
+    if (lifecycle === 'tree-away-back') {
+      h.c.treePort = () => ({ ok: true, projectId: h.c.currentProjectId === 'project-a' ? 'project-b' : 'project-a', root: {} });
+      await h.c.loadTree(); await h.c.loadTree(); assert.equal(h.c.currentProjectId, 'project-a');
+    }
+    if (lifecycle === 'delete') {
+      h.c.commandPort = () => ({ ok: true }); h.c.treePort = () => ({ ok: true, projectId: 'project-a', root: {} });
+      await h.c.handleDeleteNode({ nodeId: 'scene-a' }); assert.equal(h.c.currentDocumentId, null);
+    }
+    await h.settle(); const state = JSON.stringify({ journey: h.c.atlasJourneyState, draft: h.draft() });
+    const count = [h.renders.length, h.queries.length, h.statuses.length, h.counters.renders];
+    gate.resolve({ ok: true, value: { status: 'APPLIED' } }); await pending; await h.settle();
+    assert.equal(JSON.stringify({ journey: h.c.atlasJourneyState, draft: h.draft() }), state);
+    assert.deepEqual([h.renders.length, h.queries.length, h.statuses.length, h.counters.renders], count);
+    assert.equal(h.working(), 'manuscript é 🧭');
+  });
+}
+
+for (const control of ['field', 'select']) test('R2 C02 real Journey ' + control + ' edits invalidate old command and query presentation', async () => {
+  const h = publicationHarness(), gate = h.deferred(); h.c.commandPort = () => gate.promise;
+  const pending = h.c.runProductJourneyCommand('atlas.entity.rename', { entityId: 'entity-a', name: 'A' });
+  const input = control === 'field' ? h.c.appendAtlasJourneyField(h.rail, { fieldName: 'entityName', value: 'A' })
+    : h.c.appendAtlasJourneySelect(h.rail, { fieldName: 'sourceEntityId', value: 'A', options: [{ value: 'B' }] });
+  input.focus(); input.value = 'B'; await input.emit(control === 'field' ? 'input' : 'change');
+  const state = JSON.stringify(h.c.atlasJourneyState), draft = JSON.stringify(h.c.atlasJourneyDraft), renders = h.renders.length;
+  const receipt = { ok: true, value: { status: 'APPLIED' } }; gate.resolve(receipt);
+  assert.equal(await pending, receipt); assert.equal(JSON.stringify(h.c.atlasJourneyState), state);
+  assert.equal(JSON.stringify(h.c.atlasJourneyDraft), draft); assert.equal(h.renders.length, renders);
+  assert.equal(h.queries.length, 0); assert.equal(h.document.activeElement, input);
+});
+
+test('R2 C02 active Journey finally cannot rebuild B after its currentScene child becomes stale', async () => {
+  const h = publicationHarness(), gate = h.deferred(); h.c.currentAtlasSurface = 'journey';
+  h.c.queryPort = () => gate.promise; h.c.refreshActiveAtlasSurface(); assert.equal(h.queries.length, 1);
+  h.open('label'); const witness = focusedDraftWitness(h), renders = h.renders.length;
+  gate.resolve(h.projection(h.leaves[1])); await h.settle();
+  assert.equal(h.renders.length, renders); assertDraftWitness(h, witness);
+});
+
+test('R2 C02 stale product-surface parent cannot start any loading render or query', async () => {
+  const h = publicationHarness(), current = h.c.captureAtlasPublication(); h.open('label');
+  const witness = focusedDraftWitness(h), renders = h.renders.length, domRenders = h.counters.renders;
+  await h.c.refreshAtlasProductSurfaces({ isCurrent: current });
+  assert.equal(h.queries.length, 0); assert.equal(h.renders.length, renders); assert.equal(h.counters.renders, domRenders);
+  assertDraftWitness(h, witness);
+});
+
+test('R2 C02 current source-edit generation, cancel and tab changes refuse late query publication', async () => {
+  for (const change of ['generation', 'cancel', 'tab', 'surface']) {
+    const h = publicationHarness(), row = h.leaves[2], gate = h.deferred(); h.open('label');
+    h.c.queryPort = () => gate.promise; const pending = callPublicationLeaf(h, row);
+    if (change === 'generation') h.c.localEditGeneration++;
+    if (change === 'cancel') h.c.cancelManualMapCommandDraft();
+    if (change === 'tab') h.c.currentRightTab = 'metadata';
+    if (change === 'surface') h.c.currentAtlasSurface = 'overview';
+    const expected = JSON.stringify(h.c[row[4]]), renders = h.renders.length;
+    gate.resolve(h.projection(row)); await pending;
+    assert.equal(JSON.stringify(h.c[row[4]]), expected); assert.equal(h.renders.length, renders);
+  }
+});
+
+test('R2 C02 declined lifecycle payload cannot cancel an otherwise current Atlas publication', async () => {
+  const h = publicationHarness(), current = h.c.captureAtlasPublication();
+  assert.equal(h.c.applyTreeContextPublication({ treePublication: true, projectId: 'foreign' }), false);
+  assert.equal(h.c.applyTreeDetachedPublication({ treeDetached: true, projectId: 'foreign' }), false);
+  assert.equal(current(), true); assert.equal(h.working(), 'manuscript é 🧭');
+});
+
+// Each mutant compiles the same actual functions. Only semantic assertion
+// failure counts as sensitivity; missing bindings and parse errors cannot pass.
+async function sequenceOracle(transform) {
+  const h = publicationHarness(transform), a = h.deferred(), b = h.deferred();
+  h.c.commandPort = () => h.commands.length === 1 ? a.promise : b.promise;
+  const pa = h.c.runManualMapExportCommand('manualMap.export.json', { mapId: 'map-a' });
+  const pb = h.c.runManualMapExportCommand('manualMap.export.json', { mapId: 'map-a' });
+  b.resolve({ ok: true, value: { mapId: 'B', export: { jsonSha256: 'B' } } }); await pb; await h.settle();
+  const expected = JSON.stringify(h.c.manualMapPortabilityCommandState);
+  a.resolve({ ok: true, value: { mapId: 'A', export: { jsonSha256: 'A' } } }); await pa;
+  assert.equal(JSON.stringify(h.c.manualMapPortabilityCommandState), expected, 'OUTER_SEQUENCE_REQUIRED');
+}
+async function queryOrderOracle(transform) {
+  const h = publicationHarness(transform), row = h.leaves[2], a = h.deferred(), b = h.deferred();
+  h.c.queryPort = () => h.queries.length === 1 ? a.promise : b.promise;
+  const pa = callPublicationLeaf(h, row), pb = callPublicationLeaf(h, row);
+  const valueB = h.projection(row); valueB[row[2]].unavailableReason = 'B';
+  b.resolve(valueB); await pb; const expected = JSON.stringify(h.c[row[4]]);
+  a.resolve(h.projection(row)); await pa; assert.equal(JSON.stringify(h.c[row[4]]), expected, 'QUERY_ORDER_REQUIRED');
+}
+async function lifecycleOracle(transform) {
+  const h = publicationHarness(transform), gate = h.deferred(); h.c.currentTreeContentPublicationId = '';
+  h.c.commandPort = () => gate.promise; const pending = h.c.runProductJourneyCommand('manualMap.node.add', { mapId: 'map-a' });
+  h.incoming({ projectId: 'project-a', documentId: 'scene-a', kind: 'scene', metaEnabled: true, title: 'A', content: h.working() });
+  await h.settle(); const expected = JSON.stringify(h.c.atlasJourneyState);
+  gate.resolve({ ok: true, value: { status: 'APPLIED' } }); await pending;
+  assert.equal(JSON.stringify(h.c.atlasJourneyState), expected, 'LIFECYCLE_EPOCH_REQUIRED');
+}
+async function parentOracle(transform) {
+  const h = publicationHarness(transform), row = h.leaves[2], current = h.c.captureAtlasPublication();
+  h.open('label'); const before = [h.queries.length, h.renders.length];
+  await callPublicationLeaf(h, row, { isCurrent: current });
+  assert.deepEqual([h.queries.length, h.renders.length], before, 'PARENT_BEFORE_EFFECT_REQUIRED');
+}
+async function errorOracle(transform) {
+  const h = publicationHarness(transform), gate = h.deferred(); h.open('label'); h.c.commandPort = () => gate.promise;
+  const pending = h.c.applyManualMapCommandDraft(); h.open('label'); h.statuses.push({ value: 'B' });
+  gate.resolve({ ok: false, error: { code: 'E_COMMAND_FAILED', reason: 'CAPABILITY_DISABLED_FOR_COMMAND' } }); await pending;
+  assert.equal(h.statuses.at(-1).value, 'B', 'EARLY_PRESENTATION_OWNER_REQUIRED');
+}
+async function revisionOracle(transform) {
+  const h = publicationHarness(transform), row = h.leaves[2], gate = h.deferred(); h.open('label');
+  h.c.queryPort = () => gate.promise; const pending = callPublicationLeaf(h, row);
+  await h.edit(h.field(), 'B'); const expected = JSON.stringify(h.c[row[4]]), renders = h.renders.length;
+  gate.resolve(h.projection(row)); await pending;
+  assert.equal(JSON.stringify(h.c[row[4]]), expected, 'FIELD_REVISION_REQUIRED'); assert.equal(h.renders.length, renders, 'FIELD_REVISION_REQUIRED');
+}
+const semanticMutants = [
+  ['outer-sequence', sequenceOracle, text => text.startsWith('async function runManualMapExportCommand(')
+    ? text.replace('sequence === atlasCommandPublicationSequence', 'true') : text],
+  ['query-order', queryOrderOracle, text => text.replace('sequence === atlasQueryPublicationSequences.get(key)', 'true')],
+  ['lifecycle-epoch', lifecycleOracle, text => text.replace('atlasPublicationEpoch += 1;', 'atlasPublicationEpoch += 0;')],
+  ['parent-before-loading', parentOracle, text => text.replace('if (options.isCurrent && !options.isCurrent()) return null;', ';')],
+  ['early-error-presentation', errorOracle, text => text.replace('!deferredMetadataError && ownsPresentation()', '!deferredMetadataError')],
+  ['per-edit-revision', revisionOracle, text => text.replace('draftRevision === manualMapDraftRevision', 'true')],
+];
+for (const [name, oracle, mutant] of semanticMutants) test('R2 C02 actual semantic oracle rejects compiling ' + name + ' mutant', async () => {
+  await oracle();
+  await assert.rejects(() => oracle(mutant), error => error.code === 'ERR_ASSERTION', 'semantic mutant must fail an outcome assertion');
+});
+
+test('R2 C02 normal current Apply permits slow current fanout siblings after its applied draft publication', async () => {
+  const h = publicationHarness(), scene = h.deferred(), outerMap = h.deferred(), siblings = [];
+  let mapRequests = 0;
+  h.c.queryPort = request => {
+    if (request.row[0] === 'refreshAtlasCurrentScene') return scene.promise;
+    if (request.row[0] === 'refreshManualMapWorkbench' && ++mapRequests === 2) return outerMap.promise;
+    const gate = h.deferred(); siblings.push({ ...gate, row: request.row }); return gate.promise;
+  };
+  h.open('label'); const pending = h.c.applyManualMapCommandDraft(); await h.settle();
+  assert.equal(h.queries.length, 1); scene.resolve(h.projection(h.leaves[1])); await h.settle();
+  assert.equal(siblings.length, 8); assert.equal(mapRequests, 2); assert.equal(h.draft().state, 'applying');
+  outerMap.resolve(h.projection(h.leaves[0], 'project-a', 'outerMap')); await pending;
+  assert.equal(h.draft().state, 'applied'); const draft = h.draft();
+  for (const sibling of siblings.filter(s => s.row[0] !== 'refreshManualMapWorkbench')) {
+    sibling.resolve(h.projection(sibling.row)); await h.settle();
+    assert.equal(h.c[sibling.row[4]].state, 'ready', 'legitimate current sibling must publish after Apply');
+    assert.deepEqual(h.draft(), draft);
+  }
+  siblings.find(s => s.row[0] === 'refreshManualMapWorkbench').resolve(h.projection(h.leaves[0], 'project-a', 'olderMap'));
+  await h.settle(); assert.equal(h.c.manualMapWorkbenchState.summary.workbenchHash, 'outerMap');
+  assert.deepEqual(h.draft(), draft); assert.equal(h.commands.length, 1);
 });

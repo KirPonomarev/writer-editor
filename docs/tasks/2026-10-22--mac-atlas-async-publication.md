@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_ATLAS_ASYNC_PUBLICATION_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: b113069233521b4b1288d7e9ca3849aa03e4cf27
-HEAD_SHA_AT_START: b113069233521b4b1288d7e9ca3849aa03e4cf27
+BINDING_BASE_SHA: 5c0ee35c4a457ed0b177af5aad92f8c30ba62e84
+HEAD_SHA_AT_START: 5c0ee35c4a457ed0b177af5aad92f8c30ba62e84
 ORIGINAL_DELIVERY_BASE_SHA: b113069233521b4b1288d7e9ca3849aa03e4cf27
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-atlas-async-publication-20261022
@@ -28,7 +28,7 @@ I: clean b113 branch, exact declaration/preflight/taskE0/source hashes, actual c
 
 ## ARTIFACT
 
-Three delegated files: editor.js, normal generated editor.bundle.js and existing R2 C02 test. Root owns exact task/factual/current binding companions only. No new runtime framework, module, dependency, test framework or file.
+Five delegated files: editor.js, normal generated editor.bundle.js, existing R2 C02 test, and only mechanical actual-helper wiring in the existing metadata-inspector and project-tree-pathless finite VMs. Root owns exact task/factual/current binding companions only. No new runtime framework, module, dependency, test framework or file.
 
 ## ALLOWLIST
 
@@ -48,6 +48,8 @@ Three delegated files: editor.js, normal generated editor.bundle.js and existing
 - src/renderer/editor.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js
+- test/unit/metadata-inspector-read-model-main.test.js
+- test/unit/project-tree-pathless-contract.test.js
 
 ## DENYLIST
 
@@ -57,11 +59,13 @@ Everything outside the exact allowlist. No Main/Core/preload/IPC/command policy/
 
 Integration mode: EXISTING_SEAM. This corrects existing publication ownership, not product meaning or UI design. The current draft is authoring working state; it is not disposable shell state. Successful A remains a real canonical effect even if its UI has been superseded. Current failures remain visible. Error display in dispatch must be guarded before it touches status, not after the caller regains control. Child refreshes must consume the same ownership and independently validate query order/context. Preserve the normal refresh set and direct-query behavior.
 
-Runtime budget: at most350 added+deleted editor lines in these seams only: minimal local ownership declarations/helpers; create/open/cancel/apply draft and form callback validity; narrow existing dispatch presentation option; runProductJourneyCommand and refreshAtlasProductSurfaces; refreshManualMapWorkbench, refreshAtlasCurrentScene, refreshAtlasOverview, refreshAtlasEntityDossier, refreshAtlasRelationDossier, refreshAtlasMatrices, refreshAtlasReportsSavedQueries, refreshAtlasDiagnosticsStageAcceptance and refreshProjectionInspector; minimal lifecycle invalidation at existing project/document publication or invalidation points. No generalized scheduler/controller. If that bounded list/budget cannot cover the causal bug, stop before exceeding it.
+Runtime budget: at most350 added+deleted editor lines in these existing seams only: minimal local ownership declarations/helpers; create/open/cancel/update/confirm/apply draft and form callback validity; narrow dispatch presentation option; runManualMapWorkbenchCommand, runManualMapExportCommand, runAtlasSurfaceProductCommand, Journey field/select callbacks, runProductJourneyCommand, refreshAtlasProductSurfaces and refreshActiveAtlasSurface; twelve readers refreshManualMapWorkbench, refreshAtlasCurrentScene, refreshAtlasOverview, refreshAtlasEntityDossier, refreshAtlasRelationDossier, refreshAtlasMatrices, refreshAtlasReportsSavedQueries, refreshAtlasDiagnosticsStageAcceptance, refreshProjectionInspector, refreshAtlasHeatmap, refreshAtlasTemporalLayout and refreshAtlasContinuityLedgerSurface; only minimal accepted lifecycle invalidation at existing openDocumentNode, handleDeleteNode, loadTree, applyTreeDetachedPublication, applyTreeContextPublication and normal onEditorSetText publication points. Preserve existing continuity guards, all rejected payloads and special authoring branches. No generalized scheduler/controller. If that finite list/budget cannot cover the causal bug, stop before exceeding it.
 
 Test budget: at most700 added+deleted lines in the existing R2 C02 file, preserving all old test bodies/assertions. Minimal finite DOM harness wiring may load actual new helpers/globals or expose exact actual lifecycle functions; it may not replace the code under test with a model. New schedules must execute actual Apply, Journey, dispatch, relevant query/normalizer and actual workbench clear/render. Deferred command/query ports are allowed effect boundaries, not claimed real Core/native execution. Parent success/failure/result and each query response are released independently. No timing-only race assertion or success count substitute.
 
-Root companions: add exactly the new task to existing DATA/source/certificate/DONE memberships if required, update only current hashes, append a current certificate successor and exact approved witnesses, preserve all historical tuples, corruption predicates, inventory memberships/classifications/lanes/skips. Current Apply guard identity/count literal may name the new complete successor; all negative checks remain byte-exact. Expected747DATA/600source/259certificate plus1guard are forecasts until independently verified. No old evidence relabel or claim promotion.
+Two existing finite VM fixture files may each receive at most30 added+deleted helper/global wiring lines needed to execute the actual accepted lifecycle; all assertions, test logic and unrelated bytes remain exact. Do not mock away the new guard.
+
+Root companions: add exactly the new task to existing DATA/source/certificate/DONE memberships if required, update only current hashes, append a current certificate successor and exact approved witnesses, preserve all historical tuples, corruption predicates, inventory memberships/classifications/lanes/skips. Append only the existing project-tree-pathless test exact path to DONE if required; no widened prefix. Current Apply guard identity/count literal may name the new complete successor; all negative checks remain byte-exact. Derive complete DATA/source/certificate counts after final bindings; do not copy a forecast. No old evidence relabel or claim promotion.
 
 FEATURE_INTEGRATION_MANIFEST_V1:
 
@@ -75,9 +79,9 @@ FEATURE_INTEGRATION_MANIFEST_V1:
   "commandIds": "Existing manualMap and Atlas commands only; unchanged IDs and payloads.",
   "eventTypes": "Existing command results, current project/document publication and input events; no new domain event.",
   "queryIds": [
-    "manualMapWorkbench, Atlas Journey result, currentScene, overview, entity dossier, relation dossier, matrices, reportsSavedQueries, diagnosticsStageAcceptance and projectionInspector in the existing Journey followup path."
+    "Existing manualMapWorkbench, currentScene, overview, entity dossier, relation dossier, matrices, reportsSavedQueries, diagnosticsStageAcceptance, projectionInspector, heatmap, temporalLayout and continuityLedger projections."
   ],
-  "productProjectionIds": "Existing nine query projections only.",
+  "productProjectionIds": "Existing twelve query projections only.",
   "capabilityIds": "Unchanged current capability policy.",
   "authorityMap": {
     "product": "Core owns canonical projects, maps, entities, scene/manifest revisions and recovery. Unsaved current draft and manuscript are authoring working state with no-loss duty. Renderer projection and command-status ownership never grant product mutation authority.",
@@ -146,7 +150,7 @@ Internal references: brain:refs executed read-only; current R2 C02 source/contra
 ## IMPLEMENTATION_STEPS
 
 CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
-1. Root clean exact-base bootstrap, ordered reads, current scope/source/authority checks, declaration/preflight before first repo edit; task E0 before separate code agent.
+1. Original clean b113 preflight admitted the task-only checkpoint5c0ee35c4. Expanded clean checkpoint preflight admits the finite existing lifecycle/fanout and two fixture wiring paths before first runtime/test edit; original failure and receipts retained. Root clean exact-base bootstrap, ordered reads, current scope/source/authority checks, declaration/preflight before first repo edit; task E0 before separate code agent.
 2. Agent builds minimal unchanged-runtime RED. Freeze failure/source identities. Only after causal failure, surgical ownership correction and preserved whole R2 acceptance. Report any fixture-method failures separately.
 3. Root independently reviews source diff, preservation, schedules and affected-chain selection. Normal bundle and exact current binding companions; commit semantic checkpoint after verification, not full acceptance.
 4. Complete affected/gates then rebuild and inspect actual unsigned bundle; genuine native ordinary project/map/node/typing/Apply/sceneSave/normalQuit/cold/raw evidence on a fresh owned profile before push.

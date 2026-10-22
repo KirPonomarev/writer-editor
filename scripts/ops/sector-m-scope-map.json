@@ -431,7 +431,9 @@
       "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
       "test/unit/paste-focus-signal.test.js",
       "test/unit/metadata-inspector-read-model-main.test.js",
-      "test/unit/sector-m-preload-ui-command-bridge.test.js"
+      "test/unit/sector-m-preload-ui-command-bridge.test.js",
+      "docs/tasks/2026-10-22--mac-atlas-async-publication.md",
+      "test/unit/project-tree-pathless-contract.test.js"
     ]
   },
   "allowPrefixByPhase": {

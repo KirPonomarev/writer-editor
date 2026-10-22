@@ -413,6 +413,8 @@ async function metadataWorkingHarness(t) {
   metadataVm.createContext(c);
   metadataVm.runInContext(
     metadataSection("let currentMetadataBaselineHash = '';", 'let expandedNodesByTab')
+    + metadataSection('let atlasPublicationEpoch =', 'let atlasCommandPublicationSequence =')
+    + metadataSection('function invalidateAtlasPublications()', 'function captureAtlasPublication(')
     + metadataSection('function updateMetaInputs(', 'function updateMetaVisibility(')
     + metadataSection('function normalizeMetadataInspectorPayload(', 'function normalizeNotesWorkspaceReadModel(')
     + metadataSection("if (metaSynopsis) {\n  metaSynopsis.addEventListener('input'", 'if (addCardButton)')

@@ -1145,6 +1145,13 @@ let manualMapSearchQuery = '';
 let manualMapPinnedNodeIds = new Set();
 let manualMapDragState = null;
 let manualMapCommandDraft = null;
+let atlasPublicationEpoch = 0;
+let atlasCommandPublicationSequence = 0;
+let manualMapDraftOwnership = 0;
+let manualMapDraftRevision = 0;
+let manualMapDraftContext = null;
+let atlasJourneyDraftRevision = 0;
+const atlasQueryPublicationSequences = new Map();
 let manualMapPortabilityCommandState = {
   status: '',
   exportJsonSha256: '',
@@ -8095,13 +8102,14 @@ function withEditorModeCommandPayload(payload = {}) {
 }
 
 async function dispatchUiCommand(commandId, payload = {}, options = {}) {
-  updateStatusText('', { clear: true });
+  const ownsPresentation = () => !options.isCurrentPresentation || options.isCurrentPresentation();
+  if (ownsPresentation()) updateStatusText('', { clear: true });
   const result = await runCommandThroughBus(runCommand, commandId, withEditorModeCommandPayload(payload), {
     route: COMMAND_BUS_ROUTE,
   });
   const deferredMetadataError = options.deferMetadataError === true
     && commandId === METADATA_UPDATE_COMMAND_ID && isMetadataUpdateStaleResult(result);
-  if (!result.ok && !deferredMetadataError) {
+  if (!result.ok && !deferredMetadataError && ownsPresentation()) {
     const mapped = mapCommandErrorToUi(result.error);
     updateStatusText(mapped.userMessage, { visible: true });
     if (mapped.severity === 'ERROR') {
@@ -10403,6 +10411,7 @@ async function openDocumentNode(node) {
       activeDocumentRevealRequested = false;
       return false;
     }
+    invalidateAtlasPublications();
     currentDocumentId = value && typeof value.documentId === 'string'
       ? value.documentId
       : documentId;
@@ -10637,6 +10646,7 @@ async function handleDeleteNode(node) {
     return;
   }
   if (currentDocumentId && currentDocumentId === nodeId) {
+    invalidateAtlasPublications();
     currentDocumentId = null;
   }
   await loadTree();
@@ -11191,6 +11201,7 @@ async function loadTree() {
     if (typeof result.projectId === 'string' && result.projectId.trim()) {
       const nextProjectId = normalizeProjectId(result.projectId);
       if (nextProjectId !== currentProjectId) {
+        invalidateAtlasPublications();
         invalidateDocxImportAttempt();
         currentProjectId = nextProjectId;
         expandedNodesByTab = new Map();
@@ -13592,7 +13603,9 @@ function refreshActiveAtlasSurface() {
   syncAtlasSurfaceCompositionState();
   if (surface === 'journey') {
     renderAtlasJourneyState();
-    void refreshAtlasCurrentScene({ force: true }).finally(() => renderAtlasJourneyState());
+    const current = beginAtlasQueryPublication('activeJourney');
+    // This immediate child captures the same live context; no parent await precedes it.
+    void refreshAtlasCurrentScene({ force: true }).finally(() => { if (current?.()) renderAtlasJourneyState(); });
     return;
   }
   if (surface === 'manualMap') {
@@ -14352,6 +14365,40 @@ function manualMapText(value, fallback = '') {
   return typeof value === 'string' && value.trim() ? value.trim() : fallback;
 }
 
+function invalidateAtlasPublications() {
+  atlasPublicationEpoch += 1;
+}
+
+function captureAtlasPublication(parent = null, watchDraftRevision = true) {
+  const epoch = atlasPublicationEpoch, projectId = currentProjectId, documentId = currentDocumentId;
+  const publicationId = currentTreeContentPublicationId, generation = localEditGeneration;
+  const draftOwner = manualMapDraftOwnership, journeyRevision = atlasJourneyDraftRevision;
+  const draftRevision = manualMapDraftRevision;
+  return () => epoch === atlasPublicationEpoch && projectId === currentProjectId && documentId === currentDocumentId
+    && publicationId === currentTreeContentPublicationId && generation === localEditGeneration
+    && draftOwner === manualMapDraftOwnership && journeyRevision === atlasJourneyDraftRevision
+    && (!watchDraftRevision || draftRevision === manualMapDraftRevision)
+    && (!parent || parent());
+}
+
+function beginAtlasQueryPublication(key, options = {}) {
+  if (options.isCurrent && !options.isCurrent()) return null;
+  const current = captureAtlasPublication(options.isCurrent);
+  const sequence = (atlasQueryPublicationSequences.get(key) || 0) + 1;
+  atlasQueryPublicationSequences.set(key, sequence);
+  const commandSequence = atlasCommandPublicationSequence;
+  const tab = currentRightTab, surface = currentAtlasSurface;
+  return () => current() && sequence === atlasQueryPublicationSequences.get(key)
+    && commandSequence === atlasCommandPublicationSequence
+    && tab === currentRightTab && surface === currentAtlasSurface;
+}
+
+function readAtlasQueryProjection(result, key, projectId, sceneId = null) {
+  const value = result && result.ok !== false && result[key];
+  return value && typeof value === 'object' && !Array.isArray(value) && typeof value.state === 'string' && value.projectId === projectId
+    && (sceneId === null || value.sceneId === sceneId) ? value : null;
+}
+
 function manualMapNumber(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
@@ -14596,8 +14643,12 @@ function getManualMapSecondarySelectedNodeId() {
 }
 
 async function runManualMapWorkbenchCommand(commandId, payload = {}) {
-  await runProductJourneyCommand(commandId, payload);
-  await refreshManualMapWorkbench({ force: true });
+  const context = captureAtlasPublication();
+  const sequence = Math.max(atlasCommandPublicationSequence, Number(atlasJourneyState.commandSeq || 0)) + 1;
+  const current = () => context() && sequence === atlasCommandPublicationSequence;
+  const result = await runProductJourneyCommand(commandId, payload);
+  if (current()) await refreshManualMapWorkbench({ force: true, isCurrent: current });
+  return result;
 }
 
 function unwrapManualMapProductCommandReceipt(result = {}) {
@@ -14612,13 +14663,18 @@ function unwrapManualMapProductCommandReceipt(result = {}) {
 }
 
 async function runManualMapExportCommand(commandId, payload = {}) {
+  const context = captureAtlasPublication();
   manualMapPortabilityCommandState = {
     ...manualMapPortabilityCommandState,
     status: 'running',
     lastCommandId: commandId,
   };
   renderManualMapWorkbenchState();
-  const result = await runProductJourneyCommand(commandId, payload);
+  const pending = runProductJourneyCommand(commandId, payload);
+  const sequence = atlasCommandPublicationSequence;
+  const current = () => context() && sequence === atlasCommandPublicationSequence;
+  const result = await pending;
+  if (!current()) return result;
   if (result && result.ok === true) {
     const receipt = unwrapManualMapProductCommandReceipt(result);
     const exported = receipt.export || {};
@@ -14638,8 +14694,8 @@ async function runManualMapExportCommand(commandId, payload = {}) {
       lastCommandId: commandId,
     };
   }
-  await refreshManualMapWorkbench({ force: true });
-  renderManualMapWorkbenchState();
+  await refreshManualMapWorkbench({ force: true, isCurrent: current });
+  if (current()) renderManualMapWorkbenchState();
   return result;
 }
 
@@ -14664,12 +14720,15 @@ function createManualMapCommandDraft(config = {}) {
 }
 
 function openManualMapCommandDraft(config = {}) {
+  manualMapDraftOwnership += 1;
+  manualMapDraftContext = captureAtlasPublication(null, false);
   manualMapCommandDraft = createManualMapCommandDraft(config);
   renderManualMapWorkbenchState();
 }
 
 function cancelManualMapCommandDraft() {
   if (!manualMapCommandDraft) return;
+  manualMapDraftOwnership += 1;
   manualMapCommandDraft = {
     ...manualMapCommandDraft,
     state: 'cancelled',
@@ -14707,6 +14766,7 @@ function updateManualMapCommandDraftField(fieldName, fieldValue) {
   if (!manualMapCommandDraft) return;
   const name = manualMapText(fieldName);
   if (!name) return;
+  manualMapDraftRevision += 1;
   manualMapCommandDraft = {
     ...manualMapCommandDraft,
     payload: {
@@ -14721,6 +14781,7 @@ function updateManualMapCommandDraftField(fieldName, fieldValue) {
 
 function setManualMapCommandDraftConfirmation(checked) {
   if (!manualMapCommandDraft) return;
+  manualMapDraftRevision += 1;
   manualMapCommandDraft = {
     ...manualMapCommandDraft,
     confirmChecked: checked === true,
@@ -14731,7 +14792,8 @@ function setManualMapCommandDraftConfirmation(checked) {
 
 async function applyManualMapCommandDraft() {
   const draft = manualMapCommandDraft;
-  if (!draft || draft.state !== 'draft') return;
+  if (!draft || draft.state !== 'draft' || !manualMapDraftContext?.()) return;
+  const context = captureAtlasPublication(manualMapDraftContext);
   const commandId = manualMapText(draft.commandId);
   const payload = draft.payload && typeof draft.payload === 'object' && !Array.isArray(draft.payload)
     ? { ...draft.payload }
@@ -14754,8 +14816,13 @@ async function applyManualMapCommandDraft() {
   }
   manualMapCommandDraft = { ...draft, state: 'applying', result: null };
   renderManualMapWorkbenchState();
-  const result = await runProductJourneyCommand(commandId, payload);
-  await refreshManualMapWorkbench({ force: true });
+  const pending = runProductJourneyCommand(commandId, payload);
+  const sequence = atlasCommandPublicationSequence;
+  const current = () => context() && sequence === atlasCommandPublicationSequence;
+  const result = await pending;
+  if (!current()) return result;
+  await refreshManualMapWorkbench({ force: true, isCurrent: current });
+  if (!current()) return result;
   const commandApplied = result && result.ok === true;
   const commandReason = commandApplied
     ? ''
@@ -15450,6 +15517,7 @@ function renderManualMapCommandDraft(parent) {
   panel.dataset.manualMapCommandId = draft.commandId || '';
   panel.dataset.manualMapCommandRisk = draft.risk || '';
   const isCurrentDraft = () => panel.isConnected && currentProjectId === projectId
+    && manualMapDraftContext?.()
     && manualMapCommandDraft?.state === 'draft'
     && manualMapCommandDraft.commandId === draft.commandId
     && manualMapCommandDraft.targetId === draft.targetId;
@@ -15734,14 +15802,19 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
 }
 
 async function runAtlasSurfaceProductCommand(commandId, payload = {}, options = {}) {
+  const sequence = ++atlasCommandPublicationSequence;
+  const context = captureAtlasPublication();
+  const current = () => context() && sequence === atlasCommandPublicationSequence;
   const result = await dispatchUiCommand(commandId, {
     ...payload,
     projectId: currentProjectId,
-  });
+  }, { isCurrentPresentation: current });
+  if (!current()) return result;
   const statusLabel = options.statusLabel || commandId;
   updateStatusText(result && result.ok ? `${statusLabel} persisted` : (result?.reason || result?.error?.reason || `${statusLabel} failed`));
-  await refreshAtlasCurrentScene({ force: true });
-  void refreshAtlasProductSurfaces({ currentScene: false }).catch((error) => {
+  await refreshAtlasCurrentScene({ force: true, isCurrent: current });
+  if (!current()) return result;
+  void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: current }).catch((error) => {
     console.warn('Atlas surface command refresh failed', error);
   });
   return result;
@@ -15864,6 +15937,7 @@ function appendAtlasJourneyField(parent, config = {}) {
   input.placeholder = config.placeholder || '';
   input.dataset.atlasJourneyField = config.fieldName || '';
   input.addEventListener('input', () => {
+    atlasJourneyDraftRevision += 1;
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
       [config.fieldName]: input.value,
@@ -15895,6 +15969,7 @@ function appendAtlasJourneySelect(parent, config = {}) {
   }
   select.value = config.value || '';
   select.addEventListener('change', () => {
+    atlasJourneyDraftRevision += 1;
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
       [config.fieldName]: select.value,
@@ -16278,24 +16353,28 @@ function appendAtlasSavedQueryControls(parent) {
 }
 
 async function refreshAtlasProductSurfaces(options = {}) {
+  if (options.isCurrent && !options.isCurrent()) return;
   const refreshes = [
-    refreshAtlasOverview(),
-    refreshAtlasEntityDossier(),
-    refreshAtlasRelationDossier(),
-    refreshAtlasMatrices(),
-    refreshAtlasReportsSavedQueries(),
-    refreshAtlasDiagnosticsStageAcceptance(),
-    refreshManualMapWorkbench(),
-    refreshProjectionInspector(),
+    refreshAtlasOverview(options),
+    refreshAtlasEntityDossier(options),
+    refreshAtlasRelationDossier(options),
+    refreshAtlasMatrices(options),
+    refreshAtlasReportsSavedQueries(options),
+    refreshAtlasDiagnosticsStageAcceptance(options),
+    refreshManualMapWorkbench(options),
+    refreshProjectionInspector(options),
   ];
   if (options.currentScene !== false) {
-    refreshes.push(refreshAtlasCurrentScene({ force: true }));
+    refreshes.push(refreshAtlasCurrentScene({ force: true, isCurrent: options.isCurrent }));
   }
   await Promise.all(refreshes);
 }
 
 async function runProductJourneyCommand(commandId, payload = {}) {
-  const nextCommandSeq = Number(atlasJourneyState.commandSeq || 0) + 1;
+  const nextCommandSeq = Math.max(atlasCommandPublicationSequence, Number(atlasJourneyState.commandSeq || 0)) + 1;
+  atlasCommandPublicationSequence = nextCommandSeq;
+  const context = captureAtlasPublication();
+  const current = () => context() && nextCommandSeq === atlasCommandPublicationSequence;
   atlasJourneyState = {
     status: 'running',
     lastCommandId: commandId,
@@ -16306,7 +16385,8 @@ async function runProductJourneyCommand(commandId, payload = {}) {
   const result = await dispatchUiCommand(commandId, {
     ...payload,
     projectId: currentProjectId,
-  });
+  }, { isCurrentPresentation: current });
+  if (!current()) return result;
   if (commandId === 'atlas.mention.confirm' && result && result.ok) {
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
@@ -16321,9 +16401,10 @@ async function runProductJourneyCommand(commandId, payload = {}) {
     commandSeq: nextCommandSeq,
   };
   renderAtlasJourneyState();
-  await refreshAtlasCurrentScene({ force: true });
+  await refreshAtlasCurrentScene({ force: true, isCurrent: current });
+  if (!current()) return result;
   renderAtlasJourneyState();
-  void refreshAtlasProductSurfaces({ currentScene: false }).catch((error) => {
+  void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: current }).catch((error) => {
     console.warn('Atlas background surface refresh failed', error);
   });
   return result;
@@ -16655,6 +16736,9 @@ function handleManualMapWorkbenchPointerUp(event) {
 async function refreshManualMapWorkbench(options = {}) {
   const workspaceVisible = manualMapPlanWorkspace instanceof HTMLElement && manualMapPlanWorkspace.hidden !== true;
   if (currentRightTab !== 'atlas' && workspaceVisible !== true && options.force !== true) return;
+  const current = beginAtlasQueryPublication('manualMapWorkbench', options), requestProject = currentProjectId;
+  if (!current) return;
+  const selection = manualMapWorkbenchState.mapId;
   manualMapWorkbenchState = {
     ...manualMapWorkbenchState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -16665,9 +16749,9 @@ async function refreshManualMapWorkbench(options = {}) {
     projectId: currentProjectId,
     mapId: manualMapWorkbenchState.mapId || '',
   });
-  const nextState = result && result.ok !== false && result.manualMapWorkbench
-    ? result.manualMapWorkbench
-    : { state: 'unavailable', unavailableReason: 'MANUAL_MAP_WORKBENCH_QUERY_FAILED' };
+  if (!current() || selection !== manualMapWorkbenchState.mapId) return;
+  const nextState = readAtlasQueryProjection(result, 'manualMapWorkbench', requestProject)
+    || { state: 'unavailable', unavailableReason: 'MANUAL_MAP_WORKBENCH_QUERY_FAILED', projectId: requestProject };
   manualMapWorkbenchState = normalizeManualMapWorkbench(nextState);
   renderManualMapWorkbenchState();
 }
@@ -16738,8 +16822,10 @@ function renderProjectionInspectorState() {
   appendAtlasReportsRow(boundary, 'Meaning', 'Promotion only through meaning.promote via CommandKernel only', 'current');
 }
 
-async function refreshProjectionInspector() {
+async function refreshProjectionInspector(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('projectionInspector', options), requestProject = currentProjectId;
+  if (!current) return;
   projectionInspectorState = {
     ...projectionInspectorState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -16749,9 +16835,9 @@ async function refreshProjectionInspector() {
   const result = await invokeWorkspaceQueryBridge(PROJECTION_INSPECTOR_QUERY_ID, {
     projectId: currentProjectId,
   });
-  const nextState = result && result.ok !== false && result.projectionInspector
-    ? result.projectionInspector
-    : { state: 'unavailable', unavailableReason: 'PROJECTION_INSPECTOR_QUERY_FAILED' };
+  if (!current()) return;
+  const nextState = readAtlasQueryProjection(result, 'projectionInspector', requestProject)
+    || { state: 'unavailable', unavailableReason: 'PROJECTION_INSPECTOR_QUERY_FAILED', projectId: requestProject };
   projectionInspectorState = normalizeProjectionInspector(nextState);
   renderProjectionInspectorState();
 }
@@ -16845,8 +16931,10 @@ function renderAtlasOverviewState() {
   }
 }
 
-async function refreshAtlasOverview() {
+async function refreshAtlasOverview(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('atlasOverview', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasOverviewState = {
     ...atlasOverviewState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -16857,9 +16945,9 @@ async function refreshAtlasOverview() {
     projectId: currentProjectId,
     limit: 5,
   });
-  const nextState = result && result.ok !== false && result.atlasOverview
-    ? result.atlasOverview
-    : { state: 'unavailable', unavailableReason: 'ATLAS_OVERVIEW_QUERY_FAILED' };
+  if (!current()) return;
+  const nextState = readAtlasQueryProjection(result, 'atlasOverview', requestProject)
+    || { state: 'unavailable', unavailableReason: 'ATLAS_OVERVIEW_QUERY_FAILED', projectId: requestProject };
   atlasOverviewState = normalizeAtlasOverview(nextState);
   renderAtlasOverviewState();
   renderAtlasWorkspaceState();
@@ -16991,8 +17079,11 @@ function renderAtlasEntityDossierState() {
   }
 }
 
-async function refreshAtlasEntityDossier() {
+async function refreshAtlasEntityDossier(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('atlasEntityDossier', options), requestProject = currentProjectId;
+  if (!current) return;
+  const selection = atlasSelectedEntityId;
   atlasEntityDossierState = {
     ...atlasEntityDossierState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -17005,9 +17096,10 @@ async function refreshAtlasEntityDossier() {
     entityId: atlasSelectedEntityId || '',
     limit: 8,
   });
-  const nextState = result && result.ok !== false && result.atlasEntityDossier
-    ? result.atlasEntityDossier
-    : { state: 'unavailable', unavailableReason: 'ATLAS_ENTITY_DOSSIER_QUERY_FAILED' };
+  if (!current() || selection !== atlasSelectedEntityId) return;
+  const projection = readAtlasQueryProjection(result, 'atlasEntityDossier', requestProject);
+  const nextState = projection && projection.requestedEntityId === (selection || '') ? projection
+    : { state: 'unavailable', unavailableReason: 'ATLAS_ENTITY_DOSSIER_QUERY_FAILED', projectId: requestProject };
   atlasEntityDossierState = normalizeAtlasEntityDossier(nextState);
   atlasSelectedEntityId = atlasEntityDossierState.selectedEntityId || atlasSelectedEntityId || '';
   renderAtlasEntityDossierState();
@@ -17188,8 +17280,11 @@ function renderAtlasRelationDossierState() {
   }
 }
 
-async function refreshAtlasRelationDossier() {
+async function refreshAtlasRelationDossier(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('atlasRelationDossier', options), requestProject = currentProjectId;
+  if (!current) return;
+  const selection = atlasSelectedRelation;
   atlasRelationDossierState = {
     ...atlasRelationDossierState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -17206,9 +17301,11 @@ async function refreshAtlasRelationDossier() {
     rightEntityId: atlasSelectedRelation.rightEntityId || '',
     limit: 8,
   });
-  const nextState = result && result.ok !== false && result.atlasRelationDossier
-    ? result.atlasRelationDossier
-    : { state: 'unavailable', unavailableReason: 'ATLAS_RELATION_DOSSIER_QUERY_FAILED' };
+  if (!current() || selection !== atlasSelectedRelation) return;
+  const projection = readAtlasQueryProjection(result, 'atlasRelationDossier', requestProject);
+  const nextState = projection && projection.requestedPairId === (selection.pairId || '')
+    && projection.requestedLeftEntityId === (selection.leftEntityId || '') && projection.requestedRightEntityId === (selection.rightEntityId || '') ? projection
+    : { state: 'unavailable', unavailableReason: 'ATLAS_RELATION_DOSSIER_QUERY_FAILED', projectId: requestProject };
   atlasRelationDossierState = normalizeAtlasRelationDossier(nextState);
   atlasSelectedRelation = {
     pairId: atlasRelationDossierState.selectedPairId || atlasSelectedRelation.pairId || '',
@@ -17643,8 +17740,10 @@ function renderAtlasMatricesState() {
   }
 }
 
-async function refreshAtlasMatrices() {
+async function refreshAtlasMatrices(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('atlasMatrices', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasMatricesState = {
     ...atlasMatricesState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -17657,9 +17756,9 @@ async function refreshAtlasMatrices() {
     columnLimit: 8,
     listLimit: 24,
   });
-  const nextState = result && result.ok !== false && result.atlasMatrices
-    ? result.atlasMatrices
-    : { state: 'unavailable', unavailableReason: 'ATLAS_MATRICES_QUERY_FAILED' };
+  if (!current()) return;
+  const nextState = readAtlasQueryProjection(result, 'atlasMatrices', requestProject)
+    || { state: 'unavailable', unavailableReason: 'ATLAS_MATRICES_QUERY_FAILED', projectId: requestProject };
   atlasMatricesState = normalizeAtlasMatrices(nextState);
   renderAtlasMatricesState();
 }
@@ -17820,9 +17919,11 @@ function openAtlasHeatmapSurface() {
   refreshAtlasHeatmap();
 }
 
-async function refreshAtlasHeatmap() {
+async function refreshAtlasHeatmap(options = {}) {
   if (currentRightTab !== 'atlas') return;
   if (atlasHeatmapExplicitOpen !== true) return;
+  const current = beginAtlasQueryPublication('atlasHeatmap', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasHeatmapState = {
     ...atlasHeatmapState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -17837,9 +17938,9 @@ async function refreshAtlasHeatmap() {
     tileLimit: 64,
     listLimit: 16,
   });
-  const nextState = result && result.ok !== false && result.atlasHeatmap
-    ? result.atlasHeatmap
-    : { state: 'unavailable', unavailableReason: 'ATLAS_HEATMAP_QUERY_FAILED' };
+  if (!current() || atlasHeatmapExplicitOpen !== true) return;
+  const nextState = readAtlasQueryProjection(result, 'atlasHeatmap', requestProject)
+    || { state: 'unavailable', unavailableReason: 'ATLAS_HEATMAP_QUERY_FAILED', projectId: requestProject };
   atlasHeatmapState = normalizeAtlasHeatmap(nextState);
   renderAtlasHeatmapState();
 }
@@ -18112,9 +18213,11 @@ function openAtlasTemporalLayoutSurface() {
   refreshAtlasTemporalLayout();
 }
 
-async function refreshAtlasTemporalLayout(sliderValue = null) {
+async function refreshAtlasTemporalLayout(sliderValue = null, options = {}) {
   if (currentRightTab !== 'atlas') return;
   if (atlasTemporalLayoutExplicitOpen !== true) return;
+  const current = beginAtlasQueryPublication('atlasTemporalLayout', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasTemporalLayoutState = {
     ...atlasTemporalLayoutState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -18128,9 +18231,9 @@ async function refreshAtlasTemporalLayout(sliderValue = null) {
     segmentLimit: 32,
     sliderValue,
   });
-  const nextState = result && result.ok !== false && result.atlasTemporalLayout
-    ? result.atlasTemporalLayout
-    : { state: 'unavailable', unavailableReason: 'ATLAS_TEMPORAL_LAYOUT_QUERY_FAILED' };
+  if (!current() || atlasTemporalLayoutExplicitOpen !== true) return;
+  const nextState = readAtlasQueryProjection(result, 'atlasTemporalLayout', requestProject)
+    || { state: 'unavailable', unavailableReason: 'ATLAS_TEMPORAL_LAYOUT_QUERY_FAILED', projectId: requestProject };
   atlasTemporalLayoutState = normalizeAtlasTemporalLayout(nextState);
   renderAtlasTemporalLayoutState();
 }
@@ -18910,9 +19013,11 @@ function openAtlasContinuityLedgerSurface() {
   refreshAtlasContinuityLedgerSurface();
 }
 
-async function refreshAtlasContinuityLedgerSurface() {
+async function refreshAtlasContinuityLedgerSurface(options = {}) {
   if (currentRightTab !== 'atlas') return;
   if (atlasContinuityLedgerExplicitOpen !== true) return;
+  const current = beginAtlasQueryPublication('atlasContinuityLedgerSurface', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasContinuityLedgerState = {
     ...atlasContinuityLedgerState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -18926,9 +19031,11 @@ async function refreshAtlasContinuityLedgerSurface() {
     explicitOpen: atlasContinuityLedgerExplicitOpen === true,
     rowLimit: 16,
   });
+  if (!current()) return;
   if (requestEpoch !== atlasContinuityRequestEpoch || atlasContinuityLedgerExplicitOpen !== true
     || currentRightTab !== 'atlas' || currentProjectId !== requestProjectId) return;
   const nextState = result && result.ok !== false && result.atlasContinuityLedgerSurface
+    && !Array.isArray(result.atlasContinuityLedgerSurface) && typeof result.atlasContinuityLedgerSurface.state === 'string'
     ? normalizeAtlasContinuityLedgerSurface(result.atlasContinuityLedgerSurface)
     : normalizeAtlasContinuityLedgerSurface({ state: 'unavailable', unavailableReason: 'ATLAS_CONTINUITY_LEDGER_QUERY_FAILED' });
   atlasContinuityLedgerState = nextState.projectId === requestProjectId
@@ -19074,8 +19181,10 @@ function renderAtlasReportsSavedQueriesState() {
   exportSection.appendChild(exportRows);
 }
 
-async function refreshAtlasReportsSavedQueries() {
+async function refreshAtlasReportsSavedQueries(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('atlasReportsSavedQueries', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasReportsState = {
     ...atlasReportsState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -19086,9 +19195,9 @@ async function refreshAtlasReportsSavedQueries() {
     projectId: currentProjectId,
     limit: 12,
   });
-  const nextState = result && result.ok !== false && result.atlasReportsSavedQueries
-    ? result.atlasReportsSavedQueries
-    : { state: 'unavailable', unavailableReason: 'ATLAS_REPORTS_SAVED_QUERIES_QUERY_FAILED' };
+  if (!current()) return;
+  const nextState = readAtlasQueryProjection(result, 'atlasReportsSavedQueries', requestProject)
+    || { state: 'unavailable', unavailableReason: 'ATLAS_REPORTS_SAVED_QUERIES_QUERY_FAILED', projectId: requestProject };
   atlasReportsState = normalizeAtlasReportsSavedQueries(nextState);
   renderAtlasReportsSavedQueriesState();
 }
@@ -19232,8 +19341,10 @@ function renderAtlasDiagnosticsStageAcceptanceState() {
   inventorySection.appendChild(inventoryRows);
 }
 
-async function refreshAtlasDiagnosticsStageAcceptance() {
+async function refreshAtlasDiagnosticsStageAcceptance(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('atlasDiagnosticsStageAcceptance', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasDiagnosticsState = {
     ...atlasDiagnosticsState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -19243,9 +19354,9 @@ async function refreshAtlasDiagnosticsStageAcceptance() {
   const result = await invokeWorkspaceQueryBridge(ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_ID, {
     projectId: currentProjectId,
   });
-  const nextState = result && result.ok !== false && result.atlasDiagnosticsStageAcceptance
-    ? result.atlasDiagnosticsStageAcceptance
-    : { state: 'unavailable', unavailableReason: 'ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_FAILED' };
+  if (!current()) return;
+  const nextState = readAtlasQueryProjection(result, 'atlasDiagnosticsStageAcceptance', requestProject)
+    || { state: 'unavailable', unavailableReason: 'ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_FAILED', projectId: requestProject };
   atlasDiagnosticsState = normalizeAtlasDiagnosticsStageAcceptance(nextState);
   renderAtlasDiagnosticsStageAcceptanceState();
 }
@@ -19377,6 +19488,8 @@ function renderAtlasCurrentSceneState() {
 
 async function refreshAtlasCurrentScene(options = {}) {
   if (currentRightTab !== 'atlas' && options.force !== true) return;
+  const current = beginAtlasQueryPublication('atlasCurrentScene', options), requestProject = currentProjectId;
+  if (!current) return;
   atlasCurrentSceneState = {
     ...atlasCurrentSceneState,
     state: currentDocumentId ? 'loading' : 'empty',
@@ -19388,9 +19501,9 @@ async function refreshAtlasCurrentScene(options = {}) {
     projectId: currentProjectId,
     nodeId: currentDocumentId || '',
   });
-  const nextState = result && result.ok !== false && result.atlasCurrentScene
-    ? result.atlasCurrentScene
-    : { state: 'unavailable', unavailableReason: 'ATLAS_QUERY_FAILED' };
+  if (!current()) return;
+  const nextState = readAtlasQueryProjection(result, 'atlasCurrentScene', requestProject, currentDocumentId || '')
+    || { state: 'unavailable', unavailableReason: 'ATLAS_QUERY_FAILED', projectId: requestProject };
   atlasCurrentSceneState = normalizeAtlasCurrentSceneDossier(nextState);
   renderAtlasCurrentSceneState();
 }
@@ -24586,6 +24699,7 @@ function applyTreeDetachedPublication(payload) {
     || composeDocumentContent() !== payload.expectedContent) return false;
   // A committed Undo removed this copy before a late edit arrived. Main has
   // detached its save target; preserve the live buffer for the existing Save As.
+  invalidateAtlasPublications();
   treeDetachedOrigin = { projectId: currentProjectId, documentId: currentDocumentId };
   currentDocumentId = '';
   currentDocumentTitle = payload.title.trim();
@@ -24611,6 +24725,7 @@ function applyTreeContextPublication(payload) {
     || typeof payload.title !== 'string' || !payload.title.trim()
     || typeof payload.expectedContent !== 'string' || payload.content !== payload.expectedContent
     || composeDocumentContent() !== payload.expectedContent) return false;
+  invalidateAtlasPublications();
   currentDocumentTitle = payload.title.trim();
   try {
     localStorage.setItem(getActiveDocumentTitleStorageKey(currentProjectId), currentDocumentTitle);
@@ -24737,6 +24852,7 @@ if (window.electronAPI) {
       return;
     }
 
+    invalidateAtlasPublications();
     clearFlowModeState();
     clearPendingMetadataUpdate();
     currentMetadataBaselineHash = '';

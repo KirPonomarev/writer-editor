@@ -753,7 +753,8 @@
     "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
     "test/unit/paste-focus-signal.test.js",
     "test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js",
-    "test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js"
+    "test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js",
+    "docs/tasks/2026-10-22--mac-atlas-async-publication.md"
   ],
   "protectedFiles": [
     {
@@ -994,7 +995,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "9a3fb76b2e6ac9a0ad5fda9ecd3b2ba6d2983d257a1ebac22b6385837abdc123"
+        "sha256": "64d65be789f08d22c89be99f8b37efee46006d059ecb09cd51fb9d5de5810379"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1158,7 +1159,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "f9d5e47ddb52e4326502ef6737a3080923ddef78d784f3a55d087daaf5b2ee7b"
+        "sha256": "ebe1f1ea35859d76fb45f41627c39e183c0320bebb9beeb8866786a24036e7c3"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1622,7 +1623,7 @@
       },
       {
         "path": "test/unit/project-tree-pathless-contract.test.js",
-        "sha256": "79ee7ce662537f8b6659360445d37e2c605c666918833d30dbfba3c0c2ffd4b1"
+        "sha256": "071cac522c2d1d11660140368acc9d66f759ab916ae9b803739de530df23d9ae"
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
@@ -1718,7 +1719,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "c043e4de08bef4f801a4463157e8d78b09a602097b5468fa2db8034b97c1f67b"
+        "sha256": "76006ac3e613eea43777281829bfe6058bccc901c8dc3cd6d31bc5cd3b454f23"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2278,7 +2279,7 @@
       },
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
-        "sha256": "425748a7678cfab0f5471f55cffeeab64eff0bb79c27337e8c4ad767b06d0744"
+        "sha256": "df1e350e5f87cb3d696cda35ee7690b4b4fc92efbfe8b0f361c67f57515589b8"
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
@@ -2674,15 +2675,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "09e5a9f4fbbc158e065231514c707b8a4997c22bb445e57d05c458dd6bbffb17"
+        "sha256": "40ddb1bcfbdae6d41aedd56a007c986c47d23d8ac2820ec941a08b97a20efa22"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "75a8e60279ec1784ee3ab6f314e46d8b30cd69d527b540fe96cbf7ec986e1eb8"
+        "sha256": "93c5c828ce725c55c2fcb84181f47946562b437255ba922c6d73fab3fe1aafee"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "118b1fea7e3c09f5715f73e8875790b4d5d6c7153ac961004807b75ee3b74239"
+        "sha256": "d2873753fb84f3d8713dfc6a5bb661c2c1f951cc6186c91fa9fcda9dc9d5ce43"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3222,7 +3223,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "76df2cfecf7f33f5c14ab865ec565840f05ddecec5375323ec2f167a03b05adc"
+        "sha256": "76c3fdad114297b005437b7497b4fb9c8bcd6a0ae3471b92f28167841cf9e6f6"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3354,11 +3355,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "a097dbf46a50288dbf073cab67b7ea235f123d75cc469c30d8048a1e475d4a2f"
+        "sha256": "da230f71e9b914e9e6b46c49c9c7e7497b8126c0a0cfba2474e861367ea4fb65"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "435fdb765da1f2cfcef2f6e27204cab987f72334902ff1702b16cbe61d2b7ed3"
+        "sha256": "03cc1136a0055f517c481e77766c723d8b31ae5eb11eca3133e4276d97b04885"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3375,6 +3376,10 @@
       {
         "path": "test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js",
         "sha256": "85d268c8b860f3b02154b38a65cfc8569ba674c06aa29d413e1664acdfe12813"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--mac-atlas-async-publication.md",
+        "sha256": "57fc8ae81d8717cb9182221dafd6f6c64baf16c59b2bd7010cc14953b8aa8d7e"
       }
     ],
     "followupRepair": {
