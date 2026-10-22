@@ -4,8 +4,8 @@ TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 310182192c6d99aa3460c53797bc5f7ba55d1705
-HEAD_SHA_AT_START: 310182192c6d99aa3460c53797bc5f7ba55d1705
+BINDING_BASE_SHA: 87baac4449d544cc6afc9c622cba1d89cd86aaed
+HEAD_SHA_AT_START: 87baac4449d544cc6afc9c622cba1d89cd86aaed
 ORIGINAL_DELIVERY_BASE_SHA: 4bc78a775df9476877add40f62a1fcb1932ed7a7
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/full-mac-atlas-map-20261022
@@ -24,7 +24,7 @@ The current V1 packaging profile refuses an existing canonical manualMap route a
 
 ## ARTIFACT
 
-Code executor owns ten exact paths; root owns twelve factual/mechanical companions. V2 cut validity is separate from candidate readiness: NOT_READY/UNKNOWN with17rows and all agreed full-product duties, no acceptance booleans, public permit or programDone promotion. New genuine unsigned exact source builds and native readback are scoped functional proof only.
+The prior ten implementation paths remain byte-exact. This same-PR correction delegates four exact paths: renderer source, its normal generated bundle, existing R2 C02 behavioral contract and one C1 negative-fixture literal. Root owns thirteen factual/mechanical companions; cumulative scope is exactly27paths. V2 cut validity is separate from candidate readiness: NOT_READY/UNKNOWN with17rows and all agreed full-product duties, no acceptance booleans, public permit or programDone promotion. New genuine unsigned exact source builds and native readback are scoped functional proof only.
 
 Proposed profile identity WRITER_LOCAL_ATLAS_V2 and pure factory createWriterAtlasProfileProjection; keep legacy createWriterLocalProfileProjection/default/schema/API unchanged. Select the new bounded profile only from trusted Main packaged/platform identity. Only manualMap.create, manualMap.node.add, query.atlasCurrentScene and query.manualMapWorkbench are added to availability. optionalSystemsEnabled stays false for active packaged Mac; every other optional route remains refused by existing policy. These internal packaging identities are distinct from Design OS BASELINE/SAFE/FOCUS/COMPACT and OPS WRITER_CORE/PACKAGED_RELEASE_SECURITY.
 
@@ -43,12 +43,17 @@ Proposed profile identity WRITER_LOCAL_ATLAS_V2 and pure factory createWriterAtl
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 - scripts/ops/release-candidate.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/sector-m-scope-map.json
 - src/core/writer-local-profile-v1.cjs
 - src/main.js
+- src/renderer/editor.bundle.js
+- src/renderer/editor.js
 - src/renderer/flags.js
 - test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js
+- test/contracts/rtk-interop-100-denominator.contract.test.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js
+- test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
 - test/unit/r24-wp307-writer-local-profile-mutants.test.js
 - test/unit/r24-wp307-writer-local-profile.test.js
@@ -57,7 +62,7 @@ Proposed profile identity WRITER_LOCAL_ATLAS_V2 and pure factory createWriterAtl
 
 Everything outside the exact allowlist; arbitrary refactoring, formatting, dependencies, security-policy/IPC-registry/entitlement/tier changes, new Core/Stage10/storage semantics or private writer, runtime network/cloud/plugins, signing/notary/public distribution, owner/private project mutation, Git reset/stash/clean/checkout/rebase/amend/force-push, historical evidence/owner-gate/plan-state rewrite. Preserve FIRST_MAC_RELEASE_CUT_V1.json, all38V1pins, V1 API/default/CLI semantics and the original six legacy release test bodies/helpers prefix byte-exact. Do not alter source tests/predicates merely to hide actual failures; no skip/todo/name-filter/zero-test green or timeout increases. No Lazyweb/Paper/Penpot/A1/Firecrawl, new controller/graph/stage/lease, or manual owner worktree selection. No cleanup of the previous task's nonblocking terminal blank line.
 
-Diff budget: Main import/getter only at most30changed runtime lines; pure profile module at most180changed lines; flags at most100; existing OPS module at most550including fixed pins. All behavior-test delta at most1100lines, no copied framework or new test files. Generated canonical V2 scope/policy/inventory/certificate data excluded from line budget but bounded by declared schemas and existing byte limits. Existing editor/preload bundles expected exact; no generated source drift silently added.
+Diff budget: Main import/getter only at most30changed runtime lines; pure profile module at most180changed lines; flags at most100; existing OPS module at most550including fixed pins. All behavior-test delta at most1100lines, no copied framework or new test files. Generated canonical V2 scope/policy/inventory/certificate data excluded from line budget but bounded by declared schemas and existing byte limits. The admitted input correction changes at most140renderer source lines and appends at most450behavior-test lines to the existing R2 C02 contract, within the existing1100line total behavior-test budget; preserve all five original cases/assertions byte-exact. C1 denominator changes exactly one unadmitted-control string and no other byte. Rebuild only the admitted editor.bundle.js through existing build:renderer; generated bundle excluded from source line budget, bound by exact build/hash. Preload/native helper remain exact; no new test file or dependency.
 
 ## CONTRACT / SHAPES
 
@@ -137,10 +142,10 @@ FEATURE_INTEGRATION_MANIFEST_V1:
   ],
   "stateClasses": {
     "PROJECT_STATE": "manualMaps and immutable authored manuscript",
-    "AUTHORING_WORKING_STATE": "no-loss active unsaved text; existing Save/UndoRedo only",
+    "AUTHORING_WORKING_STATE": "no-loss active unsaved manuscript and pending map title/node label until Apply or explicit Cancel; no silent input loss",
     "DERIVED_STATE": "rebuildable graph/list/layout generation",
     "SHELL_STATE": "packaging presentation projection, selected existing rail",
-    "TRANSIENT_STATE": "draft confirmation/focus/hover/selection paint"
+    "TRANSIENT_STATE": "confirmation/focus/hover/selection paint; pending author input is protected separately"
   },
   "persistenceClass": "Existing atomic canonical manifest; no author truth in shell or derived caches",
   "migrations": "NONE: existing shared project format/manualMap.author.v1 and historical V1 API preserved",
@@ -179,6 +184,20 @@ Same task, outcome, original4bc rollback and one PR. The normal implementation c
 
 Only the existing ER C03 contract path is added to the code executor: replace its literal first-array-position assertion with a membership assertion scoped to the exact named guarded bridge allowlist. Existing media.insertLocal precedes the product registry in unchanged4bc; the original whole file fails4of5 there. The prepared external correction executes5of5, and observed-source product-spread removal still fails4of5. Every other assertion and test body stays exact, the nine implementation paths stay held, and no product/security/entitlement/IPC/storage behavior changes. Complete final focused/affected files and all original gates/native/delivery duties remain mandatory. These diagnostics never substitute for committed or native verification.
 
+### Exact87 native input and required-scope correction
+
+This is a correction of the same unfinished PR2144, original4bc rollback and bounded map journey. Fresh clean87 bootstrap, ordered full normative/scoped factual reads, exact source review and current origin/main fetch precede a new architecture preflight. The amended task E0 precedes the correction executor; no post-edit PRE rerun. All prior ten implementation files remain byte-exact, including the fixed66V2 source pins (the newly touched renderer/test files are not members of that pin set).
+
+Actual exact87 full baseline exits1 with2451of2512passed,2SectorMscope failures and59unchanged sanctioned skips; default20contracts were not reached. Both failures reject exactly six legitimate committed paths absent from DONE. Add only those six exact DONE entries in sector-m-scope-map.json; preserve all prior entries/phases/prefixes/carveouts/classifier/runner/tests. Consume the unchanged reader for each omitted-member mutant and unrelated near-miss refusal; run both maintained scope files whole. No branch rename or broad allow-prefix exception.
+
+Official exact87 full maintained RTK executes4414cases,4413pass,1fail,zero cancel/skip/todo. Its C1 negative fixture names src/renderer/flags.js as unadmitted, which is stale after this task legitimately admitted that path. Only replace that literal with existing genuinely unadmitted src/renderer/theme/theme-config-validator.js. Retain every predicate, byte adapter, corruption and implementation-drift check; normal full maintained affected execution and final official CI remain mandatory.
+
+Actual native87 LibraryCreate, default map create/node add, Unicode Save, text Undo/Redo and normal Quit/cold reopen are independently preserved, including full bundle530members and whole warm153/cold167profile members. Raw maps changed only governed manualMaps/lastCommandId plus existing Stage10 receipt/session files; saved scene and old backup bytes remained. However native sequential title input expected01 Начало12 produced01 Начало1 then focused BODY. The second trusted digit went to BODY. Cancel changed none of the10existing project files. That actual failure remains open and is not waived by default-title successes.
+
+The correction must keep the existing draft input node during input/confirmation, preserve caret/selection/composition and synchronize only other current connected draft controls/status in place. Do not destroy/recreate then refocus the input, issue commands, persist or lay out a graph per character. Old detached controls cannot modify a replaced/cancelled draft. Keep ordinary open/cancel/apply and query identity/capability checks. Existing title/node-label controls must accept sequential characters and selection replacement. All five original R2 C02 cases remain exact; append meaningful executable actual-function/actual-clear-path DOM cases for typing, Unicode, composition-style events, caret/backspace/selection, zero-dispatch cancellation, detached-event refusal and exactly-one Apply. Such Node evidence is not native/IME acceptance.
+
+Before the next corrective push, build exact final source and exercise fresh genuine native custom multi-character title and node label, freeze actual DOM IDs/values before Apply, independently compare persisted maps and protected manuscript/history/presets, edit/Undo/Redo/Save, normal Quit and untouched same-artifact/profile cold reopen. Preserve failed87 as its own source identity. Full local baseline and all exact-candidate official gates must pass before merge. No full Atlas/Mac release claim follows this repair.
+
 ## IMPLEMENTATION_STEPS
 
 1. CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ. Root clean bootstrap/remote/mount/source authority and architecture preflight actual0 precede the first task-file write. Then run actual task E0 before executor implementation. Pin exact delegated execution ticket. Do not rerun PRE after any repository edits.
@@ -189,7 +208,7 @@ Only the existing ER C03 contract path is added to the code executor: replace it
 
 ## CHECKS
 
-CHECK_01_PRE_ADMISSION: clean exact4bc78a77, fetched origin/main, registered branch, verified T7 encrypted/unlocked/writable UUID and T777 writable UUID; ordered full normative/scoped factual startup and exact sources; prior delivery fully closed; direct human scope/testing authority; architecture declaration/preflight actual0 before first repository edit.
+CHECK_01_PRE_ADMISSION: original clean4bc78a77 admission remains historical; this same-PR correction uses clean exact87baac44, fetched origin/main, registered branch, verified T7 encrypted/unlocked/writable UUID and T777 writable UUID; ordered full normative/scoped factual startup and exact sources; prior delivery fully closed; direct human scope/testing authority; architecture declaration/preflight actual0 before first repository edit.
 
 CHECK_02_POST_TASK_AND_CAUSAL_RED: task E0 actual0 before executor code. Freeze legacy prefix/hash and pure V1 semantics. Actual unchanged packaged Main getter/guarded bridge/profile refuses create/add/read before product effect; renderer hides existing Atlas. Preserve original refused output. Then route succeeds through actual existing authority and independent persisted map observation.
 
@@ -199,7 +218,7 @@ CHECK_04_POST_RUNTIME_NEGATIVES: legacy V1 and dev/non-Mac behavior; trusted pac
 
 CHECK_05_POST_AFFECTED: complete existing release contract; WP307unit/integration/mutants; entitlement and WP206baseline/mutants; preload command/query/caller and B2C10; actual existing Atlas ER C03/C04 and E02A C01/C02/C03 manual-map Core/graph/recovery; complete affected getter/Word/archive/export callers from exact source inventory. No name filters, new skips/todo or historical execution relabeling.
 
-CHECK_06_POST_NATIVE: new actual build with every source leaf and full bundle bound/preserved. Fresh owned synthetic profile and genuine ordinary project/bootstrap owner; freeze expected source scene/map/node identities before native input. Existing UI Map create/add confirmation, visible query result, normal Save/Quit and same profile cold reopen. Independent raw manualMaps reader, protected manuscript/history/presets and wrong/foreign targets; complete closed profiles. Native publication uses only CUA, passive observation does not create product authority.
+CHECK_06_POST_NATIVE: retain actual87 title failure; require corrected native multi-character title and label/caret plus new actual build with every source leaf and full bundle bound/preserved. Fresh owned synthetic profile and genuine ordinary project/bootstrap owner; freeze expected source scene/map/node identities before native input. Existing UI Map create/add confirmation, visible query result, normal Save/Quit and same profile cold reopen. Independent raw manualMaps reader, protected manuscript/history/presets and wrong/foreign targets; complete closed profiles. Native publication uses only CUA, passive observation does not create product authority.
 
 CHECK_07_POST_REQUIRED_GATES: exact task E0 and full E0mutants; strict doctor, guardrails, governance, normal inventory/C2A, current DATA/source/certificate plus unchanged guard, complete Apply-corruption predicates, OSS policy, npm audit truth, runtime bundle coherence and perf-lite simulation-only. Full required npm baseline including unchanged sanctioned skip truth. No hidden dependency/advisory/security clearance.
 

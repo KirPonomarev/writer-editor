@@ -747,7 +747,9 @@
     "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
     "src/renderer/flags.js",
     "docs/tasks/2026-10-22--full-mac-atlas-map.md",
-    "test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js"
+    "test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js",
+    "scripts/ops/sector-m-scope-map.json",
+    "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -988,7 +990,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "557121c1d66cf9047a82936b1b250e8c0e0caac9f695112a73bbc028c827e890"
+        "sha256": "d4a470bad2ac55b0a70a1d7dcb7b115ec9e1bdbda6ee8e5b687e99025854080f"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1152,7 +1154,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "fc1fb114433a11824093eb4c5a7afa5b988f69fafb5730584bb81973bf914d25"
+        "sha256": "7d2763cf5e890719dd03bfca44c9b3e7a81aba70d2e7d48ffd7c78d6574f4d43"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1192,7 +1194,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "17abe6f41aff9eadc82b493b111b3617d1005ff6799409de361a6ceaea6d8b9f"
+        "sha256": "1ece1618bc151f223699d78e0126f574532445ccb70d51f277f6845d19d9c4f5"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -1712,7 +1714,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "e14434819ab0920432ec635b5ee7d135cb49eae0b7b99b88bc86804a9ca7dce7"
+        "sha256": "945dd383661b2cfad0002684563ae295abcf373648844cec9a2be67de6309313"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2668,15 +2670,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8931fe9bb208092de4405a6442466d18fa1fc6f4b60c86b9dd11a801aa431b31"
+        "sha256": "5e02b6ba7f81526fe18a3177c541c75bd37a81b2e27daaabe702dedca98d6879"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "b5b77b259bedf11ab1f1ed70abcf1f0342f00a7a52a0cc7c526b1e076a5f3ff9"
+        "sha256": "52ec685f95b8286ef3f301625f58dcb92c8386bda9c8c0e551aa1a950c567d3d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "20367e053d850838293fc301c828e55e36d5e152b8afe65ac633ef50c43fb5c4"
+        "sha256": "bce9d1d6e2250cb60d047f2ddc7aaf55ad345b91c7220f76c296699212789610"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3216,7 +3218,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "7865fc96b391bf88425c9c2391183107b8faa88511e32684d540f5df6830a71b"
+        "sha256": "404850537dd84c6a28a8e2bb3547ff672ab37a0681b08604dad27418e8b43da0"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3340,11 +3342,19 @@
       },
       {
         "path": "docs/tasks/2026-10-22--full-mac-atlas-map.md",
-        "sha256": "66ba82c972f39dc0ece9e1cea57388da168d078e36686851ea96af10fc9dad98"
+        "sha256": "cbdf7d76dd6ba4aa8629c4f831971ed6a8c2596b8af424a28d029106b8a5f1b2"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js",
         "sha256": "56b457a5e61a37001b4272b7b2786832507f1c06bc2de377d39fa46dd20cdc55"
+      },
+      {
+        "path": "scripts/ops/sector-m-scope-map.json",
+        "sha256": "a6709c613a6034936b6c98fa0521368979c5aa28811a6d6b69b5c7c53b81edc5"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
+        "sha256": "435fdb765da1f2cfcef2f6e27204cab987f72334902ff1702b16cbe61d2b7ed3"
       }
     ],
     "followupRepair": {

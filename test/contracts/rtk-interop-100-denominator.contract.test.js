@@ -1780,7 +1780,7 @@ it('data C1 delivery binds immutable code and preserves Buffer and text Git adap
     }
   }
 
-  const unadmittedRuntime='src/renderer/flags.js';assert.equal(policy.admittedPaths.includes(unadmittedRuntime),false);
+  const unadmittedRuntime='src/renderer/theme/theme-config-validator.js';assert.equal(policy.admittedPaths.includes(unadmittedRuntime),false);
   changed.push(unadmittedRuntime);assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/UNADMITTED/);changed.pop();
   const altered=a=>a[0]==='show'&&a[1].endsWith(':src/utils/docxImportPreviewReferences.js')?git(a)+'\n':git(a);
   assert.throws(()=>data.verifyDataC1PostEvaluation({git:altered}),/RUNTIME_REPAIR_PIN/);

@@ -14556,6 +14556,28 @@ function cancelManualMapCommandDraft() {
   renderManualMapWorkbenchState();
 }
 
+function syncManualMapCommandDraftControls() {
+  const draft = manualMapCommandDraft;
+  if (!draft) return;
+  for (const host of [manualMapWorkbenchHost, manualMapPlanHost]) {
+    if (!(host instanceof HTMLElement)) continue;
+    for (const form of host.querySelectorAll('[data-manual-map-command-form]')) {
+      if (!form.isConnected || form.dataset.manualMapCommandId !== draft.commandId
+        || form.querySelector('[data-manual-map-selection-target]')?.dataset.manualMapSelectionTarget !== draft.targetId) continue;
+      for (const input of form.querySelectorAll('[data-manual-map-command-field]')) {
+        const value = draft.payload?.[input.dataset.manualMapCommandField];
+        if (input !== document.activeElement && typeof value === 'string' && input.value !== value) input.value = value;
+      }
+      for (const confirm of form.querySelectorAll('[data-manual-map-confirm-risk]')) {
+        if (confirm !== document.activeElement && confirm.checked !== draft.confirmChecked) confirm.checked = draft.confirmChecked;
+      }
+      if (!draft.result) {
+        for (const result of form.querySelectorAll('[data-manual-map-operation-result]')) result.remove();
+      }
+    }
+  }
+}
+
 function updateManualMapCommandDraftField(fieldName, fieldValue) {
   if (!manualMapCommandDraft) return;
   const name = manualMapText(fieldName);
@@ -14569,7 +14591,7 @@ function updateManualMapCommandDraftField(fieldName, fieldValue) {
     fields: manualMapCommandDraft.fields.map((field) => (field.name === name ? { ...field, value: fieldValue } : field)),
     result: null,
   };
-  renderManualMapWorkbenchState();
+  syncManualMapCommandDraftControls();
 }
 
 function setManualMapCommandDraftConfirmation(checked) {
@@ -14579,7 +14601,7 @@ function setManualMapCommandDraftConfirmation(checked) {
     confirmChecked: checked === true,
     result: null,
   };
-  renderManualMapWorkbenchState();
+  syncManualMapCommandDraftControls();
 }
 
 async function applyManualMapCommandDraft() {
@@ -15296,14 +15318,19 @@ function renderManualMapPortabilityCommandReadback(parent, options = {}) {
 function renderManualMapCommandDraft(parent) {
   if (!manualMapCommandDraft) return;
   const draft = manualMapCommandDraft;
+  const projectId = currentProjectId;
   const panel = document.createElement('form');
   panel.className = 'manual-map-workspace__command-form';
   panel.dataset.manualMapCommandForm = 'true';
   panel.dataset.manualMapCommandId = draft.commandId || '';
   panel.dataset.manualMapCommandRisk = draft.risk || '';
+  const isCurrentDraft = () => panel.isConnected && currentProjectId === projectId
+    && manualMapCommandDraft?.state === 'draft'
+    && manualMapCommandDraft.commandId === draft.commandId
+    && manualMapCommandDraft.targetId === draft.targetId;
   panel.addEventListener('submit', (event) => {
     event.preventDefault();
-    void applyManualMapCommandDraft();
+    if (isCurrentDraft()) void applyManualMapCommandDraft();
   });
 
   const title = document.createElement('strong');
@@ -15328,7 +15355,9 @@ function renderManualMapCommandDraft(parent) {
     input.type = field.type || 'text';
     input.value = manualMapText(draft.payload?.[field.name], manualMapText(field.value));
     input.dataset.manualMapCommandField = field.name || '';
-    input.addEventListener('input', () => updateManualMapCommandDraftField(field.name, input.value));
+    input.addEventListener('input', () => {
+      if (isCurrentDraft()) updateManualMapCommandDraftField(field.name, input.value);
+    });
     label.append(labelText, input);
     panel.appendChild(label);
   }
@@ -15340,7 +15369,9 @@ function renderManualMapCommandDraft(parent) {
     confirm.type = 'checkbox';
     confirm.checked = draft.confirmChecked === true;
     confirm.dataset.manualMapConfirmRisk = draft.risk;
-    confirm.addEventListener('change', () => setManualMapCommandDraftConfirmation(confirm.checked));
+    confirm.addEventListener('change', () => {
+      if (isCurrentDraft()) setManualMapCommandDraftConfirmation(confirm.checked);
+    });
     const text = document.createElement('span');
     text.textContent = draft.risk === 'destructive'
       ? 'Confirm destructive change'
@@ -15366,7 +15397,9 @@ function renderManualMapCommandDraft(parent) {
   cancel.className = 'manual-map-workspace__chip';
   cancel.dataset.manualMapCommandCancel = 'true';
   cancel.textContent = 'Cancel';
-  cancel.addEventListener('click', () => cancelManualMapCommandDraft());
+  cancel.addEventListener('click', () => {
+    if (isCurrentDraft()) cancelManualMapCommandDraft();
+  });
   const apply = document.createElement('button');
   apply.type = 'submit';
   apply.className = 'manual-map-workspace__action';
