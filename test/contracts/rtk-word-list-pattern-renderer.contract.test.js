@@ -575,6 +575,10 @@ test('actual active-scene caller publishes before identity commit including same
   const invalidateStart=source.indexOf('function invalidateDocxImportAttempt()'),invalidateEnd=source.indexOf('function isCurrentDocxImportAttempt(',invalidateStart);
   assert.ok(invalidateStart>=0&&invalidateEnd>invalidateStart);
   const invalidator=source.slice(invalidateStart,invalidateEnd);
+  const atlasStart=source.indexOf('function invalidateAtlasPublications()'),atlasEnd=source.indexOf('function captureAtlasPublication(',atlasStart);
+  const epochStart=source.indexOf('let atlasPublicationEpoch ='),epochEnd=source.indexOf('\n',epochStart);
+  assert.ok(atlasStart>=0&&atlasEnd>atlasStart&&epochStart>=0&&epochEnd>epochStart);
+  const atlasInvalidation=source.slice(epochStart,epochEnd)+'\n'+source.slice(atlasStart,atlasEnd);
   for(const scenario of ['scene','project','same','failure','tree']) {
     const {editor,context}=await scenePublicationHarness();
     try {
@@ -587,8 +591,9 @@ test('actual active-scene caller publishes before identity commit including same
         isTiptapMode:true,setTiptapDocumentSnapshot:input=>{calls.push(input);return scenario==='failure'?false:context.setTiptapDocumentSnapshot(input);},
         updateStatusText:message=>notices.push(message),clearFlowModeState(){},clearPendingMetadataUpdate(){},
         nextMetaEnabled:false,kind:'scene',createNavigatorSelectionState:()=>({}),restoreSpatialLayoutState(){},adoptToolbarConfiguratorState(){}});
-      const before=editor.state;vm.runInContext(`${invalidator}
+      const before=editor.state;vm.runInContext(`${atlasInvalidation}\n${invalidator}
 function incoming(){${body}};incoming();`,ctx);
+      assert.equal(vm.runInContext('atlasPublicationEpoch',ctx),scenario==='failure'?0:1,'only accepted scene publication invalidates prior Atlas results');
       if(scenario==='project'){assert.equal(ctx.pendingDocxImportAttempt,null);assert.equal(ctx.pendingDocxImportPreviewValue,null);assert.equal(ctx.pendingDocxImportPreviewPlan,null);assert.deepEqual(closed,[modal]);}
       else {assert.equal(ctx.pendingDocxImportAttempt,attempt);assert.equal(ctx.pendingDocxImportPreviewValue,preview);assert.equal(ctx.pendingDocxImportPreviewPlan,plan);assert.equal(closed.length,0);}
       if(scenario==='failure'){assert.equal(ctx.currentDocumentId,'A');assert.equal(ctx.currentProjectId,'project');assert.equal(editor.state,before);assert.equal(notices.length,1);}

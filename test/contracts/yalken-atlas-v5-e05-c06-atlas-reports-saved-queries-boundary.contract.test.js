@@ -191,12 +191,12 @@ test('E05 C06: reports derived sources keep side-effect boundaries closed', () =
   }
 });
 
-test('E05 C06: renderer and main wire reports through typed read-only surface without hidden mutation', () => {
+test('E05 C06: renderer and main wire reports through typed read-only surface without hidden mutation', async () => {
   const mainSource = fs.readFileSync(path.join(process.cwd(), 'src', 'main.js'), 'utf8');
   const editorSource = fs.readFileSync(path.join(process.cwd(), 'src', 'renderer', 'editor.js'), 'utf8');
   const htmlSource = fs.readFileSync(path.join(process.cwd(), 'src', 'renderer', 'index.html'), 'utf8');
   const cssSource = fs.readFileSync(path.join(process.cwd(), 'src', 'renderer', 'styles.css'), 'utf8');
-  const capabilitySource = fs.readFileSync(path.join(process.cwd(), 'src', 'renderer', 'commands', 'capabilityPolicy.mjs'), 'utf8');
+  const capabilityPolicy = await loadModule('src/renderer/commands/capabilityPolicy.mjs');
 
   assert.match(mainSource, /const ATLAS_REPORTS_SAVED_QUERIES_QUERY_ID = WORKSPACE_QUERY_IDS\.ATLAS_REPORTS_SAVED_QUERIES/u);
   assert.match(mainSource, /loadAtlasReportsSavedQueriesModule/u);
@@ -213,5 +213,5 @@ test('E05 C06: renderer and main wire reports through typed read-only surface wi
   assert.doesNotMatch(editorSource, /ATLAS_REPORTS_SAVED_QUERIES_QUERY_ID[\s\S]{0,1000}dispatchUiCommand/u);
   assert.doesNotMatch(editorSource, /atlas\.savedQuery\.save[\s\S]{0,1000}invokePreloadUiCommandBridge/u);
   assert.match(cssSource, /\.right-rail-surface--atlas-reports/u);
-  assert.match(capabilitySource, /'atlas\.savedQuery\.save': 'cap\.atlas\.savedQuery\.save'/u);
+  assert.equal(capabilityPolicy.CAPABILITY_BINDING['atlas.savedQuery.save'], 'cap.atlas.savedQuery.save');
 });

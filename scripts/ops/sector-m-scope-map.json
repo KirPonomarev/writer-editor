@@ -431,7 +431,12 @@
       "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
       "test/unit/paste-focus-signal.test.js",
       "test/unit/metadata-inspector-read-model-main.test.js",
-      "test/unit/sector-m-preload-ui-command-bridge.test.js"
+      "test/unit/sector-m-preload-ui-command-bridge.test.js",
+      "docs/tasks/2026-10-22--mac-atlas-async-publication.md",
+      "test/unit/project-tree-pathless-contract.test.js",
+      "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
+      "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+      "test/contracts/yalken-atlas-v5-e05-c06-atlas-reports-saved-queries-boundary.contract.test.js"
     ]
   },
   "allowPrefixByPhase": {

@@ -119,7 +119,11 @@ test('active document channel exposes document identity without renderer path au
 const vm = require('node:vm');
 function executableFunctions(names) {
   const source = read('src/renderer/editor.js');
-  return names.map(name => {
+  const needsAtlasState = names.some(name => ['openDocumentNode', 'handleDeleteNode', 'loadTree',
+    'applyTreeContextPublication', 'applyTreeDetachedPublication', 'showEditorPanelFor'].includes(name));
+  const prefix = needsAtlasState ? source.slice(source.indexOf('let atlasPublicationEpoch ='), source.indexOf('let atlasCommandPublicationSequence =')) : '';
+  if (needsAtlasState) names = ['invalidateAtlasPublications', ...names];
+  return prefix + names.map(name => {
     const match = new RegExp(`^(?:async )?function ${name}\\(`, 'mu').exec(source);
     assert.ok(match, name);
     const end = source.indexOf('\n}\n', match.index);
