@@ -31,6 +31,7 @@ async function loadMainWithElectronStub(paths) {
   const originalLoad = Module._load;
   const electronStub = {
     app: {
+      get isPackaged() { return paths.bridge?.isPackaged === true; },
       getPath: (name) => {
         if (name === 'userData') return paths.userDataRoot;
         if (name === 'documents') return paths.documentsParent;
@@ -67,15 +68,68 @@ async function loadMainWithElectronStub(paths) {
     },
   };
 
+  if (paths.bridge) {
+    const bridge = paths.bridge;
+    function InertWindow() {
+      bridge.window = this;
+      this.webContents = { id: 33, session: {}, isDestroyed: () => false,
+        getURL: () => bridge.shellUrl, setWindowOpenHandler() {}, on() {},
+        send: (...args) => bridge.sent.push(args) };
+      this.isDestroyed = () => false;
+      this.on = () => {};
+      this.loadFile = (file, { query }) => {
+        const url = require('node:url').pathToFileURL(file);
+        for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
+        bridge.shellUrl = url.href;
+        return new Promise(() => {}); // Never starts renderer or startup restoration.
+      };
+    }
+    InertWindow.getFocusedWindow = () => bridge.window;
+    InertWindow.getAllWindows = () => [bridge.window];
+    electronStub.BrowserWindow = InertWindow;
+    electronStub.screen = { getPrimaryDisplay: () => ({ workAreaSize: { width: 1280, height: 800 } }) };
+    electronStub.ipcMain.handle = (channel, handler) => bridge.handlers.set(channel, handler);
+    electronStub.dialog.showOpenDialog = async (...args) => {
+      bridge.openCalls.push(args);
+      return bridge.openResult;
+    };
+  }
+
   Module._load = function patchedLoad(request, parent, isMain) {
     if (request === 'electron') return electronStub;
+    if (paths.bridge && parent?.filename === mainPath && request === './command/commandSurfaceKernel') {
+      const actual = originalLoad.call(this, request, parent, isMain);
+      return { ...actual, createCommandSurfaceKernel: (...args) => {
+        const kernel = actual.createCommandSurfaceKernel(...args);
+        return { ...kernel, dispatch: (...input) => {
+          paths.bridge.kernelCalls.push(input[0]);
+          return kernel.dispatch(...input);
+        } };
+      } };
+    }
+    if (paths.bridge && parent?.filename === mainPath && request === './core/minimum-interchange-v1.cjs') {
+      const actual = originalLoad.call(this, request, parent, isMain);
+      return { ...actual, bindMinimumInterchangeRuntime: runtime => {
+        const result = actual.bindMinimumInterchangeRuntime(runtime);
+        paths.bridge.menuHandlers = runtime.menuCommandHandlers;
+        return result;
+      } };
+    }
+    if (paths.bridge && process.platform !== 'darwin' && parent?.filename === mainPath
+      && request === './main/projectArchiveDarwinPublication.cjs') {
+      const actual = originalLoad.call(this, request, parent, isMain);
+      // Generic CI effect only. Darwin always retains its actual fixed helper.
+      return { ...actual, createProjectArchiveDarwinPublisher: () => bridgeGenericPublicationTestPort };
+    }
     return originalLoad.call(this, request, parent, isMain);
   };
   delete require.cache[mainPath];
   delete require.cache[fileManagerPath];
   try {
+    const main = require(mainPath);
+    if (paths.bridge) main.createWindow();
     return {
-      main: require(mainPath),
+      main,
       fileManager: require(fileManagerPath),
     };
   } finally {
@@ -83,7 +137,7 @@ async function loadMainWithElectronStub(paths) {
   }
 }
 
-async function createHarness(t) {
+async function createHarness(t, options = {}) {
   // Test/build preparation only; the product never invokes a compiler. Darwin
   // uses the exact production helper. Other CI hosts cover generic import
   // semantics with a test port and do not claim directory qualification.
@@ -98,10 +152,13 @@ async function createHarness(t) {
   const userDataRoot = path.join(tempRoot, 'userData');
   await fsPromises.mkdir(documentsRoot, { recursive: true });
   await fsPromises.mkdir(userDataRoot, { recursive: true });
+  const bridge = options.bridge ? { handlers: new Map(), sent: [], openCalls: [], kernelCalls: [],
+    isPackaged: options.isPackaged !== false, openResult: { canceled: true } } : null;
   const { main, fileManager } = await loadMainWithElectronStub({
     tempRoot,
     documentsParent,
     userDataRoot,
+    bridge,
   });
   if (process.platform !== 'darwin') {
     const importArchive = main.handleImportProjectArchive;
@@ -119,6 +176,7 @@ async function createHarness(t) {
     main,
     tempRoot,
     documentsRoot,
+    bridge,
   };
 }
 
@@ -192,7 +250,7 @@ test('S33 full archive import: command is admitted through catalog, capability, 
   assert.ok(main.includes("const IMPORT_PROJECT_ARCHIVE_COMMAND_ID = 'cmd.project.importFullArchiveV1';"));
   assert.ok(main.includes('PROJECT_IMPORT_FULL_ARCHIVE_V1: IMPORT_PROJECT_ARCHIVE_COMMAND_ID'));
   assert.ok(main.includes('[COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1]: async (payload = {}) => {'));
-  assert.ok(main.includes('[IMPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}) => {'));
+  assert.ok(main.includes('[IMPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}, context = {}) => {'));
   assert.ok(main.includes('handleImportProjectArchive,'));
   assert.ok(html.includes('data-import-surface-format="archive"'));
   assert.ok(editor.includes('handleProjectArchiveImportUiPath'));
@@ -583,4 +641,207 @@ test('S33 literal V1 import retains exact files and only known file-parent topol
   assert.deepEqual((await physicalProjectRoster(root)).directories, ['assets', 'backups', 'recovery', 'roman', 'roman/Part One']);
   assert.equal(result.archiveManifest.directoryCoverage, 'FILE_PARENTS_ONLY');
   assert.equal(result.archiveManifest.directoryCount, 5); assert.equal(result.archiveManifest.entryCount, 6);
+});
+
+const ARCHIVE_BRIDGE_COMMAND = 'cmd.project.importFullArchiveV1';
+async function bridgeGenericPublicationTestPort({ tempRoot, targetRoot, parentIdentity, stagingIdentity, assertCurrent }) {
+  await assertCurrent();
+  assert.equal(path.dirname(tempRoot), path.dirname(targetRoot));
+  const sameDirectory = (actual, expected) => {
+    assert.equal(actual.isDirectory(), true); assert.equal(actual.isSymbolicLink(), false);
+    assert.equal(actual.dev, expected.dev); assert.equal(actual.ino, expected.ino);
+  };
+  sameDirectory(await fsPromises.lstat(path.dirname(targetRoot), { bigint: true }), parentIdentity);
+  sameDirectory(await fsPromises.lstat(tempRoot, { bigint: true }), stagingIdentity);
+  await assert.rejects(fsPromises.lstat(targetRoot), { code: 'ENOENT' });
+  await assertCurrent();
+  // This test-owned target has no competing writer. This is not a native
+  // no-clobber/durability proof and never replaces the production adapter.
+  await fsPromises.rename(tempRoot, targetRoot);
+  sameDirectory(await fsPromises.lstat(targetRoot, { bigint: true }), stagingIdentity);
+  sameDirectory(await fsPromises.lstat(path.dirname(targetRoot), { bigint: true }), parentIdentity);
+  return { namePublished: true, directorySynced: false, publicationOutcome: 'TEST_PORT_ONLY' };
+}
+async function archiveBridgeFixture(t, options = {}) {
+  const harness = await createHarness(t, { ...options, bridge: true });
+  await fsPromises.writeFile(path.join(harness.tempRoot, '.task-owner.json'), JSON.stringify({
+    taskId: 'YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022', role: 'OWNED_INERT_MAIN_BRIDGE_FIXTURE' }));
+  const source = path.join(harness.tempRoot, 'Source Alpha');
+  const files = await writeDirectoryProject(source);
+  const archive = await buildProjectArchiveBuffer(source);
+  const archivePath = path.join(harness.tempRoot, 'physical-directory-v2.zip');
+  await fsPromises.writeFile(archivePath, archive.buffer, { flag: 'wx' });
+  harness.bridge.openResult = { canceled: false, filePaths: [archivePath] };
+  const shell = harness.bridge.window.webContents;
+  const event = () => ({ sender: shell, senderFrame: { url: shell.getURL() } });
+  const envelope = (payload, commandId = ARCHIVE_BRIDGE_COMMAND) =>
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:command-bridge', commandId, payload);
+  const invoke = (payload, commandId) => harness.bridge.handlers.get('ui:command-bridge')(event(), envelope(payload, commandId));
+  return { ...harness, source, files, archivePath, event, envelope, invoke };
+}
+async function completeBridgeFilesystemSnapshot(root) {
+  const rows = [];
+  async function visit(relative = '') {
+    const target = path.join(root, relative), stat = await fsPromises.lstat(target, { bigint: true });
+    assert.equal(stat.isSymbolicLink(), false);
+    const identity = [relative, String(stat.dev), String(stat.ino), String(stat.uid), String(stat.mode),
+      String(stat.size), String(stat.mtimeNs), String(stat.ctimeNs)];
+    if (stat.isDirectory()) {
+      rows.push([...identity, 'directory']);
+      for (const name of (await fsPromises.readdir(target)).sort()) await visit(relative ? relative + '/' + name : name);
+    } else {
+      assert.equal(stat.isFile(), true);
+      rows.push([...identity, (await fsPromises.readFile(target)).toString('hex')]);
+    }
+  }
+  await visit(); return rows;
+}
+test('S33 actual guarded live-window bridge selects a real archive and previews six files nine directories with zero writes', async t => {
+  const input = await archiveBridgeFixture(t), before = await completeBridgeFilesystemSnapshot(input.tempRoot);
+  const result = await input.invoke({ requestId: 's33-live-window-preview' });
+  const observed = { result, dialogCalls: input.bridge.openCalls.length,
+    kernelCalls: input.bridge.kernelCalls, reflected: input.bridge.sent.filter(([channel]) => channel === 'ui:runtime-command') };
+  t.diagnostic(JSON.stringify(observed));
+  assert.equal(input.bridge.openCalls.length, 1, JSON.stringify(observed));
+  assert.deepEqual(input.bridge.kernelCalls, [ARCHIVE_BRIDGE_COMMAND]);
+  assert.equal(observed.reflected.length, 0);
+  assert.equal(result.ok, true);
+  assert.equal(result.value.preview, true);
+  assert.equal(result.value.imported, false);
+  assert.equal(result.value.archiveManifest.projectId, 'project-directory-readonly-20261022');
+  assert.equal(result.value.archiveManifest.projectName, 'Project Alpha');
+  assert.equal(result.value.archiveManifest.fileCount, 6);
+  assert.equal(result.value.archiveManifest.directoryCount, 9);
+  assert.equal(result.value.archiveManifest.entryCount, 15);
+  assert.equal(result.value.restoreAvailable, true);
+  assertPathless(result, input.tempRoot);
+  await new Promise(setImmediate);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), before);
+});
+test('S33 actual guarded archive confirmation reuses Main selection and restores six files nine directories', async t => {
+  const input = await archiveBridgeFixture(t), requestId = 's33-live-confirmation';
+  const preview = await input.invoke({ requestId });
+  assert.equal(preview.value.preview, true); assert.equal(preview.value.restoreAvailable, true);
+  const result = await input.invoke({ requestId, confirmed: true, mode: 'restore', openAfterImport: false });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.imported, true); assert.equal(result.value.mode, 'restore');
+  assert.equal(input.bridge.openCalls.length, 1);
+  assert.deepEqual(input.bridge.kernelCalls, [ARCHIVE_BRIDGE_COMMAND, ARCHIVE_BRIDGE_COMMAND]);
+  assert.equal(input.bridge.sent.filter(([channel]) => channel === 'ui:runtime-command').length, 0);
+  const actual = await physicalProjectRoster(path.join(input.documentsRoot, 'Project Alpha'));
+  assert.deepEqual(actual.directories, directoryFixturePaths);
+  const expectedFiles = [...input.files].sort(([a], [b]) => a.localeCompare(b));
+  assert.deepEqual(actual.files, expectedFiles);
+  assert.deepEqual((await physicalProjectRoster(input.source)).files, expectedFiles);
+  assertPathless(result, input.tempRoot);
+});
+test('S33 actual guarded archive picker cancellation has no preview or filesystem mutation', async t => {
+  const input = await archiveBridgeFixture(t);
+  input.bridge.openResult = { canceled: true, filePaths: [] };
+  const before = await completeBridgeFilesystemSnapshot(input.tempRoot);
+  const result = await input.invoke({ requestId: 's33-live-cancel' });
+  assert.equal(result.ok, true); assert.equal(result.value.canceled, true);
+  assert.equal(result.value.preview, false); assert.equal(result.value.imported, false);
+  assert.equal(result.value.archiveManifest, undefined);
+  assert.equal(input.bridge.openCalls.length, 1);
+  assert.deepEqual(input.bridge.kernelCalls, [ARCHIVE_BRIDGE_COMMAND]);
+  assert.equal(input.bridge.sent.filter(([channel]) => channel === 'ui:runtime-command').length, 0);
+  await new Promise(setImmediate);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), before);
+});
+test('S33 actual guarded archive bridge refuses malformed physical ZIP without writes or false preview', async t => {
+  const input = await archiveBridgeFixture(t);
+  await fsPromises.writeFile(input.archivePath, Buffer.from('PK\x03\x04not-a-valid-archive'));
+  const before = await completeBridgeFilesystemSnapshot(input.tempRoot);
+  const result = await input.invoke({ requestId: 's33-live-invalid' });
+  assert.equal(result.ok, false); assert.ok(result.reason);
+  assert.equal(result.value.preview, undefined); assert.equal(result.value.archiveManifest, undefined);
+  assert.equal(input.bridge.openCalls.length, 1);
+  assert.deepEqual(input.bridge.kernelCalls, [ARCHIVE_BRIDGE_COMMAND]);
+  assert.equal(input.bridge.sent.filter(([channel]) => channel === 'ui:runtime-command').length, 0);
+  await new Promise(setImmediate);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), before);
+});
+test('S33 actual native-menu archive handler retains modal intent and ignores payload origin spoofs', async t => {
+  const input = await archiveBridgeFixture(t), before = await completeBridgeFilesystemSnapshot(input.tempRoot);
+  // The real existing binder exposes this table to our observing loader only;
+  // no production export, alternate dispatcher or decision is substituted.
+  const handler = input.bridge.menuHandlers[ARCHIVE_BRIDGE_COMMAND];
+  for (const payload of [{}, { invocationSource: 'ui-command-bridge', source: 'ui', origin: 'ui-command-bridge' }]) {
+    assert.deepEqual(await handler(payload), { ok: true, preview: true });
+  }
+  assert.equal(input.bridge.openCalls.length, 0); assert.deepEqual(input.bridge.kernelCalls, []);
+  assert.deepEqual(input.bridge.sent, Array.from({ length: 2 }, () => ['ui:runtime-command', {
+    commandId: ARCHIVE_BRIDGE_COMMAND, payload: { source: 'menu', preview: true } }]));
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), before);
+});
+test('S33 actual guarded archive bridge refuses payload and envelope routing-context spoofs', async t => {
+  const input = await archiveBridgeFixture(t), before = await completeBridgeFilesystemSnapshot(input.tempRoot);
+  for (const extra of [{ source: 'menu' }, { origin: 'native-menu' }, { invocationSource: 'native-menu' },
+    { options: { invocationSource: 'native-menu' } }, { route: 'direct' }]) {
+    const result = await input.invoke({ requestId: 's33-live-spoof', ...extra });
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.value.error.code, 'E_PROJECT_ARCHIVE_IMPORT_PAYLOAD_INVALID');
+  }
+  assert.deepEqual(input.bridge.kernelCalls, Array(5).fill(ARCHIVE_BRIDGE_COMMAND));
+  const request = input.envelope({ requestId: 's33-spoof-envelope' });
+  request.invocationSource = 'native-menu';
+  const refused = await input.bridge.handlers.get('ui:command-bridge')(input.event(), request);
+  assert.equal(refused.ok, false); assert.equal(refused.reason, 'E_ENVELOPE_KEY_UNKNOWN');
+  assert.equal(input.bridge.kernelCalls.length, 5);
+  assert.equal(input.bridge.openCalls.length, 0); assert.deepEqual(input.bridge.sent, []);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), before);
+});
+test('S33 live archive bridge keeps caller envelope route profile and entitlement refusals before effects', async t => {
+  const input = await archiveBridgeFixture(t), before = await completeBridgeFilesystemSnapshot(input.tempRoot);
+  const handler = input.bridge.handlers.get('ui:command-bridge');
+  const envelope = () => input.envelope({ requestId: 's33-refusal' });
+  const genuine = input.event(), shell = genuine.sender;
+  for (const [event, code] of [
+    [{ ...genuine, sender: { ...shell, id: shell.id + 1 } }, 'E_IPC_SENDER_MISMATCH'],
+    [{ ...genuine, sender: { ...shell, session: {} } }, 'E_IPC_SESSION_MISMATCH'],
+    [{ ...genuine, senderFrame: { url: shell.getURL().replace('USE_TIPTAP=1', 'USE_TIPTAP=0') } }, 'E_IPC_FRAME_QUERY_DENIED'],
+    [{ ...genuine, sender: { ...shell, isDestroyed: () => true } }, 'E_IPC_SENDER_DESTROYED']]) {
+    await assert.rejects(async () => handler(event, envelope()), { code });
+  }
+  for (const change of [{ v: 0 }, { route: 'direct' }, { commandId: 'cmd.forbidden.archive' }]) {
+    assert.equal((await handler(genuine, { ...envelope(), ...change })).ok, false);
+  }
+  const optionalCommand = 'cmd.project.review.applyExactTextChange';
+  const profiled = await input.invoke({}, optionalCommand);
+  assert.equal(profiled.ok, false);
+  if (process.platform === 'darwin') assert.equal(profiled.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+  else assert.equal(profiled.value.code, 'E_COMMAND_DISABLED_FOR_ENTITLEMENT');
+  // A separate ordinary source host uses its actual inactive profile and shell
+  // URL; no profile evaluator or product-owned FREE entitlement is substituted.
+  const sourceHost = await archiveBridgeFixture(t, { isPackaged: false });
+  const sourceBefore = await completeBridgeFilesystemSnapshot(sourceHost.tempRoot);
+  const unentitled = await sourceHost.invoke({}, optionalCommand);
+  assert.equal(unentitled.ok, false); assert.equal(unentitled.value.code, 'E_COMMAND_DISABLED_FOR_ENTITLEMENT');
+  assert.deepEqual(sourceHost.bridge.kernelCalls, []); assert.equal(sourceHost.bridge.openCalls.length, 0);
+  assert.deepEqual(sourceHost.bridge.sent, []);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(sourceHost.tempRoot), sourceBefore);
+  assert.deepEqual(input.bridge.kernelCalls, []); assert.equal(input.bridge.openCalls.length, 0);
+  assert.deepEqual(input.bridge.sent, []);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), before);
+});
+test('S33 generic bridge publication test port checks real ownership and preserves an existing target', async t => {
+  const input = await archiveBridgeFixture(t), tempRoot = path.join(input.tempRoot, 'generic-stage');
+  const targetRoot = path.join(input.tempRoot, 'generic-final');
+  await fsPromises.mkdir(tempRoot);
+  const parentIdentity = await fsPromises.lstat(input.tempRoot, { bigint: true });
+  const stagingIdentity = await fsPromises.lstat(tempRoot, { bigint: true });
+  let currentChecks = 0;
+  const args = { tempRoot, targetRoot, parentIdentity, stagingIdentity, assertCurrent: async () => { currentChecks++; } };
+  await assert.rejects(bridgeGenericPublicationTestPort({ ...args, stagingIdentity: { ...stagingIdentity, ino: stagingIdentity.ino + 1n } }));
+  await fsPromises.mkdir(targetRoot);
+  const foreign = await fsPromises.lstat(targetRoot, { bigint: true });
+  await assert.rejects(bridgeGenericPublicationTestPort(args));
+  assert.equal((await fsPromises.lstat(targetRoot, { bigint: true })).ino, foreign.ino);
+  await fsPromises.rmdir(targetRoot); // Only this empty marker-owned fixture directory.
+  currentChecks = 0;
+  assert.deepEqual(await bridgeGenericPublicationTestPort(args), {
+    namePublished: true, directorySynced: false, publicationOutcome: 'TEST_PORT_ONLY' });
+  assert.equal(currentChecks, 2);
+  assert.equal((await fsPromises.lstat(targetRoot, { bigint: true })).ino, stagingIdentity.ino);
 });

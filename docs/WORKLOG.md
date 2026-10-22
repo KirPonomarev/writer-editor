@@ -1,3 +1,30 @@
+# Native archive import continuation — 2026-10-22
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SAME_PR_AMENDMENT_SOURCE_REVIEW_COMPLETE_DELIVERY_PENDING
+
+Actual4956 app showed an empty confirmation before file selection; prompt canceled
+and complete failure profile/artifact preserved. Actual guarded Main live-window
+RED on unchanged4956 reached the same reflection, not Kernel/dialog. Closed internal
+Main routing context corrects only this continuation after existing checks. Native
+menu intent, all physical archive/COPY code and four original source/test files stay
+exact. Both mechanical bridge tests retain all assertions and bypass mutants.
+
+Executor/root each ran complete32files313of313,zero fail/cancel/skip/todo. Real preview
+calls dialog+Kernel once and writes nothing; confirmed restore uses pending Main
+selection, preserves all6raw files+9dirs and needs no second picker. Cancel/invalid
+ZIP/spoof/caller/envelope/profile/entitlement cases are observed. Main delta11lines;
+S33267lines, no original case weakened. Non-Darwin generic effect is test-only.
+
+Initial4956 baseline3OPS/2406of2465unit(59sanctioned skips)/20contracts and E0172+40mutants
+remain historical. Its official RTK4414of4414 does not override native failure or
+qualify changed source. Same PR2143/original base69be91c, amendment16/union20paths.
+Normal factual/OPS companions preserve1603inventory, DATA736/589 and historical
+246-binding tuples/guard/predicates. Final-source required gates/baseline, normal
+follow-up commit/push/new exactCI, rebuilt actual native journey, merge/fresh merged
+proof still required. No COPY/numeric/signing/release qualification.
+
 # 2026-10-22 — Physical archive source proof
 
 TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022

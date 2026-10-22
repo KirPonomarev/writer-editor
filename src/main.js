@@ -34081,7 +34081,7 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
   try {
     const result = PRODUCT_COMMAND_ID_SET.has(commandId)
       ? await dispatchProductCommandBridge(commandId, payload)
-      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE });
+      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge' });
     if (result && result.ok === true) return makeCommandBridgeSuccess(result);
     const reason = findCommandBridgeFailureReason(result) || 'COMMAND_EXECUTION_FAILED';
     return makeCommandBridgeFailure(reason, result);
@@ -37313,9 +37313,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     );
     return normalizeUiBridgeMenuResult(result);
   },
-  [IMPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}) => {
+  [IMPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}, context = {}) => {
     const confirmed = payload && payload.confirmed === true;
-    if (!confirmed) {
+    if (!confirmed && context.invocationSource !== 'ui-command-bridge') {
       const delivered = sendCanonicalRuntimeCommand(
         IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
         {
@@ -38180,7 +38180,10 @@ function dispatchMenuCommand(commandId, payload = {}, options = {}) {
     throw new Error(`Unknown menu command id: ${String(resolved.commandId)}`);
   }
 
-  return handler(payload);
+  const invocationContext = Object.freeze({
+    invocationSource: options.invocationSource === 'ui-command-bridge' ? 'ui-command-bridge' : 'native-menu',
+  });
+  return handler(payload, invocationContext);
 }
 
 function buildCommandClickHandler(commandId, payload = {}) {

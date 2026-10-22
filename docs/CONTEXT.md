@@ -1,3 +1,70 @@
+# Native archive preview bridge — same PR correction — 2026-10-22
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: AMENDMENT_COMPONENT_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 4956aa243d4dcb3fdbc2205cc9cb8b155478899d
+CLAIM_BOUNDARY: Same open PR2143, original delivery base69be91c; physical archive and native import correction only.
+
+The initial4956 physical topology candidate passed its complete baseline:3OPS,
+2406of2465unit cases with59unchanged sanctioned skips,20contracts; no failures,
+cancellation or todo. E0 passed172cases plus40mutants. Official4956RTK completed
+4414of4414,zero fail/skip/todo. Those historical results are not relabelled as
+evidence for this amendment and did not override the actual native failure.
+
+The actual newly built unsigned4956 app showed an empty Project/Files0/Bytes0
+confirmation before any file selection. The prompt was canceled, target absent,
+and the complete50-file failed profile plus530-member app were preserved with
+independent full readback. No native archive journey was accepted. Read-only
+diagnosis traced the guarded UI continuation into the menu's modal reflection
+before Kernel/file picker. A fresh clean4956 declaration/preflight and task E0
+admitted a bounded correction inside the same still-open delivery chain.
+
+Before runtime edit, the actual guarded Main live-window bridge regression failed:
+22of23cases passed; dialog0,Kernel0,one reflected runtime command and bare preview.
+Main remained exact4956SHA971275de6908323dba78a65a66fd99c03de90c8b38a87ce55884a8460c4fe93e.
+The exact RED-stage S33 source is retained and matches its original execution hash.
+
+Main now attaches a closed out-of-band routing classification at the guarded UI
+bridge. Dispatcher keeps profile, entitlement and namespace checks before passing
+sanitized context; only import's unconfirmed UI continuation avoids modal reflection.
+Real preview/confirmation still traverse the canonical Kernel and existing Main
+native picker, bounded validation and owned import adapter. Original native-menu
+intent remains. Renderer payload fields cannot supply context or authority.
+
+Executor and root separately execute the complete32-file affected pack:313of313,
+zero fail/cancel/skip/todo. Genuine preview observes dialog1,Kernel1,reflection0,
+six files/nine directories and a complete zero-write filesystem snapshot. Confirmed
+restore reuses Main's selection without another picker and retains every raw file
+and directory. Cancellation, malformed physical ZIP, payload/envelope origin spoofs,
+caller/session/frame/route/ID/profile/entitlement refusal and original menu intent
+are exercised. Darwin uses the actual fixed helper. Other CI hosts use an explicit
+generic test effect; no non-Darwin native publication/durability claim follows.
+
+The amendment changes11runtime lines and267S33test lines. Both other maintained
+bridge tests change only their exact call/mutant literals; all assertions and
+mutants remain. Root verifies Main equals4956 outside precisely three reviewed
+regions; physical restore/sync/cleanup/COPY functions and the other four original
+archive source/test paths remain byte-exact. All original S33 test bodies/assertions
+remain except the strict updated handler-signature literal. Root review
+SHA7e28faea6b64f02b3645524528eaaa8e1aa204b1359442779bbe62397254900c
+binds the component review, not native or release acceptance.
+
+Total delivery union20paths; amendment16paths, four original frozen. Normal
+inventory/C2A generation keeps1603members/classes/skip policy. DATA retains736paths
+and589source pins; append-only246-binding certificate successor plus unchanged
+guard preserves every committed historical tuple/predicate. The preload source
+test remains covered by the589-source DATA guard without expanding this vector.
+Exact-path governance witnesses preserve approval history and do not create
+product mutation or release authority.
+
+Final-source required gates/baseline, normal additional commit/push, all official
+checks on the new exact head, actual rebuilt native picker/preview/import/open/save/
+cold reopen, normal merge and fresh merged verification remain required. Old
+failure evidence stays intact. COPY identity/Stage10/Word lineage, numerical workload,
+signing/notary/channel/public distribution and first Mac release remain open.
+Continue the owner's authorized release work after this delivery closes.
+
 # Physical archive directory source proof — 2026-10-22
 
 TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022

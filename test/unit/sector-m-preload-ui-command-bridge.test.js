@@ -31,7 +31,7 @@ test('preload ui command bridge: main exposes one handler and enforces route and
   assert.ok(source.includes('[METADATA_UPDATE_COMMAND_ID]: async (payload = {}) => {'))
   assert.ok(source.includes('return handleMetadataUpdateCommand(payload);'))
   assert.ok(source.includes("return { ok: false, reason: 'COMMAND_ID_NOT_ALLOWED' };"))
-  assert.ok(source.includes('dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE })'))
+  assert.ok(source.includes("dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge' })"))
 })
 
 test('preload ui command bridge: editor cmd.ui handlers use bridge and no longer call direct setTheme setFont setFontSizePx', () => {

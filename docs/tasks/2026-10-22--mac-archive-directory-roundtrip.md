@@ -24,6 +24,24 @@ Owner authorizes necessary existing-seam archive correctness fixes and unrestric
 
 One versioned physical archive topology repair across two existing runtime files and four maintained tests. Separate executor owns those six paths; root owns task, factual/OPS companions, independent oracle, review and delivery. Runtime added-plus-deleted budget900lines; test budget1200lines. No formatting/refactor outside changed functions. Generated governance/inventory/certificate data is mechanical and separately reviewed. External reports and final materials use dated UUID-verified T777 folders; synthetic temporary APFS runtime is declared and preserved.
 
+### Same open PR2143 amendment — actual native preview bridge
+
+AMENDMENT_BINDING_BASE_SHA: 4956aa243d4dcb3fdbc2205cc9cb8b155478899d. Original delivery base69be91c and the single rollback remain unchanged. Fresh bootstrap/fetch find a clean registered branch and unchanged origin/main69be91c; amendment declaration/preflight actual0 precedes this edit. Amendment writes16paths; total union20. Separate executor owns Main, S33 and two exact mechanical bridge-test bindings. Root retains twelve task/factual/OPS paths.
+
+The actual rebuilt4956 app fails ordinary menu -> import modal -> Project Archive before any picker: it shows Archive: Project, Files:0, Bytes:0, Mode:copy. The prompt was canceled. Failed profile and whole app are preserved with independent full readback. Its successful component tests, full baseline and E0 remain historical4956 evidence and do not qualify a correction.
+
+O: real native file selection -> bounded valid six-file/nine-directory preview without writes -> confirmation -> exact physical restore. T: existing guarded UI bridge -> dispatcher profile/entitlement/namespace admission -> canonical Kernel -> existing Main/native adapter. H: unconfirmed UI continuation is reflected into the menu's modal intent; closed out-of-band Main options distinguish that invocation without granting authority. B: preserve caller/envelope/route/allowlist/profile/entitlement/Kernel order and every renderer/preload/Core/codec/COPY byte; one PR revert. P: meaningful actual-Main/live-window RED, real full bridge GREEN/cancel/spoof/refusal/confirmed restore, all complete affected suites and final-source required/native/delivery gates. I: base4956/tree9eb01c2; original input/oracles/failure profile, actual new build/profile and exact new candidate/merged SHA.
+
+Only Main's guarded bridge constructs the internal invocationSource options literal. Never spread payload into options or infer context from payload source/origin/requestId/route. Dispatcher forwards only sanitized context after unchanged admission. Only archive-import handler uses it to avoid reflecting UI continuation; native-menu default still emits its existing modal intent. Both real preview and confirmation traverse unchanged Kernel and Main import authority. No global mutable flag, stale-source comment anchor, new IPC key, public test hook or evaluator-policy weakening.
+
+Before runtime edit, append a regression that loads actual Main with an inert live BrowserWindow, captures the actual guarded ipcMain registration, builds the real envelope and uses matching live sender/session/frame. Unchanged4956 must reach the reflection loop and fail the meaningful dialog/summary assertion. Observe real Kernel/effect counts without replacing its decisions. Preview must be zero-write on a complete owned filesystem snapshot; cancel returns canceled, malformed physical ZIP refuses, same-request confirmed restore uses Main-owned pending selection without a second picker and retains all6files/9dirs. Existing caller/envelope/route/ID/profile/entitlement laws and original menu intent remain enforced.
+
+The exact existing source-call assertions in sector-m-preload-ui-command-bridge.test.js and the route-bypass mutant anchor in b2c10-command-bypass-negative-matrix.contract.test.js must follow the actual internal call shape mechanically. Preserve every assertion and mutant; no substitute anchor hidden in comments. S33 adds only faithful effect ports/new cases and updates its exact handler signature assertion. Amendment runtime budget100added-plus-deleted lines; new S33 budget300; overall original runtime900/test1200 budgets remain.
+
+Frozen byte-identical4956 paths: projectArchiveExportHandler.js SHAa5a302fc6242913acece3ed2fdff171bbbc5b50fbed804c70209d9b63ee4fe44; project-archive-correctness.test.js SHA8c43387217aa0c3c33d7cc77402502a1104dda908e618dd86e94d8074d0ff84f; project-archive-export-handler.test.js SHA9aaca2dace7dfcd374c2c2519896d7a70b4a4f028c4d724da1685e63a926f9a8; sector-m-s32-full-archive-export.test.js SHA149e53c43584d0dc649605360547f505b1fdcb1c4a9b938b2bb2d98152e5b866. Main's physical restoration/sync/cleanup/COPY implementation also remains exact4956.
+
+Required final-source proof: complete prior eleven archive files; full S33/preload/B2C10 and affected caller/envelope/profile/entitlement suites; source diff/pins; strict doctor/governance/inventory/C2A/DATA/certificate/Apply all corruption predicates/E0+mutants/guardrails/OSS/honest audit/bundle coherence/perf-lite simulation; full baseline after semantic closure; new normal commit/push, official exact new-head CI and rebuilt actual native journey. Preserve prior committed246-binding certificate tuple and append a same-denominator successor with the same guard; DATA736paths/589pins and inventory1603members/classes/skips stay fixed. Normal merge and fresh clean merged checks/native proof close this delivery. No release, COPY, numeric, signing or distribution acceptance follows.
+
 ## ALLOWLIST
 
 - src/export/archive/projectArchiveExportHandler.js
@@ -32,6 +50,8 @@ One versioned physical archive topology repair across two existing runtime files
 - test/unit/project-archive-export-handler.test.js
 - test/unit/sector-m-s32-full-archive-export.test.js
 - test/unit/sector-m-s33-full-archive-import.test.js
+- test/unit/sector-m-preload-ui-command-bridge.test.js
+- test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js
 - docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
