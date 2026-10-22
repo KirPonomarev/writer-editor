@@ -11,7 +11,7 @@ retains every ordered source and all normative reads. Only CONTEXT/HANDOFF use
 current status plus complete task-relevant history, with broader reading up to
 whole files on uncertainty. Historical bytes remain intact. Scoped reading never
 creates authority or a P03 full-read claim. The existing checkpoint protocol and
-all declaration validation remain byte-exact. Startup contracts pass29of29;
+all declaration validation remain byte-exact. Startup and P03 compatibility contracts pass34of34;
 full official CI, protected merge and exact merged proof remain required.
 The next product task remains macOS MR06, after this separate delivery closes.
 

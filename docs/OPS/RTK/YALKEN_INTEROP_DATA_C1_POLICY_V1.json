@@ -1702,7 +1702,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "43802b1be2f7c3ab18845c6aa6f1b5e997462a0d51121584a8b33de90e8d6941"
+        "sha256": "b13101b8ed7850fe0aa4a9c24bd37e351ce496350030eeb4c1a6ac5634fa90e5"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2658,15 +2658,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6971b91c96d24faab687f961ad45d8e79916a0fa5d2048af4a1feeb091b20c59"
+        "sha256": "c79f0bc8fd1fd56cb3b3dedecdef0408740e0be890e1dff790233e5c2b54bed7"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "89fa829612f27e44e91b9d403f1f6f9c5763f60f96fbc153918aa235a29f7aa1"
+        "sha256": "af1ebf559caf1782aeb62db58bb6465d885a227ee0cf478c7528901da0490fd1"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "12e6bcf45b994be6923e956ad63b04dc5dc0b44f1c5e8fcd7e6ee1b05e53dd22"
+        "sha256": "94ec6169ded9b418ba861cfbf2a9aca898d9c7bb9cb9e0425b2f42de369fd35e"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3206,7 +3206,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c33c92b34be1fc31340981fde5f803bcb41c895577e68f490d3c68329a376955"
+        "sha256": "e9c04c48354357b5c14d21bd7de50e24fef30a7d247630282f8fd415623fd2a6"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3254,7 +3254,7 @@
       },
       {
         "path": "AGENTS.md",
-        "sha256": "3b841a744e4067293d7c55f47f58d639e1e8e3201cd8c971857d84a1a67bc8f0"
+        "sha256": "af4fdeb93def4476134c376ba8c3679f76d0837d895478628841b91a35cd37da"
       },
       {
         "path": "docs/AGENT_START_PROTOCOL.md",
@@ -3294,7 +3294,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--agent-scoped-context.md",
-        "sha256": "758118a58a0fc10f4b17f97bad099367967d6671ed7f0bcfc578e955581ff2ee"
+        "sha256": "79bb05db5510a9986ba0065b57078fb18f91ce45c4c4d2f92ff17e827718084b"
       }
     ],
     "followupRepair": {

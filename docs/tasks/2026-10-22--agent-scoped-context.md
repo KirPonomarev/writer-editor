@@ -101,7 +101,8 @@ CHECK_02_POST_STARTUP: real bootstrap text/JSON exposes fixed scoped factual gui
 all original ordered paths remain; unsafe/missing/unknown policy refuses even
 when the spec digest is recomputed; no false full-read/cache claim; existing
 P03 invalidation, fencing and writer-control tests still pass.
-CHECK_03_POST_REQUIRED: full focused/affected startup contracts; actual inventory/C2A,
+CHECK_03_POST_REQUIRED: full focused/affected startup and existing R24 P03
+compatibility contracts; actual inventory/C2A,
 strict governance, task, E0, OSS/audit/guardrails, committed Apply and every
 individual source corruption. Official CI retains the full RTK and baseline.
 CHECK_04_POST_DELIVERY: exact staged allowlist/budgets and diff review; full delivery;

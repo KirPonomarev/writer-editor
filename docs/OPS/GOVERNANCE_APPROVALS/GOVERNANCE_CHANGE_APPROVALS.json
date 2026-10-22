@@ -13561,6 +13561,86 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
       "sha256": "4fb133c34d7e2ac8730c0066b3720df48a112506510a7f7fa65d3a8a74383601"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "b1161bca4f2a146ebf798a50fe68755439483865061e971689c7dcc04114495c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "e9c04c48354357b5c14d21bd7de50e24fef30a7d247630282f8fd415623fd2a6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "AGENTS.md",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "af4fdeb93def4476134c376ba8c3679f76d0837d895478628841b91a35cd37da"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--agent-scoped-context.md",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "79bb05db5510a9986ba0065b57078fb18f91ce45c4c4d2f92ff17e827718084b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "b13101b8ed7850fe0aa4a9c24bd37e351ce496350030eeb4c1a6ac5634fa90e5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "d4eba55a979f3e5bd7a01645db0d5a7786cb171df5c77d1a39632a0c4972d4c5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "8dfbceeb0a3d2860136c557ae0511588bfb62715a1b8c576ddf97d4f4725851a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "78a505060b72d7b649af0bf5c17dbd678aecebf3a1c818387edf88678f2213b0"
     }
   ],
   "evidenceStampIds": [
