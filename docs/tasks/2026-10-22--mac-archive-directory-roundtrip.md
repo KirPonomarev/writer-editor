@@ -60,6 +60,14 @@ Exercise real post-publication read/open failure, stale project/file/window/life
 
 Required closure: root independent source/diff/budget review and six frozen pins; normal inventory/C2A generation with1603same members/classes/skips, DATA736/589 and append-only same246plusguard certificate successor preserving all tuples/predicates; exact-path governance history. Full final-source mandatory gates/baseline, newly built native picker/preview/import/text/edit/save/cold reopen, normal followup commit/push/all official new-head CI, merge and fresh clean merged proof remain mandatory. An admitted exact-digest uncommitted-source diagnostic app may detect another native gap before final commit, but cannot be relabelled as committed/merged evidence or substitute for final-source proof. COPY/numeric/signing/distribution/release remain open.
 
+### Same open PR2143 followup — explicit lifecycle test context
+
+FOLLOWUP_BINDING_BASE_SHA: 999931937454440d809a5d0f8d7a37b6302ae30e. This normal local checkpoint preserves the already-authorized Main/S33/task edits; it is unaccepted, unpushed and creates no delivery or runtime qualification. Original base69be91c, one PR/rollback, the six frozen source/test paths and all existing source budgets remain. A fresh clean bootstrap/fetch, full normative/scoped factual reads and actual preflight0 precede this followup. Followup scope15paths; total delivery union21. Separate code executor now owns Main/S33 and one mechanically bound existing lifecycle contract; root retains twelve companions.
+
+The meaningful unchanged Main lease RED30of31 and queued/completed-save RED54of58 remain retained. Latest Main ca09b351 and S33 c9beab32 pass58of58 with0skip/todo; this does not qualify final native or full-chain behavior. The earlier complete61-file run executes866of871: five real lifecycle VM cases fail because wordExportQuitFixture omits Main's new finite capture state. In test/contracts/rtk-word-scene-identity-main.contract.test.js add exactly projectArchiveOpenCapture:null to that existing context, preserving every other byte, all predicates and the full87-case population. No typeof/fallback, timeout, exclusion or weakened assertion. The path already belongs to DATA736/589 and the246-binding certificate; only its current byte pin may change. Denominators and every historical tuple stay fixed.
+
+After the single property edit execute the complete61-file affected pack including all87lifecycle cases on the frozen source. Root verifies the exact mechanical diff, original test predicates, runtime source/budgets and full executor receipt. Actual build-bound native import/open/edit/save/cold reopen and every final-source mandatory gate/baseline/official CI/merge/clean merged proof remain required. CHECK_01 executes before edits; CHECK_02+ afterward. Do not rerun PRE after this write or promote the checkpoint to final acceptance.
+
 ## ALLOWLIST
 
 - src/export/archive/projectArchiveExportHandler.js
@@ -70,6 +78,7 @@ Required closure: root independent source/diff/budget review and six frozen pins
 - test/unit/sector-m-s33-full-archive-import.test.js
 - test/unit/sector-m-preload-ui-command-bridge.test.js
 - test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js
+- test/contracts/rtk-word-scene-identity-main.contract.test.js
 - docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md
 - docs/CONTEXT.md
 - docs/HANDOFF.md
