@@ -1007,3 +1007,255 @@ test('metadata receipt uses actual Core bytes with nonempty cohorts, compact V3 
     assert.equal(h.ports.sent.slice(sent).some(([id]) => id === 'set-dirty' || id === 'editor:set-text'), false);
   });
 });
+
+
+// Reuse the exact existing faithful Main host; expose only its captured public
+// guarded handlers with a finite JSON IPC realm boundary, never a live app.
+async function metadataReconciliationHarness(t) {
+  const own = fs.readFileSync(__filename, 'utf8');
+  let fixture = own.slice(own.indexOf('async function metadataTransactionHarness('), own.indexOf("test('metadata transaction preserves real committed"));
+  const seam = 'return { main, unit, ports, file, root, projectRoot, manifestPath, profile, read, commit, commitPath, update, working,';
+  assert.equal(fixture.split(seam).length, 2);
+  fixture = fixture.replace(seam, seam + `
+    bridge:(channel,id,payload)=>ports.handlers.get(channel)(event(),require('../../src/core/ipc-envelope-v1.cjs').createEnvelope(channel,id,JSON.parse(JSON.stringify(payload)))),
+    workingOnly:content=>{snapshot={...snapshot,content};},`);
+  const host = new Module(__filename, module);
+  host.filename = __filename; host.paths = Module._nodeModulePaths(__dirname);
+  host._compile(own.slice(0, own.indexOf('// Each harness'))
+    + own.slice(own.indexOf('function sha256('), own.indexOf('function findNode('))
+    + own.slice(own.indexOf('function metadataDeferred('), own.indexOf('function metadataControl('))
+    + fixture + '\nmodule.exports=metadataTransactionHarness;', __filename);
+  const h = await host.exports(t);
+  const registryModule = await import('../../src/renderer/commands/registry.mjs');
+  const projectModule = await import('../../src/renderer/commands/projectCommands.mjs');
+  const runnerModule = await import('../../src/renderer/commands/runCommand.mjs');
+  const busModule = await import('../../src/renderer/commands/commandBusGuard.mjs');
+  const commands = [], queries = [], errors = [], statuses = [], timers = new Map(), ports = { queryGate: null, transform: null, commandTransform: null };
+  const registry = registryModule.createCommandRegistry();
+  projectModule.registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async (request) => {
+    const result = await h.bridge('ui:command-bridge', request.commandId, request.payload);
+    commands.push({ id: request.commandId, payload: request.payload, result });
+    return ports.commandTransform ? ports.commandTransform(JSON.parse(JSON.stringify(result))) : result;
+  } } });
+  const run = runnerModule.createCommandRunner(registry, { capability: { platformId: 'node', editorMode: 'tiptap' } });
+  const synopsis = metadataControl(), status = metadataControl(), pov = metadataControl(), line = metadataControl(), place = metadataControl();
+  let text = '', timerId = 0;
+  const statusElement = { style: {}, get textContent() { return text; }, set textContent(v) { text = v; statuses.push(v); } };
+  const c = {
+    currentProjectId: h.projectId, currentDocumentId: h.nodeId, currentDocumentKind: 'scene', currentDocumentTitle: 'Alpha', currentMeta: {}, metaEnabled: true,
+    metaSynopsis: synopsis, metaStatus: status, metaTagPov: pov, metaTagLine: line, metaTagPlace: place,
+    inspectorMetaSynopsisValue: synopsis, inspectorMetaStatusValue: status, statusElement, heldCommandStatusMessage: false,
+    uiErrorMapDoc: JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/OPS/STATUS/UI_ERROR_MAP.json'), 'utf8')), UI_ERROR_MAP_SCHEMA_VERSION: 'ui-error-map.v1',
+    UI_ERROR_FALLBACK_MESSAGE: 'Операция не выполнена', UI_ERROR_FALLBACK_SEVERITY: 'ERROR',
+    console: { error: (v) => errors.push(v) }, isTiptapMode: true, runCommand: run, runCommandThroughBus: busModule.runCommandThroughBus, COMMAND_BUS_ROUTE: 'command.bus',
+    document: { activeElement: synopsis }, metaPanel: { dataset: {}, classList: { toggle() {}, add() {} } }, inspectorEmptyState: null,
+    rightInspectorTabButton: null, inspectorContextKind: null, inspectorSceneSections: [], inspectorSceneDetails: null, inspectorDocumentSummary: null,
+    inspectorDocumentTypeValue: null, inspectorDetailsShowLabel: null, inspectorDetailsHideLabel: null, inspectorMetaContextValue: null,
+    inspectorMetaWordCountValue: null, inspectorDocumentWordCountValue: null, inspectorMetaTagsValue: null, inspectorMetaModifiedValue: null, inspectorDocumentModifiedValue: null,
+    METADATA_UPDATE_COMMAND_ID: 'cmd.project.metadata.update', METADATA_INSPECTOR_QUERY_ID: 'query.metadataInspector',
+    composeObservablePayload: h.envelope.composeObservablePayload, parseObservablePayload: h.envelope.parseObservablePayload,
+    ensureSelectHasOption() {}, getPlainText: () => 'Привет é 🧭', editor: null, editorPanel: null, mainContent: null,
+    window: { setTimeout(fn, delay) { assert.equal(delay, 400); timers.set(++timerId, fn); return timerId; },
+      clearTimeout(id) { timers.delete(id); }, electronAPI: { invokeWorkspaceQueryBridge() {} } },
+    invokeWorkspaceQueryBridge: async (id, payload) => {
+      let result = await h.bridge('ui:workspace-query-bridge', id, payload);
+      queries.push({ id, payload: JSON.parse(JSON.stringify(payload)), result });
+      const gate = ports.queryGate; ports.queryGate = null;
+      if (gate) await gate.promise;
+      if (ports.transform) result = ports.transform(JSON.parse(JSON.stringify(result)));
+      return result;
+    },
+  };
+  for (const name of ['clearFlowModeState', 'hideManualMapPlanWorkspace', 'hideNotesWorkspace', 'hideProjectSearchWorkspace', 'hideAuthoringSurfacesSurface',
+    'setPlainText', 'updateWordCount', 'updateInspectorSnapshot', 'updateCardsList', 'showWriterHomeSurface']) c[name] = () => {};
+  metadataVm.createContext(c);
+  metadataVm.runInContext(metadataSection("let currentMetadataBaselineHash = '';", 'let expandedNodesByTab')
+    + metadataSection('function sanitizeUiErrorMap(', 'async function invokePreloadUiCommandBridge(')
+    + metadataSection('function updateStatusText(', 'function updateSaveStateText(')
+    + metadataSection('function updateMetaInputs(', 'function updateMetaVisibility(')
+    + metadataSection('function collapseSelection()', 'function updateMetaInputs(')
+    + metadataSection('function normalizeMetadataInspectorPayload(', 'function normalizeNotesWorkspaceReadModel(')
+    + metadataSection("if (metaSynopsis) {\n  metaSynopsis.addEventListener('input'", 'if (addCardButton)'), c);
+  await c.refreshMetadataInspector();
+  const state = () => JSON.parse(metadataVm.runInContext('JSON.stringify({baseline:currentMetadataBaselineHash,pending:metadataUpdatePending,form:metadataFormGeneration,edit:metadataEditGeneration,meta:currentMeta})', c));
+  const waitFor = async (predicate) => { const deadline = performance.now() + 2500;
+    while (!predicate() && performance.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 5));
+    assert.ok(predicate(), 'finite real metadata barrier reached'); };
+  const effect = async () => ({ raw: await h.read(), commit: await fsPromises.readFile(h.commitPath, 'utf8'),
+    protected: await h.protectedState(), state: h.unit.state(), transactions: h.ports.transactions.length, pushes: h.ports.sent.length });
+  const saveWorking = async () => {
+    const parsed = h.envelope.parseObservablePayload(await h.read());
+    h.workingOnly(h.envelope.composeObservablePayload({ ...parsed, metaEnabled: true, meta: c.currentMeta }));
+    return c.dispatchUiCommand('cmd.project.save', {});
+  };
+  return { h, c, ports, synopsis, status, pov, line, place, commands, queries, errors, statuses, timers, state, effect, waitFor, saveWorking,
+    finalStatus: () => text, flush: () => c.flushMetadataUpdate(),
+    input: (value = 'Замысел é 🧭', start = 0, end = start, direction = 'none') => synopsis.input(value, start, end, direction),
+    fire: () => { assert.equal(timers.size, 1); const [id, fn] = timers.entries().next().value; timers.delete(id); fn(); },
+  };
+}
+
+test('metadata Save-before-debounce observes already canonical intent without a false command error or second writer', async (t) => {
+  const x = await metadataReconciliationHarness(t);
+  x.input(); assert.equal((await x.saveWorking()).ok, true);
+  const before = await x.effect(), pending = x.state(), working = x.synopsis.value;
+  await x.flush();
+  assert.equal(x.commands.at(-1).result.value.code, 'E_METADATA_UPDATE_STALE', 'Main strict CAS still refused the obsolete command');
+  assert.notEqual(x.finalStatus(), 'Команда завершилась с ошибкой');
+  assert.match(x.finalStatus(), /Метаданные.*сохранены/u);
+  assert.equal(x.errors.length, 0, 'already canonical desired intent is read-only, not a displayed command failure');
+  assert.deepEqual(await x.effect(), before);
+  assert.equal(x.state().baseline, sha256(before.raw));
+  assert.deepEqual(x.state().meta, pending.meta); assert.equal(x.synopsis.value, working); assert.equal(x.synopsis.selectionStart, 0);
+});
+
+test('metadata reverse ordering keeps actual metadata transaction and ordinary Save successful', async (t) => {
+  const x = await metadataReconciliationHarness(t);
+  x.input('  Intent é 🧭  '); await x.flush();
+  assert.equal(x.commands.at(-1).result.ok, true);
+  assert.equal((await x.saveWorking()).ok, true);
+  assert.equal(x.errors.length, 0);
+  assert.equal(x.h.envelope.parseObservablePayload(await x.h.read()).meta.synopsis, 'Intent é 🧭');
+  assert.equal(x.h.commit().sceneDigest, sha256(await x.h.read()));
+});
+
+test('metadata canonical equality checks every full field and never rebases a newer draft over foreign data', async (t) => {
+  for (const field of ['synopsis', 'status', 'pov', 'line', 'place']) await t.test(field, async (t) => {
+    const x = await metadataReconciliationHarness(t);
+    x.input('  Submitted A  '); assert.equal((await x.saveWorking()).ok, true);
+    const parsed = x.h.envelope.parseObservablePayload(await x.h.read());
+    const metadata = JSON.parse(JSON.stringify(parsed.meta));
+    if (field === 'synopsis' || field === 'status') metadata[field] = 'foreign canonical';
+    else metadata.tags[field] = 'foreign canonical';
+    assert.equal((await x.h.unit.fixtureRawCommit(x.h.envelope.composeObservablePayload({ ...parsed, metaEnabled: true, meta: metadata }))).success, true);
+    const gate = metadataDeferred(); x.ports.queryGate = gate;
+    const old = x.flush(); await x.waitFor(() => x.queries.length === 2);
+    x.input('newer B remains unsaved', 3); const before = await x.effect(), baseline = x.state().baseline;
+    gate.resolve(); await old;
+    assert.deepEqual(await x.effect(), before);
+    assert.equal(x.finalStatus(), 'Команда завершилась с ошибкой'); assert.equal(x.errors.length, 1);
+    assert.equal(x.state().baseline, baseline); assert.equal(x.state().pending, true);
+    assert.equal(x.synopsis.value, 'newer B remains unsaved'); assert.equal(x.synopsis.selectionStart, 3);
+    assert.equal(x.timers.size, 0, 'a refused projection cannot automatically schedule B with a foreign baseline');
+  });
+});
+
+test('metadata stale observation requires complete typed raw projection before canonical comparison', async (t) => {
+  const malformed = {
+    missingSynopsis: r => { delete r.metadata.synopsis; }, badStatus: r => { r.metadata.status = null; },
+    missingPov: r => { delete r.metadata.tags.pov; }, badLine: r => { r.metadata.tags.line = 0; },
+    missingPlace: r => { delete r.metadata.tags.place; }, arrayMetadata: r => { r.metadata = []; },
+    arrayTags: r => { r.metadata.tags = []; }, noMetadata: r => { delete r.metadata; },
+    wrongProject: r => { r.context.projectId = 'foreign'; }, wrongDocument: r => { r.context.nodeId = 'foreign'; },
+    disabled: r => { r.context.metaEnabled = false; }, wrongKind: r => { r.context.kind = 'roman-section'; },
+    missingTitle: r => { delete r.context.title; }, upperHash: r => { r.contentHash = 'A'.repeat(64); },
+    missingHash: r => { delete r.contentHash; }, unavailable: r => { r.state = 'unavailable'; },
+    failed: r => { r.ok = false; }, missingOk: r => { delete r.ok; }, arrayContext: r => { r.context = []; },
+    noContext: r => { delete r.context; },
+  };
+  for (const [name, mutate] of Object.entries(malformed)) await t.test(name, async (t) => {
+    const x = await metadataReconciliationHarness(t);
+    // Empty tags are intentional: a missing field must not default to equality.
+    x.c.currentMeta = { synopsis: 'A', status: 'черновик', tags: { pov: '', line: '', place: '' } };
+    x.c.updateMetaInputs(false); x.input('A'); assert.equal((await x.saveWorking()).ok, true);
+    const before = await x.effect(), baseline = x.state().baseline;
+    x.ports.transform = r => { mutate(r); return r; };
+    await x.flush();
+    assert.deepEqual(await x.effect(), before); assert.equal(x.state().baseline, baseline);
+    assert.equal(x.finalStatus(), 'Команда завершилась с ошибкой'); assert.equal(x.state().pending, true);
+    assert.equal(x.queries.length, 2); assert.equal(x.timers.size, 0); assert.equal(x.errors.length, 1);
+  });
+});
+
+test('metadata reconciliation read errors retain actual refusal and working CAS without another write', async (t) => {
+  for (const failure of ['null', 'throw']) await t.test(failure, async (t) => {
+    const x = await metadataReconciliationHarness(t);
+    x.input(); await x.saveWorking(); const before = await x.effect(), baseline = x.state().baseline;
+    x.ports.transform = () => { if (failure === 'throw') throw Error('owned query unavailable'); return null; };
+    await x.flush();
+    assert.deepEqual(await x.effect(), before); assert.equal(x.state().baseline, baseline);
+    assert.equal(x.synopsis.value, 'Замысел é 🧭'); assert.equal(x.finalStatus(), 'Команда завершилась с ошибкой');
+  });
+});
+
+test('metadata newer B uses observed canonical A baseline through a real second strict CAS transaction', async (t) => {
+  const x = await metadataReconciliationHarness(t);
+  x.input('  A é 🧭  '); await x.saveWorking();
+  const gate = metadataDeferred(); x.ports.queryGate = gate;
+  const a = x.flush(); await x.waitFor(() => x.queries.length === 2);
+  const before = await x.effect();
+  x.input('  B é 🧭  ', 2); const pending = x.state(); x.fire();
+  await new Promise(setImmediate); assert.equal(x.commands.filter(c => c.id === 'cmd.project.metadata.update').length, 1);
+  gate.resolve(); await a;
+  assert.deepEqual(await x.effect(), before, 'readback adds no transaction, save acknowledgement or dirty clear');
+  assert.equal(x.state().baseline, sha256(before.raw)); assert.equal(x.state().pending, true);
+  assert.equal(x.synopsis.value, '  B é 🧭  '); assert.equal(x.synopsis.selectionStart, 2);
+  assert.deepEqual(x.state().meta, pending.meta); assert.equal(x.statuses.includes('Метаданные сохранены'), false, 'A never acknowledges B');
+  assert.equal(x.timers.size, 1); x.fire();
+  await x.waitFor(() => x.commands.filter(c => c.id === 'cmd.project.metadata.update').length === 2 && x.state().pending === false && x.finalStatus() === 'Метаданные сохранены');
+  const actual = await x.h.read(), command = x.commands.at(-1);
+  assert.equal(command.result.ok, true); assert.equal(command.payload.baselineHash, sha256(before.raw));
+  assert.equal(x.h.envelope.parseObservablePayload(actual).meta.synopsis, 'B é 🧭');
+  assert.equal(x.h.commit().sceneDigest, sha256(actual)); assert.equal(x.state().baseline, sha256(actual));
+  assert.equal(x.h.ports.transactions.length, before.transactions + 1);
+  assert.deepEqual(x.h.unit.state(), before.state); assert.deepEqual(await x.h.protectedState(), before.protected);
+  assert.equal(x.errors.length, 0); assert.equal(x.synopsis.value, '  B é 🧭  ');
+});
+
+test('metadata observation refuses stale form, context, away-back and later query publication', async (t) => {
+  for (const change of ['same IDs incoming', 'away back', 'project', 'document', 'later query']) await t.test(change, async (t) => {
+    const x = await metadataReconciliationHarness(t);
+    x.input('old A'); await x.saveWorking();
+    const gate = metadataDeferred(); x.ports.queryGate = gate;
+    const old = x.flush(); await x.waitFor(() => x.queries.length === 2);
+    if (change === 'later query') await x.c.refreshMetadataInspector();
+    else {
+      if (change === 'away back') x.c.collapseSelection();
+      if (change === 'project') x.c.currentProjectId = 'foreign project';
+      if (change === 'document') x.c.currentDocumentId = 'foreign document';
+      if (change === 'same IDs incoming' || change === 'away back') {
+        const parsed = x.h.envelope.parseObservablePayload(await x.h.read());
+        const incoming = { ...parsed.meta, synopsis: 'New canonical payload' };
+        assert.equal((await x.h.unit.fixtureRawCommit(x.h.envelope.composeObservablePayload({ ...parsed, metaEnabled: true, meta: incoming }))).success, true);
+        x.c.currentMeta = incoming; x.c.metaEnabled = true;
+      }
+      x.c.updateMetaInputs(false);
+      if (change === 'same IDs incoming' || change === 'away back') await x.c.refreshMetadataInspector();
+    }
+    const before = x.state(), statuses = [...x.statuses], effect = await x.effect(), value = x.synopsis.value;
+    gate.resolve(); await old;
+    assert.deepEqual(x.state(), before); assert.deepEqual(x.statuses, statuses); assert.deepEqual(await x.effect(), effect);
+    assert.equal(x.synopsis.value, value); assert.equal(x.errors.length, 0);
+    if (change === 'same IDs incoming' || change === 'away back') assert.equal(value, 'New canonical payload');
+  });
+});
+
+test('metadata private deferral does not silence other typed failures or unrelated command errors', async (t) => {
+  const x = await metadataReconciliationHarness(t);
+  x.input(); await x.saveWorking();
+  x.ports.commandTransform = result => ({ ...result, value: { ...result.value, reason: 'METADATA_OTHER_FAILURE' } });
+  const before = await x.effect(); await x.flush();
+  assert.equal(x.errors.length, 1); assert.equal(x.finalStatus(), 'Команда завершилась с ошибкой');
+  assert.deepEqual(await x.effect(), before);
+  const result = await x.c.dispatchUiCommand('cmd.not.registered', {}, { deferMetadataError: true });
+  assert.equal(result.ok, false); assert.equal(x.errors.length, 2); assert.ok(x.finalStatus());
+  // Consume the actual dispatcher and bus with finite typed runner errors;
+  // these are error-presentation ports, never Main/Kernel decisions or writes.
+  const stale = { code: 'E_COMMAND_FAILED', op: 'cmd.project.metadata.update', reason: 'METADATA_UPDATE_STALE_CONTEXT' };
+  const cases = [
+    ['cmd.project.save', stale],
+    ['cmd.project.metadata.update', { ...stale, code: 'E_IO_WRITE' }],
+    ['cmd.project.metadata.update', { ...stale, op: 'cmd.project.save' }],
+    ['cmd.project.metadata.update', { ...stale, reason: 'METADATA_UPDATE_UNSUPPORTED' }],
+  ];
+  for (const [id, error] of cases) {
+    x.c.runCommand = async () => ({ ok: false, error });
+    const count = x.errors.length;
+    const refusal = await x.c.dispatchUiCommand(id, {}, { deferMetadataError: true });
+    assert.equal(refusal.ok, false); assert.deepEqual(refusal.error, error);
+    assert.equal(x.c.statusElement.style.visibility, 'visible'); assert.ok(x.finalStatus());
+    assert.equal(x.c.heldCommandStatusMessage, true);
+    assert.equal(x.errors.length, count + (x.c.mapCommandErrorToUi(error).severity === 'ERROR' ? 1 : 0));
+  }
+  assert.deepEqual(await x.effect(), before);
+});

@@ -1,3 +1,63 @@
+# Metadata Save reconciliation checkpoint in PR2145 — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: UNACCEPTED_SOURCE_CHECKPOINT_REQUIRED_CALLER_CONTRACT_OPEN
+BINDING_BASE_SHA: 0e8b97f689e7b477456053392fd59f12745b5996
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Same unfinished native clipboard outcome; source tests only, no native or delivery acceptance.
+
+Actual0e8 warm/cold processes exit0, canonical scene/metadata/map/node survive,
+and all14 prior project files are byte-exact on cold reopen with11 additional
+empty directories. Whole162warm175cold profiles are retained. Immediate synopsis
+Paste then Save nevertheless leaves a generic command error after durable Save.
+Diagnostic03 on actual renderer/commands/Main/Core reproduces Save before delayed
+metadata strictCAS refusal; reverse order succeeds. Exact native failing command
+was not captured, so its attribution remains an explicitly causal inference.
+Full0e8 npm baseline actual0 executes2518pass and59existing skips among2577cases;
+its wrapper91 only reflects six proven new synthetic harness files, preserved,
+readmatched and isolated with same-device inode retention. It is old-head evidence.
+
+Fresh clean0e8 declaration/preflight/taskE0 precede the renderer amendment. The
+unchanged-runtime acceptance RED preserves37old passing cases and fails exactly
+the false generic status. Current renderer defers only the exact typed metadata
+stale result and observes full already-persisted metadata through the existing
+read-only query, with project/document/form/request/order and raw schema guards.
+It never manufactures a receipt, Save acknowledgement, writer retry or dirty clear.
+Different metadata retains refusal and pending working text; it cannot adopt a
+foreign baseline and automatically overwrite it. Newer B retains raw caret and
+whitespace and persists by its own real strictCAS transaction after A completes.
+Main/Core/preload/IPC/command wrappers/normalizers and593 held source inputs remain.
+
+The complete metadata file executes77of77,0fail/cancel/skip/todo. Original1009lines
+and all37old cases remain byte-exact;252lines appended,103renderer lines changed.
+Whole11file focused pack executes127of128: the sole remaining failure is the
+preload bridge contract's exact old two-argument metadata-call literal. Its
+pathless payload and forbidden-path assertions remain untouched. The new private
+third presentation option changes no transport authority. The extra test is not
+admitted by the original21path declaration and has not been edited. A supplemental
+preflight correctly refused the dirty worktree; its nonzero receipt remains.
+This normal local checkpoint preserves the originally admitted source and current
+bindings, with that required finding OPEN; a fresh clean exact-base declaration
+and task amendment are required before editing the additional test. No source is
+retagged, no failed gate is bypassed, and no push/native/merge acceptance is claimed.
+
+Actual normal bundle build exits0; read-only wrapper91 reflects only the expected
+editor bundle delta. Original build receipt and independent bundle readback remain.
+Initial missing-helper, Core-success-shape/caret-helper and invalid-command fixture
+failures are preserved separately from the causal RED and final77case execution.
+DATA746/source599/certificate257plus1guard/inventory1603 memberships, historical
+certificate tuples/predicates, graph/V1/V2, classifications/lanes/skips remain.
+Root current hashes/witnesses and factual prefix do not create stage or release authority.
+
+Next: close the explicitly bounded caller contract on a freshly admitted clean
+checkpoint, then complete final25file affected/gates and rebuilt native immediate
+Paste+Save/normalQuit/cold/raw/full-profile journey before next push. Full baseline,
+official CI/full maintained RTK, normal merge and exact merged proof remain required.
+Full Mac Atlas/maps/WSE/Pulse/epochs, input CmdA/fullIME/numeric metrics and release
+qualification remain open. Black Box follows release. Preserve owner app and all
+old profiles; only fresh owned synthetic APFS runtime with final T777 preservation.
+
 # Native metadata transaction correction in PR2145 — 2026-10-22
 
 TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022

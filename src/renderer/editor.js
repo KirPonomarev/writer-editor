@@ -8094,12 +8094,14 @@ function withEditorModeCommandPayload(payload = {}) {
   };
 }
 
-async function dispatchUiCommand(commandId, payload = {}) {
+async function dispatchUiCommand(commandId, payload = {}, options = {}) {
   updateStatusText('', { clear: true });
   const result = await runCommandThroughBus(runCommand, commandId, withEditorModeCommandPayload(payload), {
     route: COMMAND_BUS_ROUTE,
   });
-  if (!result.ok) {
+  const deferredMetadataError = options.deferMetadataError === true
+    && commandId === METADATA_UPDATE_COMMAND_ID && isMetadataUpdateStaleResult(result);
+  if (!result.ok && !deferredMetadataError) {
     const mapped = mapCommandErrorToUi(result.error);
     updateStatusText(mapped.userMessage, { visible: true });
     if (mapped.severity === 'ERROR') {
@@ -12227,6 +12229,36 @@ function getMetadataUpdatePayload() {
   };
 }
 
+function presentUiCommandError(error) {
+  const mapped = mapCommandErrorToUi(error);
+  updateStatusText(mapped.userMessage, { visible: true });
+  if (mapped.severity === 'ERROR') {
+    const opSuffix = mapped.op ? ` op=${mapped.op}` : '';
+    console.error(`UI_COMMAND_ERROR code=${mapped.code}${opSuffix}`);
+  }
+}
+
+
+function isMetadataUpdateStaleResult(result) {
+  return result?.ok === false && result.error?.code === 'E_COMMAND_FAILED'
+    && result.error?.op === METADATA_UPDATE_COMMAND_ID && result.error?.reason === 'METADATA_UPDATE_STALE_CONTEXT';
+}
+
+function observeCanonicalMetadataIntent(raw, payload) {
+  const record = (value) => value && typeof value === 'object' && !Array.isArray(value);
+  if (!record(raw) || raw.ok !== true || raw.state !== 'ready'
+    || !record(raw.context) || raw.context.projectId !== payload.projectId || raw.context.nodeId !== payload.nodeId
+    || !['scene', 'chapter-file'].includes(raw.context.kind) || raw.context.metaEnabled !== true
+    || typeof raw.context.title !== 'string' || typeof raw.contentHash !== 'string' || !/^[a-f0-9]{64}$/u.test(raw.contentHash)
+    || !record(raw.metadata) || !record(raw.metadata.tags)
+    || !['synopsis', 'status'].every((key) => typeof raw.metadata[key] === 'string')
+    || !['pov', 'line', 'place'].every((key) => typeof raw.metadata.tags[key] === 'string')) return null;
+  const desired = parseObservablePayload(composeObservablePayload({ metaEnabled: true, meta: payload.metadata })).meta;
+  const sameMetadata = raw.metadata.synopsis === desired.synopsis && raw.metadata.status === desired.status
+    && ['pov', 'line', 'place'].every((key) => raw.metadata.tags[key] === desired.tags[key]);
+  return sameMetadata ? { kind: 'CANONICAL_METADATA_ALREADY_CURRENT', contentHash: raw.contentHash } : null;
+}
+
 async function flushMetadataUpdate() {
   clearPendingMetadataUpdate();
   if (metadataUpdateInFlight) return;
@@ -12235,31 +12267,60 @@ async function flushMetadataUpdate() {
   const generation = metadataFormGeneration;
   const editGeneration = metadataEditGeneration;
   const request = { generation, projectId: payload.projectId, nodeId: payload.nodeId };
+  const isCurrent = () => metadataUpdateInFlight === request && generation === metadataFormGeneration
+    && payload.projectId === currentProjectId && payload.nodeId === currentDocumentId;
   metadataUpdateInFlight = request;
   metadataQuerySequence += 1;
   metadataUpdatePending = false;
-  let result;
+  let reschedulePending = false;
   try {
-    result = await dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload);
-  } finally {
-    if (metadataUpdateInFlight === request) metadataUpdateInFlight = null;
-  }
-  if (generation !== metadataFormGeneration || payload.projectId !== currentProjectId || payload.nodeId !== currentDocumentId) return;
-  if (!result || result.ok !== true) {
-    updateStatusText('Метаданные не сохранены');
+    const result = await dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload, { deferMetadataError: true });
+    if (!isCurrent()) return;
+    if (!result || result.ok !== true) {
+      if (isMetadataUpdateStaleResult(result)) {
+        const sequence = ++metadataQuerySequence;
+        let projection;
+        try {
+          projection = await invokeWorkspaceQueryBridge(METADATA_INSPECTOR_QUERY_ID, {
+            projectId: payload.projectId, nodeId: payload.nodeId,
+          });
+        } catch { /* Keep the original typed refusal when readback is unavailable. */ }
+        if (!isCurrent() || sequence !== metadataQuerySequence) return;
+        const observation = observeCanonicalMetadataIntent(projection, payload);
+        if (observation) {
+          // This is readback, never a write receipt or a scene-save acknowledgement.
+          currentMetadataBaselineHash = observation.contentHash;
+          if (editGeneration === metadataEditGeneration) updateStatusText('Метаданные сохранены');
+          if (metadataUpdatePending) reschedulePending = true;
+        } else {
+          // Do not adopt a foreign CAS baseline or schedule a pending edit over it.
+          clearPendingMetadataUpdate();
+          metadataUpdatePending = true;
+          presentUiCommandError(result.error);
+        }
+        return;
+      }
+      updateStatusText('Метаданные не сохранены');
+      await refreshMetadataInspector();
+      return;
+    }
+    const receipt = result.value?.receipt && typeof result.value.receipt === 'object' && !Array.isArray(result.value.receipt)
+      ? result.value.receipt
+      : null;
+    if (receipt && typeof receipt.contentHashAfter === 'string' && /^[a-f0-9]{64}$/u.test(receipt.contentHashAfter)) {
+      currentMetadataBaselineHash = receipt.contentHashAfter;
+    }
+    // A valid same-session receipt rebases a newer pending edit's CAS; it must
+    // not acknowledge that newer working value as already saved.
+    if (editGeneration === metadataEditGeneration) updateStatusText('Метаданные сохранены');
     await refreshMetadataInspector();
-    return;
+  } finally {
+    if (metadataUpdateInFlight === request) {
+      const scheduleCurrent = reschedulePending && isCurrent() && metadataUpdatePending;
+      metadataUpdateInFlight = null;
+      if (scheduleCurrent) scheduleMetadataUpdate();
+    }
   }
-  const receipt = result.value?.receipt && typeof result.value.receipt === 'object' && !Array.isArray(result.value.receipt)
-    ? result.value.receipt
-    : null;
-  if (receipt && typeof receipt.contentHashAfter === 'string' && /^[a-f0-9]{64}$/u.test(receipt.contentHashAfter)) {
-    currentMetadataBaselineHash = receipt.contentHashAfter;
-  }
-  // A valid same-session receipt rebases a newer pending edit's CAS; it must
-  // not acknowledge that newer working value as already saved.
-  if (editGeneration === metadataEditGeneration) updateStatusText('Метаданные сохранены');
-  await refreshMetadataInspector();
 }
 
 function scheduleMetadataUpdate() {

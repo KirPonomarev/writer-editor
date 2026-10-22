@@ -994,7 +994,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "d96e3fe6841121ec904b68c6a77c4b8d4a2c58c380ce0b048b286a975e915054"
+        "sha256": "9a3fb76b2e6ac9a0ad5fda9ecd3b2ba6d2983d257a1ebac22b6385837abdc123"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1158,7 +1158,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "457f3dee9f503e313baa7172e1d60fe061538e57496f65cc1fdbdabdbcd34954"
+        "sha256": "f9d5e47ddb52e4326502ef6737a3080923ddef78d784f3a55d087daaf5b2ee7b"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1718,7 +1718,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "3992e64d8e46127274c8397f242c0dd71f4393a9e49e47056f325f3071a61397"
+        "sha256": "31ff7225dae1a489847b4d8f110b6753bb5d13c57e84c6d870d1fb70621ceb84"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2278,7 +2278,7 @@
       },
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
-        "sha256": "84264434f624dbf40b260eb6119c11c262c6c887adf58f2f8139f1c772eb1089"
+        "sha256": "425748a7678cfab0f5471f55cffeeab64eff0bb79c27337e8c4ad767b06d0744"
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
@@ -2674,15 +2674,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "02ed565ad800b08d0eae1c68b6f247de539cf343246992ccf531829ed0752a3d"
+        "sha256": "97ea8ec34dd91d56ea87f9dc977575f1a48e92316a4f4df803d182663325a164"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "28dabfbfa466b36db14ed8fc85141dabcf19b6848384d7d46c21247aaf833d4b"
+        "sha256": "cba5594ef56566fbcee20cdc075bbb13b23f192990406e995932192e24154f44"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "cc714017d3dee3052303f4f85d9be068767d3af4415a656fc01859c711a12e53"
+        "sha256": "69e8e3990fff0a1c1b8df202c7ac0f995c9726acd6f23c4451f700c3de032e96"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3222,7 +3222,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "b8a97d213f891c290ab185f2331f4c38cab868053728ea4e854e91189fcef5a3"
+        "sha256": "a1d287e1841bbf6c1470fc32ef5be5055b2a8125b7072588e659df3ac8a38f9a"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3362,7 +3362,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
-        "sha256": "19b9297227fceddca5b3317aa817e791f48e836e8bce7b28dd59bc949a3c6346"
+        "sha256": "7b28b0ffc92897c0bb2802fc3770d34ffb5630ee85c83a0e23bcf7092c32fe65"
       },
       {
         "path": "test/unit/paste-focus-signal.test.js",
