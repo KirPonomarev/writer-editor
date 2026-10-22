@@ -261,8 +261,14 @@ const macHash = bytes => createHash('sha256').update(bytes).digest('hex');
 const macCopy = value => JSON.parse(JSON.stringify(value));
 async function macInputs() {
   const api = await macModule;
-  return { api, cut: readJson(MAC_CUT_PATH), sources: Object.fromEntries(Object.keys(api.FIRST_MAC_RELEASE_SOURCE_PINS)
-    .map(source => [source, fs.readFileSync(path.join(REPO_ROOT, source))])) };
+  // Historical V1 policy binds exactly69be; current full-Mac evidence uses the
+  // separately pinned V2 reader. Git blobs cannot acquire current readiness.
+  return { api, cut: readJson(MAC_CUT_PATH), sources: Object.fromEntries(Object.entries(api.FIRST_MAC_RELEASE_SOURCE_PINS)
+    .map(([source, pin]) => {
+      const historical = spawnSync('git', ['show', '69be91c23848e3931c448abaf1f453c7c6f7673d:' + source], { cwd: REPO_ROOT, maxBuffer: 8 * 1024 * 1024 });
+      assert.equal(historical.status, 0, source); assert.equal(macHash(historical.stdout), pin, source);
+      return [source, historical.stdout];
+    })) };
 }
 function macVerify(input, cut = input.cut, sources = input.sources) {
   const cutBytes = Buffer.from(input.api.canonicalFirstMacReleaseCutV1(cut));
@@ -486,4 +492,203 @@ test('first Mac inherited evidence policy cannot replace original contracts with
   await t.test('missing inherited contract policy', child => macRefused(child, input, 'missing inherited contract policy', c => { delete c.traceability.inheritedEvidencePolicy; }, /^E_FIRST_MAC_TRACEABILITY$/));
   await t.test('weakened inherited contract policy', child => macRefused(child, input, 'weakened inherited contract policy', c => { c.traceability.inheritedEvidencePolicy = 'S07_REPLACES_ALL_BASELINE_EVIDENCE'; }, /^E_FIRST_MAC_TRACEABILITY$/));
   assert.equal(input.api.readFirstMacReleaseCutV1({ repoRoot: REPO_ROOT + '/docs/..', cutPath: MAC_CUT_PATH, expectedCutSha256: macHash(fs.readFileSync(MAC_CUT_PATH)) }).error, 'E_FIRST_MAC_INPUT_PATH');
+});
+
+// Full-Mac V2: current policy is independent of the historical V1 fixture.
+async function fullMacInputs() {
+  const api = await macModule;
+  return { api, cut: readJson(path.join(REPO_ROOT, 'docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json')),
+    sources: Object.fromEntries(Object.keys(api.FIRST_MAC_RELEASE_V2_SOURCE_PINS).map(source => [source, fs.readFileSync(path.join(REPO_ROOT, source))])) };
+}
+function fullMacVerify(input, cut = input.cut, sources = input.sources) {
+  const cutBytes = Buffer.from(input.api.canonicalFirstMacReleaseCutV2(cut));
+  return input.api.verifyFirstMacReleaseCutV2({ cutBytes, expectedCutSha256: macHash(cutBytes), sources });
+}
+function fullMacRefused(t, input, label, mutate, code, sources = input.sources) {
+  const cut = macCopy(input.cut); mutate(cut); const result = fullMacVerify(input, cut, sources);
+  assert.equal(result.scopeValidity, 'INVALID', label); assert.equal(result.readiness, 'NOT_READY', label);
+  for (const key of ['programDone', 'signingAuthority', 'notarizationAuthority', 'publicationAuthority', 'releaseAuthorityGranted', 'qualificationPerformed']) assert.equal(result[key], false, label);
+  assert.equal(result.token, undefined); if (code) assert.match(result.error, code, label);
+  t.diagnostic(JSON.stringify({ label, error: result.error }));
+}
+const FULL_MAC_SCOPES = ['fragment-or-selected-node', 'scene', 'book'];
+const FULL_MAC_DIMENSIONS = ['associations', 'plot-threads', 'knowledge', 'time', 'promises'];
+
+test('full Mac V2 derives the complete original dependency cut while every qualification remains unknown', async () => {
+  const input = await fullMacInputs(), cut = input.cut, program = JSON.parse(input.sources['docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json']);
+  assert.equal(program.nodes.length, 109); assert.equal(program.nodes.reduce((n, row) => n + row.dependsOn.length, 0), 171);
+  const roots = ['WP-305_MINIMUM_INTERCHANGE', 'WP-709_MIXED_CHAINS', 'WP-902_ENTITLEMENT_PRODUCT', 'WP-906_RELEASE_VERDICT', 'WP-607_WSE_CLAIMS', 'WP-806_PULSE_CLAIM'];
+  const nodes = new Map(program.nodes.map(row => [row.id, row])), found = new Set(), queue = [...roots];
+  while (queue.length) { const id = queue.shift(); if (!found.has(id)) { found.add(id); queue.push(...nodes.get(id).dependsOn); } }
+  const tuples = [...found].sort().flatMap(dependent => nodes.get(dependent).dependsOn.map(prerequisite => `${dependent}\0${prerequisite}`));
+  assert.equal(found.size, 99); assert.equal(tuples.length, 159); assert.deepEqual(cut.traceability.roots, roots);
+  assert.deepEqual(cut.traceability.nodeIds, [...found].sort());
+  assert.deepEqual(cut.traceability.edges.map(row => `${row.dependent}\0${row.prerequisite}`), tuples);
+  assert.deepEqual(cut.applicability.map(row => row.id), Array.from({ length: 12 }, (_, i) => 'S' + String(i + 1).padStart(2, '0')));
+  assert.deepEqual(cut.fullProductScope.planParts, ['P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19']);
+  assert.deepEqual(cut.fullProductScope.atlas.stages.map(row => row.stageId), Array.from({ length: 12 }, (_, i) => String(i).padStart(2, '0')));
+  assert.deepEqual(cut.fullProductScope.atlas.analyticalCells, FULL_MAC_SCOPES.flatMap(scope => FULL_MAC_DIMENSIONS.map(dimension => ({ scope, dimension }))));
+  assert.deepEqual(cut.fullProductScope.atlas.projections, ['Plot', 'Idea', 'Meaning', 'Atlas']);
+  assert.deepEqual(cut.fullProductScope.atlas.languageModes, ['GLOBAL', 'BASIC', 'DEEP']);
+  assert.equal(cut.fullProductScope.wseProgramNodes.length, 8); assert.equal(cut.fullProductScope.pulseProgramNodes.length, 7);
+  assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
+  assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
+  assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_V2'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.deepEqual(cut.profiles.runtime.admittedCommandIds, ['manualMap.create', 'manualMap.node.add']);
+  const result = fullMacVerify(input);
+  assert.equal(result.scopeValidity, 'VALID', JSON.stringify(result)); assert.equal(result.readiness, 'NOT_READY');
+  assert.equal(result.missingQualification.length, 17); assert.equal(result.candidate.status, 'UNFROZEN');
+  assert.equal(result.qualificationPerformed, false); assert.equal(result.releaseAuthorityGranted, false); assert.equal(result.programDone, false);
+  assert.equal(Object.isFrozen(result.missingQualification[0]), true); assert.equal(result.token, undefined);
+  assert.equal((await macInputs()).cut.traceability.edges.length, 120);
+});
+
+test('full Mac V2 refuses each missing dependency and every S01-S12 applicability after resealing', async t => {
+  const input = await fullMacInputs();
+  for (let i = 0; i < 159; i++) await t.test(`edge ${i + 1}`, child => fullMacRefused(child, input, `edge ${i + 1}`, c => c.traceability.edges.splice(i, 1), /^E_FULL_MAC_TRACEABILITY$/));
+  for (let i = 0; i < 12; i++) await t.test(`applicability ${i + 1}`, child => fullMacRefused(child, input, `applicability ${i + 1}`, c => c.applicability.splice(i, 1), /^E_FULL_MAC_APPLICABILITY$/));
+  for (const [label, mutate] of [
+    ['same-count duplicate edge', c => { c.traceability.edges[0] = macCopy(c.traceability.edges[1]); }],
+    ['waived inherited duty', c => { c.traceability.edges[0].proofObligations = []; }],
+    ['altered disposition', c => { c.traceability.edges[0].disposition = 'deferred'; }],
+    ['foreign original prerequisite', c => { c.traceability.edges[0].prerequisite = 'FORGED'; }],
+    ['source closure as full completion', c => { c.traceability.originalNodeCount = 99; c.traceability.originalEdgeCount = 159; }],
+    ['lost original evidence contract', c => { delete c.traceability.inheritedEvidencePolicy; }],
+    ['supplement replaces original', c => { c.traceability.inheritedEvidencePolicy = 'S07_REPLACES_ALL_BASELINE'; }],
+    ['new completion program', c => { c.traceability.completionPolicy = 'SCOPED_PROGRAM_DONE'; }],
+  ]) await t.test(label, child => fullMacRefused(child, input, label, mutate, /^E_FULL_MAC_TRACEABILITY$/));
+});
+
+test('full Mac V2 consumes all stages cells projections WSE Pulse language epochs and full workload', async t => {
+  const input = await fullMacInputs();
+  for (const [key, count] of [['stages', 12], ['analyticalCells', 15], ['projections', 4], ['languageModes', 3]])
+    for (let i = 0; i < count; i++) await t.test(`${key} ${i + 1}`, child => fullMacRefused(child, input, `${key} ${i + 1}`, c => c.fullProductScope.atlas[key].splice(i, 1), /^E_FULL_MAC_PRODUCT_SCOPE$/));
+  for (const [key, count] of [['wseProgramNodes', 8], ['pulseProgramNodes', 7], ['planParts', 8]])
+    for (let i = 0; i < count; i++) await t.test(`${key} ${i + 1}`, child => fullMacRefused(child, input, `${key} ${i + 1}`, c => c.fullProductScope[key].splice(i, 1), /^E_FULL_MAC_PRODUCT_SCOPE$/));
+  const mutations = [
+    ['same-count substituted cell', c => { c.fullProductScope.atlas.analyticalCells[0] = macCopy(c.fullProductScope.atlas.analyticalCells[1]); }],
+    ['same-count substituted stage', c => { c.fullProductScope.atlas.stages[0] = macCopy(c.fullProductScope.atlas.stages[1]); }],
+    ['stage completed by schema', c => { c.fullProductScope.atlas.stages[0].qualification = 'PASS'; }],
+    ['projection counted as cell', c => { c.fullProductScope.atlas.projectionsAreDistinctFromAnalyticalCells = false; }],
+    ['historical lease resumed', c => { c.fullProductScope.atlas.executionAuthority = 'RESUME_STAGE_00'; }],
+    ['original stage obligations lost', c => { delete c.fullProductScope.atlas.stageContracts; }],
+    ['silent language fallback', c => { c.fullProductScope.atlas.languageAdmission = 'GLOBAL_ONLY'; }],
+    ['lost decision memory', c => { delete c.fullProductScope.decisionMemory; }],
+    ['invented environment node', c => { c.fullProductScope.environmentEpochs.workItem = 'NEW_ENV_NODE'; }],
+    ['epoch rewrite', c => { c.fullProductScope.environmentEpochs.policy = 'REPLACE_HISTORY'; }],
+    ['history truncation', c => { c.fullProductScope.environmentEpochs.pulseHistoryTruncation = true; }],
+    ['missing ENV-EPOCH-01', c => { delete c.fullProductScope.environmentEpochs; }],
+    ['proxy workload acceptance', c => { c.fullProductScope.workload.proxyTimingAccepted = true; }],
+    ['Writer-only measured state', c => { c.fullProductScope.workload.state = ['Writer']; }],
+  ];
+  for (let i = 0; i < 13; i++) mutations.push([`lost PERF-${i + 1}`, c => c.fullProductScope.workload.metricIds.splice(i, 1)]);
+  for (const [label, mutate] of mutations) await t.test(label, child => fullMacRefused(child, input, label, mutate, /^E_FULL_MAC_PRODUCT_SCOPE$/));
+});
+
+test('full Mac V2 protects all ordinary safety interchange review and unknown qualification rows', async t => {
+  const input = await fullMacInputs();
+  for (let i = 0; i < 8; i++) await t.test(MAC_DIRECTIONS[i], child => fullMacRefused(child, input, MAC_DIRECTIONS[i], c => c.minimumInterchange.routes.splice(i, 1), /^E_FULL_MAC_INTERCHANGE$/));
+  for (let i = 0; i < 14; i++) await t.test(MAC_REVIEW[i], child => fullMacRefused(child, input, MAC_REVIEW[i], c => c.profiles.reviewCommandExceptions.splice(i, 1), /^E_FULL_MAC_PROFILES$/));
+  for (let i = 0; i < 17; i++) await t.test(`MAC-${i + 1}`, child => fullMacRefused(child, input, `ledger ${i + 1}`, c => c.qualification.splice(i, 1), /^E_FULL_MAC_LEDGER$/));
+  for (let i = 0; i < input.cut.protectedRequirements.length; i++) await t.test(input.cut.protectedRequirements[i], child => fullMacRefused(child, input, input.cut.protectedRequirements[i], c => c.protectedRequirements.splice(i, 1), /^E_FULL_MAC_REQUIREMENTS$/));
+  for (const key of Object.keys(input.cut.qualificationPolicy)) await t.test(key, child => fullMacRefused(child, input, key, c => { delete c.qualificationPolicy[key]; }, /^E_FULL_MAC_QUALIFICATION_POLICY$/));
+  const mutations = [
+    ['V1 profile substitute', c => { c.profiles.runtime = require('../../src/core/writer-local-profile-v1.cjs').createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' }); }],
+    ['blanket optional admission', c => { c.profiles.runtime.optionalSystemsEnabled = true; }],
+    ['old OPS PASS', c => { c.profiles.writerOps = 'WRITER_CORE_PASS'; }],
+    ['all green without current evidence', c => c.qualification.forEach(row => { row.status = 'PASS'; })],
+    ['historical proof promoted', c => { c.qualification[0].historicalProof.currentCandidateAcceptance = true; }],
+    ['lost independent oracle', c => { c.qualification[13].independentOracle = ''; }],
+    ['unknown gap erased', c => { c.qualification[16].missingCurrentProof = ''; }],
+    ['ownerApproved boolean', c => { c.ownerApproved = true; }], ['fake artifact proof', c => { c.physicalEvidence = { allGreen: true, independent: true }; }],
+    ['PRO tier admission', c => { c.entitlement.policyId = 'PRO_ENABLED'; }],
+    ['enabled encrypted feature deferred', c => { c.deferredCapabilities.newEncryptedProduct.enabled = true; }],
+    ['Atlas WSE Pulse deferred', c => { c.deferredCapabilities.newAtlasWsePulse = 'DEFERRED'; }],
+    ['narrow visible-only duty', c => { c.capabilityPolicy = 'VISIBLE_COMMANDS_ONLY'; }],
+    ['token promotion', c => { c.token = { RELEASE_CANDIDATE_LOCK_MATCH_OK: 1 }; }],
+  ];
+  for (const key of Object.keys(input.cut.authority)) mutations.push([key, c => { c.authority[key] = true; }]);
+  for (const key of ['headSha', 'treeSha', 'buildId', 'artifactSha256']) mutations.push([`frozen ${key}`, c => { c.candidate[key] = 'a'.repeat(64); }]);
+  for (const [label, mutate] of mutations) await t.test(label, child => fullMacRefused(child, input, label, mutate));
+});
+
+test('full Mac V2 uses independent current source pins and refuses each omission byte change and joint reseal', async t => {
+  const input = await fullMacInputs(), paths = Object.keys(input.api.FIRST_MAC_RELEASE_V2_SOURCE_PINS);
+  assert.equal(paths.length, 66); assert.notDeepEqual(input.cut.sourceBindings, input.api.FIRST_MAC_RELEASE_SOURCE_PINS);
+  for (const source of paths) await t.test(source, child => {
+    const sources = { ...input.sources, [source]: Buffer.concat([input.sources[source], Buffer.from('\n// untrusted source change\n')]) };
+    fullMacRefused(child, input, 'byte changed:' + source, () => {}, /^E_FULL_MAC_SOURCE_DRIFT:/u, sources);
+    fullMacRefused(child, input, 'joint reseal:' + source, c => { c.sourceBindings[source] = macHash(sources[source]); }, /^E_FULL_MAC_SOURCE_BINDINGS$/u, sources);
+    const omitted = { ...input.sources }; delete omitted[source];
+    fullMacRefused(child, input, 'omitted:' + source, () => {}, /^E_FULL_MAC_SOURCES$/u, omitted);
+  });
+  fullMacRefused(t, input, 'forged source path', c => { c.sourceBindings['../../private/foreign'] = '0'.repeat(64); }, /^E_FULL_MAC_SOURCE_BINDINGS$/u);
+  const v1 = await macInputs();
+  assert.equal(fullMacVerify(input, v1.cut).scopeValidity, 'INVALID');
+  assert.equal(macVerify(v1).scopeValidity, 'VALID', 'historical V1 remains valid only against its own exact inputs');
+  assert.match(input.api.readFirstMacReleaseCutV1({ repoRoot: REPO_ROOT, cutPath: MAC_CUT_PATH, expectedCutSha256: macHash(fs.readFileSync(MAC_CUT_PATH)) }).error, /^E_FIRST_MAC_SOURCE_DRIFT:/u);
+});
+
+test('full Mac V2 rejects malformed canonical input and refuses all effectful or mixed CLI modes', async t => {
+  const input = await fullMacInputs(), bytes = Buffer.from(input.api.canonicalFirstMacReleaseCutV2(input.cut));
+  const bad = [['duplicate', Buffer.from(bytes.toString().replace('{', '{"cutId":"forged",'))], ['space', Buffer.concat([bytes, Buffer.from(' ')])],
+    ['BOM', Buffer.concat([Buffer.from([239, 187, 191]), bytes])], ['UTF8', Buffer.from([123, 34, 255, 34, 125])],
+    ['empty', Buffer.alloc(0)], ['huge', Buffer.alloc(1024 * 1024 + 1)], ['array', Buffer.from('[]\n')], ['JSON', Buffer.from('{')]];
+  for (const [label, cutBytes] of bad) await t.test(label, () => {
+    const result = input.api.verifyFirstMacReleaseCutV2({ cutBytes, expectedCutSha256: macHash(cutBytes), sources: input.sources });
+    assert.equal(result.scopeValidity, 'INVALID'); assert.equal(result.readiness, 'NOT_READY'); assert.equal(result.releaseAuthorityGranted, false);
+  });
+  for (const pin of [undefined, '', '0'.repeat(64), 'A'.repeat(64)]) assert.equal(input.api.verifyFirstMacReleaseCutV2({ cutBytes: bytes, expectedCutSha256: pin, sources: input.sources }).error, 'E_FULL_MAC_CUT_PIN');
+  const fixture = macFixture(input);
+  try {
+    const before = macRoster(fixture.root), args = ['--verify-first-mac-cut-v2', '--cut', fixture.cutPath, '--cut-sha256', fixture.pin, '--repo-root', fixture.root, '--json'];
+    const read = input.api.readFirstMacReleaseCutV2({ repoRoot: fixture.root, cutPath: fixture.cutPath, expectedCutSha256: fixture.pin });
+    const run = runReleaseCandidate(args, fixture.root); assert.equal(run.status, 0, run.stdout + run.stderr); assert.deepEqual(parseJsonOutput(run), read);
+    assert.equal(read.scopeValidity, 'VALID'); assert.equal(read.readiness, 'NOT_READY'); assert.equal(read.missingQualification.length, 17);
+    for (const extra of [['--create'], ['--verify'], ['--mode', 'promotion'], ['--mode', 'release'], ['--verify-first-mac-cut'],
+      ['--lock-path', fixture.cutPath], ['--evidence-root', fixture.root], ['--json'], ['--verify-first-mac-cut-v2'], ['--unknown']]) {
+      const badRun = runReleaseCandidate([...args, ...extra], fixture.root); assert.notEqual(badRun.status, 0);
+      const result = parseJsonOutput(badRun); assert.equal(result.scopeValidity, 'INVALID'); assert.equal(result.readiness, 'NOT_READY');
+      assert.equal(result.token, undefined); assert.equal(result.releaseAuthorityGranted, false);
+    }
+    assert.deepEqual(macRoster(fixture.root), before, 'scope query creates no locks doctor results evidence or tokens');
+  } finally { fixture.cleanup(); }
+});
+
+test('full Mac V2 no-follow reader fences the complete captured input and validates paths before opening sources', async () => {
+  const input = await fullMacInputs(), fixture = macFixture(input);
+  const read = (root = fixture.root, cut = fixture.cutPath, pin = fixture.pin) => input.api.readFirstMacReleaseCutV2({ repoRoot: root, cutPath: cut, expectedCutSha256: pin });
+  try {
+    const link = path.join(fixture.root, 'linked-cut'); fs.symlinkSync(fixture.cutPath, link); assert.equal(read(fixture.root, link).scopeValidity, 'INVALID');
+    const parent = path.join(fixture.root, 'linked-parent'); fs.symlinkSync(fixture.root, parent, 'dir'); assert.equal(read(parent).scopeValidity, 'INVALID');
+    const paths = Object.keys(input.sources), first = path.join(fixture.root, paths[0]), last = path.join(fixture.root, paths.at(-1));
+    const original = fs.readFileSync(first); fs.unlinkSync(first); fs.symlinkSync(fixture.cutPath, first);
+    assert.equal(read().scopeValidity, 'INVALID'); fs.unlinkSync(first); fs.writeFileSync(first, original);
+    let consumed = 0; const open = fs.openSync;
+    try {
+      fs.openSync = function(file, ...args) { const fd = open.call(this, file, ...args);
+        if (file === last && consumed === 0) { consumed++; fs.appendFileSync(first, ' '); } return fd; };
+      assert.equal(read().error, 'E_FULL_MAC_SOURCE_CAPTURE_STALE'); assert.equal(consumed, 1);
+    } finally { fs.openSync = open; }
+    const forged = macCopy(input.cut); forged.sourceBindings['/private/foreign'] = '0'.repeat(64);
+    const bytes = Buffer.from(input.api.canonicalFirstMacReleaseCutV2(forged)); fs.writeFileSync(fixture.cutPath, bytes);
+    assert.equal(read(path.join(fixture.root, 'absent'), fixture.cutPath, macHash(bytes)).error, 'E_FULL_MAC_SOURCE_BINDINGS');
+  } finally { fixture.cleanup(); }
+});
+
+test('full Mac inherited edge obligations remain required alongside Atlas WSE Pulse and epoch supplements', async t => {
+  const current = await fullMacInputs(), historical = await macInputs();
+  const edges = new Map(current.cut.traceability.edges.map(row => [`${row.dependent}\0${row.prerequisite}`, row]));
+  for (const old of historical.cut.traceability.edges) {
+    const actual = edges.get(`${old.dependent}\0${old.prerequisite}`); assert.ok(actual);
+    for (const requirement of old.proofObligations) assert.equal(actual.proofObligations.includes(requirement), true,
+      `${old.dependent} -> ${old.prerequisite} lost ${requirement}`);
+  }
+  for (const id of ['S10', 'S11', 'S12']) for (const requirement of ['ORDINARY_RECOVERY', 'FULL_HISTORY_RETENTION', 'BACKUP_RESTORE_MIGRATION_CONFLICT']) {
+    const index = current.cut.traceability.edges.findIndex(row => row.applicabilityId === id); assert.ok(index >= 0);
+    await t.test(`${id} retains ${requirement}`, child => fullMacRefused(child, current, id + requirement, c => {
+      c.traceability.edges[index].proofObligations = c.traceability.edges[index].proofObligations.filter(value => value !== requirement);
+    }, /^E_FULL_MAC_TRACEABILITY$/u));
+  }
 });
