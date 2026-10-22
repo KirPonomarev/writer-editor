@@ -1,3 +1,71 @@
+# Full Mac scope and first ordinary Atlas map — 2026-10-22
+
+TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_SOURCE_PROOF_COMPLETE_DELIVERY_AND_NATIVE_PENDING
+BINDING_BASE_SHA: 310182192c6d99aa3460c53797bc5f7ba55d1705
+ORIGINAL_DELIVERY_BASE_SHA: 4bc78a775df9476877add40f62a1fcb1932ed7a7
+CLAIM_BOUNDARY: Same single full-Mac scope and first manual-map availability delivery; no complete Atlas or Mac release acceptance.
+
+PR2143 is closed at actual merge4bc78a77 with identical candidate tree, all20official
+candidate checks, fresh merged805of805 and required gates. Its rebuilt merged native
+archive/import/edit/UndoRedo/Save/cold reopen and complete profile/bundle readback
+close only that source correction. Authored COPY, numerical/full-product qualification,
+signing/notary/channel and final release obligations remain separate.
+
+The owner requires the complete agreed Mac product, including Atlas/maps, WSE, Pulse
+and configuration epochs; Black Box follows release. The frozen V6 reference SHAeb2b
+is scope context, not stage admission, current lease, evidence or public permission.
+FIRST_MAC_RELEASE_CUT_V2 separately versions that scope with17UNKNOWN qualification
+rows, all12Atlas stages,15scope/dimension cells, four distinct graph projections,
+WSE/Pulse and epoch duties. The original109-node171-edge program and V1 cut/API remain
+exact. Derived99-node159-edge dependency closure never replaces the full denominator.
+All120inherited raw-edge obligations and ordinary recovery/history/backup/conflict
+requirements remain. V2 scope validity always leaves readiness NOT_READY and release,
+public distribution and program-completion authority false.
+
+Only trusted packaged Darwin selects WRITER_LOCAL_ATLAS_V2. It admits the existing
+FREE manualMap.create and manualMap.node.add commands plus query.atlasCurrentScene
+and query.manualMapWorkbench. The existing Atlas rail is visible; Plan/Review and
+other optional systems retain their policy. Legacy WRITER_LOCAL_V1, dev/non-Mac,
+current14DOCX exceptions and entitlement/IPC/Kernel/real Stage10 owner/project/source
+CAS/atomic persistence remain. No Core/editor/preload/bundle, dependency, visual
+language, security boundary, private writer or runtime network change is introduced.
+
+Meaningful unchanged actual-Main RED6of7 first showed the profile refusing both map
+commands and queries after successful ordinary project creation. Current complete
+sixteen-file execution at310 plus the exact ER/task amendment passes839of839 with
+zero fail/cancel/skip/todo. Original13caller execution remains937of937 at original4bc
+plus its independently frozen nine source bytes; root archive58of58 retains that
+actual source identity. Neither is relabelled a newer-head/native execution. All
+initial fixture/method failures and the pre-union736run remain preserved separately.
+
+The old ER C03 oracle also fails4of5 on clean unchanged4bc because a legitimate local
+command precedes the product registry spread. Fresh clean310 bootstrap/startup/fetch,
+architecture preflight and amended task E0 precede its only additional delegated
+edit. The correction scopes membership to the exact named guarded allowlist; every
+other assertion and body reconstructs byte-exact. Prepared external5of5 and consumed
+missing-spread4of5 diagnostics precede the edit; maintained whole ER now passes5of5.
+All nine implementation paths stay exact. The normal310 implementation checkpoint
+is explicitly unaccepted and starts no new independent delivery contour.
+
+Normal inventory/C2A regeneration and current DATA/certificate/exact-path witnesses
+must retain1603members/classes/skip policy, every historical tuple and verifier
+predicate. The declared additional four source memberships derive740DATApaths,
+593source pins and250certificate bindings plus the unchanged guard; exact committed
+verification and every corruption oracle remain mandatory. Witnesses create no
+product, native-stage or release authority. Root review SHA89434a41b16f945ddbddda350139e0b7cc12cb3c3f172695edc872c993696ee2
+binds the ten frozen source paths and preservation; it is not self-acceptance.
+
+Full final-source baseline and required gates, exact commit/push/official CI/normal
+merge, fresh clean merged verification, and a newly built packaged native ordinary
+Create/Map/create/add/Save/Quit/cold reopen with independent raw map/manuscript
+readback remain required. No app is launched by this source observation. All17full
+Mac rows remain UNKNOWN; after this bounded delivery, continue the owner's complete
+Mac objective. Unrestricted synthetic native testing remains authorized. New reports
+and materials use the matching dated T777 folders and declared owned temporary APFS
+build/profile runtime, with complete final artifact/profile preservation.
+
 # Imported archive authoring handoff — source and early native proof — 2026-10-22
 
 TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022

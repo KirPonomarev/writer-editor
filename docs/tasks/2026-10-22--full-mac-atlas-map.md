@@ -4,8 +4,9 @@ TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 4bc78a775df9476877add40f62a1fcb1932ed7a7
-HEAD_SHA_AT_START: 4bc78a775df9476877add40f62a1fcb1932ed7a7
+BINDING_BASE_SHA: 310182192c6d99aa3460c53797bc5f7ba55d1705
+HEAD_SHA_AT_START: 310182192c6d99aa3460c53797bc5f7ba55d1705
+ORIGINAL_DELIVERY_BASE_SHA: 4bc78a775df9476877add40f62a1fcb1932ed7a7
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/full-mac-atlas-map-20261022
 DESIGN_TOOL_ROUTER: existing composition and surface contract unchanged; exact router value is in the validated architecture declaration
@@ -23,7 +24,7 @@ The current V1 packaging profile refuses an existing canonical manualMap route a
 
 ## ARTIFACT
 
-Code executor owns nine exact paths; root owns twelve factual/mechanical companions. V2 cut validity is separate from candidate readiness: NOT_READY/UNKNOWN with17rows and all agreed full-product duties, no acceptance booleans, public permit or programDone promotion. New genuine unsigned exact source builds and native readback are scoped functional proof only.
+Code executor owns ten exact paths; root owns twelve factual/mechanical companions. V2 cut validity is separate from candidate readiness: NOT_READY/UNKNOWN with17rows and all agreed full-product duties, no acceptance booleans, public permit or programDone promotion. New genuine unsigned exact source builds and native readback are scoped functional proof only.
 
 Proposed profile identity WRITER_LOCAL_ATLAS_V2 and pure factory createWriterAtlasProfileProjection; keep legacy createWriterLocalProfileProjection/default/schema/API unchanged. Select the new bounded profile only from trusted Main packaged/platform identity. Only manualMap.create, manualMap.node.add, query.atlasCurrentScene and query.manualMapWorkbench are added to availability. optionalSystemsEnabled stays false for active packaged Mac; every other optional route remains refused by existing policy. These internal packaging identities are distinct from Design OS BASELINE/SAFE/FOCUS/COMPACT and OPS WRITER_CORE/PACKAGED_RELEASE_SECURITY.
 
@@ -47,6 +48,7 @@ Proposed profile identity WRITER_LOCAL_ATLAS_V2 and pure factory createWriterAtl
 - src/renderer/flags.js
 - test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
+- test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
 - test/unit/r24-wp307-writer-local-profile-mutants.test.js
 - test/unit/r24-wp307-writer-local-profile.test.js
@@ -165,11 +167,17 @@ Retain the immutable original109-node171-edge program and effective-state policy
 
 Require all17qualification rows MAC-01..17; all12Atlas stages00..11 in applicable macOS scope;15exact analytical cells (fragment-or-selected-node,scene,book crossed with associations,plot-threads,knowledge,time,promises); four Plot/Idea/Meaning/Atlas projections; agreed WSE/decision memory/Pulse/continuity/configuration epochs, including ENV-EPOCH-01 bound to existingWP303. No new runtime node. GLOBAL/BASIC/DEEP applicable product/engine/license/resource admission remains an explicit qualification obligation, not GLOBAL-only substitution or pricing/tier authority. Each remains UNKNOWN without exact evidence. Candidate stays UNFROZEN and every public/signing/program authority false. No V1 profile, fake all-green rows, unapproved workload/channel or stale artifact can turn scope validity into release readiness.
 
-The selected FREE route uses cap.manualMap.edit; getProductCommandRecord and the existing entitlement law already admit it as free_authorship. Plan switch, PRO, BlackBox, cloud/collab and non-admitted optional routes remain refused. Renderer/query-string/profile/tier hints never grant Main authority. Actual project/entity/revision/owner and capability refusals occur before persistence. Any newly exposed stale/race or authority defect stops implementation for an exact clean amendment rather than widening nine executor paths.
+The selected FREE route uses cap.manualMap.edit; getProductCommandRecord and the existing entitlement law already admit it as free_authorship. Plan switch, PRO, BlackBox, cloud/collab and non-admitted optional routes remain refused. Renderer/query-string/profile/tier hints never grant Main authority. Actual project/entity/revision/owner and capability refusals occur before persistence. Any newly exposed stale/race or authority defect stops implementation for an exact clean amendment rather than widening ten executor paths.
 
-Root companions are current exact mechanical bindings only: derive admitted DATA/source/certificate denominators from final exact membership, preserve all historical tuples/predicates/guard; normal inventory/C2A and append-only path-specific governance witnesses. Conditional739/592/249plusguard is a forecast, not a self-authored success. No change to old lanes/skips, global DAG, owner decisions or capability/entitlement truth.
+Root companions are current exact mechanical bindings only: derive admitted DATA/source/certificate denominators from final exact membership, preserve all historical tuples/predicates/guard; normal inventory/C2A and append-only path-specific governance witnesses. Conditional740/593/250plusguard is a forecast, not a self-authored success. No change to old lanes/skips, global DAG, owner decisions or capability/entitlement truth.
 
 Reference discovery actually ran brain:refs; relevant internal notes: markmap.md (ideas only, no dependency), native-fluency-typographic-sharpness.md (advisory only). ui-craft discovery found existing Electron/vanilla HTML/CSS/JS, warm token spine and native buttons/list parity; no style choice, token/brief rewrite, service discovery or layout change follows.
+
+### Exact clean assurance amendment
+
+Same task, outcome, original4bc rollback and one PR. The normal implementation checkpoint 310182192c6d99aa3460c53797bc5f7ba55d1705 is NOT_ACCEPTED and closes no gate. After its completed caller run and clean checkpoint, fresh bootstrap/full startup/current sources and architecture preflight precede this updated task; task E0 precedes the additional delegated edit. Original scope/canon/lease/source-cut authority is never relabeled.
+
+Only the existing ER C03 contract path is added to the code executor: replace its literal first-array-position assertion with a membership assertion scoped to the exact named guarded bridge allowlist. Existing media.insertLocal precedes the product registry in unchanged4bc; the original whole file fails4of5 there. The prepared external correction executes5of5, and observed-source product-spread removal still fails4of5. Every other assertion and test body stays exact, the nine implementation paths stay held, and no product/security/entitlement/IPC/storage behavior changes. Complete final focused/affected files and all original gates/native/delivery duties remain mandatory. These diagnostics never substitute for committed or native verification.
 
 ## IMPLEMENTATION_STEPS
 

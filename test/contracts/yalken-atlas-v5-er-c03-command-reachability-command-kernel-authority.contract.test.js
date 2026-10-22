@@ -126,7 +126,9 @@ test('ER C03: main bridge allowlist and routing use product registry and fail cl
   const mainSource = readText('src/main.js');
 
   assert.match(mainSource, /PRODUCT_COMMAND_ID_LIST/);
-  assert.match(mainSource, /new Set\(\[\s*\.\.\.PRODUCT_COMMAND_ID_LIST/);
+  const bridgeAllowlist = mainSource.match(/const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set\(\[([\s\S]*?)\]\);/);
+  assert.ok(bridgeAllowlist, 'named guarded bridge allowlist must exist');
+  assert.match(bridgeAllowlist[1], /(?:^|,)\s*\.\.\.PRODUCT_COMMAND_ID_LIST\s*(?:,|$)/);
   assert.match(mainSource, /PRODUCT_COMMAND_ID_SET\.has\(commandId\)/);
   assert.match(mainSource, /dispatchProductCommandBridge\(commandId, payload\)/);
   assert.match(mainSource, /activeStage10ApplicationCommandRoute\.dispatch\(commandId, payload\)/);
