@@ -1718,7 +1718,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "f4032e71e5d8cd9d60e6e97468341009c9bd4ae41e32c973574932b07e2e84ed"
+        "sha256": "c043e4de08bef4f801a4463157e8d78b09a602097b5468fa2db8034b97c1f67b"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2674,15 +2674,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "14ede7be3cc178d5274703c4b3d3c894b51963d73b1ba529a52650a312688a79"
+        "sha256": "09e5a9f4fbbc158e065231514c707b8a4997c22bb445e57d05c458dd6bbffb17"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "b90edadb46ca278fd52370f64bbd09518de162a56461ef78109c862124903156"
+        "sha256": "75a8e60279ec1784ee3ab6f314e46d8b30cd69d527b540fe96cbf7ec986e1eb8"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5bc5ab78923f103c719fef611d6601074e11baa180aeaf34c1235de69042c881"
+        "sha256": "118b1fea7e3c09f5715f73e8875790b4d5d6c7153ac961004807b75ee3b74239"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3222,7 +3222,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "80cf98162a550d9073161a18ba49a509665d0b4bb7554aa508fa53624092fb81"
+        "sha256": "76df2cfecf7f33f5c14ab865ec565840f05ddecec5375323ec2f167a03b05adc"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3362,7 +3362,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
-        "sha256": "2436aed903b4278dc6b41b27d4f930a26f961c9ef26e382e89bf97708d8c62b5"
+        "sha256": "f9dc3a4d96b085c2435fad6e82de75411b7d16db02d183745dd2466b98cb5380"
       },
       {
         "path": "test/unit/paste-focus-signal.test.js",

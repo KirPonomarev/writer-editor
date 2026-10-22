@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: f73b8e2442c74e49e53a236f4c3d6c14b3bb4982
-HEAD_SHA_AT_START: f73b8e2442c74e49e53a236f4c3d6c14b3bb4982
+BINDING_BASE_SHA: fd2bfcdcd1e77743f8d2169369689ec6f15eaa2a
+HEAD_SHA_AT_START: fd2bfcdcd1e77743f8d2169369689ec6f15eaa2a
 ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
 AMENDMENT: Same unfinished PR2145 delivery; close one outdated caller-test literal on cleanf73 while all runtime/bundle and existing behavioral assertions remain held. Original4fa rollback and all previous evidence stay.
 TARGET_BRANCH: main
@@ -238,6 +238,10 @@ References: brain:refs actually examined native clipboard/paste/cut/focus existi
 ### Current caller membership resolved before root companions
 
 Read-only membership inspection on f73 confirms the existing caller test sector-m-preload-ui-command-bridge.test.js already belongs to DATA admittedPaths746 and sourceBindings599, but is absent from current certificate257 and SectorM DONE173. Within this declared same22path contour, root appends exactly that required caller to the current successor certificate and DONE list:258certificate and174DONE. Preserve every prior member and order, all historical certificate tuples and verifier predicates, DATA membership, inventory1603 classifications, lanes and skips. This is a required changed-test binding, never broader product or stage authority. Original taskE0 and executor ticket remain historical exact evidence; refreshed taskE0 precedes these root companion writes.
+
+### Current binding-count correction on cleanfd2
+
+Same unfinished PR2145 and original4fa rollback. Mandatory Apply guard on fd2 failed258!==257 at its current-carrier count assertion, before its verifier call; root had appended the correctly admitted caller but omitted the matching expected literal. Retain actual failed process, no runtime fault inferred. Fresh cleanfd2 bootstrap/declaration/preflight before this root-only amendment. Correct exactly current.bindings.length expected257to258 and named successor identity; every following per-binding corruption, mixed/stale and capability predicate stays byte-exact. All604held application/build/earlier tests and caller remain exactfd2. No membership change:258certificate,746DATA,599source,1603inventory,174DONE. Root current pins/task/factual/inventory/C2A/append-only witnesses only. Re-run whole guard and all final required source/native/baseline/officialRTK/CI/merge/merged checks. No result or old-head evidence is promoted.
 
 ## IMPLEMENTATION_STEPS
 

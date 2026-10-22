@@ -1,3 +1,7 @@
+# 2026-10-22 — Current clipboard certificate count corrected; acceptance pending
+
+Same unfinished PR2145; original rollback4fa. Root count preparation on fd2 left257 in the mandatory Apply guard although its existing required caller brought the actual certificate to258. The actual258!=257 failure remains preserved. Cleanfd2 bootstrap/declaration/preflight admit only the exact count/current-successor and mechanical pin companions; all604application/build/caller/earlier test bytes held. No new membership, predicate, lane, classification or skip. Complete affected25files400of400 on fd2 passed; separate Apply guard failed and is not promoted. Whole final source/guard/native immediate Paste+Save, normal Quit/cold/raw/profile, baseline, official CI/maintained RTK, merge and fresh merged verification remain required. Full Mac, IME/numeric and public release stay open.
+
 # 2026-10-22 — Native clipboard caller contract aligned; final acceptance pending
 
 Same unfinished PR2145, original rollback4fa. Fresh cleanf73 declaration/preflight/taskE0 admitted exactly one stale caller assertion literal; every other caller byte and all603held application/build/earlier test inputs remain identical. Complete caller8of8 and unchanged11file selection128of128 executed with zero skips. Prior R9 metadata77of77 and all retained failures remain source-scoped evidence, not this candidate native acceptance. Root independently reversed the literal to original bytes and checked actual execution receipts.
