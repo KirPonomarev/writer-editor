@@ -601,3 +601,409 @@ test('metadata wrong project or node projection cannot replace current baseline 
   assert.deepEqual(h.statuses, statuses);
   assert.equal(h.synopsis.value, value);
 });
+
+// Full Main Save and metadata share genuine Core/FS effects. Only Electron's
+// window/transport and explicitly armed fault/barrier ports are finite hosts.
+async function metadataTransactionHarness(t, { cohorts = false } = {}) {
+  const root = fs.realpathSync(await fsPromises.mkdtemp(path.join(os.tmpdir(), 'metadata-transaction-main-')));
+  fs.writeFileSync(path.join(root, 'OWNED_METADATA_TRANSACTION'), 'synthetic fixture only\n');
+  t.after(() => fsPromises.rm(root, { recursive: true, force: true }));
+  const documents = path.join(root, 'Documents', 'craftsman'), userData = path.join(root, 'userData');
+  await fsPromises.mkdir(userData, { recursive: true });
+  const mainPath = path.join(ROOT, 'src/main.js'), managerPath = path.join(ROOT, 'src/utils/fileManager.js');
+  const ports = { sent: [], listeners: new Map(), handlers: new Map(), transactions: [], queued: null, fsHook: null, capability: true };
+  let window, shellUrl, snapshot;
+  const event = () => ({ sender: window.webContents, senderFrame: { url: shellUrl, parent: null, top: null } });
+  function Window() {
+    window = this;
+    this.isDestroyed = () => false; this.on = () => {};
+    this.webContents = { id: 88, session: {}, isDestroyed: () => false, getURL: () => shellUrl,
+      setWindowOpenHandler() {}, on() {}, send(channel, payload) {
+        ports.sent.push([channel, payload]);
+        if (channel === 'editor:set-text') {
+          if (payload.expectedGeneration !== undefined) {
+            if (snapshot.content === payload.expectedContent && snapshot.generation === payload.expectedGeneration) {
+              snapshot = { ...snapshot, content: payload.content };
+            }
+          } else snapshot = { ...payload, generation: 0, plainText: '' };
+        }
+        if (channel === 'editor:snapshot-request') queueMicrotask(() => ports.listeners.get('editor:snapshot-response')(
+          event(), { requestId: payload.requestId, snapshot }));
+      } };
+    this.loadFile = (file, { query }) => {
+      const url = require('node:url').pathToFileURL(file);
+      for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
+      shellUrl = url.href; return new Promise(() => {}); // No renderer/startup/application launch.
+    };
+  }
+  Window.getFocusedWindow = () => window; Window.getAllWindows = () => [window];
+  const electron = {
+    app: { getPath: name => name === 'userData' ? userData : name === 'documents' ? path.dirname(documents) : root,
+      setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true },
+    BrowserWindow: Window, screen: { getPrimaryDisplay: () => ({ workAreaSize: { width: 1200, height: 800 } }) },
+    Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
+    dialog: { showMessageBox: async () => ({ response: 1 }), showSaveDialog: async () => ({ canceled: true }), showOpenDialog: async () => ({ canceled: true }) },
+    ipcMain: { on: (id, fn) => ports.listeners.set(id, fn), handle: (id, fn) => ports.handlers.set(id, fn) },
+    session: { defaultSession: { webRequest: { onHeadersReceived() {} } } },
+  };
+  const originalLoad = Module._load;
+  let main, manager;
+  Module._load = function(request, parent, isMain) {
+    if (request === 'electron') return electron;
+    const actual = originalLoad.call(this, request, parent, isMain);
+    if (parent?.filename === mainPath && request === './core/project-transaction-v1.cjs') return { ...actual,
+      commitProjectTransaction: async input => {
+        ports.transactions.push(input);
+        const adapter = new Proxy(fsPromises, { get(target, key) {
+          if (typeof target[key] !== 'function') return target[key];
+          return async (...args) => { if (ports.fsHook) await ports.fsHook(key, args); return target[key](...args); };
+        } });
+        return actual.commitProjectTransaction({ ...input, fsAdapter: adapter });
+      } };
+    if (parent?.filename === mainPath && request === './core/writer-local-profile-v1.cjs') return { ...actual,
+      evaluateWriterLocalCommandAccess: input => {
+        const result = actual.evaluateWriterLocalCommandAccess(input);
+        return !ports.capability && input.commandId === 'cmd.project.metadata.update' ? { ...result, allowed: false } : result;
+      } };
+    return actual;
+  };
+  delete require.cache[managerPath];
+  try {
+    const compiled = new Module(mainPath, module);
+    compiled.filename = mainPath; compiled.paths = Module._nodeModulePaths(path.dirname(mainPath));
+    compiled._compile(fs.readFileSync(mainPath, 'utf8') + `\nmodule.exports.__metadataTransactionTest = {
+      save: handleSave, reopen: openProjectDocumentFile, recover: recoverWriterProjectTransactionForFile,
+      continuation: () => userBookmarkSaveContinuation,
+      fixtureRawCommit: async sceneContent => {
+        const scenePath=currentFilePath, manifestPath=getProjectManifestPath(currentProjectName);
+        const raw=await fs.readFile(manifestPath,'utf8'), projectId=JSON.parse(raw).projectId;
+        const beforeContent=await fs.readFile(scenePath,'utf8'), sceneId=path.relative(path.dirname(manifestPath),scenePath).split(path.sep).join('/');
+        const comments=await (await loadRtkNonTextReturnModule()).readCommentAuthoringState({projectRoot:path.dirname(manifestPath),projectId});
+        const notes=await (await loadNotesStorageModule()).readNotesStorage({projectRoot:path.dirname(manifestPath),projectId});
+        const commentState=planCommentAnchorSave({beforeText:comments.text,projectId,sceneId,beforeContent,afterContent:sceneContent,includeUnchanged:true});
+        const noteState=manuscriptNoteModel.planManuscriptNoteAnchorSave({beforeText:notes.sourceExists?notes.sourceText:null,projectId,sceneId,beforeContent,afterContent:sceneContent,includeUnchanged:true});
+        const authority=await getMainProjectManifestAuthority();
+        return authority.withProjectLease(projectId,lease=>lease.publish(()=>commitProjectTransaction({
+          scenePath,sceneContent,expectedSceneContent:beforeContent,manifestPath,manifestContent:raw,expectedManifestContent:raw,
+          revision:lastSignaledEditGeneration,...(commentState?{commentState}:{}),...(noteState?{noteState}:{}),
+          verifyManifestContinuation:r=>authority.verifyManifestContinuation({...r,projectId}),
+          publishManifest:args=>authority.commitManifestText({projectId,lease,targetPath:args.manifestPath,expectedText:args.expectedText,nextText:args.nextText,label:'owned raw fixture baseline'})
+        })));
+      },
+      queue: (...args) => queueDiskOperation(...args),
+      state: () => ({projectName:currentProjectName,file:currentFilePath,session:commentAuthoringSessionId,
+        generation:lastSignaledEditGeneration,ack:lastAcknowledgedEditGeneration,dirty:isDirty}),
+      change: kind => { if(kind==='project')currentProjectName='Foreign'; if(kind==='file')currentFilePath=null;
+        if(kind==='session')commentAuthoringSessionId='foreign'; if(kind==='window')mainWindow={...mainWindow};
+        if(kind==='owner')activeStage10ApplicationBootstrap={}; if(kind==='generation')lastSignaledEditGeneration++;
+        if(kind==='import')projectArchiveOpenCapture={}; },
+      observeQueue: callback => { const original=queueDiskOperation; queueDiskOperation=(operation,label)=>{
+        const result=original(operation,label); if(label.startsWith('update metadata'))callback(); return result; }; }
+      ,observePublish: callback => { const original=commitWriterProjectSnapshot; commitWriterProjectSnapshot=(...args)=>{
+        const options=args[5]; if(typeof options?.beforeScenePublish!=='function')throw Error('actual publication guard required');
+        args[5]={...options,beforeScenePublish:async()=>{await callback();return options.beforeScenePublish();}};
+        return original(...args); }; }
+    };`, mainPath);
+    main = compiled.exports; manager = require(managerPath);
+    const previous = manager.getDocumentsPath; manager.getDocumentsPath = () => documents;
+    t.after(() => { manager.getDocumentsPath = previous; });
+    main.createWindow();
+  } finally { Module._load = originalLoad; }
+  const created = await main.handleProjectLifecycleCreateCommand({ projectName: 'Metadata Tx' });
+  assert.equal(created.ok, true, JSON.stringify(created));
+  assert.equal(created.stage10Bootstrap.ok, true, 'real existing owner bootstrap');
+  const unit = main.__metadataTransactionTest, file = unit.state().file, projectRoot = path.join(documents, 'Metadata Tx');
+  const manifestPath = path.join(projectRoot, 'project.craftsman.json');
+  const profileModule = await import(require('node:url').pathToFileURL(path.join(ROOT, 'src/core/bookProfile.mjs')).href);
+  const profile = { ...profileModule.createDefaultBookProfile(), profileId: 'metadata-transaction-profile', marginLeftMm: 30 };
+  const manifest = JSON.parse(await fsPromises.readFile(manifestPath, 'utf8'));
+  manifest.bookProfile = profile; manifest.privateSentinel = { retain: ['é', '🧭'] };
+  await fsPromises.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  let content = envelope.composeObservablePayload({ metaEnabled: true,
+    meta: { synopsis: 'Original', status: 'черновик', tags: { pov: 'Kira', line: 'A', place: 'Station' } },
+    doc: { type: 'doc', attrs: { wordPendingRevisions: null, wordUserBookmarks: null }, content: [
+      { type: 'paragraph', attrs: { textAlign: null }, content: [{ type: 'text', text: 'Привет é 🧭' }] } ] } });
+  await fsPromises.writeFile(file, content);
+  const resource = path.join(projectRoot, 'assets', 'protected.bin');
+  await fsPromises.mkdir(path.dirname(resource), { recursive: true }); await fsPromises.writeFile(resource, Buffer.from([0, 9, 255]));
+  const comments = path.join(projectRoot, '.yalken/word-review/non-text-return-state.v1.json');
+  await fsPromises.mkdir(path.dirname(comments), { recursive: true });
+  await fsPromises.writeFile(comments, JSON.stringify({ schemaVersion: 'yalken.rtk.word.non-text-return-state.v1',
+    projectId: created.projectId, revision: 0, threads: [], events: [], privateSentinel: 'comments preserved' }));
+  const notes = path.join(projectRoot, 'notes.craftsman.json'), history = path.join(projectRoot, 'backups/protected-history.bin');
+  await fsPromises.writeFile(notes, JSON.stringify({ schemaVersion: 1, projectId: created.projectId, notes: [], privateSentinel: 'notes preserved' }));
+  await fsPromises.mkdir(path.dirname(history), { recursive: true }); await fsPromises.writeFile(history, Buffer.from([9, 0, 33]));
+  if (cohorts) {
+    const bookmarks = require('../../src/core/word-user-bookmarks-v1.cjs'), parsed = envelope.parseObservablePayload(content);
+    const sceneId = path.relative(projectRoot, file).split(path.sep).join('/');
+    const doc = bookmarks.planMutation({ doc: parsed.doc, action: 'create', name: 'Anchor',
+      start: { paragraphIndex: 0, offsetUtf16: 1, edge: 'text' }, end: { paragraphIndex: 0, offsetUtf16: 5, edge: 'text' },
+      requestId: 'owned-metadata-bookmark', projectId: created.projectId, sceneId }).doc;
+    doc.attrs.privateDocumentSentinel = { retain: ['é', '🧭'] };
+    content = envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock, doc });
+    await fsPromises.writeFile(file, content);
+    const comment = require('../../src/core/word-comment-authoring-v1.cjs').planCommentAuthoring({ beforeText: null,
+      projectId: created.projectId, sceneId, sceneSha256: sha256(content), paragraphs: [parsed.text], now: '2026-10-22T00:00:00Z',
+      input: { requestId: 'metadata-comment', action: 'create', projectId: created.projectId, sceneId,
+        expectedSceneSha256: sha256(content), expectedStateSha256: '', body: 'Protected comment é 🧭',
+        anchor: { paragraphIndex: 0, startUtf16: 1, selectedText: parsed.text.slice(1, 5) } } });
+    await fsPromises.writeFile(comments, comment.afterText);
+    const model = require('../../src/core/word-manuscript-notes-v1.cjs');
+    const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Protected note é 🧭' }] }] };
+    await fsPromises.writeFile(notes, JSON.stringify({ schemaVersion: 1, projectId: created.projectId, notes: [{ id: 'owned-note', scope: 'manuscript',
+      body: model.validateNoteBody(body).text, manuscript: model.bindManuscriptPayload({ kind: 'footnote', body, sceneId, offsetUtf16: 2, sceneContent: content }) }] }));
+  }
+  snapshot = { ...snapshot, content, bookProfile: profile, generation: 1 };
+  const signal = async () => {
+    const channel = 'ui:save-lifecycle-signal-bridge';
+    const request = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope(channel, 'signal.localDirty.set', { state: true, generation: snapshot.generation });
+    assert.equal((await ports.handlers.get(channel)(event(), request)).ok, true);
+  };
+  await signal(); assert.equal(await unit.save(), true, 'actual initial ordinary Save');
+  const read = () => fsPromises.readFile(file, 'utf8');
+  const commitPath = file + '.wp201-commit.json', commit = () => JSON.parse(fs.readFileSync(commitPath, 'utf8'));
+  assert.equal(commit().sceneDigest, sha256(await read()));
+  const update = async (synopsis, options) => main.handleMetadataUpdateCommand({ projectId: created.projectId,
+    nodeId: created.documentId, baselineHash: sha256(await read()), metadata: { synopsis, status: 'черновик', tags: { pov: 'Kira', line: 'A', place: 'Station' } } }, options);
+  const working = async (content, generation) => { snapshot = { ...snapshot, content, generation }; await signal(); };
+  const protectedState = async () => ({ profile: JSON.parse(await fsPromises.readFile(manifestPath, 'utf8')).bookProfile,
+    sentinel: JSON.parse(await fsPromises.readFile(manifestPath, 'utf8')).privateSentinel,
+    resource: [...await fsPromises.readFile(resource)], comments: await fsPromises.readFile(comments, 'utf8'),
+    notes: await fsPromises.readFile(notes, 'utf8'), history: [...await fsPromises.readFile(history)],
+    document: envelope.parseObservablePayload(await read()).doc });
+  return { main, unit, ports, file, root, projectRoot, manifestPath, profile, read, commit, commitPath, update, working,
+    projectId: created.projectId, nodeId: created.documentId,
+    snapshot: () => snapshot, envelope, protectedState, signal,
+    save: () => unit.save(), queued: async () => {
+      const gate = metadataDeferred(), seen = metadataDeferred();
+      const blocked = unit.queue(() => gate.promise, 'test owned metadata queue barrier');
+      unit.observeQueue(() => seen.resolve());
+      return { release: async () => { gate.resolve(); await blocked; }, seen: seen.promise };
+    },
+  };
+}
+
+test('metadata transaction preserves real committed scene then ordinary Save acknowledgement and reopen', async (t) => {
+  const h = await metadataTransactionHarness(t), before = await h.protectedState();
+  const oldCommit = h.commit();
+  const pending = h.snapshot().content.replace('Привет é 🧭', 'Привет é 🧭 1');
+  await h.working(pending, 2);
+  const beforeMetadata = h.unit.state(), pushes = h.ports.sent.length;
+  const metadata = await h.update('Замысел é 🧭');
+  assert.equal(metadata.ok, true, JSON.stringify(metadata));
+  assert.deepEqual(h.unit.state(), beforeMetadata, 'metadata must not acknowledge or clear unsaved manuscript generation');
+  assert.equal(h.ports.sent.slice(pushes).some(([id]) => id === 'set-dirty'), false);
+  const updated = await h.read();
+  await h.working(updated, 2);
+  const saved = await h.save();
+  const packets = fs.existsSync(path.join(h.projectRoot, '.yalken-recovery'))
+    ? fs.readdirSync(path.join(h.projectRoot, '.yalken-recovery')).filter(n => n.endsWith('.json')).map(n => JSON.parse(fs.readFileSync(path.join(h.projectRoot, '.yalken-recovery', n), 'utf8'))) : [];
+  t.diagnostic(JSON.stringify({ saved, oldDigest: oldCommit.sceneDigest, rawDigest: sha256(updated), commitDigest: h.commit().sceneDigest,
+    recoveryReasons: packets.map(p => p.binding.reasonCode), state: h.unit.state() }));
+  assert.equal(saved, true, 'ordinary Save after metadata must retain real transaction coherence');
+  assert.equal(h.commit().sceneDigest, sha256(updated));
+  assert.deepEqual(await h.protectedState(), before);
+  assert.equal(h.envelope.parseObservablePayload(updated).meta.synopsis, 'Замысел é 🧭');
+  for (const [body, generation] of [['Привет é 🧭 1', 3], ['Привет é 🧭', 4], ['Привет é 🧭 1', 5]]) {
+    const parsed = h.envelope.parseObservablePayload(await h.read());
+    parsed.doc.content[0].content[0].text = body;
+    await h.working(h.envelope.composeObservablePayload({ ...parsed, metaEnabled: true }), generation);
+    assert.equal(await h.save(), true);
+    assert.equal(h.unit.state().ack, generation);
+    assert.equal(h.unit.state().dirty, false);
+    assert.equal(h.commit().sceneDigest, sha256(await h.read()));
+  }
+  const opened = await h.main.handleProjectLifecycleOpenCommand({ projectId: h.projectId });
+  assert.equal(opened.ok, true, JSON.stringify(opened));
+  assert.equal(h.snapshot().content, await h.read(), 'normal Main open publishes the actual persisted payload');
+  assert.match(h.snapshot().content, /Привет é 🧭 1/u);
+  const after = await h.protectedState();
+  assert.deepEqual({ ...after, document: before.document }, before);
+  assert.equal(h.envelope.parseObservablePayload(await h.read()).meta.synopsis, 'Замысел é 🧭');
+});
+
+test('metadata queued transaction refuses changed source, canonical manifest/profile/node and lifecycle authority', async (t) => {
+  for (const kind of ['source', 'manifest', 'profile', 'node', 'project', 'file', 'session', 'window', 'owner', 'generation', 'capability', 'import']) {
+    await t.test(kind, async (t) => {
+      const h = await metadataTransactionHarness(t), blocked = await h.queued();
+      const changing = h.update('must refuse');
+      await Promise.race([blocked.seen, new Promise((_, reject) => setTimeout(() => reject(Error('real metadata queue not reached')), 2000))]);
+      if (kind === 'source') await fsPromises.writeFile(h.file, (await h.read()).replace('Привет', 'Foreign source'));
+      else if (['manifest', 'profile', 'node'].includes(kind)) {
+        const manifest = JSON.parse(await fsPromises.readFile(h.manifestPath, 'utf8'));
+        if (kind === 'manifest') manifest.privateSentinel.newer = true;
+        if (kind === 'profile') manifest.bookProfile.marginLeftMm = 35;
+        if (kind === 'node') manifest.treeIdentity.nodes[h.nodeId].bindingKey = 'file:roman/Imported/Foreign.txt';
+        await fsPromises.writeFile(h.manifestPath, JSON.stringify(manifest, null, 2));
+      } else if (kind === 'capability') h.ports.capability = false;
+      else h.unit.change(kind);
+      const before = { raw: await h.read(), manifest: await fsPromises.readFile(h.manifestPath, 'utf8'),
+        commit: await fsPromises.readFile(h.commitPath, 'utf8'), state: h.unit.state(), pushes: h.ports.sent.length };
+      await blocked.release(); const result = await changing;
+      assert.equal(result.ok, false, JSON.stringify(result));
+      assert.match(result.code, /(?:METADATA_UPDATE_(?:CONTEXT|TARGET)_STALE|METADATA_UPDATE_CAPABILITY_DENIED|PROJECT_TRANSACTION_SCENE_CAS)/u);
+      assert.equal(await h.read(), before.raw); assert.equal(await fsPromises.readFile(h.manifestPath, 'utf8'), before.manifest);
+      assert.equal(await fsPromises.readFile(h.commitPath, 'utf8'), before.commit);
+      assert.deepEqual(h.unit.state(), before.state);
+      assert.equal(h.ports.sent.slice(before.pushes).some(([id]) => id === 'set-dirty'), false);
+    });
+  }
+});
+
+test('metadata actual Core publication interruption retains readable journal and recovers without repairing commit integrity', async (t) => {
+  const h = await metadataTransactionHarness(t), before = await h.read(), priorCommit = await fsPromises.readFile(h.commitPath, 'utf8');
+  let exercised = 0;
+  h.ports.fsHook = (key, args) => {
+    if (key === 'rename' && args[1] === h.file) { exercised++; throw Object.assign(Error('owned scene publication fault'), { code: 'EIO' }); }
+  };
+  const failed = await h.update('must not report saved');
+  assert.equal(failed.ok, false);
+  assert.ok(exercised > 0, 'fault reaches real Core scene publication');
+  assert.equal(await h.read(), before); assert.equal(await fsPromises.readFile(h.commitPath, 'utf8'), priorCommit);
+  const journal = h.manifestPath + '.wp201-transaction.json';
+  assert.equal(fs.existsSync(journal), true, 'real interrupted transaction remains recoverable');
+  h.ports.fsHook = null;
+  const recovery = await h.unit.recover(h.file);
+  assert.equal(recovery.recovered, true); assert.equal(await h.read(), before);
+  assert.equal(await fsPromises.readFile(h.commitPath, 'utf8'), priorCommit);
+  assert.equal(fs.existsSync(journal), false);
+  assert.equal((await h.update('after real recovery')).ok, true);
+  assert.equal(h.commit().sceneDigest, sha256(await h.read()));
+});
+
+test('metadata transaction still refuses an actually corrupt retained commit and ignores the old arbitrary writer option', async (t) => {
+  const h = await metadataTransactionHarness(t);
+  let bypassCalls = 0;
+  const result = await h.update('canonical transaction', { writeFileAtomic: () => { bypassCalls++; return { success: true }; } });
+  assert.equal(result.ok, true); assert.equal(bypassCalls, 0);
+  assert.equal(h.commit().sceneDigest, sha256(await h.read()));
+  const corrupt = { ...h.commit(), sceneDigest: '0'.repeat(64) };
+  await fsPromises.writeFile(h.commitPath, JSON.stringify(corrupt));
+  const before = await h.read(), commitBefore = await fsPromises.readFile(h.commitPath, 'utf8');
+  const failed = await h.update('refuse corruption');
+  assert.equal(failed.ok, false); assert.equal(failed.code, 'E_PROJECT_COMMIT_CORRUPT');
+  assert.equal(await h.read(), before); assert.equal(await fsPromises.readFile(h.commitPath, 'utf8'), commitBefore);
+  const packets = fs.readdirSync(path.join(h.projectRoot, '.yalken-recovery')).filter(n => n.endsWith('.json'))
+    .map(n => JSON.parse(fs.readFileSync(path.join(h.projectRoot, '.yalken-recovery', n), 'utf8')));
+  assert.ok(packets.some(p => p.binding.reasonCode === 'COMMIT_RECORD_SCENE_DIGEST_MISMATCH'));
+  assert.ok(packets.every(p => p.repairContract.automaticRepairForbidden === true));
+});
+
+test('metadata existing writer revalidates late capability, window and canonical profile inside its leased publication callback', async (t) => {
+  for (const kind of ['capability', 'window', 'profile']) await t.test(kind, async (t) => {
+    const h = await metadataTransactionHarness(t), before = await h.read(), commit = await fsPromises.readFile(h.commitPath, 'utf8');
+    let observed = 0, changedManifest;
+    h.unit.observePublish(async () => {
+      observed++;
+      assert.equal(h.ports.transactions.length, 1, 'initial Save only; actual Core metadata publication not reached yet');
+      if (kind === 'capability') h.ports.capability = false;
+      if (kind === 'window') h.unit.change('window');
+      if (kind === 'profile') {
+        const manifest = JSON.parse(await fsPromises.readFile(h.manifestPath, 'utf8'));
+        manifest.bookProfile.marginLeftMm = 40;
+        changedManifest = JSON.stringify(manifest, null, 2);
+        await fsPromises.writeFile(h.manifestPath, changedManifest);
+      }
+    });
+    const result = await h.update('late change must refuse');
+    assert.equal(observed, 1, 'existing commitWriterProjectSnapshot invokes the actual callback under its lease');
+    assert.equal(result.ok, false);
+    assert.match(result.code, /METADATA_UPDATE_(?:CAPABILITY_DENIED|CONTEXT_STALE|TARGET_STALE)/u);
+    assert.equal(await h.read(), before); assert.equal(await fsPromises.readFile(h.commitPath, 'utf8'), commit);
+    if (changedManifest) assert.equal(await fsPromises.readFile(h.manifestPath, 'utf8'), changedManifest);
+  });
+});
+
+test('metadata completed transaction with a later foreign session preserves the effect without publishing into that session', async (t) => {
+  const h = await metadataTransactionHarness(t), oldDigest = h.commit().sceneDigest;
+  await h.working(h.snapshot().content.replace('Привет', 'Unsaved body'), 2);
+  const before = h.unit.state(), sent = h.ports.sent.length;
+  let switched = 0;
+  h.ports.fsHook = (key, args) => {
+    if (key === 'readFile' && args[0] === h.commitPath && !switched && h.commit().sceneDigest !== oldDigest) {
+      switched++; h.unit.change('session');
+    }
+  };
+  const result = await h.update('committed before session changed');
+  assert.equal(switched, 1, 'race occurs only after real new commit publication');
+  assert.equal(result.ok, false); assert.equal(result.code, 'E_METADATA_UPDATE_CONTEXT_STALE');
+  assert.equal(result.details.committed, true);
+  assert.equal(result.details.contentHashAfter, sha256(await h.read()));
+  assert.equal(h.commit().sceneDigest, sha256(await h.read()));
+  assert.equal(h.unit.state().session, 'foreign');
+  assert.deepEqual({ ...h.unit.state(), session: before.session }, before);
+  assert.equal(h.ports.sent.slice(sent).some(([id]) => id === 'set-dirty'), false);
+});
+
+test('metadata updates a genuine inactive scene without rebinding or acknowledging the active working buffer', async (t) => {
+  const h = await metadataTransactionHarness(t), beta = path.join(path.dirname(h.file), '02_Beta.txt');
+  await fsPromises.writeFile(beta, await h.read());
+  await h.main.buildProjectTreeRootsWithIdentities('Metadata Tx');
+  const identity = await h.main.getProjectDocumentIdentityPayload(beta);
+  await h.working(h.snapshot().content.replace('Привет', 'Unsaved Alpha'), 2);
+  const before = { raw: await h.read(), commit: await fsPromises.readFile(h.commitPath, 'utf8'), state: h.unit.state(), sent: h.ports.sent.length };
+  const result = await h.main.handleMetadataUpdateCommand({ projectId: h.projectId, nodeId: identity.documentId,
+    baselineHash: sha256(await fsPromises.readFile(beta, 'utf8')), metadata: { synopsis: 'Beta only', status: 'черновик', tags: {} } });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(h.envelope.parseObservablePayload(await fsPromises.readFile(beta, 'utf8')).meta.synopsis, 'Beta only');
+  assert.equal(JSON.parse(await fsPromises.readFile(beta + '.wp201-commit.json', 'utf8')).sceneDigest,
+    sha256(await fsPromises.readFile(beta, 'utf8')));
+  assert.equal(await h.read(), before.raw); assert.equal(await fsPromises.readFile(h.commitPath, 'utf8'), before.commit);
+  assert.deepEqual(h.unit.state(), before.state);
+  assert.equal(h.ports.sent.slice(before.sent).some(([id]) => id === 'set-dirty' || id === 'editor:set-text'), false);
+});
+
+test('metadata receipt uses actual Core bytes with nonempty cohorts, compact V3 wire and a real Save continuation', async (t) => {
+  for (const variant of ['compact', 'continuation']) await t.test(variant, async (t) => {
+    const h = await metadataTransactionHarness(t, { cohorts: true });
+    const bookmarks = require('../../src/core/word-user-bookmarks-v1.cjs');
+    if (variant === 'compact') {
+      const raw = await h.read(), match = /\[doc-v2 length=(\d+)\]\n([\s\S]*)$/u.exec(raw);
+      const newline = match[2].indexOf('\n');
+      const wire = match[2].slice(0, newline + 1) + JSON.stringify(JSON.parse(match[2].slice(newline + 1)));
+      const compact = raw.slice(0, match.index) + `[doc-v2 length=${wire.length}]\n${wire}`;
+      assert.equal(h.envelope.parseObservablePayload(compact).issue, null);
+      assert.equal((await h.unit.fixtureRawCommit(compact)).success, true, 'real Core/leased-authority valid baseline');
+      assert.equal(h.commit().sceneDigest, sha256(compact));
+    } else {
+      const parsed = h.envelope.parseObservablePayload(await h.read());
+      parsed.doc.content[0].content[0].text = 'X' + parsed.doc.content[0].content[0].text;
+      await h.working(h.envelope.composeObservablePayload({ ...parsed, metaEnabled: parsed.hasMetaBlock }), 2);
+      const priorDigest = h.commit().sceneDigest; let newer = 0;
+      h.ports.fsHook = async (key, args) => {
+        if (key === 'readFile' && args[0] === h.commitPath && !newer && h.commit().sceneDigest !== priorDigest) {
+          newer++;
+          const pending = h.envelope.parseObservablePayload(h.snapshot().content);
+          pending.doc.content[0].content[0].text += 'Y';
+          await h.working(h.envelope.composeObservablePayload({ ...pending, metaEnabled: pending.hasMetaBlock }), 3);
+        }
+      };
+      assert.equal((await h.save()).ok, false, 'newer real edit refuses the older Save acknowledgement');
+      h.ports.fsHook = null;
+      assert.equal(newer, 1); assert.ok(h.unit.continuation());
+      assert.equal(h.unit.state().dirty, true); assert.equal(h.unit.state().generation, 3);
+    }
+    const before = await h.protectedState(), state = h.unit.state(), working = h.snapshot().content, sent = h.ports.sent.length;
+    assert.ok(bookmarks.readRegistry(before.document));
+    assert.equal(JSON.parse(before.comments).threads.length, 1);
+    assert.equal(JSON.parse(before.notes).notes.length, 1);
+    assert.deepEqual(before.document.attrs.privateDocumentSentinel, { retain: ['é', '🧭'] });
+    const result = await h.update('Bookmark metadata only');
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.equal(result.receipt.contentHashAfter, sha256(await h.read()));
+    assert.equal(h.commit().sceneDigest, result.receipt.contentHashAfter);
+    assert.deepEqual(await h.protectedState(), before);
+    assert.deepEqual(h.unit.state(), state); assert.equal(h.snapshot().content, working);
+    const next = await h.main.handleMetadataUpdateCommand({ projectId: h.projectId, nodeId: h.nodeId,
+      baselineHash: result.receipt.contentHashAfter,
+      metadata: { synopsis: 'Next CAS uses actual receipt', status: 'черновик', tags: { pov: 'Kira', line: 'A', place: 'Station' } } });
+    assert.equal(next.ok, true, JSON.stringify(next));
+    assert.equal(h.envelope.parseObservablePayload(await h.read()).meta.synopsis, 'Next CAS uses actual receipt');
+    assert.equal(next.receipt.contentHashAfter, sha256(await h.read()));
+    assert.equal(h.commit().sceneDigest, next.receipt.contentHashAfter);
+    assert.deepEqual(await h.protectedState(), before); assert.deepEqual(h.unit.state(), state);
+    assert.equal(h.snapshot().content, working);
+    assert.equal(h.ports.sent.slice(sent).some(([id]) => id === 'set-dirty' || id === 'editor:set-text'), false);
+  });
+});

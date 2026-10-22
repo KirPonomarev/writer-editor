@@ -4,10 +4,10 @@ TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: b83f363ee117234cc46386daaf08298be7c2c444
-HEAD_SHA_AT_START: b83f363ee117234cc46386daaf08298be7c2c444
+BINDING_BASE_SHA: 0bd28bf050d07793066801a6e974c99f8875f044
+HEAD_SHA_AT_START: 0bd28bf050d07793066801a6e974c99f8875f044
 ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
-AMENDMENT: Same unfinished PR2145 delivery; correct actual native synopsis working-value/caret loss across canonical metadata readback on cleanb83. Previous clipboard and assurance deltas remain protected.
+AMENDMENT: Same unfinished PR2145 delivery; correct metadata-to-ordinary-Save transaction incoherence on clean0bd after preserved failed native journey. Prior clipboard, assurance and caret deltas remain protected.
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-text-clipboard-20261022
 DESIGN_TOOL_ROUTER: existing design contract unchanged; exact router value is in the validated architecture declaration
@@ -45,6 +45,7 @@ Small renderer focus-classification/notification correction and appended meaning
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/sector-m-scope-map.json
+- src/main.js
 - src/renderer/editor.bundle.js
 - src/renderer/editor.js
 - test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js
@@ -56,7 +57,7 @@ Small renderer focus-classification/notification correction and appended meaning
 
 ## DENYLIST
 
-Everything outside the allowlist. No Main/preload/IPC allowlist/security/entitlement/Core/storage/format/profile/flags/capability change, dependency or runtime network, shell HTML/CSS/tokens/layout, executable plugin, new port/registry/worker/bus, Windows/Linux implementation, signing/notary/public distribution, owner/private data, broad code formatting/refactor, release cut/V1/V2/full program rewrite, stale native claim or cleanup of earlier evidence. No reset/stash/clean/rebase/amend/force-push or foreign WIP modification. No optional integration discovery/use.
+Everything outside the allowlist. Main metadata handler only as explicitly admitted below; no other Main/preload/IPC allowlist/security/entitlement/Core/storage-format/profile/flags/capability change, dependency or runtime network, shell HTML/CSS/tokens/layout, executable plugin, new port/registry/worker/bus, Windows/Linux implementation, signing/notary/public distribution, owner/private data, broad code formatting/refactor, release cut/V1/V2/full program rewrite, stale native claim or cleanup of earlier evidence. No reset/stash/clean/rebase/amend/force-push or foreign WIP modification. No optional integration discovery/use.
 
 Runtime source delta at most80 changed lines within the current focus fragment. Append at most450 test lines to paste-focus-signal.test.js; all three original test bodies/helper prefix byte-exact. Any note-tables fixture change at most8 lines solely to represent actual DOM connection/focus attributes; every test predicate/body beyond that literal remains. Generated bundle excluded from line count but exact normal source build/readback required. Root OPS changes are current bindings only: exact new task and test membership and exact scope entries, no classifier/runner/predicate/lane/skip changes. Derive real denominators from membership; expected744DATA/597source/254certificate plus one unchanged guard is only a forecast.
 
@@ -89,6 +90,25 @@ I: cleanb83, current registered branch/origin main4fa, exact declaration/preflig
 At most180 changed renderer source lines in existing metadata declarations/update/sync/render/schedule/flush/query and forced incoming-payload invalidation calls; no other editor body change. At most600 appended test lines to existing metadata-inspector-read-model-main.test.js; entire original four-case/helper prefix stays byte-exact. Build normally; editor.bundle.js only generated delta, preload/helper exact. Root current companions only; exact one existing required-test membership addition if needed, scope DONE entry, normal inventory/C2A/current pins and append-only witness. No verifier predicate/history/graph/V1/V2/classification/lane/skip changes. Whole final scope20paths; derive denominators rather than self-PASS.
 
 Delivery order: focused and affected checks, then actual rebuilt native smoke/journey, then push and CI, then required CI/full maintained RTK plus full baseline review, then merge and fresh merged verification. The prior b83 push before native was an order deviation retained externally; DRAFT was no exception. Correct this in the existing task/handoff only, no new tracker/gate/process project. CmdA INPUT selection failure is separate and remains open; it is not this synopsis source cause. Full IME/numeric MR06/full Mac scope remain open.
+
+### Same-chain metadata transaction correction on clean0bd
+
+PR2145 remains DRAFT at pushedb83; local0bd is unpushed and unaccepted. Its genuine native synopsis Cut/Paste now preserves raw value/caret and produces expected Замысел é 🧭. Ordinary scene Save then fails: metadata has changed raw scene to d22e5885 while retained WP201 commit still names initial scene865703cc. Five raw recovery packets report COMMIT_RECORD_SCENE_DIGEST_MISMATCH. Editor contains intended final body but disk retains initial body; do not mark Save or journey successful. Ordinary CmdQ and SIGTERM did not exit; only the verified owned synthetic process was stopped with SIGKILL after final raw/unsaved snapshots. Entire failed profile185members is independently readmatched, archive SHAde3f7fa642feeaa7ec91d024000fa122fbbf607f2619fe32a7a5c87a795d2d2a. Preserve it; no repair, relaunch or fresh-profile retag.
+
+Fresh clean0bd bootstrap, ordered full normative and scoped factual/code/evidence reads, mount/registry/fresh main4fa and architecture preflight actual0 precede this first write. This task E0 precedes delegated edits. One existing delivery and original4fa rollback remain. Earlier amendment HOLD statements describe earlier scope; this amendment thaws only Main handleMetadataUpdateCommand persistence fragment and appends to the existing metadata unit. Renderer, bundles, Core transaction, normalization, IPC and all previous tests remain exact0bd. No product rebuild is needed during executor phase; root later rebuilds the actual package.
+
+O: changing a synopsis on a normally saved scene preserves transaction coherence; subsequent ordinary Save/UndoRedo/Quit/cold reopen retains exact metadata and body with valid durable acknowledgements.
+T: metadata intent -> guarded canonical command and capability -> payload/project/node/path/source hash checks -> existing queue -> commitWriterProjectSnapshot -> current project lease, source/manifest CAS and Core atomic commit/recovery -> metadata-only receipt. Ordinary Save keeps its separate renderer generation acknowledgement.
+H: naked metadata write bypasses the existing scene/manifest commit. Reusing that transaction with exact source CAS and Main-owned canonical profile/target guards keeps scene bytes and commit digest coherent without weakening corruption refusal.
+B: retained commit integrity, no-loss working buffer, all prior source/tests, canonical profile and unknown fields, body/cards/notes/comments/bookmark/history/resources, old failed profiles and original delivery base stay protected. No reseal/delete/repair of old commit, no private writer, no new command/IPC/lease/registry/dependency/schema/security boundary.
+P: actual Main first ordinary Save creating a real commit -> metadata update -> ordinary Save causal RED on frozen0bd; verify exact error and recovery reason. Green unchanged-body and edited-body Save/UndoRedo/reopen, full rawscene/commit coherence and actual SAVED generation. Append late source/manifest/profile/project/node/window/lifecycle/session/owner/capability changes, failed transaction and corrupt retained commit negatives. Preserve whole twelve-case prefix. Existing focused/affected and required gates plus new rebuilt native journey precede push; full baseline/official maintained RTK/CI and fresh merged verification still required.
+I: clean0bd, originalmain4fa, exact architecture/preflight/taskE0/ticket/source hashes; future new build/ASAR/executable/owned profile and frozen Unicode/project/document/map/node identity.
+
+Executor budget: at most140 added+deleted Main lines only inside handleMetadataUpdateCommand; at most450 appended test lines after the exact current603-line metadata-inspector-read-model-main.test.js prefix. Main unchanged elsewhere. Preserve signature compatibility without retaining optional arbitrary writeFileAtomic bypass. Canonical bookProfile comes from the resolved Main manifest; refuse a later changed profile/manifest rather than overwrite it. Capture existing lastSignaledEditGeneration as authoring coordinate, never increase it or emit SAVED/clear dirty from metadata. Revalidate captured Main project/root/target/lifecycle/session/window (null-to-null remains valid for existing supported handler use), actual node identity, source and capability at existing queued/beforeScenePublish boundaries. No fallback naked atomic scene write. Existing backup contract and all old assertions stay.
+
+Root current binding/factual companions may change only declared paths. Full delivery scope21paths; unchanged membership denominators746DATA/599source/257certificate plus existing guard and1603inventory are forecasts until verified. No added scope classification, skip/lane, historical tuple or verifier predicate changes. Whole metadata, WP201 transaction/physics/mutants, book-profile, autosave, lifecycle/no-loss, clipboard/assurance and caller chains remain required. Record excluded historical retired five-skip file truthfully; execute its maintained31-case pathless replacement, never credit skips or drop required coverage.
+
+Delivery order remains focused/affected -> newly built native clipboard/Apply/Save/normalQuit/cold/full raw/profile -> push/CI -> complete baseline/full maintained RTK/CI review -> normal merge/fresh exact merged checks. Previousb83 order deviation remains retained. New local commits are checkpoints until delivery; no independent new contour or full-Mac completion claim.
 
 ## CONTRACT / SHAPES
 

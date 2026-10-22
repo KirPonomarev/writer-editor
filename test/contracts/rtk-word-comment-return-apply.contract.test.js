@@ -32,10 +32,10 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
   // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
   const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
-  const literal = committed.match(/^const R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SYNOPSIS_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
-  assert.ok(literal, 'candidate must declare its complete native text clipboard synopsis successor');
+  const literal = committed.match(/^const R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_TRANSACTION_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
+  assert.ok(literal, 'candidate must declare its complete native text clipboard metadata transaction successor');
   const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
-  assert.equal(current.id, 'YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_SYNOPSIS_02_20261022');
+  assert.equal(current.id, 'YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_TRANSACTION_03_20261022');
   assert.equal(current.bindings.length, 257);
   assert.equal(current.guards.length, 1);
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });

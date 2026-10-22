@@ -1,3 +1,73 @@
+# Native metadata transaction correction in PR2145 — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FROZEN_REQUIRED_GATES_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 0bd28bf050d07793066801a6e974c99f8875f044
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Existing metadata/Save transaction coherence within unfinished PR2145; no native, full Mac or release acceptance.
+
+Actual0bd native clipboard/caret input reached the expected synopsis, but subsequent
+ordinary Save refused COMMIT_RECORD_SCENE_DIGEST_MISMATCH. The old metadata handler
+changed the scene independently of its retained WP201 commit. Five real recovery
+packets, complete185member failed profile, raw18file project and exact artifact
+remain preserved. Normal Quit refused; exact owned process required SIGKILL after
+preserving unsaved bytes. That failed profile is never repaired or reused as fresh;
+0bd is local/unaccepted and its native journey has no cold-reopen acceptance.
+
+Fresh clean0bd bootstrap, full normative/scoped factual/code/evidence reads, current
+main4fa, architecture preflight and taskE0 precede this same-chain correction.
+Unchanged0bd actual Main first Save → metadata → second Save produced one causal
+failure among13cases: E_PROJECT_COMMIT_CORRUPT at RECOVER with the same raw/commit
+scene digest mismatch. The new handler uses existing queued commitWriterProjectSnapshot,
+current manifest authority lease and Core scene/manifest transaction. Canonical
+bookProfile is retained; Main captures its generation without advancing it or
+acknowledging unsaved text. Read-only raw manifest, exact scene CAS, node/path,
+capability, lifecycle/session/window/owner and generation guards reject late changes.
+A committed effect with stale session reports committed:true without shared-state
+publication. Genuine integrity corruption still refuses; no retained commit is resealed.
+
+Root review also found and reproduced a successful transaction with a wrong metadata
+receipt hash for valid compact V3 wire containing a real bookmark. Canonical continuation
+passed; compact wire persisted the same semantic document but the existing helper
+recomposed its bytes. Returned proposed-text hash differed from actual Core commit.
+The handler now consumes the actual transaction sceneDigest. Core, helper and envelope
+remain byte-exact. The maintained test exercises the valid raw baseline through real
+Core/lease, non-null registry, ordinary Save continuation and the next metadata CAS.
+Unknown document/manifest fields, profile, resources and protected history remain.
+
+The complete maintained metadata file executes 37of37 with0fail/cancel/skip/todo
+on the frozen source. Original603line/30486byte prefix stays exact. Tests cover actual
+Save → metadata → Save/reopen, dirty/generation acknowledgement separation, inactive
+scene, queued source/manifest/profile/node and lifecycle refusal, late publication guards,
+real interrupted-journal recovery and corrupt commit refusal. Finite Electron/transport
+hosts surround actual Main/Core/FS; these are source correctness, not native input proof.
+Earlier finite-host probe preparation failures remain separate from causal failures.
+
+The first complete25-file affected run executes357cases:340pass17fail, all17 blocked
+by DATA_RUNTIME_REPAIR_PIN before updated companion bindings. Its actual1 remains;
+source bytes were unchanged. Three newly born book-profile synthetic harness files
+were independently attributed, archived/read back across11members and isolated by
+same-device inode-preserving rename. No existing authority or user data moved.
+The final exact-commit25-file affected pack and all mandatory gates remain required.
+
+Only the admitted Main handler and appended metadata test change product/test behavior.
+Renderer, previous clipboard/caret fix, generated bundles, Core/preload/IPC/security,
+package/build inputs and all593 held source pins stay exact0bd. DATA746/source599,
+certificate257plus1guard and inventory1603 membership/classification/lane/skip policy
+remain. Root updates current hashes, appends a complete successor and append-only
+witnesses; historical certificate bytes/predicates, factual history, graph/V1/V2 and
+PlanState remain. Source review and these records create no stage or release authority.
+
+Next push follows complete focused/affected gates and an actual newly built packaged
+Library/map/node/synopsis/scene Save/normalQuit/cold/raw journey on a new owned profile.
+Full baseline/audit truth, exact official CI/full maintained RTK, normal merge and fresh
+merged verification remain mandatory. Previous earlyb83push deviation remains retained.
+Native INPUT CmdA, full IME/numeric MR06, Electron advisory and release locks remain open.
+Continue full Atlas/maps/WSE/Pulse/configuration epochs after this bounded delivery;
+Black Box follows release. Final material/evidence is T777, declared temporary runtime
+is owned APFS; no old evidence or synthetic counter is promoted to full Mac completion.
+
 # Native synopsis caret correction in PR2145 — 2026-10-22
 
 TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022

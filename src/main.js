@@ -34553,11 +34553,27 @@ async function handleMetadataUpdateCommand(payload = {}, options = {}) {
   const normalizedPayload = normalizeMetadataUpdatePayload(payload);
   if (!normalizedPayload.ok) return normalizedPayload;
   const safePayload = normalizedPayload.value;
+  const context = { projectName: currentProjectName, projectRoot: getProjectRootPath(), file: currentFilePath,
+    subject: currentLifecycleSubjectId(), session: commentAuthoringSessionId, window: mainWindow,
+    owner: activeStage10ApplicationBootstrap, generation: lastSignaledEditGeneration };
+  const assertContext = () => {
+    try { userBookmarkCapability(METADATA_UPDATE_COMMAND_ID); }
+    catch { throw Object.assign(Error('METADATA_UPDATE_CAPABILITY_DENIED'), { code: 'E_METADATA_UPDATE_CAPABILITY_DENIED' }); }
+    if (projectArchiveOpenCapture || context.projectName !== currentProjectName || context.projectRoot !== getProjectRootPath()
+      || context.file !== currentFilePath || context.subject !== currentLifecycleSubjectId()
+      || context.session !== commentAuthoringSessionId || context.window !== mainWindow
+      || (context.window && context.window.isDestroyed()) || context.owner !== activeStage10ApplicationBootstrap
+      || context.generation !== lastSignaledEditGeneration) {
+      throw Object.assign(Error('METADATA_UPDATE_CONTEXT_STALE'), { code: 'E_METADATA_UPDATE_CONTEXT_STALE' });
+    }
+  };
 
   let resolvedNode;
   let documentTarget;
   try {
+    assertContext();
     resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
+    assertContext();
     documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
   } catch (error) {
     return makeMetadataUpdateError(
@@ -34582,6 +34598,20 @@ async function handleMetadataUpdateCommand(payload = {}, options = {}) {
   }
 
   const filePath = documentPathGuard.payload.path;
+  const beforeScenePublish = async () => {
+    assertContext();
+    const current = await readProjectManifestRawAtPath(resolvedNode.manifestPath);
+    assertContext();
+    const record = current.manifest.treeIdentity?.nodes?.[safePayload.nodeId];
+    const pathCheck = sanitizePathFieldsWithinRoot({ path: filePath }, ['path'], resolvedNode.projectRoot,
+      { mode: 'any', resolveSymlinks: true });
+    if (current.raw !== resolvedNode.manifestRaw || current.manifest.projectId !== safePayload.projectId
+      || !record || record.present === false || record.kind !== resolvedNode.kind
+      || record.bindingKey !== `file:${path.relative(resolvedNode.projectRoot, filePath).split(path.sep).join('/')}`
+      || !pathCheck.ok || pathCheck.payload?.path !== filePath) {
+      throw Object.assign(Error('METADATA_UPDATE_TARGET_STALE'), { code: 'E_METADATA_UPDATE_TARGET_STALE' });
+    }
+  };
   let sourceText = '';
   try {
     sourceText = await fs.readFile(filePath, 'utf8');
@@ -34656,20 +34686,32 @@ async function handleMetadataUpdateCommand(payload = {}, options = {}) {
     return makeMetadataUpdateError('E_METADATA_UPDATE_BACKUP_FAILED', 'METADATA_UPDATE_BACKUP_FAILED');
   }
 
-  const writeFileAtomic = typeof options.writeFileAtomic === 'function'
-    ? options.writeFileAtomic
-    : (targetPath, content) => fileManager.writeFileAtomic(targetPath, content);
-  const writeResult = await queueDiskOperation(
-    () => writeFileAtomic(filePath, nextText),
-    'update metadata',
-  );
+  let writeResult;
+  try {
+    writeResult = await queueDiskOperation(async () => {
+      await beforeScenePublish();
+      return commitWriterProjectSnapshot(filePath, nextText, context.generation, resolvedNode.manifest.bookProfile,
+        'update metadata project transaction', { expectedSceneContent: sourceText, beforeScenePublish });
+    }, 'update metadata project transaction');
+  } catch (error) {
+    return makeMetadataUpdateError(error?.code || 'E_METADATA_UPDATE_WRITE_FAILED', 'METADATA_UPDATE_WRITE_FAILED');
+  }
   if (!writeResult || writeResult.success !== true) {
-    return makeMetadataUpdateError('E_METADATA_UPDATE_WRITE_FAILED', 'METADATA_UPDATE_WRITE_FAILED', {
+    return makeMetadataUpdateError(writeResult?.code || 'E_METADATA_UPDATE_WRITE_FAILED', 'METADATA_UPDATE_WRITE_FAILED', {
       message: writeResult && typeof writeResult.error === 'string' ? writeResult.error : '',
     });
   }
 
-  const contentHashAfter = computeHash(nextText);
+  const contentHashAfter = writeResult.sceneDigest;
+  if (typeof contentHashAfter !== 'string' || !/^[a-f0-9]{64}$/u.test(contentHashAfter)) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_RECEIPT_INVALID', 'METADATA_UPDATE_RECEIPT_INVALID', { committed: true });
+  }
+  try { assertContext(); }
+  catch (error) {
+    return makeMetadataUpdateError(error?.code || 'E_METADATA_UPDATE_CONTEXT_STALE', 'METADATA_UPDATE_CONTEXT_STALE', {
+      committed: true, contentHashAfter,
+    });
+  }
   if (filePath === currentFilePath) {
     lastAutosaveHash = contentHashAfter;
     backupHashes.set(filePath, contentHashAfter);

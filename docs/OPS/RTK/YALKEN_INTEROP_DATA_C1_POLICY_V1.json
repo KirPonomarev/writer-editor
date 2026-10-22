@@ -982,7 +982,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "bcb5debd6247c990ff8f8ac5a0ce1946c506ef4a0d0d7ad2ac6fbf89b8ce0d10"
+        "sha256": "f2a50039d351ee70e45fac15bf40e38e65063e667396bdca9bee9db261aa2e4e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1718,7 +1718,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "1988414a6c0116eab397ca82159d066b5257eef8cfc2df1691dc792bd45e3a8f"
+        "sha256": "3992e64d8e46127274c8397f242c0dd71f4393a9e49e47056f325f3071a61397"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2278,7 +2278,7 @@
       },
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
-        "sha256": "d44bab97657d140cecef58a28c450ff3288e0bb6231b87d1aa147f79199522da"
+        "sha256": "84264434f624dbf40b260eb6119c11c262c6c887adf58f2f8139f1c772eb1089"
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
@@ -2674,15 +2674,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f18994581a524eeff331a5b29abdd596a80c83b70d5b481838f7c6d4a31a6b7c"
+        "sha256": "02ed565ad800b08d0eae1c68b6f247de539cf343246992ccf531829ed0752a3d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3cf2dea180f1e1df252ee50dd09d8f43d558af6ee66996b3a4746a54571f544a"
+        "sha256": "28dabfbfa466b36db14ed8fc85141dabcf19b6848384d7d46c21247aaf833d4b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4a14aa4f2d152e3296054daa679a6a520529d5963a2c7e0d48be4b0d641c88ca"
+        "sha256": "cc714017d3dee3052303f4f85d9be068767d3af4415a656fc01859c711a12e53"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3222,7 +3222,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "f49baaf649c383cb02b7991403919badf781b5ef71d719a46e06339aa7ae6bc1"
+        "sha256": "b8a97d213f891c290ab185f2331f4c38cab868053728ea4e854e91189fcef5a3"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3362,7 +3362,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
-        "sha256": "6e8e905139545233609530c0a49f655144fd7aa79ef385f38067d99d996a9383"
+        "sha256": "19b9297227fceddca5b3317aa817e791f48e836e8bce7b28dd59bc949a3c6346"
       },
       {
         "path": "test/unit/paste-focus-signal.test.js",
