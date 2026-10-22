@@ -1,3 +1,14 @@
+## 2026-10-22 — Project document eligibility correction
+
+Actual native longform opening selected AppleDouble metadata; source scenes stayed
+exact. Bounded Main fallback/continuity/startup filtering preserves real category
+carriers and valid identities/cursors. Actual-Main frozen RED-to-GREEN and separate
+raw readers confirm the correction. Full maintained WP30243/43, affected8-file125/125
+and archive18/18 execute without skip/todo. Existing test prefix and raw payloads
+remain; generated synthetic test runtime is preserved and isolated. Only current
+source/inventory/certificate/approval companions change. Commit/CI/merge/merged
+proof and rebuilt native repeat remain required; MR06/release is not accepted.
+
 ## 2026-10-22 — Scoped factual startup candidate
 
 Retain full law reads and history; read current and task-relevant factual sections. Startup and P03 compatibility contracts pass34of34; full current CI and merged proof remain pending. No product release claim.

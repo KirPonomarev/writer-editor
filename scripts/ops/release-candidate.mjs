@@ -684,9 +684,9 @@ function printHuman(state) {
 // Opt-in MR01 scope query. It cannot qualify a candidate or execute a release.
 // These pins are trusted policy, not values learned from a caller-resealed cut.
 export const FIRST_MAC_RELEASE_SOURCE_PINS = Object.freeze({
-  "AGENTS.md": "cf1bb1a8f4dd265867661b239626b91aed8ec28af202e66b842914fb50c57524",
+  "AGENTS.md": "af4fdeb93def4476134c376ba8c3679f76d0837d895478628841b91a35cd37da",
   "CANON.md": "99398ac898104c7a392f0e84b4bb8848212e2c5a7db6ae27cbfc549c3e070e48",
-  "docs/AGENT_START_PROTOCOL.md": "b72f6e8c1b118f614679df48b37564c48e5fc5f802d6606e80b2add3f8445351",
+  "docs/AGENT_START_PROTOCOL.md": "3a86699d6320666c84ec1316e2e51cf78f843893759ba2d1b3eb98a9c5ee1b4f",
   "docs/BIBLE.md": "94864b5d7cbec709ca6d7e9c6a838ff9405cfbc86443a5485acd149ccc16de93",
   "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json": "7185d649974289e8b3a0b310203b32dbd0bac96a613adf3cf26b308ff0067df5",
   "docs/OPS/R24/OWNER_GATE_DECISIONS/ENTITLEMENT_SEMANTICS_ADR_OR_DENY_WP206_SAFE_ENTITLEMENT_BASELINE_V1.json": "d86d4edd2faf14a4ac019a3561ce468a83c333b5112ba57490211b04cd061c0e",
@@ -713,7 +713,7 @@ export const FIRST_MAC_RELEASE_SOURCE_PINS = Object.freeze({
   "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
   "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
   "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
-  "src/main.js": "ce214571f40df3f44e261c13fdb2a2f9545a85c9ba82667c828196d923a29857",
+  "src/main.js": "ab3babb81fc04432b475f1383bc8adf53da11c800f07930217dfed097a6e1046",
   "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
   "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
   "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",

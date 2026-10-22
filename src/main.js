@@ -21810,6 +21810,21 @@ async function ensureProjectSkeleton(projectNameInput) {
   };
 }
 
+function isEligibleProjectDocumentRelativePath(relativePath) {
+  if (typeof relativePath !== 'string' || !relativePath) return false;
+  const segments = relativePath.split('/');
+  if (segments.some((segment) => !segment || segment === '.' || segment === '..')) return false;
+  if (segments.every((segment) => !segment.startsWith('.'))) return true;
+
+  // Category documents are the supported hidden carrier, not navigation entries.
+  if (segments.length !== 3 || segments[2].toLowerCase() !== '.index.txt'
+    || segments.slice(0, 2).some((segment) => segment.startsWith('.'))) return false;
+  const sections = segments[0] === PROJECT_SUBFOLDERS.materials
+    ? MATERIALS_SECTIONS
+    : (segments[0] === PROJECT_SUBFOLDERS.reference ? REFERENCE_SECTIONS : []);
+  return sections.some((section) => section.dirName === segments[1]);
+}
+
 async function collectProjectTextFiles(rootPath, output = []) {
   let entries = [];
   try {
@@ -21818,6 +21833,7 @@ async function collectProjectTextFiles(rootPath, output = []) {
     return output;
   }
   for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name, 'ru'))) {
+    if (!isEligibleProjectDocumentRelativePath(entry.name)) continue;
     const entryPath = joinPathSegmentsWithinRoot(rootPath, [entry.name], { resolveSymlinks: false });
     if (entry.isDirectory()) {
       await collectProjectTextFiles(entryPath, output);
@@ -21834,7 +21850,7 @@ async function resolveProjectContinueTarget(projectBinding, settings = {}) {
   const relative = record?.projectId === projectBinding.projectId
     ? record.documentRelativePath
     : '';
-  if (relative) {
+  if (relative && isEligibleProjectDocumentRelativePath(relative)) {
     const candidatePath = joinPathSegmentsWithinRoot(projectBinding.projectRoot, relative.split('/'), {
       resolveSymlinks: false,
     });
@@ -23525,10 +23541,13 @@ async function resolveLastOpenedFilePath(settings) {
   if (!continuity.ok && continuity.present) return null;
   const lastProjectId = continuity.record?.projectId || continuity.projectId || '';
   const lastProjectRelativePath = continuity.record?.documentRelativePath || '';
+  let boundProjectRoot = '';
 
   if (lastProjectId && lastProjectRelativePath) {
+    if (!isEligibleProjectDocumentRelativePath(lastProjectRelativePath)) return null;
     const projectBinding = await findProjectBindingByProjectId(lastProjectId);
     if (projectBinding && projectBinding.projectRoot) {
+      boundProjectRoot = projectBinding.projectRoot;
       try {
         const candidatePath = joinPathSegmentsWithinRoot(projectBinding.projectRoot, lastProjectRelativePath.split('/'), {
           resolveSymlinks: false,
@@ -23542,12 +23561,14 @@ async function resolveLastOpenedFilePath(settings) {
   }
 
   const externalPath = typeof source.lastExternalFilePath === 'string' ? source.lastExternalFilePath.trim() : '';
-  if (externalPath) {
-    return externalPath;
-  }
-
   const legacyPath = typeof source.lastFilePath === 'string' ? source.lastFilePath.trim() : '';
-  return legacyPath || null;
+  const fallbackPath = externalPath || legacyPath;
+  if (boundProjectRoot && fallbackPath
+    && (fallbackPath === boundProjectRoot || isPathInside(boundProjectRoot, fallbackPath))
+    && !isEligibleProjectDocumentRelativePath(path.relative(boundProjectRoot, fallbackPath).split(path.sep).join('/'))) {
+    return null;
+  }
+  return fallbackPath || null;
 }
 
 // Путь к файлу настроек

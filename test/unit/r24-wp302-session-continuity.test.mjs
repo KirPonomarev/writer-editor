@@ -574,3 +574,206 @@ test('actual window startup continuation preserves autosave precedence after pro
     }
   }
 });
+
+async function contentSelectionFixture(t, options = {}) {
+  const harness = await createHarness(t);
+  const projectRoot = path.join(harness.documentsRoot, 'Content Selection');
+  // Match the unchanged path boundary's NFC binding form, not filesystem spelling.
+  const relative = (options.relative || 'roman/01_Часть/01_Глава/01_Сцена.txt').normalize('NFC');
+  const content = options.content ?? 'Каноническая сцена Café e\u0301 🧭\nстрока два\n';
+  const metadataRelative = path.posix.join(path.posix.dirname(relative), `._${path.posix.basename(relative)}`);
+  const projectId = 'project-content-selection';
+  const documentId = 'tree-node-33333333333333333333333333333333';
+  const nodes = {
+    'tree-node-11111111111111111111111111111111': {
+      bindingKey: 'file:roman/01_Часть', kind: 'part', present: true,
+    },
+    'tree-node-22222222222222222222222222222222': {
+      bindingKey: 'file:roman/01_Часть/01_Глава', kind: 'chapter-folder', present: true,
+    },
+    [documentId]: { bindingKey: `file:${relative}`, kind: 'scene', present: true },
+    ...(options.nodes || {}),
+  };
+  const manifest = {
+    schemaVersion: 1, projectId, projectName: 'Content Selection',
+    createdAtUtc: '2026-10-22T00:00:00.000Z',
+    futureUnknown: { protected: ['not a navigation cache'] },
+    treeIdentity: { schemaVersion: 1, nodes },
+  };
+  await fsPromises.mkdir(projectRoot, { recursive: true });
+  await fsPromises.writeFile(path.join(projectRoot, PROJECT_MANIFEST_FILENAME), `${JSON.stringify(manifest)}\n`);
+  const payloads = new Map([
+    [metadataRelative, Buffer.from([0, 5, 22, 7, 0, 2, 0, 0, 77, 97, 99, 32, 79, 83, 32, 88, 255])],
+    ['._project.craftsman.json', Buffer.from([0, 5, 22, 7, 0, 255])],
+    ...(options.omitScene ? [] : [[relative, Buffer.from(content)]]),
+    ...(options.extraFiles || []).map(([name, value]) => [name, Buffer.from(value)]),
+  ]);
+  for (const [name, bytes] of payloads) {
+    const target = path.join(projectRoot, ...name.split('/'));
+    await fsPromises.mkdir(path.dirname(target), { recursive: true });
+    await fsPromises.writeFile(target, bytes);
+  }
+  const reads = [];
+  const originalRead = harness.fileManager.readFile;
+  harness.fileManager.readFile = async (...args) => {
+    const result = await originalRead(...args);
+    reads.push({ filePath: args[0], result });
+    return result;
+  };
+  t.after(() => { harness.fileManager.readFile = originalRead; });
+  const assertPreserved = async () => {
+    for (const [name, bytes] of payloads) {
+      assert.deepEqual(await fsPromises.readFile(path.join(projectRoot, ...name.split('/'))), bytes, name);
+    }
+    const persisted = JSON.parse(await fsPromises.readFile(path.join(projectRoot, PROJECT_MANIFEST_FILENAME), 'utf8'));
+    assert.deepEqual(persisted.futureUnknown, manifest.futureUnknown);
+  };
+  return { ...harness, projectRoot, projectId, relative, metadataRelative, content, documentId, reads, assertPreserved };
+}
+
+async function assertCanonicalContentOpen(fixture, { source = 'first-scene', selection = { start: 0, end: 0 } } = {}) {
+  const opened = await fixture.main.handleProjectLifecycleOpenCommand({ projectId: fixture.projectId });
+  assert.equal(opened.ok, true, JSON.stringify(opened));
+  assert.equal(opened.continuationSource, source);
+  assert.equal(opened.documentId, fixture.documentId);
+  assert.equal(fixture.reads.length, 1, 'one actual document read through the existing fileManager');
+  assert.equal(fixture.reads[0].filePath, path.join(fixture.projectRoot, ...fixture.relative.split('/')));
+  assert.equal(fixture.reads[0].result.success, true);
+  assert.equal(fixture.reads[0].result.content, fixture.content);
+  const settings = JSON.parse(await fsPromises.readFile(fixture.settingsPath, 'utf8'));
+  assert.equal(settings.sessionContinuityV1.projectId, fixture.projectId);
+  assert.equal(settings.sessionContinuityV1.documentRelativePath, fixture.relative);
+  assert.deepEqual(settings.sessionContinuityV1.selectionRange, selection);
+  const tree = await fixture.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
+  assert.equal(tree.ok, true, JSON.stringify(tree));
+  assert.ok(findNode(tree.root, node => node.nodeId === fixture.documentId));
+  assert.equal(findNode(tree.root, node => typeof node.label === 'string' && node.label.startsWith('._')), null,
+    'metadata never becomes a navigation node; internal dots remain ordinary text');
+  await fixture.assertPreserved();
+  return settings;
+}
+
+test('WP302 canonical open selects nested authored text instead of its AppleDouble sibling', async t => {
+  await assertCanonicalContentOpen(await contentSelectionFixture(t));
+});
+
+test('WP302 canonical open preserves legacy Imported text and its existing identity', async t => {
+  await assertCanonicalContentOpen(await contentSelectionFixture(t, { relative: 'roman/Imported/01 Start.txt' }));
+});
+
+test('WP302 zero-byte scene stays eligible while a nonempty AppleDouble sibling stays raw', async t => {
+  await assertCanonicalContentOpen(await contentSelectionFixture(t, { content: '' }));
+});
+
+test('WP302 first scene traversal excludes hidden ancestors without deleting their documents', async t => {
+  await assertCanonicalContentOpen(await contentSelectionFixture(t, {
+    extraFiles: [['roman/.transport/00 Hidden.txt', 'hidden payload retained']],
+  }));
+});
+
+for (const mode of ['v1', 'legacy']) test(`WP302 ${mode} metadata continuation falls back without transferring its cursor`, async t => {
+  const h = await contentSelectionFixture(t);
+  const metadataPath = path.join(h.projectRoot, ...h.metadataRelative.split('/'));
+  const settings = mode === 'v1'
+    ? { sessionContinuityV1: makeRecord({ projectId: h.projectId, documentRelativePath: h.metadataRelative, selectionRange: { start: 2, end: 5 } }) }
+    : { lastProjectId: h.projectId, lastProjectRelativePath: h.metadataRelative, lastProjectSelectionRange: { start: 2, end: 5 } };
+  settings.lastFilePath = metadataPath;
+  settings.lastExternalFilePath = metadataPath;
+  assert.equal(await h.main.resolveLastOpenedFilePath(settings), null, 'startup refuses both metadata and forged lower-priority mirrors');
+  assert.equal(h.reads.length, 0);
+  await fsPromises.writeFile(h.settingsPath, JSON.stringify(settings));
+  await assertCanonicalContentOpen(h);
+});
+
+test('WP302 hidden ancestor continuity cannot reopen a hidden payload at startup or project open', async t => {
+  const hidden = 'roman/.transport/00 Hidden.txt';
+  const h = await contentSelectionFixture(t, { extraFiles: [[hidden, 'hidden retained']] });
+  const settings = { sessionContinuityV1: makeRecord({ projectId: h.projectId, documentRelativePath: hidden }) };
+  assert.equal(await h.main.resolveLastOpenedFilePath(settings), null);
+  await fsPromises.writeFile(h.settingsPath, JSON.stringify(settings));
+  await assertCanonicalContentOpen(h);
+});
+
+for (const mirror of ['lastFilePath', 'lastExternalFilePath']) test(`WP302 missing visible target cannot fall through to bound metadata ${mirror}`, async t => {
+  const h = await contentSelectionFixture(t);
+  const settings = {
+    sessionContinuityV1: makeRecord({ projectId: h.projectId, documentRelativePath: 'roman/Imported/99 Missing.txt' }),
+    [mirror]: path.join(h.projectRoot, ...h.metadataRelative.split('/')),
+  };
+  assert.equal(await h.main.resolveLastOpenedFilePath(settings), null, 'eligible missing record exercises the absolute fallback branch');
+  assert.equal(h.reads.length, 0);
+  await h.assertPreserved();
+});
+
+test('WP302 visible valid last-active retains its text identity and cursor', async t => {
+  const h = await contentSelectionFixture(t);
+  const selection = { start: 2, end: 5 };
+  const settings = { sessionContinuityV1: makeRecord({ projectId: h.projectId, documentRelativePath: h.relative, selectionRange: selection }) };
+  assert.equal(await h.main.resolveLastOpenedFilePath(settings), path.join(h.projectRoot, ...h.relative.split('/')));
+  await fsPromises.writeFile(h.settingsPath, JSON.stringify(settings));
+  await assertCanonicalContentOpen(h, { source: 'last-active', selection });
+});
+
+for (const [section, category, kind] of [
+  ['materials', 'Заметки', 'materials-category'],
+  ['reference', 'Персонажи', 'reference-category'],
+]) for (const carrier of ['.index.txt', '.INDEX.TXT']) test(`WP302 ${section} category ${carrier} remains a supported last-active document`, async t => {
+  const relative = `${section}/${category}/${carrier}`;
+  const documentId = 'tree-node-44444444444444444444444444444444';
+  const h = await contentSelectionFixture(t, {
+    extraFiles: [[relative, 'Category text preserved']],
+    nodes: { [documentId]: { bindingKey: `file:${section}/${category}`, kind, present: true } },
+  });
+  const selection = { start: 2, end: 5 };
+  const settings = { sessionContinuityV1: makeRecord({ projectId: h.projectId, documentRelativePath: relative, selectionRange: selection }) };
+  const target = path.join(h.projectRoot, ...relative.split('/'));
+  assert.equal(await h.main.resolveLastOpenedFilePath(settings), target);
+  await fsPromises.writeFile(h.settingsPath, JSON.stringify(settings));
+  const opened = await h.main.handleProjectLifecycleOpenCommand({ projectId: h.projectId });
+  assert.equal(opened.ok, true, JSON.stringify(opened));
+  assert.equal(opened.continuationSource, 'last-active');
+  assert.equal(opened.documentId, documentId, 'carrier retains category identity rather than a hidden-file identity');
+  assert.deepEqual(h.reads, [{ filePath: target, result: { success: true, content: 'Category text preserved' } }]);
+  const persisted = JSON.parse(await fsPromises.readFile(h.settingsPath, 'utf8'));
+  assert.equal(persisted.sessionContinuityV1.documentRelativePath, relative);
+  assert.deepEqual(persisted.sessionContinuityV1.selectionRange, selection);
+  await h.assertPreserved();
+});
+
+for (const relative of ['roman/Imported/.index.txt', 'materials/Заметки/.draft.txt', 'materials/Arbitrary/.index.txt']) {
+  test(`WP302 hidden non-carrier ${relative} stays raw and cannot become continuity`, async t => {
+    const h = await contentSelectionFixture(t, { extraFiles: [[relative, 'not an admitted category carrier']] });
+    const settings = { sessionContinuityV1: makeRecord({ projectId: h.projectId, documentRelativePath: relative }) };
+    assert.equal(await h.main.resolveLastOpenedFilePath(settings), null);
+    await fsPromises.writeFile(h.settingsPath, JSON.stringify(settings));
+    await assertCanonicalContentOpen(h);
+  });
+}
+
+for (const filename of ['01_internal._dots.txt', '01_under_score.TXT', '01_Сцена e\u0301 🧭.txt']) {
+  test(`WP302 visible filename ${filename} retains fallback eligibility`, async t => {
+    await assertCanonicalContentOpen(await contentSelectionFixture(t, { relative: `roman/Imported/${filename}` }));
+  });
+}
+
+test('WP302 metadata-only project returns the existing typed empty result without reading metadata', async t => {
+  const h = await contentSelectionFixture(t, { omitScene: true });
+  const opened = await h.main.handleProjectLifecycleOpenCommand({ projectId: h.projectId });
+  assert.equal(opened.ok, false);
+  assert.equal(opened.code, 'E_PROJECT_EMPTY');
+  assert.equal(h.reads.length, 0);
+  await h.assertPreserved();
+});
+
+test('WP302 bound missing target retains legitimate visible and external startup fallbacks', async t => {
+  const h = await contentSelectionFixture(t);
+  const settings = { sessionContinuityV1: makeRecord({ projectId: h.projectId, documentRelativePath: 'roman/Imported/99 Missing.txt' }) };
+  const canonical = path.join(h.projectRoot, ...h.relative.split('/'));
+  assert.equal(await h.main.resolveLastOpenedFilePath({ ...settings, lastFilePath: canonical }), canonical);
+  const external = path.join(h.documentsRoot, 'external.txt');
+  await fsPromises.writeFile(external, 'external startup compatibility');
+  assert.equal(await h.main.resolveLastOpenedFilePath({ ...settings, lastExternalFilePath: external, lastFilePath: canonical }), external);
+  assert.equal(await h.main.resolveLastOpenedFilePath({ lastExternalFilePath: external }), external);
+  assert.equal(h.reads.length, 0, 'resolver preserves its read-only path-result role');
+  await h.assertPreserved();
+});

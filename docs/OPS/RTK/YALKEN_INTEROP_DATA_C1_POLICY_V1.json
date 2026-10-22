@@ -737,7 +737,8 @@
     "docs/architecture/AGENT_CONTEXT_PACKET_V1.schema.json",
     "test/contracts/agent-architecture-guardrails.contract.test.js",
     "test/contracts/agent-context-restoration.contract.test.mjs",
-    "docs/tasks/2026-10-22--agent-scoped-context.md"
+    "docs/tasks/2026-10-22--agent-scoped-context.md",
+    "docs/tasks/2026-10-22--mac-project-open-content.md"
   ],
   "protectedFiles": [
     {
@@ -966,7 +967,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ce214571f40df3f44e261c13fdb2a2f9545a85c9ba82667c828196d923a29857"
+        "sha256": "ab3babb81fc04432b475f1383bc8adf53da11c800f07930217dfed097a6e1046"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1702,7 +1703,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b13101b8ed7850fe0aa4a9c24bd37e351ce496350030eeb4c1a6ac5634fa90e5"
+        "sha256": "9159411cb60889b7d1bc6bfd85ccee2c71d2e8a2619d96ec6225c9de49cb7376"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2654,19 +2655,19 @@
       },
       {
         "path": "test/unit/r24-wp302-session-continuity.test.mjs",
-        "sha256": "515d2a0f5a482d6d815cb1b3be4f933c6ee18a25a980edec62fb96f1ce255603"
+        "sha256": "16b4295febd49f7a735f91ecc2eb9fee4108c1280e8e4977c62ffa1e70a3a0f5"
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "c79f0bc8fd1fd56cb3b3dedecdef0408740e0be890e1dff790233e5c2b54bed7"
+        "sha256": "a8e0bc4658f2ad32e94974547654f91f1b08ac6b733a594e47bfd32e4a99befe"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "af1ebf559caf1782aeb62db58bb6465d885a227ee0cf478c7528901da0490fd1"
+        "sha256": "288075ab60133f5986fe738778b59caa563090fa276c199b8a6ed5073ce7ddcd"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "94ec6169ded9b418ba861cfbf2a9aca898d9c7bb9cb9e0425b2f42de369fd35e"
+        "sha256": "228dcea8cb499b1ec454800a6c61cb036f2deed2801dcffc5ec6cae3dbc15ae0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3206,7 +3207,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e9c04c48354357b5c14d21bd7de50e24fef30a7d247630282f8fd415623fd2a6"
+        "sha256": "c4258fba9aa2a382dd27206261734696f3ef99b6c286f1343183bc0f74716b6d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3230,7 +3231,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "e1f39fdcc4cc2f5df40cfbf285bfc1af3cbc96a77779ef1a76a03bcf73642c7d"
+        "sha256": "6e6b034d89b680b5ee605c2eb01a7d1bf4dd5e374383a18867218a1471dfe30b"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3238,7 +3239,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
-        "sha256": "bb1df2fe4243261f4bc8115ac829f17e1577deb174aa526a7333510c9a25adc6"
+        "sha256": "6c29bd28bde708df484dbb20056fff2b633fa0ed67028680ba389bc80dccc76e"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-first-release-scope.md",
@@ -3295,6 +3296,10 @@
       {
         "path": "docs/tasks/2026-10-22--agent-scoped-context.md",
         "sha256": "79bb05db5510a9986ba0065b57078fb18f91ce45c4c4d2f92ff17e827718084b"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--mac-project-open-content.md",
+        "sha256": "aa4d99e29d14645b9a4856dfd497b64e09813d18af6caaf16f85413162ec0219"
       }
     ],
     "followupRepair": {
