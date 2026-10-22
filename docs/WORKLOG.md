@@ -1,3 +1,9 @@
+# 2026-10-22 — Atlas registry parity companion correction: source verified, delivery open
+
+The Atlas async-publication runtime and its five-file focused source remain frozen at the reviewed9095 checkpoint bytes. The baseline-controlled ER C02 mismatch is corrected only by three exact preload assertions: tree and library createEnvelope arguments and the generic envelope/timeout/invoke path. All4 existing ER cases and all other assertions remain; the whole ER plus two existing preload files executed14 of14 with zero failure/cancel/skip/todo. Preload/Main/runtime source is unchanged. Clean9095 refined admission preceded the first ER edit; raw outer-wrapper metadata and actual declaration-argument binding are distinguished in ADMISSION_ARGUMENT_BINDING.json.
+
+Current companions append only the existing required ER test to DATA/source/certificate/DONE membership, preserve all historical tuples/predicates, and refresh current hashes and successor identity/count. Inventory membership, required classes/lanes and skips stay unchanged. This source checkpoint does not close native, whole40/source/baseline, official CI, push/PR/merge or merged verification. Full Mac, native IME, numerical performance, signing and public distribution remain open; moderate Electron advisory remains declared. Predecessor PR2145 remains a bounded closed delivery, not full-product acceptance.
+
 # 2026-10-22 — Atlas delayed-publication correction: source checkpoint, delivery open
 
 PR2145 closed by normal merge b113069233521b4b1288d7e9ca3849aa03e4cf27, with fresh merged-source checks and packaged warm/cold raw project/profile verification. Bounded DELIVERY_CLOSURE.json SHA d114cd8883719d6f327e7ab9876fea86285b316b35694f8f78301f083947dade; this does not close the full Mac objective.

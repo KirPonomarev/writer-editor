@@ -152,9 +152,9 @@ test('ER C02: main and renderer consume registry; preload remains sandbox-safe p
   assert.doesNotMatch(editorSource, /queryId !== ATLAS_[A-Z_]+_QUERY_ID/u);
   assert.doesNotMatch(editorSource, /queryId !== 'query\.[^']+'/u);
 
-  assert.match(preloadSource, /queryId: PRELOAD_WORKSPACE_QUERY_IDS\.PROJECT_TREE/u);
-  assert.match(preloadSource, /queryId: PRELOAD_WORKSPACE_QUERY_IDS\.PROJECT_LIBRARY/u);
-  assert.match(preloadSource, /return ipcRenderer\.invoke\(WORKSPACE_QUERY_BRIDGE_CHANNEL, \{ queryId, payload \}\);/u);
+  assert.match(preloadSource, /getProjectTree: \(tab\) => \{\s*const envelope = createEnvelope\(WORKSPACE_QUERY_BRIDGE_CHANNEL, PRELOAD_WORKSPACE_QUERY_IDS\.PROJECT_TREE, \{ tab \}\);/u);
+  assert.match(preloadSource, /getProjectLibrary: \(payload\) => \{\s*const envelope = createEnvelope\(WORKSPACE_QUERY_BRIDGE_CHANNEL, PRELOAD_WORKSPACE_QUERY_IDS\.PROJECT_LIBRARY, normalizeRequestPayload\(payload\)\);/u);
+  assert.match(preloadSource, /invokeWorkspaceQueryBridge: \(request\) => \{[\s\S]{0,650}const envelope = createEnvelope\(WORKSPACE_QUERY_BRIDGE_CHANNEL, queryId, payload\);\s*return withTimeoutBudget\(\s*\(\) => ipcRenderer\.invoke\(WORKSPACE_QUERY_BRIDGE_CHANNEL, envelope\),\s*\{ timeoutMs: QUERY_BRIDGE_TIMEOUT_MS, correlationId: envelope\.correlationId \},\s*\);/u);
   assert.match(editorSource, /const PROJECT_TREE_QUERY_ID = WORKSPACE_QUERY_IDS\.PROJECT_TREE;/u);
   assert.match(editorSource, /const COLLAB_SCOPE_LOCAL_QUERY_ID = WORKSPACE_QUERY_IDS\.COLLAB_SCOPE_LOCAL;/u);
 });

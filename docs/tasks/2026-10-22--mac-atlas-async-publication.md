@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_ATLAS_ASYNC_PUBLICATION_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 5c0ee35c4a457ed0b177af5aad92f8c30ba62e84
-HEAD_SHA_AT_START: 5c0ee35c4a457ed0b177af5aad92f8c30ba62e84
+BINDING_BASE_SHA: 9095f1d17d5c8d5cca3dfeaca55fd58bb7e89bfc
+HEAD_SHA_AT_START: 9095f1d17d5c8d5cca3dfeaca55fd58bb7e89bfc
 ORIGINAL_DELIVERY_BASE_SHA: b113069233521b4b1288d7e9ca3849aa03e4cf27
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-atlas-async-publication-20261022
@@ -44,18 +44,16 @@ Five delegated files: editor.js, normal generated editor.bundle.js, existing R2 
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/sector-m-scope-map.json
-- src/renderer/editor.bundle.js
-- src/renderer/editor.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
-- test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js
-- test/unit/metadata-inspector-read-model-main.test.js
-- test/unit/project-tree-pathless-contract.test.js
+- test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js
 
 ## DENYLIST
 
 Everything outside the exact allowlist. No Main/Core/preload/IPC/command policy/schema/storage/platform change. No HTML/CSS/tokens/visual baseline change, new dependencies/network, stage admission, release cut or graph policy change. No reset/stash/clean/rebase/checkout/amend/force-push. No private data, owner profile mutation, signing/notary/publication or Windows/Linux implementation. No assertion weakening, skips, filtering, swallowed failure or fabricated receipt. Existing13 R2 test bodies/assertions must remain exact; faithful harness wiring may add required actual helpers/globals.
 
 ## CONTRACT / SHAPES
+
+Current clean checkpoint amendment: 9095f1d17 contains the reviewed five-file source correction and current companion bindings; it is not delivery acceptance. All five runtime/behavior files named above are now frozen and forbidden to edit. The only newly delegated write is the existing ER C02 registry parity contract: replace its three retired preload assertions with exact current tree/library and generic createEnvelope plus withTimeoutBudget/invoke contracts, at most16 added+deleted lines, all4 cases and every other assertion preserved. Root independently reproduced the same3 of4 result on clean b113. Root may update only this task, factual prefixes, exact current hashes, successor identity/count and append this required ER path to current DATA/source/certificate/DONE memberships. No preload/runtime change, coverage exclusion, skip, predicate weakening or gate waiver. The original runtime budget and implementation below describe the completed frozen source checkpoint, not renewed edit authority. Complete branch denominator is original18 plus ER; current amendment write denominator is14.
 
 Integration mode: EXISTING_SEAM. This corrects existing publication ownership, not product meaning or UI design. The current draft is authoring working state; it is not disposable shell state. Successful A remains a real canonical effect even if its UI has been superseded. Current failures remain visible. Error display in dispatch must be guarded before it touches status, not after the caller regains control. Child refreshes must consume the same ownership and independently validate query order/context. Preserve the normal refresh set and direct-query behavior.
 
@@ -150,6 +148,7 @@ Internal references: brain:refs executed read-only; current R2 C02 source/contra
 ## IMPLEMENTATION_STEPS
 
 CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
+Current amendment: fresh clean9095 bootstrap/preflight passed before this task edit. Read the unchanged envelope source and baseline failure; separate agent repairs only three ER contracts; root preserves frozen five-file source, updates current companions, then reruns whole40 and all delivery gates.
 1. Original clean b113 preflight admitted the task-only checkpoint5c0ee35c4. Expanded clean checkpoint preflight admits the finite existing lifecycle/fanout and two fixture wiring paths before first runtime/test edit; original failure and receipts retained. Root clean exact-base bootstrap, ordered reads, current scope/source/authority checks, declaration/preflight before first repo edit; task E0 before separate code agent.
 2. Agent builds minimal unchanged-runtime RED. Freeze failure/source identities. Only after causal failure, surgical ownership correction and preserved whole R2 acceptance. Report any fixture-method failures separately.
 3. Root independently reviews source diff, preservation, schedules and affected-chain selection. Normal bundle and exact current binding companions; commit semantic checkpoint after verification, not full acceptance.
