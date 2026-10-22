@@ -1,3 +1,9 @@
+# 2026-10-22 — Native clipboard caller contract aligned; final acceptance pending
+
+Same unfinished PR2145, original rollback4fa. Fresh cleanf73 declaration/preflight/taskE0 admitted exactly one stale caller assertion literal; every other caller byte and all603held application/build/earlier test inputs remain identical. Complete caller8of8 and unchanged11file selection128of128 executed with zero skips. Prior R9 metadata77of77 and all retained failures remain source-scoped evidence, not this candidate native acceptance. Root independently reversed the literal to original bytes and checked actual execution receipts.
+
+The required caller was already in DATA746/source599; append this exact test to successor certificate258 and existing DONE174 while keeping all old tuples, predicates, classifications, lanes and skips. Inventory1603 only current hashes, append-only exact witnesses and existing factual histories. No product source, bundle, dependency, design or persistence change in this amendment. Final candidate source gates, affected25, rebuilt genuine immediate synopsis Paste+Save, normal Quit/cold reopen/raw/profile, full baseline, official exact CI/maintained RTK, merge and fresh merged checks remain mandatory. No full Mac, IME, numeric or public release claim.
+
 # Metadata Save reconciliation checkpoint in PR2145 — 2026-10-22
 
 TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022

@@ -4,10 +4,10 @@ TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 0e8b97f689e7b477456053392fd59f12745b5996
-HEAD_SHA_AT_START: 0e8b97f689e7b477456053392fd59f12745b5996
+BINDING_BASE_SHA: f73b8e2442c74e49e53a236f4c3d6c14b3bb4982
+HEAD_SHA_AT_START: f73b8e2442c74e49e53a236f4c3d6c14b3bb4982
 ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
-AMENDMENT: Same unfinished PR2145 delivery; reconcile exact already-persisted metadata after ordinary Save on clean0e8. Strict Main CAS, prior clipboard/caret/transaction corrections and all previous evidence stay protected.
+AMENDMENT: Same unfinished PR2145 delivery; close one outdated caller-test literal on cleanf73 while all runtime/bundle and existing behavioral assertions remain held. Original4fa rollback and all previous evidence stay.
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-text-clipboard-20261022
 DESIGN_TOOL_ROUTER: existing design contract unchanged; exact router value is in the validated architecture declaration
@@ -54,6 +54,7 @@ Small renderer focus-classification/notification correction and appended meaning
 - test/contracts/rtk-word-note-tables.contract.test.js
 - test/unit/metadata-inspector-read-model-main.test.js
 - test/unit/paste-focus-signal.test.js
+- test/unit/sector-m-preload-ui-command-bridge.test.js
 
 ## DENYLIST
 
@@ -130,6 +131,16 @@ Keep request ownership through reconciliation; clear only the same in-flight own
 At most500 appended lines in metadata-inspector-read-model-main.test.js after its exact1009-line prefix; every old helper/assertion remains. Only that test, editor.js and its normally generated editor.bundle.js are delegated writes. Main and all other runtime paths stay exact0e8. Root changes only existing task/current binding/factual companions;21path overall delivery union, no new memberships, classifiers, lanes, skips, predicates, history replacement or scope expansion. Expected746DATA/599source/257certificate plus guard/1603inventory require actual membership verification. The final source/negative/affected/native/delivery gates consume new exact bytes and source identities.
 
 Delivery order stays focused/affected -> newly built full native clipboard/Apply/Save/normalQuit/cold/raw/profile -> push/CI -> baseline/full maintained RTK/CI review -> normal merge and fresh merged proof. Previous earlyb83push deviation stays retained. Full Mac Atlas/maps/WSE/Pulse/epochs, IME/numeric metrics, signing/notary/publication and other open findings remain outside this bounded acceptance; continue the owner objective after closure.
+
+### Same-chain caller contract correction on cleanf73
+
+Localf73 preserves the original R9 renderer correction and current pin companions as an explicitly UNACCEPTED checkpoint, not delivery. Whole metadata77of77 passed; full11file focused127of128 retains one required failure at sector-m-preload-ui-command-bridge.test.js:66. That assertion demands the old two-argument dispatch source literal. The admitted private third deferMetadataError option changes only presentation, not the pathless command payload or transport. Root read the complete file and runtime diff; all other pathless/stable-ID/CAS/forbidden-path checks remain meaningful and unchanged. Supplemental R9 preflight correctly refused dirty WIP before this extra test edit; retain it, never treat it as approval.
+
+Fresh cleanf73 bootstrap, verified unchanged normative authority and current factual/source/evidence, mounts/registry/fetched main4fa, declaration/preflight actual0 precede this amendment. This amended task E0 precedes the only extra test edit. Exact cumulative scope is22paths, same original4fa outcome/rollback. This amendment authorizes no runtime, generated bundle, Main/Core/preload/IPC/command wrapper/normalizer or metadata test edit.
+
+O: the existing pathless bridge contract checks the actual private presentation option while preserving every command-authority assertion. T: actual existing source -> existing exact source assertion -> whole8case file and complete11file focused verification. H: replacing only the old metadata dispatch call literal with dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload, { deferMetadataError: true }) closes the sole mechanical failure; all behavioral77metadata cases and pathless guards must still pass. B: every other byte of this caller file and all frozenf73 application/test inputs remain protected. P: complete8case caller and11file focused, exact reverse-byte proof, final25file affected and all existing native/delivery obligations. I: cleanf73, originalmain4fa, fresh declaration/preflight/taskE0/ticket and final source/build/profile identities.
+
+Separate code agent may change only that one assertion literal in test/unit/sector-m-preload-ui-command-bridge.test.js, at most2added+deleted lines; do not add an alternate matcher, weaken payload/forbidden-path predicates or change runtime to accommodate the old string. No rebuild: source and bundle must remain exactf73. Root mechanically updates only current existing bindings/inventory/C2A/witnesses and factual prefix. Check existing certificate/DATA membership before deriving denominators; do not silently add membership, lane, skip or predicate. Current full25file required selection already includes the caller file. No prior partial/failed run is promoted. Normal local checkpoint does not waive final exact gates/native before push, fullbaseline/officialRTK/CI, normalmerge or fresh merged verification.
 
 ## CONTRACT / SHAPES
 
@@ -222,6 +233,11 @@ Before implementation, preserve an unchanged-source RED that invokes actual clas
 Before native input, freeze expected Library name, Unicode map title/node label and textarea/scene text plus protected sentinels, exact build/profile. Use genuine Library creation and real Stage10 owner. Perform native Paste into Library and map fields, separate trusted characters and selection/Cut/Paste, textarea clipboard input, existing Apply and scene Unicode editing/UndoRedo/Save, normal Quit and untouched same-artifact/profile cold reopen. Freeze actual map/node/project/document identities before draft typing/Apply. Independent raw doc-v2 UTF16/UTF8/metadata and full manualMaps reader plus complete project file enumeration must agree with frozen expectations; preserve old backups/presets and failure outputs. CUA only for UI; passive observer cannot inject input/private IPC/DOM or rewrite product files; no AX setValue acceptance. Native input proof is separate from full IME/numeric MR06/release qualification.
 
 References: brain:refs actually examined native clipboard/paste/cut/focus existing seams. Internal native-fluency-typographic-sharpness.md is advisory only; existing approved surface remains. No borrowed code or service needed.
+
+
+### Current caller membership resolved before root companions
+
+Read-only membership inspection on f73 confirms the existing caller test sector-m-preload-ui-command-bridge.test.js already belongs to DATA admittedPaths746 and sourceBindings599, but is absent from current certificate257 and SectorM DONE173. Within this declared same22path contour, root appends exactly that required caller to the current successor certificate and DONE list:258certificate and174DONE. Preserve every prior member and order, all historical certificate tuples and verifier predicates, DATA membership, inventory1603 classifications, lanes and skips. This is a required changed-test binding, never broader product or stage authority. Original taskE0 and executor ticket remain historical exact evidence; refreshed taskE0 precedes these root companion writes.
 
 ## IMPLEMENTATION_STEPS
 
