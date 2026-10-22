@@ -189,3 +189,28 @@ test('full Mac profile independent oracles kill broadened admission and lost den
   }
   t.diagnostic(`FULL_MAC_PROFILE_MUTANTS=${mutants.length}/${mutants.length}`);
 });
+
+test('manual-map V3 independent oracles kill capability overgrant, malformed policy and missing command mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8');
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'manual-map-v3-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mutants = [
+    ['overgrant', s => s.replace('(optional ? selected : true)', 'true'), m => {
+      const profile = m.createWriterManualMapProfileProjection({ isPackaged: true, platform: 'darwin' });
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId: 'atlas.entity.create', productCommandRecord: { id: 'atlas.entity.create', domain: 'atlas' } }).allowed, false);
+    }],
+    ['malformed', s => s.replace('if (!isWriterManualMapProfileCandidate(profile)) return false;', 'if (!isWriterManualMapProfileCandidate(profile)) return false; return true;'), m => {
+      const profile = { ...m.createWriterManualMapProfileProjection({ isPackaged: true, platform: 'darwin' }), optionalSystemsEnabled: true };
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.manualMapWorkbench' }).allowed, false);
+    }],
+    ['missing command', s => s.replace("'manualMap.edge.update', 'manualMap.edge.delete',", "'manualMap.edge.update.disabled', 'manualMap.edge.delete',"), m => {
+      const profile = m.createWriterManualMapProfileProjection({ isPackaged: true, platform: 'darwin' });
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId: 'manualMap.edge.update', productCommandRecord: { id: 'manualMap.edge.update', domain: 'manualMap' } }).allowed, true);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    const changed = transform(source); assert.notEqual(changed, source);
+    const file = path.join(root, name + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+});

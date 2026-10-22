@@ -436,7 +436,11 @@
       "test/unit/project-tree-pathless-contract.test.js",
       "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
       "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-      "test/contracts/yalken-atlas-v5-e05-c06-atlas-reports-saved-queries-boundary.contract.test.js"
+      "test/contracts/yalken-atlas-v5-e05-c06-atlas-reports-saved-queries-boundary.contract.test.js",
+      "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
+      "scripts/native/projectArchiveFilesystem.c",
+      "src/main/projectArchiveDarwinPublication.cjs",
+      "test/unit/project-archive-darwin-publication.test.js"
     ]
   },
   "allowPrefixByPhase": {

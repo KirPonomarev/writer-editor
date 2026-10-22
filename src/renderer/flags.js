@@ -4,7 +4,7 @@
   window.__USE_TIPTAP = qs.get('USE_TIPTAP') === '1';
   window.__PRODUCT_PROFILE = qs.get('PRODUCT_PROFILE') === 'WRITER_LOCAL_V1'
     ? 'WRITER_LOCAL_V1'
-    : qs.get('PRODUCT_PROFILE') === 'WRITER_LOCAL_ATLAS_V2' ? 'WRITER_LOCAL_ATLAS_V2' : '';
+    : ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3'].includes(qs.get('PRODUCT_PROFILE')) ? qs.get('PRODUCT_PROFILE') : '';
 
   const applyWriterLocalPresentationCut = () => {
     if (window.__PRODUCT_PROFILE !== 'WRITER_LOCAL_V1') return;
@@ -27,8 +27,8 @@
   };
 
   const applyWriterAtlasPresentationCut = () => {
-    if (window.__PRODUCT_PROFILE !== 'WRITER_LOCAL_ATLAS_V2') return;
-    document.body.dataset.productProfile = 'WRITER_LOCAL_ATLAS_V2';
+    if (!['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3'].includes(window.__PRODUCT_PROFILE)) return;
+    document.body.dataset.productProfile = window.__PRODUCT_PROFILE;
     const selectors = [
       '[data-mode="plan"]',
       '[data-mode="review"]',

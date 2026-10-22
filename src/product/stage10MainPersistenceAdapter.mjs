@@ -713,9 +713,14 @@ export function createStage10MainPersistenceAdapter(input = {}) {
     }
   }
 
-  async function linkArtifactExclusive(sourcePath, targetPath, conflictReason) {
+  async function linkArtifactExclusive(sourcePath, targetPath, conflictReason, proof) {
     try {
-      await fs.link(sourcePath, targetPath);
+      // The separate legacy integrity-anchor call has no artifact proof.
+      if (proof && typeof input.publishFileExclusive === 'function') {
+        await input.publishFileExclusive({ sourcePath, targetPath, assertCurrent: () => proof.assertOwned() });
+      } else {
+        await fs.link(sourcePath, targetPath);
+      }
       await syncFileAndParent(targetPath);
       return true;
     } catch (error) {
@@ -724,6 +729,18 @@ export function createStage10MainPersistenceAdapter(input = {}) {
       }
       throw error;
     }
+  }
+
+  async function assertArtifactPublicationAvailable(mutation, lease) {
+    if (!mutation || typeof input.publishFileExclusive !== 'function') return;
+    if (typeof input.publishFileExclusive.assertAvailable !== 'function') {
+      throw typedError('E_STAGE10_FILE_PRIMITIVE_UNAVAILABLE', 'FILE_PUBLICATION_CAPABILITY_REQUIRED');
+    }
+    await lease.publish(async proof => {
+      const result = await input.publishFileExclusive.assertAvailable({ targetPath: mutation.targetPath, assertCurrent: () => proof.assertOwned() });
+      if (result?.available !== true || result.readOnly !== true) throw typedError('E_STAGE10_FILE_PRIMITIVE_UNAVAILABLE', 'FILE_PUBLICATION_CAPABILITY_UNAVAILABLE');
+      await proof.assertOwned();
+    });
   }
 
   async function preserveTargetAtConflictPath(reservation) {
@@ -742,7 +759,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
     await syncFileAndParent(reservation.conflictPath);
   }
 
-  async function restoreReservedPrevious(mutation, reservation) {
+  async function restoreReservedPrevious(mutation, reservation, proof) {
     if (!mutation.previousExists) return;
     const target = await readArtifactPath(reservation.targetPath);
     if (target.exists) return;
@@ -754,10 +771,12 @@ export function createStage10MainPersistenceAdapter(input = {}) {
       reservation.backupPath,
       reservation.targetPath,
       'EXTERNAL_ARTIFACT_RECOVERY_TARGET_OCCUPIED',
+      proof,
     );
   }
 
   async function publishExternalArtifactReserved(mutation, reservation, lease) {
+    await assertArtifactPublicationAvailable(mutation, lease);
     return lease.publish(async (proof) => {
       await writeArtifactCandidate(reservation, mutation);
       await killpoint('after-external-artifact-candidate');
@@ -776,7 +795,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
           backup = await readArtifactPath(reservation.backupPath);
         }
         if (backup.text !== mutation.previousText || backup.hash !== mutation.previousHash) {
-          await restoreReservedPrevious(mutation, reservation);
+          await restoreReservedPrevious(mutation, reservation, proof);
           throw typedError('E_STAGE10_EXTERNAL_ARTIFACT_CAS_FAILED', 'EXTERNAL_ARTIFACT_REVISION_CONFLICT');
         }
       }
@@ -789,6 +808,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
           mutation.previousExists
             ? 'EXTERNAL_ARTIFACT_CONCURRENT_CREATE'
             : 'EXTERNAL_ARTIFACT_UNEXPECTEDLY_EXISTS',
+          proof,
         );
       } else if (target.text !== mutation.nextText || target.hash !== mutation.nextHash) {
         throw typedError('E_STAGE10_EXTERNAL_ARTIFACT_CAS_FAILED', 'EXTERNAL_ARTIFACT_CONCURRENT_CREATE');
@@ -801,7 +821,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
         const stableBackup = await readArtifactPath(reservation.backupPath);
         if (stableBackup.text !== mutation.previousText || stableBackup.hash !== mutation.previousHash) {
           await preserveTargetAtConflictPath(reservation);
-          await restoreReservedPrevious(mutation, reservation);
+          await restoreReservedPrevious(mutation, reservation, proof);
           throw typedError('E_STAGE10_EXTERNAL_ARTIFACT_CAS_FAILED', 'EXTERNAL_ARTIFACT_IN_PLACE_REVISION_CONFLICT');
         }
       }
@@ -851,13 +871,13 @@ export function createStage10MainPersistenceAdapter(input = {}) {
       await lease.publish(async (proof) => {
         await proof.assertOwned();
         await preserveTargetAtConflictPath(reservation);
-        await restoreReservedPrevious(mutation, reservation);
+        await restoreReservedPrevious(mutation, reservation, proof);
       });
       return;
     }
     if (!current.exists) {
       if (mutation.previousExists) {
-        await lease.publish(() => restoreReservedPrevious(mutation, reservation));
+        await lease.publish(proof => restoreReservedPrevious(mutation, reservation, proof));
       }
       return;
     }
@@ -1110,6 +1130,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
       : await readJsonIfPresent(paths.anchorRecovery, 'anchorRecovery');
     validateBundleIntegrity(projectId, target, targetPreviousAnchor);
     if (projectTruthMutation) {
+      await assertArtifactPublicationAvailable(projectTruthMutation.externalArtifactMutation, lease);
       if (lease) await lease.renew();
       const currentProjectTruth = await readProjectTruthText(projectTruthMutation);
       const currentProjectTruthHash = hashText(currentProjectTruth);
@@ -1260,6 +1281,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
         const projectTruthMutation = normalizeProjectTruthMutation(projectId, options.projectTruthMutation);
         let externalArtifactReservation = null;
         if (projectTruthMutation) {
+          await assertArtifactPublicationAvailable(projectTruthMutation.externalArtifactMutation, lease);
           await assertProjectTruthText(
             projectTruthMutation,
             projectTruthMutation.previousText,

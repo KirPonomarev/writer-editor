@@ -162,6 +162,7 @@ function draftDomHarness(transform = text => text) {
     'applyManualMapCommandDraft', 'renderManualMapCommandDraft', 'renderManualMapWorkbenchInto',
     'renderManualMapWorkbenchState'];
   if (editor.includes('function syncManualMapCommandDraftControls(')) names.push('syncManualMapCommandDraftControls');
+  names.push('unwrapManualMapProductCommandReceipt');
   names.push('invalidateAtlasPublications', 'captureAtlasPublication', 'beginAtlasQueryPublication', 'readAtlasQueryProjection');
   const stateStart = editor.indexOf('let atlasPublicationEpoch =');
   const stateEnd = editor.indexOf('let manualMapPortabilityCommandState =', stateStart);
@@ -188,7 +189,8 @@ function draftDomHarness(transform = text => text) {
   const draft = () => JSON.parse(JSON.stringify(context.port.draft()));
   const form = (host = rail) => host.querySelector('[data-manual-map-command-form]');
   const settle = () => new Promise((resolve) => setImmediate(resolve));
-  return { document, rail, plan, context, calls, counters, field, open, edit, draft, form, settle };
+  const loadActual = (...names) => vm.runInContext(names.map(sourceFunction).join('\n'), context);
+  return { document, rail, plan, context, calls, counters, field, open, edit, draft, form, settle, loadActual };
 }
 
 for (const kind of ['title', 'label']) test('R2 C02 actual ' + kind + ' typing keeps the input node focus and selection', async () => {
@@ -770,4 +772,167 @@ test('R2 C02 normal current Apply permits slow current fanout siblings after its
   siblings.find(s => s.row[0] === 'refreshManualMapWorkbench').resolve(h.projection(h.leaves[0], 'project-a', 'olderMap'));
   await h.settle(); assert.equal(h.c.manualMapWorkbenchState.summary.workbenchHash, 'outerMap');
   assert.deepEqual(h.draft(), draft); assert.equal(h.commands.length, 1);
+});
+
+function manualAuthoringDomHarness() {
+  const h = draftDomHarness(), c = h.context;
+  const graph = { nodes: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }], edges: [], groups: [] };
+  Object.assign(c, { manualMapTransientViewState: { selection: { primaryNodeId: 'a', nodeIds: ['a'], edgeIds: [] } },
+    crypto: require('node:crypto').webcrypto,
+    manualMapPortabilityCommandState: {},
+    manualMapListState: {}, manualMapPinnedNodeIds: new Set(), manualMapDragState: null,
+    MANUAL_MAP_DEFAULT_VIEWPORT: { x: 0, y: 0, zoom: 1 }, normalizeManualMapViewState: value => value,
+    currentDocumentTitle: 'Scene', atlasJourneyDraft: {}, findAtlasJourneyEntity: () => null,
+    makeStableUiId: (() => { let i = 0; return name => name + ++i; })(), manualMapLayoutMode: 'manual',
+    MANUAL_MAP_LAYOUT_MODES: { MANUAL: 'manual', HIERARCHY: 'hierarchy' }, MANUAL_MAP_WORKBENCH_QUERY_ID: 'query.manualMapWorkbench',
+    invokeWorkspaceQueryBridge: async () => { throw Error('UNEXPECTED_QUERY'); } });
+  c.manualMapWorkbenchState.mapRows = [{ mapId: 'map-a', title: 'Source' }, { mapId: 'map-b', title: 'Target B' }, { mapId: 'map-c', title: 'Target C' }];
+  h.loadActual('makeManualMapAuthorId', 'manualMapHasRetainedDraft', 'selectManualMap', 'refreshManualMapPortalTargets',
+    'getManualMapSelectedNodeId', 'getManualMapSelectedEdgeId', 'getManualMapNodeById', 'getManualMapEdgeById',
+    'getManualMapGroupByNodeId', 'makeManualMapDraftButton', 'renderManualMapToolbar');
+  const toolbar = () => c.renderManualMapToolbar(h.rail, c.manualMapWorkbenchState, { sourceGraph: graph, presentationGraph: graph }, { compact: true });
+  const button = label => h.rail.querySelectorAll('[data-manual-map-command-draft]').find(node => node.textContent === label);
+  const input = name => h.rail.querySelectorAll('[data-manual-map-command-field]').find(node => node.dataset.manualMapCommandField === name);
+  return { ...h, c, toolbar, button, input };
+}
+
+test('manual-map actual selector blocks retained/applying/failed drafts without removing working input or caret', async () => {
+  const h = manualAuthoringDomHarness(); h.open();
+  const input = h.field(); input.focus(); input.setSelectionRange(2, 4);
+  const selector = h.rail.querySelector('[data-manual-map-selector]');
+  assert.equal(selector.tagName, 'SELECT'); assert.equal(selector.disabled, true);
+  selector.value = 'map-b'; await selector.emit('change'); await h.settle();
+  assert.equal(h.c.manualMapWorkbenchState.mapId, 'map-a'); assert.equal(h.field(), input);
+  assert.equal(h.document.activeElement, input); assert.equal(input.selectionStart, 2); assert.equal(input.selectionEnd, 4);
+  for (const state of ['applying', 'failed']) {
+    h.c.commandResult = { ok: false };
+    if (state === 'applying') {
+      let release; h.c.runProductJourneyCommand = () => new Promise(resolve => { release = resolve; });
+      await h.rail.querySelector('[data-manual-map-confirm-risk]').emit('change');
+      h.c.setManualMapCommandDraftConfirmation(true); const pending = h.c.applyManualMapCommandDraft();
+      await h.c.selectManualMap('map-b'); assert.equal(h.c.manualMapWorkbenchState.mapId, 'map-a');
+      release({ ok: false, reason: 'REFUSED' }); await pending;
+    }
+    await h.c.selectManualMap('map-b'); assert.equal(h.c.manualMapWorkbenchState.mapId, 'map-a');
+  }
+  await h.rail.querySelector('[data-manual-map-command-cancel]').emit('click');
+  await h.c.selectManualMap('map-b'); assert.equal(h.c.manualMapWorkbenchState.mapId, 'map-b');
+  assert.equal(h.calls.length, 0); // the pending finite command above never called this recorder
+});
+
+test('manual-map real attachment draft emits only identifiers, label and kind', async () => {
+  const h = manualAuthoringDomHarness(); h.toolbar();
+  await h.button('Add attachment').emit('click');
+  assert.deepEqual(Object.keys(h.draft().payload).sort(), ['attachmentId', 'attachmentKind', 'label', 'mapId', 'nodeId']);
+});
+
+test('manual-map real import control is enabled before the first map and adopts the actual command receipt before refresh', async () => {
+  const h = manualAuthoringDomHarness(); h.c.manualMapWorkbenchState.mapId = ''; h.c.manualMapWorkbenchState.mapRows = [];
+  h.toolbar(); assert.equal(h.button('Import JSON file').disabled, false);
+  await h.button('Import JSON file').emit('click');
+  h.c.commandResult = { ok: true, value: { mapId: 'actual-imported', import: { mapId: 'actual-imported' } } };
+  const observed = []; h.c.refreshManualMapWorkbench = async () => observed.push(h.c.manualMapWorkbenchState.mapId);
+  h.c.setManualMapCommandDraftConfirmation(true); await h.c.applyManualMapCommandDraft();
+  assert.deepEqual(observed, ['actual-imported']); assert.equal(h.draft().state, 'applied');
+  assert.equal(h.calls[0].commandId, 'manualMap.import.jsonRepeat');
+});
+
+test('manual-map create adopts receipt map identity and ignores an old detached selector', async () => {
+  const h = manualAuthoringDomHarness(); h.toolbar();
+  const old = h.rail.querySelector('[data-manual-map-selector]');
+  h.open(); h.c.commandResult = { ok: true, value: { mapId: 'actual-created' } };
+  const observed = []; h.c.refreshManualMapWorkbench = async () => observed.push(h.c.manualMapWorkbenchState.mapId);
+  h.c.setManualMapCommandDraftConfirmation(true); await h.c.applyManualMapCommandDraft();
+  assert.deepEqual(observed, ['actual-created']);
+  old.value = 'map-b'; await old.emit('change'); assert.equal(h.c.manualMapWorkbenchState.mapId, 'actual-created');
+});
+
+test('manual-map portal target queries are independent, exact and ordered without replacing the source map', async () => {
+  const h = manualAuthoringDomHarness(); h.toolbar(); await h.button('Add portal').emit('click');
+  const calls = [], replies = [];
+  h.c.invokeWorkspaceQueryBridge = (id, payload) => new Promise(resolve => { calls.push({ id, payload }); replies.push(resolve); });
+  h.input('targetMapId').value = 'map-b'; await h.input('targetMapId').emit('change');
+  h.input('targetMapId').value = 'map-c'; await h.input('targetMapId').emit('change');
+  assert.equal(calls.length, 2); assert.equal(calls[0].payload.mapId, 'map-b'); assert.equal(calls[1].payload.mapId, 'map-c');
+  const reply = mapId => ({ ok: true, manualMapWorkbench: { state: 'ready', projectId: 'project-a', mapId,
+    graph: { mapId, nodes: [{ id: mapId + '-node', label: 'Target node' }] } } });
+  replies[1](reply('map-c')); await h.settle(); replies[0](reply('map-b')); await h.settle();
+  assert.equal(h.c.manualMapWorkbenchState.mapId, 'map-a');
+  assert.deepEqual(h.draft().fields.find(field => field.name === 'targetNodeId').options,
+    [{ value: '', label: 'Whole map' }, { value: 'map-c-node', label: 'Target node' }]);
+  assert.equal(h.draft().payload.mapId, 'map-a'); assert.equal(h.draft().payload.targetMapId, 'map-c');
+});
+
+test('manual-map portal target publication preserves focused working input and clears nodes when its map changes', async () => {
+  const h = manualAuthoringDomHarness(); h.toolbar(); await h.button('Add portal').emit('click');
+  const replies = []; h.c.invokeWorkspaceQueryBridge = () => new Promise(resolve => replies.push(resolve));
+  h.input('targetMapId').value = 'map-b'; await h.input('targetMapId').emit('change');
+  const label = h.input('label'); label.focus(); label.setSelectionRange(2, 4);
+  replies[0]({ ok: true, manualMapWorkbench: { state: 'ready', projectId: 'project-a', mapId: 'map-b',
+    graph: { mapId: 'map-b', nodes: [{ id: 'b-node', label: 'Target B' }] } } }); await h.settle();
+  assert.equal(h.input('label'), label, 'target options must not replace working input');
+  assert.equal(h.document.activeElement, label); assert.equal(label.selectionStart, 2); assert.equal(label.selectionEnd, 4);
+  assert.deepEqual(h.input('targetNodeId').children.map(option => option.value), ['', 'b-node']);
+  h.input('targetNodeId').value = 'b-node'; await h.input('targetNodeId').emit('change');
+  h.input('targetMapId').value = 'map-c'; await h.input('targetMapId').emit('change');
+  assert.equal(h.draft().payload.targetNodeId, '');
+  assert.deepEqual(h.input('targetNodeId').children.map(option => option.value), ['']);
+});
+
+for (const stale of [false, true]) test('manual-map portal target query rejection preserves current input and ignores stale errors: ' + stale, async () => {
+  const h = manualAuthoringDomHarness(); h.toolbar(); await h.button('Add portal').emit('click');
+  h.c.updateManualMapCommandDraftField('targetMapId', 'map-b');
+  let reject; h.c.invokeWorkspaceQueryBridge = () => new Promise((resolve, fail) => { reject = fail; });
+  const label = h.input('label'); label.focus(); label.setSelectionRange(2, 4);
+  const pending = h.c.refreshManualMapPortalTargets();
+  if (stale) h.open('label');
+  const replacement = h.context.port.draft(); reject(Object.assign(Error('IPC query timed out'), { code: 'E_TIMEOUT' }));
+  await assert.doesNotReject(pending);
+  assert.equal(h.calls.length, 0);
+  if (stale) assert.equal(h.context.port.draft(), replacement);
+  else {
+    assert.equal(h.input('label'), label); assert.equal(h.document.activeElement, label);
+    assert.equal(label.selectionStart, 2); assert.equal(label.selectionEnd, 4);
+    assert.match(h.input('targetNodeId').children[0].textContent, /unavailable/iu);
+    assert.equal(h.draft().payload.targetMapId, 'map-b');
+  }
+});
+
+for (const fault of ['wrong-map', 'wrong-project', 'malformed-node', 'edited', 'cancelled', 'source-switch']) test('manual-map portal refuses late ' + fault + ' target projection', async () => {
+  const h = manualAuthoringDomHarness(); h.toolbar(); await h.button('Add portal').emit('click');
+  let reply; h.c.invokeWorkspaceQueryBridge = () => new Promise(resolve => { reply = resolve; });
+  h.input('targetMapId').value = 'map-b'; await h.input('targetMapId').emit('change');
+  if (fault === 'edited') h.c.updateManualMapCommandDraftField('label', 'Keep working text');
+  if (fault === 'cancelled') h.c.cancelManualMapCommandDraft();
+  if (fault === 'source-switch') h.c.manualMapWorkbenchState.mapId = 'map-c';
+  reply({ ok: true, manualMapWorkbench: { state: 'ready', projectId: fault === 'wrong-project' ? 'foreign' : 'project-a',
+    mapId: fault === 'wrong-map' ? 'map-a' : 'map-b', graph: { mapId: 'map-b', nodes: fault === 'malformed-node' ? [null] : [{ id: 'late' }] } } });
+  await h.settle();
+  assert.deepEqual(h.draft().fields.find(field => field.name === 'targetNodeId').options, [{ value: '', label: 'Whole map' }]);
+  assert.equal(h.calls.length, 0);
+});
+
+test('manual-map real creation identifiers remain distinct after a renderer process restart', async () => {
+  for (const [label, key] of [['Create map', 'mapId'], ['Add node', 'nodeId'], ['Scene node', 'nodeId'], ['Entity node', 'nodeId'], ['Add edge', 'edgeId'],
+    ['Create group', 'groupId'], ['Add attachment', 'attachmentId'], ['Add portal', 'portalId'],
+    ['Apply template', 'templateInstanceId'], ['Import JSON file', 'targetMapId']]) {
+    const ids = [];
+    for (let process = 0; process < 2; process++) {
+      const h = manualAuthoringDomHarness();
+      h.context.findAtlasJourneyEntity = () => ({ entityId: 'entity-a', name: 'Entity' });
+      h.context.atlasStableUiIdSeq = 0; h.loadActual('makeStableUiId');
+      h.context.manualMapTransientViewState.selection.nodeIds = ['a', 'b'];
+      h.toolbar(); await h.button(label).emit('click');
+      const payload = h.draft().payload;
+      const created = label === 'Apply template' ? [payload.templateInstanceId, ...payload.nodes.map(node => node.nodeId), ...payload.edges.map(edge => edge.edgeId)] : [payload[key]];
+      assert.equal(new Set(created).size, created.length); ids.push(created);
+    }
+    for (const id of ids[0]) assert.equal(ids[1].includes(id), false, label + ' must not reuse a persisted identity');
+  }
+});
+
+test('manual-map authoring refuses missing secure identity generation without a counter fallback or command write', async () => {
+  const h = manualAuthoringDomHarness(); h.toolbar(); h.context.crypto = undefined;
+  await assert.rejects(async () => h.button('Create map').emit('click'), { code: 'E_MANUAL_MAP_IDENTITY_UNAVAILABLE' });
+  assert.equal(h.draft(), null); assert.equal(h.calls.length, 0);
 });

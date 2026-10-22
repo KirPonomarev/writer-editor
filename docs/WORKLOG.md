@@ -4861,3 +4861,16 @@ remain open. Do not attempt or credit native bookUndoRedo from this proof. A
 shared Main/Worker resource admission is the next bounded hypothesis after the
 current required delivery closes. Native OPEN-only verification may be admitted
 separately; native history/finite16/fullfeature status remains NOT_READY.
+
+
+## 2026-10-23 — Mac manual-map authoring/JSON/SVG source frozen
+
+PR2146 independently closed at normal merge ba42e0c1 (bounded only). Clean
+new registered branch at that exact SHA passed startup/preflight/task E0 before
+implementation. Separate code agent froze7 runtime/6 maintained test paths.
+Root read the complete delta and protected originals; latest3 whole files pass
+177/177 without skips/TODO; normal renderer build0. Current source binding,
+whole6/affected/required gates, native package, CI/normal merge remain pending.
+Actual T777 read-only capability refusal preserves existing export; positive
+T777 publication stays blocked pending owner reply, never counted as success.
+Full first Mac, true PDF, remaining Atlas/WSE/Pulse/epochs remains active.

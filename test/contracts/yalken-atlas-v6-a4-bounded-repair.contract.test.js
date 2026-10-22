@@ -606,3 +606,112 @@ test('Atlas V6 A4: process-instance heartbeat defeats PID reuse, wall-clock jump
   assert.equal(recoveredLease.recoveredExpiredLease, true);
   await crashRecovery.release(recoveredLease);
 });
+
+test('manual-map actual Stage10 regular-file publication retains reserved sources and recovers every artifact interruption', async t => {
+  const { createDarwinExclusiveFilePublisher } = require('../../src/main/projectArchiveDarwinPublication.cjs');
+  if (process.platform !== 'darwin') {
+    await assert.rejects(createDarwinExclusiveFilePublisher({ platform: process.platform })({}), { code: 'E_STAGE10_FILE_PRIMITIVE_UNAVAILABLE' });
+    return;
+  }
+  const core = await importModule('src/core/runtime.mjs'), bootstrapModule = await importModule('src/product/stage10ApplicationBootstrap.mjs');
+  const external = process.env.YALKEN_MANUAL_MAP_TEST_ARTIFACT_ROOT;
+  for (const volume of ['APFS', ...(external ? ['external'] : [])]) {
+    for (const point of ['after-external-artifact-candidate', 'after-external-artifact-reserve', 'after-external-artifact-write', 'after-anchor-write']) {
+      await t.test(volume + ':' + point, async t => {
+        const projectId = `map-file-${volume}-${point}`, h = await createHarness('file-publication', projectId);
+        t.after(() => fs.rmSync(h.root, { recursive: true, force: true }));
+        const helperPath = path.join(fs.realpathSync(h.root), 'helper');
+        require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({ outputPath: helperPath });
+        const outputRoot = volume === 'APFS' ? fs.realpathSync(h.root) : fs.mkdtempSync(path.join(external, 'stage10-file-'));
+        if (volume !== 'APFS') t.after(() => fs.rmSync(outputRoot, { recursive: true, force: true }));
+        const targetPath = path.join(outputRoot, 'map.json'), previousText = '{"state":"PREVIOUS"}\n', nextText = '{"state":"NEXT"}\n';
+        fs.writeFileSync(targetPath, previousText);
+        const manifestPath = path.join(h.projectRoot, 'project.craftsman.json');
+        const previousManifest = manifestTextForState(h.bootstrap.getRuntime().getSession().coreState, projectId, { protected: 'keep' });
+        fs.writeFileSync(manifestPath, previousManifest);
+        let armed = false, captured = 0;
+        const publisher = createDarwinExclusiveFilePublisher({ helperPath });
+        const publishFileExclusive = async input => {
+          const before = fs.lstatSync(input.sourcePath), bytes = fs.readFileSync(input.sourcePath);
+          const result = await publisher(input);
+          const after = fs.lstatSync(input.sourcePath);
+          assert.equal(after.dev, before.dev); assert.equal(after.ino, before.ino);
+          assert.deepEqual(fs.readFileSync(input.sourcePath), bytes); captured++;
+          return result;
+        };
+        publishFileExclusive.assertAvailable = publisher.assertAvailable;
+        const options = { publishFileExclusive, onKillpoint(name) { if (armed && name === point) { armed = false; throw Error('OWNED_INTERRUPTION:' + point); } } };
+        const adapter = h.makeAdapter(options), bootstrap = bootstrapModule.createStage10ApplicationBootstrap({ persistencePort: adapter });
+        await bootstrap.reopenProjectRuntime({ projectId });
+        let state = bootstrap.getRuntime().getSession().coreState;
+        const made = await bootstrap.dispatchCanonicalProjectCommand(core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE,
+          { projectId, mapId: 'map', title: 'Map' }, { projectId, coreState: state, sourceHash: hashText(previousManifest), sourceRevision: state.data.lastCommandId,
+            prepareMutation: ({ nextCoreState }) => projectTruthMutation(projectId, previousManifest, manifestTextForState(nextCoreState, projectId, { protected: 'keep' })) });
+        assert.equal(made.ok, true);
+        const manifestText = fs.readFileSync(manifestPath, 'utf8'); state = bootstrap.getRuntime().getSession().coreState;
+        armed = true;
+        await assert.rejects(bootstrap.dispatchCanonicalProjectCommand(core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_JSON,
+          { projectId, mapId: 'map', artifact: { schemaVersion: 'manualMap.localArtifactIntent.v1', format: 'json', sha256: hashText(nextText), byteLength: Buffer.byteLength(nextText) } },
+          { projectId, coreState: state, sourceHash: hashText(manifestText), sourceRevision: state.data.lastCommandId,
+            prepareMutation: ({ nextCoreState }) => projectTruthMutation(projectId, manifestText,
+              manifestTextForState(nextCoreState, projectId, { protected: 'keep' }), artifactMutation(targetPath, nextText, previousText)) }), /OWNED_INTERRUPTION/u);
+        const transaction = JSON.parse(fs.readFileSync(adapter.paths(projectId).transaction));
+        const reservation = transaction.externalArtifactReservation;
+        assert.equal(fs.readFileSync(reservation.candidatePath, 'utf8'), nextText);
+        if (point !== 'after-external-artifact-candidate') assert.equal(fs.readFileSync(reservation.backupPath, 'utf8'), previousText);
+        const recovery = h.makeAdapter({ publishFileExclusive });
+        const recovered = await recovery.readStage10State(projectId); assert.equal(recovered.recoveryConsumed, true);
+        const committed = point === 'after-anchor-write';
+        assert.equal(fs.readFileSync(targetPath, 'utf8'), committed ? nextText : previousText);
+        assert.equal(JSON.parse(fs.readFileSync(manifestPath)).protected, 'keep');
+        if (!committed) assert.equal(fs.readFileSync(manifestPath, 'utf8'), manifestText);
+        assert.equal(fs.existsSync(reservation.candidatePath), false); assert.equal(fs.existsSync(reservation.backupPath), false);
+        assert.equal(fs.existsSync(adapter.paths(projectId).transaction), false);
+        assert.equal(fs.readdirSync(outputRoot).some(name => name.startsWith('.stage10-publish-')), false);
+        if (point === 'after-external-artifact-write' || committed) assert.ok(captured >= 1);
+      });
+    }
+  }
+});
+
+test('manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation', async t => {
+  const core = await importModule('src/core/runtime.mjs'), bootstrapModule = await importModule('src/product/stage10ApplicationBootstrap.mjs');
+  for (const fault of ['missing-method', 'unavailable', 'false', 'unknown', 'malformed', 'stale-lease']) await t.test(fault, async t => {
+    const projectId = 'map-capability-' + fault, h = await createHarness('capability-refusal', projectId);
+    t.after(() => fs.rmSync(h.root, { recursive: true, force: true }));
+    const targetPath = path.join(fs.realpathSync(h.root), 'map.json'), previousText = '{"state":"PREVIOUS"}\n', nextText = '{"state":"NEXT"}\n';
+    fs.writeFileSync(targetPath, previousText); const targetIdentity = fs.lstatSync(targetPath);
+    const manifestPath = path.join(h.projectRoot, 'project.craftsman.json');
+    const initial = manifestTextForState(h.bootstrap.getRuntime().getSession().coreState, projectId, { protected: 'keep' });
+    fs.writeFileSync(manifestPath, initial); let capabilityCalls = 0, publicationCalls = 0;
+    const publisher = async () => { publicationCalls++; throw Error('PUBLICATION_MUST_NOT_RUN'); };
+    if (fault !== 'missing-method') publisher.assertAvailable = async ({ assertCurrent }) => {
+      capabilityCalls++; await assertCurrent();
+      if (fault === 'unavailable') throw Object.assign(Error('E_STAGE10_FILE_PRIMITIVE_UNAVAILABLE'), { code: 'E_STAGE10_FILE_PRIMITIVE_UNAVAILABLE',
+        details: { publication: { phase: 'CAPABILITY_UNAVAILABLE', errno: 45, namePublished: false } } });
+      if (fault === 'stale-lease') {
+        const metadataPath = path.join(h.anchorRoot, fs.readdirSync(h.anchorRoot, { recursive: true }).find(name => name.endsWith('/owner.v3.json')));
+        const metadata = JSON.parse(fs.readFileSync(metadataPath)); metadata.fencingGeneration++;
+        fs.writeFileSync(metadataPath, JSON.stringify(metadata)); return { available: true, readOnly: true };
+      }
+      return fault === 'false' ? { available: false, readOnly: true } : fault === 'malformed' ? { available: 'true', readOnly: true } : {};
+    };
+    t.diagnostic('FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF');
+    const adapter = h.makeAdapter({ publishFileExclusive: publisher }), bootstrap = bootstrapModule.createStage10ApplicationBootstrap({ persistencePort: adapter });
+    await bootstrap.reopenProjectRuntime({ projectId }); let state = bootstrap.getRuntime().getSession().coreState;
+    assert.equal((await bootstrap.dispatchCanonicalProjectCommand(core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE,
+      { projectId, mapId: 'map', title: 'Map' }, { projectId, coreState: state, sourceHash: hashText(initial), sourceRevision: state.data.lastCommandId,
+        prepareMutation: ({ nextCoreState }) => projectTruthMutation(projectId, initial, manifestTextForState(nextCoreState, projectId, { protected: 'keep' })) })).ok, true);
+    const manifestText = fs.readFileSync(manifestPath, 'utf8'), before = directoryDigest(h.projectRoot);
+    state = bootstrap.getRuntime().getSession().coreState;
+    await assert.rejects(bootstrap.dispatchCanonicalProjectCommand(core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_JSON,
+      { projectId, mapId: 'map', artifact: { schemaVersion: 'manualMap.localArtifactIntent.v1', format: 'json', sha256: hashText(nextText), byteLength: Buffer.byteLength(nextText) } },
+      { projectId, coreState: state, sourceHash: hashText(manifestText), sourceRevision: state.data.lastCommandId,
+        prepareMutation: ({ nextCoreState }) => projectTruthMutation(projectId, manifestText, manifestTextForState(nextCoreState, projectId, { protected: 'keep' }), artifactMutation(targetPath, nextText, previousText)) }),
+    error => ['E_STAGE10_FILE_PRIMITIVE_UNAVAILABLE', 'E_PROJECT_LEASE_OWNERSHIP_LOST'].includes(error.code));
+    assert.equal(capabilityCalls, fault === 'missing-method' ? 0 : 1); assert.equal(publicationCalls, 0);
+    assert.equal(directoryDigest(h.projectRoot), before); assert.equal(fs.readFileSync(targetPath, 'utf8'), previousText);
+    assert.equal(fs.lstatSync(targetPath).ino, targetIdentity.ino); assert.equal(fs.existsSync(adapter.paths(projectId).transaction), false);
+    assert.equal(fs.readdirSync(fs.realpathSync(h.root)).some(name => name.includes('.stage10-cas.')), false);
+  });
+});

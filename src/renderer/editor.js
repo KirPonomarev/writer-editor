@@ -14749,6 +14749,15 @@ function syncManualMapCommandDraftControls() {
       if (!form.isConnected || form.dataset.manualMapCommandId !== draft.commandId
         || form.querySelector('[data-manual-map-selection-target]')?.dataset.manualMapSelectionTarget !== draft.targetId) continue;
       for (const input of form.querySelectorAll('[data-manual-map-command-field]')) {
+        const field = draft.fields.find(field => field.name === input.dataset.manualMapCommandField);
+        if (field?.type === 'select' && input.dataset.manualMapFieldOptions !== JSON.stringify(field.options || [])) {
+          input.innerHTML = '';
+          for (const row of field.options || []) {
+            const option = document.createElement('option'); option.value = row.value; option.textContent = row.label;
+            input.appendChild(option);
+          }
+          input.dataset.manualMapFieldOptions = JSON.stringify(field.options || []);
+        }
         const value = draft.payload?.[input.dataset.manualMapCommandField];
         if (input !== document.activeElement && typeof value === 'string' && input.value !== value) input.value = value;
       }
@@ -14766,14 +14775,19 @@ function updateManualMapCommandDraftField(fieldName, fieldValue) {
   if (!manualMapCommandDraft) return;
   const name = manualMapText(fieldName);
   if (!name) return;
+  const resetTarget = name === 'targetMapId' && manualMapCommandDraft.commandId === 'manualMap.portal.add';
   manualMapDraftRevision += 1;
   manualMapCommandDraft = {
     ...manualMapCommandDraft,
+    state: 'draft',
     payload: {
       ...manualMapCommandDraft.payload,
       [name]: fieldValue,
+      ...(resetTarget ? { targetNodeId: '' } : {}),
     },
-    fields: manualMapCommandDraft.fields.map((field) => (field.name === name ? { ...field, value: fieldValue } : field)),
+    fields: manualMapCommandDraft.fields.map((field) => resetTarget && field.name === 'targetNodeId'
+      ? { ...field, value: '', options: [{ value: '', label: 'Whole map' }] }
+      : field.name === name ? { ...field, value: fieldValue } : field),
     result: null,
   };
   syncManualMapCommandDraftControls();
@@ -14790,6 +14804,52 @@ function setManualMapCommandDraftConfirmation(checked) {
   syncManualMapCommandDraftControls();
 }
 
+function makeManualMapAuthorId(prefix) {
+  if (typeof globalThis.crypto?.randomUUID !== 'function') {
+    throw Object.assign(new Error('MANUAL_MAP_IDENTITY_UNAVAILABLE'), { code: 'E_MANUAL_MAP_IDENTITY_UNAVAILABLE' });
+  }
+  return `${prefix}-${globalThis.crypto.randomUUID()}`;
+}
+
+function manualMapHasRetainedDraft() {
+  return !!manualMapCommandDraft && !['applied', 'cancelled'].includes(manualMapCommandDraft.state);
+}
+
+async function selectManualMap(mapId) {
+  if (manualMapHasRetainedDraft() || !currentProjectId || !manualMapWorkbenchState.mapRows.some(row => row.mapId === mapId)) return;
+  invalidateAtlasPublications();
+  manualMapDraftOwnership += 1;
+  manualMapCommandDraft = null;
+  manualMapWorkbenchState = { ...manualMapWorkbenchState, mapId };
+  manualMapTransientViewState = normalizeManualMapViewState({ viewport: MANUAL_MAP_DEFAULT_VIEWPORT }, {});
+  manualMapListState = { activeRowId: '' }; manualMapPinnedNodeIds = new Set(); manualMapDragState = null;
+  await refreshManualMapWorkbench({ force: true });
+}
+
+async function refreshManualMapPortalTargets() {
+  const draft = manualMapCommandDraft, sourceMapId = manualMapWorkbenchState.mapId;
+  if (draft?.commandId !== 'manualMap.portal.add' || draft.state !== 'draft' || !draft.payload.targetMapId) return;
+  const targetMapId = draft.payload.targetMapId, projectId = currentProjectId;
+  const current = beginAtlasQueryPublication('manualMapPortalTargets');
+  if (!current) return;
+  let result;
+  try { result = await invokeWorkspaceQueryBridge(MANUAL_MAP_WORKBENCH_QUERY_ID, { projectId, mapId: targetMapId }); }
+  catch {
+    if (!current() || manualMapWorkbenchState.mapId !== sourceMapId || manualMapCommandDraft !== draft) return;
+    manualMapCommandDraft = { ...draft, fields: draft.fields.map(field => field.name === 'targetNodeId'
+      ? { ...field, options: [{ value: '', label: 'Target nodes unavailable; whole map only' }] } : field) };
+    syncManualMapCommandDraftControls(); return;
+  }
+  if (!current() || manualMapWorkbenchState.mapId !== sourceMapId || manualMapCommandDraft !== draft) return;
+  const projection = readAtlasQueryProjection(result, 'manualMapWorkbench', projectId);
+  if (projection?.state !== 'ready' || projection.mapId !== targetMapId || projection.graph?.mapId !== targetMapId
+    || !Array.isArray(projection.graph.nodes) || projection.graph.nodes.some(node => typeof node?.id !== 'string' || !node.id)) return;
+  manualMapCommandDraft = { ...draft, fields: draft.fields.map(field => field.name === 'targetNodeId'
+    ? { ...field, options: [{ value: '', label: 'Whole map' }, ...projection.graph.nodes.map(node => ({ value: node.id, label: node.label || node.id }))] }
+    : field) };
+  syncManualMapCommandDraftControls();
+}
+
 async function applyManualMapCommandDraft() {
   const draft = manualMapCommandDraft;
   if (!draft || draft.state !== 'draft' || !manualMapDraftContext?.()) return;
@@ -14798,7 +14858,7 @@ async function applyManualMapCommandDraft() {
   const payload = draft.payload && typeof draft.payload === 'object' && !Array.isArray(draft.payload)
     ? { ...draft.payload }
     : {};
-  if (!commandId || !manualMapText(payload.mapId) && commandId !== 'manualMap.create') {
+  if (!commandId || !manualMapText(payload.mapId) && !['manualMap.create', 'manualMap.import.jsonRepeat'].includes(commandId)) {
     manualMapCommandDraft = {
       ...draft,
       result: { status: 'NOT_APPLIED', reason: 'MANUAL_MAP_TARGET_REQUIRED', mutationDispatched: false },
@@ -14821,6 +14881,14 @@ async function applyManualMapCommandDraft() {
   const current = () => context() && sequence === atlasCommandPublicationSequence;
   const result = await pending;
   if (!current()) return result;
+  if (result?.ok === true && ['manualMap.create', 'manualMap.import.jsonRepeat'].includes(commandId)) {
+    const receipt = unwrapManualMapProductCommandReceipt(result);
+    if (typeof receipt.mapId === 'string' && receipt.mapId) {
+      manualMapWorkbenchState = { ...manualMapWorkbenchState, mapId: receipt.mapId };
+      manualMapTransientViewState = normalizeManualMapViewState({ viewport: MANUAL_MAP_DEFAULT_VIEWPORT }, {});
+      manualMapListState = { activeRowId: '' }; manualMapPinnedNodeIds = new Set(); manualMapDragState = null;
+    }
+  }
   await refreshManualMapWorkbench({ force: true, isCurrent: current });
   if (!current()) return result;
   const commandApplied = result && result.ok === true;
@@ -14869,6 +14937,26 @@ function makeManualMapDraftButton(label, draftFactory, optionsFactory = () => ({
 }
 
 function renderManualMapToolbar(parent, state, runtime, options = {}) {
+  const mapLabel = document.createElement('label');
+  mapLabel.className = 'manual-map-workspace__field';
+  const mapText = document.createElement('span');
+  mapText.textContent = manualMapHasRetainedDraft() ? 'Map (Apply or Cancel the current command first)' : 'Map';
+  const mapSelect = document.createElement('select');
+  mapSelect.className = 'right-rail-atlas-journey-field__control';
+  mapSelect.dataset.manualMapSelector = 'true';
+  mapSelect.disabled = manualMapHasRetainedDraft() || !state.mapRows?.length;
+  for (const row of state.mapRows || []) {
+    const option = document.createElement('option'); option.value = row.mapId; option.textContent = row.title || row.mapId;
+    mapSelect.appendChild(option);
+  }
+  mapSelect.value = state.mapId || '';
+  const projectId = currentProjectId, sourceMapId = state.mapId;
+  mapSelect.addEventListener('change', () => {
+    if (!mapSelect.isConnected || currentProjectId !== projectId || manualMapWorkbenchState.mapId !== sourceMapId) return;
+    if (manualMapHasRetainedDraft()) { mapSelect.value = sourceMapId; return; }
+    void selectManualMap(mapSelect.value);
+  });
+  mapLabel.append(mapText, mapSelect); parent.appendChild(mapLabel);
   const actionBar = document.createElement('div');
   actionBar.className = options.compact
     ? 'right-rail-atlas-action-bar'
@@ -14883,9 +14971,9 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
   const selectedNode = getManualMapNodeById(sourceGraph, selectedNodeId);
   const selectedEdge = getManualMapEdgeById(sourceGraph, selectedEdgeId);
   const selectedGroup = getManualMapGroupByNodeId(sourceGraph, selectedNodeId);
-  const mapId = state.mapId || makeStableUiId('manual-map');
+  const mapId = state.mapId || '';
   actionBar.appendChild(makeManualMapDraftButton('Create map', () => {
-    const draftMapId = makeStableUiId('manual-map');
+    const draftMapId = makeManualMapAuthorId('manual-map');
     return {
       commandId: 'manualMap.create',
       title: 'Create map',
@@ -14903,7 +14991,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
     };
   }, () => ({ disabled: !currentProjectId, reason: currentProjectId ? '' : 'Project is not open' })));
   actionBar.appendChild(makeManualMapDraftButton('Add node', () => {
-    const nodeId = makeStableUiId('manual-node');
+    const nodeId = makeManualMapAuthorId('manual-node');
     return {
       commandId: 'manualMap.node.add',
       title: 'Add node',
@@ -14924,7 +15012,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
     };
   }, () => ({ disabled: !state.mapId, reason: state.mapId ? '' : 'Create a map first' })));
   actionBar.appendChild(makeManualMapDraftButton('Scene node', () => {
-    const nodeId = makeStableUiId('manual-scene-node');
+    const nodeId = makeManualMapAuthorId('manual-scene-node');
     return {
       commandId: 'manualMap.node.add',
       title: 'Add scene node',
@@ -14948,7 +15036,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
   }, () => ({ disabled: !state.mapId || !currentDocumentId, reason: currentDocumentId ? '' : 'No scene selected' })));
   actionBar.appendChild(makeManualMapDraftButton('Entity node', () => {
     const entity = findAtlasJourneyEntity(atlasJourneyDraft.sourceEntityId);
-    const nodeId = makeStableUiId('manual-entity-node');
+    const nodeId = makeManualMapAuthorId('manual-entity-node');
     return {
       commandId: 'manualMap.node.add',
       title: 'Add entity node',
@@ -14983,7 +15071,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
       risk: 'semantic',
       payload: {
         mapId,
-        edgeId: makeStableUiId('manual-edge'),
+        edgeId: makeManualMapAuthorId('manual-edge'),
         fromNodeId: selectedIds[0] || '',
         toNodeId: selectedIds[1] || '',
         edgeKind: 'link',
@@ -15068,7 +15156,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
   })));
   actionBar.appendChild(makeManualMapDraftButton('Create group', () => {
     const selectedIds = manualMapTransientViewState.selection?.nodeIds || [];
-    const groupId = makeStableUiId('manual-group');
+    const groupId = makeManualMapAuthorId('manual-group');
     return {
       commandId: 'manualMap.group.create',
       title: 'Create group',
@@ -15130,7 +15218,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
     reason: 'Select a grouped node',
   })));
   actionBar.appendChild(makeManualMapDraftButton('Add attachment', () => {
-    const attachmentId = makeStableUiId('manual-attachment');
+    const attachmentId = makeManualMapAuthorId('manual-attachment');
     return {
       commandId: 'manualMap.attachment.add',
       title: 'Add attachment',
@@ -15143,12 +15231,6 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
         attachmentId,
         label: 'Reference packet',
         attachmentKind: 'reference',
-        source: {
-          name: 'manual-map-reference.txt',
-          mediaType: 'text/plain',
-          sourceHash: 'd'.repeat(64),
-          byteLength: 128,
-        },
       },
       fields: [
         { name: 'label', label: 'Attachment label', type: 'text', value: 'Reference packet' },
@@ -15161,8 +15243,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
     reason: 'Select a node',
   })));
   actionBar.appendChild(makeManualMapDraftButton('Add portal', () => {
-    const portalId = makeStableUiId('manual-portal');
-    const targetNodeId = getManualMapSecondarySelectedNodeId();
+    const portalId = makeManualMapAuthorId('manual-portal');
     return {
       commandId: 'manualMap.portal.add',
       title: 'Add portal',
@@ -15173,24 +15254,28 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
         mapId,
         portalId,
         fromNodeId: selectedNodeId,
-        targetMapId: mapId,
-        targetNodeId,
+        targetMapId: '',
+        targetNodeId: '',
         label: 'Portal link',
       },
       fields: [
         { name: 'label', label: 'Portal label', type: 'text', value: 'Portal link' },
+        { name: 'targetMapId', label: 'Target map', type: 'select', options: [
+          { value: '', label: 'Choose a target map' }, ...(state.mapRows || []).map(row => ({ value: row.mapId, label: row.title || row.mapId })),
+        ] },
+        { name: 'targetNodeId', label: 'Target node (optional)', type: 'select', options: [{ value: '', label: 'Whole map' }] },
       ],
-      impactPreview: `Adds one portal from ${selectedNodeId} to ${mapId}:${targetNodeId || 'map'}. It links graph navigation only and does not rewrite target content.`,
+      impactPreview: `Choose the target map and optional node for source ${selectedNodeId}. Target content is unchanged.`,
     };
   }, () => ({
     disabled: !selectedNode,
     reason: 'Select a source node',
   })));
   actionBar.appendChild(makeManualMapDraftButton('Apply template', () => {
-    const templateInstanceId = makeStableUiId('manual-template');
-    const nodeOneId = makeStableUiId('manual-template-node');
-    const nodeTwoId = makeStableUiId('manual-template-node');
-    const edgeId = makeStableUiId('manual-template-edge');
+    const templateInstanceId = makeManualMapAuthorId('manual-template');
+    const nodeOneId = makeManualMapAuthorId('manual-template-node');
+    const nodeTwoId = makeManualMapAuthorId('manual-template-node');
+    const edgeId = makeManualMapAuthorId('manual-template-edge');
     const nextIndex = state.summary.nodeCount + 1;
     return {
       commandId: 'manualMap.template.apply',
@@ -15245,7 +15330,7 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
   });
   actionBar.appendChild(imagePdfButton);
   actionBar.appendChild(makeManualMapDraftButton('Import JSON file', () => {
-    const targetMapId = makeStableUiId('manual-map-imported');
+    const targetMapId = makeManualMapAuthorId('manual-map-imported');
     return {
       commandId: 'manualMap.import.jsonRepeat',
       title: 'Import exported copy',
@@ -15263,8 +15348,8 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
       impactPreview: `Selects a local Manual Map JSON file and imports it into new map ${targetMapId}. Existing maps and scene text stay unchanged.`,
     };
   }, () => ({
-    disabled: !state.mapId,
-    reason: state.mapId ? '' : 'Create a map first',
+    disabled: !currentProjectId,
+    reason: currentProjectId ? '' : 'Project is not open',
   })));
   if (!options.compact) {
     const layoutToggle = document.createElement('button');
@@ -15518,7 +15603,7 @@ function renderManualMapCommandDraft(parent) {
   panel.dataset.manualMapCommandRisk = draft.risk || '';
   const isCurrentDraft = () => panel.isConnected && currentProjectId === projectId
     && manualMapDraftContext?.()
-    && manualMapCommandDraft?.state === 'draft'
+    && ['draft', 'failed'].includes(manualMapCommandDraft?.state)
     && manualMapCommandDraft.commandId === draft.commandId
     && manualMapCommandDraft.targetId === draft.targetId;
   panel.addEventListener('submit', (event) => {
@@ -15544,12 +15629,22 @@ function renderManualMapCommandDraft(parent) {
     label.className = 'manual-map-workspace__field';
     const labelText = document.createElement('span');
     labelText.textContent = field.label || field.name || 'Field';
-    const input = document.createElement('input');
-    input.type = field.type || 'text';
+    const input = document.createElement(field.type === 'select' ? 'select' : 'input');
+    if (field.type === 'select') input.className = 'right-rail-atlas-journey-field__control';
+    if (field.type !== 'select') input.type = field.type || 'text';
+    for (const row of field.options || []) {
+      const option = document.createElement('option'); option.value = row.value; option.textContent = row.label;
+      input.appendChild(option);
+    }
+    if (field.type === 'select') input.dataset.manualMapFieldOptions = JSON.stringify(field.options || []);
     input.value = manualMapText(draft.payload?.[field.name], manualMapText(field.value));
     input.dataset.manualMapCommandField = field.name || '';
-    input.addEventListener('input', () => {
-      if (isCurrentDraft()) updateManualMapCommandDraftField(field.name, input.value);
+    input.addEventListener(field.type === 'select' ? 'change' : 'input', () => {
+      if (!isCurrentDraft()) return;
+      updateManualMapCommandDraftField(field.name, input.value);
+      if (field.name === 'targetMapId') {
+        void refreshManualMapPortalTargets();
+      }
     });
     label.append(labelText, input);
     panel.appendChild(label);

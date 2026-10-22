@@ -1,3 +1,48 @@
+# Current bounded task — Mac manual-map authoring and portability, 2026-10-23
+
+TASK_ID: YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023
+STATUS: SOURCE_REVIEWED_FOR_BINDINGS_NATIVE_AND_DELIVERY_PENDING
+BASE_SHA: ba42e0c1925a6d536b18c445fdfcaf523c4864db
+BRANCH: codex/mac-manual-map-authoring-20261023
+
+PR2146 is independently closed as ACCEPTED_BOUNDED_DELIVERY at actual normal
+merge ba42e0c1925a6d536b18c445fdfcaf523c4864db. Closure SHA
+0793b06401654688f1f04ded283e8b5c5fa6ae8a859c8b9588f5876eb24ab7f2;
+full first-Mac acceptance is false. Earlier pending prefixes below are historical.
+Fresh merged source/gates/build/native/raw cold preservation were reviewed;
+prior complete candidate baseline and official CI retain their own identities.
+Known unchanged Electron audit findings were not labelled security PASS.
+
+New task: docs/tasks/2026-10-23--mac-manual-map-authoring.md. One existing-seam
+vertical for closed packaged V3/all16 existing map commands, map selection,
+real bounded native attachment metadata, cross-map portals and JSON/SVG
+portability with preserved draft/manuscript/history and reserved artifacts.
+Clean architecture preflight and task E0 actual0 preceded implementation.
+Separate code agent froze7 runtime/6 test paths; root independently read the
+complete diff and protected originals. Latest3 complete files passed177/177,
+zero cancelled/skipped/TODO. Normal renderer build actual0. These are source
+checks only; whole6/current bindings, package/native/CI/merge are still pending.
+
+Actual causal failures and repairs include restarted renderer ID collisions,
+portal caret loss/rejected queries, manifest A-to-B lost update, and unsupported
+publication leaving an old target unnamed. Real APFS capability/publication and
+four interruption/recovery schedules pass. Actual T777 read-only capability
+refusal preserves the old name/inode/bytes. Direct positive T777 export remains
+blocked pending owner scope reply; refusal is not positive export acceptance.
+Original fs.link/RENAME_EXCL failures and all raw evidence remain retained.
+
+New reports/materials: dated 2026-10-23--mac-manual-map-authoring directories
+on verified T777; code in the registered T7-Secure worktree. Owner checkout,
+profiles/projects and prior evidence remain untouched.
+Defects stay in this task's existing Known limitations and deferred defects
+section. Data loss, wrong save, security/ownership/isolation, new regressions
+and affected mandatory-gate blockers cannot pass dependent acceptance.
+Full first-Mac scope, including true binary PDF, remaining Atlas, WSE/Pulse
+and epochs, stays required. SVG does not satisfy PDF. Black Box remains later.
+No native outcome, full-Mac completion or public release claim yet.
+
+---
+
 # 2026-10-22 — Atlas reports capability contract: source parity repaired, delivery open
 
 The current71e4 direct-caller scan covers2754 tracked maintained test and harness files. Existing41 complete affected files passed619 tests; supplementary8 complete files ran61 tests with60 pass and one required reports capability literal failure. That contract, capabilityPolicy and shared registry are byte-identical to original b113: this is a stale source-location oracle, not a new runtime regression. Raw failures stay retained. After exact clean71e4 declaration/preflight and taskE0, the reports contract now imports the actual capability policy and requires atlas.savedQuery.save to map exactly to cap.atlas.savedQuery.save. Only3 lines were replaced; all4 cases and other assertions/negative boundaries are preserved byte-exact. Whole4of4 passed without skips or TODO. All runtime/bundles and earlier repaired tests remain frozen.
