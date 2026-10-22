@@ -210,3 +210,51 @@ test('central sheet proof keeps page paper on shell layer only', () => {
   assert.match(shellRule, /background:\s*var\(--page-bg\);/);
   assert.match(shellRule, /border-radius:\s*var\(--page-radius\);/);
 });
+
+// The native800 witness is in viewport coordinates after ordinary end navigation.
+// A page count alone cannot prove that the canonical terminal block is reachable.
+const { resolveCentralSheetEditableExtentDecision } = require('../../src/renderer/centralSheetStripProofDecision.js');
+
+test('central sheet actual extent refuses the frozen clipped canonical terminal block', () => {
+  const result = resolveCentralSheetEditableExtentDecision({
+    contentTop: -260407, contentBottom: 12094, clipTop: -260407, clipBottom: 870,
+  });
+  assert.equal(result.geometryValid, true);
+  assert.equal(result.shouldRender, false);
+  assert.equal(result.overflowReason, 'editable-extent-continuous');
+  assert.equal(12094 - (-260407), 272501);
+  assert.equal(870 - (-260407), 261277);
+});
+
+test('central sheet actual extent preserves fitting and exactly equal pagination at any scroll origin', () => {
+  for (const origin of [0, -260407, 75.25]) {
+    for (const extent of [19, 500, 999.5, 1000]) {
+      const result = resolveCentralSheetEditableExtentDecision({
+        contentTop: origin, contentBottom: origin + extent,
+        clipTop: origin, clipBottom: origin + 1000,
+      });
+      assert.equal(result.geometryValid, true);
+      assert.equal(result.shouldRender, true);
+      assert.equal(result.overflowReason, '');
+    }
+  }
+});
+
+test('central sheet actual extent refuses missing non-finite inverted or non-numeric geometry', () => {
+  const fitting = { contentTop: 0, contentBottom: 400, clipTop: 0, clipBottom: 500 };
+  for (const key of Object.keys(fitting)) {
+    for (const value of [undefined, null, NaN, Infinity, -Infinity, '400']) {
+      const result = resolveCentralSheetEditableExtentDecision({ ...fitting, [key]: value });
+      assert.equal(result.geometryValid, false, `${key}: ${String(value)}`);
+      assert.equal(result.shouldRender, false);
+      assert.equal(result.overflowReason, 'editable-extent-continuous');
+    }
+  }
+  for (const geometry of [
+    { ...fitting, contentBottom: -1 }, { ...fitting, clipBottom: 0 },
+    { ...fitting, clipTop: 600 },
+  ]) {
+    assert.equal(resolveCentralSheetEditableExtentDecision(geometry).geometryValid, false);
+  }
+  assert.equal(resolveCentralSheetEditableExtentDecision({ ...fitting, contentTop: -1 }).shouldRender, false);
+});

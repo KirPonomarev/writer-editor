@@ -208,6 +208,7 @@ import * as toolbarRuntimeProjectionModule from './toolbar/toolbarRuntimeProject
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const {
+  resolveCentralSheetEditableExtentDecision,
   resolveCentralSheetStripProofDecision,
 } = centralSheetStripProofDecision;
 
@@ -3853,6 +3854,8 @@ let centralSheetStripLargePayloadFastPathDirty = false;
 let centralSheetStripLargePayloadFastPathRevision = 0;
 let centralSheetStripTextMeasureCanvas = null;
 let derivedPageMapRuntimeBridgeRefreshSerial = 0;
+let centralSheetStripContinuousFallbackIdentity = null;
+let centralSheetStripLayoutGeneration = 0;
 
 function resetCentralSheetStripStructuralSettleState() {
   if (centralSheetStripStructuralSettleFrameId) {
@@ -3907,6 +3910,12 @@ function applyPageGeometryCssVars(metrics) {
     return;
   }
 
+  const geometryChanged = [
+    ['--page-width-px', metrics.pageWidthPx], ['--page-height-px', metrics.pageHeightPx],
+    ['--page-margin-top-px', metrics.marginTopPx], ['--page-margin-right-px', metrics.marginRightPx],
+    ['--page-margin-bottom-px', metrics.marginBottomPx], ['--page-margin-left-px', metrics.marginLeftPx],
+  ].some(([key, value]) => document.documentElement.style.getPropertyValue(key) !== `${Math.round(value)}px`);
+  if (geometryChanged) resetCentralSheetStripContinuousFallback();
   document.documentElement.style.setProperty('--page-width-px', `${Math.round(metrics.pageWidthPx)}px`);
   document.documentElement.style.setProperty('--page-height-px', `${Math.round(metrics.pageHeightPx)}px`);
   document.documentElement.style.setProperty('--page-margin-top-px', `${Math.round(metrics.marginTopPx)}px`);
@@ -4391,6 +4400,59 @@ function finishCentralSheetStripStructuralTransition() {
   resetCentralSheetStripStructuralSettleState();
 }
 
+function readCentralSheetStripPresentationIdentity() {
+  // Inline token/style reads do not force layout or hash the authoring text.
+  const rootStyle = document.documentElement.style;
+  return [currentProjectId, currentDocumentId, editor.querySelector('.ProseMirror'),
+    centralSheetStripLayoutGeneration, activeBookProfileState, editorZoom,
+    ...['--page-width-px', '--page-height-px', '--page-margin-top-px', '--page-margin-right-px',
+      '--page-margin-bottom-px', '--page-margin-left-px', '--page-gap-px', '--font-family']
+      .map((key) => rootStyle.getPropertyValue(key)),
+    ...['fontFamily', 'fontSize', 'fontWeight', 'fontStretch', 'letterSpacing', 'lineHeight', 'whiteSpace']
+      .map((key) => editor.style[key] || '')];
+}
+
+function isCentralSheetStripContinuousFallbackCurrent() {
+  if (!centralSheetStripContinuousFallbackIdentity) return false;
+  const current = readCentralSheetStripPresentationIdentity();
+  if (!centralSheetStripContinuousFallbackIdentity.every((value, index) => value === current[index])) {
+    centralSheetStripContinuousFallbackIdentity = null;
+    return false;
+  }
+  return true;
+}
+
+function resetCentralSheetStripContinuousFallback() {
+  centralSheetStripContinuousFallbackIdentity = null;
+  centralSheetStripLayoutGeneration += 1;
+  centralSheetStripCachedRuntimeState = null;
+  centralSheetStripCacheDirty = true;
+  if (centralSheetStripRefreshFrameId) {
+    window.cancelAnimationFrame(centralSheetStripRefreshFrameId);
+    centralSheetStripRefreshFrameId = null;
+  }
+  finishCentralSheetStripStructuralTransition();
+}
+
+function validateCentralSheetStripEditableExtent() {
+  // The separately guarded large single-paragraph path uses derived visible rows.
+  if (centralSheetStripLargePayloadFastPathActive) return true;
+  const proseMirror = editor.querySelector('.ProseMirror');
+  const clip = editor.querySelector('.tiptap-editor');
+  const terminal = proseMirror?.lastElementChild;
+  const contentRect = proseMirror instanceof HTMLElement ? proseMirror.getBoundingClientRect() : null;
+  const terminalRect = terminal instanceof HTMLElement ? terminal.getBoundingClientRect() : null;
+  const clipRect = clip instanceof HTMLElement ? clip.getBoundingClientRect() : null;
+  const decision = resolveCentralSheetEditableExtentDecision({
+    contentTop: contentRect?.top, contentBottom: terminalRect?.bottom,
+    clipTop: clipRect?.top, clipBottom: clipRect?.bottom,
+  });
+  if (decision.shouldRender) return true;
+  centralSheetStripContinuousFallbackIdentity = readCentralSheetStripPresentationIdentity();
+  clearCentralSheetStripProof({ overflowReason: decision.overflowReason });
+  return false;
+}
+
 function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   if (!(editor instanceof HTMLElement)) {
     return;
@@ -4443,6 +4505,7 @@ function resetCentralSheetStripForIncomingPayload() {
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
     return;
   }
+  resetCentralSheetStripContinuousFallback();
   if (centralSheetStripRefreshFrameId) {
     window.cancelAnimationFrame(centralSheetStripRefreshFrameId);
     centralSheetStripRefreshFrameId = null;
@@ -4764,6 +4827,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   if (!(editor instanceof HTMLElement) || !runtimeState) {
     return false;
   }
+  if (isCentralSheetStripContinuousFallbackCurrent()) return false;
   const {
     metrics,
     contentWidthPx,
@@ -4858,7 +4922,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   renderCentralSheetStripShellPages(pageWindow, runtimeState);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
   centralSheetStripLastScrollTop = Math.max(0, Number(pageWindow.scrollTop) || 0);
-  return true;
+  return validateCentralSheetStripEditableExtent();
 }
 
 function syncCentralSheetStripWindowFromCachedRuntimeState() {
@@ -4879,6 +4943,10 @@ function syncCentralSheetStripWindowFromCachedRuntimeState() {
 function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
     return;
+  }
+  if (isCentralSheetStripContinuousFallbackCurrent()) {
+    finishCentralSheetStripStructuralTransition();
+    return false;
   }
   const tiptapEditor = editor.querySelector('.tiptap-editor');
   const proseMirror = editor.querySelector('.ProseMirror');
@@ -4927,7 +4995,9 @@ function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
     centralSheetStripCacheDirty = false;
   }
   if (!applyCentralSheetStripRuntimeState(runtimeState)) {
-    clearCentralSheetStripProof({ overflowReason: 'viewport-window-unavailable' });
+    if (!isCentralSheetStripContinuousFallbackCurrent()) {
+      clearCentralSheetStripProof({ overflowReason: 'viewport-window-unavailable' });
+    }
     return false;
   }
   return true;
@@ -4935,6 +5005,10 @@ function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
 
 function scheduleCentralSheetStripProofRefreshOnScroll() {
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  if (isCentralSheetStripContinuousFallbackCurrent()) {
+    finishCentralSheetStripStructuralTransition();
     return;
   }
   bindCentralSheetStripScrollRefresh();
@@ -4961,6 +5035,10 @@ function scheduleCentralSheetStripProofRefresh({ scrollOnly = false, forceFull =
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
     return;
   }
+  if (isCentralSheetStripContinuousFallbackCurrent()) {
+    finishCentralSheetStripStructuralTransition();
+    return;
+  }
   bindCentralSheetStripScrollRefresh();
   const shouldKeepEstimatedLargePayloadState = (
     forceFull !== true
@@ -4980,7 +5058,9 @@ function scheduleCentralSheetStripProofRefresh({ scrollOnly = false, forceFull =
     centralSheetStripCacheDirty = true;
   }
   centralSheetStripRefreshMode = nextRefreshMode;
+  const layoutGeneration = centralSheetStripLayoutGeneration;
   centralSheetStripRefreshFrameId = window.requestAnimationFrame(() => {
+    if (layoutGeneration !== centralSheetStripLayoutGeneration) return;
     centralSheetStripRefreshFrameId = null;
     const refreshMode = centralSheetStripRefreshMode;
     centralSheetStripRefreshMode = 'full';
@@ -4995,7 +5075,9 @@ function scheduleCentralSheetStripPostStructuralRefresh() {
   if (!centralSheetStripStructuralGuardActive || centralSheetStripStructuralSettleFrameId) {
     return;
   }
+  const layoutGeneration = centralSheetStripLayoutGeneration;
   centralSheetStripStructuralSettleFrameId = window.requestAnimationFrame(() => {
+    if (layoutGeneration !== centralSheetStripLayoutGeneration) return;
     centralSheetStripStructuralSettleFrameId = null;
     centralSheetStripCacheDirty = true;
     const applied = refreshCentralSheetStripProof();
@@ -24287,6 +24369,7 @@ window.addEventListener('resize', () => {
   syncWriterA11yPerformanceProjection();
   updateSpatialLayoutForViewportChange();
   scheduleLayoutRefresh();
+  resetCentralSheetStripContinuousFallback();
   scheduleCentralSheetStripProofRefresh();
   if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) renderAtlasWorkspaceState();
 });

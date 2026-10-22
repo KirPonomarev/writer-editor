@@ -2,6 +2,19 @@
 
 const CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON = 'max-page-count';
 
+// Both bounds must come from the same post-apply viewport coordinate system.
+function resolveCentralSheetEditableExtentDecision({ contentTop, contentBottom, clipTop, clipBottom } = {}) {
+  const geometryValid = [contentTop, contentBottom, clipTop, clipBottom]
+    .every((value) => typeof value === 'number' && Number.isFinite(value))
+    && contentBottom >= contentTop && clipBottom > clipTop;
+  const shouldRender = geometryValid && contentTop >= clipTop && contentBottom <= clipBottom;
+  return {
+    geometryValid,
+    shouldRender,
+    overflowReason: shouldRender ? '' : 'editable-extent-continuous',
+  };
+}
+
 function toPositiveNumber(value, fallback) {
   const number = Number(value);
   return Number.isFinite(number) && number > 0 ? number : fallback;
@@ -52,6 +65,7 @@ function resolveCentralSheetStripProofDecision({
 
 module.exports = {
   CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
+  resolveCentralSheetEditableExtentDecision,
   resolveCentralSheetStripProofDecision,
   selectActiveLayoutPreviewSnapshotPageCount,
 };

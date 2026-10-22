@@ -1,3 +1,13 @@
+## 2026-10-22 — Reachable longform editor correction
+
+Actual merged25e native end navigation confirmed canonical text beyond the clip.
+A finite post-apply geometry guard reuses the existing complete continuous editor;
+document/layout identity prevents repeated failed pagination during typing. Separate
+executor and independent root full affected runs each pass76of76 with no skips;
+original test bytes and seven authoring functions remain. Source/bundle and normal
+inventory/certificate/approval companions only. Actual native outcome, full required
+baseline and commit/CI/merge/merged proof remain pending; no workload/release claim.
+
 ## 2026-10-22 — Project document eligibility correction
 
 Actual native longform opening selected AppleDouble metadata; source scenes stayed
