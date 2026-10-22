@@ -751,7 +751,9 @@
     "scripts/ops/sector-m-scope-map.json",
     "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
     "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
-    "test/unit/paste-focus-signal.test.js"
+    "test/unit/paste-focus-signal.test.js",
+    "test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js",
+    "test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1716,7 +1718,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "88acedb6b7b5d0a30dfa3977b81dea66756e8d167dc62dadaaae177451faa4db"
+        "sha256": "b4e75323966d5f2d74c802376506c2322108ec2aa7c1e6b7c4f74f29ff4d2c10"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2672,15 +2674,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "7f2293a7dcb43d1887d6f1428713aacdf4b50171ea909f3d71a6fd79f7c34db4"
+        "sha256": "4574a732a380a6017208638d974037d8192ef6a043e95512bfb37c1631f3d155"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "51c8d2df6ab13af9ef57eb5a7b11d73533eaef72f81e911f380f351482069f34"
+        "sha256": "ecc8b28aa4b743a9f6b9f702f4aeb6ddc597461bdc2773a217a232d038208cda"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f34d48fc1bec5f400ec53b5b5181f5ed8b534450e0959254d82aab84d8688a26"
+        "sha256": "ff5a6ec8d3113d17c6af6aa840195451179c653506256f4076297e69708cb773"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3220,7 +3222,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "732f4e9f8b8c4b89d2f01489c03463cb8acb22c7f1589093bf83c4fe1d8b2cf1"
+        "sha256": "667c9877508906a5b9eeaaa9aedae5fe4e74427b6e62cff5e36b12b5b366e20f"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3360,11 +3362,19 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
-        "sha256": "7f3da0805d8d232af01615dec7dba0f682dbe2b2941e5b616cc96de1d080c429"
+        "sha256": "0ad6ae3682a3dce8a8ad3dfbf64eccc5ef6421bebe231ff48cd5cdfd08601be3"
       },
       {
         "path": "test/unit/paste-focus-signal.test.js",
         "sha256": "42e0e9f60ecf0c30a42c0f28fa1cb824fac321797e842e93cd0ddc034bf5b125"
+      },
+      {
+        "path": "test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js",
+        "sha256": "59731a41f16205bfe97a26bc25a4fba81eb6f0d0a8ff177882d10ddec2459637"
+      },
+      {
+        "path": "test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js",
+        "sha256": "85d268c8b860f3b02154b38a65cfc8569ba674c06aa29d413e1664acdfe12813"
       }
     ],
     "followupRepair": {

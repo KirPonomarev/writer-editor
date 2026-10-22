@@ -4,8 +4,10 @@ TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
-HEAD_SHA_AT_START: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+BINDING_BASE_SHA: 50d9e10d793ce65459ea92ba15a0d5e800544d01
+HEAD_SHA_AT_START: 50d9e10d793ce65459ea92ba15a0d5e800544d01
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+AMENDMENT: Same unfinished delivery; two required stale assurance contracts only, original four implementation paths held byte-exact.
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-text-clipboard-20261022
 DESIGN_TOOL_ROUTER: existing design contract unchanged; exact router value is in the validated architecture declaration
@@ -45,6 +47,8 @@ Small renderer focus-classification/notification correction and appended meaning
 - scripts/ops/sector-m-scope-map.json
 - src/renderer/editor.bundle.js
 - src/renderer/editor.js
+- test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js
+- test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/rtk-word-note-tables.contract.test.js
 - test/unit/paste-focus-signal.test.js
@@ -54,6 +58,19 @@ Small renderer focus-classification/notification correction and appended meaning
 Everything outside the allowlist. No Main/preload/IPC allowlist/security/entitlement/Core/storage/format/profile/flags/capability change, dependency or runtime network, shell HTML/CSS/tokens/layout, executable plugin, new port/registry/worker/bus, Windows/Linux implementation, signing/notary/public distribution, owner/private data, broad code formatting/refactor, release cut/V1/V2/full program rewrite, stale native claim or cleanup of earlier evidence. No reset/stash/clean/rebase/amend/force-push or foreign WIP modification. No optional integration discovery/use.
 
 Runtime source delta at most80 changed lines within the current focus fragment. Append at most450 test lines to paste-focus-signal.test.js; all three original test bodies/helper prefix byte-exact. Any note-tables fixture change at most8 lines solely to represent actual DOM connection/focus attributes; every test predicate/body beyond that literal remains. Generated bundle excluded from line count but exact normal source build/readback required. Root OPS changes are current bindings only: exact new task and test membership and exact scope entries, no classifier/runner/predicate/lane/skip changes. Derive real denominators from membership; expected744DATA/597source/254certificate plus one unchanged guard is only a forecast.
+
+### Same-chain assurance amendment on clean50d9
+
+The original clipboard source is an unaccepted normal checkpoint; no push/PR/merge or native acceptance exists yet. This is the same task/outcome/rollback against original4fa, not an independent delivery. Fresh clean50d9 bootstrap/full normative and scoped factual reads/fetch/declaration/preflight precede the first amendment write; amended task E0 precedes the two delegated test edits. Original4fa prewrite and sourceRED receipts remain historical and are never retagged50d9.
+
+The exact50d9 seventeen-file affected run actually executes236of238, with two required failures. Independent unchanged4fa full two-file control actually executes4of6 and reproduces the same failures. Neither failure establishes a new runtime defect. Keep both whole files in the affected selection, required inventory, lane and classification. Their only admitted edits, together at most260 additional test lines, are:
+
+- Retired contour-01 historical boundary check truthfully reports false because its unchanged detector expects the removed raw IPC listener. Assert consumed mainEditorTextResponseListener=false and its exact missing-check entry, independently assert current guardedOn listener present and raw ipcMain.on absent. Keep retirement/admission false/token0, autosave and UI recovery seams true, and both forced-negative case bodies byte-exact. Do not edit the proofhook or promote retired evidence.
+- Scope the original eight no-full-rerender/incremental assertions to the actual legacy else branch paired with the Tiptap registration. Preserve the other two original cases byte-exact. Append finite execution of actual Tiptap registration/update/sync/markModified and deferred guards: PM transaction routes once, ordinary PM DOM input does not duplicate it, active large-payload fallback DOM input routes once, authoring text/dirty/generation remain correct, direct full render/DOM replacement is trapped. Bounded in-memory source mutants for guard/update/direct-render changes must fail semantic assertions through the same oracle, not parser or missing-function failures.
+
+The original editor.js, generated editor.bundle.js, paste-focus-signal.test.js and rtk-word-note-tables.contract.test.js are held exact50d9. No runtime rebuild or additional product change is authorized by this assurance amendment. Main/preload/keyboard/proofhook and every other application path stay exact. Root adds only these two exact required-test DATA/source/certificate memberships, normal current inventory/C2A hashes, current append-only witnesses and one factual pass. Existing SectorMmap already admits the two contract paths and stays exact50d9. Forecast746DATA/599source/256certificate plus the existing guard is derived only after actual membership checks; it is not acceptance.
+
+The final union is19paths. The original focused/native/whole baseline/audit/official CI/normal merge/fresh merged checks remain mandatory. Finite VM proof gives no native clipboard, numerical performance, recovery or full Mac readiness claim. Retain every initial failed process, malformed preparation and current source identity separately. One final PR revert covers the original clipboard correction and this assurance amendment together.
 
 ## CONTRACT / SHAPES
 

@@ -1,3 +1,50 @@
+# Native clipboard delivery — required editor assurance — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SAME_CHAIN_ASSURANCE_SOURCE_FROZEN_FINAL_GATES_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 50d9e10d793ce65459ea92ba15a0d5e800544d01
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Two required stale contract corrections in the same unfinished clipboard delivery; no additional runtime, native or full Mac acceptance.
+
+Unaccepted clipboard checkpoint50d9 passes eleven short mandatory gates, but its
+complete17file affected run actually executes236of238. Independent unchanged4fa
+whole-two-file control executes4of6 with the same two failures. Both RED executions
+remain retained; neither is relabeled a clipboard regression or dropped from coverage.
+Fresh clean50d9 full normative/scoped factual startup, fetch, architecture preflight
+and amended taskE0 precede the two additional delegated test edits. Original4fa
+prewrite evidence and original delivery rollback remain their separate identities.
+
+The historical retired proof still detects a removed raw IPC listener. Its contract
+now consumes false plus the exact missing-check and independently verifies the real
+guardedOn listener. Retired status, token0, inactive admission, true autosave/UI
+recovery seams and both forced-negative bodies remain. The proofhook is byte-exact.
+The hotpath test selects the actual paired legacy branch and preserves all8original
+assertions and other2case bodies. Actual Tiptap registration/onUpdate/update/sync/
+dirty-generation/deferred guards execute in finite ports. PM DOM input cannot
+duplicate a transaction; active fallback DOM input uses its existing working buffer.
+Four compiling guard/update/direct-render/DOM-replacement mutants fail the same
+semantic oracle. No native clipboard/recovery/performance proof follows from this VM.
+
+The complete2files execute8of8 and original3clipboard files29of29, all zero fail,
+cancel, skip and todo. Initial new-oracle7of8 and exact source remain retained;
+only the finite trap message was corrected to carry its stable semantic reason.
+Root independently reverse-verified every original byte outside admitted assertion
+and extraction changes,136added lines within260. Original4clipboard source paths
+and every application/build input are exact50d9; no renderer build is performed.
+
+Only2exact required contract memberships and current mechanical/factual companions
+are added. Normal inventory/C2A, a complete256binding successor with one guard,
+746DATApaths/599source pins and append-only exact-path witnesses must be checked on
+the final commit; historical tuples/predicates/graph/V1/V2/PlanState/lanes/skips and
+current SectorMscope map remain. Final whole17file affected, baseline/audit truth,
+official full maintained RTK/CI, genuine packaged clipboard/Apply/Save/Quit/cold/raw
+and whole artifact/profile proof, normal merge and fresh merged checks remain required.
+Electron advisory/release locks, full IME/numeric MR06 and all17full-Mac rows remain
+open. Continue complete Atlas/maps/WSE/Pulse/configuration epochs after this delivery;
+Black Box follows release. New evidence/materials stay on T777 and owned declared
+temporary APFS runtime; no profile/evidence identity is retagged.
+
 # Native text-control clipboard correction — 2026-10-22
 
 TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022

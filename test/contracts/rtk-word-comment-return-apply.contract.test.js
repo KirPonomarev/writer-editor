@@ -32,11 +32,11 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
   // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
   const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
-  const literal = committed.match(/^const R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
-  assert.ok(literal, 'candidate must declare its complete native text clipboard successor');
+  const literal = committed.match(/^const R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_ASSURANCE_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
+  assert.ok(literal, 'candidate must declare its complete native text clipboard assurance successor');
   const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
-  assert.equal(current.id, 'YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022');
-  assert.equal(current.bindings.length, 254);
+  assert.equal(current.id, 'YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_ASSURANCE_01_20261022');
+  assert.equal(current.bindings.length, 256);
   assert.equal(current.guards.length, 1);
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
