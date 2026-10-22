@@ -1,3 +1,46 @@
+# 2026-10-22 — Physical archive source proof
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 69be91c23848e3931c448abaf1f453c7c6f7673d
+CLAIM_BOUNDARY: Frozen source proof only; native/delivery/COPY/Mac release remain open.
+
+Executor and root complete all174affected cases without fail/cancel/skip/todo.
+The actual Main pre-edit RED observes5of9dirs; frozen correction restores9dirs
+and6exact raw files. Independent Python ZIP oracle confirms all6files/9explicit
+dirs in V2 ZIPe7559451ab4a2dc80491e364f2ae52afe9fecd7b1156d5e8462307e1657f079f.
+Runtime279lines and tests338 preserve original bodies/assertions,1061other Main
+blocks, COPY semantics and legacy V1/WP704 compatibility. Real physical ZIP,
+capture race, FD sync/close, foreign stage and post-publication loss negatives
+execute. Inventory1603and normal C2A preserve membership/history/predicates.
+Required remaining proofs and complete delivery are mandatory; retain original
+source and artifact identities and continue the larger release task.
+
+# 2026-10-22 — Archive physical directory correction admitted
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: ADMITTED_CORRECTION_WITH_INDEPENDENT_RED
+BINDING_BASE_SHA: 69be91c23848e3931c448abaf1f453c7c6f7673d
+CLAIM_BOUNDARY: Physical archive topology only; no COPY, numerical or release acceptance.
+
+PR2142 is fully delivered: all20exact official CI, normal69be91c2 merge and16fresh
+merged commands; affected76, media/table16, Apply19, E0 172plus40mutants pass. Actual
+rebuilt merged app received100trusted Russian key/input events, retained Undo/Redo,
+exact save and cold reopen with reachable terminal caret. All99project files and
+15prior backups stayed exact; complete175-file profile and530-member app preserved.
+Closure hash1ae0ae0cf8fc34cfa775065c69aea55714bedf0964101f3c687b357d96e9edbf.
+
+On current69be91c2, frozen six-file/nine-directory archive independently loses four
+directories despite self-verify. New actual Main RED reaches extraction: ten original
+S33cases pass, new case observes five dirs versus nine. Fresh declaration/preflight
+and E0 admit V2 sealed topology plus owned staging/readback/cleanup at existing
+seams. V1/WP704 compatibility remains mandatory. Frozen independent ZIP/filesystem
+oracles and full delivery are required; target is not yet live. Task/evidence use
+the dated mac-archive-directory-roundtrip scope. COPY identity/authority and first
+Mac qualification remain open.
+
 # 2026-10-22 — Longform PR2142 faithful contract amendment
 
 TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022

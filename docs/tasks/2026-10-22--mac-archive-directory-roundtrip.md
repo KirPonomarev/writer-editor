@@ -1,0 +1,142 @@
+# Complete physical directory roundtrip in Project Archive
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+TYPE: CORE
+DOCUMENT_CLASS: PROCESS
+STATUS: ADMITTED_BOUNDED_CORRECTION
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+ACTIVE_EXECUTION_CANON: v3.13a-final
+BINDING_BASE_SHA: 69be91c23848e3931c448abaf1f453c7c6f7673d
+DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_VERIFICATION_REQUIRED=true
+DESIGN_TOOL_ROUTER: existing interface form unchanged; exact router value is in the validated architecture declaration
+CLAIM_BOUNDARY: Physical directory/file preservation and existing owned import publication only; COPY authority, numerical workload and first Mac qualification remain open.
+
+## MICRO_GOAL
+
+Preserve every sealed non-root physical project directory, including empty Unicode directories, alongside every raw file through Project Archive export and actual Main staging/import. Existing archives remain readable. Success requires independently observed exact topology and file bytes rather than codec self-verification alone.
+
+O: Frozen six-file/nine-directory project exports and restores all nine directories and all six exact raw files. T: Direct first Mac owner task and DNA no-loss duty -> validated declaration -> existing canonical archive commands -> Main snapshot/owned staging/platform adapters. H: The current file-only private snapshot and ZIP omit empty topology; a sealed typed directory roster, explicit V2 directory members and owned Main directory readback restore the missing four directories. B: Protect all authoring data/history/opaque files, V1 compatibility, Core identity/authority, current command leases and no-clobber/output isolation; one PR rollback. P: Existing independent current-head RED, meaningful actual Main pre-edit RED, full affected tests, frozen independent ZIP/filesystem oracle, required gates and complete delivery. I: Clean registered69be91c branch/main, qualified Node22/COW dependencies, UUID-pinned disks, fixed synthetic input/old evidence identities.
+
+Owner authorizes necessary existing-seam archive correctness fixes and unrestricted synthetic native testing within first Mac scope. This is not a new R2.4 graph stage or a fabricated admission/lease. TYPE CORE follows the executable E0 classifier for this product format/I/O repair; the A4 IO label is not accepted by that unchanged classifier.
+
+## ARTIFACT
+
+One versioned physical archive topology repair across two existing runtime files and four maintained tests. Separate executor owns those six paths; root owns task, factual/OPS companions, independent oracle, review and delivery. Runtime added-plus-deleted budget900lines; test budget1200lines. No formatting/refactor outside changed functions. Generated governance/inventory/certificate data is mechanical and separately reviewed. External reports and final materials use dated UUID-verified T777 folders; synthetic temporary APFS runtime is declared and preserved.
+
+## ALLOWLIST
+
+- src/export/archive/projectArchiveExportHandler.js
+- src/main.js
+- test/unit/project-archive-correctness.test.js
+- test/unit/project-archive-export-handler.test.js
+- test/unit/sector-m-s32-full-archive-export.test.js
+- test/unit/sector-m-s33-full-archive-import.test.js
+- docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md
+- docs/CONTEXT.md
+- docs/HANDOFF.md
+- docs/WORKLOG.md
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- test/contracts/rtk-word-comment-return-apply.contract.test.js
+
+## DENYLIST
+
+Every unlisted path. No Core/WP704, renderer/preload/UI strings/layout/tokens, command IDs, dependency/lockfile, workflow, native helper/security configuration, cut/ledger/graph/PLAN_STATE or new registry/port. No COPY treeIdentity, Stage10 or Word lineage correction in this contour. No global parser/framework, size policy, heap/timeout increase, source/history filter, placeholder file, generated positive evidence, test exclusion or weakened original assertion. No Black Box/FULL/automation, Atlas/WSE/Pulse, Windows/Linux, product network/cloud, signing/notary/public distribution, reset/stash/clean/rebase/amend/force push or foreign WIP changes.
+
+## CONTRACT / SHAPES
+
+### FEATURE_INTEGRATION_MANIFEST_V1
+
+integrationMode: EXISTING_SEAM: BOUND_TO_CURRENT_APPROVED_ENTRYPOINTS; normative task contract only, no runtime registry.
+featureId: project-archive-physical-directory-roundtrip.
+featureVersion: 2 for the new physical carrier; existing command IDs and historical V1 symbols remain stable.
+domainOwner: existing Product Core truth and Main archive adapter; no new data owner.
+authoritativeData: sealed physical project source N, unchanged raw files and non-root physical directory roster.
+derivedData: ZIP buffer, validated read-only payload/summary and external proof; none creates authority.
+commandIds: cmd.project.exportFullArchiveV1; cmd.project.importFullArchiveV1.
+eventTypes: existing handler results and import/export status; no new domain event or bus.
+queryIds: existing archive preview/payload summary; no new query ID.
+productProjectionIds: existing immutable capture/payload/summary, extended with directory topology.
+capabilityIds: existing archive command availability/capability; no new privilege.
+authorityMap: Core owns project identity/truth; Kernel revalidates dispatch; Main owns existing filesystem/effect ports; Design OS reads summary and sends intent only.
+identityKeys: projectId, root dev/ino, source manifest/entry identities, authoring generation, staging owner dev/ino and validated typed path identities.
+revisionPolicy: reject capture races before sealing; after sealing build N from private copies without reading N+1; revalidate current project/root/capability before publication.
+writePath: existing menu intent -> dispatchCommandSurfaceKernel -> existing archive handler/lease -> validated owned staging -> existing atomic gateway -> fixed Darwin no-clobber publication -> verified result.
+readPath: canonical source -> sealed immutable snapshot -> V2 ZIP; bounded external ZIP -> validation -> immutable summary -> existing preview.
+requiredProductPorts: existing fs/fsp, readExternalFileBounded, projectManifestAuthority lease, atomic write/gateway and fixed Darwin publication adapter only.
+requiredDesignOsPorts: existing preview/query and intent-only dispatch; no new port.
+adapterRequirements: no-follow identity-owned traversal, directory fsync/readback and cleanup within existing Main adapter.
+surfaceManifests: none, because no new visual zone or design contract is introduced.
+slotRequirements: none; existing preview reads manifest.fileCount and is unchanged.
+supportedWorkspaces: unchanged WRITE/PLAN/REVIEW command availability.
+platformAvailability: existing desktop paths; first Mac native proof only; Windows/Linux implementation is outside scope.
+accessibilityRequirements: preserve keyboard, focus, clipboard, Undo/Redo, IME, zoom and existing dialog behavior; no editor/UI changes.
+fallbacks: strict V1 read remains available with known file-parent directories and explicit incomplete original topology; corrupt/unsafe/unsupported input refuses; no silent V2 downgrade.
+stateClasses: PROJECT_STATE and AUTHORING_WORKING_STATE are protected truth; sealed snapshot/payload are DERIVED_STATE; command preview is transient; no shell truth.
+persistenceClass: complete sealed raw project snapshot; atomic owned import; no project format migration.
+migrations: new named V2 schema/manifest for ordinary project writer; unchanged V1 exported constants and WP704 producer/accepted read profile.
+recovery: own staging root and exact rosters; refuse unsafe cleanup before unlink; retain ownership-unconfirmed stage/journal and post-publication final artifact under existing recovery policy.
+rollback: one normal PR revert; retain all old fixtures, failed observations and legacy compatibility.
+performanceBudget: retain current 256MiB import and ZIP32 finite member/name/offset limits; directories consume the same entry budget; traversal only at explicit export/import, not input; no numeric Writer SLO is accepted here.
+securityBoundary: external raw ZIP and manifest validated before path authority; preserve spelling while detecting NFC/case/prefix/type ambiguity; no arbitrary output path, renderer authority or new platform boundary.
+lifecycle: capture under existing project lease; seal N; build/read; own stage; sync; verify; publish; final readback; register; recovery on failure.
+negativeBypassChecks: malformed physical ZIPs, capture races, stale capability/project, typed path aliases/conflicts, directory body/attributes, absent/extra directories, unsafe stage mutation, fsync/close faults and no-clobber target races.
+evidenceBindings: frozen independent six-file/nine-directory oracle, actual Main RED/GREEN, full eleven-file affected chain, required gates, exact candidate CI, merged verification and actual rebuilt native restore.
+currentReality: exact69be91c self-verifies six raw files yet loses four of nine physical directories; acceptance target is not live until final exact-source/build proof.
+
+### Versioned physical carrier
+
+Keep ARCHIVE_SCHEMA_VERSION and ARCHIVE_MANIFEST_PATH as historical V1 exports. Add explicitly named ARCHIVE_SCHEMA_VERSION_V2 and ARCHIVE_MANIFEST_PATH_V2. Ordinary sealed project writer defaults to V2. Keep Core WP704 unchanged: it produces a V1 carrier and relies on the historical V1 verify envelope, including its empty-entries distinction from the stricter reader. Do not globally replace V1 verify with readProjectArchivePayload.
+
+V2 uses typed file entries and directories:[{type:'directory',relativePath,archivePath:'project/'+relativePath+'/'}]. Root is implicit and excluded from directoryCount. Fixed fixture: fileCount6, directoryCount9, project entryCount15 and ZIP memberCount16 including manifest. A directory member has one trailing slash, empty body, zero sizes/CRC and consistent standard directory attributes. Every file/directory ancestor except fixed project root is explicitly present. One matching V2 manifest filename/schema only. V1 derives only existing file parents and never invents missing empty directories.
+
+Validate raw entry names/ZIP structure/types before normalized registry keys or filesystem authority. A typed path registry rejects duplicate explicit names, case/NFC aliases and file/directory/prefix conflicts. It may materialize one explicit directory over its previously implicit parent once, in either physical ordering. Reject nonzero directory payload, symlink/special or contradictory attributes, local/central mismatch, missing/extra/undeclared directories, omitted parents, conflicting/unsupported manifests and exceeded bounds. Canonical V2 JSON bytes may avoid duplicate-key ambiguity without changing accepted V1 input or introducing a generic parser.
+
+Capture all physical non-root directories from the same initially/finally checked N roster into the private WeakMap/deep-frozen projection. Preserve file Buffer copies, root/dir/file race fences, no-follow, queue/lease and existing generation guards. No live reads during build after seal, including after source removal or ordinary N+1.
+
+### Owned Main restoration
+
+Create validated directories parent-first under the existing exclusively owned staging root, then atomic file writes. Verify exact file and directory rosters and raw bytes before publication. Sync each owned directory through no-follow O_RDONLY/O_DIRECTORY where available; verify FD fstat before/after sync against named lstat and recorded owner identity. A call-count-only fsync check is insufficient.
+
+Before any cleanup unlink, compare complete actual and owned staging directory/file rosters. Missing/swapped/symlink/foreign empty child must refuse cleanup and preserve foreign state. Retain the recovery journal when ownership is unconfirmed. After no-clobber publication verify exact final directory/file topology and staged directory identities before readbackVerified/library registration. Preserve existing late-target race and failure recovery. Existing COPY manifest rebinding behavior remains outside this claim.
+
+Source witness: BASELINE_DIRECTORY_ARCHIVE_V1.zip SHA d331a19dcb13774b05fa06d1e40ad52c0d8f7cfc1d6a3dc1f1a1a590c614dca1 from exact69be91c. Frozen input SHA26362524d94e0c272c174a6fd0bce0f5daa892943f327d4969c645897035242d. Independent Python raw ZIP reader observes six exact files and only five recoverable directories, missing references, references/空, references/空/Пусто and roman/Пустая часть. Its executable oracle is frozen before edits and must not change to obtain green. Local reference novelwriter.md supplied ideas only; no copied implementation, dependency or external service.
+
+## IMPLEMENTATION_STEPS
+
+1. CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ. Root bootstrap, full normative startup/scoped factual reads, clean exact branch/main binding, verified disks and architecture preflight actual0 precede this task edit. Run actual task E0 then pin the executor ticket. Do not rerun PRE after writes.
+2. Append a meaningful S33 actual Main restore regression before runtime edits. On unchanged production reach extraction and assert required nine physical directories against actual five. Preserve RED and original assertions. Version constants alone are not the failure oracle.
+3. Implement the bounded V2 sealed topology codec and Main owned restore/sync/readback/cleanup. Keep V1 compatibility and every protected source/authority byte. Complete runtime/test changes only inside the six executor paths.
+4. Execute the complete eleven-file affected pack and adversarial matrix. Root independently reads produced ZIP and actual restored filesystem against frozen roster/bytes, reviews diff/budget, freezes sources, then makes only normal factual/OPS/inventory/certificate companions and required proof.
+5. Commit/push/attached PR, all official exact-head CI, normal merge, fresh fetched clean merged source checks and actual packaged native restore. Preserve raw failures and all legacy data; continue the larger first Mac release after this delivery closes.
+
+## CHECKS
+
+CHECK_01_PRE_IDENTITY_AUTHORITY: clean69be91c/registered branch/fetched main; T7 encrypted/unlocked/writable UUID and T777 writable UUID; required startup/source/evidence, closed prior source chain, direct owner authority and declaration/preflight actual0 before edit. No historical lease, full-history or P03 cache claim.
+
+CHECK_02_POST_RED_GREEN: unchanged-product actual Main RED observes five versus nine directories after extraction; GREEN restores all nine plus six raw files. Empty/nested Unicode/hidden directories and empty file distinction; immutable exposed topology, sealed N survives N+1/removal; capture add/remove/swap races reject. Preserve every actual failed result.
+
+CHECK_03_POST_TYPED_BOUNDARY_RECOVERY: physical malformed ZIP reaches actual reader for duplicates/aliases/prefix/types/attrs/body/local-central/manifests/bounds/missing/extra/ancestor errors. Parent-first staging and live-FD sync identity; missing/foreign empty/swap/symlink, sync/close and post-publication topology loss refuse success and preserve protected state/journal. Legacy V1 literal import, known parents and unchanged WP704 profile all remain correct.
+
+CHECK_04_POST_AFFECTED: qualified Node22 serial full project-archive-correctness, project-archive-export-handler, sector-m-s32-full-archive-export, sector-m-s33-full-archive-import, project-archive-darwin-publication, sector-m-s38-pro-free-pro-roundtrip, r24-wp305-minimum-interchange, sector-m-s28-project-archive-trash-integrity, r24-wp704-pdf-archive-review, r24-wp704-pdf-archive-review-mutants and r24-wp704-pdf-archive-review-integration. No original predicate/assertion removal, skip/todo or zero-test green.
+
+CHECK_05_POST_REQUIRED_DELIVERY: task E0, agent guardrails, strict doctor/governance, full DATA/certificate/Apply corruption tests with every historical tuple and unchanged guard, normal inventory/C2A generation, OSS policy/honest audit disposition, perf-lite simulation and one qualified full baseline after semantic closure. Frozen independent ZIP/filesystem oracle, actual build-bound native restore and complete staged scope/budget/commit/push/PR/exact CI/merge/clean merged proof. No numerical workload, COPY authority, signing or release readiness inference.
+
+## STOP_CONDITION
+
+Stop dependent mutation for ambiguous source/base/branch/scope/authority, foreign dirty state, failed admission/gate, widened security/dependency/product semantics, data loss, unmergeable base drift, missing/stale proof or third identical failure signature. Keep evidence; missing mandatory proof remains UNKNOWN. No hidden fallback, exclusion, self-PASS or silent transfer of base.
+
+## REPORT_FORMAT
+
+AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY: final exactly one text block, KEY: VALUE, basenames only, no slash paths or URLs; exact before/after/merged SHA, scope, real test denominators, commit/push/PR/CI/merge/merged verification, open limitations, rollback and one next action. Bounded correction is not first Mac release completion. Continue the authorized release task.
+
+## FAIL_PROTOCOL
+
+Record expected/actual, exact seed/fixture, source/build/profile, hashes, command/exit and one next hypothesis. After three same-signature failures stop that loop. Do not weaken old tests/oracle, relabel historical evidence, fabricate admission, remove/rewrite opaque data or treat codec self-verify as independent topology proof.
+

@@ -14061,6 +14061,166 @@
       "filePath": "test/contracts/rtk-word-table-editor.contract.test.js",
       "rationale": "Same open PR2142: faithful complete VM dependency closure for existing media/table regressions, finite actual extent and latch counterexamples; original six application/unit/bundle files frozen. Exact maintained/factual/mechanical companions only. Preserve historical tuples/predicates, inventory membership/classifications/skip policy and all approval history. No runtime correction, numerical envelope, IME or release acceptance.",
       "sha256": "0a705c7739a4fb1a8e2aa96aaab988a9262c735f617c10a411fc2894f32844b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/export/archive/projectArchiveExportHandler.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "a5a302fc6242913acece3ed2fdff171bbbc5b50fbed804c70209d9b63ee4fe44"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "971275de6908323dba78a65a66fd99c03de90c8b38a87ce55884a8460c4fe93e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-correctness.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "8c43387217aa0c3c33d7cc77402502a1104dda908e618dd86e94d8074d0ff84f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-export-handler.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "9aaca2dace7dfcd374c2c2519896d7a70b4a4f028c4d724da1685e63a926f9a8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s32-full-archive-export.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "149e53c43584d0dc649605360547f505b1fdcb1c4a9b938b2bb2d98152e5b866"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s33-full-archive-import.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "907bfb2b2f163c2f790d49273f4563a74b7ab1adfb22258798b3de4500a04728"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "4212b4c011212c04cb0a083f3e9a72a8b214967f994de35ff54abca8493a7362"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "0c1d8033bf4b4bb31506f8b7d79880586c16981d8e394a94605c238eb06c0e22"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "5bbba93fe339ecb5fded6e4c39958f3be7a38d14e337aca0f0788e18645576dd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "b9ee08006e3511d01f7cb2ec01b7adba10ffbd95d2a29288cf4444fe88e16d9c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "b18b4240a9afc9a1953af5a52e569d38f7e05e744e2951e49cf352e83b12a890"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "658afa2400a289ab6cfd1b297205a6c5052719bbe2c6ef60e16c14c45f39ae64"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "c0776816ec4d3f87ee1bc54ac6f8756cf2849787725714ac71a5c3216796f387"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "edb42235971fa783f60c4f7358a6d5c763540c091c261cdefc9514f74bb9e3f2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "0e07fefc53c00309ac3c2eca5d19fbaab7d8776d45d9c262e46a8235027bf3b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "7ef2dccb84564e4aaeb139f5ce0339fc2cff428b464065d71bfd04edccd318ae"
     }
   ],
   "evidenceStampIds": [

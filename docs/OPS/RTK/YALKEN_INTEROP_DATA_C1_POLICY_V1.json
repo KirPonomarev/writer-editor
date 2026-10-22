@@ -742,7 +742,8 @@
     "src/renderer/centralSheetStripProofDecision.js",
     "test/unit/central-sheet-strip-proof-decision.test.js",
     "test/unit/central-sheet-strip-proof.test.js",
-    "docs/tasks/2026-10-22--mac-longform-visible-editor.md"
+    "docs/tasks/2026-10-22--mac-longform-visible-editor.md",
+    "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md"
   ],
   "protectedFiles": [
     {
@@ -971,7 +972,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ab3babb81fc04432b475f1383bc8adf53da11c800f07930217dfed097a6e1046"
+        "sha256": "971275de6908323dba78a65a66fd99c03de90c8b38a87ce55884a8460c4fe93e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1707,7 +1708,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "02dbcfdb3e591587689a11fb59d20d16ba78100fa9dbfd5d005266148ec97c86"
+        "sha256": "7ef2dccb84564e4aaeb139f5ce0339fc2cff428b464065d71bfd04edccd318ae"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2663,15 +2664,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9c37e02cb69750546cb5b0656988ef7d58ebd938e4a5b9eec697deeb5858607a"
+        "sha256": "0c1d8033bf4b4bb31506f8b7d79880586c16981d8e394a94605c238eb06c0e22"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0b228af170f1d22acb01fb6cf85f55e1c73c0cccae1d009b20fb92253f85e6b1"
+        "sha256": "5bbba93fe339ecb5fded6e4c39958f3be7a38d14e337aca0f0788e18645576dd"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f0e5f1ab03b03e1adf382ecd122f03837dc4118e1eff68f39d9b6912efe996ea"
+        "sha256": "b9ee08006e3511d01f7cb2ec01b7adba10ffbd95d2a29288cf4444fe88e16d9c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3171,7 +3172,7 @@
       },
       {
         "path": "src/export/archive/projectArchiveExportHandler.js",
-        "sha256": "ab7144381d04b0351f85e5a9f0379f1c01f47a8cc0b41f4a09ecfb6cf23ae586"
+        "sha256": "a5a302fc6242913acece3ed2fdff171bbbc5b50fbed804c70209d9b63ee4fe44"
       },
       {
         "path": "src/main/projectArchiveDarwinPublication.cjs",
@@ -3191,7 +3192,7 @@
       },
       {
         "path": "test/unit/project-archive-correctness.test.js",
-        "sha256": "5abbb28d77790f818f2ff4795b2b61a05b4f214fbef8316c8544690500725341"
+        "sha256": "8c43387217aa0c3c33d7cc77402502a1104dda908e618dd86e94d8074d0ff84f"
       },
       {
         "path": "test/unit/project-archive-darwin-publication.test.js",
@@ -3199,11 +3200,11 @@
       },
       {
         "path": "test/unit/project-archive-export-handler.test.js",
-        "sha256": "1d4eb354d214cdb0e360f0577ad4b718f7ad5af0a18e4d64bc79e1d02b59d758"
+        "sha256": "9aaca2dace7dfcd374c2c2519896d7a70b4a4f028c4d724da1685e63a926f9a8"
       },
       {
         "path": "test/unit/sector-m-s33-full-archive-import.test.js",
-        "sha256": "ff8c6af77d77dffd88c2344f3a6c5924d0d350c1b1fc210250883249c716eb21"
+        "sha256": "907bfb2b2f163c2f790d49273f4563a74b7ab1adfb22258798b3de4500a04728"
       },
       {
         "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -3211,11 +3212,11 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c982128c6fddccc2e21afb11e53fe073c5f5ba7dae12cf31a266dedbdaa457e6"
+        "sha256": "658afa2400a289ab6cfd1b297205a6c5052719bbe2c6ef60e16c14c45f39ae64"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
-        "sha256": "3ad56b5496e078da5964f51e1992b3f4ddbe19ea969f72cbc6988c71cb768f26"
+        "sha256": "149e53c43584d0dc649605360547f505b1fdcb1c4a9b938b2bb2d98152e5b866"
       },
       {
         "path": "src/core/minimum-interchange-v1.cjs",
@@ -3320,6 +3321,10 @@
       {
         "path": "docs/tasks/2026-10-22--mac-longform-visible-editor.md",
         "sha256": "b49e583450c7e00f760d26e0a35ce272ecfc72672458522a5634cf5b49303423"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
+        "sha256": "4212b4c011212c04cb0a083f3e9a72a8b214967f994de35ff54abca8493a7362"
       }
     ],
     "followupRepair": {

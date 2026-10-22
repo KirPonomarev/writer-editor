@@ -1,3 +1,84 @@
+# Physical archive directory source proof — 2026-10-22
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 69be91c23848e3931c448abaf1f453c7c6f7673d
+CLAIM_BOUNDARY: Frozen physical archive source proof; native/delivery and first Mac qualification remain open.
+
+The ordinary physical writer now emits an explicitly named V2 carrier with sealed
+typed non-root directories and raw files. Nine explicit empty-body directory
+members plus six exact files and one manifest survive the independent Python
+ZIP reader against the predefined input. ZIP SHAe7559451ab4a2dc80491e364f2ae52afe9fecd7b1156d5e8462307e1657f079f
+binds this frozen source observation on base69be91c2; it is not relabelled as a
+committed or merged execution. The final candidate must retain those source bytes.
+
+Separate executor and root each execute the complete eleven-file affected pack:
+174of174,zero fail/cancel/skip/todo. The actual Main nine-directory/six-file restore
+regression first failed after successful old extraction, then passes. Physical
+malformed ZIP cases reach the real reader; directory races, immutable sealed N,
+N+1/source removal, aliases/types/manifests/bounds, empty-file distinction and
+V1/WP704 compatibility are exercised. Four staging mutations retain foreign state
+and block retry; four real directory FD stat/sync/close faults refuse success;
+post-publication directory loss retains the final root and recovery journal.
+
+Runtime delta279lines changes only the existing codec/Main adapter. Tests add338lines.
+All original test bodies/assertions remain byte-identical, with only two named V2
+import aliases for the ordinary writer. All1061other Main function blocks and the
+COPY rebind block remain exact. Historical V1 exports/verification envelope and
+strict known-parent import remain; their incomplete topology is reported honestly.
+No Core/renderer/dependency/security/cut/program/authority expansion is included.
+
+Normal inventory retains1603members/classifications/skip policy. Normal C2A
+generation changes only its inventory digest; five protected generated outputs
+stay exact. DATA/certificate/approval successors are mechanical byte bindings,
+not product/release acceptance. Retained independent actual-Main filesystem
+readback, required gates/baseline, normal commit/push/official exact CI/merge,
+fresh merged source checks and actual packaged native restore remain required.
+COPY identity/authority and the larger first Mac release remain open.
+
+# Physical archive directories — admitted correction — 2026-10-22
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: ADMITTED_CORRECTION_WITH_INDEPENDENT_RED
+BINDING_BASE_SHA: 69be91c23848e3931c448abaf1f453c7c6f7673d
+CLAIM_BOUNDARY: Complete physical archive topology only; COPY authority and first Mac release remain open.
+
+The preceding longform correction is fully delivered by PR2142: candidate41f2387b,
+actual normal merge69be91c2, identical whole source tree. All20official candidate
+jobs succeeded, including4414of4414RTK with zero skip/fail/todo. Fresh clean merged
+verification completed16commands, including76affected,16media/table,19Apply and
+172E0cases plus40killed mutants. The qualified candidate baseline passed3OPS,
+2355of2414unit cases with59unchanged sanctioned skips, and20contracts. Its identical
+merged tree permits carrying that baseline without relabelling its execution SHA.
+
+A newly built unsigned69be91c2 app passed actual native end navigation,100trusted
+Russian key/input events, Undo/Redo/save and cold reopen. The independent persisted
+plain text SHA is36341f5d0b7a2cf5115e3160c8518f2bb934b4749bd15a8bd85ea87c890897e1.
+All99current project files and15prior whole-profile backups stayed exact across
+cold reopen. The complete175-file profile and530-member application bundle were
+preserved/read back. Source closure SHA1ae0ae0cf8fc34cfa775065c69aea55714bedf0964101f3c687b357d96e9edbf
+binds those results; it grants neither numerical workload nor first Mac readiness.
+
+Current exact69be91c2 codec self-verifies all six frozen raw files but independently
+loses four of nine physical directories, including empty Unicode folders. A new
+actual Main S33 regression reaches successful extraction and observes the same
+five-versus-nine failure; all ten original S33 cases still pass. Root froze separate
+independent ZIP and actual-filesystem oracles before implementation. Their expected
+six-file/nine-directory input hash is26362524d94e0c272c174a6fd0bce0f5daa892943f327d4969c645897035242d.
+
+Fresh isolated source, full normative/scoped factual startup, declaration/preflight
+and task E0 admit only the existing archive codec/Main seams, four maintained tests
+and exact factual/mechanical companions. Target V2 carries sealed physical directory
+entries; V1 exported constants, accepted read profile and WP704 producer stay
+compatible. Owned stage sync/readback/cleanup must prove exact topology and preserve
+foreign objects/journal on uncertainty. No runtime outcome is accepted by this
+admission. Task:2026-10-22--mac-archive-directory-roundtrip.md. All new reports use
+the matching dated T777 folder. COPY tree/Stage10/Word authority, MR06numeric matrix,
+signing/install/channel/audits and final release remain separate open obligations.
+The owner's unrestricted synthetic native-testing reply continues to apply.
+
 # Longform editor — same PR contract closure — 2026-10-22
 
 TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022

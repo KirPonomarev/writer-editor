@@ -8,7 +8,7 @@ const os = require('node:os');
 const path = require('node:path');
 
 const {
-  ARCHIVE_SCHEMA_VERSION,
+  ARCHIVE_SCHEMA_VERSION_V2: ARCHIVE_SCHEMA_VERSION,
   readProjectArchivePayload,
   verifyProjectArchiveBuffer,
 } = require('../../src/export/archive/projectArchiveExportHandler');
@@ -403,4 +403,27 @@ test('S32 full archive export: main rejects renderer-owned archive fields and pr
   assert.equal(forbiddenTarget.ok, false);
   assert.equal(forbiddenTarget.error.code, 'E_PROJECT_ARCHIVE_EXPORT_TARGET_FORBIDDEN');
   assert.equal(forbiddenTarget.error.reason, 'export_target_inside_project_root');
+});
+
+test('S32 actual Main V2 export carries every physical empty directory without fabricated files', async t => {
+  const harness = await createHarness(t), { projectRoot, manifest } = await writeDefaultProject(harness.documentsRoot);
+  for (const relative of ['references/空/Пусто', 'roman/Пустая часть']) await fsPromises.mkdir(path.join(projectRoot, relative), { recursive: true });
+  const before = await hashProjectFiles(projectRoot), directories = [];
+  async function visit(relative = '') {
+    for (const name of await fsPromises.readdir(path.join(projectRoot, relative))) {
+      const child = relative ? relative + '/' + name : name;
+      if ((await fsPromises.lstat(path.join(projectRoot, child))).isDirectory()) { directories.push(child); await visit(child); }
+    }
+  }
+  await visit(); assert.equal(directories.length, 9);
+  const outPath = path.join(harness.tempRoot, 'topology.zip');
+  const result = await harness.main.handleExportProjectArchive({ confirmed: true, requestId: 's32-topology', outPath });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.archiveManifest.schemaVersion, 'yalken-project-archive.v2');
+  assert.equal(result.archiveManifest.fileCount, 6); assert.equal(result.archiveManifest.directoryCount, 9);
+  assert.equal(result.archiveManifest.entryCount, 15);
+  const payload = readProjectArchivePayload(await fsPromises.readFile(outPath));
+  assert.deepEqual(payload.directories.map(row => row.relativePath).sort(), directories.sort());
+  assert.deepEqual([...(await hashProjectFiles(projectRoot))].sort(), [...before].sort());
+  await assertExactArchive(outPath, projectRoot, manifest);
 });

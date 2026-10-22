@@ -426,3 +426,161 @@ test('S33 a lost directory-publication return preserves the final and requires r
   assert.equal((await fsPromises.lstat(selected.targetRoot, { bigint: true })).ino, before.ino);
   assert.equal(await fsPromises.readFile(path.join(selected.targetRoot, 'notes.json'), 'utf8'), '{"notes":[{"id":"n1"}]}\n');
 });
+
+const directoryFixturePaths = ['assets', 'backups', 'recovery', 'references', 'references/空',
+  'references/空/Пусто', 'roman', 'roman/Part One', 'roman/Пустая часть'];
+async function writeDirectoryProject(root) {
+  for (const relative of directoryFixturePaths) await fsPromises.mkdir(path.join(root, relative), { recursive: true });
+  const files = new Map([
+    [PROJECT_MANIFEST_FILENAME, Buffer.from(JSON.stringify({ schemaVersion: 1,
+      projectId: 'project-directory-readonly-20261022', projectName: 'Project Alpha', proUnknown: { preserved: true } }, null, 2) + '\n')],
+    ['roman/Part One/Scene 01.txt', Buffer.from('Привет e\u0301 🧭\n')],
+    ['notes.json', Buffer.from('{"notes":[{"id":"n1"}]}\n')],
+    ['assets/cover.bin', Buffer.from([0, 1, 2, 3])], ['backups/scene.bak', Buffer.from('backup text')],
+    ['recovery/snapshot.txt', Buffer.from('readable recovery')],
+  ]);
+  for (const [relative, bytes] of files) await fsPromises.writeFile(path.join(root, relative), bytes, { flag: 'wx' });
+  return files;
+}
+async function physicalProjectRoster(root) {
+  const directories = [], files = [];
+  async function visit(relative = '') {
+    for (const name of await fsPromises.readdir(path.join(root, relative))) {
+      const child = relative ? relative + '/' + name : name;
+      const stat = await fsPromises.lstat(path.join(root, child));
+      assert.equal(stat.isSymbolicLink(), false);
+      if (stat.isDirectory()) { directories.push(child); await visit(child); }
+      else { assert.equal(stat.isFile(), true); files.push([child, await fsPromises.readFile(path.join(root, child))]); }
+    }
+  }
+  await visit(); return { directories: directories.sort(), files: files.sort(([a], [b]) => a.localeCompare(b)) };
+}
+test('S33 actual Main restores all nine physical directories and six exact raw files', async t => {
+  const harness = await createHarness(t), source = path.join(harness.tempRoot, 'Source Alpha');
+  await fsPromises.writeFile(path.join(harness.tempRoot, '.task-owner.json'), JSON.stringify({
+    taskId: 'YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022', scope: 'Owned synthetic S33 fixture only' }), { flag: 'wx' });
+  const expectedFiles = await writeDirectoryProject(source), archive = await buildProjectArchiveBuffer(source);
+  const archivePath = path.join(harness.tempRoot, 'directories.zip'); await fsPromises.writeFile(archivePath, archive.buffer);
+  const result = await harness.main.handleImportProjectArchive({ confirmed: true, requestId: 's33-directory-roster', archivePath, mode: 'restore' });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const actual = await physicalProjectRoster(path.join(harness.documentsRoot, 'Project Alpha'));
+  assert.deepEqual(actual.files, [...expectedFiles].sort(([a], [b]) => a.localeCompare(b)));
+  assert.deepEqual((await physicalProjectRoster(source)).files, actual.files);
+  console.log('S33_PHYSICAL_DIRECTORY_OBSERVATION ' + JSON.stringify({ expected: directoryFixturePaths, actual: actual.directories,
+    expectedCount: 9, actualCount: actual.directories.length, rawFileCount: actual.files.length }));
+  assert.deepEqual(actual.directories, directoryFixturePaths);
+});
+
+async function directoryImportInput(t) {
+  const harness = await createHarness(t), source = path.join(harness.tempRoot, 'Source Alpha');
+  const files = await writeDirectoryProject(source), archive = await buildProjectArchiveBuffer(source);
+  const archivePath = path.join(harness.tempRoot, 'directory-input.zip'); await fsPromises.writeFile(archivePath, archive.buffer);
+  return { ...harness, source, files, archivePath };
+}
+async function assertDirectorySourceFiles(input, root = input.source, omitManifest = false) {
+  for (const [relative, bytes] of input.files) if (!omitManifest || relative !== PROJECT_MANIFEST_FILENAME) {
+    assert.deepEqual(await fsPromises.readFile(path.join(root, relative)), bytes, relative);
+  }
+}
+for (const kind of ['foreign-empty', 'missing', 'swap', 'symlink']) test('S33 owned-directory ' + kind + ' refuses publication and retains unresolved staging', async t => {
+  const input = await directoryImportInput(t); let paths, protectedPath, protectedIdentity;
+  const result = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'directory-' + kind,
+    archivePath: input.archivePath, mode: 'restore' }, {
+    afterExtractBeforeFinalMove: async selected => {
+      paths = selected; const leaf = path.join(paths.tempRoot, 'references', '空', 'Пусто');
+      if (kind === 'foreign-empty') { protectedPath = path.join(paths.tempRoot, 'foreign-empty'); await fsPromises.mkdir(protectedPath); }
+      else if (kind === 'missing') { await fsPromises.rmdir(leaf); protectedPath = path.dirname(leaf); }
+      else {
+        await fsPromises.rename(leaf, leaf + '-original');
+        if (kind === 'swap') { await fsPromises.mkdir(leaf); protectedPath = leaf; }
+        else { protectedPath = path.join(input.tempRoot, 'outside'); await fsPromises.mkdir(protectedPath); await fsPromises.symlink(protectedPath, leaf); }
+      }
+      protectedIdentity = await fsPromises.lstat(protectedPath, { bigint: true });
+    },
+  });
+  assert.equal(result.ok, false); assert.equal(result.error.details.publication.namePublished, false);
+  assert.equal(result.error.details.cleanup, 'STAGING_OWNERSHIP_UNCONFIRMED');
+  assert.equal((await fsPromises.lstat(protectedPath, { bigint: true })).ino, protectedIdentity.ino);
+  await assertDirectorySourceFiles(input); await assertDirectorySourceFiles(input, paths.tempRoot);
+  await assert.rejects(fsPromises.lstat(paths.targetRoot), { code: 'ENOENT' });
+  const before = await fsPromises.lstat(paths.tempRoot, { bigint: true });
+  const retry = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'directory-retry', archivePath: input.archivePath, mode: 'restore' });
+  assert.equal(retry.error.reason, 'PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED');
+  assert.equal((await fsPromises.lstat(paths.tempRoot, { bigint: true })).ino, before.ino);
+});
+for (const phase of ['stat-before', 'stat-after', 'sync', 'close']) test('S33 owned directory live-FD ' + phase + ' failure cannot verify import', async t => {
+  const input = await directoryImportInput(t), open = fsPromises.open; let injected = false, stats = 0, paths;
+  fsPromises.open = async (target, ...args) => {
+    const handle = await open(target, ...args);
+    if (String(target).endsWith(path.join('references', '空', 'Пусто'))) {
+      const stat = handle.stat.bind(handle), sync = handle.sync.bind(handle), close = handle.close.bind(handle);
+      handle.stat = async options => {
+        const observed = await stat(options); stats++;
+        if (phase === 'stat-before' && stats === 1 || phase === 'stat-after' && stats === 2) {
+          injected = true; const changed = Object.create(observed); Object.defineProperty(changed, 'ino', { value: observed.ino + 1n }); return changed;
+        }
+        return observed;
+      };
+      if (phase === 'sync') handle.sync = async () => { injected = true; await sync(); throw Error('DIRECTORY_SYNC_LOST_RESULT'); };
+      if (phase === 'close') handle.close = async () => { injected = true; await close(); throw Error('DIRECTORY_CLOSE_LOST_RESULT'); };
+    }
+    return handle;
+  };
+  let result;
+  try { result = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'directory-fd-' + phase,
+    archivePath: input.archivePath, mode: 'restore' }, { beforeExtract: async value => { paths = value; } }); }
+  finally { fsPromises.open = open; }
+  assert.equal(injected, true); assert.equal(result.ok, false);
+  assert.match(result.error.reason, /DIRECTORY_FD_CHANGED|DIRECTORY_SYNC_LOST_RESULT|DIRECTORY_CLOSE_LOST_RESULT/u);
+  assert.equal(result.error.details.publication.namePublished, false);
+  assert.equal(result.error.details.cleanup, 'OWNED_STAGING_REMOVED');
+  await assert.rejects(fsPromises.lstat(paths.targetRoot), { code: 'ENOENT' });
+  await assert.rejects(fsPromises.lstat(paths.tempRoot), { code: 'ENOENT' });
+  await assertDirectorySourceFiles(input);
+});
+test('S33 directory loss after actual publication retains useful final and recovery journal', async t => {
+  const input = await directoryImportInput(t); let paths, publishedIdentity;
+  const publish = process.platform === 'darwin'
+    ? require('../../src/main/projectArchiveDarwinPublication.cjs').createProjectArchiveDarwinPublisher()
+    : async request => { await request.assertCurrent(); await fsPromises.rename(request.tempRoot, request.targetRoot); return { namePublished: true }; };
+  const result = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'directory-final-loss', archivePath: input.archivePath, mode: 'restore' }, {
+    beforeExtract: async selected => { paths = selected; },
+    publishArchiveDirectory: async request => {
+      const outcome = await publish(request); publishedIdentity = await fsPromises.lstat(paths.targetRoot, { bigint: true });
+      await fsPromises.rmdir(path.join(paths.targetRoot, 'references', '空', 'Пусто')); return outcome;
+    },
+  });
+  assert.equal(result.ok, false); assert.match(result.error.reason, /DIRECTORY_ROSTER_MISMATCH/u);
+  assert.equal(result.error.details.publication.namePublished, true);
+  assert.notEqual(result.error.details.publication.readbackVerified, true);
+  assert.equal((await fsPromises.lstat(paths.targetRoot, { bigint: true })).ino, publishedIdentity.ino);
+  await assertDirectorySourceFiles(input, paths.targetRoot); await assertDirectorySourceFiles(input);
+  const retry = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'directory-final-retry', archivePath: input.archivePath, mode: 'restore' });
+  assert.equal(retry.error.reason, 'PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED');
+  assert.equal((await fsPromises.lstat(paths.targetRoot, { bigint: true })).ino, publishedIdentity.ino);
+});
+test('S33 V2 copy preserves physical topology without changing existing manifest rebind policy', async t => {
+  const input = await directoryImportInput(t);
+  const result = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'directory-copy', archivePath: input.archivePath,
+    mode: 'copy', projectName: 'Physical Copy' });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const root = path.join(input.documentsRoot, 'Physical Copy'), actual = await physicalProjectRoster(root);
+  assert.deepEqual(actual.directories, directoryFixturePaths);
+  await assertDirectorySourceFiles(input, root, true); await assertDirectorySourceFiles(input);
+  assert.notEqual((await readManifest(root)).projectId, 'project-directory-readonly-20261022');
+});
+test('S33 literal V1 import retains exact files and only known file-parent topology', async t => {
+  const input = await directoryImportInput(t), crypto = require('node:crypto');
+  const manifest = { schemaVersion: 'yalken-project-archive.v1', archiveKind: 'full-project', project: {
+    projectId: 'project-directory-readonly-20261022', projectName: 'Project Alpha' }, entries: [...input.files].map(([relativePath, buffer]) => ({
+    relativePath, archivePath: 'project/' + relativePath, size: buffer.length, sha256: crypto.createHash('sha256').update(buffer).digest('hex') })) };
+  const bytes = buildZipArchive([{ archivePath: 'yalken-archive-manifest.v1.json', buffer: Buffer.from(JSON.stringify(manifest)) },
+    ...[...input.files].map(([relativePath, buffer]) => ({ archivePath: 'project/' + relativePath, buffer }))]);
+  const archivePath = path.join(input.tempRoot, 'literal-v1.zip'); await fsPromises.writeFile(archivePath, bytes);
+  const result = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'literal-v1', archivePath, mode: 'restore' });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const root = path.join(input.documentsRoot, 'Project Alpha'); await assertDirectorySourceFiles(input, root);
+  assert.deepEqual((await physicalProjectRoster(root)).directories, ['assets', 'backups', 'recovery', 'roman', 'roman/Part One']);
+  assert.equal(result.archiveManifest.directoryCoverage, 'FILE_PARENTS_ONLY');
+  assert.equal(result.archiveManifest.directoryCount, 5); assert.equal(result.archiveManifest.entryCount, 6);
+});

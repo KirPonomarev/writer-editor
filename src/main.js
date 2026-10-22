@@ -22870,6 +22870,8 @@ function summarizeProjectArchivePayload(payload) {
     projectId: typeof project.projectId === 'string' ? project.projectId : '',
     projectName: typeof project.projectName === 'string' ? project.projectName : '',
     fileCount: Number.isSafeInteger(payload?.fileCount) ? payload.fileCount : 0,
+    directoryCount: Number.isSafeInteger(payload?.directoryCount) ? payload.directoryCount : 0,
+    directoryCoverage: typeof payload?.directoryCoverage === 'string' ? payload.directoryCoverage : '',
     byteCount: Number.isSafeInteger(payload?.byteCount) ? payload.byteCount : 0,
     entryCount: Number.isSafeInteger(payload?.entryCount) ? payload.entryCount : 0,
     archiveSha256: typeof payload?.archiveSha256 === 'string' ? payload.archiveSha256 : '',
@@ -22884,18 +22886,20 @@ async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot, ow
   await fs.mkdir(tempRoot, { mode: 0o700 });
   ownership.identity = await fs.lstat(tempRoot, { bigint: true });
   ownership.directories.set(tempRoot, ownership.identity);
+  for (const entry of [...archivePayload.directories].sort((a, b) => a.relativePath.split('/').length - b.relativePath.split('/').length)) {
+    await ownership.assertOwned();
+    const directory = joinPathSegmentsWithinRoot(tempRoot, [entry.relativePath], { resolveSymlinks: false });
+    if (!ownership.directories.has(path.dirname(directory))) throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_PARENT_MISSING');
+    await fs.mkdir(directory, { mode: 0o700 });
+    const stat = await fs.lstat(directory, { bigint: true });
+    if (!stat.isDirectory() || stat.isSymbolicLink()) throw Error('PROJECT_ARCHIVE_IMPORT_STAGING_CHANGED');
+    ownership.directories.set(directory, stat);
+  }
   for (const entry of archivePayload.entries) {
     await ownership.assertOwned();
     const relativePath = typeof entry.relativePath === 'string' ? entry.relativePath : '';
     const targetPath = joinPathSegmentsWithinRoot(tempRoot, [relativePath], { resolveSymlinks: false });
-    let directory = tempRoot;
-    for (const segment of relativePath.split('/').slice(0, -1)) {
-      directory = path.join(directory, segment);
-      if (!ownership.directories.has(directory)) {
-        await fs.mkdir(directory, { mode: 0o700 });
-        ownership.directories.set(directory, await fs.lstat(directory, { bigint: true }));
-      }
-    }
+    if (!ownership.directories.has(path.dirname(targetPath))) throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_PARENT_MISSING');
     try { await fs.lstat(targetPath); throw Error('PROJECT_ARCHIVE_IMPORT_STAGING_ENTRY_EXISTS'); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
     const writeResult = await fileManager.writeFileAtomic(targetPath, entry.buffer);
@@ -22907,28 +22911,57 @@ async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot, ow
   await ownership.assertOwned();
 }
 
+async function verifyProjectArchiveDirectoryRoster(snapshot, directories, ownership, tempRoot, actualRoot = tempRoot) {
+  const expected = directories.map(row => row.relativePath).sort();
+  if (JSON.stringify(snapshot.directories.map(row => row.relativePath).sort()) !== JSON.stringify(expected)
+    || JSON.stringify([...ownership.directories.keys()].filter(row => row !== tempRoot)
+      .map(row => path.relative(tempRoot, row).split(path.sep).join('/')).sort()) !== JSON.stringify(expected)) {
+    throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_ROSTER_MISMATCH');
+  }
+  for (const relative of ['', ...expected]) {
+    const own = ownership.directories.get(path.join(tempRoot, relative));
+    const named = await fs.lstat(path.join(actualRoot, relative), { bigint: true });
+    if (!own || own.dev !== named.dev || own.ino !== named.ino || !named.isDirectory() || named.isSymbolicLink()) {
+      throw Error('PROJECT_ARCHIVE_IMPORT_STAGING_CHANGED');
+    }
+  }
+}
+
+async function syncProjectArchiveOwnedDirectory(directory, ownership) {
+  await ownership.assertOwned();
+  const own = ownership.directories.get(directory);
+  const check = stat => {
+    if (!own || stat.dev !== own.dev || stat.ino !== own.ino || !stat.isDirectory() || stat.isSymbolicLink()) {
+      throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_FD_CHANGED');
+    }
+  };
+  const handle = await fs.open(directory, fsSync.constants.O_RDONLY | (fsSync.constants.O_NOFOLLOW || 0) | (fsSync.constants.O_DIRECTORY || 0));
+  try {
+    check(await handle.stat({ bigint: true })); check(await fs.lstat(directory, { bigint: true }));
+    await handle.sync();
+    check(await handle.stat({ bigint: true })); check(await fs.lstat(directory, { bigint: true }));
+    await ownership.assertOwned();
+  } finally { await handle.close(); }
+}
+
 async function verifyProjectArchiveImportStaging(archivePayload, tempRoot, ownership, manifestOverride = null) {
   await ownership.assertOwned();
   const snapshot = await collectProjectArchiveSourceEntries(tempRoot);
+  await verifyProjectArchiveDirectoryRoster(snapshot, archivePayload.directories, ownership, tempRoot);
   if (snapshot.files.length !== archivePayload.entries.length) throw Error('PROJECT_ARCHIVE_IMPORT_ROSTER_MISMATCH');
   for (const entry of archivePayload.entries) {
     const actual = snapshot.files.find(row => row.relativePath === entry.relativePath);
     const expected = manifestOverride && entry.relativePath === PROJECT_MANIFEST_FILENAME ? manifestOverride : entry.buffer;
     if (!actual || !actual.buffer.equals(expected)) throw Error('PROJECT_ARCHIVE_IMPORT_RAW_READBACK_MISMATCH');
   }
-  const directories = new Set([tempRoot]);
   for (const entry of archivePayload.entries) {
     await ownership.assertOwned();
     const target = path.join(tempRoot, entry.relativePath);
     const handle = await fs.open(target, fsSync.constants.O_RDONLY | (fsSync.constants.O_NOFOLLOW || 0));
     try { await handle.sync(); } finally { await handle.close(); }
-    let parent = path.dirname(target);
-    while (parent !== tempRoot) { directories.add(parent); parent = path.dirname(parent); }
   }
-  for (const directory of [...directories].sort((a,b) => b.length - a.length)) {
-    await ownership.assertOwned();
-    const handle = await fs.open(directory, fsSync.constants.O_RDONLY | (fsSync.constants.O_NOFOLLOW || 0));
-    try { await handle.sync(); } finally { await handle.close(); }
+  for (const directory of [...ownership.directories.keys()].sort((a,b) => b.length - a.length)) {
+    await syncProjectArchiveOwnedDirectory(directory, ownership);
   }
   await ownership.assertOwned();
 }
@@ -31066,6 +31099,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         throw new Error('PROJECT_ARCHIVE_IMPORT_MANIFEST_READBACK_MISMATCH');
       }
       const published = await collectProjectArchiveSourceEntries(targetRoot);
+      await verifyProjectArchiveDirectoryRoster(published, archivePayload.directories, ownership, tempRoot, targetRoot);
       if (published.files.length !== archivePayload.entries.length) throw Error('PROJECT_ARCHIVE_IMPORT_ROSTER_MISMATCH');
       for (const entry of archivePayload.entries) {
         const actual = published.files.find(row => row.relativePath === entry.relativePath);
@@ -31146,6 +31180,9 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       try {
         await ownership.assertOwned();
         const snapshot = await collectProjectArchiveSourceEntries(tempRoot);
+        const ownedDirectories = [...ownership.directories.keys()].filter(row => row !== tempRoot)
+          .map(row => ({ relativePath: path.relative(tempRoot, row).split(path.sep).join('/') }));
+        await verifyProjectArchiveDirectoryRoster(snapshot, ownedDirectories, ownership, tempRoot);
         if (snapshot.files.length !== ownership.files.size || snapshot.files.some(entry => {
           const own = ownership.files.get(entry.relativePath); return !own || !entry.buffer.equals(own.buffer);
         })) throw Error('PROJECT_ARCHIVE_IMPORT_CLEANUP_UNCONFIRMED');
@@ -31165,7 +31202,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       }
       catch { cleanup = publication.namePublished ? 'PUBLISHED_ROOT_RETAINED' : 'STAGING_OWNERSHIP_UNCONFIRMED'; }
     }
-    if (!publication.namePublished && publication.publicationOutcome !== 'UNKNOWN') {
+    if (!publication.namePublished && publication.publicationOutcome !== 'UNKNOWN' && cleanup !== 'STAGING_OWNERSHIP_UNCONFIRMED') {
       try { await clearProjectArchiveImportJournal(); }
       catch { cleanup += '_JOURNAL_RECONCILIATION_REQUIRED'; }
     }
