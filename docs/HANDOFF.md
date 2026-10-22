@@ -1,3 +1,63 @@
+# Native synopsis caret correction in PR2145 — 2026-10-22
+
+TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FROZEN_REQUIRED_GATES_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: b83f363ee117234cc46386daaf08298be7c2c444
+ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
+CLAIM_BOUNDARY: Existing metadata working-value/caret correctness in the same unfinished clipboard delivery; no native, full Mac or release acceptance.
+
+PR2145 remains DRAFT. Exactb83 passes12local source gates and240of240affected,
+but genuine synopsis Cut/Paste FAILED. The same active connected textarea116
+changed from raw leading-space value/caret0 to canonical trimmed value/caret5
+before Paste; it saved é 🧭Замысел instead of expected Замысел é 🧭. The complete
+failed profile152members, raw project, source/build and expectations are retained;
+it is neither corrected in place nor reused as a fresh profile. Other Library/map/
+node successes are scoped b83 observations only. Its push before rebuilt native
+violated the owner delivery order; that deviation is retained, DRAFT was no exception.
+
+Fresh cleanb83 full normative/scoped factual/code/native startup, fresh main4fa,
+declaration/preflight and amended taskE0 precede this correction. The exact real
+input/sync/debounce/command/Main/Core CAS persistence/query/render chain reproduces
+leading-space/caret loss on unchanged runtime. Existing Core normalization remains.
+Renderer readback retains writable active same-document raw working value/selection;
+explicit incoming payloads force new form values even with same IDs. Local form/edit
+coordinates, ordered queries and one existing in-flight update fence stale followups.
+A same-session receipt advances CAS for pending newer input without claiming it saved.
+
+The complete maintained metadata file executes12of12 with0fail/cancel/skip/todo.
+Its final oracle on captured unchangedb83 runtime executes12 with causal failures,
+including exact whitespace/caret5 loss through real saved metadata/body readback.
+Middle selection/direction, tags/composition-style input, inactive canonical mirrors,
+newer input eventual persistence, same-ID replacement, other-document/away-and-back,
+wrong project/node projection and independently released stale query/ack are covered.
+Original12275byte four-case/helper prefix stays exact. Initial RED and first finite
+fixture initialization failure remain separate; no old assertion is weakened or skipped.
+The initial complete11-file affected run executes264tests:263pass,1failure in the
+new finite wait helper before the second save/query barrier. Its raw log and nonzero
+exit remain retained. A bounded real-time wait replaces iteration counting without
+weakening the awaited predicate; the final12 metadata cases and unchanged-runtime control
+use the updated test bytes. The complete final20-file pack remains mandatory below.
+These finite ports are source correctness, not native input, IME or performance proof.
+
+Root independently verifies only named metadata fragments changed; all other renderer
+bytes, clipboard focus route, previous clipboard/assurance tests, Main/Core/preload/
+IPC/normalization/security and protected application inputs stay exactb83. Normal
+build produces only editor.bundle.js; preload/helper remain. One existing required
+metadata test is added to certificate and DONE scope; DATA746/source599 and inventory
+1603members/classes/lanes/skips stay. A complete257binding successor plus one guard,
+current hashes and append-only witnesses must pass exact committed checks. Historical
+certificate tuples/predicates/graph/V1/V2/PlanState and previous evidence remain.
+
+Next push and CI follow complete focused/affected checks and an actual rebuilt native
+clipboard/Apply/Save/Quit/cold/raw journey on a new owned profile, with complete artifact/
+profile preservation. Full baseline/audit truth, exact official CI and full maintained
+RTK, normal merge and fresh merged checks remain mandatory. Native INPUT CmdA finding,
+Electron advisory/release locks, full IME/numeric MR06 and all17full-Mac rows stay open.
+Continue complete Atlas/maps/WSE/Pulse/configuration epochs after this bounded delivery;
+Black Box follows release. New materials/evidence stay on T777 with declared owned APFS
+runtime. No stage/lease/publication permit or broader release readiness is manufactured.
+
 # Native clipboard delivery — required editor assurance — 2026-10-22
 
 TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022

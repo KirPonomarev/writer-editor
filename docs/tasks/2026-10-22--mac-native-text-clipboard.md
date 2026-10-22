@@ -4,10 +4,10 @@ TASK_ID: YALKEN_MAC_NATIVE_TEXT_CLIPBOARD_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 50d9e10d793ce65459ea92ba15a0d5e800544d01
-HEAD_SHA_AT_START: 50d9e10d793ce65459ea92ba15a0d5e800544d01
+BINDING_BASE_SHA: b83f363ee117234cc46386daaf08298be7c2c444
+HEAD_SHA_AT_START: b83f363ee117234cc46386daaf08298be7c2c444
 ORIGINAL_DELIVERY_BASE_SHA: 4fa8c6df41a28e8b34ee82210605968ff5f16c5b
-AMENDMENT: Same unfinished delivery; two required stale assurance contracts only, original four implementation paths held byte-exact.
+AMENDMENT: Same unfinished PR2145 delivery; correct actual native synopsis working-value/caret loss across canonical metadata readback on cleanb83. Previous clipboard and assurance deltas remain protected.
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-text-clipboard-20261022
 DESIGN_TOOL_ROUTER: existing design contract unchanged; exact router value is in the validated architecture declaration
@@ -51,6 +51,7 @@ Small renderer focus-classification/notification correction and appended meaning
 - test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/rtk-word-note-tables.contract.test.js
+- test/unit/metadata-inspector-read-model-main.test.js
 - test/unit/paste-focus-signal.test.js
 
 ## DENYLIST
@@ -71,6 +72,23 @@ The exact50d9 seventeen-file affected run actually executes236of238, with two re
 The original editor.js, generated editor.bundle.js, paste-focus-signal.test.js and rtk-word-note-tables.contract.test.js are held exact50d9. No runtime rebuild or additional product change is authorized by this assurance amendment. Main/preload/keyboard/proofhook and every other application path stay exact. Root adds only these two exact required-test DATA/source/certificate memberships, normal current inventory/C2A hashes, current append-only witnesses and one factual pass. Existing SectorMmap already admits the two contract paths and stays exact50d9. Forecast746DATA/599source/256certificate plus the existing guard is derived only after actual membership checks; it is not acceptance.
 
 The final union is19paths. The original focused/native/whole baseline/audit/official CI/normal merge/fresh merged checks remain mandatory. Finite VM proof gives no native clipboard, numerical performance, recovery or full Mac readiness claim. Retain every initial failed process, malformed preparation and current source identity separately. One final PR revert covers the original clipboard correction and this assurance amendment together.
+
+### Same-chain native synopsis correction on cleanb83
+
+PR2145 is DRAFT at b83, not accepted or merged. Source12gates and whole17file240of240 pass, but genuine native synopsis Cut then Paste FAILS: same connected active textarea116 has raw leading-space value with caret0 after Cut; canonical readback trims it and unconditionally assigns value, moving caret5; Paste appends, saving é 🧭Замысел instead of Замысел é 🧭. Exact failed source/build/profile152members/raw scene and original expectations remain preserved. Never reclassify it as successful or relaunch/retag that profile as fresh.
+
+Fresh cleanb83 bootstrap/full normative and scoped factual/code reads/fetch, architecture declaration and preflight precede this first amendment write. This amended task E0 precedes delegated source/test edits. The original4fa rollback and task remain one unfinished delivery. Historical50d9 assurance restrictions describe that earlier amendment; this explicitly thaws only editor.js metadata binding functions and its normal generated editor bundle, plus appended tests in the existing metadata-inspector-read-model-main.test.js. Earlier focus fragment and all clipboard/assurance test bytes remain exactb83.
+
+O: native Cut leaves the active raw synopsis working value and intended caret; subsequent Paste produces exactly Замысел é 🧭, Save/Quit/cold reopen retains it with protected scene/history.
+T: actual metadata input -> sync -> existing400ms debounce -> cmd.project.metadata.update -> unchanged validated Main/Core CAS/atomic persistence -> query.metadataInspector -> context-bound renderer projection. Both synopsis selectors alias the same textarea.
+H: updateMetaInputs unconditionally replaces the active field before the later inspector active-element guard. Preserve writable active field on same-document readback only and reject stale followups; explicit incoming document payload must force current values even with same IDs.
+B: Core normalization, Main/preload/IPC/metadata CAS/recovery/capability, existing clipboard focus classifier, all old test bytes, owner state and original base4fa stay protected. No new scheduler/port/writer/registry/dependency or UI design change.
+P: actual whole-chain causal RED on unchangedb83 using browser-like changed-value caret setter, shared textarea alias and actual existing Main update/query/raw filesystem harness; green prefix/middle selection/direction/tags/composition-style/inactive canonical mirror and real saved scene preservation. Different document/project, same-ID forced incoming payload, newer pending input, deferred stale/out-of-order ack/query must not overwrite current baseline/value/status. Whole focused/affected plus rebuilt native journey precede next push; required baseline/official CI/full RTK/merge and fresh merged proof remain.
+I: cleanb83, current registered branch/origin main4fa, exact declaration/preflight/taskE0/ticket; new source/bundle/build/executable/ASAR and fresh synthetic profile. Freeze expected Unicode, project/document/map/node identities and complete raw roster before input.
+
+At most180 changed renderer source lines in existing metadata declarations/update/sync/render/schedule/flush/query and forced incoming-payload invalidation calls; no other editor body change. At most600 appended test lines to existing metadata-inspector-read-model-main.test.js; entire original four-case/helper prefix stays byte-exact. Build normally; editor.bundle.js only generated delta, preload/helper exact. Root current companions only; exact one existing required-test membership addition if needed, scope DONE entry, normal inventory/C2A/current pins and append-only witness. No verifier predicate/history/graph/V1/V2/classification/lane/skip changes. Whole final scope20paths; derive denominators rather than self-PASS.
+
+Delivery order: focused and affected checks, then actual rebuilt native smoke/journey, then push and CI, then required CI/full maintained RTK plus full baseline review, then merge and fresh merged verification. The prior b83 push before native was an order deviation retained externally; DRAFT was no exception. Correct this in the existing task/handoff only, no new tracker/gate/process project. CmdA INPUT selection failure is separate and remains open; it is not this synopsis source cause. Full IME/numeric MR06/full Mac scope remain open.
 
 ## CONTRACT / SHAPES
 
@@ -169,7 +187,7 @@ References: brain:refs actually examined native clipboard/paste/cut/focus existi
 1. CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ. Root bootstrap/full normative/scoped factual read, mount/registry/fresh main/source and architecture preflight actual0 before first task write; task E0 before code agent.
 2. Separate code agent receives exact ticket, preserves source/test prefix, executes causal RED, corrects only admitted focus fragment and faithful fixture, appends meaningful negatives and normal bundle build. No commit/push by executor.
 3. Root reviews whole source delta and causal evidence, complete focused/affected files, freezes code. Root appends exact scope/DATA/certificate/witness companions, normal inventory/C2A and one factual pass. All old tuples/predicates/graph/lanes/skips remain.
-4. Final source gates/baseline/audit truth; normal commit/push/attached PR, exact official CI including full post-build maintained RTK. Exact packaged native clipboard/Apply/Save/Quit/cold/raw/artifact/profile acceptance before merge. No tests relabeled by same-tree assertion.
+4. Complete focused/affected checks and actual rebuilt packaged native clipboard/Apply/Save/Quit/cold/raw/artifact/profile journey before the next push and CI. Final source gates/baseline/audit truth, normal commit/push/existing attached PR and exact official CI including full post-build maintained RTK precede merge. No tests relabeled by same-tree assertion.
 5. Normal merge, fresh exact main and clean detached merged verification with relevant gates/native. Continue remaining agreed Mac product objective; this fix creates no full-release readiness.
 
 ## CHECKS

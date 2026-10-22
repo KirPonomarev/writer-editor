@@ -1214,6 +1214,10 @@ let currentMeta = {
 let currentMetadataBaselineHash = '';
 let metadataUpdateDebounceId = null;
 let metadataUpdatePending = false;
+let metadataFormGeneration = 0;
+let metadataEditGeneration = 0;
+let metadataQuerySequence = 0;
+let metadataUpdateInFlight = null;
 let expandedNodesByTab = new Map();
 let autoSaveTimerId = null;
 let floatingToolbarState = {
@@ -9933,6 +9937,9 @@ function collapseSelection() {
   currentDocumentTitle = '';
   currentMetadataBaselineHash = '';
   metadataUpdatePending = false;
+  metadataFormGeneration += 1;
+  metadataQuerySequence += 1;
+  metadataUpdateInFlight = null;
   clearPendingMetadataUpdate();
   currentMeta = { synopsis: '', status: 'черновик', tags: { pov: '', line: '', place: '' } };
   currentCards = [];
@@ -9946,19 +9953,32 @@ function collapseSelection() {
   showWriterHomeSurface();
 }
 
-function updateMetaInputs() {
+function updateMetaInputs(preserveActive = false) {
+  // Explicit incoming payloads replace the form even with the same entity IDs.
+  if (!preserveActive) {
+    metadataFormGeneration += 1;
+    metadataQuerySequence += 1;
+    metadataUpdateInFlight = null;
+    metadataUpdatePending = false;
+    clearPendingMetadataUpdate();
+  }
   if (!metaSynopsis || !metaStatus || !metaTagPov || !metaTagLine || !metaTagPlace) return;
-  metaSynopsis.value = currentMeta.synopsis || '';
+  const setValue = (control, value) => {
+    if (preserveActive && document.activeElement === control && !control.disabled && !control.readOnly) return;
+    if (control.value !== value) control.value = value;
+  };
+  setValue(metaSynopsis, currentMeta.synopsis || '');
   const status = currentMeta.status || 'черновик';
   ensureSelectHasOption(metaStatus, status, status);
-  metaStatus.value = status;
-  metaTagPov.value = currentMeta.tags.pov || '';
-  metaTagLine.value = currentMeta.tags.line || '';
-  metaTagPlace.value = currentMeta.tags.place || '';
+  setValue(metaStatus, status);
+  setValue(metaTagPov, currentMeta.tags.pov || '');
+  setValue(metaTagLine, currentMeta.tags.line || '');
+  setValue(metaTagPlace, currentMeta.tags.place || '');
 }
 
-function syncMetaFromInputs() {
+function syncMetaFromInputs(markEdit = true) {
   if (!metaSynopsis || !metaStatus || !metaTagPov || !metaTagLine || !metaTagPlace) return;
+  if (markEdit) metadataEditGeneration += 1;
   currentMeta = {
     synopsis: metaSynopsis.value || '',
     status: metaStatus.value || 'черновик',
@@ -12002,6 +12022,7 @@ function normalizeMetadataInspectorPayload(result) {
     unavailableReason: typeof result?.unavailableReason === 'string' ? result.unavailableReason : '',
     context: context
       ? {
+        projectId: typeof context.projectId === 'string' ? context.projectId : '',
         nodeId: typeof context.nodeId === 'string' ? context.nodeId : '',
         kind: typeof context.kind === 'string' ? context.kind : '',
         title: typeof context.title === 'string' ? context.title : '',
@@ -12116,6 +12137,8 @@ function setMetadataInspectorContextPresentation(state, contextAvailable) {
 
 function renderMetadataInspectorState(rawState = {}) {
   const state = normalizeMetadataInspectorPayload(rawState);
+  const sameDocument = state.context?.projectId === currentProjectId && state.context?.nodeId === currentDocumentId;
+  if (state.context && !sameDocument) return;
   const hasWritableBaseline = typeof rawState?.contentHash === 'string' && /^[a-f0-9]{64}$/u.test(rawState.contentHash);
   if (hasWritableBaseline) {
     currentMetadataBaselineHash = rawState.contentHash;
@@ -12138,7 +12161,8 @@ function renderMetadataInspectorState(rawState = {}) {
       status: state.metadata.status,
       tags: { ...state.metadata.tags },
     };
-    updateMetaInputs();
+    updateMetaInputs(sameDocument);
+    if (sameDocument) syncMetaFromInputs(false);
   }
 
   const unavailable = presentMetadataInspectorUnavailable(state.unavailableReason);
@@ -12205,10 +12229,22 @@ function getMetadataUpdatePayload() {
 
 async function flushMetadataUpdate() {
   clearPendingMetadataUpdate();
+  if (metadataUpdateInFlight) return;
   const payload = getMetadataUpdatePayload();
   if (!payload) return;
+  const generation = metadataFormGeneration;
+  const editGeneration = metadataEditGeneration;
+  const request = { generation, projectId: payload.projectId, nodeId: payload.nodeId };
+  metadataUpdateInFlight = request;
+  metadataQuerySequence += 1;
   metadataUpdatePending = false;
-  const result = await dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload);
+  let result;
+  try {
+    result = await dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload);
+  } finally {
+    if (metadataUpdateInFlight === request) metadataUpdateInFlight = null;
+  }
+  if (generation !== metadataFormGeneration || payload.projectId !== currentProjectId || payload.nodeId !== currentDocumentId) return;
   if (!result || result.ok !== true) {
     updateStatusText('Метаданные не сохранены');
     await refreshMetadataInspector();
@@ -12220,7 +12256,9 @@ async function flushMetadataUpdate() {
   if (receipt && typeof receipt.contentHashAfter === 'string' && /^[a-f0-9]{64}$/u.test(receipt.contentHashAfter)) {
     currentMetadataBaselineHash = receipt.contentHashAfter;
   }
-  updateStatusText('Метаданные сохранены');
+  // A valid same-session receipt rebases a newer pending edit's CAS; it must
+  // not acknowledge that newer working value as already saved.
+  if (editGeneration === metadataEditGeneration) updateStatusText('Метаданные сохранены');
   await refreshMetadataInspector();
 }
 
@@ -12234,14 +12272,21 @@ function scheduleMetadataUpdate() {
 }
 
 async function refreshMetadataInspector() {
+  const sequence = ++metadataQuerySequence;
+  const generation = metadataFormGeneration;
+  const editGeneration = metadataEditGeneration;
+  const projectId = currentProjectId;
+  const nodeId = currentDocumentId || '';
   if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') {
     renderMetadataInspectorState({ state: 'unavailable', unavailableReason: 'QUERY_BRIDGE_UNAVAILABLE' });
     return;
   }
   const result = await invokeWorkspaceQueryBridge(METADATA_INSPECTOR_QUERY_ID, {
-    projectId: currentProjectId,
-    nodeId: currentDocumentId || '',
+    projectId,
+    nodeId,
   });
+  if (sequence !== metadataQuerySequence || generation !== metadataFormGeneration || editGeneration !== metadataEditGeneration
+    || projectId !== currentProjectId || nodeId !== (currentDocumentId || '')) return;
   if (!result || result.ok === false) {
     renderMetadataInspectorState({ state: 'unavailable', unavailableReason: 'METADATA_QUERY_FAILED' });
     return;
