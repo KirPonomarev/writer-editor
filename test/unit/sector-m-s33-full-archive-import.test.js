@@ -56,7 +56,7 @@ async function loadMainWithElectronStub(paths) {
     },
     dialog: {
       showMessageBox: async () => ({}),
-      showSaveDialog: async () => ({ canceled: true }),
+      showSaveDialog: async () => paths.bridge?.saveResult || ({ canceled: true }),
       showOpenDialog: async () => ({ canceled: true }),
     },
     ipcMain: {
@@ -74,7 +74,7 @@ async function loadMainWithElectronStub(paths) {
       bridge.window = this;
       this.webContents = { id: 33, session: {}, isDestroyed: () => false,
         getURL: () => bridge.shellUrl, setWindowOpenHandler() {}, on() {},
-        send: (...args) => bridge.sent.push(args) };
+        send: (...args) => { bridge.sent.push(args); bridge.sendEffect?.(...args); } };
       this.isDestroyed = () => false;
       this.on = () => {};
       this.loadFile = (file, { query }) => {
@@ -89,6 +89,7 @@ async function loadMainWithElectronStub(paths) {
     electronStub.BrowserWindow = InertWindow;
     electronStub.screen = { getPrimaryDisplay: () => ({ workAreaSize: { width: 1280, height: 800 } }) };
     electronStub.ipcMain.handle = (channel, handler) => bridge.handlers.set(channel, handler);
+    electronStub.ipcMain.on = (channel, handler) => bridge.listeners.set(channel, handler);
     electronStub.dialog.showOpenDialog = async (...args) => {
       bridge.openCalls.push(args);
       return bridge.openResult;
@@ -126,7 +127,28 @@ async function loadMainWithElectronStub(paths) {
   delete require.cache[mainPath];
   delete require.cache[fileManagerPath];
   try {
-    const main = require(mainPath);
+    let main;
+    if (paths.bridge?.queueProbe) {
+      // Private compile-time seam only, like the existing actual-Main tests.
+      // Real Kernel, queue, Core receipts and filesystem effects are retained.
+      const compiled = new Module(mainPath, module);
+      compiled.filename = mainPath; compiled.paths = Module._nodeModulePaths(path.dirname(mainPath));
+      compiled._compile(fs.readFileSync(mainPath, 'utf8') + `\nmodule.exports.__archiveOpenTest = {
+        setup(file) { currentProjectName='Prior'; currentFilePath=file; isDirty=false; },
+        queue: (...args) => queueDiskOperation(...args),
+        observe(label,phase,notify,release) {
+          if(phase==='queued') { const original=queueDiskOperation; queueDiskOperation=(operation,name)=>{
+            const result=original(operation,name); if(name===label)notify(); return result; }; }
+          else { const original=commitWriterProjectSnapshot; commitWriterProjectSnapshot=async(...args)=>{
+            const result=await original(...args); if(args[4]===label){notify(result);await release;} return result; }; }
+        },
+        state: () => ({projectName:currentProjectName,filePath:currentFilePath,capture:!!projectArchiveOpenCapture}),
+        handoff(binding) { return openImportedArchiveProject(binding,{window:mainWindow,contents:mainWindow.webContents,
+          projectName:currentProjectName,filePath:currentFilePath,session:commentAuthoringSessionId,
+          owner:activeStage10ApplicationBootstrap,generation:lastSignaledEditGeneration}); }
+      };`, mainPath);
+      main = compiled.exports;
+    } else main = require(mainPath);
     if (paths.bridge) main.createWindow();
     return {
       main,
@@ -145,15 +167,15 @@ async function createHarness(t, options = {}) {
     require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative();
     nativePrepared = true;
   }
-  const tempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'project-archive-s33-'));
+  const tempRoot = await fsPromises.mkdtemp(path.join(await fsPromises.realpath(os.tmpdir()), 'project-archive-s33-'));
   t.after(async () => fsPromises.rm(tempRoot, { recursive: true, force: true }));
   const documentsParent = path.join(tempRoot, 'Documents');
   const documentsRoot = path.join(documentsParent, 'craftsman');
   const userDataRoot = path.join(tempRoot, 'userData');
   await fsPromises.mkdir(documentsRoot, { recursive: true });
   await fsPromises.mkdir(userDataRoot, { recursive: true });
-  const bridge = options.bridge ? { handlers: new Map(), sent: [], openCalls: [], kernelCalls: [],
-    isPackaged: options.isPackaged !== false, openResult: { canceled: true } } : null;
+  const bridge = options.bridge ? { handlers: new Map(), listeners: new Map(), sent: [], openCalls: [], kernelCalls: [],
+    isPackaged: options.isPackaged !== false, queueProbe: options.queueProbe === true, openResult: { canceled: true } } : null;
   const { main, fileManager } = await loadMainWithElectronStub({
     tempRoot,
     documentsParent,
@@ -174,6 +196,7 @@ async function createHarness(t, options = {}) {
   t.after(() => { fileManager.getDocumentsPath = originalGetDocumentsPath; });
   return {
     main,
+    fileManager,
     tempRoot,
     documentsRoot,
     bridge,
@@ -844,4 +867,308 @@ test('S33 generic bridge publication test port checks real ownership and preserv
     namePublished: true, directorySynced: false, publicationOutcome: 'TEST_PORT_ONLY' });
   assert.equal(currentChecks, 2);
   assert.equal((await fsPromises.lstat(targetRoot, { bigint: true })).ino, stagingIdentity.ino);
+});
+test('S33 actual guarded Main opens a restored minimal archive after releasing its publication lease', async t => {
+  const input = await archiveBridgeFixture(t), requestId = 's33-post-open-minimal';
+  assert.equal(Object.hasOwn(JSON.parse(input.files.get(PROJECT_MANIFEST_FILENAME)), 'createdAtUtc'), false);
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const readFile = input.fileManager.readFile; let leaseChecks = 0;
+  input.fileManager.readFile = async function(file, ...args) {
+    if (file === path.join(input.documentsRoot, 'Project Alpha', 'roman', 'Part One', 'Scene 01.txt')) {
+      const entries = await fsPromises.readdir(path.join(input.tempRoot, 'userData', 'stage10-integrity-anchors'), { recursive: true });
+      assert.equal(entries.some(name => name.endsWith('project-transaction.lease')), false);
+      leaseChecks++;
+    }
+    return readFile.call(this, file, ...args);
+  };
+  let result;
+  try { result = await input.invoke({ requestId, confirmed: true, mode: 'restore', openAfterImport: true }); }
+  finally { input.fileManager.readFile = readFile; }
+  assert.equal(leaseChecks, 1);
+  const root = path.join(input.documentsRoot, 'Project Alpha');
+  const actual = await physicalProjectRoster(root);
+  const editor = input.bridge.sent.filter(([channel]) => channel === 'editor:set-text');
+  const index = JSON.parse(await fsPromises.readFile(path.join(input.tempRoot, 'userData', 'project-library-index.v1.json')));
+  t.diagnostic('POST_OPEN_OBSERVATION ' + JSON.stringify({ result, editor, directories: actual.directories,
+    files: actual.files.map(([relative, bytes]) => [relative, bytes.length]), indexEntries: index.entries.map(row => row.projectId) }));
+  assert.deepEqual(actual.directories, directoryFixturePaths);
+  for (const [relative, bytes] of input.files) {
+    const restored = actual.files.find(([name]) => name === relative)[1];
+    if (relative === PROJECT_MANIFEST_FILENAME && result.ok) {
+      const manifest = JSON.parse(restored), original = JSON.parse(bytes);
+      assert.ok(Number.isFinite(Date.parse(manifest.createdAtUtc)));
+      delete manifest.createdAtUtc; assert.deepEqual(manifest, original);
+    } else assert.equal(restored.equals(bytes), true);
+  }
+  assert.equal(index.entries.some(row => row.projectId === 'project-directory-readonly-20261022'), true);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.imported, true); assert.equal(editor.length, 1);
+  assert.equal(result.value.opened, true); assert.equal(result.value.documentId, editor[0][1].documentId);
+  assert.match(editor[0][1].documentId, /^tree-node-/u);
+  assert.equal(editor[0][1].content, input.files.get('roman/Part One/Scene 01.txt').toString('utf8'));
+  assert.equal(editor[0][1].projectId, 'project-directory-readonly-20261022');
+});
+
+function deferredPostOpen() {
+  let resolve; const promise = new Promise(done => { resolve = done; });
+  return { promise, resolve };
+}
+async function assertPublishedPostOpen(input, result) {
+  assert.equal(result.ok, false, JSON.stringify(result));
+  const publication = result.value.error.details.publication;
+  assert.equal(publication.namePublished, true); assert.equal(publication.readbackVerified, true);
+  assert.equal(result.value.error.details.cleanup, 'PUBLISHED_ROOT_RETAINED');
+  const root = path.join(input.documentsRoot, 'Project Alpha'), actual = await physicalProjectRoster(root);
+  assert.deepEqual(actual.directories, directoryFixturePaths);
+  for (const [relative, bytes] of input.files) {
+    const observed = actual.files.find(([name]) => name === relative)?.[1];
+    assert.ok(observed, relative);
+    if (relative === PROJECT_MANIFEST_FILENAME) {
+      const manifest = JSON.parse(observed); delete manifest.createdAtUtc;
+      assert.deepEqual(manifest, JSON.parse(bytes));
+    } else assert.equal(observed.equals(bytes), true, relative);
+  }
+  const index = JSON.parse(await fsPromises.readFile(path.join(input.tempRoot, 'userData', 'project-library-index.v1.json')));
+  assert.equal(index.entries.some(row => row.projectId === 'project-directory-readonly-20261022'), true);
+  assert.equal(input.bridge.sent.filter(([channel]) => channel === 'editor:set-text').length, 0);
+}
+test('S33 actual guarded post-open preserves the published root and prior context across real effect failures', async t => {
+  for (const fault of ['read-failed', 'read-threw', 'manifest-write', 'continuity-lost-result', 'window-destroyed',
+    'window-replaced', 'dirty-during-read', 'dirty-after-continuity', 'rollback-unconfirmed']) {
+    await t.test(fault, async t => {
+      const input = await archiveBridgeFixture(t), requestId = 'post-open-' + fault;
+      const priorRoot = path.join(input.documentsRoot, 'Роман'), priorFile = path.join(priorRoot, 'roman', 'Prior.txt');
+      await fsPromises.mkdir(path.dirname(priorFile), { recursive: true });
+      await fsPromises.writeFile(priorFile, 'PREVIOUS CANONICAL TEXT');
+      await fsPromises.writeFile(path.join(priorRoot, PROJECT_MANIFEST_FILENAME), JSON.stringify({
+        schemaVersion: 1, projectId: 'prior-project', projectName: 'Роман', createdAtUtc: '2026-01-01T00:00:00.000Z' }));
+      const priorIdentity = await input.main.getProjectDocumentIdentityPayload(priorFile);
+      const settingsPath = path.join(input.tempRoot, 'userData', 'settings.json');
+      const priorSettings = { projectId: 'prior-project', lastProjectId: 'prior-project', fontSize: 19 };
+      await fsPromises.writeFile(settingsPath, JSON.stringify(priorSettings));
+      assert.equal((await input.invoke({ requestId })).value.preview, true);
+      const readFile = input.fileManager.readFile, writeFile = input.fileManager.writeFileAtomic;
+      const importedScene = path.join(input.documentsRoot, 'Project Alpha', 'roman', 'Part One', 'Scene 01.txt');
+      let exercised = 0;
+      input.fileManager.readFile = async function(file, ...args) {
+        if (file === importedScene) {
+          if (fault === 'read-failed') { exercised++; return { success: false }; }
+          if (fault === 'read-threw') { exercised++; throw Object.assign(Error(fault), { code: 'E_OWNED_READ_FAULT' }); }
+          if (fault === 'window-destroyed') { exercised++; input.bridge.window.isDestroyed = () => true; }
+          if (fault === 'window-replaced') { exercised++; input.main.createWindow(); }
+          if (fault === 'dirty-during-read') {
+            exercised++;
+            const channel = 'ui:save-lifecycle-signal-bridge';
+            const request = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope(channel, 'signal.localDirty.set', { state: true, generation: 1 });
+            assert.equal((await input.bridge.handlers.get(channel)(input.event(), request)).ok, true);
+          }
+        }
+        return readFile.call(this, file, ...args);
+      };
+      input.fileManager.writeFileAtomic = async function(file, ...args) {
+        if (fault === 'manifest-write' && file === path.join(path.dirname(path.dirname(path.dirname(importedScene))), PROJECT_MANIFEST_FILENAME)) {
+          exercised++; throw Object.assign(Error(fault), { code: 'E_OWNED_MANIFEST_FAULT' });
+        }
+        const written = await writeFile.call(this, file, ...args);
+        if (fault === 'rollback-unconfirmed' && file === settingsPath && exercised > 0) return { success: false };
+        if (['continuity-lost-result', 'rollback-unconfirmed'].includes(fault) && file === settingsPath && exercised === 0) {
+          exercised++; return { success: false, code: 'E_OWNED_SETTINGS_LOST_RESULT' };
+        }
+        if (fault === 'dirty-after-continuity' && file === settingsPath && exercised === 0) {
+          exercised++;
+          const channel = 'ui:save-lifecycle-signal-bridge';
+          await input.bridge.handlers.get(channel)(input.event(), require('../../src/core/ipc-envelope-v1.cjs')
+            .createEnvelope(channel, 'signal.localDirty.set', { state: true, generation: 1 }));
+        }
+        return written;
+      };
+      let result;
+      try { result = await input.invoke({ requestId, confirmed: true, mode: 'restore', openAfterImport: true }); }
+      finally { input.fileManager.readFile = readFile; input.fileManager.writeFileAtomic = writeFile; }
+      assert.equal(exercised, 1, fault); await assertPublishedPostOpen(input, result);
+      assert.deepEqual(await input.main.getProjectDocumentIdentityPayload(priorFile), priorIdentity);
+      assert.equal(await fsPromises.readFile(priorFile, 'utf8'), 'PREVIOUS CANONICAL TEXT');
+      assert.deepEqual(JSON.parse(await fsPromises.readFile(settingsPath)), priorSettings);
+      if (fault === 'rollback-unconfirmed') assert.equal(result.value.error.details.continuityRollbackUnconfirmed, true);
+      assert.equal(input.bridge.sent.filter(([channel]) => channel === 'editor:snapshot-request').length, 0);
+    });
+  }
+});
+test('S33 actual guarded post-open blocks fresh autosave Save and SaveAs throughout deferred settings read', async t => {
+  const input = await archiveBridgeFixture(t), requestId = 'post-open-settings-capture';
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const blocked = deferredPostOpen(), release = deferredPostOpen(), originalRead = fsPromises.readFile;
+  const settingsPath = path.join(input.tempRoot, 'userData', 'settings.json');
+  const journal = path.join(input.documentsRoot, '.project-lifecycle-journal.v1.json');
+  const targetRoot = path.join(input.documentsRoot, 'Project Alpha');
+  let paused = false;
+  fsPromises.readFile = async function(file, ...args) {
+    if (!paused && file === settingsPath && fs.existsSync(targetRoot) && !fs.existsSync(journal)) {
+      paused = true; blocked.resolve(); await release.promise;
+    }
+    return originalRead.call(this, file, ...args);
+  };
+  // A missing guard receives a genuine response instead of a timeout; the
+  // observation below still rejects any old-renderer capture at this boundary.
+  input.bridge.sendEffect = (channel, payload) => {
+    if (channel === 'editor:snapshot-request') queueMicrotask(() => input.bridge.listeners.get('editor:snapshot-response')(
+      input.event(), { requestId: payload.requestId, snapshot: { content: 'OLD EDITOR', generation: 0 } }));
+  };
+  const importing = input.invoke({ requestId, confirmed: true, mode: 'restore', openAfterImport: true });
+  let timer;
+  try {
+    await Promise.race([blocked.promise, new Promise((_, reject) => { timer = setTimeout(() => reject(Error('settings barrier not reached')), 3000); })]);
+    const channel = 'ui:save-lifecycle-signal-bridge';
+    const signal = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope(channel, 'signal.autoSave.request', {});
+    const auto = await input.bridge.handlers.get(channel)(input.event(), signal);
+    assert.equal(auto.ok, false); assert.equal(auto.reason, 'PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
+    const save = await input.invoke({}, 'cmd.project.save');
+    assert.equal(save.ok, false); assert.equal(save.reason, 'PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
+    const saveAs = await input.invoke({}, 'cmd.project.saveAs'); assert.equal(saveAs.ok, false);
+    assert.equal(input.bridge.sent.filter(([name]) => name === 'editor:snapshot-request').length, 0);
+  } finally { clearTimeout(timer); release.resolve(); fsPromises.readFile = originalRead; }
+  const result = await importing;
+  assert.equal(paused, true); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.opened, true);
+  assert.equal(input.bridge.sent.filter(([name]) => name === 'editor:set-text').length, 1);
+  const autoAfter = await input.bridge.handlers.get('ui:save-lifecycle-signal-bridge')(input.event(),
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', 'signal.autoSave.request', {}));
+  assert.equal(autoAfter.ok, true, 'owned capture is released after successful handoff');
+});
+function postOpenRuntimeUnit() {
+  // Exact helper under finite effect ports. This checks consumed Main-owned
+  // guards; it grants no real-window, native, platform or filesystem credit.
+  const source = read('src/main.js'), vm = require('node:vm');
+  const unit = {
+    mainWindow: { isDestroyed: () => false, webContents: { isDestroyed: () => false } },
+    currentProjectName: 'Prior', currentFilePath: '/owned/prior.txt', commentAuthoringSessionId: 'session',
+    activeStage10ApplicationBootstrap: {}, lastSignaledEditGeneration: 3, isDirty: false,
+    activeAutoSavePromise: null, activeBackupPromise: null, projectArchiveOpenCapture: null,
+    IMPORT_PROJECT_ARCHIVE_COMMAND_ID: ARCHIVE_BRIDGE_COMMAND, allowed: true, opens: 0,
+    SESSION_CONTINUITY_SETTINGS_KEY: 'sessionContinuityV1', getWriterLocalRuntimeProfile: () => ({}), getProductCommandRecord: () => ({}),
+  };
+  unit.evaluateWriterLocalCommandAccess = () => ({ allowed: unit.allowed });
+  unit.setActiveProjectNameFromRoot = () => { unit.currentProjectName = 'Imported'; };
+  unit.loadSettings = async () => ({});
+  unit.resolveProjectContinueTarget = async () => ({ filePath: '/owned/imported.txt' });
+  unit.openProjectDocumentFile = async (file, options) => { options.assertCurrent(); unit.opens++; return { ok: true, opened: true }; };
+  vm.createContext(unit);
+  vm.runInContext(source.slice(source.indexOf('async function openImportedArchiveProject('),
+    source.indexOf('\nasync function handleImportProjectArchive(', source.indexOf('async function openImportedArchiveProject('))), unit);
+  vm.runInContext(source.slice(source.indexOf('function createBackup() {'), source.indexOf('\nasync function runCreateBackup()')), unit);
+  const captured = { window: unit.mainWindow, contents: unit.mainWindow.webContents, projectName: unit.currentProjectName,
+    filePath: unit.currentFilePath, session: unit.commentAuthoringSessionId, owner: unit.activeStage10ApplicationBootstrap, generation: unit.lastSignaledEditGeneration };
+  return { unit, captured, run: () => unit.openImportedArchiveProject({ projectId: 'imported', projectRoot: '/owned/imported' }, captured) };
+}
+test('S33 exact post-open helper blocks new captures before draining existing capture promises', async () => {
+  const { unit, run } = postOpenRuntimeUnit(), auto = deferredPostOpen(), backup = deferredPostOpen(), settings = deferredPostOpen();
+  let settingsReads = 0;
+  unit.activeAutoSavePromise = auto.promise; unit.activeBackupPromise = backup.promise;
+  unit.loadSettings = async () => { settingsReads++; await settings.promise; return {}; };
+  const opening = run();
+  assert.ok(unit.projectArchiveOpenCapture); assert.equal(settingsReads, 0);
+  const backupRefusal = unit.createBackup(); assert.notEqual(backupRefusal, backup.promise);
+  assert.equal((await backupRefusal).code, 'E_PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
+  auto.resolve(); await new Promise(setImmediate); assert.equal(settingsReads, 0);
+  backup.resolve(); await new Promise(setImmediate); assert.equal(settingsReads, 1); assert.ok(unit.projectArchiveOpenCapture);
+  settings.resolve(); await opening; assert.equal(unit.opens, 1); assert.equal(unit.projectArchiveOpenCapture, null);
+});
+test('S33 exact post-open helper consumes every stale owner identity and preserves newer foreign context', async t => {
+  const changes = {
+    project: unit => { unit.currentProjectName = 'Foreign'; }, file: unit => { unit.currentFilePath = '/owned/foreign.txt'; },
+    window: unit => { unit.mainWindow = { ...unit.mainWindow }; }, session: unit => { unit.commentAuthoringSessionId = 'foreign'; },
+    owner: unit => { unit.activeStage10ApplicationBootstrap = {}; }, generation: unit => { unit.lastSignaledEditGeneration++; },
+    dirty: unit => { unit.isDirty = true; }, capability: unit => { unit.allowed = false; },
+  };
+  for (const [name, change] of Object.entries(changes)) await t.test(name, async () => {
+    const { unit, run } = postOpenRuntimeUnit();
+    unit.resolveProjectContinueTarget = async () => { change(unit); return { filePath: '/owned/imported.txt' }; };
+    await assert.rejects(run(), { code: 'E_PROJECT_ARCHIVE_OPEN_CONTEXT_STALE' });
+    assert.equal(unit.opens, 0); assert.equal(unit.projectArchiveOpenCapture, null);
+    if (name === 'project') assert.equal(unit.currentProjectName, 'Foreign');
+    if (name === 'file') assert.equal(unit.currentFilePath, '/owned/foreign.txt');
+    if (name === 'session') assert.equal(unit.commentAuthoringSessionId, 'foreign');
+    if (name === 'window') assert.equal(unit.currentProjectName, 'Prior');
+    if (name === 'dirty') assert.equal(unit.isDirty, true);
+    if (name === 'generation') assert.equal(unit.lastSignaledEditGeneration, 4);
+  });
+});
+
+test('S33 actual guarded restored open retains registered custom scene identity and source metadata', async t => {
+  const input = await archiveBridgeFixture(t), requestId = 'post-open-custom-id';
+  const manifestPath = path.join(input.source, PROJECT_MANIFEST_FILENAME);
+  const manifest = JSON.parse(input.files.get(PROJECT_MANIFEST_FILENAME));
+  const documentId = 'tree-node-33333333333333333333333333333333';
+  manifest.treeIdentity = { schemaVersion: 1, nodes: {
+    'tree-node-11111111111111111111111111111111': { bindingKey: 'file:roman/Part One', kind: 'part', present: true },
+    [documentId]: { bindingKey: 'file:roman/Part One/Scene 01.txt', kind: 'chapter-file', present: true },
+  } };
+  const raw = Buffer.from(JSON.stringify(manifest)); input.files.set(PROJECT_MANIFEST_FILENAME, raw);
+  await fsPromises.writeFile(manifestPath, raw);
+  await fsPromises.writeFile(input.archivePath, (await buildProjectArchiveBuffer(input.source)).buffer);
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const result = await input.invoke({ requestId, confirmed: true, mode: 'restore', openAfterImport: true });
+  assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.value.documentId, documentId);
+  const editor = input.bridge.sent.filter(([name]) => name === 'editor:set-text');
+  assert.equal(editor.length, 1); assert.equal(editor[0][1].documentId, documentId);
+  assert.equal(editor[0][1].projectId, manifest.projectId);
+  const restored = JSON.parse(await fsPromises.readFile(path.join(input.documentsRoot, 'Project Alpha', PROJECT_MANIFEST_FILENAME)));
+  delete restored.createdAtUtc; assert.deepEqual(restored, manifest);
+  assert.equal(editor[0][1].content, input.files.get('roman/Part One/Scene 01.txt').toString('utf8'));
+});
+
+test('S33 actual guarded SaveAs and untitled Save refuse queued or completed-receipt context publication during import handoff', async t => {
+  for (const intent of ['saveAs', 'save']) for (const phase of ['queued', 'receipt']) await t.test(intent + ':' + phase, async t => {
+    const input = await archiveBridgeFixture(t, { queueProbe: true }), probe = input.main.__archiveOpenTest;
+    const make = async (name, id) => {
+      const root = path.join(input.documentsRoot, name), scene = path.join(root, 'roman', 'Imported', 'Scene.txt');
+      await fsPromises.mkdir(path.dirname(scene), { recursive: true });
+      const manifest = { schemaVersion: 1, projectId: id, projectName: name, createdAtUtc: '2026-01-01T00:00:00.000Z' };
+      const manifestPath = path.join(root, PROJECT_MANIFEST_FILENAME);
+      await fsPromises.writeFile(manifestPath, JSON.stringify(manifest));
+      await fsPromises.writeFile(scene, name + ' CANONICAL');
+      return { projectId: id, projectRoot: root, manifestPath, manifest, scene };
+    };
+    const prior = await make('Prior', 'save-prior'), imported = await make('Imported', 'save-imported');
+    const selected = path.join(input.documentsRoot, 'selected-save-as.txt');
+    input.bridge.saveResult = { canceled: false, filePath: selected };
+    probe.setup(intent === 'save' ? null : prior.scene);
+    input.bridge.sendEffect = (channel, payload) => {
+      if (channel === 'editor:snapshot-request') queueMicrotask(() => input.bridge.listeners.get('editor:snapshot-response')(
+        input.event(), { requestId: payload.requestId, snapshot: { content: 'OLD SELECTED CONTENT', generation: 0 } }));
+    };
+    const ready = deferredPostOpen(), release = deferredPostOpen(), paused = deferredPostOpen(), resume = deferredPostOpen();
+    const label = intent === 'save' ? 'save new project transaction' : 'save as project transaction';
+    const ahead = phase === 'queued' ? probe.queue(() => release.promise, 'owned queue predecessor') : Promise.resolve();
+    probe.observe(label, phase, ready.resolve, release.promise);
+    const saving = input.invoke({}, 'cmd.project.' + intent);
+    await ready.promise;
+    const readdir = fsPromises.readdir; let intercepted = false;
+    fsPromises.readdir = async function(file, ...args) {
+      if (!intercepted && file === path.join(imported.projectRoot, 'roman') && probe.state().capture) {
+        intercepted = true; paused.resolve(); await resume.promise;
+      }
+      return readdir.call(this, file, ...args);
+    };
+    const opening = probe.handoff(imported).then(result => ({ ok: true, result }), error => ({ ok: false, code: error.code }));
+    let timer;
+    try {
+      await Promise.race([paused.promise, new Promise((_, reject) => { timer = setTimeout(() => reject(Error('handoff barrier missing')), 3000); })]);
+      release.resolve({ success: true }); await ahead;
+      const saved = await saving, during = probe.state(); resume.resolve();
+      const opened = await opening, after = probe.state();
+      t.diagnostic('POST_OPEN_SAVE_QUEUE ' + JSON.stringify({ intent, phase, saved, during, opened, after }));
+      assert.equal(intercepted, true); assert.equal(await fsPromises.readFile(imported.scene, 'utf8'), 'Imported CANONICAL');
+      if (phase === 'receipt') assert.equal(await fsPromises.readFile(selected, 'utf8'), 'OLD SELECTED CONTENT', 'already authorized durable effect is retained');
+      else await assert.rejects(fsPromises.lstat(selected), { code: 'ENOENT' });
+      assert.equal(saved.ok, false, 'old completion cannot publish active context during the owned handoff');
+      assert.equal(opened.ok, true, JSON.stringify(opened));
+      assert.deepEqual(after, { projectName: 'Imported', filePath: imported.scene, capture: false });
+      const editors = input.bridge.sent.filter(([channel]) => channel === 'editor:set-text');
+      assert.equal(editors.length, 1); assert.equal(editors[0][1].content, 'Imported CANONICAL');
+      const settings = JSON.parse(await fsPromises.readFile(path.join(input.tempRoot, 'userData', 'settings.json')));
+      assert.equal(settings.projectId, imported.projectId);
+      assert.equal(settings.lastProjectRelativePath, 'roman/Imported/Scene.txt');
+    } finally { clearTimeout(timer); release.resolve({ success: true }); resume.resolve(); fsPromises.readdir = readdir; await opening; }
+  });
 });

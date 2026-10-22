@@ -328,6 +328,7 @@ let isDirty = false;
 let isEditorPasteTargetFocused = false;
 let autoSaveInProgress = false;
 let activeAutoSavePromise = null;
+let projectArchiveOpenCapture = null;
 let lastSignaledEditGeneration = 0;
 let lastAcknowledgedEditGeneration = 0;
 let isQuitting = false;
@@ -21893,14 +21894,17 @@ async function getReadOnlyProjectDocumentIdentityPayload(filePath, projectBindin
 }
 
 async function openProjectDocumentFile(filePath, options = {}) {
+  const previousFilePath = currentFilePath;
+  const assertCurrent = expectedFile => { if (typeof options.assertCurrent === 'function') options.assertCurrent(expectedFile); };
+  assertCurrent(previousFilePath);
   if (!filePath || !isAllowedFilePath(filePath)) {
     return makeProjectLifecycleError('E_PROJECT_OPEN_PATH_NOT_ALLOWED', 'PROJECT_OPEN_PATH_NOT_ALLOWED');
   }
   const fileResult = await fileManager.readFile(filePath);
+  assertCurrent(previousFilePath);
   if (!fileResult.success) {
     return makeProjectLifecycleError('E_PROJECT_OPEN_READ_FAILED', 'PROJECT_OPEN_READ_FAILED');
   }
-  const previousFilePath = currentFilePath;
   currentFilePath = filePath;
   const context = getDocumentContextFromPath(filePath);
   const readOnlyProject = options.readOnlyProject === true;
@@ -21908,11 +21912,20 @@ async function openProjectDocumentFile(filePath, options = {}) {
   const documentIdentity = readOnlyProject && projectBinding
     ? await getReadOnlyProjectDocumentIdentityPayload(filePath, projectBinding)
     : await getProjectDocumentIdentityPayload(filePath);
+  assertCurrent(filePath);
   const selectionRange = clampSelectionRangeForContent(options.selectionRange, fileResult.content);
+  const editorPayload = await attachProjectIdToEditorPayload({
+    content: fileResult.content, title: context.title, ...documentIdentity,
+    projectId: options.projectId || documentIdentity.projectId || projectBinding?.projectId || '',
+    kind: context.kind, metaEnabled: context.metaEnabled, selectionRange, readOnlyProject,
+  }, filePath);
+  assertCurrent(filePath);
   const continuityCommit = await saveLastFile({
     selectionRange,
     projectBinding,
+    beforeWrite: () => assertCurrent(filePath),
   });
+  assertCurrent(filePath);
   if (!continuityCommit.ok) {
     currentFilePath = previousFilePath;
     updateStatus('Ошибка');
@@ -21921,16 +21934,7 @@ async function openProjectDocumentFile(filePath, options = {}) {
       'SESSION_CONTINUITY_COMMIT_FAILED',
     );
   }
-  sendEditorText(await attachProjectIdToEditorPayload({
-    content: fileResult.content,
-    title: context.title,
-    ...documentIdentity,
-    projectId: options.projectId || documentIdentity.projectId || projectBinding?.projectId || '',
-    kind: context.kind,
-    metaEnabled: context.metaEnabled,
-    selectionRange,
-    readOnlyProject,
-  }, filePath));
+  sendEditorText(editorPayload);
   setDirtyState(false);
   const contentHash = computeHash(fileResult.content);
   lastAutosaveHash = contentHash;
@@ -30846,7 +30850,73 @@ async function handleExportProjectArchive(payloadRaw = {}) {
   });
 }
 
+async function openImportedArchiveProject(binding, captured) {
+  const stale = () => Object.assign(Error('PROJECT_ARCHIVE_OPEN_CONTEXT_STALE'), { code: 'E_PROJECT_ARCHIVE_OPEN_CONTEXT_STALE' });
+  let expectedName = captured.projectName, targetFile = captured.filePath;
+  const sameOwner = () => mainWindow === captured.window && mainWindow?.webContents === captured.contents
+    && commentAuthoringSessionId === captured.session && activeStage10ApplicationBootstrap === captured.owner;
+  const assertCurrent = (expectedFile = captured.filePath) => {
+    const access = evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
+      productCommandRecord: getProductCommandRecord(IMPORT_PROJECT_ARCHIVE_COMMAND_ID) });
+    if (!sameOwner() || !mainWindow || mainWindow.isDestroyed() || captured.contents.isDestroyed()
+      || currentProjectName !== expectedName || currentFilePath !== expectedFile
+      || lastSignaledEditGeneration !== captured.generation || isDirty || !access.allowed) throw stale();
+  };
+  assertCurrent();
+  if (projectArchiveOpenCapture) throw stale();
+  const capture = projectArchiveOpenCapture = {};
+  let previousSettings = null;
+  try {
+    await Promise.all([activeAutoSavePromise, activeBackupPromise].filter(Boolean));
+    assertCurrent();
+    previousSettings = await loadSettings();
+    assertCurrent();
+    setActiveProjectNameFromRoot(binding.projectRoot);
+    expectedName = currentProjectName;
+    const target = await resolveProjectContinueTarget(binding, {});
+    assertCurrent();
+    if (!target.filePath) throw Object.assign(Error('PROJECT_EMPTY'), { code: 'E_PROJECT_EMPTY' });
+    targetFile = target.filePath;
+    const opened = await openProjectDocumentFile(targetFile, { projectId: binding.projectId, projectBinding: binding,
+      statusText: 'Архив проекта импортирован', assertCurrent });
+    if (!opened?.ok || opened.opened !== true) throw Object.assign(Error(opened?.reason || 'PROJECT_ARCHIVE_OPEN_FAILED'), {
+      code: opened?.code || 'E_PROJECT_ARCHIVE_OPEN_FAILED' });
+    return opened;
+  } catch (error) {
+    // Restore only our still-owned transition. A later foreign switch wins.
+    const ownsTransition = () => commentAuthoringSessionId === captured.session
+      && activeStage10ApplicationBootstrap === captured.owner && currentProjectName === expectedName
+      && (currentFilePath === targetFile || currentFilePath === captured.filePath);
+    if (ownsTransition()) {
+      currentProjectName = captured.projectName;
+      currentFilePath = captured.filePath;
+      const assertRestored = () => {
+        if (commentAuthoringSessionId !== captured.session || activeStage10ApplicationBootstrap !== captured.owner
+          || currentProjectName !== captured.projectName || currentFilePath !== captured.filePath) throw stale();
+      };
+      try {
+        const settings = await loadSettings();
+        assertRestored();
+        if (previousSettings && settings.projectId === binding.projectId) {
+          for (const key of [SESSION_CONTINUITY_SETTINGS_KEY, 'projectId', 'projectManifestPath', 'lastProjectId',
+            'lastProjectRelativePath', 'lastProjectSelectionRange', 'lastExternalFilePath', 'lastFilePath']) {
+            if (Object.hasOwn(previousSettings, key)) settings[key] = previousSettings[key];
+            else delete settings[key];
+          }
+          if (!await saveSettings(settings, { beforeWrite: assertRestored })) error.continuityRollbackUnconfirmed = true;
+        }
+      } catch { error.continuityRollbackUnconfirmed = true; }
+    }
+    throw error;
+  } finally {
+    if (projectArchiveOpenCapture === capture) projectArchiveOpenCapture = null;
+  }
+}
+
 async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
+  const openContext = { window: mainWindow, contents: mainWindow?.webContents, projectName: currentProjectName,
+    filePath: currentFilePath, session: commentAuthoringSessionId, owner: activeStage10ApplicationBootstrap,
+    generation: lastSignaledEditGeneration };
   const recovered = await recoverProjectLifecycleJournal();
   if (!recovered.ok) return makeTypedProjectArchiveImportError(recovered.code || 'E_PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED',
     recovered.reason || 'PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED', recovered.details || {});
@@ -31010,9 +31080,10 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       || context.session !== commentAuthoringSessionId) throw Error('PROJECT_ARCHIVE_IMPORT_CONTEXT_STALE');
   };
   let publication = { namePublished: false, publicationOutcome: 'NOT_STARTED', directorySynced: false, readbackVerified: false };
+  let publishedBinding = null;
 
   try {
-    return await authority.withProjectLease(newProjectId, async (lease) => {
+    const imported = await authority.withProjectLease(newProjectId, async (lease) => {
       await lease.assertOwned();
       const racedBinding = await findProjectBindingByProjectId(newProjectId);
       if (racedBinding?.projectRoot) {
@@ -31127,19 +31198,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         throw Error('PROJECT_ARCHIVE_IMPORT_REGISTRATION_UNCONFIRMED');
       }
       await clearProjectArchiveImportJournal();
-      if (payload.openAfterImport === true) {
-        setActiveProjectNameFromRoot(targetRoot);
-        const target = await resolveProjectContinueTarget(projectBinding, {});
-        if (target.filePath) {
-          await openProjectDocumentFile(target.filePath, {
-            statusText: 'Архив проекта импортирован',
-            projectId: newProjectId,
-            projectBinding,
-          });
-        }
-      }
-      updateStatus('Архив проекта импортирован');
-      pendingProjectArchiveImportPreview = null;
+      publishedBinding = projectBinding;
       return {
         ok: true,
         imported: true,
@@ -31164,6 +31223,14 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         },
       };
     });
+    if (payload.openAfterImport === true) {
+      const opened = await openImportedArchiveProject(publishedBinding, openContext);
+      imported.opened = opened.opened;
+      imported.documentId = opened.documentId;
+    }
+    updateStatus('Архив проекта импортирован');
+    pendingProjectArchiveImportPreview = null;
+    return imported;
   } catch (error) {
     if (error?.details?.publication) publication = { ...publication, ...error.details.publication };
     // A lost return (including lease loss after the actual effect) is observed
@@ -31213,7 +31280,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       typeof error?.reason === 'string'
         ? error.reason
         : (error && typeof error.message === 'string' ? error.message : 'project_archive_import_failed'),
-      { publication, cleanup },
+      { publication, cleanup, ...(error?.continuityRollbackUnconfirmed ? { continuityRollbackUnconfirmed: true } : {}) },
     );
   }
 }
@@ -36161,6 +36228,7 @@ async function handleOpen() {
 }
 
 async function runAutoSave() {
+  if (projectArchiveOpenCapture) return lifecycleSaveFailure(currentLifecycleSubjectId(), 'PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
   if (!mainWindow) {
     return lifecycleSaveFailure(
       currentLifecycleSubjectId(),
@@ -36393,6 +36461,7 @@ async function prepareUserBookmarkBackup(filePath, snapshot) {
 let activeBackupPromise = null, treeBackupCaptureDepth = 0;
 const treeBackupSeeds = new Map();
 function createBackup() {
+  if (projectArchiveOpenCapture) return Promise.resolve({ success: false, code: 'E_PROJECT_ARCHIVE_OPEN_IN_PROGRESS' });
   if (activeBackupPromise) return activeBackupPromise;
   if (treeBackupCaptureDepth > 0) return Promise.resolve();
   const operation = runCreateBackup();
@@ -36507,6 +36576,7 @@ async function runCreateBackup() {
 }
 
 async function handleSave() {
+  if (projectArchiveOpenCapture) return projectSaveFailure('PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
   if (!mainWindow) {
     return projectSaveFailure('NO_ACTIVE_WINDOW');
   }
@@ -36514,7 +36584,7 @@ async function handleSave() {
   const saveSubjectId = currentLifecycleSubjectId();
   const saveTargetPath = currentFilePath;
   const saveSessionId = commentAuthoringSessionId, saveProjectRoot = getProjectRootPath();
-  const isCurrentSaveTarget = () => currentLifecycleSubjectId() === saveSubjectId
+  const isCurrentSaveTarget = () => !projectArchiveOpenCapture && currentLifecycleSubjectId() === saveSubjectId
     && commentAuthoringSessionId === saveSessionId && getProjectRootPath() === saveProjectRoot
     && currentFilePath === saveTargetPath;
   const staleSaveReceipt = () => ({ success: false, code: 'E_SAVE_AUTHORING_TARGET_STALE' });
@@ -36555,6 +36625,7 @@ async function handleSave() {
       'save existing project transaction'
     );
     if (saveResult.success) {
+      if (projectArchiveOpenCapture) return projectSaveFailure('PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
       if (textChanged && saveResult.projectTransaction !== true) {
         try {
           await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
@@ -36616,6 +36687,7 @@ async function handleSave() {
       'save new project transaction'
     );
     if (saveResult.success) {
+      if (projectArchiveOpenCapture) return projectSaveFailure('PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
       if (saveResult.projectTransaction !== true) {
         await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       }
@@ -36856,12 +36928,17 @@ async function handleTreeRecoveredCopySaveAs() {
 }
 
 async function handleSaveAs() {
+  if (projectArchiveOpenCapture) return false;
   if (treeEditorReplacementFence) return handleTreeRecoveredCopySaveAs();
   if (!mainWindow) {
     return false;
   }
 
   const saveSubjectId = currentLifecycleSubjectId();
+  const isCurrentSaveAsTarget = () => !projectArchiveOpenCapture && currentLifecycleSubjectId() === saveSubjectId;
+  const guardSaveAsTarget = () => {
+    if (!isCurrentSaveAsTarget()) throw Object.assign(Error('SAVE_AUTHORING_TARGET_STALE'), { code: 'E_SAVE_AUTHORING_TARGET_STALE' });
+  };
   let snapshot;
   try {
     snapshot = await requestEditorSnapshot();
@@ -36870,7 +36947,7 @@ async function handleSaveAs() {
     logDevError('handleSaveAs', error);
     return false;
   }
-  if (currentLifecycleSubjectId() !== saveSubjectId) return false;
+  if (!isCurrentSaveAsTarget()) return false;
   const content = snapshot.content;
 
   const wasUntitled = currentFilePath === null;
@@ -36892,23 +36969,27 @@ async function handleSaveAs() {
       updateStatus('Ошибка');
       return false;
     }
-    if (currentLifecycleSubjectId() !== saveSubjectId) return false;
+    if (!isCurrentSaveAsTarget()) return false;
 
     const saveResult = await queueDiskOperation(
-      () => commitWriterProjectSnapshot(
+      async () => {
+        if (!isCurrentSaveAsTarget()) return { success: false, code: 'E_SAVE_AUTHORING_TARGET_STALE' };
+        return commitWriterProjectSnapshot(
         filePath,
         content,
         snapshot.generation,
         snapshot.bookProfile,
         'save as project transaction',
-      ),
+        { beforeScenePublish: guardSaveAsTarget },
+      ); },
       'save as project transaction'
     );
     if (saveResult.success) {
+      if (!isCurrentSaveAsTarget()) return false;
       if (saveResult.projectTransaction !== true) {
         await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       }
-      if (currentLifecycleSubjectId() !== saveSubjectId) return false;
+      if (!isCurrentSaveAsTarget()) return false;
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
       await saveLastFile({ selectionRange: snapshot.selectionRange });
