@@ -20,7 +20,11 @@ npm run agent:bootstrap -- --objective "один конкретный резул
 ```
 
 Bootstrap не заменяет чтение: он разрешает active canon, фиксирует exact HEAD и
-выдаёт authority order. Для любой write-задачи затем обязательна архитектурная
+выдаёт authority order. Остальные документы порядка читаются полностью; только factual
+CONTEXT/HANDOFF читаются по §2B `docs/AGENT_START_PROTOCOL.md`: текущий блок,
+индекс и история затронутого контура с расширением при неопределённости.
+Scoped reads не заменяют P03 full-read claim, authority или проверки.
+Для любой write-задачи затем обязательна архитектурная
 декларация по `AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json` и проверка:
 
 ```bash
@@ -75,8 +79,8 @@ regenerate and revalidate before first write if the planned output changes.
 The bounded rollout and measured baseline are in
 `docs/tasks/2026-09-03--r24-process-corrections.md`. Historical completed
 receipts certify their own immutable commit/tree/artifacts; they never count
-as current candidate coverage. Full startup reads remain in force until the
-separate context-restoration protocol change is delivered.
+as current candidate coverage. The current startup reading policy is defined in
+AGENTS and the startup protocol; P03 full-read checkpoint claims remain strict.
 
 - Любая write-задача запускается только с явной `DELIVERY_POLICY`.
 - Канонический набор флагов: `COMMIT_REQUIRED`, `PUSH_REQUIRED`, `PR_REQUIRED`, `MERGE_REQUIRED`.

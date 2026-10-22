@@ -158,6 +158,50 @@ test('agent bootstrap emits exact-head context for an objective', async () => {
   assert.equal(result.packet.activeCanon.status, 'ACTIVE_CANON');
   assert.equal(result.packet.currentCorex, 'docs/corex/COREX.v2.md');
   assert.ok(result.packet.readingOrder.includes('docs/ARCHITECTURE_ONE_PAGE.md'));
+  assert.deepEqual(result.packet.factualContextReading, {
+    mode: 'CURRENT_AND_TASK_RELEVANT_HISTORY',
+    paths: ['docs/CONTEXT.md', 'docs/HANDOFF.md'],
+    protocolRef: 'docs/AGENT_START_PROTOCOL.md#2b-scoped-factual-history',
+    fullReadOnAmbiguity: true,
+    mutationAuthority: false,
+    checkpointFullReadClaimAllowed: false,
+  });
+  assert.ok(result.packet.readingOrder.includes('docs/CONTEXT.md'));
+  assert.ok(result.packet.readingOrder.includes('docs/HANDOFF.md'));
+});
+
+test('scoped factual reading rejects authority, cache claims and narrowing law even with a matching spec digest', async () => {
+  const guardrails = await loadGuardrails();
+  const crypto = require('node:crypto');
+  const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-scoped-history-'));
+  try {
+    const clone = spawnSync('git', ['clone', '--quiet', '--shared', REPO_ROOT, fixtureRoot], {encoding: 'utf8', timeout: 30000});
+    assert.equal(clone.status, 0, `${clone.stdout}\n${clone.stderr}`);
+    const statusPath = 'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_STATUS.json';
+    const specPath = 'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json';
+    const spec = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, specPath)));
+    const status = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, statusPath)));
+    for (const mutate of [
+      p => { p.mutationAuthority = true; },
+      p => { p.checkpointFullReadClaimAllowed = true; },
+      p => { p.fullReadOnAmbiguity = false; },
+      p => { p.paths.push('CANON.md'); },
+      p => { p.mode = 'SKIP_ALL_HISTORY'; },
+      p => { delete p.protocolRef; },
+      p => { p.extra = true; },
+    ]) {
+      const changed = structuredClone(spec);
+      mutate(changed.factualContextReading);
+      const bytes = JSON.stringify(changed, null, 2) + '\n';
+      fs.writeFileSync(path.join(fixtureRoot, specPath), bytes);
+      fs.writeFileSync(path.join(fixtureRoot, statusPath), JSON.stringify({...status, activeSpecSha256: crypto.createHash('sha256').update(bytes).digest('hex')}, null, 2) + '\n');
+      const result = guardrails.buildContextPacket({repoRoot: fixtureRoot, objective: 'Reject unsafe scoped-reading policy'});
+      assert.equal(result.ok, false);
+      assert.ok(result.errors.some(e => e.code === 'E_AGENT_FACTUAL_READ_POLICY_DRIFT'), JSON.stringify(result.errors));
+    }
+  } finally {
+    fs.rmSync(fixtureRoot, {recursive: true, force: true});
+  }
 });
 
 test('task architecture preflight accepts a complete bounded declaration', async () => {

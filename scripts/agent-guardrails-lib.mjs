@@ -363,6 +363,17 @@ export function validateRepositoryGuardrails(options = {}) {
         || bootstrapSpec.documentStatus !== 'ACTIVE_BOOTSTRAP_FOR_ANY_AGENT') {
         errors.push(fail('E_AGENT_BOOTSTRAP_SPEC_DRIFT', 'Active bootstrap spec identity/status is invalid'));
       }
+      const factual = bootstrapSpec.factualContextReading;
+      if (!isPlainObject(factual)
+        || Object.keys(factual).sort().join(',') !== 'checkpointFullReadClaimAllowed,fullReadOnAmbiguity,mode,mutationAuthority,paths,protocolRef'
+        || factual.mode !== 'CURRENT_AND_TASK_RELEVANT_HISTORY'
+        || JSON.stringify(factual.paths) !== JSON.stringify(['docs/CONTEXT.md', 'docs/HANDOFF.md'])
+        || factual.protocolRef !== 'docs/AGENT_START_PROTOCOL.md#2b-scoped-factual-history'
+        || factual.fullReadOnAmbiguity !== true
+        || factual.mutationAuthority !== false
+        || factual.checkpointFullReadClaimAllowed !== false) {
+        errors.push(fail('E_AGENT_FACTUAL_READ_POLICY_DRIFT', 'Only scoped factual history is allowed; law reads, authority and full-read checkpoint claims stay strict'));
+      }
       if (bootstrapSpec.repositoryNativeContext?.architectureManifestSha256 !== sha256File(repoRoot, ARCHITECTURE_MANIFEST_PATH)) {
         errors.push(fail('E_AGENT_BOOTSTRAP_SPEC_DRIFT', 'Architecture manifest digest does not match active bootstrap spec'));
       }
@@ -432,6 +443,7 @@ export function validateRepositoryGuardrails(options = {}) {
       bootstrapSpecPath: bootstrapStatus?.activeSpecPath || null,
       bootstrapSpecId: bootstrapSpec?.documentId || null,
       policyVersion: policy?.policyVersion || null,
+      factualContextReading: bootstrapSpec?.factualContextReading || null,
     },
   };
 }
@@ -476,6 +488,7 @@ export function buildContextPacket(options = {}) {
       currentCorex: CURRENT_COREX_PATH,
       architectureManifest: ARCHITECTURE_MANIFEST_PATH,
       readingOrder,
+      factualContextReading: validation.details.factualContextReading,
       requiredPreflight: {
         template: 'docs/templates/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.json',
         schema: 'docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json',

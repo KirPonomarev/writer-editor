@@ -1,3 +1,20 @@
+# Scoped factual context — 2026-10-22
+
+TASK_ID: YALKEN_AGENT_SCOPED_CONTEXT_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CANDIDATE_SCOPED_STARTUP_DELIVERY_PENDING
+BINDING_BASE_SHA: 6e03a13c088fde150d5a95a6c5a7dd3aac09feb5
+CLAIM_BOUNDARY: Agent startup only; no product/release qualification
+
+The preceding CI-only PR2139 is delivered at this binding base. This candidate
+retains every ordered source and all normative reads. Only CONTEXT/HANDOFF use
+current status plus complete task-relevant history, with broader reading up to
+whole files on uncertainty. Historical bytes remain intact. Scoped reading never
+creates authority or a P03 full-read claim. The existing checkpoint protocol and
+all declaration validation remain byte-exact. Startup and P03 compatibility contracts pass34of34;
+full official CI, protected merge and exact merged proof remain required.
+The next product task remains macOS MR06, after this separate delivery closes.
+
 # Single complete post-build RTK — 2026-10-22
 
 TASK_ID: YALKEN_CI_SINGLE_RTK_20261022

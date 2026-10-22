@@ -36,17 +36,22 @@ npm run agent:bootstrap -- --objective "краткая цель задачи"
 Команда read-only. Если она завершается ошибкой, работа останавливается с её
 fail-signal. Нельзя обходить bootstrap ручным выбором старого канона.
 
-После bootstrap прочитать в указанном им порядке:
+После bootstrap пройти указанный ниже порядок. Он сохраняет полный authority
+denominator. Все остальные документы списка читаются полностью; только для factual
+`CONTEXT.md` и `HANDOFF.md` действует scoped-политика §2B startup protocol:
+текущая сводка, индекс разделов и полные относящиеся к задаче фрагменты истории.
+При пробеле или противоречии чтение расширяется вплоть до полного файла.
 
-Список ниже остаётся полным authority denominator. После поставки P03,
-при восстановлении уже прочитанного контекста той же задачи, допускается
-`VALIDATED_CONTEXT_CACHE` по `docs/AGENT_START_PROTOCOL.md`, раздел 2A.
-Всегда заново читать этот AGENTS.md, CANON_STATUS и сам startup protocol;
-bootstrap заново проверяет HEAD, canon/source bytes и отдельно закреплённые
-текущие admission/lease. Checkpoint не создаёт authority и не заменяет
-preflight, native StageAdmission, свежую remote-проверку или required gates.
-Без валидного checkpoint, при новом scope или любом invalidation — полный
-порядок чтения. До terminal delivery P03 действует прежний полный протокол.
+До terminal delivery P03 действует прежний полный протокол.
+
+После поставки P03 восстановление уже полностью прочитанного контекста той же
+задачи допускает `VALIDATED_CONTEXT_CACHE` по §2A. Всегда заново читать этот
+AGENTS.md, CANON_STATUS и startup protocol. Bootstrap восстанавливает exact
+Git/canon identities; текущие admission/lease, preflight, remote и required gates остаются
+обязательными. Scoped-чтение не даёт права заявить полное чтение или создать
+P03 checkpoint с full-read claim. Без валидного checkpoint новая задача
+проходит основной порядок ниже; протокол P03 и его fail-closed fallback не
+ослабляются.
 
 1. `docs/OPS/STATUS/CANON_STATUS.json`.
 2. Документ из `canonicalDocPath` resolver-а.

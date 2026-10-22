@@ -13391,6 +13391,256 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Owner-authorized first process delivery: one complete actual post-build RTK and every unchanged original additional check; fail-closed old required context and protected merge. Preserve all product bytes, graph/catalog membership, historical tuples/approval history and negative predicates. Current720admitted572sourcePins228certificateBindingsplus1guard; every229individual corruption remains required. No macOS readiness, programDone or product authority.",
       "sha256": "b5877080d49c5fab1cd34327811d2538faabaea1674b4a3e5f4063fd0fe83650"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "37cf60fd460dffda3f92a17cbd82e6f721510f2e3f8da9a723b7527a44355f89"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "c33c92b34be1fc31340981fde5f803bcb41c895577e68f490d3c68329a376955"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "AGENTS.md",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "3b841a744e4067293d7c55f47f58d639e1e8e3201cd8c971857d84a1a67bc8f0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/AGENT_START_PROTOCOL.md",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "3a86699d6320666c84ec1316e2e51cf78f843893759ba2d1b3eb98a9c5ee1b4f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/PROCESS.md",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "0cd4601aa777296caf5c76509541f665263f29b8c61260ad494208eed461ea13"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "54bfb9d25026d4692b3ad611e809eda4f92b03ba2df9f9628624bd5691973f75"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_STATUS.json",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "0ed3662528b9d2a5f435681208f5ad0f8e34085f2a1fa6a3ba056b7a0be43658"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/agent-guardrails-lib.mjs",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "963268c34013dfecb9a22f1b215e8ffdd2bd69a6ec74124f4adf90444a93d5a1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/agent-bootstrap.mjs",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "fb262985be51181c9c9d1b7e20e1e78d832f76281e156f096d2814d7940b71c8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/architecture/AGENT_CONTEXT_PACKET_V1.schema.json",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "9df153859a96e92f372f4f7730d77c89e25301f7c5eacbbd67ef1d8132764e0b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/agent-architecture-guardrails.contract.test.js",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "f1fc96736335b142ec80c536d7cec4a1007e4b6ba56abf1cb8a63b8e518c962f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/agent-context-restoration.contract.test.mjs",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "043be16d9452ab4573a016723f5c579196780b96e7cb4924b92087ab252c0066"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--agent-scoped-context.md",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "758118a58a0fc10f4b17f97bad099367967d6671ed7f0bcfc578e955581ff2ee"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "43802b1be2f7c3ab18845c6aa6f1b5e997462a0d51121584a8b33de90e8d6941"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "a36897d755614ed30e7e95ad4dcba40327f805ec885b1e6a65791295bfeadefb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "b07e9366fec8248fc03c16cc30f58f91df1687af9de60c76a201afb6bc26268b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-21T23:51:15.324843+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-authorized second process delivery: full normative reads retained, scoped factual history only; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "4fb133c34d7e2ac8730c0066b3720df48a112506510a7f7fa65d3a8a74383601"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "b1161bca4f2a146ebf798a50fe68755439483865061e971689c7dcc04114495c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "e9c04c48354357b5c14d21bd7de50e24fef30a7d247630282f8fd415623fd2a6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "AGENTS.md",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "af4fdeb93def4476134c376ba8c3679f76d0837d895478628841b91a35cd37da"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--agent-scoped-context.md",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "79bb05db5510a9986ba0065b57078fb18f91ce45c4c4d2f92ff17e827718084b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "b13101b8ed7850fe0aa4a9c24bd37e351ce496350030eeb4c1a6ac5634fa90e5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "d4eba55a979f3e5bd7a01645db0d5a7786cb171df5c77d1a39632a0c4972d4c5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "8dfbceeb0a3d2860136c557ae0511588bfb62715a1b8c576ddf97d4f4725851a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T00:02:32.373877+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_AGENT_SCOPED_CONTEXT_20261022_P03_ACTIVATION_GUARD",
+      "authority": "DIRECT_OWNER_SCOPED_CONTEXT_P03_COMPATIBILITY_REPAIR_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-authorized startup contour: restore the original P03 preterminal full-protocol guard and cover the unchanged legacy compatibility oracle; scoped postterminal factual reads retained; source/code/evidence, writer control, preflight, admission, lease and full-read checkpoint semantics stay mandatory. Preserve product/workflow bytes, all old tuples, predicates and approvals. Current730admitted583sourcePins238certificateBindingsplus1guard; every239individual corruption remains required. No product capability or release-readiness claim.",
+      "sha256": "78a505060b72d7b649af0bf5c17dbd678aecebf3a1c818387edf88678f2213b0"
     }
   ],
   "evidenceStampIds": [

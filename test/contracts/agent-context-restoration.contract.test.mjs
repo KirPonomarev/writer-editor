@@ -11,7 +11,7 @@ import {ALWAYS_READ, READ_CLAIM, contextSourcePaths, createHandoffCheckpoint, re
 const root = process.cwd(), hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const raw = value => Buffer.from(JSON.stringify(value, null, 2) + '\n');
 const BASE = '87de5fdf38a03b25de5736664ce3df30eac8314d';
-const files = ['AGENTS.md', 'docs/AGENT_START_PROTOCOL.md', 'docs/PROCESS.md', 'docs/HANDOFF.md', 'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json', 'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_STATUS.json', 'docs/architecture/AGENT_CONTEXT_PACKET_V1.schema.json', 'docs/architecture/AGENT_HANDOFF_CHECKPOINT_V1.schema.json', 'scripts/agent-bootstrap.mjs', 'scripts/agent-context-restoration.mjs', 'scripts/brain.mjs'];
+const files = ['scripts/agent-guardrails-lib.mjs', 'AGENTS.md', 'docs/AGENT_START_PROTOCOL.md', 'docs/PROCESS.md', 'docs/HANDOFF.md', 'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json', 'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_STATUS.json', 'docs/architecture/AGENT_CONTEXT_PACKET_V1.schema.json', 'docs/architecture/AGENT_HANDOFF_CHECKPOINT_V1.schema.json', 'scripts/agent-bootstrap.mjs', 'scripts/agent-context-restoration.mjs', 'scripts/brain.mjs'];
 function fixture(t) {
   const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'p03-context-'))), repo = path.join(temp, 'repo'), data = path.join(temp, 'data');
   t.after(() => fs.rmSync(temp, {recursive: true, force: true}));

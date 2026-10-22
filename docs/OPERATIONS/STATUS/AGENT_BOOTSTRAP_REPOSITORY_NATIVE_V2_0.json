@@ -173,5 +173,16 @@
     "mutationAuthority": false,
     "completionEvidence": false,
     "curatedHandoffOverwriteAllowed": false
+  },
+  "factualContextReading": {
+    "mode": "CURRENT_AND_TASK_RELEVANT_HISTORY",
+    "paths": [
+      "docs/CONTEXT.md",
+      "docs/HANDOFF.md"
+    ],
+    "protocolRef": "docs/AGENT_START_PROTOCOL.md#2b-scoped-factual-history",
+    "fullReadOnAmbiguity": true,
+    "mutationAuthority": false,
+    "checkpointFullReadClaimAllowed": false
   }
 }
