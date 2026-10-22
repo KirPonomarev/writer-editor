@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_ATLAS_ASYNC_PUBLICATION_20261022
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 9095f1d17d5c8d5cca3dfeaca55fd58bb7e89bfc
-HEAD_SHA_AT_START: 9095f1d17d5c8d5cca3dfeaca55fd58bb7e89bfc
+BINDING_BASE_SHA: 2b99f40394eca2077690d047a16f73b388d74e40
+HEAD_SHA_AT_START: 2b99f40394eca2077690d047a16f73b388d74e40
 ORIGINAL_DELIVERY_BASE_SHA: b113069233521b4b1288d7e9ca3849aa03e4cf27
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-atlas-async-publication-20261022
@@ -45,7 +45,7 @@ Five delegated files: editor.js, normal generated editor.bundle.js, existing R2 
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/sector-m-scope-map.json
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
-- test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js
+- test/contracts/rtk-word-list-pattern-renderer.contract.test.js
 
 ## DENYLIST
 
@@ -53,7 +53,11 @@ Everything outside the exact allowlist. No Main/Core/preload/IPC/command policy/
 
 ## CONTRACT / SHAPES
 
-Current clean checkpoint amendment: 9095f1d17 contains the reviewed five-file source correction and current companion bindings; it is not delivery acceptance. All five runtime/behavior files named above are now frozen and forbidden to edit. The only newly delegated write is the existing ER C02 registry parity contract: replace its three retired preload assertions with exact current tree/library and generic createEnvelope plus withTimeoutBudget/invoke contracts, at most16 added+deleted lines, all4 cases and every other assertion preserved. Root independently reproduced the same3 of4 result on clean b113. Root may update only this task, factual prefixes, exact current hashes, successor identity/count and append this required ER path to current DATA/source/certificate/DONE memberships. No preload/runtime change, coverage exclusion, skip, predicate weakening or gate waiver. The original runtime budget and implementation below describe the completed frozen source checkpoint, not renewed edit authority. Complete branch denominator is original18 plus ER; current amendment write denominator is14.
+Current clean checkpoint amendment03: exact2b99 draftPR2146 official RTK run39837760346 executed4414 tests,4413 pass and one missing-helper ReferenceError in the maintained active-scene VM. Root whole unchanged list-pattern file independently executed29of30 with the same error. Raw failures remain; this is fixture omission, not causal runtime RED. Clean2b99 declaration/preflight passed before this task edit. The separate code agent may change only the existing active-scene test in rtk-word-list-pattern-renderer.contract.test.js, at most30 added+deleted lines: extract actual production invalidateAtlasPublications and epoch declaration; execute them alongside the unchanged incoming body; assert increment for accepted scene/project/same/tree and no change for failed publication. All30 tests, five scenarios, prior assertions and every unrelated byte stay exact. No no-op replacement, model or runtime edit.
+
+All application/runtime/bundle and prior R2, metadata, pathless and ER contract sources are frozen at2b99. Root updates this task, factual prefixes and exact current pins; DATA748/source601 memberships stay exact. Append only this already-required list contract to successor certificate and DONE, deriving actual counts. Inventory1603 membership/classification/lane/skips and historical certificates/verifier predicates remain exact. Same PR and original b113 rollback; complete branch denominator20 and this amendment14. Prior2b99 native/source/baseline evidence remains historical on that identity; new candidate source/affected41/build/native/baseline/official CI/fullRTK and fresh merged checks are required. No new full-Mac contour opens.
+
+Historical amendment02 at9095 repaired three retired ER preload assertions; whole4ER and14withpreload passed, and its current bytes are now protected. Earlier budgets below describe frozen implementation, not renewed write authority.
 
 Integration mode: EXISTING_SEAM. This corrects existing publication ownership, not product meaning or UI design. The current draft is authoring working state; it is not disposable shell state. Successful A remains a real canonical effect even if its UI has been superseded. Current failures remain visible. Error display in dispatch must be guarded before it touches status, not after the caller regains control. Child refreshes must consume the same ownership and independently validate query order/context. Preserve the normal refresh set and direct-query behavior.
 
@@ -148,7 +152,7 @@ Internal references: brain:refs executed read-only; current R2 C02 source/contra
 ## IMPLEMENTATION_STEPS
 
 CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
-Current amendment: fresh clean9095 bootstrap/preflight passed before this task edit. Read the unchanged envelope source and baseline failure; separate agent repairs only three ER contracts; root preserves frozen five-file source, updates current companions, then reruns whole40 and all delivery gates.
+Current amendment03: clean2b99 bootstrap/preflight precede this edit; taskE0 precedes delegated test repair. Whole30 list contract and prior40 affected files form41 complete files. Root reviews preservation and all exact companion bindings; new candidate gates, native, baseline, official CI and merged verification remain required.
 1. Original clean b113 preflight admitted the task-only checkpoint5c0ee35c4. Expanded clean checkpoint preflight admits the finite existing lifecycle/fanout and two fixture wiring paths before first runtime/test edit; original failure and receipts retained. Root clean exact-base bootstrap, ordered reads, current scope/source/authority checks, declaration/preflight before first repo edit; task E0 before separate code agent.
 2. Agent builds minimal unchanged-runtime RED. Freeze failure/source identities. Only after causal failure, surgical ownership correction and preserved whole R2 acceptance. Report any fixture-method failures separately.
 3. Root independently reviews source diff, preservation, schedules and affected-chain selection. Normal bundle and exact current binding companions; commit semantic checkpoint after verification, not full acceptance.

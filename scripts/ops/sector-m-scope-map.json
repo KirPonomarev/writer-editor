@@ -434,7 +434,8 @@
       "test/unit/sector-m-preload-ui-command-bridge.test.js",
       "docs/tasks/2026-10-22--mac-atlas-async-publication.md",
       "test/unit/project-tree-pathless-contract.test.js",
-      "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js"
+      "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
+      "test/contracts/rtk-word-list-pattern-renderer.contract.test.js"
     ]
   },
   "allowPrefixByPhase": {

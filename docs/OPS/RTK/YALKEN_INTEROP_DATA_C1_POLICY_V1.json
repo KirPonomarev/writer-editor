@@ -1720,7 +1720,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "4b80b495904988b98a15bd77e914228ccf82401c961669fd022a99f83dd46e2c"
+        "sha256": "4589ab8e5ccfd3290202a2783aaab62e4886c3b73ee4a0010bf71c61d405e402"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2580,7 +2580,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "06b7e2729c300106ccc26177de5be85e78563cfc368bf1a5fe777444b2bfadf5"
+        "sha256": "7df2331aa0c1a54806a5b512699b08f45bbcde71dc33aef3dc537a02fb53c407"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
@@ -2676,15 +2676,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5792eebf47ea5496471751e93cb9e0a8c9c9a77851b404b20d93b3ddae6cccf5"
+        "sha256": "d519fab80efc12f92d7658b8762d9801aca46e015025486670235f73a885b1ce"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "078c180a2cd43bcb0f096bd868d4ec87f548ae6c1fa99e7ca1bb7ea790871f95"
+        "sha256": "36f66cce571b626bd7c099e0a37516fdb29020faa35e341b2bb69375f2901f44"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f295dcd920ac69567186f5e0bad3f5ad19ec2f4bc66a5107382a778cd73bc7af"
+        "sha256": "b841c08a6eff3fc5051e54fee08d69a416d15e29a10a6d789898968a95b3e4f3"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3224,7 +3224,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "3f5301f8371cbca732934b1d13aa13ce16009db130b0a2c908b9317981cbd562"
+        "sha256": "a318b8b12e03c0716c7e2dc7ff2155dfef2785aac15fc6d0dfc05844468e038b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3356,7 +3356,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "daf4df07896236d74cac402366a57ef1f0295a2d1803f586e859c8d4cc7b5b04"
+        "sha256": "95ecfc3cfe89f59d25165902744961ce33074e41425967311c2669906cb5109c"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3380,7 +3380,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-atlas-async-publication.md",
-        "sha256": "66481a8bd907fca372c1ee9c272d161600012cdb56482548342e384287d1a12d"
+        "sha256": "ec9394925e779d6386f7856d74cf4f70ff4e96f6b66643069559031a1043ae8d"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
