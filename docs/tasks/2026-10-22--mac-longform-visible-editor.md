@@ -11,6 +11,7 @@ BINDING_BASE_SHA: 25e6247541f0fe4ce36aa96c08b05bc89aa4f6ee
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_VERIFICATION_REQUIRED=true
 DESIGN_TOOL_ROUTER: existing form unchanged; exact router value is in the validated architecture declaration
 CLAIM_BOUNDARY: Editor geometry correctness only; numerical workload and first Mac qualification remain open.
+SAME_CONTOUR_AMENDMENT_BASE_SHA: 5b3908e60a32ec97670ec4e2c0c8498a49e4068e
 
 ## MICRO_GOAL
 
@@ -23,6 +24,36 @@ The owner authorizes necessary Writer correctness/accessibility corrections with
 ## ARTIFACT
 
 Bounded runtime geometry guard and continuous fallback latch, minimal existing CSS extension and appended maintained regressions. Separate executor owns the five source/test files; root owns this task, factual/OPS companions, generated bundle, independent proof and delivery. Manual runtime/CSS/helper added-plus-deleted budget450lines; two maintained test files budget450lines; generated bundle excluded. Preserve original tests and predicates. External reports use the dated mac-longform-visible-editor T777 folder; full native artifacts/profiles remain preserved separately.
+
+### Same open PR2142 — complete table/media contract dependencies
+
+Official exact5b RTK executed4414cases:4412passed and two failed. Root reproduced
+both complete contract files:14of16passed, with ReferenceError for the actual
+isCentralSheetStripContinuousFallbackCurrent dependency omitted by their partial
+VM fixtures. This is a test dependency failure; no further runtime defect is
+established. The original six runtime/unit/bundle paths stay byte-exact5b.
+
+Fresh clean5b bootstrap and amendment declaration/preflight passed before this
+amendment edit. The original binding base25e and one rollback/delivery chain stay
+unchanged. CHECK_01 for this amendment precedes its edits; do not rerun PRE after
+admitted writes. Separate executor may change only the two existing media/table
+contract files, within250added-plus-deleted lines. Preserve all16names and all
+original assertions plus the other14case bodies byte-exact. Extract the actual
+identity/current-latch/extent/refresh dependency closure, supply stable finite
+DOM read ports, and consume actual extent validation. Fitting media/table removal
+must still return true; clipped extent must refuse and a same-identity repeated
+refresh must not apply again. No constant predicate, positive geometry stub,
+skip/todo, weakened assertion or production source change is allowed.
+
+Root repeats the complete16case contracts and76case affected chain, then the
+required gates and qualified baseline on the final source. Normal inventory and
+C2A generation retain1603members/classes; DATA keeps735paths/588pins. Append a
+complete245binding successor plus the unchanged guard and exact-path approvals,
+preserving every historical tuple/predicate. Append a normal commit to this PR;
+all official exact-new-head CI and fresh merged/native proof remain mandatory.
+Old5b native observations keep their source/artifact identities and never grant
+numerical workload, full IME or release acceptance. Total PR scope is20paths;
+the amendment writes14paths and freezes the original six application/unit paths.
 
 ## ALLOWLIST
 
@@ -44,6 +75,8 @@ Bounded runtime geometry guard and continuous fallback latch, minimal existing C
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
+- test/contracts/rtk-word-media-editor.contract.test.js
+- test/contracts/rtk-word-table-editor.contract.test.js
 
 ## DENYLIST
 

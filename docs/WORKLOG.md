@@ -1,3 +1,23 @@
+# 2026-10-22 — Longform PR2142 faithful contract amendment
+
+TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 5b3908e60a32ec97670ec4e2c0c8498a49e4068e
+CLAIM_BOUNDARY: Same editor correction; no workload, full IME or Mac release acceptance.
+
+Official full RTK4412of4414 and root14of16 isolated two omitted VM dependencies.
+Separate executor repaired only the two maintained media/table fixtures with real
+source functions, finite stable rectangles and clipping/current-latch negatives.
+Root independently passed16of16contracts and76of76affected cases, no exclusions.
+All original assertions/names, other14case bodies and six application/unit/bundle
+files remain exact. Manual delta72of250lines; total PR20paths, amendment14.
+Normal inventory/C2A, DATA735/588, complete245binding successor/guard and append-only
+approval companions retain historical predicates/classifications. New final-source
+baseline/gates, normal additional commit/push/official CI/merge/merged native proof
+are pending. Old5b native500keys, exact1350suffix save/reopen and short/empty/deadkey
+observations remain separately bound; full numerical/IME envelope remains open.
+
 ## 2026-10-22 — Reachable longform editor correction
 
 Actual merged25e native end navigation confirmed canonical text beyond the clip.

@@ -1475,7 +1475,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media-editor.contract.test.js",
-        "sha256": "9040de413fb1961f2a027bacca7f501bf61b746bcb846ec256922c1fa2a56113"
+        "sha256": "92d1839c1b27a2abe5ef9feac3ade0ee204bbeed3a96428e594e63109f1ee1d4"
       },
       {
         "path": "docs/tasks/2026-09-25--word-media-text-offset.md",
@@ -1507,7 +1507,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
-        "sha256": "f9ace3bbddda4b178ef26d41c6f7a478428208ef958ebbb38c9855dc7f692714"
+        "sha256": "0a705c7739a4fb1a8e2aa96aaab988a9262c735f617c10a411fc2894f32844b7"
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
@@ -1707,7 +1707,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "4d042f4f6c88cc512e8e8efd097e76bbbbccee7d3648d777e808b123250f0350"
+        "sha256": "02dbcfdb3e591587689a11fb59d20d16ba78100fa9dbfd5d005266148ec97c86"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2663,15 +2663,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3e335727861a6e959bb9f78524e99652ae1b6521c7774abe58306352050150d3"
+        "sha256": "9c37e02cb69750546cb5b0656988ef7d58ebd938e4a5b9eec697deeb5858607a"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5cb628d34fa512878b75ef56a8edeb13289a6aae0ba8375e76379a09c2a48338"
+        "sha256": "0b228af170f1d22acb01fb6cf85f55e1c73c0cccae1d009b20fb92253f85e6b1"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "23f30d6a526bd2d01273328a50cbc9d9c178b7018ac2e432650f78a150c918d0"
+        "sha256": "f0e5f1ab03b03e1adf382ecd122f03837dc4118e1eff68f39d9b6912efe996ea"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3211,7 +3211,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "7ae60dc0babc2fa077288fc878eb72a3fe9bf944569cfa56b82d25679fe3f076"
+        "sha256": "c982128c6fddccc2e21afb11e53fe073c5f5ba7dae12cf31a266dedbdaa457e6"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3319,7 +3319,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--mac-longform-visible-editor.md",
-        "sha256": "f3ac6575196ea2ab4401c9ff2ed9342b04ec2b84ca18a316e9a9064d5fcd751f"
+        "sha256": "b49e583450c7e00f760d26e0a35ce272ecfc72672458522a5634cf5b49303423"
       }
     ],
     "followupRepair": {

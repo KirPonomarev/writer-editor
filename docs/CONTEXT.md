@@ -1,3 +1,52 @@
+# Longform editor — same PR contract closure — 2026-10-22
+
+TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: AMENDMENT_COMPONENT_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 5b3908e60a32ec97670ec4e2c0c8498a49e4068e
+CLAIM_BOUNDARY: Same open PR2142; finite editor/test proof, no numerical workload or first Mac acceptance.
+
+The actual unsigned5b app retained all800paragraphs and exposed the terminal caret
+inside the viewport after native end navigation. All500additional native keys
+were observed and independently matched exact saved/reopened1350symbol suffix.
+Native Undo/Redo/save and cold reopen retained the expected text. Complete closed
+profiles and raw timing/resource populations remain labelled5b and its ASAR;
+timing observations do not accept a numerical envelope. Short54character and
+empty scenes retain fitting pagination. Native ABC deadkey produced exact e-acute,
+with Undo/Redo/save and cold reopen; compositionend trust remains UNKNOWN after
+two distinct controls. No full IME qualification follows.
+
+Official exact5b CI executed the complete4414case RTK graph:4412passed, two
+failed with ReferenceError. Root reproduced both entire table/media contract
+files14of16. Their isolated VM omitted the new actual current-fallback dependency;
+this did not establish a new production defect. Dependent RTK/merge/OSS aggregate
+jobs failed honestly; the separate OSS core job succeeded. No failed job is waived.
+
+A fresh clean5b amendment declaration/preflight admitted only those two existing
+contract fixtures and required factual/mechanical companions in this same chain.
+Stable finite PM/clip/terminal ports now feed the actual source-extracted identity,
+latch, extent, transition and refresh functions. The counted existing rendering
+port consumes the real extent verdict. Clipped geometry must refuse; repeated
+current-identity refresh must not apply again. All original16names/assertions and
+the other14case bodies remain; the original six application/unit/bundle files are
+byte-exact5b. Both executor and root executed complete16of16contracts and76of76
+related cases with zero failure/cancel/skip/todo. The amendment is72manual lines.
+
+Normal inventory/C2A generation retains1603members/classes/skip policy. DATA keeps
+735paths/588source pins; a complete245binding successor plus the unchanged guard
+and append-only exact-path approvals preserve historical tuples and predicates.
+The full old5b baseline process passed2355of2414unit cases with59unchanged
+sanctioned skips, plus3of3OPS and20of20contracts. Its six newly generated synthetic
+harness files were independently preserved and isolated on the same device.
+New final-source baseline, full corruption/gate proof and all official checks
+on the additional normal commit remain required; old results are not relabelled.
+
+This PR still requires normal merge, fresh exact merged verification and actual
+rebuilt merged native repeat. Total scope is20paths; amendment writes14 and freezes
+six. No source/dependency/UI/security/release-scope expansion, signing/notary,
+publication permit, numerical workload or first supported Mac readiness is claimed.
+Continue the owner-authorized release work after this delivery closes.
+
 # Reachable canonical longform editor — 2026-10-22
 
 TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022
