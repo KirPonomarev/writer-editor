@@ -742,7 +742,8 @@
     "src/renderer/centralSheetStripProofDecision.js",
     "test/unit/central-sheet-strip-proof-decision.test.js",
     "test/unit/central-sheet-strip-proof.test.js",
-    "docs/tasks/2026-10-22--mac-longform-visible-editor.md"
+    "docs/tasks/2026-10-22--mac-longform-visible-editor.md",
+    "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md"
   ],
   "protectedFiles": [
     {
@@ -971,7 +972,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ab3babb81fc04432b475f1383bc8adf53da11c800f07930217dfed097a6e1046"
+        "sha256": "ca09b35152547c7259821a1a2dffd037fc6c66942cbed40df47b899398c6de90"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1623,7 +1624,7 @@
       },
       {
         "path": "test/unit/sector-m-preload-ui-command-bridge.test.js",
-        "sha256": "c9f890e80c5ea65010571b36cfff11b908ac8224a1111723d8e2d3c402dd475c"
+        "sha256": "55ec66499f1667d1c05587750e303ca32708442b3d8799b92d4ff8a08260a9c7"
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
@@ -1707,7 +1708,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "02dbcfdb3e591587689a11fb59d20d16ba78100fa9dbfd5d005266148ec97c86"
+        "sha256": "94fca2cec2629a392bfb1c3b0479d2a9e2277f2205589a4e3d2678fc92b31436"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1975,7 +1976,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "10a0477469930a4d5a26a345c4f6183fdcb115c4cf396fa57f1a2eba01870bb7"
+        "sha256": "922caf08f8188d484da7fd87e8d1f08a9aef11d6a2260e68fc1d3c951c5426cd"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -2159,7 +2160,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "c6d9e3d0cd0cb3498d2c251b43dac462039ef7f402329dddb6389098d374bbfb"
+        "sha256": "192c59f8b173a264bd6e46f02d9779c7b0cc11a6e6605e21df61f59bf2abb1b8"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2663,15 +2664,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9c37e02cb69750546cb5b0656988ef7d58ebd938e4a5b9eec697deeb5858607a"
+        "sha256": "52b587d299c58f126545a0495fda23ee2e553c37c9a4dd6c1f9d9220bf205e2e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0b228af170f1d22acb01fb6cf85f55e1c73c0cccae1d009b20fb92253f85e6b1"
+        "sha256": "47c6f412320438f2b75dd2bd597c8f49f03e66566795e0274aec86796d090263"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f0e5f1ab03b03e1adf382ecd122f03837dc4118e1eff68f39d9b6912efe996ea"
+        "sha256": "265b6fe98f161884fea12f0a3fa0894055558b8d3e92a1d360178a9ee1b5f3c0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2931,7 +2932,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "0ff5da02d22ea29eca9b481f526e2484f517939cf064616f2be3660d31ff38f4"
+        "sha256": "9be52467e9fbc2f2ba1a418ea47ac36d8ab6c1672731b287d4bd458e107debd7"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -3171,7 +3172,7 @@
       },
       {
         "path": "src/export/archive/projectArchiveExportHandler.js",
-        "sha256": "ab7144381d04b0351f85e5a9f0379f1c01f47a8cc0b41f4a09ecfb6cf23ae586"
+        "sha256": "a5a302fc6242913acece3ed2fdff171bbbc5b50fbed804c70209d9b63ee4fe44"
       },
       {
         "path": "src/main/projectArchiveDarwinPublication.cjs",
@@ -3183,7 +3184,7 @@
       },
       {
         "path": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
-        "sha256": "2abc6f92b173d80b69757de6b23da95a6f44c215f6e19eec88b63da91ec4cdd5"
+        "sha256": "1c4e16183744b8ea9c20780ad68a2c0634fa700cdee4f725c65fadcafc21aedb"
       },
       {
         "path": "test/unit/macos-package-network-policy.test.js",
@@ -3191,7 +3192,7 @@
       },
       {
         "path": "test/unit/project-archive-correctness.test.js",
-        "sha256": "5abbb28d77790f818f2ff4795b2b61a05b4f214fbef8316c8544690500725341"
+        "sha256": "8c43387217aa0c3c33d7cc77402502a1104dda908e618dd86e94d8074d0ff84f"
       },
       {
         "path": "test/unit/project-archive-darwin-publication.test.js",
@@ -3199,11 +3200,11 @@
       },
       {
         "path": "test/unit/project-archive-export-handler.test.js",
-        "sha256": "1d4eb354d214cdb0e360f0577ad4b718f7ad5af0a18e4d64bc79e1d02b59d758"
+        "sha256": "9aaca2dace7dfcd374c2c2519896d7a70b4a4f028c4d724da1685e63a926f9a8"
       },
       {
         "path": "test/unit/sector-m-s33-full-archive-import.test.js",
-        "sha256": "ff8c6af77d77dffd88c2344f3a6c5924d0d350c1b1fc210250883249c716eb21"
+        "sha256": "c9beab32d88ecebb1d1d06ce2dd846cfecbb8a323e9cd3346507bddc95a18b9e"
       },
       {
         "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -3211,11 +3212,11 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c982128c6fddccc2e21afb11e53fe073c5f5ba7dae12cf31a266dedbdaa457e6"
+        "sha256": "ee223f1413e195f7f7c0a2c6294ee41c94e8d25b75631a23bbba848627ea917d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
-        "sha256": "3ad56b5496e078da5964f51e1992b3f4ddbe19ea969f72cbc6988c71cb768f26"
+        "sha256": "149e53c43584d0dc649605360547f505b1fdcb1c4a9b938b2bb2d98152e5b866"
       },
       {
         "path": "src/core/minimum-interchange-v1.cjs",
@@ -3320,6 +3321,10 @@
       {
         "path": "docs/tasks/2026-10-22--mac-longform-visible-editor.md",
         "sha256": "b49e583450c7e00f760d26e0a35ce272ecfc72672458522a5634cf5b49303423"
+      },
+      {
+        "path": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
+        "sha256": "c85ed97826071353a58cecbc4ae5ffcc29464912f21ffc135e4632c740f7bc8b"
       }
     ],
     "followupRepair": {

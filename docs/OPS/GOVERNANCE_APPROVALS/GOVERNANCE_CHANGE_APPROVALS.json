@@ -14061,6 +14061,456 @@
       "filePath": "test/contracts/rtk-word-table-editor.contract.test.js",
       "rationale": "Same open PR2142: faithful complete VM dependency closure for existing media/table regressions, finite actual extent and latch counterexamples; original six application/unit/bundle files frozen. Exact maintained/factual/mechanical companions only. Preserve historical tuples/predicates, inventory membership/classifications/skip policy and all approval history. No runtime correction, numerical envelope, IME or release acceptance.",
       "sha256": "0a705c7739a4fb1a8e2aa96aaab988a9262c735f617c10a411fc2894f32844b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/export/archive/projectArchiveExportHandler.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "a5a302fc6242913acece3ed2fdff171bbbc5b50fbed804c70209d9b63ee4fe44"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "971275de6908323dba78a65a66fd99c03de90c8b38a87ce55884a8460c4fe93e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-correctness.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "8c43387217aa0c3c33d7cc77402502a1104dda908e618dd86e94d8074d0ff84f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-archive-export-handler.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "9aaca2dace7dfcd374c2c2519896d7a70b4a4f028c4d724da1685e63a926f9a8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s32-full-archive-export.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "149e53c43584d0dc649605360547f505b1fdcb1c4a9b938b2bb2d98152e5b866"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s33-full-archive-import.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "907bfb2b2f163c2f790d49273f4563a74b7ab1adfb22258798b3de4500a04728"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "4212b4c011212c04cb0a083f3e9a72a8b214967f994de35ff54abca8493a7362"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "0c1d8033bf4b4bb31506f8b7d79880586c16981d8e394a94605c238eb06c0e22"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "5bbba93fe339ecb5fded6e4c39958f3be7a38d14e337aca0f0788e18645576dd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "b9ee08006e3511d01f7cb2ec01b7adba10ffbd95d2a29288cf4444fe88e16d9c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "b18b4240a9afc9a1953af5a52e569d38f7e05e744e2951e49cf352e83b12a890"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "658afa2400a289ab6cfd1b297205a6c5052719bbe2c6ef60e16c14c45f39ae64"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "c0776816ec4d3f87ee1bc54ac6f8756cf2849787725714ac71a5c3216796f387"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "edb42235971fa783f60c4f7358a6d5c763540c091c261cdefc9514f74bb9e3f2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "0e07fefc53c00309ac3c2eca5d19fbaab7d8776d45d9c262e46a8235027bf3b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T05:41:23.289894+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Necessary existing Project Archive complete physical directory/file preservation under the direct first Mac task. Versioned typed topology, sealed N and owned staging sync/readback preserve raw data and legacy V1 compatibility. No COPY authority, UI, numerical SLO, dependency or release expansion. Preserve historical tuples/predicates, all inventory classifications, skip policy and approval history.",
+      "sha256": "7ef2dccb84564e4aaeb139f5ce0339fc2cff428b464065d71bfd04edccd318ae"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "48e45aecccbe5b12d0aca030f96a6f81f2e1e8d6b7387a0225faa66fd266e82e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s33-full-archive-import.test.js",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "0300e236f0c35a04a9d3e7656a43f534dee11f7752fe9d0d934bf3918850752d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-preload-ui-command-bridge.test.js",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "55ec66499f1667d1c05587750e303ca32708442b3d8799b92d4ff8a08260a9c7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "1c4e16183744b8ea9c20780ad68a2c0634fa700cdee4f725c65fadcafc21aedb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "29d008bf553f1512efc0f0ad1cd217018ba214b52967b10a8704c3bdecb08eaf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "9f017557abbec9cb9b07f7088e77d0f993fe2d94991ad13464b06d59ff345cea"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "9a39a11090146fca6a073990c9733622f58f4f2f181a4d3892dd95f6b910cb87"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "39b9ead8fb43ac74f603716081ecdde6204fe5f4afba9bdb51725c5f54a8648d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "013de69831d1d311ea3511b61ed85c03fcb2d4fe25787ff4c7014b080bf06a30"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "424a3d54dfb868d4e34444b170bd0b1e7869358ed9d7203b836fe882c35cc4af"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "7a59434d281577e24f1d99831275469d656e0213896517a2d2e7bce3b3bb66b6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "6e79156ad0c0c30e9c23bf53b52b30f3479c44de87759f39ebb32faafcc13601"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "642a49663d243ecd4b5fd60e28b34ea0e122e91583c6b73054a96734db2e2ba9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T06:27:09.480967+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same open PR2143 native archive preview correction under the direct first Mac task. Main-owned out-of-band routing classification prevents UI reflection while preserving caller/envelope/profile/entitlement/Kernel authority, actual selected archive validation, physical directories and raw bytes. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "0bdf4d087a1b6eb9bf214162812c435262737632cd38c05d94bffdc48bfb6122"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "ca09b35152547c7259821a1a2dffd037fc6c66942cbed40df47b899398c6de90"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s33-full-archive-import.test.js",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "c9beab32d88ecebb1d1d06ce2dd846cfecbb8a323e9cd3346507bddc95a18b9e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "c85ed97826071353a58cecbc4ae5ffcc29464912f21ffc135e4632c740f7bc8b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "52b587d299c58f126545a0495fda23ee2e553c37c9a4dd6c1f9d9220bf205e2e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "47c6f412320438f2b75dd2bd597c8f49f03e66566795e0274aec86796d090263"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "265b6fe98f161884fea12f0a3fa0894055558b8d3e92a1d360178a9ee1b5f3c0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "2f869574952cc0550d61105870d7466d6595908382a982156bad21a0e1176776"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "ee223f1413e195f7f7c0a2c6294ee41c94e8d25b75631a23bbba848627ea917d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "eb89dfc53075444d1ab170eec48f833b6dd4e5553e305b12611e54bb5ff7355e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "687213196a5547d017aca9e6f5415e8fd31dfa7ae8457f3c097272a57e68319d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "8bc2d76c2fcbe158d45963061efb441e51d992ec69d241d788f5dd07965dc2da"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "94fca2cec2629a392bfb1c3b0479d2a9e2277f2205589a4e3d2678fc92b31436"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "192c59f8b173a264bd6e46f02d9779c7b0cc11a6e6605e21df61f59bf2abb1b8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "922caf08f8188d484da7fd87e8d1f08a9aef11d6a2260e68fc1d3c951c5426cd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-22T08:23:28.999251+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MAC_ARCHIVE_POST_OPEN_20261022",
+      "authority": "DIRECT_OWNER_FIRST_SUPPORTED_MAC_CORRECTION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "rationale": "Same open PR2143 imported editor handoff correction and exactly three known VM fixture-input updates under the direct owner macOS task. Exit owned import lease after verified physical publication and library registration, then perform guarded transactional ordinary open; preserve prior or newer foreign authoring context and prevent wrong-context autosave or backup. Keep canonical command authority and all physical archive protections. Preserve all historical tuples, predicates, inventory classifications, skip policy and approval history. No renderer/Core/COPY/UI/dependency/security or release expansion.",
+      "sha256": "9be52467e9fbc2f2ba1a418ea47ac36d8ab6c1672731b287d4bd458e107debd7"
     }
   ],
   "evidenceStampIds": [

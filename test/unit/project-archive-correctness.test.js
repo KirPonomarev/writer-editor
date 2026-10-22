@@ -527,3 +527,142 @@ for (const profile of ['ATOMIC_HARDLINK', 'ATOMIC_REPLACE', 'EXCLUSIVE_CREATE'])
   if (profile === 'ATOMIC_REPLACE') await assert.rejects(fs.lstat(failed.recovery.stagingPath), { code: 'ENOENT' });
   else assert.deepEqual(await fs.readFile(failed.recovery.stagingPath), bytes);
 });
+
+for (const action of ['add', 'remove', 'replace']) test('directory capture fence refuses ' + action + ' during file reads', async t => {
+  const { project } = await fixture(t), empty = path.join(project, 'chapter', 'empty');
+  await fs.mkdir(empty, { recursive: true });
+  const ran = await afterRead(t, path.join(project, 'a.txt'), async () => {
+    if (action === 'add') await fs.mkdir(path.join(project, 'new-empty'));
+    else if (action === 'remove') await fs.rmdir(empty);
+    else { await fs.rename(empty, empty + '-old'); await fs.mkdir(empty); await fs.rmdir(empty + '-old'); }
+  });
+  await assert.rejects(archive.collectProjectArchiveSourceEntries(project), /source_changed/u);
+  assert.equal(ran(), true);
+});
+test('sealed physical directories are immutable and survive live N+1 and source removal', async t => {
+  const { project } = await fixture(t);
+  for (const relative of ['chapter/empty', '.transport/空']) await fs.mkdir(path.join(project, relative), { recursive: true });
+  await fs.writeFile(path.join(project, 'zero.txt'), Buffer.alloc(0));
+  const snapshot = await archive.collectProjectArchiveSourceEntries(project);
+  const expected = ['.transport', '.transport/空', 'chapter', 'chapter/empty'];
+  assert.deepEqual(snapshot.directories.map(row => row.relativePath).sort(), expected);
+  assert.throws(() => snapshot.directories.push({ relativePath: 'forged' }), TypeError);
+  assert.throws(() => { snapshot.directories[0].relativePath = 'forged'; }, TypeError);
+  await fs.mkdir(path.join(project, 'later')); await fs.rm(project, { recursive: true });
+  const built = archive.buildProjectArchiveFromSnapshot(snapshot), payload = archive.readProjectArchivePayload(built.buffer);
+  assert.equal(payload.manifest.schemaVersion, 'yalken-project-archive.v2');
+  assert.deepEqual(payload.directories.map(row => row.relativePath).sort(), expected);
+  assert.equal(payload.entries.find(row => row.relativePath === 'zero.txt').buffer.length, 0);
+  assert.equal(payload.directoryCoverage, 'COMPLETE_PHYSICAL_ROSTER');
+  assert.equal(payload.entryCount, payload.fileCount + expected.length);
+});
+
+// Independent stored-ZIP encoder: malformed physical members must reach the
+// production reader even when the production builder refuses to create them.
+function physicalZip(rows) {
+  const local = [], central = []; let offset = 0;
+  const crc = bytes => { let value = 0xffffffff; for (const byte of bytes) {
+    value ^= byte; for (let bit = 0; bit < 8; bit++) value = value & 1 ? 0xedb88320 ^ value >>> 1 : value >>> 1;
+  } return (value ^ 0xffffffff) >>> 0; };
+  for (const row of rows) {
+    const name = Buffer.from(row.name), localName = Buffer.from(row.localName || row.name), body = row.data || Buffer.alloc(0);
+    const sum = row.crc ?? crc(body), h = Buffer.alloc(30), c = Buffer.alloc(46);
+    h.writeUInt32LE(0x04034b50); h.writeUInt16LE(20, 4); h.writeUInt16LE(0x800, 6);
+    h.writeUInt32LE(sum, 14); h.writeUInt32LE(body.length, 18); h.writeUInt32LE(body.length, 22); h.writeUInt16LE(localName.length, 26);
+    c.writeUInt32LE(0x02014b50); c.writeUInt16LE(20, 4); c.writeUInt16LE(20, 6); c.writeUInt16LE(0x800, 8);
+    c.writeUInt32LE(sum, 16); c.writeUInt32LE(body.length, 20); c.writeUInt32LE(body.length, 24); c.writeUInt16LE(name.length, 28);
+    c.writeUInt32LE(row.attrs ?? (row.name.endsWith('/') ? 0x10 : 0), 38); c.writeUInt32LE(offset, 42);
+    local.push(h, localName, body); central.push(c, name); offset += h.length + localName.length + body.length;
+  }
+  const end = Buffer.alloc(22), cd = Buffer.concat(central);
+  end.writeUInt32LE(0x06054b50); end.writeUInt16LE(rows.length, 8); end.writeUInt16LE(rows.length, 10);
+  end.writeUInt32LE(cd.length, 12); end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...local, cd, end]);
+}
+function typedZipFixture() {
+  const files = [[ 'project.craftsman.json', Buffer.from('{"projectId":"typed","projectName":"Typed"}') ],
+    ['part/scene.txt', Buffer.from('raw 🧭')], ['part/zero.txt', Buffer.alloc(0)]];
+  const entries = files.map(([relativePath, buffer]) => ({ type: 'file', relativePath, archivePath: 'project/' + relativePath,
+    size: buffer.length, sha256: crypto.createHash('sha256').update(buffer).digest('hex') }));
+  const directories = ['part', 'part/empty'].map(relativePath => ({ type: 'directory', relativePath, archivePath: 'project/' + relativePath + '/' }));
+  return { manifest: { schemaVersion: 'yalken-project-archive.v2', archiveKind: 'full-project', createdAtUtc: '2026-10-22T00:00:00.000Z',
+    project: { projectId: 'typed', projectName: 'Typed', manifestSha256: entries[0].sha256 },
+    source: { localOnly: true, networkRequired: false, pathlessReceipt: true, sourceProjectMutated: false }, entries, directories },
+  rows: [...files.map(([relativePath, data]) => ({ name: 'project/' + relativePath, data })),
+    ...directories.map(row => ({ name: row.archivePath }))] };
+}
+function encodeTypedZip(state) {
+  return physicalZip([{ name: state.manifestPath || 'yalken-archive-manifest.v2.json',
+    data: state.manifestBytes || Buffer.from(JSON.stringify(state.manifest, null, 2) + '\n') }, ...state.rows]);
+}
+for (const reverse of [false, true]) test('typed ZIP accepts one explicit parent after implicit ancestors, reverse=' + reverse, () => {
+  const state = typedZipFixture(); if (reverse) state.rows.reverse();
+  const bytes = encodeTypedZip(state), payload = archive.readProjectArchivePayload(bytes);
+  assert.equal(payload.fileCount, 3); assert.equal(payload.directoryCount, 2); assert.equal(payload.entryCount, 5);
+  assert.equal(archive.verifyProjectArchiveBuffer(bytes).entryCount, 5);
+  assert.equal(payload.entries.find(row => row.relativePath === 'part/zero.txt').buffer.length, 0);
+});
+const typedZipNegatives = [
+  ['physical directory duplicate', s => s.rows.push({ name: 'project/part/' }), /duplicate/u],
+  ['physical directory case alias', s => s.rows.push({ name: 'project/PART/' }), /collision/u],
+  ['physical NFC directory alias', s => s.rows.push({ name: 'project/caf\u00e9/' }, { name: 'project/cafe\u0301/' }), /collision/u],
+  ['file directory prefix alias', s => { s.rows[1].name = 'project/Part/scene.txt'; }, /collision/u],
+  ['file versus directory', s => s.rows.push({ name: 'project/part', data: Buffer.from('file') }), /conflict/u],
+  ['nonempty physical directory', s => { s.rows.at(-1).data = Buffer.from('body'); }, /entry_type/u],
+  ['nonzero directory CRC', s => { s.rows.at(-1).crc = 1; }, /entry_type/u],
+  ['directory without directory attributes', s => { s.rows.at(-1).attrs = 0; }, /entry_type/u],
+  ['file with directory attributes', s => { s.rows[1].attrs = 0x10; }, /entry_type/u],
+  ['symlink attributes', s => { s.rows[1].attrs = (0xa000 << 16) >>> 0; }, /entry_type/u],
+  ['special attributes', s => { s.rows[1].attrs = (0x1000 << 16) >>> 0; }, /entry_type/u],
+  ['DOS volume-label attributes', s => { s.rows[1].attrs = 0x08; }, /entry_type/u],
+  ['directory with regular-file attributes', s => { s.rows.at(-1).attrs = ((0x8000 << 16) | 0x10) >>> 0; }, /entry_type/u],
+  ['local central spelling mismatch', s => { s.rows.at(-1).localName = 'project/part/other/'; }, /local_name_mismatch/u],
+  ['declared directory duplicate', s => { s.manifest.directories[1] = { ...s.manifest.directories[0] }; }, /duplicate/u],
+  ['missing physical directory', s => s.rows.pop(), /roster_mismatch/u],
+  ['extra physical directory', s => s.rows.push({ name: 'project/unclaimed/' }), /roster_mismatch/u],
+  ['undeclared physical directory', s => s.manifest.directories.pop(), /roster_mismatch/u],
+  ['omitted directory ancestor', s => { s.rows = s.rows.filter(row => row.name !== 'project/part/'); s.manifest.directories.shift(); }, /ancestor_missing/u],
+  ['directory relative path disagreement', s => { s.manifest.directories[1].relativePath = 'part/different'; }, /directory_path/u],
+  ['directory traversal', s => { s.rows.at(-1).name = 'project/../outside/'; }, /path_invalid/u],
+  ['double directory marker', s => { s.rows.at(-1).name += '/'; }, /path_invalid/u],
+  ['directory in file roster', s => { s.manifest.entries[1].type = 'directory'; }, /file_shape/u],
+  ['file checksum mismatch', s => { s.manifest.entries[1].sha256 = '0'.repeat(64); }, /checksum_mismatch/u],
+  ['two manifest versions', s => s.rows.push({ name: 'yalken-archive-manifest.v1.json', data: Buffer.from('{}') }), /manifest_conflict/u],
+  ['unknown schema', s => { s.manifest.schemaVersion = 'yalken-project-archive.v3'; }, /schema_unsupported/u],
+  ['filename schema disagreement', s => { s.manifestPath = 'yalken-archive-manifest.v1.json'; }, /schema_unsupported/u],
+  ['duplicate JSON key', s => { s.manifestBytes = Buffer.from((JSON.stringify(s.manifest, null, 2) + '\n').replace('"archiveKind":', '"archiveKind":"forged","archiveKind":')); }, /noncanonical/u],
+];
+for (const [label, mutate, expected] of typedZipNegatives) test('V2 actual physical ZIP reader refuses ' + label, () => {
+  const state = typedZipFixture(); mutate(state); const bytes = encodeTypedZip(state);
+  for (const reader of [archive.readProjectArchivePayload, archive.verifyProjectArchiveBuffer]) assert.throws(() => reader(bytes), error => {
+    assert.match(error.reason, expected); assert.match(error.code, /^E_PROJECT_ARCHIVE_/u); return true;
+  });
+});
+test('V2 physical ZIP refuses mismatched local sizes and out-of-range offsets/counts', () => {
+  for (const mutation of [b => b.writeUInt32LE(12345, 18),
+    b => b.writeUInt32LE(0xffffffff, b.readUInt32LE(b.length - 6) + 42),
+    b => b.writeUInt16LE(b.readUInt16LE(b.length - 12) - 1, b.length - 12)]) {
+    const bytes = encodeTypedZip(typedZipFixture()); mutation(bytes);
+    assert.throws(() => archive.readProjectArchivePayload(bytes), /zip_/u);
+  }
+  assert.throws(() => archive.buildZipArchive(new Array(65536)), /limit/u);
+  assert.throws(() => archive.buildZipArchive([{ archivePath: 'a'.repeat(65536), buffer: Buffer.alloc(0) }]), /limit/u);
+});
+test('literal legacy V1 symbols retain file-only reader and known-parent coverage', () => {
+  assert.equal(archive.ARCHIVE_SCHEMA_VERSION, 'yalken-project-archive.v1');
+  assert.equal(archive.ARCHIVE_MANIFEST_PATH, 'yalken-archive-manifest.v1.json');
+  const bytes = container(['part/zero.txt']), payload = archive.readProjectArchivePayload(bytes);
+  assert.equal(payload.directoryCoverage, 'FILE_PARENTS_ONLY');
+  assert.deepEqual(payload.directories.map(row => row.relativePath), ['part']);
+  assert.equal(payload.entryCount, 2);
+  const legacyZero = physicalZip([{ name: 'yalken-archive-manifest.v1.json', data: Buffer.from('{"schemaVersion":"yalken-project-archive.v1","entries":[]}') },
+    { name: 'project/hidden.txt', data: Buffer.from('unclaimed') }]);
+  assert.equal(archive.verifyProjectArchiveBuffer(legacyZero).ok, true);
+  assert.throws(() => archive.readProjectArchivePayload(legacyZero), /undeclared/u);
+});
+test('deep physical directory spelling still requires every declared ancestor', () => {
+  const state = typedZipFixture(), relativePath = new Array(4096).fill('a').join('/');
+  state.manifest.directories.push({ type: 'directory', relativePath, archivePath: 'project/' + relativePath + '/' });
+  state.rows.push({ name: 'project/' + relativePath + '/' });
+  assert.throws(() => archive.readProjectArchivePayload(encodeTypedZip(state)), /ancestor_missing/u);
+});

@@ -1,3 +1,137 @@
+# Imported archive authoring handoff — source and early native proof — 2026-10-22
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_PROOF_COMPLETE_FINAL_DELIVERY_PENDING
+BINDING_BASE_SHA: d5c1627bebd0d983c6a51296d597ffbfb6ff5c2d
+CLAIM_BOUNDARY: Same unfinished PR2143 and original69be91c rollback; current source/component and exact-digest diagnostic observations, not candidate/merged/release acceptance.
+
+The rebuilt944 picker/preview restored the physical archive but normal opening failed
+on a nested manifest lease, before imported editor publication. A backup captured
+the prior empty renderer under the imported scene path. That complete failure
+profile/artifact and actual unchanged-Main lease RED30of31 remain preserved. The
+subsequent queued/completed SaveAs and untitled Save RED54of58 also remains.
+
+Main now exits the import lease only after verified physical publication/readback
+and strict library registration, then performs ordinary guarded transactional open.
+A finite transition capture excludes wrong-context save/autosave/backup, checks
+prior project/file/window/lifecycle/Stage10/capability at delayed boundaries, prepares
+fallible identity/content before publication, and restores only still-owned context
+on refusal. Verified final/library and newer foreign switches survive. COPY, Core,
+renderer/preload, fixed helper, physical codec and security boundaries stay unchanged.
+
+Exact Mainca09b351 and S33c9beab32 pass58of58. Full61-file affected execution at its
+actual99993193 source identity passed876of876,zero fail/cancel/skip/todo. Three known
+source-extracted VM contexts now explicitly supply the finite capture state; the
+novel fixture canonicalizes its owned macOS temporary root. All original predicates,
+arguments, cleanup and other bytes remain exact. Full two additional contract files
+at actuald5c1627b source identity pass190of190,zero fail/cancel/skip/todo. Root
+independently reviews actual argv/raw TAP/hashes and the three exact fixture deltas;
+it does not claim another execution or relabel earlier61 as a newer-head result.
+Runtime amendment145lines and S33339 stay within220/500; whole runtime435 and
+behavior948 stay within900/1200. Six original source/test paths remain exact944.
+
+Early diagnostic sourceInput7a0563a77136/ASAR4836f096 passes actual native picker,
+zero-write preview, import, imported text, trusted typing, Undo/Redo, durable Save
+and normal Quit/cold reopen. Saved scene SHA3c7e0c4e9d82fdbe0fca1dcec7d25d06cf2926e713eb7c62b0da7f887d1d2fed
+is exact across restart. All9physical directories,4opaque input files and5prior
+document files survive. Complete warm139/cold168 profile members and530application
+members were preserved and readmatched. Normal manifest/Stage10/cache additions
+and one removed previously empty Electron blob directory are fully enumerated.
+This unsigned diagnostic is bound to actual999 plus its admitted source digest;
+it never becomes committed/merged/native-release qualification by renaming it.
+The original terminal-LF to paragraph representation remains an explicit observation.
+
+Earlier old-project Navigator inference was refuted: independently derived row IDs
+belong to the imported project. The original physical schema1 manifest omits authored
+treeIdentity; arbitrary nested folders cannot establish authored part/scene roles.
+Inspector fallback and full authored topology/Stage10/COPY qualification remain
+separate. No speculative refresh or registry fabrication was added.
+
+Final-source normal inventory/C2A keeps1603members/classes/skip policy. DATA736/589,
+append-only246-binding certificate plus unchanged guard and every historical tuple
+and predicate remain fixed. Exact-path governance witnesses are mechanical byte
+bindings, not product authority or release acceptance. Required final baseline,
+all final-source gates, committed candidate/push/official exactCI/final native proof,
+normal merge and fresh clean merged verification still close this delivery.
+
+Owner clarified that the intended macOS release includes complete agreed Atlas and
+product functionality; Black Box follows later. The older narrow release cut cannot
+establish that outcome. After PR2143 closure, reconcile the separately updated full
+master-plan/Atlas plan and repo scope through normal admission, never a competing
+writer. COPY, full authored archive matrix, numerical workloads, complete Atlas,
+signing/notary/channel/distribution and overall macOS readiness remain open.
+
+# Native archive import continuation — 2026-10-22
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SAME_PR_AMENDMENT_SOURCE_REVIEW_COMPLETE_DELIVERY_PENDING
+
+Actual4956 app showed an empty confirmation before file selection; prompt canceled
+and complete failure profile/artifact preserved. Actual guarded Main live-window
+RED on unchanged4956 reached the same reflection, not Kernel/dialog. Closed internal
+Main routing context corrects only this continuation after existing checks. Native
+menu intent, all physical archive/COPY code and four original source/test files stay
+exact. Both mechanical bridge tests retain all assertions and bypass mutants.
+
+Executor/root each ran complete32files313of313,zero fail/cancel/skip/todo. Real preview
+calls dialog+Kernel once and writes nothing; confirmed restore uses pending Main
+selection, preserves all6raw files+9dirs and needs no second picker. Cancel/invalid
+ZIP/spoof/caller/envelope/profile/entitlement cases are observed. Main delta11lines;
+S33267lines, no original case weakened. Non-Darwin generic effect is test-only.
+
+Initial4956 baseline3OPS/2406of2465unit(59sanctioned skips)/20contracts and E0172+40mutants
+remain historical. Its official RTK4414of4414 does not override native failure or
+qualify changed source. Same PR2143/original base69be91c, amendment16/union20paths.
+Normal factual/OPS companions preserve1603inventory, DATA736/589 and historical
+246-binding tuples/guard/predicates. Final-source required gates/baseline, normal
+follow-up commit/push/new exactCI, rebuilt actual native journey, merge/fresh merged
+proof still required. No COPY/numeric/signing/release qualification.
+
+# 2026-10-22 — Physical archive source proof
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPONENT_PROOF_COMPLETE_DELIVERY_PENDING
+BINDING_BASE_SHA: 69be91c23848e3931c448abaf1f453c7c6f7673d
+CLAIM_BOUNDARY: Frozen source proof only; native/delivery/COPY/Mac release remain open.
+
+Executor and root complete all174affected cases without fail/cancel/skip/todo.
+The actual Main pre-edit RED observes5of9dirs; frozen correction restores9dirs
+and6exact raw files. Independent Python ZIP oracle confirms all6files/9explicit
+dirs in V2 ZIPe7559451ab4a2dc80491e364f2ae52afe9fecd7b1156d5e8462307e1657f079f.
+Runtime279lines and tests338 preserve original bodies/assertions,1061other Main
+blocks, COPY semantics and legacy V1/WP704 compatibility. Real physical ZIP,
+capture race, FD sync/close, foreign stage and post-publication loss negatives
+execute. Inventory1603and normal C2A preserve membership/history/predicates.
+Required remaining proofs and complete delivery are mandatory; retain original
+source and artifact identities and continue the larger release task.
+
+# 2026-10-22 — Archive physical directory correction admitted
+
+TASK_ID: YALKEN_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_20261022
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: ADMITTED_CORRECTION_WITH_INDEPENDENT_RED
+BINDING_BASE_SHA: 69be91c23848e3931c448abaf1f453c7c6f7673d
+CLAIM_BOUNDARY: Physical archive topology only; no COPY, numerical or release acceptance.
+
+PR2142 is fully delivered: all20exact official CI, normal69be91c2 merge and16fresh
+merged commands; affected76, media/table16, Apply19, E0 172plus40mutants pass. Actual
+rebuilt merged app received100trusted Russian key/input events, retained Undo/Redo,
+exact save and cold reopen with reachable terminal caret. All99project files and
+15prior backups stayed exact; complete175-file profile and530-member app preserved.
+Closure hash1ae0ae0cf8fc34cfa775065c69aea55714bedf0964101f3c687b357d96e9edbf.
+
+On current69be91c2, frozen six-file/nine-directory archive independently loses four
+directories despite self-verify. New actual Main RED reaches extraction: ten original
+S33cases pass, new case observes five dirs versus nine. Fresh declaration/preflight
+and E0 admit V2 sealed topology plus owned staging/readback/cleanup at existing
+seams. V1/WP704 compatibility remains mandatory. Frozen independent ZIP/filesystem
+oracles and full delivery are required; target is not yet live. Task/evidence use
+the dated mac-archive-directory-roundtrip scope. COPY identity/authority and first
+Mac qualification remain open.
+
 # 2026-10-22 — Longform PR2142 faithful contract amendment
 
 TASK_ID: YALKEN_MAC_LONGFORM_VISIBLE_EDITOR_20261022

@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 
 const {
-  ARCHIVE_SCHEMA_VERSION,
+  ARCHIVE_SCHEMA_VERSION_V2: ARCHIVE_SCHEMA_VERSION,
   buildProjectArchiveBuffer,
   runProjectArchiveExport,
   verifyProjectArchiveBuffer,
@@ -217,4 +217,18 @@ for (const failReadback of [false, true]) test('archive handler reports the excl
   } else assert.equal(result.verified, true);
   const bytes = await fs.readFile(outPath);
   assert.equal(verifyProjectArchiveBuffer(bytes).manifest.project.projectId, 'project-alpha');
+});
+
+test('ordinary physical builder declares complete typed V2 topology and file-only counts', async t => {
+  const { projectRoot } = await writeFixtureProject(t);
+  for (const relative of ['references/空/Пусто', 'roman/Пустая часть']) await fs.mkdir(path.join(projectRoot, relative), { recursive: true });
+  const archive = await buildProjectArchiveBuffer(projectRoot), codec = require('../../src/export/archive/projectArchiveExportHandler');
+  assert.equal(archive.manifest.schemaVersion, 'yalken-project-archive.v2');
+  assert.equal(archive.fileCount, 6); assert.equal(archive.directoryCount, 9);
+  assert.equal(archive.manifest.entries.every(row => row.type === 'file'), true);
+  assert.equal(archive.manifest.directories.every(row => row.type === 'directory' && row.archivePath === 'project/' + row.relativePath + '/'), true);
+  const payload = codec.readProjectArchivePayload(archive.buffer);
+  assert.equal(payload.entryCount, 15); assert.equal(payload.fileCount, 6); assert.equal(payload.directoryCount, 9);
+  assert.equal(codec.ARCHIVE_SCHEMA_VERSION, 'yalken-project-archive.v1');
+  assert.equal(codec.ARCHIVE_MANIFEST_PATH, 'yalken-archive-manifest.v1.json');
 });

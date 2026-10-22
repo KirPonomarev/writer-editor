@@ -328,6 +328,7 @@ let isDirty = false;
 let isEditorPasteTargetFocused = false;
 let autoSaveInProgress = false;
 let activeAutoSavePromise = null;
+let projectArchiveOpenCapture = null;
 let lastSignaledEditGeneration = 0;
 let lastAcknowledgedEditGeneration = 0;
 let isQuitting = false;
@@ -21893,14 +21894,17 @@ async function getReadOnlyProjectDocumentIdentityPayload(filePath, projectBindin
 }
 
 async function openProjectDocumentFile(filePath, options = {}) {
+  const previousFilePath = currentFilePath;
+  const assertCurrent = expectedFile => { if (typeof options.assertCurrent === 'function') options.assertCurrent(expectedFile); };
+  assertCurrent(previousFilePath);
   if (!filePath || !isAllowedFilePath(filePath)) {
     return makeProjectLifecycleError('E_PROJECT_OPEN_PATH_NOT_ALLOWED', 'PROJECT_OPEN_PATH_NOT_ALLOWED');
   }
   const fileResult = await fileManager.readFile(filePath);
+  assertCurrent(previousFilePath);
   if (!fileResult.success) {
     return makeProjectLifecycleError('E_PROJECT_OPEN_READ_FAILED', 'PROJECT_OPEN_READ_FAILED');
   }
-  const previousFilePath = currentFilePath;
   currentFilePath = filePath;
   const context = getDocumentContextFromPath(filePath);
   const readOnlyProject = options.readOnlyProject === true;
@@ -21908,11 +21912,20 @@ async function openProjectDocumentFile(filePath, options = {}) {
   const documentIdentity = readOnlyProject && projectBinding
     ? await getReadOnlyProjectDocumentIdentityPayload(filePath, projectBinding)
     : await getProjectDocumentIdentityPayload(filePath);
+  assertCurrent(filePath);
   const selectionRange = clampSelectionRangeForContent(options.selectionRange, fileResult.content);
+  const editorPayload = await attachProjectIdToEditorPayload({
+    content: fileResult.content, title: context.title, ...documentIdentity,
+    projectId: options.projectId || documentIdentity.projectId || projectBinding?.projectId || '',
+    kind: context.kind, metaEnabled: context.metaEnabled, selectionRange, readOnlyProject,
+  }, filePath);
+  assertCurrent(filePath);
   const continuityCommit = await saveLastFile({
     selectionRange,
     projectBinding,
+    beforeWrite: () => assertCurrent(filePath),
   });
+  assertCurrent(filePath);
   if (!continuityCommit.ok) {
     currentFilePath = previousFilePath;
     updateStatus('Ошибка');
@@ -21921,16 +21934,7 @@ async function openProjectDocumentFile(filePath, options = {}) {
       'SESSION_CONTINUITY_COMMIT_FAILED',
     );
   }
-  sendEditorText(await attachProjectIdToEditorPayload({
-    content: fileResult.content,
-    title: context.title,
-    ...documentIdentity,
-    projectId: options.projectId || documentIdentity.projectId || projectBinding?.projectId || '',
-    kind: context.kind,
-    metaEnabled: context.metaEnabled,
-    selectionRange,
-    readOnlyProject,
-  }, filePath));
+  sendEditorText(editorPayload);
   setDirtyState(false);
   const contentHash = computeHash(fileResult.content);
   lastAutosaveHash = contentHash;
@@ -22870,6 +22874,8 @@ function summarizeProjectArchivePayload(payload) {
     projectId: typeof project.projectId === 'string' ? project.projectId : '',
     projectName: typeof project.projectName === 'string' ? project.projectName : '',
     fileCount: Number.isSafeInteger(payload?.fileCount) ? payload.fileCount : 0,
+    directoryCount: Number.isSafeInteger(payload?.directoryCount) ? payload.directoryCount : 0,
+    directoryCoverage: typeof payload?.directoryCoverage === 'string' ? payload.directoryCoverage : '',
     byteCount: Number.isSafeInteger(payload?.byteCount) ? payload.byteCount : 0,
     entryCount: Number.isSafeInteger(payload?.entryCount) ? payload.entryCount : 0,
     archiveSha256: typeof payload?.archiveSha256 === 'string' ? payload.archiveSha256 : '',
@@ -22884,18 +22890,20 @@ async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot, ow
   await fs.mkdir(tempRoot, { mode: 0o700 });
   ownership.identity = await fs.lstat(tempRoot, { bigint: true });
   ownership.directories.set(tempRoot, ownership.identity);
+  for (const entry of [...archivePayload.directories].sort((a, b) => a.relativePath.split('/').length - b.relativePath.split('/').length)) {
+    await ownership.assertOwned();
+    const directory = joinPathSegmentsWithinRoot(tempRoot, [entry.relativePath], { resolveSymlinks: false });
+    if (!ownership.directories.has(path.dirname(directory))) throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_PARENT_MISSING');
+    await fs.mkdir(directory, { mode: 0o700 });
+    const stat = await fs.lstat(directory, { bigint: true });
+    if (!stat.isDirectory() || stat.isSymbolicLink()) throw Error('PROJECT_ARCHIVE_IMPORT_STAGING_CHANGED');
+    ownership.directories.set(directory, stat);
+  }
   for (const entry of archivePayload.entries) {
     await ownership.assertOwned();
     const relativePath = typeof entry.relativePath === 'string' ? entry.relativePath : '';
     const targetPath = joinPathSegmentsWithinRoot(tempRoot, [relativePath], { resolveSymlinks: false });
-    let directory = tempRoot;
-    for (const segment of relativePath.split('/').slice(0, -1)) {
-      directory = path.join(directory, segment);
-      if (!ownership.directories.has(directory)) {
-        await fs.mkdir(directory, { mode: 0o700 });
-        ownership.directories.set(directory, await fs.lstat(directory, { bigint: true }));
-      }
-    }
+    if (!ownership.directories.has(path.dirname(targetPath))) throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_PARENT_MISSING');
     try { await fs.lstat(targetPath); throw Error('PROJECT_ARCHIVE_IMPORT_STAGING_ENTRY_EXISTS'); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
     const writeResult = await fileManager.writeFileAtomic(targetPath, entry.buffer);
@@ -22907,28 +22915,57 @@ async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot, ow
   await ownership.assertOwned();
 }
 
+async function verifyProjectArchiveDirectoryRoster(snapshot, directories, ownership, tempRoot, actualRoot = tempRoot) {
+  const expected = directories.map(row => row.relativePath).sort();
+  if (JSON.stringify(snapshot.directories.map(row => row.relativePath).sort()) !== JSON.stringify(expected)
+    || JSON.stringify([...ownership.directories.keys()].filter(row => row !== tempRoot)
+      .map(row => path.relative(tempRoot, row).split(path.sep).join('/')).sort()) !== JSON.stringify(expected)) {
+    throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_ROSTER_MISMATCH');
+  }
+  for (const relative of ['', ...expected]) {
+    const own = ownership.directories.get(path.join(tempRoot, relative));
+    const named = await fs.lstat(path.join(actualRoot, relative), { bigint: true });
+    if (!own || own.dev !== named.dev || own.ino !== named.ino || !named.isDirectory() || named.isSymbolicLink()) {
+      throw Error('PROJECT_ARCHIVE_IMPORT_STAGING_CHANGED');
+    }
+  }
+}
+
+async function syncProjectArchiveOwnedDirectory(directory, ownership) {
+  await ownership.assertOwned();
+  const own = ownership.directories.get(directory);
+  const check = stat => {
+    if (!own || stat.dev !== own.dev || stat.ino !== own.ino || !stat.isDirectory() || stat.isSymbolicLink()) {
+      throw Error('PROJECT_ARCHIVE_IMPORT_DIRECTORY_FD_CHANGED');
+    }
+  };
+  const handle = await fs.open(directory, fsSync.constants.O_RDONLY | (fsSync.constants.O_NOFOLLOW || 0) | (fsSync.constants.O_DIRECTORY || 0));
+  try {
+    check(await handle.stat({ bigint: true })); check(await fs.lstat(directory, { bigint: true }));
+    await handle.sync();
+    check(await handle.stat({ bigint: true })); check(await fs.lstat(directory, { bigint: true }));
+    await ownership.assertOwned();
+  } finally { await handle.close(); }
+}
+
 async function verifyProjectArchiveImportStaging(archivePayload, tempRoot, ownership, manifestOverride = null) {
   await ownership.assertOwned();
   const snapshot = await collectProjectArchiveSourceEntries(tempRoot);
+  await verifyProjectArchiveDirectoryRoster(snapshot, archivePayload.directories, ownership, tempRoot);
   if (snapshot.files.length !== archivePayload.entries.length) throw Error('PROJECT_ARCHIVE_IMPORT_ROSTER_MISMATCH');
   for (const entry of archivePayload.entries) {
     const actual = snapshot.files.find(row => row.relativePath === entry.relativePath);
     const expected = manifestOverride && entry.relativePath === PROJECT_MANIFEST_FILENAME ? manifestOverride : entry.buffer;
     if (!actual || !actual.buffer.equals(expected)) throw Error('PROJECT_ARCHIVE_IMPORT_RAW_READBACK_MISMATCH');
   }
-  const directories = new Set([tempRoot]);
   for (const entry of archivePayload.entries) {
     await ownership.assertOwned();
     const target = path.join(tempRoot, entry.relativePath);
     const handle = await fs.open(target, fsSync.constants.O_RDONLY | (fsSync.constants.O_NOFOLLOW || 0));
     try { await handle.sync(); } finally { await handle.close(); }
-    let parent = path.dirname(target);
-    while (parent !== tempRoot) { directories.add(parent); parent = path.dirname(parent); }
   }
-  for (const directory of [...directories].sort((a,b) => b.length - a.length)) {
-    await ownership.assertOwned();
-    const handle = await fs.open(directory, fsSync.constants.O_RDONLY | (fsSync.constants.O_NOFOLLOW || 0));
-    try { await handle.sync(); } finally { await handle.close(); }
+  for (const directory of [...ownership.directories.keys()].sort((a,b) => b.length - a.length)) {
+    await syncProjectArchiveOwnedDirectory(directory, ownership);
   }
   await ownership.assertOwned();
 }
@@ -30813,7 +30850,73 @@ async function handleExportProjectArchive(payloadRaw = {}) {
   });
 }
 
+async function openImportedArchiveProject(binding, captured) {
+  const stale = () => Object.assign(Error('PROJECT_ARCHIVE_OPEN_CONTEXT_STALE'), { code: 'E_PROJECT_ARCHIVE_OPEN_CONTEXT_STALE' });
+  let expectedName = captured.projectName, targetFile = captured.filePath;
+  const sameOwner = () => mainWindow === captured.window && mainWindow?.webContents === captured.contents
+    && commentAuthoringSessionId === captured.session && activeStage10ApplicationBootstrap === captured.owner;
+  const assertCurrent = (expectedFile = captured.filePath) => {
+    const access = evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
+      productCommandRecord: getProductCommandRecord(IMPORT_PROJECT_ARCHIVE_COMMAND_ID) });
+    if (!sameOwner() || !mainWindow || mainWindow.isDestroyed() || captured.contents.isDestroyed()
+      || currentProjectName !== expectedName || currentFilePath !== expectedFile
+      || lastSignaledEditGeneration !== captured.generation || isDirty || !access.allowed) throw stale();
+  };
+  assertCurrent();
+  if (projectArchiveOpenCapture) throw stale();
+  const capture = projectArchiveOpenCapture = {};
+  let previousSettings = null;
+  try {
+    await Promise.all([activeAutoSavePromise, activeBackupPromise].filter(Boolean));
+    assertCurrent();
+    previousSettings = await loadSettings();
+    assertCurrent();
+    setActiveProjectNameFromRoot(binding.projectRoot);
+    expectedName = currentProjectName;
+    const target = await resolveProjectContinueTarget(binding, {});
+    assertCurrent();
+    if (!target.filePath) throw Object.assign(Error('PROJECT_EMPTY'), { code: 'E_PROJECT_EMPTY' });
+    targetFile = target.filePath;
+    const opened = await openProjectDocumentFile(targetFile, { projectId: binding.projectId, projectBinding: binding,
+      statusText: 'Архив проекта импортирован', assertCurrent });
+    if (!opened?.ok || opened.opened !== true) throw Object.assign(Error(opened?.reason || 'PROJECT_ARCHIVE_OPEN_FAILED'), {
+      code: opened?.code || 'E_PROJECT_ARCHIVE_OPEN_FAILED' });
+    return opened;
+  } catch (error) {
+    // Restore only our still-owned transition. A later foreign switch wins.
+    const ownsTransition = () => commentAuthoringSessionId === captured.session
+      && activeStage10ApplicationBootstrap === captured.owner && currentProjectName === expectedName
+      && (currentFilePath === targetFile || currentFilePath === captured.filePath);
+    if (ownsTransition()) {
+      currentProjectName = captured.projectName;
+      currentFilePath = captured.filePath;
+      const assertRestored = () => {
+        if (commentAuthoringSessionId !== captured.session || activeStage10ApplicationBootstrap !== captured.owner
+          || currentProjectName !== captured.projectName || currentFilePath !== captured.filePath) throw stale();
+      };
+      try {
+        const settings = await loadSettings();
+        assertRestored();
+        if (previousSettings && settings.projectId === binding.projectId) {
+          for (const key of [SESSION_CONTINUITY_SETTINGS_KEY, 'projectId', 'projectManifestPath', 'lastProjectId',
+            'lastProjectRelativePath', 'lastProjectSelectionRange', 'lastExternalFilePath', 'lastFilePath']) {
+            if (Object.hasOwn(previousSettings, key)) settings[key] = previousSettings[key];
+            else delete settings[key];
+          }
+          if (!await saveSettings(settings, { beforeWrite: assertRestored })) error.continuityRollbackUnconfirmed = true;
+        }
+      } catch { error.continuityRollbackUnconfirmed = true; }
+    }
+    throw error;
+  } finally {
+    if (projectArchiveOpenCapture === capture) projectArchiveOpenCapture = null;
+  }
+}
+
 async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
+  const openContext = { window: mainWindow, contents: mainWindow?.webContents, projectName: currentProjectName,
+    filePath: currentFilePath, session: commentAuthoringSessionId, owner: activeStage10ApplicationBootstrap,
+    generation: lastSignaledEditGeneration };
   const recovered = await recoverProjectLifecycleJournal();
   if (!recovered.ok) return makeTypedProjectArchiveImportError(recovered.code || 'E_PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED',
     recovered.reason || 'PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED', recovered.details || {});
@@ -30977,9 +31080,10 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       || context.session !== commentAuthoringSessionId) throw Error('PROJECT_ARCHIVE_IMPORT_CONTEXT_STALE');
   };
   let publication = { namePublished: false, publicationOutcome: 'NOT_STARTED', directorySynced: false, readbackVerified: false };
+  let publishedBinding = null;
 
   try {
-    return await authority.withProjectLease(newProjectId, async (lease) => {
+    const imported = await authority.withProjectLease(newProjectId, async (lease) => {
       await lease.assertOwned();
       const racedBinding = await findProjectBindingByProjectId(newProjectId);
       if (racedBinding?.projectRoot) {
@@ -31066,6 +31170,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         throw new Error('PROJECT_ARCHIVE_IMPORT_MANIFEST_READBACK_MISMATCH');
       }
       const published = await collectProjectArchiveSourceEntries(targetRoot);
+      await verifyProjectArchiveDirectoryRoster(published, archivePayload.directories, ownership, tempRoot, targetRoot);
       if (published.files.length !== archivePayload.entries.length) throw Error('PROJECT_ARCHIVE_IMPORT_ROSTER_MISMATCH');
       for (const entry of archivePayload.entries) {
         const actual = published.files.find(row => row.relativePath === entry.relativePath);
@@ -31093,19 +31198,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         throw Error('PROJECT_ARCHIVE_IMPORT_REGISTRATION_UNCONFIRMED');
       }
       await clearProjectArchiveImportJournal();
-      if (payload.openAfterImport === true) {
-        setActiveProjectNameFromRoot(targetRoot);
-        const target = await resolveProjectContinueTarget(projectBinding, {});
-        if (target.filePath) {
-          await openProjectDocumentFile(target.filePath, {
-            statusText: 'Архив проекта импортирован',
-            projectId: newProjectId,
-            projectBinding,
-          });
-        }
-      }
-      updateStatus('Архив проекта импортирован');
-      pendingProjectArchiveImportPreview = null;
+      publishedBinding = projectBinding;
       return {
         ok: true,
         imported: true,
@@ -31130,6 +31223,14 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         },
       };
     });
+    if (payload.openAfterImport === true) {
+      const opened = await openImportedArchiveProject(publishedBinding, openContext);
+      imported.opened = opened.opened;
+      imported.documentId = opened.documentId;
+    }
+    updateStatus('Архив проекта импортирован');
+    pendingProjectArchiveImportPreview = null;
+    return imported;
   } catch (error) {
     if (error?.details?.publication) publication = { ...publication, ...error.details.publication };
     // A lost return (including lease loss after the actual effect) is observed
@@ -31146,6 +31247,9 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       try {
         await ownership.assertOwned();
         const snapshot = await collectProjectArchiveSourceEntries(tempRoot);
+        const ownedDirectories = [...ownership.directories.keys()].filter(row => row !== tempRoot)
+          .map(row => ({ relativePath: path.relative(tempRoot, row).split(path.sep).join('/') }));
+        await verifyProjectArchiveDirectoryRoster(snapshot, ownedDirectories, ownership, tempRoot);
         if (snapshot.files.length !== ownership.files.size || snapshot.files.some(entry => {
           const own = ownership.files.get(entry.relativePath); return !own || !entry.buffer.equals(own.buffer);
         })) throw Error('PROJECT_ARCHIVE_IMPORT_CLEANUP_UNCONFIRMED');
@@ -31165,7 +31269,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       }
       catch { cleanup = publication.namePublished ? 'PUBLISHED_ROOT_RETAINED' : 'STAGING_OWNERSHIP_UNCONFIRMED'; }
     }
-    if (!publication.namePublished && publication.publicationOutcome !== 'UNKNOWN') {
+    if (!publication.namePublished && publication.publicationOutcome !== 'UNKNOWN' && cleanup !== 'STAGING_OWNERSHIP_UNCONFIRMED') {
       try { await clearProjectArchiveImportJournal(); }
       catch { cleanup += '_JOURNAL_RECONCILIATION_REQUIRED'; }
     }
@@ -31176,7 +31280,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       typeof error?.reason === 'string'
         ? error.reason
         : (error && typeof error.message === 'string' ? error.message : 'project_archive_import_failed'),
-      { publication, cleanup },
+      { publication, cleanup, ...(error?.continuityRollbackUnconfirmed ? { continuityRollbackUnconfirmed: true } : {}) },
     );
   }
 }
@@ -34044,7 +34148,7 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
   try {
     const result = PRODUCT_COMMAND_ID_SET.has(commandId)
       ? await dispatchProductCommandBridge(commandId, payload)
-      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE });
+      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge' });
     if (result && result.ok === true) return makeCommandBridgeSuccess(result);
     const reason = findCommandBridgeFailureReason(result) || 'COMMAND_EXECUTION_FAILED';
     return makeCommandBridgeFailure(reason, result);
@@ -36124,6 +36228,7 @@ async function handleOpen() {
 }
 
 async function runAutoSave() {
+  if (projectArchiveOpenCapture) return lifecycleSaveFailure(currentLifecycleSubjectId(), 'PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
   if (!mainWindow) {
     return lifecycleSaveFailure(
       currentLifecycleSubjectId(),
@@ -36356,6 +36461,7 @@ async function prepareUserBookmarkBackup(filePath, snapshot) {
 let activeBackupPromise = null, treeBackupCaptureDepth = 0;
 const treeBackupSeeds = new Map();
 function createBackup() {
+  if (projectArchiveOpenCapture) return Promise.resolve({ success: false, code: 'E_PROJECT_ARCHIVE_OPEN_IN_PROGRESS' });
   if (activeBackupPromise) return activeBackupPromise;
   if (treeBackupCaptureDepth > 0) return Promise.resolve();
   const operation = runCreateBackup();
@@ -36470,6 +36576,7 @@ async function runCreateBackup() {
 }
 
 async function handleSave() {
+  if (projectArchiveOpenCapture) return projectSaveFailure('PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
   if (!mainWindow) {
     return projectSaveFailure('NO_ACTIVE_WINDOW');
   }
@@ -36477,7 +36584,7 @@ async function handleSave() {
   const saveSubjectId = currentLifecycleSubjectId();
   const saveTargetPath = currentFilePath;
   const saveSessionId = commentAuthoringSessionId, saveProjectRoot = getProjectRootPath();
-  const isCurrentSaveTarget = () => currentLifecycleSubjectId() === saveSubjectId
+  const isCurrentSaveTarget = () => !projectArchiveOpenCapture && currentLifecycleSubjectId() === saveSubjectId
     && commentAuthoringSessionId === saveSessionId && getProjectRootPath() === saveProjectRoot
     && currentFilePath === saveTargetPath;
   const staleSaveReceipt = () => ({ success: false, code: 'E_SAVE_AUTHORING_TARGET_STALE' });
@@ -36518,6 +36625,7 @@ async function handleSave() {
       'save existing project transaction'
     );
     if (saveResult.success) {
+      if (projectArchiveOpenCapture) return projectSaveFailure('PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
       if (textChanged && saveResult.projectTransaction !== true) {
         try {
           await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
@@ -36579,6 +36687,7 @@ async function handleSave() {
       'save new project transaction'
     );
     if (saveResult.success) {
+      if (projectArchiveOpenCapture) return projectSaveFailure('PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
       if (saveResult.projectTransaction !== true) {
         await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       }
@@ -36819,12 +36928,17 @@ async function handleTreeRecoveredCopySaveAs() {
 }
 
 async function handleSaveAs() {
+  if (projectArchiveOpenCapture) return false;
   if (treeEditorReplacementFence) return handleTreeRecoveredCopySaveAs();
   if (!mainWindow) {
     return false;
   }
 
   const saveSubjectId = currentLifecycleSubjectId();
+  const isCurrentSaveAsTarget = () => !projectArchiveOpenCapture && currentLifecycleSubjectId() === saveSubjectId;
+  const guardSaveAsTarget = () => {
+    if (!isCurrentSaveAsTarget()) throw Object.assign(Error('SAVE_AUTHORING_TARGET_STALE'), { code: 'E_SAVE_AUTHORING_TARGET_STALE' });
+  };
   let snapshot;
   try {
     snapshot = await requestEditorSnapshot();
@@ -36833,7 +36947,7 @@ async function handleSaveAs() {
     logDevError('handleSaveAs', error);
     return false;
   }
-  if (currentLifecycleSubjectId() !== saveSubjectId) return false;
+  if (!isCurrentSaveAsTarget()) return false;
   const content = snapshot.content;
 
   const wasUntitled = currentFilePath === null;
@@ -36855,23 +36969,27 @@ async function handleSaveAs() {
       updateStatus('Ошибка');
       return false;
     }
-    if (currentLifecycleSubjectId() !== saveSubjectId) return false;
+    if (!isCurrentSaveAsTarget()) return false;
 
     const saveResult = await queueDiskOperation(
-      () => commitWriterProjectSnapshot(
+      async () => {
+        if (!isCurrentSaveAsTarget()) return { success: false, code: 'E_SAVE_AUTHORING_TARGET_STALE' };
+        return commitWriterProjectSnapshot(
         filePath,
         content,
         snapshot.generation,
         snapshot.bookProfile,
         'save as project transaction',
-      ),
+        { beforeScenePublish: guardSaveAsTarget },
+      ); },
       'save as project transaction'
     );
     if (saveResult.success) {
+      if (!isCurrentSaveAsTarget()) return false;
       if (saveResult.projectTransaction !== true) {
         await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       }
-      if (currentLifecycleSubjectId() !== saveSubjectId) return false;
+      if (!isCurrentSaveAsTarget()) return false;
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
       await saveLastFile({ selectionRange: snapshot.selectionRange });
@@ -37276,9 +37394,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     );
     return normalizeUiBridgeMenuResult(result);
   },
-  [IMPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}) => {
+  [IMPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}, context = {}) => {
     const confirmed = payload && payload.confirmed === true;
-    if (!confirmed) {
+    if (!confirmed && context.invocationSource !== 'ui-command-bridge') {
       const delivered = sendCanonicalRuntimeCommand(
         IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
         {
@@ -38143,7 +38261,10 @@ function dispatchMenuCommand(commandId, payload = {}, options = {}) {
     throw new Error(`Unknown menu command id: ${String(resolved.commandId)}`);
   }
 
-  return handler(payload);
+  const invocationContext = Object.freeze({
+    invocationSource: options.invocationSource === 'ui-command-bridge' ? 'ui-command-bridge' : 'native-menu',
+  });
+  return handler(payload, invocationContext);
 }
 
 function buildCommandClickHandler(commandId, payload = {}) {

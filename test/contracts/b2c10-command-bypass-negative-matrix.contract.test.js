@@ -116,7 +116,7 @@ test('b2c10 guarded registration rejects removed, weakened, reordered and bypass
     ['allowlist weakened', 'if (!UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS.has(commandId)) {', 'if (false && !UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS.has(commandId)) {'],
     ['profile weakened', 'if (!profileAccess.allowed) {', 'if (false && !profileAccess.allowed) {'],
     ['profile wrong command', '    productCommandRecord: getProductCommandRecord(commandId),', "    productCommandRecord: getProductCommandRecord(commandId), commandId: 'cmd.menu',"],
-    ['menu dispatch route bypass', 'await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE });', "await dispatchMenuCommand(commandId, payload, { route: 'direct' });"],
+    ['menu dispatch route bypass', "await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge' });", "await dispatchMenuCommand(commandId, payload, { route: 'direct', invocationSource: 'ui-command-bridge' });"],
     ['dispatch before admission', "guardedProtocolHandle('ui:command-bridge', async (_, request) => {", "guardedProtocolHandle('ui:command-bridge', async (_, request) => {\n  await dispatchProductCommandBridge('cmd.product', {});"],
   ];
   for (const [name, from, to] of cases) {
