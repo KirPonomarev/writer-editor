@@ -761,7 +761,9 @@
     "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
     "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
     "test/unit/r24-wp100-wiring-matrix.test.js",
-    "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs"
+    "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs",
+    "src/core/runtime.mjs",
+    "docs/tasks/2026-10-23--mac-manual-map-pdf.md"
   ],
   "protectedFiles": [
     {
@@ -990,7 +992,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "abfa0a3f1612e4a9aecd63496f89bba39c5e99d4c1215945f3eeb0d0c9486abb"
+        "sha256": "e72c33944131804bcf86551e2543afb931d3c4337895b738703d69685117c8d5"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1002,7 +1004,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "70f0ff8df3d71b00919322d2db2a2834e08bc05bf94d1ac02ffe079ba5d9b9f1"
+        "sha256": "9abd35990c499ac3f36986db467db3760b63c57327e5b93faad6296087a4981f"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1014,7 +1016,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "73e90e292b438d21b4601983e5c908a6bb773fcbc10cad4716d0a5be36fac9d5"
+        "sha256": "843177d934dee0191fd298d81923b12c73f839e77fdd970105128c22116bf2e0"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1166,7 +1168,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "d854043aeeba9040616db5f503f95caba9383ad436478091e28c0f73e19ceed4"
+        "sha256": "5e884d55cfdf2da0a587cc483b49fc89c34da34b59f26e5da8eb2643e408cd6d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1726,7 +1728,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "f78e8d6b87c53d227d39c113b305afb341e8963bd91ad6be7bcd00306dfb086a"
+        "sha256": "8fa9df602c255d790578ca4dec0c41f0ad10daca6f3f68ab7ba59d831816d119"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2682,15 +2684,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "49542fb2531a0fad8f2d98bf4b95643b8ee2e56113c2a8354c4b8cccf65a61a3"
+        "sha256": "b4ecd0ef40692b5a01207ecf00fab407adb45ed8bcf4b8c3fe627a78edfc226d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9c8598b5777dfa284321813b8d0c5e8103e89473e00c5f6b7979415901a1905f"
+        "sha256": "10a2e46fea3838aeb92444f9b42c3cce70b837d6efc883a7be5c197ecd9a162d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "948caabe3284de493d7382da361732b722f02332747262520bb4f9a94abd63e5"
+        "sha256": "bf7aa22f06416bda6ca1d76d6ce760bdb264b8d3ae6de5778dc6c9c1a5251c03"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3054,7 +3056,7 @@
       },
       {
         "path": "src/product/stage10MainPersistenceAdapter.mjs",
-        "sha256": "4a63405168987b88252e45775d5fff1465c91f656fcda86fbbe2bd5f649100f5"
+        "sha256": "f9abf686a72db5b7071cea1a58f73c66de771c58e673b748e4d965805d722385"
       },
       {
         "path": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
@@ -3230,7 +3232,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "944a0106b6840a4f6242357d66f6bcb5cd42f6ead20de32f7e0e292f4d0c97d9"
+        "sha256": "d641aca914bfb9454c7b087322f8bd2420c8ac28787dc1f4658afd61403364b9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3254,7 +3256,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "2555534c910a878a07ae2dcbda16935b091162dd5b1c17cf535977a94fc1a4f5"
+        "sha256": "3dd2ad8777ea8fc792cbd57cb8cd6b0a481ef6a0ed3aef4e2d5a452ae33cc094"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3346,7 +3348,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "90ab6d93852e9d3dab46029402c0a102de516aaca66d5d389447029fce27874e"
+        "sha256": "6edcf6de5a0b7866b73cd60cb6fc926201b86e7e286aa70ac7fbd0fb296215aa"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3362,11 +3364,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "600046e3fec7ba188ac8a579e7dc1549f1630dbe0e939fb2e4d2a687b0a3fe65"
+        "sha256": "83c434ad3096ad7918e1823aeab1aa2e1b0e4eafb3cd46493003a87cf0bb0cca"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "fffea29dff394c0f14c23813b2857011e93f54780e679c6948575dd5aa002b12"
+        "sha256": "a4f9716dc7cd6ebbba73d9f25dcbeaa7a37a2d35e6268a6de00e82367b0e4db6"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3398,11 +3400,11 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
-        "sha256": "33b20a2c15a739d601b9a0033d9a9430307db7c30f35393a10ecbe0beffac761"
+        "sha256": "ce641372a3d27709f2a1338f089753648dd48c48620f2e07faf344a3e5afa79d"
       },
       {
         "path": "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
-        "sha256": "aff429735fc00366ac8cf23548e1ec3dd20566bf0ff22d5f156035d231b45978"
+        "sha256": "d119fa8325d8a8504d3e81055751d58e10334bdf060c352aea06070d6d05761f"
       },
       {
         "path": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
@@ -3418,7 +3420,15 @@
       },
       {
         "path": "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs",
-        "sha256": "274c895156b22f5b6a8c1baedf8d45eb2b39cc8c89f8d1c1a5f8536ed2a2757f"
+        "sha256": "c2d5b240cae93bbb8556798ec77be1d4ffd59044a832c4550ce9de1b66c4a985"
+      },
+      {
+        "path": "src/core/runtime.mjs",
+        "sha256": "d4e5a8cb47170900548f9241512239ccd0099d9f27496cc53d4b2d3c9b478b76"
+      },
+      {
+        "path": "docs/tasks/2026-10-23--mac-manual-map-pdf.md",
+        "sha256": "40a8b9fc3e9c2e5ef55df452f7b25da3af0c679a3359f0d1dbecfd1d9fcfd5f1"
       }
     ],
     "followupRepair": {

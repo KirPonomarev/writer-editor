@@ -1157,6 +1157,7 @@ let manualMapPortabilityCommandState = {
   exportJsonSha256: '',
   exportMapId: '',
   imageEvidenceHash: '',
+  pdfSha256: '',
   pdfTypedLoss: '',
   importMapId: '',
   lastCommandId: '',
@@ -14685,7 +14686,8 @@ async function runManualMapExportCommand(commandId, payload = {}) {
       exportMapId: receipt.mapId || payload.mapId || '',
       exportJsonSha256: exported.jsonSha256 || manualMapPortabilityCommandState.exportJsonSha256,
       imageEvidenceHash: exported.evidenceHash || manualMapPortabilityCommandState.imageEvidenceHash,
-      pdfTypedLoss: exported.pdf?.typedLoss?.code || manualMapPortabilityCommandState.pdfTypedLoss,
+      pdfSha256: exported.pdf?.binaryGenerated === true ? exported.sha256 : manualMapPortabilityCommandState.pdfSha256,
+      pdfTypedLoss: exported.pdf?.binaryGenerated === true ? '' : exported.pdf?.typedLoss?.code || manualMapPortabilityCommandState.pdfTypedLoss,
     };
   } else {
     manualMapPortabilityCommandState = {
@@ -15329,6 +15331,19 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
     void runManualMapExportCommand('manualMap.export.imagePdf', { mapId });
   });
   actionBar.appendChild(imagePdfButton);
+  const pdfButton = document.createElement('button');
+  pdfButton.type = 'button';
+  pdfButton.className = imagePdfButton.className;
+  pdfButton.textContent = 'Export PDF';
+  pdfButton.dataset.manualMapPortabilityAction = 'export-pdf';
+  pdfButton.dataset.productCommandId = 'manualMap.export.imagePdf';
+  pdfButton.disabled = !state.mapId || manualMapHasRetainedDraft();
+  pdfButton.title = 'Apply or cancel the current draft before exporting PDF';
+  pdfButton.addEventListener('click', () => {
+    if (pdfButton.disabled || manualMapHasRetainedDraft()) return;
+    void runManualMapExportCommand('manualMap.export.imagePdf', { mapId, requestedFormat: 'pdf' });
+  });
+  actionBar.appendChild(pdfButton);
   actionBar.appendChild(makeManualMapDraftButton('Import JSON file', () => {
     const targetMapId = makeManualMapAuthorId('manual-map-imported');
     return {
@@ -15567,6 +15582,11 @@ function renderManualMapPortabilityCommandReadback(parent, options = {}) {
       key: 'imagePdf',
       label: 'Image/PDF packet',
       value: state.imageEvidenceHash ? `${state.imageEvidenceHash.slice(0, 12)}${state.pdfTypedLoss ? ' typed PDF loss' : ''}` : 'not exported',
+    },
+    {
+      key: 'pdf',
+      label: 'PDF export',
+      value: state.pdfSha256 ? state.pdfSha256.slice(0, 12) : 'not exported',
     },
     {
       key: 'import',

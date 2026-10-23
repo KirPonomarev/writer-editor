@@ -714,3 +714,236 @@ for (const fault of ['missing-method', 'unavailable', 'false', 'unknown', 'malfo
     assert.equal(fs.readdirSync(fs.realpathSync(h.root)).some(name => name.includes('.stage10-cas.')), false);
   });
 }
+
+// These bytes exercise the binary carrier; native PDF parse/render is separate.
+function pdfCarrierBytes(length = 29) {
+  const bytes = Buffer.alloc(length, 0xff);
+  Buffer.from('%PDF-1.7\n', 'latin1').copy(bytes);
+  Buffer.from('\n%%EOF\n').copy(bytes, length - 7); return bytes;
+}
+
+function pdfArtifactMutation(targetPath, next, previous = null) {
+  const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+  return { schemaVersion: 'yalken.stage10.externalArtifactMutation.v2', targetPath, format: 'pdf', mediaType: 'application/pdf',
+    nextBase64: next.toString('base64'), nextByteLength: next.length, nextHash: hash(next), previousExists: previous !== null,
+    previousBase64: previous?.toString('base64') || '', previousByteLength: previous?.length || 0, previousHash: previous === null ? '' : hash(previous) };
+}
+
+let pdfFixtureSequence = 0;
+async function pdfPersistenceFixture(t, previous = null, options = {}) {
+  const core = await importModule('src/core/runtime.mjs'), boot = await importModule('src/product/stage10ApplicationBootstrap.mjs');
+  const projectId = 'pdf-carrier-' + ++pdfFixtureSequence, h = await createHarness('pdf-carrier', projectId);
+  const rootIdentity = fs.lstatSync(h.root);
+  t.after(() => { const now = fs.lstatSync(h.root); assert.equal(now.dev, rootIdentity.dev); assert.equal(now.ino, rootIdentity.ino); fs.rmSync(h.root, { recursive: true }); });
+  const targetPath = path.join(fs.realpathSync(h.root), 'map.pdf'), next = pdfCarrierBytes();
+  if (previous !== null) fs.writeFileSync(targetPath, previous);
+  const manifestPath = path.join(h.projectRoot, 'project.craftsman.json');
+  fs.writeFileSync(manifestPath, manifestTextForState(h.bootstrap.getRuntime().getSession().coreState, projectId, { protected: 'keep é 🧭' }));
+  let publisher;
+  if (options.physical !== false) {
+    if (process.platform === 'darwin') {
+      const helperPath = path.join(fs.realpathSync(h.root), 'helper');
+      require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({ outputPath: helperPath });
+      const native = require('../../src/main/projectArchiveDarwinPublication.cjs').createDarwinExclusiveFilePublisher({ helperPath });
+      publisher = async input => {
+        const before = fs.lstatSync(input.sourcePath), bytes = fs.readFileSync(input.sourcePath), result = await native(input);
+        const after = fs.lstatSync(input.sourcePath); assert.equal(after.dev, before.dev); assert.equal(after.ino, before.ino);
+        assert.deepEqual(fs.readFileSync(input.sourcePath), bytes); return result;
+      };
+      publisher.assertAvailable = native.assertAvailable;
+    } else {
+      // Finite non-Darwin effect, NOT physical Darwin publication/PDF proof.
+      publisher = async ({ sourcePath, targetPath, assertCurrent }) => {
+        await assertCurrent(); await fs.promises.copyFile(sourcePath, targetPath, fs.constants.COPYFILE_EXCL);
+      };
+      publisher.assertAvailable = async ({ assertCurrent }) => { await assertCurrent(); return { available: true, readOnly: true }; };
+    }
+  }
+  const adapter = h.makeAdapter({ publishFileExclusive: publisher, onKillpoint: options.onKillpoint });
+  const bootstrap = boot.createStage10ApplicationBootstrap({ persistencePort: adapter }); await bootstrap.reopenProjectRuntime({ projectId });
+  const command = async (type, payload, external) => {
+    const state = bootstrap.getRuntime().getSession().coreState, text = fs.readFileSync(manifestPath, 'utf8');
+    return bootstrap.dispatchCanonicalProjectCommand(type, { projectId, mapId: 'map', ...payload },
+      { projectId, coreState: state, sourceHash: hashText(text), sourceRevision: state.data.lastCommandId,
+        prepareMutation: ({ nextCoreState }) => projectTruthMutation(projectId, text,
+          manifestTextForState(nextCoreState, projectId, { protected: 'keep é 🧭' }), external) });
+  };
+  assert.equal((await command(core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE, { title: 'Map' })).ok, true);
+  const dispatch = (external = pdfArtifactMutation(targetPath, next, previous), requestedBytes = next) => command(
+    external.format === 'json' ? core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_JSON : core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_IMAGE_PDF,
+    { artifact: { schemaVersion: 'manualMap.localArtifactIntent.v1', format: external.format === 'json' ? 'json' : 'pdf',
+      mediaType: external.format === 'json' ? 'application/json' : 'application/pdf',
+      sha256: hashText(external.format === 'json' ? external.nextText : requestedBytes),
+      byteLength: external.format === 'json' ? Buffer.byteLength(external.nextText) : requestedBytes.length } }, external);
+  return { ...h, adapter, targetPath, manifestPath, next, previous, publisher, dispatch,
+    reopen: () => h.makeAdapter({ publishFileExclusive: publisher }).readStage10State(projectId) };
+}
+
+test('manual-map PDF v2 rejects malformed binary carriers before canonical or external writes', async t => {
+  const h = await pdfPersistenceFixture(t, Buffer.from([0xff, 0xfe, 0]), { physical: false });
+  const original = pdfArtifactMutation(h.targetPath, h.next, h.previous), before = directoryDigest(h.projectRoot);
+  const invalid = [
+    { bytes: 'forged' }, { previousText: '' }, { targetPath: 'relative.pdf' }, { targetPath: '/' }, { targetPath: '/tmp/a\0.pdf' },
+    { format: 'svg' }, { mediaType: 'text/html' }, { previousExists: 1 }, { previousExists: null },
+    { nextByteLength: '29' }, { nextByteLength: 0 }, { nextByteLength: 1.5 }, { nextByteLength: 8 * 1024 * 1024 + 1 },
+    { nextBase64: original.nextBase64 + '\n' }, { nextBase64: original.nextBase64.replace('/', '_') },
+    { nextBase64: '*'.repeat(original.nextBase64.length) }, { nextHash: '0'.repeat(64) },
+    { previousByteLength: -1 }, { previousByteLength: 8 * 1024 * 1024 + 1 }, { previousHash: '' },
+    { previousExists: false }, { previousBase64: 'Zh==', previousByteLength: 1, previousHash: hashText('f') },
+    { nextBase64: Buffer.from('<html>not PDF</html>').toString('base64'), nextByteLength: 20, nextHash: hashText('<html>not PDF</html>') },
+  ];
+  for (const extra of invalid) {
+    // A refused persistence call is not a fresh in-memory command context.
+    const current = await pdfPersistenceFixture(t, h.previous, { physical: false }), baseline = directoryDigest(current.projectRoot);
+    const carrier = pdfArtifactMutation(current.targetPath, current.next, current.previous);
+    await assert.rejects(current.dispatch({ ...carrier, ...extra }), error => {
+      assert.equal(error.code, 'E_STAGE10_EXTERNAL_ARTIFACT_MUTATION_INVALID', JSON.stringify(error)); return true;
+    }, JSON.stringify(extra));
+    assert.equal(directoryDigest(current.projectRoot), baseline); assert.deepEqual(fs.readFileSync(current.targetPath), current.previous);
+    assert.equal(fs.existsSync(current.adapter.paths(current.projectId).transaction), false);
+  }
+  const oversized = 'A'.repeat(4 * Math.ceil(8 * 1024 * 1024 / 3) + 4), from = Buffer.from; let decoded = 0;
+  Buffer.from = function(value, ...args) { if (value === oversized && args[0] === 'base64') decoded++; return from(value, ...args); };
+  try { await assert.rejects(h.dispatch({ ...original, nextBase64: oversized }), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_MUTATION_INVALID'); }
+  finally { Buffer.from = from; }
+  assert.equal(decoded, 0); assert.equal(directoryDigest(h.projectRoot), before);
+  const absent = await pdfPersistenceFixture(t, null, { physical: false });
+  const missing = pdfArtifactMutation(absent.targetPath, absent.next); delete missing.previousExists;
+  await assert.rejects(absent.dispatch(missing), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_MUTATION_INVALID');
+});
+
+test('manual-map PDF v2 raw publication and four interruption schedules preserve opaque previous bytes', async t => {
+  for (const previous of [null, Buffer.alloc(0), Buffer.from([0xff, 0xfe, 0, 0x80])]) {
+    const h = await pdfPersistenceFixture(t, previous);
+    assert.equal((await h.dispatch()).ok, true); assert.deepEqual(fs.readFileSync(h.targetPath), h.next);
+    assert.equal((await h.reopen()).session.projectId, h.projectId);
+    assert.equal(JSON.parse(fs.readFileSync(h.manifestPath)).protected, 'keep é 🧭');
+    assert.equal(fs.readdirSync(h.root).some(name => name.includes('.stage10-cas.')), false);
+  }
+  for (const point of ['after-external-artifact-candidate', 'after-external-artifact-reserve', 'after-external-artifact-write', 'after-anchor-write']) {
+    let armed = false;
+    const h = await pdfPersistenceFixture(t, Buffer.from([0xff, 0xfe, 0, 0x80]), { onKillpoint(name) {
+      if (armed && name === point) { armed = false; throw Error('PDF_INTERRUPTION:' + point); }
+    } });
+    const manifest = fs.readFileSync(h.manifestPath); armed = true;
+    await assert.rejects(h.dispatch(), /PDF_INTERRUPTION/u);
+    const transaction = JSON.parse(fs.readFileSync(h.adapter.paths(h.projectId).transaction)), reservation = transaction.externalArtifactReservation;
+    assert.deepEqual(fs.readFileSync(reservation.candidatePath), h.next);
+    if (point !== 'after-external-artifact-candidate') assert.deepEqual(fs.readFileSync(reservation.backupPath), h.previous);
+    assert.equal(transaction.projectTruthMutation.externalArtifactMutation.schemaVersion, 'yalken.stage10.externalArtifactMutation.v2');
+    assert.equal((await h.reopen()).recoveryConsumed, true);
+    assert.deepEqual(fs.readFileSync(h.targetPath), point === 'after-anchor-write' ? h.next : h.previous);
+    if (point !== 'after-anchor-write') assert.deepEqual(fs.readFileSync(h.manifestPath), manifest);
+    assert.equal(fs.existsSync(reservation.candidatePath), false); assert.equal(fs.existsSync(reservation.backupPath), false);
+    assert.equal(fs.existsSync(h.adapter.paths(h.projectId).transaction), false);
+  }
+  const boundary = await pdfPersistenceFixture(t), bytes = pdfCarrierBytes(8 * 1024 * 1024);
+  assert.equal((await boundary.dispatch(pdfArtifactMutation(boundary.targetPath, bytes), bytes)).ok, true);
+  assert.deepEqual(fs.readFileSync(boundary.targetPath), bytes);
+});
+
+test('manual-map PDF v2 bounded no-follow reads retain changed files and ambiguous reservations', async t => {
+  for (const location of ['target', 'candidate', 'backup', 'conflict']) for (const fault of ['oversize', 'symlink', 'changed']) {
+    let armed = false;
+    const point = location === 'backup' ? 'after-external-artifact-reserve' : location === 'conflict' ? 'after-external-artifact-write' : 'after-external-artifact-candidate';
+    const h = await pdfPersistenceFixture(t, Buffer.from([0xff, 0xfe, 0x80]), { onKillpoint(name) {
+      if (armed && name === point) { armed = false; throw Error('PDF_READ_FIXTURE'); }
+    } });
+    let reservation;
+    if (location !== 'target') {
+      armed = true; await assert.rejects(h.dispatch(), /PDF_READ_FIXTURE/u);
+      reservation = JSON.parse(fs.readFileSync(h.adapter.paths(h.projectId).transaction)).externalArtifactReservation;
+    }
+    const file = location === 'target' ? h.targetPath : reservation[location + 'Path'];
+    if (location === 'conflict') fs.writeFileSync(file, Buffer.from([0x81]));
+    if (fault === 'oversize') fs.truncateSync(file, 8 * 1024 * 1024 + 1);
+    if (fault === 'symlink') { fs.renameSync(file, file + '.original'); fs.symlinkSync(file + '.original', file); }
+    const before = fs.readFileSync(file), manifest = fs.readFileSync(h.manifestPath), originalOpen = fs.promises.open; let injected = false;
+    if (fault === 'changed') fs.promises.open = async (name, ...args) => {
+      const handle = await originalOpen(name, ...args); if (name !== file) return handle;
+      const read = handle.read.bind(handle); handle.read = async (...params) => {
+        const result = await read(...params); if (!injected) { injected = true; fs.appendFileSync(file, Buffer.from([0x82])); } return result;
+      }; return handle;
+    };
+    try { await assert.rejects(location === 'target' ? h.dispatch() : h.reopen(), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_READ_FAILED'); }
+    finally { fs.promises.open = originalOpen; }
+    assert.deepEqual(fs.readFileSync(file), fault === 'changed' ? Buffer.concat([before, Buffer.from([0x82])]) : before);
+    if (fault === 'changed') assert.equal(injected, true);
+    if (location === 'target') assert.deepEqual(fs.readFileSync(h.manifestPath), manifest);
+    else {
+      assert.equal(fs.existsSync(h.adapter.paths(h.projectId).transaction), true);
+      assert.equal(fs.lstatSync(reservation.candidatePath).isFile() || fault === 'symlink' && location === 'candidate', true);
+      if (location === 'conflict') assert.deepEqual(fs.readFileSync(h.targetPath), h.next);
+    }
+  }
+});
+
+test('manual-map PDF v2 refuses reservationless legacy recovery while v1 tuple and recovery remain exact', async t => {
+  let armed = false;
+  const h = await pdfPersistenceFixture(t, Buffer.from([0xff, 0xfe]), { onKillpoint(name) {
+    if (armed && name === 'after-external-artifact-candidate') { armed = false; throw Error('PDF_LEGACY_FIXTURE'); }
+  } });
+  armed = true; await assert.rejects(h.dispatch(), /PDF_LEGACY_FIXTURE/u);
+  const transactionPath = h.adapter.paths(h.projectId).transaction, transaction = JSON.parse(fs.readFileSync(transactionPath));
+  const before = fs.readFileSync(h.manifestPath), reservation = transaction.externalArtifactReservation;
+  for (const version of [2, 3, 4]) {
+    const forged = { ...transaction, schemaVersion: 'yalken.stage10.mainPersistenceTransaction.v' + version };
+    delete forged.externalArtifactReservation; delete forged.externalArtifactReservationDigest;
+    fs.writeFileSync(transactionPath, JSON.stringify(forged));
+    await assert.rejects(h.reopen(), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_RESERVATION_INVALID' && error.reason === 'PDF_RESERVATION_REQUIRED');
+    assert.deepEqual(fs.readFileSync(h.manifestPath), before); assert.deepEqual(fs.readFileSync(h.targetPath), h.previous);
+    assert.deepEqual(fs.readFileSync(reservation.candidatePath), h.next);
+  }
+  fs.writeFileSync(transactionPath, JSON.stringify(transaction)); assert.equal((await h.reopen()).recoveryConsumed, true);
+  let v1Armed = false;
+  const old = await pdfPersistenceFixture(t, Buffer.from('{"old":"é 🧭"}\n'), { onKillpoint(name) {
+    if (v1Armed && name === 'after-external-artifact-candidate') { v1Armed = false; throw Error('V1_TUPLE_FIXTURE'); }
+  } });
+  const v1 = artifactMutation(old.targetPath, '{"next":"é 🧭"}\n', old.previous.toString('utf8')); v1Armed = true;
+  await assert.rejects(old.dispatch(v1), /V1_TUPLE_FIXTURE/u);
+  const journal = JSON.parse(fs.readFileSync(old.adapter.paths(old.projectId).transaction));
+  assert.deepEqual(journal.projectTruthMutation.externalArtifactMutation, v1);
+  assert.deepEqual(Object.keys(journal.projectTruthMutation.externalArtifactMutation), ['schemaVersion', 'targetPath', 'format', 'mediaType', 'nextText', 'nextHash', 'previousExists', 'previousText', 'previousHash']);
+  const hashing = await importModule('src/core/browser-safe-hash.mjs');
+  assert.equal(journal.projectTruthMutationDigest, hashing.hashCanonicalValue(journal.projectTruthMutation));
+  assert.equal((await old.reopen()).recoveryConsumed, true); assert.deepEqual(fs.readFileSync(old.targetPath), old.previous);
+});
+
+test('manual-map PDF v2 non-regular FIFO or directory input refuses without blocking or replacing opaque bytes', async t => {
+  const h = await pdfPersistenceFixture(t, Buffer.from([0xff, 0xfe, 0x81]));
+  const original = h.targetPath + '.opaque-original'; fs.renameSync(h.targetPath, original);
+  const fifo = ['darwin', 'linux'].includes(process.platform);
+  if (fifo) { const made = spawnSync('mkfifo', [h.targetPath], { encoding: 'utf8' }); assert.equal(made.status, 0, made.stderr); }
+  else fs.mkdirSync(h.targetPath); // Explicit non-regular control, never a skipped case.
+  const shape = fs.lstatSync(h.targetPath); assert.equal(fifo ? shape.isFIFO() : shape.isDirectory(), true);
+  const canonical = directoryDigest(h.projectRoot); let timer, finished = false, release;
+  const pending = h.dispatch().finally(() => { finished = true; });
+  try {
+    const deadline = new Promise((_, reject) => { timer = setTimeout(() => reject(Error('PDF_NON_REGULAR_READ_BLOCKED')), 10000); });
+    await assert.rejects(Promise.race([pending, deadline]), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_READ_FAILED');
+  } finally {
+    clearTimeout(timer);
+    // Release a regressed blocking FIFO open so a failed test cannot hang Node.
+    if (!finished && fifo) release = fs.openSync(h.targetPath, fs.constants.O_RDWR | fs.constants.O_NONBLOCK);
+    try { await pending.catch(() => {}); } finally { if (release !== undefined) fs.closeSync(release); }
+  }
+  assert.deepEqual(fs.readFileSync(original), h.previous); assert.equal(directoryDigest(h.projectRoot), canonical);
+  assert.equal(fs.lstatSync(h.targetPath).ino, shape.ino); assert.equal(fs.existsSync(h.adapter.paths(h.projectId).transaction), false);
+});
+
+test('manual-map PDF v2 late foreign targets survive refusal and actual recovery', async t => {
+  for (const previous of [null, Buffer.from([0xff, 0xfe, 0x81])]) {
+    let armed = false, h; const foreign = Buffer.from([0x80, 0, 0xff, 0xfe]);
+    h = await pdfPersistenceFixture(t, previous, { onKillpoint(name) {
+      if (armed && name === 'after-transaction-write') { armed = false; fs.writeFileSync(h.targetPath, foreign); }
+    } });
+    const manifest = fs.readFileSync(h.manifestPath); armed = true;
+    await assert.rejects(h.dispatch(), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_CAS_FAILED');
+    assert.equal(armed, false); assert.deepEqual(fs.readFileSync(h.targetPath), foreign);
+    const journal = JSON.parse(fs.readFileSync(h.adapter.paths(h.projectId).transaction)), reservation = journal.externalArtifactReservation;
+    assert.deepEqual(fs.readFileSync(reservation.candidatePath), h.next);
+    assert.equal((await h.reopen()).recoveryConsumed, true); assert.deepEqual(fs.readFileSync(h.targetPath), foreign);
+    assert.deepEqual(fs.readFileSync(h.manifestPath), manifest);
+    assert.equal(fs.existsSync(reservation.candidatePath), false); assert.equal(fs.existsSync(reservation.backupPath), false);
+  }
+});

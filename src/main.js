@@ -38507,15 +38507,18 @@ function manualMapPortabilityError(commandId, code, reason, details = {}) {
 }
 
 async function buildManualMapExternalArtifactMutation({ targetPath, content, format, mediaType }) {
+  const binary = format === 'pdf';
   const nextText = typeof content === 'string' ? content : '';
   const nextHash = computeHash(nextText);
   let previousExists = false;
   let previousText = '';
+  let previousBytes = Buffer.alloc(0);
   try {
     const stat = await fs.lstat(targetPath);
     const loaded = await readExternalFileBounded(targetPath, { maxBytes: MANUAL_MAP_LOCAL_FILE_MAX_BYTES,
       expectedBytes: stat.size, allowEmpty: true, projectRoot: getProjectRootPath() });
-    previousText = new TextDecoder('utf-8', { fatal: true }).decode(loaded.bytes);
+    if (binary) previousBytes = loaded.bytes;
+    else previousText = new TextDecoder('utf-8', { fatal: true }).decode(loaded.bytes);
     previousExists = true;
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
@@ -38526,6 +38529,12 @@ async function buildManualMapExternalArtifactMutation({ targetPath, content, for
       reason: 'MANUAL_MAP_EXPORT_TARGET_TOO_LARGE',
     });
   }
+  if (binary) return {
+    schemaVersion: 'yalken.stage10.externalArtifactMutation.v2', targetPath, format, mediaType,
+    nextBase64: content.toString('base64'), nextByteLength: content.length, nextHash: computeHash(content),
+    previousExists, previousBase64: previousBytes.toString('base64'), previousByteLength: previousBytes.length,
+    previousHash: previousExists ? computeHash(previousBytes) : '',
+  };
   return {
     schemaVersion: 'yalken.stage10.externalArtifactMutation.v1',
     targetPath,
@@ -38649,15 +38658,8 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
       },
     };
   } else {
-    if (typeof payload?.requestedFormat === 'string' && payload.requestedFormat.trim().toLowerCase() === 'pdf') {
-      return manualMapPortabilityError(
-        commandId,
-        'E_MANUAL_MAP_PDF_BINARY_ADAPTER_UNAVAILABLE',
-        'LOCAL_PRINT_TO_PDF_PORT_NOT_BOUND_FOR_MANUAL_MAP_EXPORT',
-        { binaryGenerated: false, typedLoss: true },
-      );
-    }
     const exportModule = await loadManualMapExportModule();
+    await assertCurrent();
     const evidence = exportModule.buildManualMapImagePdfExportEvidence(derived.value.graph);
     if (!evidence?.ok || typeof evidence.value?.image?.content !== 'string') {
       return manualMapPortabilityError(
@@ -38685,12 +38687,29 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
         },
       },
     };
+    if (typeof payload?.requestedFormat === 'string' && payload.requestedFormat.trim().toLowerCase() === 'pdf') {
+      const packet = evidence.value.pdf?.content;
+      if (typeof packet !== 'string' || !packet.includes('<head>') || Buffer.byteLength(packet, 'utf8') > MANUAL_MAP_LOCAL_FILE_MAX_BYTES) {
+        return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_PDF_INPUT_INVALID', 'MANUAL_MAP_PDF_INPUT_INVALID');
+      }
+      const html = packet.replace('<head>', '<head><meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">');
+      content = await renderPdfBufferFromHtml(html);
+      await assertCurrent();
+      if (!Buffer.isBuffer(content) || content.length === 0 || content.length > MANUAL_MAP_LOCAL_FILE_MAX_BYTES
+        || !/^%PDF-[12]\.\d[\r\n]/u.test(content.subarray(0, 9).toString('latin1'))
+        || !/%%EOF[\t\r\n ]*$/u.test(content.subarray(-1024).toString('latin1'))) {
+        return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_PDF_OUTPUT_INVALID', 'MANUAL_MAP_PDF_OUTPUT_INVALID');
+      }
+      format = 'pdf'; mediaType = 'application/pdf';
+      publicResult = { export: { format, mediaType, sha256: computeHash(content), byteLength: content.length,
+        evidenceHash: evidence.value.meta?.evidenceHash || '', localFileWritten: true, pdf: { binaryGenerated: true } } };
+    }
   }
-  const extension = format === 'json' ? 'json' : 'svg';
+  const extension = format;
   const save = await showSaveDialogWithAutonomousPath(mainWindow, {
-    title: format === 'json' ? 'Export Manual Map JSON' : 'Export Manual Map SVG',
+    title: `Export Manual Map ${format.toUpperCase()}`,
     defaultPath: `manual-map.${extension}`,
-    filters: [{ name: format === 'json' ? 'Manual Map JSON' : 'Scalable Vector Graphics', extensions: [extension] }],
+    filters: [{ name: format === 'json' ? 'Manual Map JSON' : format === 'pdf' ? 'Portable Document Format' : 'Scalable Vector Graphics', extensions: [extension] }],
   }, `manual-map.${extension}`);
   await assertCurrent();
   if (!save || save.canceled || !save.filePath) {

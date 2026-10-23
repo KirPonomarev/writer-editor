@@ -62,6 +62,12 @@ export const PRODUCTION_NEGATIVE_EVIDENCE_MAP = Object.freeze([
   evidenceRow('reserved-external-artifact-cas-and-crash-reconciliation', [
     'Atlas V6 A4: child changes to absent and existing artifact targets after preflight are preserved and recovered',
     'Atlas V6 A4: interrupted artifact reservation restores prior bytes and stale recovery leaves no reservation files',
+    "manual-map PDF v2 rejects malformed binary carriers before canonical or external writes",
+    "manual-map PDF v2 raw publication and four interruption schedules preserve opaque previous bytes",
+    "manual-map PDF v2 bounded no-follow reads retain changed files and ambiguous reservations",
+    "manual-map PDF v2 refuses reservationless legacy recovery while v1 tuple and recovery remain exact",
+    "manual-map PDF v2 non-regular FIFO or directory input refuses without blocking or replacing opaque bytes",
+    "manual-map PDF v2 late foreign targets survive refusal and actual recovery",
     'manual-map actual Stage10 regular-file publication retains reserved sources and recovers every artifact interruption',
     'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: missing-method [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
     'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: unavailable [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
