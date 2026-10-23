@@ -388,3 +388,12 @@ test('V6 exact policy rejects malformed own properties ordered arrays and forged
   for (const id of m.WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS) assert.equal(check(active, undefined, id), true, id);
   assert.equal(check(active, undefined, 'cmd.project.save'), true);
 });
+
+test('V6 identity markers on arrays cannot bypass strict rejection through inactive legacy fallback', async t => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  const profile = Object.assign([], m.createWriterAtlasEvidenceReattachmentProfileProjection({ isPackaged: true, platform: 'darwin' }));
+  assert.equal(m.isActiveWriterAtlasEvidenceReattachmentProfile(profile), false);
+  await t.test('command', () => assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId: 'atlas.evidence.reattach',
+    productCommandRecord: { id: 'atlas.evidence.reattach', domain: 'atlas' } }).allowed, false));
+  await t.test('query', () => assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.atlasEntityDossier' }).allowed, false));
+});

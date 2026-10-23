@@ -1122,16 +1122,24 @@ function reattachmentWholeFixtureRoster(h) {
   } }; visit(h.root); return rows;
 }
 
-async function reattachmentMainFixture(t, packaged = false) {
+async function reattachmentMainFixture(t, packaged = false, beforeProject) {
   const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true }), ui = await fullMacRendererCommandPort(h);
+  if (beforeProject) beforeProject(h); // Actual lifecycle bootstrap captures the observer before constructing its prepare port.
   const f = await exactAtlasScene(h, 'Explicit saved reattachment'), { projectId, sceneId } = f;
-  const entityId = 'saved-mira', decisionId = 'saved-confirmation', hash = (await import('../../src/core/browser-safe-hash.mjs')).hashCanonicalValue;
+  const entityId = 'saved-mira', decisionId = 'saved-confirmation';
+  const { hashCanonicalValue: hash, canonicalSerialize } = await import('../../src/core/browser-safe-hash.mjs');
   const command = async (id, payload) => (await ui(id, { projectId, ...payload })).mainResult;
   const query = async () => { const r = await h.query('query.atlasCurrentScene', { projectId, nodeId: sceneId }); assert.equal(r.ok, true, JSON.stringify(r)); return r.atlasCurrentScene; };
   assert.equal((await command('atlas.entity.create', { entityId, name: 'Мира', entityKind: 'character' })).ok, true);
   const first = (await query()).mentions.find(m => m.startOffset === 14); assert.ok(first);
   assert.equal((await command('atlas.mention.confirm', { entityId, sceneId, mentionId: first.mentionId, evidenceAnchor: first.evidenceAnchor, decisionId })).ok, true);
-  const original = JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions[decisionId], originalBytes = JSON.stringify(original);
+  const original = JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions[decisionId];
+  const originalBytes = Buffer.from(canonicalSerialize(original), 'utf8'), originalHash = hash(original);
+  const assertOriginal = () => {
+    const actual = JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions[decisionId];
+    assert.deepEqual(actual, original); assert.deepEqual(Buffer.from(canonicalSerialize(actual), 'utf8'), originalBytes);
+    assert.equal(hash(actual), originalHash);
+  };
   assert.equal((await h.main.handleUiOpenDocumentCommand({ projectId, nodeId: sceneId })).ok, true);
   const envelope = require('../../src/core/document-content-envelope-v1.cjs'); let generation = 0;
   const save = async text => {
@@ -1142,7 +1150,7 @@ async function reattachmentMainFixture(t, packaged = false) {
     assert.equal((await command('cmd.project.save', {})).ok, true);
     const ack = h.sent.filter(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED').at(-1)?.[1]?.ack;
     assert.equal(ack?.savedGeneration, generation); assert.equal(envelope.parseObservablePayload(fs.readFileSync(f.scenePath, 'utf8')).text, text);
-    assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions[decisionId]), originalBytes);
+    assertOriginal();
     return query();
   };
   const shifted = await save('Добавлено. ' + EXACT_ATLAS_TEXT);
@@ -1152,7 +1160,7 @@ async function reattachmentMainFixture(t, packaged = false) {
     return { sourceRecordKind: 'decision', sourceRecordId: decisionId, staleEvidenceAnchor: structuredClone(original.evidenceAnchor),
       newEvidenceAnchor: structuredClone(mention.evidenceAnchor), expectedSourceRecordHash: hash(original), reattachmentId: id, reason: 'Explicit reviewed source' };
   };
-  return { h, ui, f, projectId, sceneId, entityId, decisionId, original, originalBytes, command, query, save, shifted, payload };
+  return { h, ui, f, projectId, sceneId, entityId, decisionId, original, originalBytes, originalHash, assertOriginal, hash, canonicalSerialize, command, query, save, shifted, payload };
 }
 
 test('V6 actual packaged Main successor replaces separately observed V5 reattachment denial [FINITE_IPC_NOT_NATIVE_ACCEPTANCE]', async t => {
@@ -1166,24 +1174,31 @@ test('V6 actual packaged Main successor replaces separately observed V5 reattach
   assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6');
   assert.equal((await x.command('atlas.evidence.reattach', x.payload(x.shifted, 'packaged-first'))).ok, true);
   assert.equal((await x.query()).mentions.find(m => m.startOffset === 68).trustState, 'AUTHOR_CONFIRMED');
-  assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.decisions[x.decisionId]), x.originalBytes);
+  x.assertOriginal();
 });
 
 test('actual unpackaged renderer Main Kernel rejects raw old and new anchor identity with no Documents or integrity-anchor writes', async t => {
   for (const field of ['staleEvidenceAnchor', 'newEvidenceAnchor']) for (const key of ['projectId', 'entityId'])
     for (const value of ['foreign', 42, null, { foreign: true }]) await t.test(`${field}-${key}-${JSON.stringify(value)}`, async t => {
-      const x = await reattachmentMainFixture(t), { h } = x;
+      let reachedCanonical = false, armed = false;
+      const x = await reattachmentMainFixture(t, false, h => h.main.__host.afterTruth(() => { if (armed) reachedCanonical = true; })), { h } = x;
       assert.equal(h.main.__profile().active, false, 'inactive source profile must not mask Core validation');
       assert.equal((await x.command('atlas.evidence.reattach', x.payload(x.shifted, 'normal-control'))).ok, true);
       assert.equal((await x.query()).mentions.find(m => m.startOffset === 68).trustState, 'AUTHOR_CONFIRMED');
+      x.assertOriginal();
       const payload = x.payload(x.shifted, 'must-not-write', 25); payload[field] = { ...payload[field], [key]: value };
-      let reachedCanonical = false; h.main.__host.afterTruth(() => { reachedCanonical = true; });
+      armed = true;
+      const physicalRecordBefore = JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.decisions[x.decisionId]);
       const before = reattachmentWholeFixtureRoster(h), result = await x.command('atlas.evidence.reattach', payload);
+      t.diagnostic(JSON.stringify({ field, key, value, reachedCanonical, ok: result.ok, reason: result.reason, coreError: result.value?.applyResult?.error }));
       assert.equal(reachedCanonical, true, 'real owner preparation and canonical Kernel route must execute');
       assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
       assert.notEqual(result.reason, 'CAPABILITY_DISABLED_FOR_COMMAND');
+      assert.equal(result.value?.error?.code, 'E_COLLAB_EVENTLOG_APPLY_COMMAND_FAILED');
+      assert.equal(result.value?.applyResult?.error?.op, 'atlas.evidence.reattach');
       assert.deepEqual(reattachmentWholeFixtureRoster(h), before, 'covers Documents, Stage10 receipts and userData integrity anchors');
-      assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.decisions[x.decisionId]), x.originalBytes);
+      assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.decisions[x.decisionId]), physicalRecordBefore);
+      x.assertOriginal();
     });
 });
 
@@ -1195,14 +1210,18 @@ test('actual Main preserves saved original and prior reattachment through re-edi
   assert.deepEqual(source.evidenceAnchor, x.original.evidenceAnchor); assert.equal(source.projectId, projectId);
   assert.equal((await x.command('atlas.evidence.reattach', { ...x.payload(x.shifted, 'z-earlier'),
     staleEvidenceAnchor: source.evidenceAnchor, expectedSourceRecordHash: source.sourceRecordHash })).ok, true);
-  const prior = JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.evidenceReattachments['z-earlier']);
+  const prior = JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.evidenceReattachments['z-earlier'];
+  const priorBytes = Buffer.from(x.canonicalSerialize(prior), 'utf8'), priorHash = x.hash(prior);
+  x.assertOriginal();
   const changed = await x.save('Добавлено. ' + EXACT_ATLAS_TEXT + ' Позже.'); assert.equal(changed.summary.confirmedMentionCount, 0);
   const review = (await h.query('query.atlasEntityDossier', { projectId, entityId })).atlasEntityDossier;
   assert.equal(review.summary.reviewRequiredEvidenceCount, 1); assert.equal(review.summary.reattachedEvidenceCount, 0);
   assert.equal(review.evidenceLedger.sourceRecords[0].currentEvidenceAnchor, null);
   assert.equal((await x.command('atlas.evidence.reattach', x.payload(changed, 'a-later', 25))).ok, true);
   const manifest = JSON.parse(fs.readFileSync(x.f.manifestPath)); assert.equal(Object.keys(manifest.atlas.evidenceReattachments).length, 2);
-  assert.equal(JSON.stringify(manifest.atlas.evidenceReattachments['z-earlier']), prior); assert.equal(JSON.stringify(manifest.atlas.decisions[x.decisionId]), x.originalBytes);
+  assert.deepEqual(manifest.atlas.evidenceReattachments['z-earlier'], prior);
+  assert.deepEqual(Buffer.from(x.canonicalSerialize(manifest.atlas.evidenceReattachments['z-earlier']), 'utf8'), priorBytes);
+  assert.equal(x.hash(manifest.atlas.evidenceReattachments['z-earlier']), priorHash); x.assertOriginal();
   const beforeRead = reattachmentWholeFixtureRoster(h); await x.query(); await h.query('query.atlasEntityDossier', { projectId, entityId });
   assert.deepEqual(reattachmentWholeFixtureRoster(h), beforeRead);
   const sceneBytes = fs.readFileSync(x.f.scenePath); assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId })).ok, true);
@@ -1212,20 +1231,26 @@ test('actual Main preserves saved original and prior reattachment through re-edi
 
 test('actual reattachment route refuses stale target revoked capability owner foreign project and commit CAS without author writes', async t => {
   for (const fault of ['stale', 'capability', 'owner', 'foreign-project', 'revision']) await t.test(fault, async t => {
-    const x = await reattachmentMainFixture(t), { h } = x, payload = x.payload(x.shifted, 'must-not-write');
+    let expected, reached = false, armed = false, x;
+    x = await reattachmentMainFixture(t, false, h => {
+      if (fault === 'revision') h.main.__host.afterTruth(() => {
+        if (!armed) return;
+        reached = true; const m = JSON.parse(fs.readFileSync(x.f.manifestPath)); m.concurrentAuthor = 'preserved'; m.lastCommandId += 7;
+        fs.writeFileSync(x.f.manifestPath, JSON.stringify(m)); expected = reattachmentWholeFixtureRoster(h);
+      });
+    });
+    const { h } = x, payload = x.payload(x.shifted, 'must-not-write');
     if (fault === 'stale') await x.save('Добавлено. ' + EXACT_ATLAS_TEXT + ' Позже.');
     if (fault === 'capability') h.main.__host.denyCapability('cap.atlas.evidence.reattach');
     if (fault === 'owner') h.main.__host.revokeOwner();
     if (fault === 'foreign-project') payload.projectId = 'foreign';
-    let expected = reattachmentWholeFixtureRoster(h), reached = false;
-    if (fault === 'revision') h.main.__host.afterTruth(() => {
-      reached = true; const m = JSON.parse(fs.readFileSync(x.f.manifestPath)); m.concurrentAuthor = 'preserved'; m.lastCommandId += 7;
-      fs.writeFileSync(x.f.manifestPath, JSON.stringify(m)); expected = reattachmentWholeFixtureRoster(h);
-    });
+    const physicalRecordBefore = JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.decisions[x.decisionId]);
+    expected = reattachmentWholeFixtureRoster(h); armed = true;
     const result = await x.command('atlas.evidence.reattach', payload);
     assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
-    if (fault === 'revision') assert.equal(reached, true);
+    if (fault === 'revision') { assert.equal(reached, true); assert.equal(result.reason, 'PRODUCT_COMMAND_REVISION_CONFLICT'); }
     assert.deepEqual(reattachmentWholeFixtureRoster(h), expected);
-    assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.decisions[x.decisionId]), x.originalBytes);
+    assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.decisions[x.decisionId]), physicalRecordBefore);
+    x.assertOriginal();
   });
 });

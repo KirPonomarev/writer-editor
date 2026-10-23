@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterAtlasEvidenceReattachmentProfileCandidate(profile)) return evaluateReattachmentCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterExactAtlasProfileCandidate(profile)) return evaluateExactAtlasCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterManualMapProfileCandidate(profile)) {
@@ -209,6 +210,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterAtlasEvidenceReattachmentProfileCandidate(profile)) return evaluateReattachmentQueryAccess(profile, queryId);
   if (isWriterExactAtlasProfileCandidate(profile)) return evaluateExactAtlasQueryAccess(profile, queryId);
   if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownQueryAccess(profile, queryId);
   if (isWriterManualMapProfileCandidate(profile)) {
@@ -319,7 +321,58 @@ function evaluateExactAtlasQueryAccess(profile, queryId) {
     OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
+// V6 admits only explicit saved Atlas evidence reattachment.
+const WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v6';
+const WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_ID = 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6';
+const WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS = Object.freeze([...WRITER_EXACT_ATLAS_COMMAND_IDS, 'atlas.evidence.reattach']);
+function createWriterAtlasEvidenceReattachmentProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_SCHEMA_VERSION, profileId: WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_ID,
+    admittedCommandIds: WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS, admittedQueryIds: WRITER_EXACT_ATLAS_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterAtlasEvidenceReattachmentProfileCandidate(profile) {
+  return Boolean(profile) && typeof profile === 'object' && (normalizeIdentity(profile.profileId).startsWith(WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_ID)
+    || normalizeIdentity(profile.schemaVersion).startsWith(WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_SCHEMA_VERSION)
+    || Array.isArray(profile.admittedCommandIds) && profile.admittedCommandIds.includes('atlas.evidence.reattach'));
+}
+function isActiveWriterAtlasEvidenceReattachmentProfile(profile) {
+  if (!isPlainObject(profile)) return false;
+  if (!isWriterAtlasEvidenceReattachmentProfileCandidate(profile)) return false;
+  const expected = createWriterAtlasEvidenceReattachmentProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const keys = Reflect.ownKeys(expected);
+  return Reflect.ownKeys(profile).length === keys.length && keys.every(key => Object.hasOwn(profile, key) && (Array.isArray(expected[key])
+    ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && Reflect.ownKeys(profile[key]).length === expected[key].length + 1
+      && expected[key].every((id, index) => Object.hasOwn(profile[key], index))
+      && expected[key].every((id, index) => profile[key][index] === id)
+    : profile[key] === expected[key]));
+}
+function reattachmentProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterAtlasEvidenceReattachmentProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_ID });
+}
+function evaluateReattachmentCommandAccess(profile, commandId, productCommandRecord) {
+  const id = normalizeIdentity(commandId);
+  const selected = WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS.includes(commandId) && isPlainObject(productCommandRecord)
+    && productCommandRecord.id === commandId && productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap');
+  return reattachmentProfileAccess(profile, selected, isOptionalWriterLocalCommand(commandId, productCommandRecord)
+    || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+}
+function evaluateReattachmentQueryAccess(profile, queryId) {
+  const id = normalizeIdentity(queryId);
+  return reattachmentProfileAccess(profile, WRITER_EXACT_ATLAS_QUERY_IDS.includes(queryId),
+    OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
+}
+
 module.exports = Object.freeze({
+  WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_SCHEMA_VERSION,
+  WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_ID,
+  WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS,
+  createWriterAtlasEvidenceReattachmentProfileProjection,
+  isActiveWriterAtlasEvidenceReattachmentProfile,
   WRITER_LOCAL_PROFILE_SCHEMA_VERSION,
   WRITER_LOCAL_PROFILE_ID,
   WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,

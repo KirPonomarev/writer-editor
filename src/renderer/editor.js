@@ -15994,6 +15994,7 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
     button.setAttribute('aria-label', `${label}. ${options.reason}`);
   }
   button.addEventListener('click', () => {
+    if (commandId === 'atlas.evidence.reattach' && (button.disabled || !button.isConnected)) return;
     const nextPayload = typeof payload === 'function' ? payload() : payload;
     void runProductJourneyCommand(commandId, nextPayload);
   });
@@ -16174,6 +16175,12 @@ function appendAtlasJourneySelect(parent, config = {}) {
       [config.fieldName]: select.value,
     };
     if (config.fieldName === 'mentionId') {
+      if (atlasJourneyDraft.reattachmentSource) {
+        atlasJourneyDraft.reattachmentTarget = select.value;
+        atlasJourneyDraft.reattachmentId = '';
+        atlasJourneyDraft.reattachmentIntentKey = '';
+        atlasJourneyDraft.reattachmentPending = false;
+      }
       const mention = findAtlasJourneyMention(select.value);
       if (mention?.entityId) {
         atlasJourneyDraft.sourceEntityId = mention.entityId;
@@ -16346,7 +16353,7 @@ function formatAtlasJourneyEntityOption(entity) {
 function formatAtlasJourneyMentionOption(mention) {
   const entity = findAtlasJourneyEntity(mention.entityId);
   const quote = mention.context?.quote || mention.matchedText || mention.mentionId;
-  return `${entity?.name || mention.entityId} · ${quote}`;
+  return `${entity?.name || mention.entityId} · ${mention.startOffset}–${mention.endOffset} · ${mention.context?.before || ''} [${quote}] ${mention.context?.after || ''}`;
 }
 
 function setAtlasTemporalDraftField(fieldName, value) {
@@ -16570,6 +16577,7 @@ async function refreshAtlasProductSurfaces(options = {}) {
 }
 
 async function runProductJourneyCommand(commandId, payload = {}) {
+  if (commandId === 'atlas.evidence.reattach') return runAtlasReattachmentCommand();
   const nextCommandSeq = Math.max(atlasCommandPublicationSequence, Number(atlasJourneyState.commandSeq || 0)) + 1;
   atlasCommandPublicationSequence = nextCommandSeq;
   const context = captureAtlasPublication();
@@ -16738,13 +16746,9 @@ function renderAtlasJourneyState() {
     restoreOperationId: ensureAtlasJourneyDraftId('restoreOperationId', 'atlas-split-restore'),
   }), { actionId: 'split-restore', disabled: !atlasJourneyDraft.mergeOperationId, reason: atlasJourneyDraft.mergeOperationId ? '' : 'Merge first' }));
   actionBar.appendChild(makeAtlasCommandButton('Reattach evidence', 'atlas.evidence.reattach', () => ({
-    sourceRecordKind: 'decision',
-    sourceRecordId: atlasJourneyDraft.decisionId || '',
-    staleEvidenceAnchor: atlasJourneyDraft.decisionEvidenceAnchor || mention?.evidenceAnchor || null,
-    newEvidenceAnchor: mention?.evidenceAnchor || null,
-    reattachmentId: ensureAtlasJourneyDraftId('reattachmentId', 'atlas-reattach'),
     reason: 'author-reviewed',
-  }), { actionId: 'reattach-evidence', disabled: !mention || !atlasJourneyDraft.decisionId, reason: atlasJourneyDraft.decisionId ? '' : 'Confirm a mention first' }));
+  }), { actionId: 'reattach-evidence', disabled: !atlasJourneyDraft.reattachmentSource || !getAtlasReattachmentIntent() || atlasJourneyDraft.reattachmentPending === true,
+    reason: 'Choose a saved confirmation in the entity dossier, then an exact current occurrence' }));
   atlasJourneyHost.appendChild(actionBar);
 
   const targetSummary = document.createElement('div');
@@ -17155,6 +17159,121 @@ async function refreshAtlasOverview(options = {}) {
   renderAtlasWorkspaceState();
 }
 
+function getAtlasReattachmentSources(state = atlasEntityDossierState) {
+  const ledger = state?.evidenceLedger, records = ledger?.sourceRecords;
+  if (!currentProjectId || !atlasSelectedEntityId || state?.state !== 'ready' || state.projectId !== currentProjectId || state.selectedEntityId !== atlasSelectedEntityId
+    || !Array.isArray(records) || records.length > 24 || typeof ledger.sourceRecordsComplete !== 'boolean'
+    || !Number.isSafeInteger(ledger.sourceRecordCount) || ledger.sourceRecordCount < records.length
+    || ledger.sourceRecordsComplete && ledger.sourceRecordCount !== records.length || ledger.state === 'unavailable') return null;
+  return records;
+}
+
+function isAtlasReattachmentSource(source) {
+  const anchor = source?.evidenceAnchor;
+  if (!source || source.rowKind !== 'sourceRecord' || source.projectId !== currentProjectId || source.entityId !== atlasSelectedEntityId
+    || source.sourceRecordKind !== 'decision'
+    || typeof source.sourceRecordId !== 'string' || !source.sourceRecordId
+    || typeof source.sourceRecordHash !== 'string' || !/^[a-f0-9]{64}$/u.test(source.sourceRecordHash) || !anchor || anchor.schemaVersion !== 'atlas.evidenceAnchor.v1'
+    || typeof anchor.anchorId !== 'string' || !anchor.anchorId || typeof anchor.sceneId !== 'string' || !anchor.sceneId
+    || !Number.isSafeInteger(anchor.startOffset) || anchor.startOffset < 0 || !Number.isSafeInteger(anchor.endOffset)
+    || anchor.endOffset <= anchor.startOffset || typeof anchor.quote !== 'string' || anchor.quote.length !== anchor.endOffset - anchor.startOffset
+    || anchor.quoteHash !== hashCanonicalValue(anchor.quote) || !/^[a-f0-9]{64}$/u.test(anchor.sceneTextHash || '')) return false;
+  return ['projectId', 'entityId'].every(key => !Object.hasOwn(anchor, key)
+    || typeof anchor[key] === 'string' && (!anchor[key] || anchor[key] === source[key]));
+}
+
+function getAtlasReattachmentContext() {
+  return { projectId: currentProjectId, sceneId: currentDocumentId, entityId: atlasSelectedEntityId,
+    epoch: atlasPublicationEpoch, publicationId: currentTreeContentPublicationId, generation: localEditGeneration,
+    tab: currentRightTab, surface: currentAtlasSurface };
+}
+
+function isAtlasReattachmentCurrent(context) {
+  return context && !localDirty && localEditGeneration === lastAckedGeneration
+    && Object.entries(getAtlasReattachmentContext()).every(([key, value]) => context[key] === value);
+}
+
+function getAtlasReattachmentIntent() {
+  const source = atlasJourneyDraft.reattachmentSource, context = atlasJourneyDraft.reattachmentContext;
+  const records = getAtlasReattachmentSources();
+  if (!isAtlasReattachmentCurrent(context) || !records || !isAtlasReattachmentSource(source)
+    || !records.some(row => hashCanonicalValue(row) === hashCanonicalValue(source))) return null;
+  const mention = findAtlasJourneyMention(atlasJourneyDraft.reattachmentTarget), anchor = mention?.evidenceAnchor;
+  const raw = getPlainText(), canonical = parseDocumentContent(composeDocumentContent()).text;
+  if (typeof raw !== 'string' || typeof canonical !== 'string' || !raw.startsWith(canonical) || !/^\n*$/u.test(raw.slice(canonical.length))
+    || atlasCurrentSceneState.state !== 'ready' || atlasCurrentSceneState.projectId !== currentProjectId
+    || atlasCurrentSceneState.sceneId !== currentDocumentId || mention?.entityId !== source.entityId || mention?.sceneId !== currentDocumentId
+    || !anchor || anchor.schemaVersion !== 'atlas.evidenceAnchor.v1' || !anchor.anchorId
+    || anchor.projectId !== currentProjectId || anchor.entityId !== source.entityId || anchor.sceneId !== currentDocumentId
+    || !Number.isSafeInteger(anchor.startOffset) || anchor.startOffset < 0 || !Number.isSafeInteger(anchor.endOffset)
+    || anchor.endOffset <= anchor.startOffset || anchor.endOffset > canonical.length
+    || anchor.startOffset !== mention.startOffset || anchor.endOffset !== mention.endOffset
+    || canonical.slice(anchor.startOffset, anchor.endOffset) !== anchor.quote || anchor.quoteHash !== hashCanonicalValue(anchor.quote)
+    || anchor.sceneTextHash !== hashCanonicalValue(canonical) || atlasCurrentSceneState.summary.sceneTextHash !== anchor.sceneTextHash) return null;
+  return { sourceRecordKind: source.sourceRecordKind, sourceRecordId: source.sourceRecordId,
+    expectedSourceRecordHash: source.sourceRecordHash, staleEvidenceAnchor: source.evidenceAnchor, newEvidenceAnchor: anchor,
+    reason: 'author-reviewed' };
+}
+
+function renderAtlasReattachmentSources(parent, state) {
+  const records = getAtlasReattachmentSources(state);
+  if (!records) { appendAtlasOverviewRow(parent, 'Saved sources unavailable: partial projection', '', ''); return; }
+  appendAtlasOverviewRow(parent, `Saved sources: ${records.length} of ${state.evidenceLedger.sourceRecordCount}`, '', '');
+  const context = getAtlasReattachmentContext();
+  for (const source of records) {
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.dataset.atlasSourceRecordSelect = source.sourceRecordId || '';
+    const anchor = source.evidenceAnchor;
+    button.textContent = `${anchor?.prefixSelector || ''} [${anchor?.quote || 'Saved evidence'}] ${anchor?.suffixSelector || ''} · ${anchor?.startOffset ?? '?'}–${anchor?.endOffset ?? '?'} · ${source.evidenceState || 'unavailable'}`;
+    button.disabled = !isAtlasReattachmentSource(source);
+    button.addEventListener('click', () => {
+      if (button.disabled || !button.isConnected || !isAtlasReattachmentCurrent(context)
+        || !getAtlasReattachmentSources()?.some(row => hashCanonicalValue(row) === hashCanonicalValue(source)) || !isAtlasReattachmentSource(source)) return;
+      atlasJourneyDraftRevision += 1;
+      atlasJourneyDraft = { ...atlasJourneyDraft, decisionId: source.sourceRecordId, decisionEvidenceAnchor: source.evidenceAnchor,
+        reattachmentSource: JSON.parse(JSON.stringify(source)), reattachmentContext: context, reattachmentTarget: '',
+        reattachmentId: '', reattachmentIntentKey: '', reattachmentPending: false };
+      renderAtlasJourneyState();
+      updateStatusText('Saved evidence selected. Choose its exact current occurrence.');
+    });
+    parent.appendChild(button);
+  }
+}
+
+async function runAtlasReattachmentCommand() {
+  const payload = getAtlasReattachmentIntent();
+  if (!payload || atlasJourneyDraft.reattachmentPending) return { ok: false, reason: 'ATLAS_REATTACHMENT_SELECTION_REQUIRED' };
+  const key = hashCanonicalValue({ ...payload, context: atlasJourneyDraft.reattachmentContext });
+  if (key !== atlasJourneyDraft.reattachmentIntentKey || !atlasJourneyDraft.reattachmentId) {
+    if (typeof globalThis.crypto?.randomUUID !== 'function') {
+      updateStatusText('ATLAS_REATTACHMENT_IDENTITY_UNAVAILABLE');
+      return { ok: false, reason: 'ATLAS_REATTACHMENT_IDENTITY_UNAVAILABLE' };
+    }
+    atlasJourneyDraft.reattachmentId = `atlas-reattach-${globalThis.crypto.randomUUID()}`;
+    atlasJourneyDraft.reattachmentIntentKey = key;
+  }
+  const id = atlasJourneyDraft.reattachmentId, context = captureAtlasPublication();
+  const sequence = ++atlasCommandPublicationSequence;
+  const current = () => context() && sequence === atlasCommandPublicationSequence
+    && atlasJourneyDraft.reattachmentId === id && hashCanonicalValue({ ...getAtlasReattachmentIntent(), context: atlasJourneyDraft.reattachmentContext }) === key;
+  atlasJourneyDraft.reattachmentPending = true;
+  atlasJourneyState = { status: 'running', lastCommandId: 'atlas.evidence.reattach', lastResult: '', commandSeq: sequence };
+  renderAtlasJourneyState();
+  const result = await dispatchUiCommand('atlas.evidence.reattach', { ...payload, projectId: currentProjectId, reattachmentId: id }, { isCurrentPresentation: current });
+  if (!current()) return result;
+  const accepted = result?.ok === true && (result.value?.status === 'APPLIED' || result.value?.receipt?.status === 'APPLIED' || result.receipt?.status === 'APPLIED');
+  atlasJourneyDraft.reattachmentPending = false;
+  if (accepted) { atlasJourneyDraft.reattachmentId = ''; atlasJourneyDraft.reattachmentIntentKey = ''; atlasJourneyDraft.reattachmentTarget = ''; }
+  atlasJourneyState = { status: accepted ? 'applied' : 'failed', lastCommandId: 'atlas.evidence.reattach',
+    lastResult: accepted ? 'persisted' : result?.error?.reason || result?.reason || 'ATLAS_REATTACHMENT_NOT_APPLIED', commandSeq: sequence };
+  renderAtlasJourneyState();
+  const refreshCurrent = () => context() && sequence === atlasCommandPublicationSequence;
+  await refreshAtlasCurrentScene({ force: true, isCurrent: refreshCurrent });
+  if (refreshCurrent()) void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: refreshCurrent }).catch(error => console.warn('Atlas reattachment refresh failed', error));
+  return result;
+}
+
 function normalizeAtlasEntityDossier(result = {}) {
   const source = result && typeof result === 'object' && !Array.isArray(result) ? result : {};
   const summary = source.summary && typeof source.summary === 'object' && !Array.isArray(source.summary) ? source.summary : {};
@@ -17193,6 +17312,9 @@ function normalizeAtlasEntityDossier(result = {}) {
       readOnly: ledger.readOnly !== false,
       commandAuthority: typeof ledger.commandAuthority === 'string' ? ledger.commandAuthority : 'none',
       rows: Array.isArray(ledger.rows) ? ledger.rows.filter(reviewSurfaceIsPlainObject) : [],
+      sourceRecords: Array.isArray(ledger.sourceRecords) ? ledger.sourceRecords : null,
+      sourceRecordCount: Number.isSafeInteger(ledger.sourceRecordCount) ? ledger.sourceRecordCount : null,
+      sourceRecordsComplete: typeof ledger.sourceRecordsComplete === 'boolean' ? ledger.sourceRecordsComplete : null,
     },
   };
 }
@@ -17273,6 +17395,8 @@ function renderAtlasEntityDossierState() {
   }
 
   const evidence = appendAtlasOverviewSection(atlasEntityDossierHost, 'Evidence ledger', { open: true });
+  if (state.evidenceLedger.sourceRecords !== null) renderAtlasReattachmentSources(evidence, state);
+  else appendAtlasOverviewRow(evidence, 'Saved sources unavailable: partial projection', '', '');
   for (const row of state.evidenceLedger.rows.slice(0, 8)) {
     appendAtlasOverviewRow(evidence, row.quote || row.sourceRecordId || row.observationId || 'evidence', `${row.rowKind || 'row'} ${row.sceneId || ''}`.trim(), row.evidenceState || 'CURRENT');
   }

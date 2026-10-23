@@ -357,3 +357,29 @@ test('actual historically omitted or blank original anchor identities remain los
     assert.equal(f.query(result.state).value.mentions.find(m => m.startOffset === 68).trustState, 'AUTHOR_CONFIRMED');
   }
 });
+
+test('saved source owner project identity cannot gain reattachment authority from its valid anchor and raw hash', async t => {
+  const f = await repeatReattachmentFixture(), hash = (await loadModule('src/core/browser-safe-hash.mjs')).hashCanonicalValue;
+  assert.equal(f.inbox(f.attach(f.moved, 'normal-owner', 68)).value.items[0].status, 'REATTACHED');
+  for (const projectId of ['foreign', 42, null, { foreign: true }]) await t.test(JSON.stringify(projectId), () => {
+    const state = structuredClone(f.moved), original = state.data.projects[f.projectId].atlas.decisions[f.decisionId];
+    original.projectId = projectId; const before = JSON.stringify(state);
+    const payload = { ...f.payload(state, 'invalid-source-owner', 68), expectedSourceRecordHash: hash(original) };
+    const result = f.runtime.reduceCoreState(state, { type: 'atlas.evidence.reattach', payload });
+    assert.equal(result.ok, false, 'raw source record must belong to the owning project');
+    assert.deepEqual(result.state, state); assert.equal(JSON.stringify(state), before);
+  });
+});
+
+test('inbox does not present foreign or malformed saved source ownership as current or reattached evidence', async t => {
+  const f = await repeatReattachmentFixture(), hash = (await loadModule('src/core/browser-safe-hash.mjs')).hashCanonicalValue;
+  const attached = f.attach(f.moved, 'normal-owner', 68);
+  for (const base of [f.original, attached]) for (const projectId of ['foreign', 42, null, { foreign: true }]) await t.test(`${base === attached ? 'reattached' : 'current'}-${JSON.stringify(projectId)}`, () => {
+    const state = structuredClone(base), atlas = state.data.projects[f.projectId].atlas, original = atlas.decisions[f.decisionId];
+    original.projectId = projectId;
+    if (base === attached) atlas.evidenceReattachments['normal-owner'].sourceRecordHash = hash(original);
+    const before = JSON.stringify(state), row = f.inbox(state).value.items[0];
+    assert.equal(row.status, 'REVIEW_REQUIRED'); assert.equal(row.currentEvidenceAnchor, null);
+    assert.equal(f.query(state).value.summary.confirmedMentionCount, 0); assert.equal(JSON.stringify(state), before);
+  });
+});

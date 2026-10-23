@@ -3570,6 +3570,17 @@ function applyAtlasObservationReassign(state, payload) {
 
 function applyAtlasEvidenceReattach(state, payload) {
   const projectId = trimString(payload?.projectId);
+  const rawAnchors = [payload?.staleEvidenceAnchor || payload?.oldEvidenceAnchor, payload?.newEvidenceAnchor];
+  for (const anchor of rawAnchors) {
+    for (const key of ['projectId', 'entityId']) {
+      if (isPlainObject(anchor) && Object.hasOwn(anchor, key) && typeof anchor[key] !== 'string') {
+        return fail(state, 'E_ATLAS_EVIDENCE_IDENTITY_INVALID', 'atlas.evidence.reattach', 'EVIDENCE_IDENTITY_INVALID', { key });
+      }
+    }
+    if (anchor?.projectId && anchor.projectId !== projectId) {
+      return fail(state, 'E_ATLAS_EVIDENCE_IDENTITY_MISMATCH', 'atlas.evidence.reattach', 'EVIDENCE_PROJECT_MISMATCH', { projectId });
+    }
+  }
   const sourceRecordKind = normalizeAtlasEvidenceSourceKind(payload?.sourceRecordKind);
   const sourceRecordId = trimString(payload?.sourceRecordId);
   const staleEvidenceAnchor = normalizeEvidenceAnchor(payload?.staleEvidenceAnchor || payload?.oldEvidenceAnchor);
@@ -3611,7 +3622,14 @@ function applyAtlasEvidenceReattach(state, payload) {
   if (!sourceRecord) {
     return fail(state, 'E_ATLAS_EVIDENCE_SOURCE_NOT_FOUND', 'atlas.evidence.reattach', 'SOURCE_RECORD_NOT_FOUND', { projectId, sourceRecordKind, sourceRecordId });
   }
-  if (!evidenceAnchorMatches(sourceRecord.evidenceAnchor, staleEvidenceAnchor)) {
+  const sourceEntity = sourceRecordKind === 'reassignment' ? sourceRecord.sourceEntityId : sourceRecord.entityId;
+  if (sourceRecord.projectId !== projectId || typeof sourceEntity !== 'string' || !isPlainObject(atlas.entities[sourceEntity])) {
+    return fail(state, 'E_ATLAS_EVIDENCE_IDENTITY_MISMATCH', 'atlas.evidence.reattach', 'SOURCE_RECORD_OWNER_MISMATCH', { projectId });
+  }
+  if (rawAnchors.some(anchor => anchor?.entityId && anchor.entityId !== sourceEntity)) {
+    return fail(state, 'E_ATLAS_EVIDENCE_IDENTITY_MISMATCH', 'atlas.evidence.reattach', 'EVIDENCE_ENTITY_MISMATCH', { projectId });
+  }
+  if (!evidenceAnchorMatches(normalizeEvidenceAnchor(sourceRecord.evidenceAnchor), staleEvidenceAnchor)) {
     return fail(state, 'E_ATLAS_EVIDENCE_SOURCE_MISMATCH', 'atlas.evidence.reattach', 'SOURCE_EVIDENCE_MISMATCH', { projectId, sourceRecordKind, sourceRecordId });
   }
   const expectedSourceRecordHash = trimString(payload?.expectedSourceRecordHash);

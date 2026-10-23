@@ -110,6 +110,9 @@ function buildEvidenceLedger(rows, reason = '') {
     readOnly: true,
     commandAuthority: 'none',
     rows: safeRows,
+    sourceRecords: [],
+    sourceRecordCount: 0,
+    sourceRecordsComplete: !reason,
   };
 }
 
@@ -251,10 +254,12 @@ function observationLedgerRows(observations) {
   });
 }
 
-function sourceRecordLedgerRows(inbox, entityId) {
+function sourceRecordLedgerRows(inbox, entityId, project) {
   return (Array.isArray(inbox?.items) ? inbox.items : [])
     .filter((item) => plainString(item.entityId) === entityId)
     .map((item) => {
+      const bucket = { decision: 'decisions', suppression: 'suppressions', reassignment: 'reassignments' }[item.sourceRecordKind];
+      const original = project?.atlas?.[bucket]?.[item.sourceRecordId];
       const stale = normalizeAnchor(item.staleEvidenceAnchor);
       const current = normalizeAnchor(item.currentEvidenceAnchor);
       const displayAnchor = current || stale;
@@ -263,6 +268,8 @@ function sourceRecordLedgerRows(inbox, entityId) {
         rowKind: 'sourceRecord',
         sourceRecordKind: plainString(item.sourceRecordKind),
         sourceRecordId: plainString(item.sourceRecordId),
+        sourceRecordHash: plainString(item.sourceRecordHash),
+        projectId: plainString(original?.projectId),
         observationId: '',
         evidenceState: evidenceStateForSourceItem(item),
         sceneId: displayAnchor ? displayAnchor.sceneId : '',
@@ -270,8 +277,8 @@ function sourceRecordLedgerRows(inbox, entityId) {
         quote: displayAnchor ? displayAnchor.quote : '',
         startOffset: displayAnchor ? displayAnchor.startOffset : 0,
         endOffset: displayAnchor ? displayAnchor.endOffset : 0,
-        evidenceAnchor: stale,
-        currentEvidenceAnchor: current,
+        evidenceAnchor: item.staleEvidenceAnchor ? JSON.parse(JSON.stringify(item.staleEvidenceAnchor)) : null,
+        currentEvidenceAnchor: item.currentEvidenceAnchor ? JSON.parse(JSON.stringify(item.currentEvidenceAnchor)) : null,
         candidateCount: Number(item.candidateCount || 0),
         reattachmentId: plainString(item.reattachmentId),
       };
@@ -329,7 +336,7 @@ function buildDossier({ coreState, projectId, requestedEntityId, aggregate, temp
   const aliases = listAliases(getEntity(project, entityId));
   const observations = (Array.isArray(aggregate?.observations) ? aggregate.observations : [])
     .filter((observation) => observation.entityId === entityId);
-  const sourceRows = sourceRecordLedgerRows(inbox, entityId);
+  const sourceRows = sourceRecordLedgerRows(inbox, entityId, project);
   const relationRows = buildRelationRows(temporal, entityId, limit);
   const absenceIntervals = (Array.isArray(temporal?.absenceIntervals) ? temporal.absenceIntervals : [])
     .filter((interval) => interval.entityId === entityId)
@@ -377,7 +384,8 @@ function buildDossier({ coreState, projectId, requestedEntityId, aggregate, temp
     },
     relationRows,
     absenceIntervals,
-    evidenceLedger: buildEvidenceLedger(rows),
+    evidenceLedger: { ...buildEvidenceLedger(rows), sourceRecords: sourceRows.slice(0, limit),
+      sourceRecordCount: sourceRows.length, sourceRecordsComplete: sourceRows.length <= limit },
     evidence: buildEvidence({ dossierHash, sourceHashes: sourceHashBundle }),
   };
 }
@@ -431,7 +439,10 @@ export function deriveAtlasEntityDossier(input = {}) {
         params: { projectId: params.projectId },
         capabilitySnapshot,
       });
-      const inbox = inboxResult.ok ? inboxResult.value : { state: 'unavailable', items: [], summary: { inboxHash: '' } };
+      if (!inboxResult.ok) {
+        return unavailable(params.projectId, params.entityId, inboxResult.error?.reason || 'ATLAS_EVIDENCE_REATTACHMENT_INBOX_UNAVAILABLE', inboxResult.error || null);
+      }
+      const inbox = inboxResult.value;
       return buildDossier({
         coreState,
         projectId: params.projectId,

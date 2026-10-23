@@ -1,3 +1,33 @@
+## 2026-10-24 — Explicit saved Atlas evidence correction source frozen
+
+TASK_ID: YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_REVIEWED_CURRENT_RELEASE_BINDINGS_PREPARED_ACCEPTANCE_PENDING
+ORIGINAL_DELIVERY_BASE_SHA: 55de17ba5e7f1c0078e964cab84248bb4a3eac6b
+REBOOT_CHECKPOINT_SHA: fb807222a098ecc43577b447c70a77d7b0487645
+
+Root independently reviewed14frozen source/test inputs, actual budgets, preserved V1-V5 implementation and all9971protected files; ROOT_CODE_REVIEW.json SHA6f0a53c1bd3d42aee3695ca06b795b37e53eabdc8dc475f3f8244ffc390c76b2. Core validates raw old/new anchor identities and actual saved-record owner before normalization. Inbox validates unique latest chronological raw-source-bound current witness and returns to review after later source edits. Existing dossier exposes bounded lossless original source references with honest completeness/unavailability; existing journey explicitly chooses a saved confirmation and exact current occurrence, with guarded per-intent UUID/retry/pending/stale result handling. No new schema/query/IPC/storage writer, typing work, dependencies or runtime network.
+
+Actual whole focused330of330 and final strict profile16of16 passed with0cancel/skip/todo. All original test assertions/harness bytes remain, apart from declared current profile literals; appended owner-record/source-kind/tagged-array negatives were causally red before correction. Candidate01 whole7 failures and all method faults remain retained; final full whole8 actual Main/Kernel/Stage10 and current release proof is still required, not replaced by these finite results. Existing successful manifest normalization may reorder JSON members: full original/prior record objects and canonical raw bytes/hashes are protected, and immediate refusal/query/cold physical bytes remain exact.
+
+Normal renderer/native-helper build exited0. Current full-Mac V2 factory/runtime now selects strictly packaged-Darwin V6 with ordered V5twenty plus only atlas.evidence.reattach and identical3queries. Only4participating source pins changed; V1 meaning and all17UNKNOWN qualification/authority fields are retained. Root prepares current inventory/DATA/certificate/governance companions in one pass before the final expensive candidate. Whole focused/affected/baseline/official RTK/current CI, rebuilt native source selection/two explicit corrections/Save/Quit/cold/full archives, normal PR merge and exact merged source/build/native remain required. No native, release or full-product acceptance is claimed here; exact later receipts determine delivery state.
+
+## 2026-10-24 — Atlas saved-evidence task resumed from reboot checkpoint
+
+TASK_ID: YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CAUSAL_BASELINE_REVIEWED_BOUNDED_CORRECTION_IN_PROGRESS
+ORIGINAL_DELIVERY_BASE_SHA: 55de17ba5e7f1c0078e964cab84248bb4a3eac6b
+REBOOT_CHECKPOINT_SHA: fb807222a098ecc43577b447c70a77d7b0487645
+
+Owner explicitly resumed. Fresh bootstrap and clean30path declaration/preflight exited0 on checkpoint before additional edits; current remote main remains original delivery base. Both storage identities, all9910offline dependency members and all635closed owned synthetic profile members were reread. Owner checkout and existing profile history remain protected. No installation, new native launch or profile retagging.
+
+Unchanged-runtime whole7RED04 exits1 with1144tests1076pass68fail and0cancel/skip/todo. All16Main identity cases reach actual canonical preparation:8invalid new-anchor identities are accepted,8old-anchor variants produce typed Core refusal and preserve complete immediate Documents/integrity rosters. Real stale/capability/owner/project/CAS no-write cases pass. Earlier RED01/02/03 and their observer/preservation-oracle faults remain immutable; none is hidden as causal proof. The earlier native cold missing-picker defect and complete101document/635archive preservation remain closed on original55de17ba, not new acceptance.
+
+Root independently reviews raw logs, frozen7tests, exact10held runtime/current companions and9971protected paths; ROOT_RED_ADMISSION_REVIEW_01.json SHA0e1065d8b3fd9526c3fb22655aa1fbf67ceec62afe91e2eb1ac9af2519c3421f permits only the already declared bounded correction. Actual original record content and canonical raw hashes are unchanged by baseline successful commands, while existing manifest normalization reorders JSON object keys; task explicitly records that distinction. Refused/read-only/cold boundaries still require physical byte preservation, successful commands require full original/prior record object and canonical raw-byte/hash equality without filtering or anchor normalization.
+
+Separate code agent now owns only declared7runtime paths and unchanged frozen assertions under fixed budgets. Root owns current release/factual/mechanical companions, independent review, actual package/native and ordinary Git delivery. No correction, build, push, PR, merge or full-product acceptance is claimed by this entry. All current required source/affected/baseline/RTK/CI/native/cold/exact merged proofs remain pending;17full-Mac qualification rows and release authority remain unchanged. Full first Mac with Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later.
+
 ## 2026-10-24 — Owner reboot pause
 
 - Stopped after terminal whole7RED01:1142tests1066pass76fail,0cancel/skip/todo. Seven test source copies and full logs/handoff preserved on verified T777; no runtime correction/build/push/PR/merge.

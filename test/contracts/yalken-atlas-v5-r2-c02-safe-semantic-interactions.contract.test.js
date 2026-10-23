@@ -1515,9 +1515,10 @@ test('actual occurrence choices show distinct ranges and surrounding context for
   assert.match(first.textContent, /увидела/u); assert.match(second.textContent, /сохранила/u);
 });
 
-test('actual saved source selection refuses missing unavailable partial malformed or foreign projections', async t => {
+test('actual saved source selection refuses missing metadata unavailable malformed or foreign projections', async t => {
   for (const [name, mutate] of [
-    ['missing-sources', d => { delete d.evidenceLedger.sourceRecords; }], ['partial', d => { d.evidenceLedger.sourceRecordsComplete = false; }],
+    ['missing-sources', d => { delete d.evidenceLedger.sourceRecords; }],
+    ['missing-completeness', d => { delete d.evidenceLedger.sourceRecordsComplete; }], ['missing-count', d => { delete d.evidenceLedger.sourceRecordCount; }],
     ['unavailable', d => { d.state = 'unavailable'; d.unavailableReason = 'INBOX_UNAVAILABLE'; }],
     ['foreign-project', d => { d.projectId = 'foreign'; }], ['foreign-entity', d => { d.selectedEntityId = 'foreign'; }],
     ['bad-source-hash', d => { d.evidenceLedger.sourceRecords[0].sourceRecordHash = ''; }],
@@ -1527,8 +1528,20 @@ test('actual saved source selection refuses missing unavailable partial malforme
     const button = h.pickButton(); if (button) await button.emit('click');
     await h.target(); await h.apply(); assert.equal(h.commands.length, 0, name);
     assert.equal(h.button().disabled, true); assert.equal(h.issued.length, 0);
-    if (name === 'partial' || name === 'unavailable') assert.match(h.c.atlasEntityDossierHost.textContent, /partial|неполн|unavailable|недоступ|INBOX_UNAVAILABLE/iu);
+    if (name === 'missing-completeness' || name === 'missing-count' || name === 'unavailable')
+      assert.match(h.c.atlasEntityDossierHost.textContent, /partial|неполн|unavailable|недоступ|INBOX_UNAVAILABLE/iu);
   });
+});
+
+test('actual honest truncated source list permits explicit selection of its complete visible reference with N of M disclosure', async () => {
+  const h = savedReattachmentRendererHarness(), d = h.dossier();
+  d.evidenceLedger.sourceRecordsComplete = false; d.evidenceLedger.sourceRecordCount = 3; h.setDossier(d);
+  assert.match(h.c.atlasEntityDossierHost.textContent, /1\s*(?:из|of|\/)\s*3/iu, 'one visible saved source out of three must be disclosed');
+  await h.pick(); assert.equal(h.commands.length, 0); await h.target('mira-68');
+  assert.equal(h.button().disabled, false); await h.apply(); assert.equal(h.commands.length, 1);
+  const sent = h.commands[0]; assert.equal(sent.id, 'atlas.evidence.reattach'); assert.equal(sent.payload.sourceRecordId, 'saved-confirmation');
+  assert.deepEqual(sent.payload.staleEvidenceAnchor, h.original); assert.equal(sent.payload.expectedSourceRecordHash, h.source.sourceRecordHash);
+  assert.equal(sent.payload.newEvidenceAnchor.startOffset, 68); assert.equal(sent.payload.newEvidenceAnchor.endOffset, 72);
 });
 
 test('actual reattachment refuses dirty unacknowledged source and stale detached source controls', async t => {
@@ -1579,6 +1592,16 @@ test('actual reattachment UUID absence refuses dispatch without falling back to 
   const h = savedReattachmentRendererHarness(); await h.pick(); await h.target(); h.c.crypto = {};
   await h.apply(); assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0);
   assert.notEqual(h.c.atlasJourneyState.status, 'applied');
+});
+
+test('actual saved confirmation picker keeps suppression and reassignment sources closed', async t => {
+  for (const sourceRecordKind of ['suppression', 'reassignment']) await t.test(sourceRecordKind, async () => {
+    const h = savedReattachmentRendererHarness(), dossier = h.dossier();
+    dossier.evidenceLedger.sourceRecords[0].sourceRecordKind = sourceRecordKind; h.setDossier(dossier);
+    const picker = h.pickButton(); if (picker) await picker.emit('click');
+    await h.target(); await h.apply();
+    assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0); assert.equal(h.button().disabled, true);
+  });
 });
 
 test('AF1 actual current-scene focus refuses dirty shifted source without selecting unrelated text', async () => {
