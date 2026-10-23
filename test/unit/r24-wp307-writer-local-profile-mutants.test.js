@@ -288,3 +288,41 @@ test('exact Atlas V5 independent oracles kill closed membership record policy an
   }
   t.diagnostic(`EXACT_ATLAS_V5_MUTANTS=${mutants.length}/${mutants.length}`);
 });
+
+test('V6 independent mutation oracles reject reattachment policy overgrant and inherited property holes', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), options = { isPackaged: true, platform: 'darwin' };
+  const original = loadFresh(MODULE_PATH); assert.equal(typeof original.createWriterAtlasEvidenceReattachmentProfileProjection, 'function');
+  const boundary = source.indexOf('// V6 admits only explicit saved Atlas evidence reattachment.'); assert.ok(boundary > 0);
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'atlas-reattach-v6-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const active = m => m.createWriterAtlasEvidenceReattachmentProfileProjection(options);
+  const check = (m, allowed, patch = {}, record = { id: 'atlas.evidence.reattach', domain: 'atlas' }, commandId = 'atlas.evidence.reattach') =>
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: { ...active(m), ...patch }, commandId, productCommandRecord: record }).allowed, allowed);
+  const mutants = [
+    ['lost command', s => s.replace("...WRITER_EXACT_ATLAS_COMMAND_IDS, 'atlas.evidence.reattach'", "...WRITER_EXACT_ATLAS_COMMAND_IDS, 'atlas.evidence.reattach.disabled'"), m => check(m, true)],
+    ['blanket optional', s => s.replace('isActiveWriterAtlasEvidenceReattachmentProfile(profile) && (!optional || selected)', 'isActiveWriterAtlasEvidenceReattachmentProfile(profile)'),
+      m => check(m, false, {}, { id: 'atlas.entity.merge', domain: 'atlas' }, 'atlas.entity.merge')],
+    ['forged record', s => s.replace('productCommandRecord.id === commandId &&', 'true &&'),
+      m => check(m, false, {}, { id: 'atlas.entity.merge', domain: 'atlas' })],
+    ['wrong domain', s => s.replace("productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap')", 'true'),
+      m => check(m, false, {}, { id: 'atlas.evidence.reattach', domain: 'manualMap' })],
+    ['policy', s => s.replace('if (!isWriterAtlasEvidenceReattachmentProfileCandidate(profile)) return false;', 'if (!isWriterAtlasEvidenceReattachmentProfileCandidate(profile)) return false; return true;'),
+      m => check(m, false, { optionalSystemsEnabled: true })],
+    ['extra key', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'), m => check(m, false, { extra: true })],
+    ['array order', s => s.replace('profile[key][index] === id', 'true'), m => check(m, false, { admittedCommandIds: [...active(m).admittedCommandIds].reverse() })],
+    ['inherited index', s => s.replace('Object.hasOwn(profile[key], index)', 'true'), m => {
+      const values = [...active(m).admittedCommandIds], index = values.length - 1; delete values[index];
+      Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: 'atlas.evidence.reattach' })); values.extra = true;
+      check(m, false, { admittedCommandIds: values });
+    }],
+    ['query overgrant', s => s.replace('reattachmentProfileAccess(profile, WRITER_EXACT_ATLAS_QUERY_IDS.includes(queryId),', 'reattachmentProfileAccess(profile, true,'), m => {
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active(m), queryId: 'query.atlasOverview' }).allowed, false);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(' ', '-') + '.cjs'); fs.writeFileSync(file, changed);
+    const mutant = loadFresh(file); assert.throws(() => oracle(mutant), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic(`ATLAS_REATTACHMENT_V6_MUTANTS=${mutants.length}/${mutants.length}`);
+});

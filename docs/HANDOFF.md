@@ -1,3 +1,35 @@
+## 2026-10-24 — Owner reboot pause: unaccepted Atlas test checkpoint
+
+TASK_ID: YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: OWNER_PAUSED_FOR_REBOOT_UNACCEPTED_WIP
+ORIGINAL_DELIVERY_BASE_SHA: 55de17ba5e7f1c0078e964cab84248bb4a3eac6b
+
+Owner requested preparation for reboot. All task execution stopped; code agent HOLD. Whole7maintained RED01 finished normally before pause: actual exit1,1142tests1066pass76fail,0cancel/skip/todo,73.324702s. No method-type failures reported; failures are retained, not green. Frozen7test copies/raw612465B stdout SHAe9f7a94ff713dc213a698d1fc04f9b6da6643d5e8e79b62948d4e39054a87121 and handoff2c5649d56e878959010263fcd901f5afe001fa872c921df4bdf4a342e0ff4a89 saved on T777. No RED02, product edit, bundle/build/push/PR/merge or accepted feature.
+
+All7runtime plus bundle/releasefactory/current cut remain exact55de17ba. Actual unchanged-M native cold-picker gap/normal Quit and101oldDocuments/635archive members already closed independently in32e63f8f43120c33726558eafd074487435fa48b1d7b0786b51eba6e1dc342a7; archive db450ef64e590d59330c501167079bcc96f62deb3439d43f743290a4ef5c8530. App and test processes closed. Original fixture creation/owner records stay unchanged; temporary profile may disappear on reboot, so revalidate physical identity or restore only its verified owned archive with a fresh truthful physical marker.
+
+Only new tests/task/factual state are saved as an UNACCEPTED ordinary checkpoint on the existing task branch, not delivery or a new contour. Exact checkpoint SHA/tree/scope/evidence/bundle and next action are in REBOOT_CHECKPOINT.json and REBOOT_HANDOFF.txt in the dated2026-10-24--atlas-evidence-reattachment T777 reports. Before further edits after explicit resume, perform fresh startup/remote/disks and clean declaration/preflight bound to the actual checkpoint HEAD, preserving original delivery base55de17ba. No stale preflight or P03 cache claim.
+
+First next action after re-admission: revise only the new R2partial negative from honest sourceRecordsComplete=false to an unusable packet with missing completeness/count metadata, add a positive for selecting a fully bound visible truncated-list entry with honest NofM; freeze02 and run whole7RED02 against unchanged runtime. Retain RED01 and its superseded overrestriction. Then root reviews genuine causal proof and already completed native RED before releasing7runtime edits. Full task proofs/delivery and full agreed Mac product remain open. No work resumes before the owner's next message.
+
+## 2026-10-24 — Explicit saved Atlas evidence: admitted, native cold gap reproduced
+
+TASK_ID: YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: ADMITTED_TEST_ONLY_RED_PRODUCT_CORRECTION_NOT_STARTED
+BINDING_BASE_SHA: 55de17ba5e7f1c0078e964cab84248bb4a3eac6b
+
+PR2153 is terminally closed on this exact merged base, candidatec6581423a56843dac5e2b5ba7361b583125074a0 with identical tree409cdc541d22a1cde9d1ae16cb719565e7b64201. Independent closure8402576817d12f70ad685356595673fd5a4574ddbfb6258fbc57a213802c91f0 and final review5247888e6aa8390ed9db9420c3501f2ab37a514a7330808637a30674a66789fe bind actual merged source/whole41affected union,20of20mainCI,4416of4416officialRTK/full baseline, fresh actual merged package/warm/cold and1259full archive members. Earlier pending entries are historical. Full Mac product remains incomplete.
+
+Fresh clean30path declaration/preflight0 and taskE0 precede current task writes;10000source bindings/9971protected, ordered normative and scoped factual reads, fresh remote main, encrypted T7-Secure and writable T777 verified. Existing separate code agent owns7runtime/7maintained tests, currently TEST_ONLY RED; no product correction or native new-version acceptance yet. Root owns generated bundle, current deterministic release profile/pins and factual/mechanical companions/delivery. Existing strict currentScene module, schemas/IPC/storage/typing/styles and historical profiles remain protected.
+
+Actual unchanged55de17ba app cold Open/library/named project -> currentScene -> entity dossier shows original sourceRecord but no saved confirmation selector; Flow reattach remains disabled with Confirm a mention first, repeated Mira options indistinguishable. Native normal Quit exits0. Independent closure32e63f8f43120c33726558eafd074487435fa48b1d7b0786b51eba6e1dc342a7 reads all101priorDocuments byte-exact, no newDocuments, complete635member profile archive db450ef64e590d59330c501167079bcc96f62deb3439d43f743290a4ef5c8530 and recomputes original4event/receipt chain. This is EXPECTED_RED for cold source selection only, not semantic trust/profile-denial/full product proof. Original profile creation/build identities and owner markers unchanged; app closed.
+
+Next outcome is explicit old confirmation selection and canonical evidence.reattach to a current occurrence, later source edit -> honest review, second fresh operation and no-loss Save/Quit/cold. Strict successor V6 adds exactly one existing command to twenty and keeps three queries/all optional authority flags false; local Core raw identity refusal is a required dependent safety check before normalization. No automatic relocation/reconfirmation/new query/writer/schema/dependency or broad unlock. Whole maintained causal RED, same-test GREEN, actual Main/Kernel no-write, all required source/affected/baseline/RTK/CI, actual candidate and merged package/native/full archives and ordinary delivery remain mandatory.
+
+All12Atlas stages/15cells/4projections, full maps/WSE/Pulse/epochs and17UNKNOWN Mac qualification remain required; Black Box later. Old native field Undo/OpenProject menu/Cancel/long-dialog/directexFAT, moderate Electron/high0/critical0 and59named baseline skips remain explicit and deferred. New evidence/materials use dated2026-10-24--atlas-evidence-reattachment on T777, with only declared physically owned temporary APFS runtime. No release/signing/notary/distribution permission.
+
 ## 2026-10-23 — Atlas continuity: native proof retained, SaveACK fixture amendment
 
 TASK_ID: YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023

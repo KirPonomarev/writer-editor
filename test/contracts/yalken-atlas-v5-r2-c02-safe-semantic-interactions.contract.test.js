@@ -1442,6 +1442,145 @@ function continuityRendererHarness() {
   return { ...h, selected, focused, projection, digest, dirty: message => dirty(message) };
 }
 
+// Existing finite DOM/query ports with the actual dossier, journey, listeners and dispatch.
+function savedReattachmentRendererHarness() {
+  const h = publicationHarness(), c = h.c, vm = require('node:vm'), issued = [];
+  const make = tag => h.document.createElement(tag), walk = node => [node, ...node.children.flatMap(walk)];
+  Object.assign(c, { atlasJourneyHost: make('section'), atlasEntityDossierHost: make('section'),
+    atlasStableUiIdSeq: 0, atlasSelectedEntityId: 'mira', currentAtlasSurface: 'entity',
+    crypto: { randomUUID: () => { const id = require('node:crypto').randomUUID(); issued.push(id); return id; } },
+    atlasJourneyDraft: { sourceEntityId: 'mira', targetEntityId: '', mentionId: '', decisionId: '', decisionEvidenceAnchor: null, reattachmentId: '' } });
+  h.document.body.append(c.atlasJourneyHost, c.atlasEntityDossierHost);
+  const names = ['makeAtlasCommandButton', 'getAtlasJourneyEntities', 'getAtlasJourneyMentions', 'findAtlasJourneyEntity',
+    'findAtlasJourneyMention', 'makeStableUiId', 'ensureAtlasJourneyDraftId', 'getAtlasJourneyEntityName', 'getAtlasJourneyAliasValue',
+    'reconcileAtlasJourneyDraft', 'formatAtlasJourneyEntityOption', 'formatAtlasJourneyMentionOption', 'renderAtlasJourneyState',
+    'renderAtlasEntityDossierState', 'appendAtlasOverviewRow', 'appendAtlasOverviewSection', 'makeManualMapAuthorId'];
+  for (const match of editor.matchAll(/^(?:async )?function (\w*AtlasReattachment\w*)\(/gm)) if (!names.includes(match[1])) names.push(match[1]);
+  h.loadActual(...names);
+  let current, dossier;
+  const original = { schemaVersion: 'atlas.evidenceAnchor.v1', anchorId: 'saved-original-anchor', projectId: 'project-a', sceneId: 'scene-a',
+    entityId: 'mira', startOffset: 14, endOffset: 18, quote: 'Мира', quoteHash: c.hashCanonicalValue('Мира'),
+    sceneTextHash: c.hashCanonicalValue(SOURCE_CONTINUITY_TEXT), retainedCoordinateData: { unicode: 'é 🧭' } };
+  const source = { rowKind: 'sourceRecord', sourceRecordKind: 'decision', sourceRecordId: 'saved-confirmation', sourceRecordHash: 'a'.repeat(64),
+    projectId: 'project-a', entityId: 'mira', evidenceState: 'REVIEW_REQUIRED', sceneId: 'scene-a', quote: 'Мира', startOffset: 14, endOffset: 18,
+    evidenceAnchor: original, currentEvidenceAnchor: null, candidateCount: 2, reattachmentId: '' };
+  const publish = (text = SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT, generation = 1) => {
+    c.setPlainText(text); c.localDirty = false; c.localEditGeneration = generation; c.lastAckedGeneration = generation;
+    current = { state: 'ready', projectId: 'project-a', sceneId: 'scene-a', sceneTitle: 'Repeated name',
+      summary: { sceneTextHash: c.hashCanonicalValue(text), entityCount: 1, mentionCount: 2 }, entities: [{ entityId: 'mira', name: 'Мира', entityKind: 'character' }],
+      mentions: [25, 68].map(start => ({ mentionId: 'mira-' + start, entityId: 'mira', sceneId: 'scene-a', startOffset: start, endOffset: start + 4,
+        matchedText: 'Мира', context: { before: text.slice(Math.max(0, start - 12), start), quote: 'Мира', after: text.slice(start + 4, start + 24) },
+        evidenceAnchor: { ...original, anchorId: 'current-' + start, startOffset: start, endOffset: start + 4, sceneTextHash: c.hashCanonicalValue(text) } })) };
+    dossier = { state: 'ready', projectId: 'project-a', requestedEntityId: 'mira', selectedEntityId: 'mira', entity: { entityId: 'mira', name: 'Мира' },
+      summary: { evidenceHealth: 'reviewRequired' }, evidenceLedger: { state: 'ready', rows: [source], sourceRecords: [source], sourceRecordCount: 1, sourceRecordsComplete: true } };
+    c.atlasCurrentSceneState = c.normalizeAtlasCurrentSceneDossier(structuredClone(current));
+    c.atlasEntityDossierState = c.normalizeAtlasEntityDossier(structuredClone(dossier));
+    c.renderAtlasEntityDossierState(); c.renderAtlasJourneyState();
+  };
+  c.queryPort = request => request.row[2] === 'atlasCurrentScene' ? { ok: true, atlasCurrentScene: structuredClone(current) }
+    : request.row[2] === 'atlasEntityDossier' ? { ok: true, atlasEntityDossier: structuredClone(dossier) } : h.projection(request.row);
+  const render = () => { c.renderAtlasEntityDossierState(); c.renderAtlasJourneyState(); };
+  const pickButton = () => walk(c.atlasEntityDossierHost).find(node => node.dataset.atlasSourceRecordSelect === source.sourceRecordId);
+  const pick = async () => { const button = pickButton(); assert.ok(button, 'actual cold dossier must expose an explicit saved-confirmation control');
+    assert.equal(button.tagName, 'BUTTON'); assert.equal(button.type, 'button'); await button.emit('click'); await h.settle(); };
+  const target = async (id = 'mira-68') => { const select = walk(c.atlasJourneyHost).find(node => node.dataset.atlasJourneyField === 'mentionId');
+    assert.ok(select); select.value = id; await select.emit('change'); };
+  const button = () => walk(c.atlasJourneyHost).find(node => node.dataset.atlasJourneyAction === 'reattach-evidence');
+  const apply = async () => { const b = button(); assert.ok(b); await b.emit('click'); await h.settle(); };
+  publish();
+  return { ...h, c, issued, source, original, publish, render, walk, pickButton, pick, target, button, apply,
+    dossier: () => structuredClone(dossier), setDossier: value => { dossier = value; c.atlasEntityDossierState = c.normalizeAtlasEntityDossier(value); render(); } };
+}
+
+test('actual cold dossier selects saved confirmation and dispatches the separately chosen exact duplicate occurrence', async () => {
+  const h = savedReattachmentRendererHarness(), c = h.c;
+  assert.equal(c.atlasJourneyDraft.decisionId, '', 'cold author intent must not manufacture another confirmation');
+  await h.pick(); assert.equal(h.commands.length, 0);
+  await h.target('mira-68'); assert.equal(h.button().disabled, false); await h.apply();
+  assert.equal(h.commands.length, 1); const sent = h.commands[0]; assert.equal(sent.id, 'atlas.evidence.reattach');
+  assert.equal(sent.payload.sourceRecordId, 'saved-confirmation'); assert.equal(sent.payload.sourceRecordKind, 'decision');
+  assert.equal(sent.payload.expectedSourceRecordHash, h.source.sourceRecordHash); assert.deepEqual(sent.payload.staleEvidenceAnchor, h.original);
+  assert.equal(sent.payload.newEvidenceAnchor.startOffset, 68); assert.equal(sent.payload.newEvidenceAnchor.endOffset, 72);
+  assert.equal(sent.payload.newEvidenceAnchor.sceneTextHash, c.hashCanonicalValue(c.getPlainText()));
+  assert.match(sent.payload.reattachmentId, /^atlas-reattach-[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
+  assert.equal(h.commands.some(row => row.id === 'atlas.mention.confirm'), false); assert.equal(h.issued.length, 1);
+});
+
+test('actual occurrence choices show distinct ranges and surrounding context for repeated identical names', () => {
+  const h = savedReattachmentRendererHarness();
+  const select = h.walk(h.c.atlasJourneyHost).find(node => node.dataset.atlasJourneyField === 'mentionId');
+  const first = select.children.find(node => node.value === 'mira-25'), second = select.children.find(node => node.value === 'mira-68');
+  assert.ok(first); assert.ok(second); assert.notEqual(first.textContent, second.textContent);
+  assert.match(first.textContent, /25.*29/u); assert.match(second.textContent, /68.*72/u);
+  assert.match(first.textContent, /увидела/u); assert.match(second.textContent, /сохранила/u);
+});
+
+test('actual saved source selection refuses missing unavailable partial malformed or foreign projections', async t => {
+  for (const [name, mutate] of [
+    ['missing-sources', d => { delete d.evidenceLedger.sourceRecords; }], ['partial', d => { d.evidenceLedger.sourceRecordsComplete = false; }],
+    ['unavailable', d => { d.state = 'unavailable'; d.unavailableReason = 'INBOX_UNAVAILABLE'; }],
+    ['foreign-project', d => { d.projectId = 'foreign'; }], ['foreign-entity', d => { d.selectedEntityId = 'foreign'; }],
+    ['bad-source-hash', d => { d.evidenceLedger.sourceRecords[0].sourceRecordHash = ''; }],
+    ['truncated-original', d => { delete d.evidenceLedger.sourceRecords[0].evidenceAnchor.schemaVersion; }],
+  ]) await t.test(name, async () => {
+    const h = savedReattachmentRendererHarness(), d = h.dossier(); mutate(d); h.setDossier(d);
+    const button = h.pickButton(); if (button) await button.emit('click');
+    await h.target(); await h.apply(); assert.equal(h.commands.length, 0, name);
+    assert.equal(h.button().disabled, true); assert.equal(h.issued.length, 0);
+    if (name === 'partial' || name === 'unavailable') assert.match(h.c.atlasEntityDossierHost.textContent, /partial|неполн|unavailable|недоступ|INBOX_UNAVAILABLE/iu);
+  });
+});
+
+test('actual reattachment refuses dirty unacknowledged source and stale detached source controls', async t => {
+  for (const fault of ['dirty', 'unacked', 'project', 'entity', 'source-hash', 'detached']) await t.test(fault, async () => {
+    const h = savedReattachmentRendererHarness(); await h.pick(); await h.target(); const old = h.button(), oldSource = h.pickButton();
+    if (fault === 'dirty') h.c.localDirty = true;
+    if (fault === 'unacked') h.c.localEditGeneration++;
+    if (fault === 'project') h.c.currentProjectId = 'other';
+    if (fault === 'entity') h.c.atlasSelectedEntityId = 'other';
+    if (fault === 'source-hash') h.c.setPlainText(h.c.getPlainText() + ' Позже.');
+    if (fault === 'detached') { h.c.invalidateAtlasPublications(); h.render(); await oldSource.emit('click'); }
+    await old.emit('click'); await h.settle(); assert.equal(h.commands.length, 0, fault); assert.equal(h.issued.length, 0);
+  });
+});
+
+test('actual same-intent retry retains UUID while accepted next source correction and cold intent receive distinct UUIDs', async () => {
+  const h = savedReattachmentRendererHarness(); await h.pick(); await h.target();
+  h.c.commandPort = () => ({ ok: false, error: { code: 'E_RETRY', reason: 'EXPLICIT_RETRY' } });
+  await h.apply(); const first = h.commands[0].payload.reattachmentId;
+  await h.apply(); assert.equal(h.commands[1].payload.reattachmentId, first); assert.equal(h.issued.length, 1);
+  h.c.commandPort = () => ({ ok: true, value: { status: 'APPLIED' } }); await h.apply();
+  assert.equal(h.commands[2].payload.reattachmentId, first);
+  h.publish(SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT + ' Позже.', 2); await h.pick(); await h.target('mira-25'); await h.apply();
+  const second = h.commands[3].payload.reattachmentId; assert.notEqual(second, first); assert.equal(h.issued.length, 2);
+  const cold = savedReattachmentRendererHarness(); cold.c.atlasStableUiIdSeq = 0; cold.c.atlasJourneyDraft.reattachmentId = '';
+  await cold.pick(); await cold.target(); await cold.apply(); assert.notEqual(cold.commands[0].payload.reattachmentId, first);
+  assert.notEqual(cold.commands[0].payload.reattachmentId, second); assert.equal(cold.issued.length, 1);
+});
+
+test('actual pending reattachment blocks duplicate dispatch and ignores stale asynchronous completion', async t => {
+  for (const fault of ['project', 'entity', 'dirty', 'source', 'publication']) await t.test(fault, async () => {
+    const h = savedReattachmentRendererHarness(), pending = h.deferred(); await h.pick(); await h.target();
+    h.c.commandPort = () => pending.promise; await h.apply(); assert.equal(h.commands.length, 1);
+    await h.apply(); assert.equal(h.commands.length, 1, 'one author intent cannot create concurrent canonical operations');
+    if (fault === 'project') h.c.currentProjectId = 'replacement';
+    if (fault === 'entity') h.c.atlasSelectedEntityId = 'replacement';
+    if (fault === 'dirty') h.c.localDirty = true;
+    if (fault === 'source') h.c.setPlainText(h.c.getPlainText() + ' Позже.');
+    if (fault === 'publication') h.c.invalidateAtlasPublications();
+    const queries = h.queries.length, before = JSON.stringify(h.c.atlasJourneyDraft);
+    pending.resolve({ ok: true, value: { status: 'APPLIED' } }); await h.settle();
+    assert.notEqual(h.c.atlasJourneyState.status, 'applied', 'stale completion must not publish success');
+    assert.equal(JSON.stringify(h.c.atlasJourneyDraft), before); assert.equal(h.queries.length, queries);
+  });
+});
+
+test('actual reattachment UUID absence refuses dispatch without falling back to the session counter', async () => {
+  const h = savedReattachmentRendererHarness(); await h.pick(); await h.target(); h.c.crypto = {};
+  await h.apply(); assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0);
+  assert.notEqual(h.c.atlasJourneyState.status, 'applied');
+});
+
 test('AF1 actual current-scene focus refuses dirty shifted source without selecting unrelated text', async () => {
   const h = continuityRendererHarness(), c = h.c;
   c.focusAtlasMention('selected-mira'); assert.deepEqual(h.selected, [{ start: 14, end: 18, quote: 'Мира' }]);

@@ -245,3 +245,115 @@ test('E04 C05: evidence reattachment inbox fails closed and adds no storage, net
     }
   }
 });
+
+// Real reducers and derives; synthetic state is ephemeral and never persisted.
+async function repeatReattachmentFixture() {
+  const runtime = await loadModule('src/core/runtime.mjs'), derived = await loadModule('src/derived/index.mjs');
+  const projectId = 'repeat-reattach', sceneId = 'scene-a', entityId = 'mira', decisionId = 'original';
+  const text = 'Начало é 🧭. Мира увидела маяк. Северная ответила Мире. Мира сохранила знак.';
+  const must = r => { assert.equal(r.ok, true, JSON.stringify(r.error)); return r.state; };
+  const initial = must(runtime.applyCoreSequence(runtime.createInitialCoreState(), [
+    { type: 'project.create', payload: { projectId, sceneId, title: 'Repeat' } },
+    { type: 'project.applyTextEdit', payload: { projectId, sceneId, text } },
+    { type: 'atlas.entity.create', payload: { projectId, entityId, name: 'Мира', entityKind: 'character' } },
+  ]));
+  const query = state => derived.deriveAtlasCurrentSceneDossier({ coreState: state, params: { projectId, sceneId } });
+  const anchor = query(initial).value.mentions.find(m => m.startOffset === 14).evidenceAnchor;
+  const original = must(runtime.reduceCoreState(initial, { type: 'atlas.mention.confirm',
+    payload: { projectId, sceneId, entityId, mentionId: query(initial).value.mentions[0].mentionId, evidenceAnchor: anchor, decisionId } }));
+  const edit = (state, nextText) => must(runtime.reduceCoreState(state, { type: 'project.applyTextEdit', payload: { projectId, sceneId, text: nextText } }));
+  const inbox = state => derived.deriveAtlasEvidenceReattachmentInbox({ coreState: state, params: { projectId } });
+  const movedText = 'Добавлено. ' + text, moved = edit(original, movedText), item = inbox(moved).value.items[0];
+  const payload = (state, id, offset) => {
+    const current = query(state).value.mentions.find(m => m.startOffset === offset); assert.ok(current);
+    return { projectId, sourceRecordKind: 'decision', sourceRecordId: decisionId, staleEvidenceAnchor: item.staleEvidenceAnchor,
+      newEvidenceAnchor: current.evidenceAnchor, expectedSourceRecordHash: item.sourceRecordHash, reattachmentId: id, reason: 'Explicit selected occurrence' };
+  };
+  const attach = (state, id, offset) => must(runtime.reduceCoreState(state, { type: 'atlas.evidence.reattach', payload: payload(state, id, offset) }));
+  const rawOriginal = JSON.stringify(original.data.projects[projectId].atlas.decisions[decisionId]);
+  return { runtime, derived, projectId, sceneId, entityId, decisionId, text, movedText, moved, original, item, query, edit, inbox, payload, attach, rawOriginal };
+}
+
+test('reattachment inbox becomes review-required again after a second saved source edit and preserves every author byte', async () => {
+  const f = await repeatReattachmentFixture(), attached = f.attach(f.moved, 'z-earlier', 68);
+  const prior = JSON.stringify(attached.data.projects[f.projectId].atlas.evidenceReattachments);
+  assert.equal(f.inbox(attached).value.items[0].status, 'REATTACHED');
+  const changed = f.edit(attached, f.movedText + ' Позже.'), before = JSON.stringify(changed);
+  const result = f.inbox(changed); assert.equal(result.ok, true);
+  assert.equal(f.query(changed).value.summary.confirmedMentionCount, 0);
+  assert.equal(result.value.items[0].status, 'REVIEW_REQUIRED'); assert.equal(result.value.items[0].currentEvidenceAnchor, null);
+  assert.deepEqual(result.value.items[0].candidates.map(c => [c.evidenceAnchor.startOffset, c.evidenceAnchor.endOffset]), [[25, 29], [68, 72]]);
+  assert.equal(result.value.summary.reviewRequiredCount, 1); assert.equal(result.value.summary.reattachedCount, 0);
+  assert.equal(JSON.stringify(changed), before); assert.equal(JSON.stringify(changed.data.projects[f.projectId].atlas.evidenceReattachments), prior);
+  const second = f.attach(changed, 'a-later', 25), latest = f.inbox(second).value.items[0];
+  assert.equal(latest.status, 'REATTACHED'); assert.equal(latest.reattachmentId, 'a-later'); assert.equal(latest.currentEvidenceAnchor.startOffset, 25);
+  assert.equal(JSON.stringify(second.data.projects[f.projectId].atlas.evidenceReattachments['z-earlier']), JSON.stringify(attached.data.projects[f.projectId].atlas.evidenceReattachments['z-earlier']));
+  assert.equal(JSON.stringify(second.data.projects[f.projectId].atlas.decisions[f.decisionId]), f.rawOriginal);
+});
+
+test('inbox selects canonical chronology rather than lexicographic ID and never resurrects superseded original evidence', async () => {
+  const f = await repeatReattachmentFixture(), first = f.attach(f.moved, 'z-earlier', 68), latest = f.attach(first, 'a-later', 25);
+  const before = JSON.stringify(latest), row = f.inbox(latest).value.items[0];
+  assert.equal(row.reattachmentId, 'a-later'); assert.equal(row.currentEvidenceAnchor.startOffset, 25);
+  const oldSource = f.edit(latest, f.text), oldBefore = JSON.stringify(oldSource);
+  assert.equal(f.inbox(oldSource).value.items[0].status, 'REVIEW_REQUIRED'); assert.equal(f.query(oldSource).value.summary.confirmedMentionCount, 0);
+  const restored = f.edit(oldSource, f.movedText); assert.equal(f.inbox(restored).value.items[0].status, 'REATTACHED');
+  assert.equal(f.inbox(restored).value.items[0].currentEvidenceAnchor.startOffset, 25);
+  assert.equal(JSON.stringify(latest), before); assert.equal(JSON.stringify(oldSource), oldBefore);
+});
+
+test('malformed or tied latest reattachment fails closed instead of falling back to older trust', async t => {
+  const f = await repeatReattachmentFixture(), first = f.attach(f.moved, 'z-earlier', 68), latest = f.attach(first, 'a-later', 25);
+  for (const [name, mutate] of [
+    ['rawhash', r => { r.sourceRecordHash = '0'.repeat(64); }], ['foreign-project', r => { r.projectId = 'foreign'; }],
+    ['foreign-entity', r => { r.newEvidenceAnchor.entityId = 'foreign'; }], ['malformed-entity', r => { r.newEvidenceAnchor.entityId = 42; }],
+    ['old-witness', r => { r.staleEvidenceAnchor.quote = 'Лира'; }], ['noninteger-seq', r => { r.createdByCommandSeq += 0.5; }],
+    ['wrong-operation', r => { r.operationKind = 'other'; }], ['automatic', r => { r.automaticReattachment = true; }],
+  ]) await t.test(name, () => {
+    const state = structuredClone(latest); mutate(state.data.projects[f.projectId].atlas.evidenceReattachments['a-later']);
+    const before = JSON.stringify(state), row = f.inbox(state).value.items[0];
+    assert.equal(row.status, 'REVIEW_REQUIRED', name); assert.equal(row.currentEvidenceAnchor, null); assert.equal(row.candidateCount, 2);
+    assert.equal(JSON.stringify(state), before);
+  });
+  const tied = structuredClone(latest), ledger = tied.data.projects[f.projectId].atlas.evidenceReattachments;
+  ledger.ambiguous = { ...structuredClone(ledger['a-later']), id: 'ambiguous' };
+  assert.equal(f.inbox(tied).value.items[0].status, 'REVIEW_REQUIRED');
+});
+
+test('reattach rejects contradictory or nonstring raw anchor identities before normalization without changing source state', async t => {
+  const f = await repeatReattachmentFixture();
+  for (const field of ['staleEvidenceAnchor', 'newEvidenceAnchor']) for (const key of ['projectId', 'entityId'])
+    for (const value of ['foreign', 42, null, { foreign: true }]) await t.test(`${field}-${key}-${JSON.stringify(value)}`, () => {
+      const payload = f.payload(f.moved, 'must-not-commit', 68); payload[field] = { ...payload[field], [key]: value };
+      const before = JSON.stringify(f.moved), result = f.runtime.reduceCoreState(f.moved, { type: 'atlas.evidence.reattach', payload });
+      assert.equal(result.ok, false, 'raw identity cannot be laundered into omitted legacy identity');
+      assert.deepEqual(result.state, f.moved); assert.equal(JSON.stringify(f.moved), before);
+    });
+});
+
+test('legal omitted and blank-string new anchor identities remain compatible with original full witness and raw source hash', async () => {
+  const f = await repeatReattachmentFixture();
+  for (const kind of ['omitted', 'blank']) {
+    const payload = f.payload(f.moved, 'legacy-' + kind, 68);
+    for (const key of ['projectId', 'entityId']) { if (kind === 'omitted') delete payload.newEvidenceAnchor[key]; else payload.newEvidenceAnchor[key] = ''; }
+    const result = f.runtime.reduceCoreState(f.moved, { type: 'atlas.evidence.reattach', payload }); assert.equal(result.ok, true, JSON.stringify(result.error));
+    assert.equal(f.query(result.state).value.mentions.find(m => m.startOffset === 68).trustState, 'AUTHOR_CONFIRMED');
+    assert.equal(f.inbox(result.state).value.items[0].status, 'REATTACHED');
+    assert.equal(JSON.stringify(result.state.data.projects[f.projectId].atlas.decisions[f.decisionId]), f.rawOriginal);
+  }
+});
+
+test('actual historically omitted or blank original anchor identities remain lossless and reattach against the raw original record hash', async () => {
+  const f = await repeatReattachmentFixture(), hash = (await loadModule('src/core/browser-safe-hash.mjs')).hashCanonicalValue;
+  for (const kind of ['omitted', 'blank']) {
+    const state = structuredClone(f.moved), original = state.data.projects[f.projectId].atlas.decisions[f.decisionId];
+    for (const key of ['projectId', 'entityId']) { if (kind === 'omitted') delete original.evidenceAnchor[key]; else original.evidenceAnchor[key] = ''; }
+    original.evidenceAnchor.extension = { untouched: 'é 🧭' }; const raw = JSON.stringify(original), before = JSON.stringify(state);
+    const payload = { ...f.payload(state, 'historical-' + kind, 68), staleEvidenceAnchor: structuredClone(original.evidenceAnchor), expectedSourceRecordHash: hash(original) };
+    const result = f.runtime.reduceCoreState(state, { type: 'atlas.evidence.reattach', payload });
+    assert.equal(result.ok, true, kind + ': ' + JSON.stringify(result.error)); assert.equal(JSON.stringify(state), before);
+    assert.equal(JSON.stringify(result.state.data.projects[f.projectId].atlas.decisions[f.decisionId]), raw);
+    assert.equal(result.state.data.projects[f.projectId].atlas.evidenceReattachments['historical-' + kind].sourceRecordHash, hash(original));
+    assert.equal(f.query(result.state).value.mentions.find(m => m.startOffset === 68).trustState, 'AUTHOR_CONFIRMED');
+  }
+});

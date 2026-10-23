@@ -70,6 +70,69 @@ async function buildEntityDossierFixture() {
   return { derived, projectId, state: moved.state };
 }
 
+test('saved source references retain the full original witness and raw record hash independently of observation row limit', async () => {
+  const f = await buildEntityDossierFixture(), state = structuredClone(f.state), project = state.data.projects[f.projectId];
+  project.scenes['scene-a'].text = 'Before ' + Array(32).fill('Anna met Mira.').join(' ');
+  const original = project.atlas.decisions['decision-anna'];
+  delete original.evidenceAnchor.projectId; delete original.evidenceAnchor.entityId;
+  original.evidenceAnchor.coordinateProof = { normalization: 'retained', unicode: 'é 🧭', nested: { preserved: true } };
+  const before = JSON.stringify(state), hash = (await loadModule('src/core/browser-safe-hash.mjs')).hashCanonicalValue(original);
+  const result = f.derived.deriveAtlasEntityDossier({ coreState: state, params: { projectId: f.projectId, entityId: 'entity-anna', limit: 2 } });
+  assert.equal(result.ok, true); assert.equal(result.value.state, 'ready');
+  const ledger = result.value.evidenceLedger; assert.equal(ledger.sourceRecordsComplete, true);
+  assert.equal(ledger.sourceRecordCount, 1); assert.ok(ledger.rows.length <= 2);
+  assert.equal(ledger.sourceRecords.length, 1, 'saved author source must not be crowded out by many observations');
+  const source = ledger.sourceRecords[0];
+  assert.equal(source.sourceRecordKind, 'decision'); assert.equal(source.sourceRecordId, 'decision-anna');
+  assert.equal(source.projectId, f.projectId); assert.equal(source.entityId, 'entity-anna'); assert.equal(source.sourceRecordHash, hash);
+  assert.deepEqual(source.evidenceAnchor, original.evidenceAnchor, 'display normalization is not a canonical stale witness');
+  assert.equal(source.evidenceState, 'REVIEW_REQUIRED'); assert.equal(JSON.stringify(state), before);
+});
+
+test('bounded dossier source references declare incompleteness rather than claiming complete author history', async () => {
+  const f = await buildEntityDossierFixture(), state = structuredClone(f.state), decisions = state.data.projects[f.projectId].atlas.decisions;
+  for (let i = 0; i < 7; i++) decisions['retained-' + i] = { ...structuredClone(decisions['decision-anna']), id: 'retained-' + i, decisionId: 'retained-' + i };
+  const before = JSON.stringify(state), result = f.derived.deriveAtlasEntityDossier({ coreState: state, params: { projectId: f.projectId, entityId: 'entity-anna', limit: 2 } });
+  assert.equal(result.ok, true); const ledger = result.value.evidenceLedger;
+  assert.equal(ledger.sourceRecordCount, 8); assert.equal(ledger.sourceRecordsComplete, false);
+  assert.ok(ledger.sourceRecords.length > 0 && ledger.sourceRecords.length <= 2);
+  assert.equal(JSON.stringify(state), before);
+});
+
+test('unavailable inbox remains unavailable in dossier instead of laundering an empty ledger into current health', async () => {
+  const f = await buildEntityDossierFixture(), before = JSON.stringify(f.state);
+  const capabilitySnapshot = { capabilities: { atlasEntityDossier: true, atlasObservationAggregate: true,
+    atlasTemporalContinuity: true, atlasEvidenceReattachmentInbox: false } };
+  const denied = f.derived.deriveAtlasEvidenceReattachmentInbox({ coreState: f.state, params: { projectId: f.projectId }, capabilitySnapshot });
+  assert.equal(denied.ok, false);
+  const result = f.derived.deriveAtlasEntityDossier({ coreState: f.state, params: { projectId: f.projectId, entityId: 'entity-anna' }, capabilitySnapshot });
+  assert.equal(result.ok, true); assert.equal(result.value.state, 'unavailable');
+  assert.equal(result.value.unavailableReason, denied.error.reason);
+  assert.equal(result.value.summary.evidenceHealth, 'unavailable');
+  assert.deepEqual(result.value.evidenceLedger.sourceRecords, []); assert.equal(result.value.evidenceLedger.sourceRecordsComplete, false);
+  assert.equal(JSON.stringify(f.state), before);
+});
+
+test('dossier and currentScene agree on review after explicit reattachment followed by another source edit', async () => {
+  const f = await buildEntityDossierFixture(), runtime = await loadModule('src/core/runtime.mjs');
+  const params = { projectId: f.projectId, entityId: 'entity-anna' };
+  const inbox = f.derived.deriveAtlasEvidenceReattachmentInbox({ coreState: f.state, params }), item = inbox.value.items[0];
+  const attached = runtime.reduceCoreState(f.state, { type: 'atlas.evidence.reattach', payload: { projectId: f.projectId,
+    sourceRecordKind: item.sourceRecordKind, sourceRecordId: item.sourceRecordId, staleEvidenceAnchor: item.staleEvidenceAnchor,
+    newEvidenceAnchor: item.candidates[0].evidenceAnchor, expectedSourceRecordHash: item.sourceRecordHash, reattachmentId: 'first' } });
+  assert.equal(attached.ok, true, JSON.stringify(attached.error));
+  const prior = JSON.stringify(attached.state.data.projects[f.projectId].atlas);
+  const changed = runtime.reduceCoreState(attached.state, { type: 'project.applyTextEdit', payload: { projectId: f.projectId, sceneId: 'scene-a', text: 'Before Anna met Mira. Later.' } });
+  assert.equal(changed.ok, true); const before = JSON.stringify(changed.state);
+  const dossier = f.derived.deriveAtlasEntityDossier({ coreState: changed.state, params }).value;
+  assert.equal(dossier.summary.reviewRequiredEvidenceCount, 1); assert.equal(dossier.summary.reattachedEvidenceCount, 0);
+  assert.equal(dossier.summary.evidenceHealth, 'reviewRequired');
+  assert.equal(dossier.evidenceLedger.sourceRecords[0].currentEvidenceAnchor, null);
+  assert.equal(dossier.evidenceLedger.sourceRecords[0].evidenceState, 'REVIEW_REQUIRED');
+  assert.equal(f.derived.deriveAtlasCurrentSceneDossier({ coreState: changed.state, params: { projectId: f.projectId, sceneId: 'scene-a' } }).value.summary.confirmedMentionCount, 0);
+  assert.equal(JSON.stringify(changed.state), before); assert.equal(JSON.stringify(changed.state.data.projects[f.projectId].atlas), prior);
+});
+
 test('E05 C02: entity dossier derives a read-only surface manifest and evidence ledger for one entity', async () => {
   const { derived, projectId, state } = await buildEntityDossierFixture();
 

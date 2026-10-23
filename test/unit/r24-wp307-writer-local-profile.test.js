@@ -332,3 +332,59 @@ test('exact Atlas V5 refuses malformed complete policy, forged records and comma
   for (const id of active.admittedQueryIds) for (const queryId of [id + ' ', ' ' + id, id + '.extra'])
     assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, false, queryId);
 });
+
+test('V6 admits exactly one existing reattachment command without changing historical V5 policy', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  assert.equal(typeof m.createWriterAtlasEvidenceReattachmentProfileProjection, 'function');
+  assert.equal(typeof m.isActiveWriterAtlasEvidenceReattachmentProfile, 'function');
+  const options = { isPackaged: true, platform: 'darwin' }, old = m.createWriterExactAtlasProfileProjection(options);
+  const active = m.createWriterAtlasEvidenceReattachmentProfileProjection(options);
+  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6');
+  assert.equal(active.schemaVersion, 'writer-local-profile.v6');
+  assert.deepEqual(active.admittedCommandIds, [...old.admittedCommandIds, 'atlas.evidence.reattach']);
+  assert.equal(active.admittedCommandIds.length, 21);
+  assert.deepEqual(active.admittedQueryIds, ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier']);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation'])
+    assert.equal(active[key], false, key);
+  assert.equal(Object.isFrozen(active), true); assert.equal(m.isActiveWriterAtlasEvidenceReattachmentProfile(active), true);
+  const registry = require('../../src/shared/productCommandRegistry.cjs');
+  for (const id of active.admittedCommandIds) {
+    const productCommandRecord = registry.getProductCommandRecord(id); assert.ok(productCommandRecord, id);
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord }).allowed, true, id);
+  }
+  for (const record of registry.PRODUCT_COMMAND_RECORDS.filter(r => m.OPTIONAL_PRODUCT_DOMAINS.includes(r.domain) && !active.admittedCommandIds.includes(r.id)))
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: record.id, productCommandRecord: record }).allowed, false, record.id);
+  for (const queryId of m.OPTIONAL_QUERY_IDS) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed,
+    active.admittedQueryIds.includes(queryId), queryId);
+  assert.equal(m.evaluateWriterLocalCommandAccess({ profile: old, commandId: 'atlas.evidence.reattach',
+    productCommandRecord: registry.getProductCommandRecord('atlas.evidence.reattach') }).allowed, false);
+  for (const options of [{ isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' }, { isPackaged: true, platform: 'win32' }])
+    assert.deepEqual(m.createWriterAtlasEvidenceReattachmentProfileProjection(options), m.createWriterLocalProfileProjection(options));
+});
+
+test('V6 exact policy rejects malformed own properties ordered arrays and forged record authority', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  assert.equal(typeof m.createWriterAtlasEvidenceReattachmentProfileProjection, 'function');
+  const active = m.createWriterAtlasEvidenceReattachmentProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const commandId = 'atlas.evidence.reattach', record = { id: commandId, domain: 'atlas' };
+  const check = (profile, productCommandRecord = record, id = commandId) => m.evaluateWriterLocalCommandAccess({ profile, commandId: id, productCommandRecord }).allowed;
+  for (const patch of [{ extra: true }, { optionalSystemsEnabled: true }, { cloudAuthority: true }, { active: false },
+    { profileId: active.profileId + '.forged' }, { schemaVersion: 'writer-local-profile.v6.extra' },
+    { admittedCommandIds: active.admittedCommandIds.slice(0, -1) }, { admittedCommandIds: [...active.admittedCommandIds, 'atlas.entity.merge'] },
+    { admittedCommandIds: [...active.admittedCommandIds].reverse() }, { admittedQueryIds: [...active.admittedQueryIds, 'query.atlasOverview'] }])
+    assert.equal(check({ ...active, ...patch }), false, JSON.stringify(patch));
+  for (const key of Reflect.ownKeys(active)) {
+    const inherited = Object.assign(Object.create({ [key]: active[key] }), active); delete inherited[key]; inherited.extra = true;
+    assert.equal(check(inherited), false, String(key));
+  }
+  for (const key of ['admittedCommandIds', 'admittedQueryIds']) {
+    const values = [...active[key]], index = values.length - 1;
+    delete values[index]; Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active[key][index] }));
+    values.extra = true; assert.equal(check({ ...active, [key]: values }), false, key + ' inherited hole plus extra');
+  }
+  for (const forged of [{ id: 'atlas.entity.merge', domain: 'atlas' }, { id: commandId, domain: 'manualMap' }, { id: commandId }, null])
+    assert.equal(check(active, forged), false, JSON.stringify(forged));
+  for (const id of [commandId + ' ', ' ' + commandId, commandId + '.extra']) assert.equal(check(active, { id, domain: 'atlas' }, id), false, id);
+  for (const id of m.WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS) assert.equal(check(active, undefined, id), true, id);
+  assert.equal(check(active, undefined, 'cmd.project.save'), true);
+});
