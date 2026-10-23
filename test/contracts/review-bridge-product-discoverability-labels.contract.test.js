@@ -58,7 +58,7 @@ test('Phase 05 canonical palette entries have honest labels and legacy Markdown 
   const projectCommands = read('src/renderer/commands/projectCommands.mjs');
 
   assert.match(catalog, /id: 'cmd\.project\.export\.docxMin',[\s\S]*label: 'Export DOCX \(Minimal\)'/u);
-  assert.match(catalog, /id: 'cmd\.project\.importDocxV1',[\s\S]*label: 'Import DOCX Content \(Content only\)'/u);
+  assert.match(catalog, /id: 'cmd\.project\.importDocxV1',[\s\S]*label: 'Import Word manuscript into a new project'/u);
   assert.match(catalog, /id: 'cmd\.project\.importMarkdownV1',[\s\S]*label: 'Import Markdown Content'/u);
   assert.match(catalog, /id: 'cmd\.project\.exportMarkdownV1',[\s\S]*label: 'Export Markdown'/u);
   assert.match(
@@ -110,7 +110,7 @@ test('current normalized artifact and historical Phase 05 status remain explicit
   const fileMenu = artifact.menus.find((menu) => menu.id === 'file');
   const reviewMenu = artifact.menus.find((menu) => menu.id === 'review');
 
-  assert.equal(artifact.normalizedHashSha256, 'cd9ecb9dbc6f2a7d1a6f42b6fcfc4dcabc6c2688e4a893193a1d20940b5f6569');
+  assert.equal(artifact.normalizedHashSha256, '50aa09a87b32a7989fc908ee86c172e317fe22954bafe4c338a1dfd04ec5c541');
   assert.ok(fileMenu.items.some(
     (item) => item.id === 'file-import-docx-content' && item.visibilityPolicy === 'visible_enabled',
   ));

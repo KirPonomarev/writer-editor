@@ -374,6 +374,20 @@ async function compileRelease01CurrentWordingRegistry({
     sha256: `sha256:${editorBindings[0].sha256}`,
   }], RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
 
+  const menuPath = 'src/menu/menu-config.v2.json';
+  const menuBindings = Array.isArray(repair?.sourceBindings)
+    ? repair.sourceBindings.filter(entry => entry?.path === menuPath) : [];
+  const menuSurfaces = Array.isArray(registry.wordingSurfaces)
+    ? registry.wordingSurfaces.filter(surface => surface?.path === menuPath || surface?.surfaceId === 'surface-menu-config') : [];
+  if (menuBindings.length !== 1 || typeof menuBindings[0].sha256 !== 'string'
+    || !/^[a-f0-9]{64}$/u.test(menuBindings[0].sha256)
+    || menuBindings[0].sha256 !== sha256RawFile(path.join(REPO_ROOT, menuPath))
+    || menuSurfaces.length !== 1 || menuSurfaces[0].path !== menuPath || menuSurfaces[0].surfaceId !== 'surface-menu-config') {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'one exact current menu source binding and surface identity required');
+  }
+  applySurfaceOverrides(registry, [{ ...menuSurfaces[0], sha256: `sha256:${menuBindings[0].sha256}` }],
+    RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
+
   const wording = repair.wordImportAttemptWording;
   const exactKeys = (value, keys) => value && typeof value === 'object' && !Array.isArray(value)
     && Object.keys(value).sort().join(',') === [...keys].sort().join(',');
@@ -2356,4 +2370,64 @@ test('RELEASE01 new-project status rejects omission drift and support promotion 
   await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
     currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }),
   error => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+});
+
+test('RELEASE01 current menu surface uses the admitted source binding without changing historical claims or rollup', async () => {
+  const module = await loadModule(), loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  assert.equal(loaded.ok, true);
+  const bytes = fs.readFileSync(REGISTRY_PATH), historical = clone(loaded.registry);
+  const compiled = await compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry });
+  const menuPath = 'src/menu/menu-config.v2.json';
+  const surfaces = compiled.wordingSurfaces.filter(surface => surface.path === menuPath || surface.surfaceId === 'surface-menu-config');
+  assert.equal(surfaces.length, 1); assert.equal(surfaces[0].surfaceId, 'surface-menu-config');
+  assert.equal(surfaces[0].sha256, sha256File(path.join(REPO_ROOT, menuPath)));
+  const binding = module.evaluateWordingSurfaceBinding({ registry: compiled, surfaceId: surfaces[0].surfaceId,
+    content: fs.readFileSync(path.join(REPO_ROOT, menuPath), 'utf8'), fileSha256: sha256File(path.join(REPO_ROOT, menuPath)) });
+  assert.equal(binding.ok, true, JSON.stringify(binding)); assert.equal(binding.code, RELEASE01_CODES.COMPILED_OK);
+  for (const claim of historical.claims) assert.deepEqual(compiled.claims.find(value => value.claimId === claim.claimId), claim);
+  assert.equal(compiled.claims.length, historical.claims.length + 6);
+  assert.deepEqual(compiled.terminalNonClaimInventory, historical.terminalNonClaimInventory);
+  assert.deepEqual(compiled.terminalRollup, historical.terminalRollup);
+  assert.equal(compiled.terminalRollup.state, 'NOT_MADE_WORD_TERMINAL_PASS_REQUIRED');
+  assert.deepEqual(loaded.registry, historical); assert.deepEqual(fs.readFileSync(REGISTRY_PATH), bytes);
+});
+
+test('RELEASE01 current menu binding rejects missing duplicate malformed stale forged and ambiguous inputs', async () => {
+  const module = await loadModule(), loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  assert.equal(loaded.ok, true);
+  const historical = clone(loaded.registry), originalBytes = fs.readFileSync(REGISTRY_PATH);
+  const menuPath = 'src/menu/menu-config.v2.json', menuRow = repair => repair.sourceBindings.find(row => row.path === menuPath);
+  const qualification = loadJsonWithBytes(C1_DATA_POLICY_PATH), code = RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID;
+  const staleHash = historical.wordingSurfaces.find(surface => surface.path === menuPath).sha256.slice(7);
+  for (const [label, mutate] of [
+    ['missing', repair => { repair.sourceBindings = repair.sourceBindings.filter(row => row.path !== menuPath); }],
+    ['duplicate', repair => { repair.sourceBindings.push(clone(menuRow(repair))); }],
+    ['malformed', repair => { menuRow(repair).sha256 = 'invalid'; }],
+    ['non-string', repair => { menuRow(repair).sha256 = null; }],
+    ['noncanonical-case', repair => { menuRow(repair).sha256 = menuRow(repair).sha256.toUpperCase(); }],
+    ['stale-historical', repair => { menuRow(repair).sha256 = staleHash; }],
+    ['forged-current', repair => { menuRow(repair).sha256 = '0'.repeat(64); }],
+    ['wrong-path', repair => { menuRow(repair).path = '../src/menu/menu-config.v2.json'; }],
+  ]) {
+    const value = clone(qualification.value); mutate(value.qualifiedRuntimeRepair);
+    const bytes = Buffer.from(JSON.stringify(value)), digest = sha256RawBytes(bytes);
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
+      currentQualificationLoad: { bytes, value, digest }, currentQualificationPin: digest }), error => error?.code === code, label);
+  }
+  const decoded = clone(qualification.value); menuRow(decoded.qualifiedRuntimeRepair).sha256 = '0'.repeat(64);
+  for (const currentQualificationLoad of [
+    { ...qualification, value: decoded }, { ...qualification, digest: '0'.repeat(64) },
+    { ...qualification, bytes: Buffer.concat([qualification.bytes, Buffer.from(' ')]) },
+  ]) await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: loaded.registry,
+    currentQualificationLoad }), error => error?.code === code);
+  for (const [label, mutate] of [
+    ['surface-missing', registry => { registry.wordingSurfaces = registry.wordingSurfaces.filter(surface => surface.path !== menuPath); }],
+    ['surface-duplicate', registry => { registry.wordingSurfaces.push(clone(registry.wordingSurfaces.find(surface => surface.path === menuPath))); }],
+    ['surface-wrong-id', registry => { registry.wordingSurfaces.find(surface => surface.path === menuPath).surfaceId = 'forged-menu'; }],
+    ['surface-wrong-path', registry => { registry.wordingSurfaces.find(surface => surface.path === menuPath).path = '../menu.json'; }],
+  ]) {
+    const registry = clone(loaded.registry); mutate(registry);
+    await assert.rejects(() => compileRelease01CurrentWordingRegistry({ historicalRegistry: registry }), error => error?.code === code, label);
+  }
+  assert.deepEqual(loaded.registry, historical); assert.deepEqual(fs.readFileSync(REGISTRY_PATH), originalBytes);
 });

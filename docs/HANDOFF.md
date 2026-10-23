@@ -1,3 +1,17 @@
+## 2026-10-23 — Select All current wording fixtures repaired; complete delivery still pending
+
+TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CURRENT_FIXTURE_SOURCE_REVIEWED_FULL_PROOFS_PENDING
+BINDING_BASE_SHA: c95797cdefea68d7843501936f88a9678d4d4a9f
+ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+
+All12source gates on c95797cd executed; audit1 remains moderate1/high0/critical0. Full50whole affected707tests704pass3fail,zero skips/todo/cancel and unchanged source is preserved. Exact old-M whole2files64tests63pass1fail proves one pre-existing stale DOCX palette expectation; two additional current failures bind the old normalized menu and historical menu surface digest. No full baseline/official RTK/build/native/push was started or claimed. Fresh clean29path bootstrap/preflight0 and taskE0 precede any correction;9969protected and13held original role/runtime/artifact/current-pin/runner/CLI/keyboard/promotion paths stay exact.
+
+Separate code agent changes only two truthful expected values in the discoverability test, adds14strict current-menu binding helper lines and60appended integration/negative-test lines in the terminal-claim contract. Existing pinned C1 current menu digest must be unique, valid and equal actual current bytes; menu surface identity must be unique and exact. Historical chain, registry, generic production evaluator, every old assertion/claim/nonClaim/status/profile/terminal rollup remain byte-exact. Root independently verifies complete78-line diff, inverse originals, source/receipt hashes and same appended assertion bodies. Whole2files on unchanged helper/expectations:66tests61pass5fail; corrected66of66,0fail/cancel/skip/todo, including15typed missing/duplicate/malformed/stale/forged/ambiguous negatives. Current wording scanner and NOT_MADE terminal blockers remain exercised; no product source or wording change.
+
+Current companion refresh derives771DATA/631source/295certificate with1603unchanged inventory membership, preserving prior294carrier and all predicates. Full affected/source/E0/baseline/official RTK/exact package/native Cmd+A/Undo/Save/Quit/cold/closed-profile readback/current CI/normal merge/exact merged closure remain pending. Known moderate Electron,59named baseline skips, old menu-path, long-dialog/exFAT and cancelled-form affordance limitations remain explicit; all17Mac qualification UNKNOWN. Full first-Mac Atlas/maps/WSE/Pulse/environment epochs task continues; Black Box later. Owner state and historical evidence retained.
+
 ## 2026-10-23 — Select All maintained gate identity aligned; full acceptance pending
 
 TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023

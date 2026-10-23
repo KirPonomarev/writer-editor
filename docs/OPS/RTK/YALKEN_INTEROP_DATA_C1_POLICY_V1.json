@@ -777,7 +777,8 @@
     "docs/tasks/2026-10-23--mac-native-select-all.md",
     "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
     "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-    "scripts/ops/menu-config-normalize.mjs"
+    "scripts/ops/menu-config-normalize.mjs",
+    "test/contracts/review-bridge-product-discoverability-labels.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1198,7 +1199,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "56a85485764362190e5910bfee0e380afc4b8addcb8beb7d402bf35d71a62c01"
+        "sha256": "8fe586be974f922d227b18852550a6b5deba5d54b3b5b7bb83294e3d13b90a46"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -1742,7 +1743,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "01438b9d11c451fa7d31a0696e6b6ab54674d0ed32254fd5cba4ba92e22890ba"
+        "sha256": "b2b99b615f7bb7308934005344ee9fa7ce7870f78a692a283a134ad496dc23ea"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2698,15 +2699,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "04898f26f2c13d12561c7e73890b92cc5e39f113c8e26df2e549b89e57d30385"
+        "sha256": "0e3d48e8590163890ad256fe8723e9029749645ff6d9b8f380bd0151391643c6"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "440d7ff46c9076c1fe39b31458259f2537bfe167f3822f189b94656f5877cacc"
+        "sha256": "7e8c2a0540840a1d28fd94320dae3631b93220ce6f9f54113ed73241b8590196"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2997653a9e58d27986323bf825fd4fd76537b7f0c63b1dd7c324e0fbddd35dac"
+        "sha256": "a87acdbc5b6194509a9320760e62b58c30672e2701e2dc2e483e09c165e1ed45"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3246,7 +3247,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "95120e2f4fba80073e7bd36b42cbdca60b5f6e300580110ea2de802a23768f38"
+        "sha256": "e654a1828a1685d2e3175ffd622bdc5fd73f0d6b229c9616843f1964c21211c9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3498,7 +3499,7 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-native-select-all.md",
-        "sha256": "ad79b902e8988c30c4ce4f30e0f237b5bcab1714c5fb1ae206ed734cf1c24832"
+        "sha256": "a08d297c324a2df531652c02d98f2506f31b5b5c4ef084ae61efafa6e3f58dcc"
       },
       {
         "path": "src/menu/menu-config.v2.json",
@@ -3523,6 +3524,10 @@
       {
         "path": "scripts/run-tests.js",
         "sha256": "3851d49105e2f714e480e3375329001224a63d742a3fb55826cc13cbde698a9a"
+      },
+      {
+        "path": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
+        "sha256": "136790a9431b601f82a6da5003078943c8ef98a58c5724a95dab606ebe35aca7"
       }
     ],
     "followupRepair": {

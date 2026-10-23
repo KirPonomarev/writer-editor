@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: dda461fa77d9b0284433d24d6bba666c2cc27bb7
-HEAD_SHA_AT_START: dda461fa77d9b0284433d24d6bba666c2cc27bb7
+BINDING_BASE_SHA: c95797cdefea68d7843501936f88a9678d4d4a9f
+HEAD_SHA_AT_START: c95797cdefea68d7843501936f88a9678d4d4a9f
 ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-select-all-20261023
@@ -56,6 +56,8 @@ Separate code agent owns the original menu-config/Main literal repair, appended 
 - test/unit/keyboard-shortcuts.test.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/promotion-heavy-lane-entrypoint.contract.test.js
+- test/contracts/review-bridge-product-discoverability-labels.contract.test.js
+- test/contracts/rtk-release01-terminal-claims.contract.test.js
 
 ## DENYLIST
 
@@ -142,3 +144,17 @@ Root runtime review a68c13ba3b571ae2a45b20d0ab2beb81b48713df474a1e842fa330a2ec8e
 ### Actual maintained gate source checkpoint on dda461fa
 
 The same final two whole files execute actual15tests12pass3fail on unchanged production literals, then15of15 with0fail/cancel/skip/todo after exactly3runner plus1CLI ID replacements. One promotion expected-ID literal follows the new current identity; every other byte and all16stage-order/denominator/failure predicates stay exact. Keyboard adds70lines above H,187above original M; all previous7case/helper bytes preserved. Root independently verifies all4source hashes, complete diff, actual executor receipts, unchanged identities and raw implicit/historical child outputs by strict TAP roundtrip. Implicit successor PASS0; explicit historical mismatch FAIL1;18finite argv-boundary calls do not claim product/native execution. All9971protected and9held original role/Main/artifact/pin paths stay exact. Current294binding certificate,770DATA and630source pins,1603unchanged inventory membership and append-only current witnesses follow only actual current source bytes. Full required source/affected/baseline/RTK/build/native/CI/ordinary merge and exact merged acceptance remain pending; all17Mac qualification UNKNOWN.
+
+### Same-outcome current wording fixture amendment on c95797cd
+
+Current candidatec95797cd parentdda461fa tree730cde9fbba7de33de21a7ec75856a635918f40d is clean. All12source gates execute with no source drift; audit actual1 retains exactly moderate1/high0/critical0. Full50whole affected actual707tests704pass3fail,0cancel/skip/todo is retained with unchanged source identity. No full baseline, official RTK, build, native or push ran. Exact prior M whole2files actually64tests63pass1fail: the old palette label expectation is already stale while unchanged-M actual catalog says Import Word manuscript into a new project. Two additional current failures bind the old menu normalized hash and leave the terminal wording helper's menu surface at the historical byte digest. These are actual failures, not suppressed warnings.
+
+Fresh clean29path bootstrap/preflight actual0 with declaration7f5e9370ab2ea4a5464840b318dd9ff54c14f8a5ff167dc9309de71167798f1f precede this amendment and every fixture correction.9969protected tracked paths and13held original Main/config/artifacts/pins plus runner/CLI/keyboard/promotion paths stay exact. This is the same unfinished native Select All delivery from original M, not new runtime scope or authority. Prior27path preflight/candidate/gates/full failing log and every historical result remain exact.
+
+Separate code agent may change only test/contracts/review-bridge-product-discoverability-labels.contract.test.js and test/contracts/rtk-release01-terminal-claims.contract.test.js. First file: only two truthful current expected values, palette label and normalized hash; all5existing cases and other assertions stay exact. Second file: keep complete historical successor/claims/profile/rollup/predicate bodies, add a bounded strict current-menu surface override from the already pinned C1 source binding with unique valid64hex digest and actual current bytes equality. Preserve historical registry and predecessor metadata, every claim/nonClaim/profile/class/evidence/rollup and real full wording scanner; do not bless a new product wording or support level. Add missing/duplicate/malformed/stale/forged menu-binding negatives and preservation proof, executing both whole files without filters before/after correction. Budgets: review-bridge<=4added+deleted lines; terminal helper<=35added lines,<=140appended negative-test lines, no deletion of prior assertions. Any genuine additional path must be read-only reported before writing.
+
+Root alone follows real current bytes in precise DATA/source/certificate/inventory/approval companions: only review-bridge test is genuinely new to DATA/source/certificate, deriving771/631/295 and1603unchanged inventory membership. Old294carrier and all predicates remain byte-exact; same task ID, append-only current witnesses, no historical claim rewriting. No original role/artifact/pin regeneration or production source/wording changes. Required complete affected/source/full baseline/official RTK/build/native/current CI/normal merge and fresh merged proof remain mandatory on final corrected identity. Known advisory/skips/qualifications remain explicit; full first-Mac task continues.
+
+### Actual current wording fixture source checkpoint
+
+Root independent complete source review verifies exactly78added+deleted lines:2truthful expected literals,14strict helper lines,60appended test lines; inverse original5and59-case files and every old assertion/chain/claim/profile/rollup remain exact. Actual whole2file RED66tests61pass5fail on unchanged helper/expectations, then GREEN66of66 with15typed negatives and0skip/todo/cancel. Same appended assertion bodies/source hashes are independently bound to actual receipts. Historical terminal registry and production evaluator,9969protected and13held paths remain exact. Earlier full707test run remains FAIL with3causes classified against actual old-M64case run; no heavy/native/delivery acceptance is inferred from focused66. Root current mechanical companions and all mandatory final corrected-candidate source/affected/full baseline/RTK/build/native/CI/ordinary merge/exact merged proof remain required.
