@@ -27183,7 +27183,7 @@ const R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "0f077d7f438fc8e7d01e7ac9d0280731581bb617ca7729c62c6f7c33f2b1febe"
+      "sha256": "7e6f5ca287618c6343f3822f9cba9d5df0c7588ae320f056d06f75208e6cfe7f"
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
@@ -27963,7 +27963,7 @@ const R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "6d65575c6bd80dd6bdca659608a416fcb34b07b609a09eabb4ab9d2a4b7c7584"
+      "sha256": "13bb30a09c77a3dbb144b0fbf6ecd21a4ad4b41993ab7b8bd6e1d92bdeb10168"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -27971,7 +27971,7 @@ const R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "086e410056b4ef5eeba2dde323b881be556a0d5ba551d71f1c3b560c126c967f"
+      "sha256": "dd70ee7ec50b1a18a44753a13572184ba2adcd7177c2d4e6c26a334d19738b50"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -28219,11 +28219,11 @@ const R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "a8dac9ffd24d6754d9a105000725f7f6b15242853bd83a40a79c146661fad7a9"
+      "sha256": "0b1dce823b1293371abbc04425cbf1c62a4cf64cbd1ae65cc8dbd2d7d34b7711"
     },
     {
       "path": "docs/tasks/2026-10-23--mac-manual-map-markdown.md",
-      "sha256": "587e316535b98aaf52f52dd49fab6d10d1e5148517a85787354be3685d5bed59"
+      "sha256": "b7e189cab578858ae1d55247ebf7a0f93061cbe0d4600251afe758577dcfb9a3"
     },
     {
       "path": "src/core/registry.ts",
@@ -28244,12 +28244,16 @@ const R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR = Object.freeze({
     {
       "path": "test/contracts/yalken-atlas-v5-e02d-c03-manual-map-markdown-portability-bridge.contract.test.js",
       "sha256": "322ff3212890a8868e4faa2f479bc002b3e167b5753bd4b3ee0ae493355f5ba0"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e10-c02-revision-history-projection-author-truth.contract.test.js",
+      "sha256": "13e9117c3fa79ec28f749ec754ce9eb2dbce8df119be88908ed3b2a00af30d0b"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c4f8990da57ffb8087152e22a2e8ebf867cf38dd9b62a97bb2ed3a31c435ebbe"
+      "sha256": "0c8517f92eb414731c546f17499cd243f4634b72ac5ef32dc6e7edb113c96827"
     }
   ]
 });

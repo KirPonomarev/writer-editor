@@ -62,6 +62,7 @@ Existing separate code agent owns exactly10 runtime and6 maintained test files b
 - test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/yalken-atlas-v5-e02d-c03-manual-map-markdown-portability-bridge.contract.test.js
+- test/contracts/yalken-atlas-v5-e10-c02-revision-history-projection-author-truth.contract.test.js
 - test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js
 - test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
@@ -162,3 +163,15 @@ Exactly19 AGENT_FINAL_REPORT_V1.schema.json fields, one text block KEY: VALUE, b
 ## FAIL_PROTOCOL
 
 Retain raw failures/source/build/profile/volume identities. Fixture/method failure is not product RED. Exit0 is process evidence, not user acceptance. Missing/stale/skipped/todo/self-authored/different-head evidence is UNKNOWN or FAIL. No prior native retagging, clearing deferred defects, hiding baseline warnings or broadening claims.
+
+### Same-vertical required-proof readmission V2
+
+H1 0f502aea01dab1f8287a7544cead726666d0e41a is an ordinary clean semantic commit, not delivered. Original binding base and pre-edit records above remain historical. Expanded declaration e0b81cf0f4e3523cc04b41a028107c7ba9d6f9b5367ed996d6b321227c8b567f and pre-edit pins2a4d6c116ab2301016d041126ec69fe6bd3d703f666c36816994231220cba2f9 bind clean H1; actual38-path preflight0 before these changes. Prior metadata-only proposal was not executed and is superseded. Original180 protected plus completed10runtime/6test paths remain byte-frozen (196 unique hashes).
+
+Initial H1 affected103 actual910tests/907pass/3fail/0skip/todo is retained as FAIL. Complete unchanged clean predecessor controls reproduce all3: missing existing numbering command documentation row, plus two E10-C02 fixture failures before projection because old raw appendEventLogEntry omits required eventId. This required-proof blocker is repaired inside the same Markdown vertical/branch/rollback/delivery, with no runtime change or waived check.
+
+Root appends only existing cmd.project.list.configureNumbering -> cap.project.list.configureNumbering documentation row and refreshes current task/source/DATA/certificate/inventory/approval bindings as actually required. All historical certificate constants/verifier/parser bodies, inventory membership/classes/lanes/skips, runtime and existing tests remain unchanged. Reuse the one current undelivered Markdown certificate successor, no new tracker or process-only PR. No release-cut rebuild unless an actual input dependency changes.
+
+Existing code agent may change only buildEventLog helper in the newly allowlisted E10-C02 test, <=90 added+deleted. Use current real Core reducer/hash, applyCommandWithEventLog and core domain event product port for same3 commands/IDs/timestamps/actor and opaque must-not-copy manuscript sentinel. Preserve all3 complete test bodies, buildReviewOutcome, HEX constants, PROJECT_ID, every hash/invalidation/ref/leak assertion and exact3event/5projection/4derived-entry counts byte-for-byte. No forged domain facts, synthesized authority, permissive validator, test filter/skip/todo or runtime edit. Original6 per-path ceilings stay; seven-test aggregate ceiling870. Actual taskE0 before explicit delegated one-file write admission.
+
+Proof: whole unchanged capability contract, complete corrected E10-C02 and unchanged E10-C03 replay control; independent exact diff/helper budget/test-body equality and196 frozen hashes. Re-run current changed-input source and affected checks; retain prior unchanged-input executions only with exact source-bound limits. Full mandatory baseline/official RTK/exact CI/package/native/merged gates remain required. Commit corrective change normally without amend/reset/rebase/force; no closure until full ordinary delivery.
