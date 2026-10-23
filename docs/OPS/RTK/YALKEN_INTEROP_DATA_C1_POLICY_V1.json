@@ -2708,7 +2708,7 @@
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5fe3c1e53bd55102d73ece8022481715aff8f37516e9fed1ad1e9cf5978999a2"
+        "sha256": "fcca7bea01322b3c95538dc94c871a44484819b835cf7cbe7ba62b602a2c3453"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
