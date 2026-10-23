@@ -210,3 +210,73 @@ test('actual runtime menu verification requests the successor and retains strict
   assert.throws(() => h.context.verifyMenuArtifactLockAtRuntime(), error => error.failSignalCode === 'E_MENU_ARTIFACT_TAMPER_OR_DRIFT');
   assert.equal(h.verificationStates.at(-1).result, 'FAIL');
 });
+
+test('maintained menu guards select the successor in release and promotion at a finite child argv boundary', async () => {
+  const vm = require('node:vm'), source = await readFile(join(process.cwd(), 'scripts/run-tests.js'), 'utf8');
+  const calls = [], expected = [];
+  let status = 0;
+  const context = { process: { execPath: process.execPath }, spawnSync(command, args, options) {
+    calls.push({ command, args: Array.from(args), options: { ...options } }); return { status };
+  } };
+  vm.createContext(context);
+  const specifications = [
+    ['runMenuSnapshotGuard', ['scripts/ops/menu-config-normalize.mjs', '--snapshot-check', `--snapshot-id=${SELECT_ALL_SNAPSHOT}`]],
+    ['runMenuArtifactExportGuard', ['scripts/ops/menu-config-normalize.mjs', '--export-artifact', '--out',
+      'docs/OPS/ARTIFACTS/menu/menu.normalized.json', '--snapshot-id', SELECT_ALL_SNAPSHOT, '--lock-artifact']],
+    ['runMenuArtifactLockGuard', ['scripts/ops/check-menu-artifact-lock.mjs', `--snapshot-id=${SELECT_ALL_SNAPSHOT}`]],
+  ];
+  for (const [name, args] of specifications) {
+    const start = source.indexOf('function ' + name + '('), end = source.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start, name); vm.runInContext(source.slice(start, end + 2), context);
+    for (const promotion of [false, true]) for (const childStatus of [0, 7, null]) {
+      status = childStatus;
+      assert.equal(context[name](process.cwd(), promotion), childStatus ?? 1, name + ': child status propagation');
+      expected.push({ command: process.execPath, args: [...args, '--mode=' + (promotion ? 'promotion' : 'release')],
+        options: { cwd: process.cwd(), stdio: 'inherit' } });
+    }
+  }
+  assert.deepEqual(calls, expected, 'finite capture proves actual argv selection, not child or native execution');
+});
+
+test('actual menu CLI implicit promotion default matches the successor while the historical snapshot still refuses drift', async (t) => {
+  const fs = require('node:fs'), { spawnSync } = require('node:child_process');
+  const { hashNormalizedConfig } = require('../../src/menu/menu-config-normalizer.js');
+  const paths = ['docs/OPS/ARTIFACTS/menu/menu.normalized.json', 'docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json',
+    'src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json',
+    'src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json', 'docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json'];
+  const before = paths.map(file => fs.readFileSync(join(process.cwd(), file)));
+  const registry = JSON.parse(before.at(-1)).snapshots, historicalId = 'menu-default-desktop-minimal';
+  const successor = registry.find(row => row.id === SELECT_ALL_SNAPSHOT), historical = registry.find(row => row.id === historicalId);
+  const directory = fs.mkdtempSync(join(fs.realpathSync(require('node:os').tmpdir()), 'select-all-snapshot-'));
+  try {
+    const runs = [null, historicalId].map((snapshotId, index) => {
+      const outPath = join(directory, `normalized-${index}.json`);
+      const args = ['scripts/ops/menu-config-normalize.mjs', '--snapshot-check', '--mode=promotion', '--out', outPath, '--json'];
+      if (snapshotId !== null) args.push('--snapshot-id=' + snapshotId);
+      const child = spawnSync(process.execPath, args, { cwd: process.cwd(), encoding: 'utf8' });
+      t.diagnostic(JSON.stringify({ actualCli: true, args, status: child.status, stdout: child.stdout, stderr: child.stderr }));
+      assert.equal(child.error, undefined); assert.equal(child.signal, null); assert.equal(child.stderr, '');
+      const state = JSON.parse(child.stdout), output = JSON.parse(fs.readFileSync(outPath, 'utf8'));
+      t.diagnostic(JSON.stringify({ actualNormalizedOutput: output }));
+      assert.equal(state.operation, 'snapshot-check'); assert.equal(state.mode, 'promotion'); assert.equal(state.outPath, outPath);
+      assert.equal(hashNormalizedConfig(output.normalizedConfig), output.normalizedHashSha256);
+      assert.equal(state.normalizedHashSha256, output.normalizedHashSha256); assert.equal(state.contextHashSha256, output.contextHashSha256);
+      assert.equal(output.normalizedHashSha256, successor.normalizedHashSha256); assert.equal(output.contextHashSha256, successor.contextHashSha256);
+      return { child, state, output };
+    });
+    const [current, old] = runs;
+    assert.ok(successor); assert.ok(historical);
+    assert.equal(old.child.status, 1); assert.equal(old.state.result, 'FAIL'); assert.equal(old.state.snapshotId, historicalId);
+    assert.equal(old.state.failSignalCode, 'E_MENU_SNAPSHOT_MISMATCH'); assert.deepEqual(old.state.snapshotEntry, historical);
+    assert.equal(old.state.mismatch.expectedNormalizedHashSha256, historical.normalizedHashSha256);
+    assert.equal(old.state.mismatch.actualNormalizedHashSha256, successor.normalizedHashSha256);
+    const h = await nativeMenuRoleHarness(); assert.deepEqual(current.output.normalizedConfig, h.normalize());
+    assert.equal(current.state.snapshotId, SELECT_ALL_SNAPSHOT, 'implicit CLI default must select current successor');
+    assert.equal(current.child.status, 0); assert.equal(current.state.exitCode, 0); assert.equal(current.state.result, 'PASS');
+    assert.equal(current.state.failSignalCode, ''); assert.equal(current.state.mismatch, null);
+    assert.deepEqual(current.state.snapshotEntry, successor);
+  } finally {
+    paths.forEach((file, index) => assert.deepEqual(fs.readFileSync(join(process.cwd(), file)), before[index], file + ': no repository writes'));
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});

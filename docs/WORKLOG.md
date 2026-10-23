@@ -1,3 +1,17 @@
+## 2026-10-23 — Select All maintained gate identity aligned; full acceptance pending
+
+TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SAME_OUTCOME_SOURCE_REVIEWED_REQUIRED_FULL_PROOFS_PENDING
+BINDING_BASE_SHA: dda461fa77d9b0284433d24d6bba666c2cc27bb7
+ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+
+Original role/menu candidate5d2cd43f and its actual12source gates remain historical exact evidence. Before full baseline, read-only dependency review finds three maintained runner snapshot arguments and one CLI default still historical; export would rewrite the new artifact. Full baseline was held, not falsely reported as a failed run. Fresh clean same-outcome admissions on H then doc-only dda461fa precede every correction. Current27paths and9971protected sources plus9held original role/Main/artifact/pin paths remain exact.
+
+Separate code agent changes only4production snapshot-ID literals and one expected-ID literal in the whole promotion contract. Appends70keyboard lines preserving all previous7case/helper bytes. Whole2files on unchanged production source: actual15tests12pass3causal failures; same test bytes with the4production literals:15of15,0fail/cancel/skip/todo. Root independently reviews complete diff, raw receipts and four child outputs with exact TAP roundtrip. Actual CLI implicit promotion selects successor PASS0; explicit historical ID continues mismatch FAIL1. Finite18production-function argv calls are child-boundary checks, not product/native execution. No artifacts regenerated, no Main/config/renderer/clipboard/Core/storage change in correction.
+
+Current DATA/source/certificate/inventory/approval companions are being refreshed without weakening historical tuples, predicates, test classes/lanes or skip policy. Full50whole affected files, release/production regressions, source gates/E0, full baseline/official RTK, exact package/native Cmd+A/Save/Quit/cold/closed archives/current CI/normal merge and exact merged proof remain pending. All17Mac qualification UNKNOWN. Unchanged moderate Electron advisory,59named baseline skips, old menu path advisory, long-dialog/exFAT and cancelled-form affordance limitations remain explicit. Full Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later. Owner state and old evidence retained.
+
 ## 2026-10-23 — live-map delivery closed; native Select All source and menu under proof
 
 TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023

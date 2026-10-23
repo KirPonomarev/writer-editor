@@ -776,7 +776,8 @@
     "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
     "docs/tasks/2026-10-23--mac-native-select-all.md",
     "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-    "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json"
+    "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+    "scripts/ops/menu-config-normalize.mjs"
   ],
   "protectedFiles": [
     {
@@ -1741,7 +1742,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "16c3b73657d6cf34645d7624905c0b7c44e6e098dbb651f83069e49fe2e7e984"
+        "sha256": "01438b9d11c451fa7d31a0696e6b6ab54674d0ed32254fd5cba4ba92e22890ba"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2585,7 +2586,7 @@
       },
       {
         "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
-        "sha256": "fa8d3ea4ac1c5fe2523c5f03792453bfd9b0f38ded93cd7fa58a8d3464a88d43"
+        "sha256": "06d34c1f2a34bb6b5a5b08d7749e89dde285f2e84fcf59df43b82233f4cf5524"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
@@ -2697,15 +2698,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9f76886c6f53e333e2789dffac46a539039e673fd9946af5c6143e736c1eb7d2"
+        "sha256": "04898f26f2c13d12561c7e73890b92cc5e39f113c8e26df2e549b89e57d30385"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c751bd7de6e3465c04ee11d42f272481bfc6339a89c9f26b7a54fe9b774151c0"
+        "sha256": "440d7ff46c9076c1fe39b31458259f2537bfe167f3822f189b94656f5877cacc"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "0034343a7d903d2418e6a16098ae83d061385fe27abe70df73d1d5c40514e969"
+        "sha256": "2997653a9e58d27986323bf825fd4fd76537b7f0c63b1dd7c324e0fbddd35dac"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3245,7 +3246,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "85ca14cc0e3f31b721ff2e06bd19e480be2336401e64160696e5171addd1383f"
+        "sha256": "95120e2f4fba80073e7bd36b42cbdca60b5f6e300580110ea2de802a23768f38"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3497,7 +3498,7 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-native-select-all.md",
-        "sha256": "23ca278619ff84551e3fe9ec58084d54fc706c391b88f7197a5b7162add329ce"
+        "sha256": "ad79b902e8988c30c4ce4f30e0f237b5bcab1714c5fb1ae206ed734cf1c24832"
       },
       {
         "path": "src/menu/menu-config.v2.json",
@@ -3513,7 +3514,15 @@
       },
       {
         "path": "test/unit/keyboard-shortcuts.test.js",
-        "sha256": "fe815f0d3766da1ad358741dbfa8a368803b8ded993000f66c487b61a67b0154"
+        "sha256": "9618a3db494120179c1657f21db603a755179feddd95ac8c7dfdb5c32d73f186"
+      },
+      {
+        "path": "scripts/ops/menu-config-normalize.mjs",
+        "sha256": "8b2773317a673d647e3101a06846e9b427ef0e38c7c59c8b8cf97af4c049688c"
+      },
+      {
+        "path": "scripts/run-tests.js",
+        "sha256": "3851d49105e2f714e480e3375329001224a63d742a3fb55826cc13cbde698a9a"
       }
     ],
     "followupRepair": {

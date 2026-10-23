@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 5d2cd43fac708bb03c87a828e3672a964c7b0c4f
-HEAD_SHA_AT_START: 5d2cd43fac708bb03c87a828e3672a964c7b0c4f
+BINDING_BASE_SHA: dda461fa77d9b0284433d24d6bba666c2cc27bb7
+HEAD_SHA_AT_START: dda461fa77d9b0284433d24d6bba666c2cc27bb7
 ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-select-all-20261023
@@ -21,7 +21,7 @@ T: Canonical menu config -> existing normalizer/successor snapshot -> artifact a
 H: Current canonical and packaged Edit menus contain only copy, despite an unused selectAll Main template. A single declared selectAll role through the actual packaged pipeline should restore Cmd+A; no renderer handler or global keyboard interception is needed.
 B: Preserve every other menu action, current filtering/capability/role policy, clipboard routes, Core/renderer/preload/IPC/storage, all authoring and project bytes, old snapshots/certificates and release/qualification truth. One coherent outcome and rollback.
 P: Append faithful maintained actual config/normalizer/artifact/Main regression; whole unchanged-source causal RED and same-test GREEN. Complete affected and required gates, exact package/native/cold, ordinary delivery and fresh merged proof.
-I: Exact original M and clean same-task doc checkpoint30d691d4/source/tree/branch/fresh main, declared24paths/9974protected tracked paths, current snapshot/artifact/lock hashes, actual app/build/profile and focused target identity.
+I: Exact original M and clean same-task checkpoints C/H/dda461fa/source/tree/branch/fresh main; active27paths/9971protected tracked plus9held paths under the amendment below, current snapshot/artifact/lock hashes, actual app/build/profile and focused target identity.
 
 ## ARTIFACT
 
@@ -55,6 +55,7 @@ Separate code agent owns the original menu-config/Main literal repair, appended 
 - src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json
 - test/unit/keyboard-shortcuts.test.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
+- test/contracts/promotion-heavy-lane-entrypoint.contract.test.js
 
 ## DENYLIST
 
@@ -79,6 +80,8 @@ Separate code agent changes only3 current snapshot-ID literals in runMenuSnapsho
 Append to the existing whole keyboard file, preserving every original7case/helper byte. Causal negative on unchanged H executes real maintained runner functions at a finite child-spawn argv boundary for release/promotion, and actual CLI implicit-default snapshot-check with promotion mode and owned APFS outPath; it must expose the historical-ID mismatch without writing any repository artifact. Same finaltest bytes must pass after4literal correction. Finite argv capture proves selection of a child argument, not execution of a product mutation. Actual baseline later must preserve all current artifacts/locks/snapshot rows byte-exact. No test-name filters, fake artifacts or hidden source rewrites.
 
 Correction budgets: runner6added+deleted, CLI2added+deleted, keyboard<=100new appended lines above H and<=320total above original M. Original menu/Main/artifacts/2current pins held exact. Root precise new DATA/source/current complete certificate successor, inventory/current approvals and factual update preserve the old291carrier and all historical tuples/predicates. All source/affected/full baseline/official RTK/new package/native/current CI/normal merge and exact merged proof remain mandatory on the final corrected identity.
+
+Before any code/test correction, the full caller scan finds one current expected argv literal in promotion-heavy-lane-entrypoint.contract.test.js. Root interrupts the agent; only the root taskdoc is dirty, no code/test edit or test execution occurred. Actual26-path taskE0/guardrails0 and ordinary doc-only checkpointdda461fa parentH preserve this state. Fresh clean dda bootstrap/preflight actual0 with declarationd30583b57bc589eb229e97eb625219303af3cf9c893604069ffa86356a9e6735 precede this final27-path amendment:9971protected plus9held paths. Add only that one expected snapshot-ID literal (2added+deleted) in the existing promotion contract; preserve every stage-order, complete unit-file denominator, failure-propagation and other assertion byte. Execute the whole promotion contract with the same whole keyboard file before/after the four production literals; no contract weakening or new runtime scope. Other26-path constraints remain.
 
 ### Native role
 
@@ -135,3 +138,7 @@ Retain each actual nonzero execution and source/method/log bindings. Distinguish
 ### Actual bounded source and generated-menu checkpoint
 
 Root runtime review a68c13ba3b571ae2a45b20d0ab2beb81b48713df474a1e842fa330a2ec8e0a84 actual0 verifies11config/2Main/117appended-test lines and original3cases/9974protected files. Same final7case test bytes: unchanged-runtime3pass4fail; role/snapshot-source6pass1artifactfail; existing normal successor/create/export/lock and exact mirrors then7of7,0fail/cancel/skip/todo. Old snapshot row preserved; only native Select All menu semantic delta. Main9745522d and current two mechanical pins reviewed, no other65release-cut bindings or qualification fields changed. Finite child-role96context/sevenmutation coverage is not native OS acceptance. All required affected/gates/full baseline/RTK/CI/new package/native/cold/normal delivery and exact merged verification remain pending.
+
+### Actual maintained gate source checkpoint on dda461fa
+
+The same final two whole files execute actual15tests12pass3fail on unchanged production literals, then15of15 with0fail/cancel/skip/todo after exactly3runner plus1CLI ID replacements. One promotion expected-ID literal follows the new current identity; every other byte and all16stage-order/denominator/failure predicates stay exact. Keyboard adds70lines above H,187above original M; all previous7case/helper bytes preserved. Root independently verifies all4source hashes, complete diff, actual executor receipts, unchanged identities and raw implicit/historical child outputs by strict TAP roundtrip. Implicit successor PASS0; explicit historical mismatch FAIL1;18finite argv-boundary calls do not claim product/native execution. All9971protected and9held original role/Main/artifact/pin paths stay exact. Current294binding certificate,770DATA and630source pins,1603unchanged inventory membership and append-only current witnesses follow only actual current source bytes. Full required source/affected/baseline/RTK/build/native/CI/ordinary merge and exact merged acceptance remain pending; all17Mac qualification UNKNOWN.
