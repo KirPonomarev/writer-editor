@@ -1747,7 +1747,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "e9146ab63130fc0ed2173946900d5c27f0235a6763dfa5917ef9d772db44de42"
+        "sha256": "d3616ea1dba94e5cbda2520a863d6ae7ddaf68cdfa6c515de1b796610d4ee907"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2631,7 +2631,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-        "sha256": "db91f5755986c930d9c7817d2845cc9cf6b8542973268aeb3a066f5efad49d02"
+        "sha256": "0a6f6c29e9b7b4956e3140b50a54e7e714116751361df42f49a7c85d36625d8d"
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
@@ -2703,15 +2703,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "2e245bd8b8061beb2966d80cd4e67691865e1734e501da6542c6a20309d6d683"
+        "sha256": "047a81f5dfec0625c66ade1ef39c12190a3afbf0049348cdc97763aa406cfabc"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "219f4e5314094fb3f9945717bcd5cbe4ae188a54e87632ae87875d5386af1d2d"
+        "sha256": "094f4c531adeaf0e55b5d5c681b3a9111250b04839db81bba0dffcd1776994d0"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "e74c1f2090b3bf8c39aee4a21a11685fc45a7ca0f15d0984fc1113c42b5dc015"
+        "sha256": "a850447ac3654549e2fe54be5cbe7b8ae550d53bb1fc7e51eda69e3b04f1714d"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3251,7 +3251,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c9c8c17593bec9c8bea81b31f9c9ac8f084edbb240d6fb7b607400a4e59c8a90"
+        "sha256": "9137ba2bdedbfa53956fa4df5b1ed342a542e6596e11c97087489aed307af03b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3539,7 +3539,7 @@
       },
       {
         "path": "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
-        "sha256": "f48b91af21d8760101675656edc844c163b78bc8201b252fa39ded7602f203a8"
+        "sha256": "3a17dc1ad9be85a3e6ddedd550b4bde39684230629ddc55e97b22b9cb5699e59"
       },
       {
         "path": "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs",

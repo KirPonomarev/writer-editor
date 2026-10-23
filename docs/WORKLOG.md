@@ -1,3 +1,15 @@
+## 2026-10-23 — Atlas continuity: native proof retained, SaveACK fixture amendment
+
+TASK_ID: YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SAME_DELIVERY_FIXTURE_ADMITTED_FULL_REQUIRED_PROOFS_PENDING
+BINDING_BASE_SHA: 7bb18804e1e28315b5431953334d7958377b5132
+ORIGINAL_DELIVERY_BASE_SHA: 4bb9129653afe5e1843845511f3d8d94a8bb8eea
+
+Clean7bb source gates and focused349of349 executed. Actual rebuilt app refuses stale click before SAVED, refreshes current ranges and restores exact source/author records; normal Quit and cold preserve all90document files. Whole565warm/576cold profile members independently read. These actual source/build/profile identities stay7bb; failed trailing clipboard shape remains retained, corrected keyboard3paragraph/79UTF16 case observed separately. No full Mac qualification.
+
+Whole40affected on7bb executes1031cases1030pass1ReferenceError,0cancel/skip/todo. Missing production currentRightTab in one comment snapshot VM is diagnosed across all18callers; no runtime defect inferred. Fresh clean22path bootstrap/preflight0 admits only its truthful comments field plus same-chain factual/mechanical companions,9978protected and seven held implementation paths exact. Original assertion bytes and every failed raw result remain protected. Complete final gates, baseline, official RTK, CI, normal PR merge and fresh exact merged build/native verification are still required. No push/PR/merge or finished-product claim yet.
+
 ## 2026-10-23 — Atlas source-evidence continuity under exact source proof
 
 TASK_ID: YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023

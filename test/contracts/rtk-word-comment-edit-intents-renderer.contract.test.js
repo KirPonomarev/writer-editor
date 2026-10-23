@@ -92,7 +92,7 @@ test('snapshot bridge carries the live bounded ledger and forwards only SAVED re
   const start=source.indexOf('function composeEditorSnapshot()'),end=source.indexOf('\n}',start)+2;
   const ackStart=source.indexOf('window.electronAPI.onSetDirty((message) => {'),ackEnd=source.indexOf('\n  });',ackStart)+6;
   let callback, checkpoints=0;
-  const context={currentProjectId:'p',currentDocumentId:'s',currentTreeContentPublicationId:null,isTiptapMode:true,localEditGeneration:4,localDirty:true,lastAckedGeneration:0,
+  const context={currentProjectId:'p',currentDocumentId:'s',currentTreeContentPublicationId:null,currentRightTab:'comments',isTiptapMode:true,localEditGeneration:4,localDirty:true,lastAckedGeneration:0,
     wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),notesMutationPending:false,storyDrafts:new Map(),storyMutationPending:false,pendingStoryRequestId:null,
     composeDocumentContent:()=>'',getPlainText:()=>'',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),
     getTiptapImageInsertionPosition:()=>null,getTiptapRootSplitBoundary:()=>null,getTiptapCommentEditIntentsJson:()=>'{"proof":"live"}',
