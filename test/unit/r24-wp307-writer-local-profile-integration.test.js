@@ -333,6 +333,39 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
   return h;
 }
 
+async function fullMacRendererCommandPort(h) {
+  const vm = require('node:vm');
+  const registryModule = await import('../../src/renderer/commands/registry.mjs');
+  const projectModule = await import('../../src/renderer/commands/projectCommands.mjs');
+  const runnerModule = await import('../../src/renderer/commands/runCommand.mjs');
+  const busModule = await import('../../src/renderer/commands/commandBusGuard.mjs');
+  const registry = registryModule.createCommandRegistry(); let last;
+  // Finite IPC transport uses the real envelope/Main fixture; no renderer
+  // normalization, registry, capability runner or command bus is replaced.
+  projectModule.registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    const mainResult = await h.command(request.commandId, structuredClone(request.payload));
+    last = { request, mainResult }; return mainResult;
+  } } });
+  const context = { isTiptapMode: true, COMMAND_BUS_ROUTE: 'command.bus',
+    runCommandThroughBus: busModule.runCommandThroughBus,
+    runCommand: runnerModule.createCommandRunner(registry, { capability: { platformId: 'node', editorMode: 'tiptap' } }),
+    updateStatusText() {}, mapCommandErrorToUi: error => ({ userMessage: error.reason, severity: 'INFO' }) };
+  const editor = read('src/renderer/editor.js');
+  const actual = name => {
+    const start = editor.indexOf((name === 'dispatchUiCommand' ? 'async ' : '') + 'function ' + name + '(');
+    const end = editor.indexOf('\n}\n', start); assert.ok(start >= 0 && end > start, name);
+    return editor.slice(start, end + 2);
+  };
+  vm.createContext(context); vm.runInContext(actual('withEditorModeCommandPayload') + '\n' + actual('dispatchUiCommand'), context);
+  return async (id, payload, tiptap = true) => {
+    context.isTiptapMode = tiptap; last = null;
+    const result = await context.dispatchUiCommand(id, payload);
+    assert.ok(last, 'actual renderer registry/runner/bus must reach Main');
+    assert.equal(result.ok, last.mainResult.ok, 'renderer result must agree with Main');
+    return { ...last, result };
+  };
+}
+
 test('full Mac actual guarded Main admits FREE map create add and queries under the ordinary project owner', async t => {
   const h = await fullMacMainFixture(t);
   const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Full Mac Map' });
@@ -455,6 +488,7 @@ test('manual-map authoring actual packaged Main updates an explicitly selected n
 
 test('manual-map authoring actual Main executes all sixteen commands with real Core and Stage10 persistence', async t => {
   const h = await fullMacMainFixture(t), executed = new Set();
+  const uiCommand = await fullMacRendererCommandPort(h);
   if (process.platform === 'darwin') {
     h.helperPath = path.join(h.root, 'project-archive-fs');
     const built = require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({ outputPath: h.helperPath });
@@ -472,7 +506,8 @@ test('manual-map authoring actual Main executes all sixteen commands with real C
   assert.equal(created.ok, true);
   const projectId = created.projectId, mapId = 'map-a';
   const command = async (id, payload) => {
-    const result = await h.command(id, { projectId, mapId, ...payload });
+    const { mainResult: result, request } = await uiCommand(id, { projectId, mapId, ...payload });
+    assert.equal(request.payload.editorMode, 'tiptap');
     assert.equal(result.ok, true, id + ': ' + JSON.stringify(result)); executed.add(id); return result;
   };
   const manifestPath = path.join(h.documents, 'craftsman', 'Complete manual maps', 'project.craftsman.json');
@@ -523,8 +558,46 @@ test('manual-map authoring actual Main executes all sixteen commands with real C
   assert.equal(queried.manualMapWorkbench.mapId, 'map-b'); assert.equal(queried.manualMapWorkbench.mapRows.length, 3);
   const empty = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'First imported map' });
   assert.equal(empty.ok, true);
-  const first = await h.command('manualMap.import.jsonRepeat', { projectId: empty.projectId, targetMapId: 'first', title: 'First' });
+  const { mainResult: first } = await uiCommand('manualMap.import.jsonRepeat', { projectId: empty.projectId, targetMapId: 'first', title: 'First' });
   assert.equal(first.ok, true, JSON.stringify(first)); assert.equal(first.value.mapId, 'first');
+});
+
+test('manual-map actual renderer transport prepares real attachments in both editor modes', async t => {
+  for (const tiptap of [true, false]) await t.test(tiptap ? 'tiptap' : 'legacy', async t => {
+    const h = await fullMacMainFixture(t), uiCommand = await fullMacRendererCommandPort(h);
+    const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Transport attachment' });
+    assert.equal(created.ok, true); const projectId = created.projectId, mapId = 'map';
+    assert.equal((await h.command('manualMap.create', { projectId, mapId, title: 'A' })).ok, true);
+    assert.equal((await h.command('manualMap.node.add', { projectId, mapId, nodeId: 'n', label: 'A' })).ok, true);
+    const donor = path.join(h.root, 'reference.txt'), bytes = Buffer.from('Реальный e\u0301 🧭\n'); fs.writeFileSync(donor, bytes);
+    let pickerCalls = 0; h.dialog.showOpenDialog = async () => { pickerCalls++; return { canceled: false, filePaths: [donor] }; };
+    const before = h.roster(), input = { projectId, mapId, nodeId: 'n', attachmentId: 'a', label: 'Selected', attachmentKind: 'reference' };
+    const { mainResult, request } = await uiCommand('manualMap.attachment.add', input, tiptap);
+    t.diagnostic(JSON.stringify({ transported: request.payload, mainResult, pickerCalls, canonicalUnchanged: JSON.stringify(h.roster()) === JSON.stringify(before) }));
+    assert.equal(request.payload.editorMode, tiptap ? 'tiptap' : 'legacy'); assert.equal(Object.hasOwn(input, 'editorMode'), false);
+    assert.equal(mainResult.ok, true, JSON.stringify(mainResult)); assert.equal(pickerCalls, 1);
+    const manifest = JSON.parse(fs.readFileSync(path.join(h.documents, 'craftsman', 'Transport attachment', 'project.craftsman.json')));
+    const attachment = manifest.manualMaps.maps.map.attachments.a;
+    assert.equal(attachment.source.sourceHash, crypto.createHash('sha256').update(bytes).digest('hex'));
+    assert.equal(attachment.source.byteLength, bytes.length); assert.equal(attachment.storedContent, false);
+    assert.equal(Object.hasOwn(attachment, 'editorMode'), false); assert.equal(JSON.stringify(attachment).includes(h.root), false);
+  });
+});
+
+test('manual-map attachment transport rejects malformed mode and author authority before picker or writes', async t => {
+  const h = await fullMacMainFixture(t), created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Transport refusals' });
+  assert.equal(created.ok, true); const projectId = created.projectId, mapId = 'map';
+  assert.equal((await h.command('manualMap.create', { projectId, mapId, title: 'A' })).ok, true);
+  assert.equal((await h.command('manualMap.node.add', { projectId, mapId, nodeId: 'n', label: 'A' })).ok, true);
+  let pickerCalls = 0; h.dialog.showOpenDialog = async () => { pickerCalls++; return { canceled: true }; };
+  const before = h.roster();
+  const payloads = [null, false, {}, ['tiptap'], '', 'TIPTAP', 'tiptap.extra', 'x'.repeat(1001)].map(editorMode => ({ editorMode }));
+  for (const key of ['source', 'sourceHash', 'byteLength', 'mediaType', 'path', 'targetPath', 'extra']) payloads.push({ editorMode: 'tiptap', [key]: 'forged' });
+  for (const extra of payloads) {
+    const result = await h.command('manualMap.attachment.add', { projectId, mapId, nodeId: 'n', attachmentId: 'a', label: 'Selected', ...extra });
+    assert.equal(result.ok, false, JSON.stringify(extra)); assert.equal(result.reason, 'MANUAL_MAP_ATTACHMENT_INTENT_INVALID');
+    assert.equal(pickerCalls, 0); assert.deepEqual(h.roster(), before);
+  }
 });
 
 test('manual-map attachment real picker refuses forged metadata and cancelled/stale/revoked/changed input without canonical writes', async t => {

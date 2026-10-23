@@ -38458,6 +38458,13 @@ function captureManualMapPreparationGuard(commandId, record) {
 }
 
 async function prepareManualMapAttachmentCommand(commandId, payload, binding, assertCurrent) {
+  if (Object.hasOwn(payload, 'editorMode')) {
+    const { editorMode, ...authorPayload } = payload;
+    if (editorMode !== 'tiptap' && editorMode !== 'legacy') {
+      return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_ATTACHMENT_INTENT_INVALID', 'MANUAL_MAP_ATTACHMENT_INTENT_INVALID');
+    }
+    payload = authorPayload;
+  }
   const allowed = ['projectId', 'mapId', 'nodeId', 'attachmentId', 'label', 'attachmentKind'];
   if (Object.keys(payload).some(key => !allowed.includes(key)) || allowed.slice(1, 5).some(key =>
     typeof payload[key] !== 'string' || !payload[key].trim() || payload[key].length > 1000)
