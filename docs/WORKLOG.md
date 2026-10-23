@@ -4886,3 +4886,7 @@ Full first Mac, true PDF, remaining Atlas/WSE/Pulse/epochs remains active.
 ## 2026-10-23 — same manual-map native keyboard correction
 
 406be native draft arrows caused graph PAN/control replacement; all raw failures and failed profile153-member archive are preserved. Minimal renderer guard plus existing R2 actual-function coverage: RED164/138pass/26fail -> GREEN164/164, zero skips; all prior cases retained. Normal bundle/current companions/native/cold/export/full required delivery remain pending; full Mac remains open.
+
+# 2026-10-23 — same manual-map attachment correction, semantic checkpointbc248
+
+Actual unchanged-Main real UI transport RED35/31/4 and same-test GREEN35/35; full six-file61/61 and actual22-suite126-mutant meta proof passed without skips. Seven Main lines copy/validate/remove editorMode before unchanged author validation; exact dispatch/async entitlement oracles replace stale global2 counting. All original cases/guards/five-mutant receipt preserved. Root reviewed and committed task plus four source files, then obtained clean15-path OPS preflight before current binding companions. Old failed baseline/native/profile evidence retained; full source/baseline/RTK/CI/new native/cold/export and normal delivery remain open.

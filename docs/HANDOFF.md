@@ -1,3 +1,11 @@
+## 2026-10-23 — manual-map attachment transport corrected, native delivery pending
+
+Actual fc81 package preserved manuscript, maps and all15 command/event records; native title selection/caret works. Attachment then refused before picker because actual UI adds editorMode. The failed native run/178-member profile and full baseline2563pass/5fail/59named skips remain retained as failures.
+
+Semantic checkpointbc248 contains the seven-line bounded Main mode copy/strip and three maintained test corrections. Actual execution HEADfc81: causal whole integration35:31pass/4fail becomes same-test35/35; six complete files61/61,0fail/cancel/skip/todo, and22-suite126-mutant meta proof passes. All prior cases and five wiring mutants remain. Exact source hashes are unchanged onbc248.
+
+Fresh clean15-path root-only binding preflight precedes current companions. Full baseline/official RTK/CI, new exact package and genuine all16/picker/portal/template/JSON/SVG/import/Save/Quit/cold/ordinary T777 completed-artifact readback and normal merge/merged verification remain required. Full first Mac/Atlas/WSE/Pulse/epochs stays open; Black Box later.
+
 ## 2026-10-23 — native manual-map draft keys, same delivery still open
 
 Exact406be unsigned V3 native run created a synthetic project and preserved Unicode through Paste, ordinary keys, Cut, Undo, Redo and Save. Raw manuscript text remains exact. Focused draft arrows instead panned the graph and replaced the input; the journey failed before all16/export/cold. Normal Quit root86732 exit0 and all153 failed profile archive members are retained/readmatched on T777.
