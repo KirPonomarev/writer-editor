@@ -1,3 +1,19 @@
+## 2026-10-23 — Exact Atlas scene journey source reviewed; actual app proof pending
+
+TASK_ID: YALKEN_MAC_ATLAS_EXACT_JOURNEY_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_REVIEWED_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: a2ce7a353103cdb334fe0c9b092def35b4753ceb
+ORIGINAL_DELIVERY_BASE_SHA: 92068bb7f7b568cfe5de8b3122367ce6b531746f
+
+Predecessor PR2151 normally merged92068bb7 with identical candidate/main tree. Independent terminal closured01c3aebf430cc77f09261deea4a2773730f9f530d1a43a64588653326c77813 actual0 binds complete main20of20CI,4416of4416RTK, full source/baseline/affected/exact package/native Cmd+A/Save/Quit/cold and complete306member profile archive. Earlier Select All pending entries are historical. Native field Undo remains OPEN; unaccepted draft3396dc1c is clean isolated and not integrated. Owner23Oct priority retains this nonblocking issue and resumes product Atlas, not a repair chain.
+
+Fresh clean23path bootstrap/preflight0 on task-only checkpoint precedes the same-outcome amendment and taskE0;9976protected files stay exact. Separate code agent adds only strict WRITER_LOCAL_EXACT_ATLAS_V5 admitting retained17manual-map plus3existing entity/alias/confirmation commands and3queries. Main selects it; exact flags and current release factory follow it. Every old V1-V4 module/test/mutant body remains inverse-byte-exact; only9approved integration helper/current expectation lines change. Whole3 maintained profile files on unchanged M runtime:83tests71pass12fail, actual entity.create profile-denied with storageWrittenfalse. Initial corrected83of83 retained; independent root array property-set finding then actual83tests82pass1fail and same updated test source83of83 after own-key/index guard. Nine new compiling mutants killed;0skip/todo/cancel. Actual finite Main/renderer registry/Kernel/Stage10 persistence, literal Unicode ranges14-18/33-41/57-61, dossier, confirmation/reopen and foreign/capability/owner/revision/stale-source no-write routes executed; this is not native OS proof.
+
+Current release runtime object and only3V2source pins follow actual source; other63bindings and all17qualification UNKNOWN stay exact. Mechanical companions derive772DATA/632source/296certificate with1603unchanged inventory membership/classes/lanes/skips, preserving every prior295carrier and corruption predicate. Native temporary profile disappeared at restart; its preserved306member archive was fully read and304non-owner members restored byte-exact at the original absolute temporary path with NEW actual physical owner identity. Original fixture creation source remains6efd19d6, archived native source92068bb7; neither is relabelled as current execution. All34old project files have an independently read baseline. No app launched or current native acceptance yet.
+
+Early exact rebuilt app smoke follows applicable source gates and clean commit; full baseline/officialRTK/CI/normal merge/exact merged package/native closure remain mandatory. Old native field Undo, Open Project menu, Cancel affordance, long-dialog/exFAT, moderate Electron and59named baseline skips remain explicit OPEN records. All15cells/4projections/12stages and full Atlas/maps/WSE/Pulse/environment epochs remain required before first Mac release; Black Box later. No signing/notary/public distribution or release permit claim. Owner checkout and unrelated data remain untouched.
+
 ## 2026-10-23 — Select All current wording fixtures repaired; complete delivery still pending
 
 TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023

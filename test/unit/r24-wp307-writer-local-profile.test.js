@@ -274,3 +274,61 @@ test('manual-map V4 admits exactly historical sixteen plus Markdown and preserve
   for (const queryId of ['query.manualMapWorkbench ', ' query.atlasCurrentScene', 'query.manualMapWorkbench.extra'])
     assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, false);
 });
+
+
+test('exact Atlas V5 admits precisely twenty existing records and three queries while retaining historical profiles', () => {
+  const m = atlasProfile, options = { isPackaged: true, platform: 'darwin' };
+  const active = m.createWriterExactAtlasProfileProjection(options);
+  const commands = [...historicalManualMapIds, 'manualMap.export.markdown', 'atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm'];
+  const queries = ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier'];
+  assert.equal(active.profileId, 'WRITER_LOCAL_EXACT_ATLAS_V5'); assert.equal(active.schemaVersion, 'writer-local-profile.v5');
+  assert.equal(m.isActiveWriterExactAtlasProfile(active), true); assert.equal(active.optionalSystemsEnabled, false);
+  assert.deepEqual(active.admittedCommandIds, commands); assert.deepEqual(active.admittedQueryIds, queries);
+  assert.equal(Object.isFrozen(active), true); assert.equal(Object.isFrozen(active.admittedCommandIds), true);
+  assert.equal(Object.isFrozen(active.admittedQueryIds), true);
+  for (const key of ['signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation']) assert.equal(active[key], false);
+  for (const record of productRecords) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: record.id, productCommandRecord: record }).allowed,
+    commands.includes(record.id), record.id);
+  for (const queryId of OPTIONAL_QUERY_IDS) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, queries.includes(queryId), queryId);
+  for (const commandId of WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId }).allowed, true);
+  for (const commandId of ['cmd.project.save', 'cmd.project.open']) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId }).allowed, true);
+  for (const queryId of ['query.projectTree', 'query.sceneHistory', 'query.projectLibrary']) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, true);
+  for (const inactive of [{}, { isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' }, { isPackaged: true, platform: 'win32' }])
+    assert.deepEqual(m.createWriterExactAtlasProfileProjection(inactive), m.createWriterLocalProfileProjection(inactive));
+  for (const factory of [m.createWriterLocalProfileProjection, m.createWriterAtlasProfileProjection, m.createWriterManualMapProfileProjection, m.createWriterManualMapMarkdownProfileProjection]) {
+    const profile = factory(options);
+    for (const id of commands.slice(17)) assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId: id, productCommandRecord: productRecords.find(r => r.id === id) }).allowed, false);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.atlasEntityDossier' }).allowed, false);
+  }
+});
+
+test('exact Atlas V5 refuses malformed complete policy, forged records and command/query near matches', () => {
+  const m = atlasProfile, active = m.createWriterExactAtlasProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const variants = [{ active: false }, { packaged: false }, { platform: 'linux' }, { optionalSystemsEnabled: true }, { cloudAuthority: true },
+    { schemaVersion: 'writer-local-profile.v4' }, { profileId: 'WRITER_LOCAL_MANUAL_MAP_V4' }, { ownerApproved: true },
+    { admittedCommandIds: active.admittedCommandIds.slice(0, -1) }, { admittedCommandIds: [...active.admittedCommandIds, 'atlas.entity.merge'] },
+    { admittedCommandIds: [...active.admittedCommandIds].reverse() }, { admittedQueryIds: [...active.admittedQueryIds].reverse() },
+    { admittedQueryIds: [...active.admittedQueryIds, 'query.atlasOverview'] }, { admittedQueryIds: [] }].map(patch => ({ ...active, ...patch }));
+  const missing = { ...active }; delete missing.signing; variants.push(missing);
+  const hidden = { ...active }; Object.defineProperty(hidden, 'hiddenAuthority', { value: true }); variants.push(hidden);
+  variants.push({ ...active, [Symbol('authority')]: true });
+  const decorated = [...active.admittedCommandIds]; decorated.extra = true; variants.push({ ...active, admittedCommandIds: decorated });
+  const inherited = [...active.admittedCommandIds]; delete inherited[17];
+  Object.setPrototypeOf(inherited, Object.assign(Object.create(Array.prototype), { 17: active.admittedCommandIds[17] }));
+  inherited.extra = true; variants.push({ ...active, admittedCommandIds: inherited });
+  for (const profile of variants) {
+    assert.equal(m.isActiveWriterExactAtlasProfile(profile), false);
+    for (const id of ['atlas.entity.create', 'manualMap.create']) assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId: id,
+      productCommandRecord: productRecords.find(r => r.id === id) }).allowed, false);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.atlasEntityDossier' }).allowed, false);
+  }
+  for (const id of active.admittedCommandIds) {
+    const record = productRecords.find(r => r.id === id); assert.ok(record);
+    for (const productCommandRecord of [null, { ...record, id: id + '.extra' }, { ...record, domain: record.domain === 'atlas' ? 'manualMap' : 'atlas' }])
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord }).allowed, false);
+    for (const commandId of [id + ' ', ' ' + id, id + '.extra']) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId,
+      productCommandRecord: { ...record, id: commandId } }).allowed, false, commandId);
+  }
+  for (const id of active.admittedQueryIds) for (const queryId of [id + ' ', ' ' + id, id + '.extra'])
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, false, queryId);
+});

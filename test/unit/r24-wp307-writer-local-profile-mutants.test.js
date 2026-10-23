@@ -245,3 +245,46 @@ test('manual-map V4 independent oracles kill Markdown policy and query mutants w
   }
   t.diagnostic(`MANUAL_MAP_V4_MUTANTS=${mutants.length}/${mutants.length}`);
 });
+
+
+test('exact Atlas V5 independent oracles kill closed membership record policy and query mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), options = { isPackaged: true, platform: 'darwin' };
+  assert.equal(typeof loadFresh(MODULE_PATH).createWriterExactAtlasProfileProjection, 'function');
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'exact-atlas-v5-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const command = (m, commandId, allowed, record = { id: commandId, domain: 'atlas' }, patch = {}) => {
+    const profile = { ...m.createWriterExactAtlasProfileProjection(options), ...patch };
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord: record }).allowed, allowed);
+  };
+  const mutants = [
+    ['lost entity', s => s.replace("'atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm'", "'atlas.entity.create.disabled', 'atlas.alias.add', 'atlas.mention.confirm'"),
+      m => command(m, 'atlas.entity.create', true)],
+    ['blanket optional', s => s.replace('isActiveWriterExactAtlasProfile(profile) && (!optional || selected)', 'isActiveWriterExactAtlasProfile(profile)'),
+      m => command(m, 'atlas.entity.merge', false)],
+    ['wrong domain', s => s.replace("productCommandRecord.domain === (WRITER_EXACT_ATLAS_AUTHOR_COMMAND_IDS.includes(commandId) ? 'atlas' : 'manualMap')", 'true'),
+      m => command(m, 'atlas.entity.create', false, { id: 'atlas.entity.create', domain: 'manualMap' })],
+    ['forged ID', s => s.replace('productCommandRecord.id === commandId &&\n    productCommandRecord.domain', 'true &&\n    productCommandRecord.domain'),
+      m => command(m, 'atlas.entity.create', false, { id: 'atlas.alias.add', domain: 'atlas' })],
+    ['malformed policy', s => s.replace('if (!isWriterExactAtlasProfileCandidate(profile)) return false;', 'if (!isWriterExactAtlasProfileCandidate(profile)) return false; return true;'),
+      m => command(m, 'atlas.entity.create', false, undefined, { optionalSystemsEnabled: true })],
+    ['query overgrant', s => s.replace('exactAtlasProfileAccess(profile, WRITER_EXACT_ATLAS_QUERY_IDS.includes(queryId),', 'exactAtlasProfileAccess(profile, true,'), m => {
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile: m.createWriterExactAtlasProfileProjection(options), queryId: 'query.atlasOverview' }).allowed, false);
+    }],
+    ['lost dossier', s => s.replace("...WRITER_ATLAS_QUERY_IDS, 'query.atlasEntityDossier'", "...WRITER_ATLAS_QUERY_IDS, 'query.atlasEntityDossier.disabled'"), m => {
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile: m.createWriterExactAtlasProfileProjection(options), queryId: 'query.atlasEntityDossier' }).allowed, true);
+    }],
+    ['extra key', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'), m => command(m, 'atlas.entity.create', false, undefined, { extra: true })],
+    ['ordered arrays', s => s.replace('expected[key].every((id, index) => profile[key][index] === id)', 'true'), m => {
+      const profile = m.createWriterExactAtlasProfileProjection(options);
+      command(m, 'atlas.entity.create', false, undefined, { admittedCommandIds: [...profile.admittedCommandIds].reverse() });
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    // Restrict replacements to V5 so legacy first-match mutation targets remain exact.
+    const boundary = source.indexOf('// V5 admits only the existing exact Atlas authoring journey.'); assert.ok(boundary > 0);
+    const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(' ', '-') + '.cjs'); fs.writeFileSync(file, changed);
+    const mutant = loadFresh(file); assert.throws(() => oracle(mutant), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic(`EXACT_ATLAS_V5_MUTANTS=${mutants.length}/${mutants.length}`);
+});

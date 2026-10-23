@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterExactAtlasProfileCandidate(profile)) return evaluateExactAtlasCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterManualMapProfileCandidate(profile)) {
     const id = normalizeIdentity(commandId);
@@ -208,6 +209,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterExactAtlasProfileCandidate(profile)) return evaluateExactAtlasQueryAccess(profile, queryId);
   if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownQueryAccess(profile, queryId);
   if (isWriterManualMapProfileCandidate(profile)) {
     const id = normalizeIdentity(queryId);
@@ -268,6 +270,55 @@ function evaluateMarkdownQueryAccess(profile, queryId) {
     OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
+// V5 admits only the existing exact Atlas authoring journey.
+const WRITER_EXACT_ATLAS_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v5';
+const WRITER_EXACT_ATLAS_PROFILE_ID = 'WRITER_LOCAL_EXACT_ATLAS_V5';
+const WRITER_EXACT_ATLAS_AUTHOR_COMMAND_IDS = Object.freeze(['atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm']);
+const WRITER_EXACT_ATLAS_COMMAND_IDS = Object.freeze([...WRITER_MANUAL_MAP_MARKDOWN_COMMAND_IDS, ...WRITER_EXACT_ATLAS_AUTHOR_COMMAND_IDS]);
+const WRITER_EXACT_ATLAS_QUERY_IDS = Object.freeze([...WRITER_ATLAS_QUERY_IDS, 'query.atlasEntityDossier']);
+function createWriterExactAtlasProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_EXACT_ATLAS_PROFILE_SCHEMA_VERSION, profileId: WRITER_EXACT_ATLAS_PROFILE_ID,
+    admittedCommandIds: WRITER_EXACT_ATLAS_COMMAND_IDS, admittedQueryIds: WRITER_EXACT_ATLAS_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterExactAtlasProfileCandidate(profile) {
+  return isPlainObject(profile) && (normalizeIdentity(profile.profileId).startsWith(WRITER_EXACT_ATLAS_PROFILE_ID)
+    || normalizeIdentity(profile.schemaVersion).startsWith(WRITER_EXACT_ATLAS_PROFILE_SCHEMA_VERSION)
+    || Array.isArray(profile.admittedCommandIds) && WRITER_EXACT_ATLAS_AUTHOR_COMMAND_IDS.some(id => profile.admittedCommandIds.includes(id))
+    || Array.isArray(profile.admittedQueryIds) && profile.admittedQueryIds.includes('query.atlasEntityDossier'));
+}
+function isActiveWriterExactAtlasProfile(profile) {
+  if (!isWriterExactAtlasProfileCandidate(profile)) return false;
+  const expected = createWriterExactAtlasProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const keys = Reflect.ownKeys(expected);
+  return Reflect.ownKeys(profile).length === keys.length && keys.every(key => Object.hasOwn(profile, key) && (Array.isArray(expected[key])
+    ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && Reflect.ownKeys(profile[key]).length === expected[key].length + 1
+      && expected[key].every((id, index) => Object.hasOwn(profile[key], index))
+      && expected[key].every((id, index) => profile[key][index] === id)
+    : profile[key] === expected[key]));
+}
+function exactAtlasProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterExactAtlasProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_EXACT_ATLAS_PROFILE_ID });
+}
+function evaluateExactAtlasCommandAccess(profile, commandId, productCommandRecord) {
+  const id = normalizeIdentity(commandId);
+  const selected = WRITER_EXACT_ATLAS_COMMAND_IDS.includes(commandId) && isPlainObject(productCommandRecord)
+    && productCommandRecord.id === commandId &&
+    productCommandRecord.domain === (WRITER_EXACT_ATLAS_AUTHOR_COMMAND_IDS.includes(commandId) ? 'atlas' : 'manualMap');
+  return exactAtlasProfileAccess(profile, selected, isOptionalWriterLocalCommand(commandId, productCommandRecord)
+    || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+}
+function evaluateExactAtlasQueryAccess(profile, queryId) {
+  const id = normalizeIdentity(queryId);
+  return exactAtlasProfileAccess(profile, WRITER_EXACT_ATLAS_QUERY_IDS.includes(queryId),
+    OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
+}
+
 module.exports = Object.freeze({
   WRITER_LOCAL_PROFILE_SCHEMA_VERSION,
   WRITER_LOCAL_PROFILE_ID,
@@ -297,4 +348,10 @@ module.exports = Object.freeze({
   WRITER_MANUAL_MAP_MARKDOWN_COMMAND_IDS,
   createWriterManualMapMarkdownProfileProjection,
   isActiveWriterManualMapMarkdownProfile,
+  WRITER_EXACT_ATLAS_PROFILE_SCHEMA_VERSION,
+  WRITER_EXACT_ATLAS_PROFILE_ID,
+  WRITER_EXACT_ATLAS_COMMAND_IDS,
+  WRITER_EXACT_ATLAS_QUERY_IDS,
+  createWriterExactAtlasProfileProjection,
+  isActiveWriterExactAtlasProfile,
 });
