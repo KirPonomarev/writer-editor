@@ -316,8 +316,8 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
         afterCoreBinding(callback) { const build = buildProductCoreStateForCurrentProject; let armed = true;
           buildProductCoreStateForCurrentProject = async (...args) => { const result = await build(...args);
             if (armed) { armed = false; await callback(result); } return result; }; },
-        denyCapability() { const read = readAuthorityCapabilityMatrixDoc; readAuthorityCapabilityMatrixDoc = () => {
-          const matrix = read(); matrix.items.find(row => row.platformId === 'node').capabilities['cap.manualMap.edit'] = false; return matrix; }; },
+        denyCapability(capabilityId = 'cap.manualMap.edit') { const read = readAuthorityCapabilityMatrixDoc; readAuthorityCapabilityMatrixDoc = () => {
+          const matrix = read(); matrix.items.find(row => row.platformId === 'node').capabilities[capabilityId] = false; return matrix; }; },
         afterTruth(callback) { const prepare = prepareCanonicalProjectTruthCommand; prepareCanonicalProjectTruthCommand = async (...args) => {
           const result = await prepare(...args); await callback(); return result; }; }
       };`, mainPath);
@@ -432,10 +432,10 @@ test('full Mac actual guarded Main admits FREE map create add and queries under 
 
 test('full Mac actual Main keeps profile caller entitlement and optional refusals before effects', async t => {
   const h = await fullMacMainFixture(t), before = h.roster();
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_MANUAL_MAP_V4');
-  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_MANUAL_MAP_V4');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_EXACT_ATLAS_V5');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_EXACT_ATLAS_V5');
   const unselected = ['atlas', 'idea', 'meaning', 'blackBox', 'stage10'].map(domain =>
-    productRegistry.PRODUCT_COMMAND_RECORDS.find(row => row.domain === domain && !['manualMap.create', 'manualMap.node.add'].includes(row.id)).id);
+    productRegistry.PRODUCT_COMMAND_RECORDS.find(row => row.domain === domain && !['atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm', 'manualMap.create', 'manualMap.node.add'].includes(row.id)).id);
   for (const id of unselected) {
     const result = await h.command(id, { projectId: 'forged', profileId: 'WRITER_LOCAL_ATLAS_V2', tier: 'pro', optionalSystemsEnabled: true });
     assert.equal(result.ok, false, id); assert.equal(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED', JSON.stringify(result));
@@ -446,7 +446,7 @@ test('full Mac actual Main keeps profile caller entitlement and optional refusal
   for (const id of ['query.atlasCurrentScene.extra', 'query.manualMapWorkbench ']) assert.equal((await h.query(id)).ok, false, id);
   const event = h.event();
   for (const forged of [{ ...event, sender: { ...event.sender, id: 999 } }, { ...event, sender: { ...event.sender, session: {} } },
-    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_V1') } }])
+    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_EXACT_ATLAS_V5', 'WRITER_LOCAL_V1') } }])
     await assert.rejects(h.command('manualMap.create', {}, forged), /E_IPC_/u);
   assert.deepEqual(h.roster(), before);
   const source = await fullMacMainFixture(t, { packaged: false });
@@ -483,7 +483,7 @@ test('full Mac actual Main consumes current project capability owner and source 
 test('full Mac flags preserve the old cut and expose only the existing Atlas tab for the new hint', () => {
   const vm = require('node:vm'), selectors = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]',
     '[data-right-tab="atlas"]', '[data-toolbar-item-key="review-comment"]', '[data-atlas-reachability-opener]'];
-  for (const id of ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_MANUAL_MAP_V4.extra', 'WRITER_LOCAL_ATLAS_V2.extra', '']) {
+  for (const id of ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5', 'WRITER_LOCAL_EXACT_ATLAS_V5.extra', 'WRITER_LOCAL_MANUAL_MAP_V4.extra', 'WRITER_LOCAL_ATLAS_V2.extra', '']) {
     const elements = Object.fromEntries(selectors.map(selector => [selector, { hidden: false, disabled: false, tabIndex: 0,
       attrs: {}, style: { setProperty(name, value, priority) { this[name] = [value, priority]; } },
       setAttribute(name, value) { this.attrs[name] = value; } }]));
@@ -493,12 +493,12 @@ test('full Mac flags preserve the old cut and expose only the existing Atlas tab
     vm.runInNewContext(read('src/renderer/flags.js'), { window, document, URLSearchParams, console: { log() {} } });
     callbacks.forEach(callback => callback());
     for (const selector of selectors) {
-      const hidden = id === 'WRITER_LOCAL_V1' || ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4'].includes(id) && selector !== '[data-right-tab="atlas"]';
+      const hidden = id === 'WRITER_LOCAL_V1' || ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5'].includes(id) && selector !== '[data-right-tab="atlas"]';
       assert.equal(elements[selector].hidden, hidden, id + selector); assert.equal(elements[selector].disabled, hidden);
       assert.equal(elements[selector].tabIndex, hidden ? -1 : 0);
       if (hidden) { assert.equal(elements[selector].attrs['aria-hidden'], 'true'); assert.deepEqual(elements[selector].style.display, ['none', 'important']); }
     }
-    assert.equal(window.__PRODUCT_PROFILE, ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4'].includes(id) ? id : '');
+    assert.equal(window.__PRODUCT_PROFILE, ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5'].includes(id) ? id : '');
   }
 });
 
@@ -949,4 +949,122 @@ test('manual-map Markdown actual Main overwrites empty and BOM UTF8 targets in b
     const bytes = fs.readFileSync(target); assert.equal(result.value.export.sha256, crypto.createHash('sha256').update(bytes).digest('hex'));
     assert.equal(result.value.export.byteLength, bytes.length); assert.equal(fs.readdirSync(h.root).some(name => name.includes('.stage10-cas.')), false);
   }
+});
+
+
+const EXACT_ATLAS_TEXT = 'Начало é 🧭. Мира увидела маяк. Северная ответила Мире. Мира сохранила знак.';
+async function exactAtlasScene(h, projectName) {
+  const made = await h.main.handleProjectLifecycleCreateCommand({ projectName }); assert.equal(made.ok, true);
+  const projectId = made.projectId, projectRoot = path.join(h.documents, 'craftsman', projectName);
+  const tree = await h.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' }); assert.equal(tree.ok, true);
+  const flat = node => [node, ...(node.children || []).flatMap(flat)];
+  const node = flat(tree.root).find(row => row.kind === 'scene' || row.kind === 'chapter-file'); assert.ok(node);
+  const resolved = await h.main.resolveProjectTreeNodeIdentity(node.nodeId, projectId);
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const seed = envelope.composeDocumentContentFromBase({ baseContent: fs.readFileSync(resolved.nodePath, 'utf8'), nextVisibleText: EXACT_ATLAS_TEXT });
+  assert.equal(seed.ok, true); fs.writeFileSync(resolved.nodePath, seed.content);
+  assert.equal(envelope.parseObservablePayload(seed.content).text, EXACT_ATLAS_TEXT);
+  return { projectId, projectRoot, sceneId: node.nodeId, scenePath: resolved.nodePath,
+    sceneBytes: fs.readFileSync(resolved.nodePath), manifestPath: path.join(projectRoot, 'project.craftsman.json') };
+}
+
+test('exact Atlas actual renderer Main Kernel persists entity alias exact evidence author decision and reopen [FINITE_IPC_NOT_NATIVE_ACCEPTANCE]', async t => {
+  const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h);
+  assert.equal((await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Unrelated Atlas project' })).ok, true);
+  const f = await exactAtlasScene(h, 'Exact Atlas Unicode'), { projectId, sceneId } = f;
+  assert.equal((await h.command('manualMap.create', { projectId, mapId: 'preserved-map', title: 'Preserved é 🧭' })).ok, true);
+  const before = JSON.parse(fs.readFileSync(f.manifestPath)), protectedRoster = h.roster();
+  const command = async (id, payload) => {
+    const response = await ui(id, { projectId, ...payload });
+    t.diagnostic('EXACT_ATLAS_ACTUAL_MAIN ' + JSON.stringify({ id, result: response.mainResult }));
+    assert.equal(response.request.payload.editorMode, 'tiptap'); assert.equal(response.mainResult.ok, true, JSON.stringify(response.mainResult));
+    assert.equal(response.mainResult.value.receipt.commandId, id); assert.equal(response.mainResult.value.receipt.storageWritten, true);
+    assert.deepEqual(fs.readFileSync(f.scenePath), f.sceneBytes); return response.mainResult;
+  };
+  const entityId = 'entity-mira', aliasId = 'alias-north', decisionId = 'decision-mira-first';
+  await command('atlas.entity.create', { entityId, name: 'Мира', entityKind: 'character', opId: 'exact-create' });
+  const q = () => h.query('query.atlasCurrentScene', { projectId, nodeId: sceneId });
+  const initial = (await q()).atlasCurrentScene;
+  assert.equal(initial.state, 'ready'); assert.deepEqual(initial.mentions.map(m => [m.startOffset, m.endOffset]), [[14, 18], [57, 61]]);
+  await command('atlas.alias.add', { entityId, aliasId, value: 'Северная', scope: 'scene', sceneId, opId: 'exact-alias' });
+  const rosterBeforeRead = h.roster(), projected = await q(); assert.equal(projected.ok, true);
+  const scene = projected.atlasCurrentScene; assert.equal(scene.state, 'ready');
+  const mentions = scene.mentions.slice().sort((a, b) => a.startOffset - b.startOffset);
+  assert.deepEqual(mentions.map(m => [m.matchedText, m.startOffset, m.endOffset, m.termKind, m.trustState]), [
+    ['Мира', 14, 18, 'entityName', 'ALGORITHMIC_OBSERVATION'], ['Северная', 33, 41, 'alias', 'ALGORITHMIC_OBSERVATION'],
+    ['Мира', 57, 61, 'entityName', 'ALGORITHMIC_OBSERVATION']]);
+  const canonicalStringHash = text => crypto.createHash('sha256').update(JSON.stringify(text)).digest('hex');
+  for (const m of mentions) {
+    assert.equal(m.entityId, entityId); assert.equal(m.sceneId, sceneId); assert.equal(m.context.quote, m.matchedText);
+    assert.equal(EXACT_ATLAS_TEXT.slice(m.startOffset, m.endOffset), m.matchedText);
+    assert.deepEqual(m.focusIntent, { kind: 'localTextSelection', sceneId, startOffset: m.startOffset, endOffset: m.endOffset });
+    assert.equal(m.evidenceAnchor.quote, m.matchedText); assert.equal(m.evidenceAnchor.startOffset, m.startOffset);
+    assert.equal(m.evidenceAnchor.endOffset, m.endOffset); assert.equal(m.evidenceAnchor.sceneId, sceneId);
+    assert.equal(m.evidenceAnchor.sceneTextHash, canonicalStringHash(EXACT_ATLAS_TEXT));
+    assert.equal(m.evidenceAnchor.quoteHash, canonicalStringHash(m.matchedText)); assert.ok(m.evidenceAnchor.anchorId);
+  }
+  assert.equal(mentions.some(m => m.matchedText === 'Мире'), false);
+  const dossier = await h.query('query.atlasEntityDossier', { projectId, entityId }); assert.equal(dossier.ok, true);
+  assert.equal(dossier.atlasEntityDossier.entity.name, 'Мира'); assert.equal(dossier.atlasEntityDossier.entity.entityKind, 'character');
+  assert.deepEqual(dossier.atlasEntityDossier.aliases, [{ aliasId, value: 'Северная', scope: 'scene', sceneId }]);
+  assert.equal(dossier.atlasEntityDossier.surfaceManifest.commandAuthority, 'none'); assert.equal(dossier.atlasEntityDossier.authority.storageMutation, false);
+  assert.deepEqual(h.roster(), rosterBeforeRead, 'queries cannot persist derived truth');
+  const first = mentions[0];
+  await command('atlas.mention.confirm', { entityId, sceneId, mentionId: first.mentionId, evidenceAnchor: first.evidenceAnchor, decisionId, opId: 'exact-confirm' });
+  const manifest = JSON.parse(fs.readFileSync(f.manifestPath)), entity = manifest.atlas.entities[entityId], decision = manifest.atlas.decisions[decisionId];
+  assert.equal(entity.name, 'Мира'); assert.equal(entity.entityKind, 'character');
+  assert.equal(entity.aliases[aliasId].value, 'Северная'); assert.equal(entity.aliases[aliasId].scope, 'scene'); assert.equal(entity.aliases[aliasId].sceneId, sceneId);
+  assert.equal(decision.decisionKind, 'mention.confirm'); assert.equal(decision.trustState, 'AUTHOR_CONFIRMED');
+  assert.equal(decision.projectId, projectId); assert.equal(decision.sceneId, sceneId); assert.equal(decision.entityId, entityId);
+  assert.equal(decision.mentionId, first.mentionId); assert.deepEqual(decision.evidenceAnchor, first.evidenceAnchor);
+  const strip = m => { const x = { ...m }; delete x.atlas; delete x.lastCommandId; return x; }; assert.deepEqual(strip(manifest), strip(before));
+  for (const row of protectedRoster.filter(([name]) => !name.startsWith('craftsman/Exact Atlas Unicode/.stage10-local') && !name.endsWith('Exact Atlas Unicode/project.craftsman.json')))
+    assert.deepEqual(h.roster().find(([name]) => name === row[0]), row, row[0]);
+  const stage = path.join(f.projectRoot, '.stage10-local');
+  const events = JSON.parse(fs.readFileSync(path.join(stage, 'product-session.v2.json'))).eventLog.events.slice(-3);
+  const receipts = JSON.parse(fs.readFileSync(path.join(stage, 'command-receipt-authority-store.v2.json'))).receipts.slice(-3);
+  assert.deepEqual(events.map(e => e.commandId), ['atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm']);
+  assert.deepEqual(receipts.map(e => e.commandId), events.map(e => e.commandId));
+  assert.deepEqual(events.map(e => e.opId), ['exact-create', 'exact-alias', 'exact-confirm']);
+  for (let i = 0; i < 3; i++) { assert.equal(events[i].domainEventDigest, receipts[i].domainEventDigest); assert.match(events[i].domainEventDigest, /^[a-f0-9]{64}$/u); }
+  const after = (await q()).atlasCurrentScene;
+  assert.equal(after.mentions.find(m => m.mentionId === first.mentionId).trustState, 'AUTHOR_CONFIRMED');
+  assert.equal(after.summary.confirmedMentionCount, 1);
+  assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId })).ok, true);
+  assert.deepEqual(JSON.parse(fs.readFileSync(f.manifestPath)).atlas, manifest.atlas); assert.deepEqual(fs.readFileSync(f.scenePath), f.sceneBytes);
+  const reopened = (await q()).atlasCurrentScene;
+  assert.deepEqual(reopened.mentions.map(m => [m.matchedText, m.startOffset, m.endOffset, m.trustState]), after.mentions.map(m => [m.matchedText, m.startOffset, m.endOffset, m.trustState]));
+  const reopenDossier = (await h.query('query.atlasEntityDossier', { projectId, entityId })).atlasEntityDossier;
+  assert.equal(reopenDossier.entity.name, 'Мира'); assert.deepEqual(reopenDossier.aliases, dossier.atlasEntityDossier.aliases);
+});
+
+test('exact Atlas actual Main refuses foreign project revoked capability owner and commit revision without writes', async t => {
+  for (const fault of ['foreign-project', 'capability', 'owner', 'revision']) await t.test(fault, async t => {
+    const h = await fullMacMainFixture(t); let manifestPath, expected, expectedRoster, exercised = fault !== 'revision';
+    if (fault === 'revision') h.main.__host.afterTruth(async () => {
+      const newer = JSON.parse(expected); newer.concurrentAuthor = 'preserve é 🧭'; newer.lastCommandId = 71;
+      expected = Buffer.from(JSON.stringify(newer)); fs.writeFileSync(manifestPath, expected); expectedRoster = h.roster(); exercised = true;
+    });
+    const f = await exactAtlasScene(h, 'Atlas no-write'); manifestPath = f.manifestPath; expected = fs.readFileSync(manifestPath); expectedRoster = h.roster();
+    if (fault === 'capability') h.main.__host.denyCapability('cap.atlas.entity.create');
+    if (fault === 'owner') h.main.__host.revokeOwner();
+    const result = await h.command('atlas.entity.create', { projectId: fault === 'foreign-project' ? 'foreign' : f.projectId, entityId: 'must-not-write', name: 'Мира' });
+    t.diagnostic(JSON.stringify({ fault, result })); assert.equal(exercised, true); assert.equal(result.ok, false);
+    assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+    assert.deepEqual(fs.readFileSync(manifestPath), expected); assert.deepEqual(h.roster(), expectedRoster); assert.deepEqual(fs.readFileSync(f.scenePath), f.sceneBytes);
+  });
+});
+
+test('exact Atlas actual Main rejects stale source evidence without altering author data or history', async t => {
+  const h = await fullMacMainFixture(t), f = await exactAtlasScene(h, 'Atlas stale evidence'), ui = await fullMacRendererCommandPort(h);
+  const { projectId, sceneId } = f, entityId = 'mira';
+  const created = await ui('atlas.entity.create', { projectId, entityId, name: 'Мира', entityKind: 'character' });
+  assert.equal(created.mainResult.ok, true, JSON.stringify(created.mainResult));
+  const first = (await h.query('query.atlasCurrentScene', { projectId, nodeId: sceneId })).atlasCurrentScene.mentions[0]; assert.ok(first);
+  // Concurrent author edits replace only the declared synthetic source; the tested confirmation still takes the actual command path.
+  const newer = Buffer.from(f.sceneBytes.toString('utf8').replace('Мира', 'Лира')); fs.writeFileSync(f.scenePath, newer); const before = h.roster();
+  const refused = (await ui('atlas.mention.confirm', { projectId, entityId, sceneId, mentionId: first.mentionId, evidenceAnchor: first.evidenceAnchor, decisionId: 'stale' })).mainResult;
+  assert.equal(refused.ok, false, JSON.stringify(refused)); assert.match(JSON.stringify(refused), /E_ATLAS_EVIDENCE_STALE/u);
+  assert.deepEqual(fs.readFileSync(f.scenePath), newer); assert.deepEqual(h.roster(), before);
+  assert.equal(JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions?.stale, undefined);
 });

@@ -534,16 +534,17 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
-  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_MANUAL_MAP_V4'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v4');
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_EXACT_ATLAS_V5'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v5');
   assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
     'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
     'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
     'manualMap.group.create', 'manualMap.group.update', 'manualMap.group.delete',
     'manualMap.attachment.add', 'manualMap.portal.add', 'manualMap.template.apply',
     'manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.import.jsonRepeat',
-    'manualMap.export.markdown',
+    'manualMap.export.markdown', 'atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm',
   ]);
+  assert.deepEqual(cut.profiles.runtime.admittedQueryIds, ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier']);
   const result = fullMacVerify(input);
   assert.equal(result.scopeValidity, 'VALID', JSON.stringify(result)); assert.equal(result.readiness, 'NOT_READY');
   assert.equal(result.missingQualification.length, 17); assert.equal(result.candidate.status, 'UNFROZEN');
