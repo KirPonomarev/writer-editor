@@ -1150,6 +1150,7 @@ let atlasCommandPublicationSequence = 0;
 let manualMapDraftOwnership = 0;
 let manualMapDraftRevision = 0;
 let manualMapDraftContext = null;
+let manualMapDraftEffect = null;
 let atlasJourneyDraftRevision = 0;
 const atlasQueryPublicationSequences = new Map();
 let manualMapPortabilityCommandState = {
@@ -14749,11 +14750,12 @@ function syncManualMapCommandDraftControls() {
   for (const host of [manualMapWorkbenchHost, manualMapPlanHost]) {
     if (!(host instanceof HTMLElement)) continue;
     for (const form of host.querySelectorAll('[data-manual-map-command-form]')) {
-      if (!form.isConnected || form.dataset.manualMapCommandId !== draft.commandId
+      if (!form.manualMapControlCurrent?.() || form.dataset.manualMapCommandId !== draft.commandId
         || form.querySelector('[data-manual-map-selection-target]')?.dataset.manualMapSelectionTarget !== draft.targetId) continue;
       for (const input of form.querySelectorAll('[data-manual-map-command-field]')) {
         const field = draft.fields.find(field => field.name === input.dataset.manualMapCommandField);
-        if (field?.type === 'select' && input.dataset.manualMapFieldOptions !== JSON.stringify(field.options || [])) {
+        const editing = input === document.activeElement || input.dataset.manualMapComposing === 'true';
+        if (!editing && field?.type === 'select' && input.dataset.manualMapFieldOptions !== JSON.stringify(field.options || [])) {
           input.innerHTML = '';
           for (const row of field.options || []) {
             const option = document.createElement('option'); option.value = row.value; option.textContent = row.label;
@@ -14762,13 +14764,28 @@ function syncManualMapCommandDraftControls() {
           input.dataset.manualMapFieldOptions = JSON.stringify(field.options || []);
         }
         const value = draft.payload?.[input.dataset.manualMapCommandField];
-        if (input !== document.activeElement && typeof value === 'string' && input.value !== value) input.value = value;
+        if (!editing && typeof value === 'string' && input.value !== value) input.value = value;
       }
       for (const confirm of form.querySelectorAll('[data-manual-map-confirm-risk]')) {
+        confirm.disabled = !!manualMapDraftEffect;
         if (confirm !== document.activeElement && confirm.checked !== draft.confirmChecked) confirm.checked = draft.confirmChecked;
       }
-      if (!draft.result) {
-        for (const result of form.querySelectorAll('[data-manual-map-operation-result]')) result.remove();
+      let result = form.querySelector('[data-manual-map-operation-result]');
+      if (!draft.result) result?.remove();
+      else {
+        if (!result) {
+          result = document.createElement('div'); result.className = 'manual-map-workspace__command-result';
+          form.insertBefore(result, form.querySelector('[data-manual-map-command-apply]')?.parentElement || null);
+        }
+        result.dataset.manualMapOperationResult = draft.result.status || '';
+        result.textContent = draft.result.reason ? `${draft.result.status}: ${draft.result.reason}` : draft.result.status || 'READY';
+      }
+      for (const apply of form.querySelectorAll('[data-manual-map-command-apply]')) {
+        apply.disabled = !!manualMapDraftEffect || draft.state !== 'draft' || ['loading', 'unavailable'].includes(manualMapWorkbenchState.state);
+        apply.textContent = manualMapDraftEffect ? 'Applying' : 'Apply';
+      }
+      for (const cancel of form.querySelectorAll('[data-manual-map-command-cancel]')) {
+        cancel.disabled = !!manualMapDraftEffect || !['draft', 'failed'].includes(draft.state);
       }
     }
   }
@@ -14855,7 +14872,8 @@ async function refreshManualMapPortalTargets() {
 
 async function applyManualMapCommandDraft() {
   const draft = manualMapCommandDraft;
-  if (!draft || draft.state !== 'draft' || !manualMapDraftContext?.()) return;
+  if (!draft || draft.state !== 'draft' || manualMapDraftEffect || !manualMapDraftContext?.()
+    || ['loading', 'unavailable'].includes(manualMapWorkbenchState.state)) return;
   const context = captureAtlasPublication(manualMapDraftContext);
   const commandId = manualMapText(draft.commandId);
   const payload = draft.payload && typeof draft.payload === 'object' && !Array.isArray(draft.payload)
@@ -14877,12 +14895,18 @@ async function applyManualMapCommandDraft() {
     renderManualMapWorkbenchState();
     return;
   }
+  const effect = {};
+  manualMapDraftEffect = effect;
   manualMapCommandDraft = { ...draft, state: 'applying', result: null };
   renderManualMapWorkbenchState();
   const pending = runProductJourneyCommand(commandId, payload);
   const sequence = atlasCommandPublicationSequence;
   const current = () => context() && sequence === atlasCommandPublicationSequence;
-  const result = await pending;
+  let result;
+  try { result = await pending; }
+  finally {
+    if (manualMapDraftEffect === effect) { manualMapDraftEffect = null; syncManualMapCommandDraftControls(); }
+  }
   if (!current()) return result;
   if (result?.ok === true && ['manualMap.create', 'manualMap.import.jsonRepeat'].includes(commandId)) {
     const receipt = unwrapManualMapProductCommandReceipt(result);
@@ -15631,23 +15655,37 @@ function renderManualMapPortabilityCommandReadback(parent, options = {}) {
   parent.appendChild(section);
 }
 
-function renderManualMapCommandDraft(parent) {
+function captureManualMapControlContext(host) {
+  const epoch = atlasPublicationEpoch, projectId = currentProjectId, documentId = currentDocumentId;
+  const publicationId = currentTreeContentPublicationId, generation = localEditGeneration;
+  const mapId = manualMapWorkbenchState.mapId, placement = host.dataset.manualMapWorkbenchPlacement;
+  return () => host.isConnected && placement === host.dataset.manualMapWorkbenchPlacement
+    && epoch === atlasPublicationEpoch && projectId === currentProjectId && documentId === currentDocumentId
+    && publicationId === currentTreeContentPublicationId && generation === localEditGeneration
+    && (mapId === manualMapWorkbenchState.mapId || !manualMapWorkbenchState.mapId
+      && ['loading', 'unavailable'].includes(manualMapWorkbenchState.state));
+}
+
+function renderManualMapCommandDraft(parent, options = {}) {
   if (!manualMapCommandDraft) return;
   const draft = manualMapCommandDraft;
-  const projectId = currentProjectId;
+  const host = options.host || parent, owner = manualMapDraftOwnership, draftContext = manualMapDraftContext;
+  const context = captureManualMapControlContext(host);
   const panel = document.createElement('form');
   panel.className = 'manual-map-workspace__command-form';
   panel.dataset.manualMapCommandForm = 'true';
   panel.dataset.manualMapCommandId = draft.commandId || '';
   panel.dataset.manualMapCommandRisk = draft.risk || '';
-  const isCurrentDraft = () => panel.isConnected && currentProjectId === projectId
-    && manualMapDraftContext?.()
-    && ['draft', 'failed'].includes(manualMapCommandDraft?.state)
+  panel.dataset.manualMapFieldSchema = JSON.stringify(draft.fields.map(field => [field.name, field.type, field.label]));
+  panel.manualMapControlCurrent = () => panel.parentElement === host && context()
+    && owner === manualMapDraftOwnership && draftContext === manualMapDraftContext && draftContext?.();
+  const isCurrentDraft = () => panel.manualMapControlCurrent()
+    && ['draft', 'applying', 'failed'].includes(manualMapCommandDraft?.state)
     && manualMapCommandDraft.commandId === draft.commandId
     && manualMapCommandDraft.targetId === draft.targetId;
   panel.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (isCurrentDraft()) void applyManualMapCommandDraft();
+    if (isCurrentDraft() && !manualMapDraftEffect) void applyManualMapCommandDraft();
   });
 
   const title = document.createElement('strong');
@@ -15678,6 +15716,11 @@ function renderManualMapCommandDraft(parent) {
     if (field.type === 'select') input.dataset.manualMapFieldOptions = JSON.stringify(field.options || []);
     input.value = manualMapText(draft.payload?.[field.name], manualMapText(field.value));
     input.dataset.manualMapCommandField = field.name || '';
+    input.addEventListener('compositionstart', () => { input.dataset.manualMapComposing = 'true'; });
+    input.addEventListener('compositionend', () => { delete input.dataset.manualMapComposing; });
+    if (field.type === 'select') input.addEventListener('blur', () => {
+      if (isCurrentDraft()) syncManualMapCommandDraftControls();
+    });
     input.addEventListener(field.type === 'select' ? 'change' : 'input', () => {
       if (!isCurrentDraft()) return;
       updateManualMapCommandDraftField(field.name, input.value);
@@ -15697,7 +15740,7 @@ function renderManualMapCommandDraft(parent) {
     confirm.checked = draft.confirmChecked === true;
     confirm.dataset.manualMapConfirmRisk = draft.risk;
     confirm.addEventListener('change', () => {
-      if (isCurrentDraft()) setManualMapCommandDraftConfirmation(confirm.checked);
+      if (isCurrentDraft() && !manualMapDraftEffect) setManualMapCommandDraftConfirmation(confirm.checked);
     });
     const text = document.createElement('span');
     text.textContent = draft.risk === 'destructive'
@@ -15725,7 +15768,7 @@ function renderManualMapCommandDraft(parent) {
   cancel.dataset.manualMapCommandCancel = 'true';
   cancel.textContent = 'Cancel';
   cancel.addEventListener('click', () => {
-    if (isCurrentDraft()) cancelManualMapCommandDraft();
+    if (isCurrentDraft() && !manualMapDraftEffect) cancelManualMapCommandDraft();
   });
   const apply = document.createElement('button');
   apply.type = 'submit';
@@ -15769,10 +15812,26 @@ function renderManualMapWorkbenchInto(host, options = {}) {
   if (!(host instanceof HTMLElement)) return;
   const state = normalizeManualMapWorkbench(manualMapWorkbenchState);
   const compact = options.compact === true;
-  host.innerHTML = '';
+  const placement = compact ? 'right-rail-inspector' : 'plan-workspace';
+  const oldForm = host.querySelector('[data-manual-map-command-form]');
+  const schema = manualMapCommandDraft && JSON.stringify(manualMapCommandDraft.fields.map(field => [field.name, field.type, field.label]));
+  const form = host.dataset.manualMapWorkbenchPlacement === placement && oldForm?.manualMapControlCurrent?.()
+    && oldForm.dataset.manualMapFieldSchema === schema ? oldForm : null;
+  const oldControls = host.querySelector('[data-manual-map-search-controls]');
+  const retainedControls = !compact && oldControls?.manualMapControlCurrent?.() ? oldControls : null;
+  for (const child of [...host.children]) if (child !== form && child !== retainedControls) child.remove();
+  if (retainedControls) for (const child of [...retainedControls.children]) {
+    if (child !== retainedControls.querySelector('[data-manual-map-search]')) child.remove();
+  }
+  const prefix = document.createDocumentFragment();
+  const publishPrefix = () => {
+    if (!form) renderManualMapCommandDraft(prefix, { host });
+    host.insertBefore(prefix, form || retainedControls || null);
+    syncManualMapCommandDraftControls();
+  };
   applyAtlasResolvedSurfaceBinding('manualMap', host, 'manualMapWorkbenchProvider');
   host.dataset.manualMapWorkbenchStatus = state.state;
-  host.dataset.manualMapWorkbenchPlacement = compact ? 'right-rail-inspector' : 'plan-workspace';
+  host.dataset.manualMapWorkbenchPlacement = placement;
 
   const header = document.createElement('div');
   header.className = compact ? 'right-rail-atlas-matrices-head' : 'manual-map-workspace__header';
@@ -15788,20 +15847,22 @@ function renderManualMapWorkbenchInto(host, options = {}) {
   hash.className = compact ? 'right-rail-atlas-overview-hash' : 'manual-map-workspace__status';
   hash.textContent = state.summary.workbenchHash ? state.summary.workbenchHash.slice(0, 8) : state.state;
   header.append(headerText, hash);
-  host.appendChild(header);
+  prefix.appendChild(header);
 
   if (state.state === 'unavailable') {
     const unavailable = document.createElement('div');
     unavailable.className = compact ? 'right-rail-atlas-state right-rail-atlas-state--blocked' : 'manual-map-workspace__empty';
     unavailable.textContent = state.unavailableReason || 'MANUAL_MAP_WORKBENCH_UNAVAILABLE';
-    host.appendChild(unavailable);
+    prefix.appendChild(unavailable);
+    publishPrefix();
     return;
   }
   if (state.state === 'loading') {
     const loading = document.createElement('div');
     loading.className = compact ? 'right-rail-atlas-state' : 'manual-map-workspace__empty';
     loading.textContent = 'Graph workbench обновляется.';
-    host.appendChild(loading);
+    prefix.appendChild(loading);
+    publishPrefix();
     return;
   }
 
@@ -15817,10 +15878,10 @@ function renderManualMapWorkbenchInto(host, options = {}) {
   appendAtlasOverviewMetric(metrics, 'refs', (runtime.sourceGraph.attachments || []).length);
   appendAtlasOverviewMetric(metrics, 'portals', (runtime.sourceGraph.portals || []).length);
   appendAtlasOverviewMetric(metrics, 'templates', (runtime.sourceGraph.templates || []).length);
-  host.appendChild(metrics);
+  prefix.appendChild(metrics);
 
-  renderManualMapToolbar(host, state, runtime, { compact });
-  renderManualMapCommandDraft(host);
+  renderManualMapToolbar(prefix, state, runtime, { compact });
+  publishPrefix();
   if (compact) {
     const openButton = document.createElement('button');
     openButton.type = 'button';
@@ -15837,18 +15898,23 @@ function renderManualMapWorkbenchInto(host, options = {}) {
     return;
   }
 
-  const controls = document.createElement('div');
+  const controls = retainedControls || document.createElement('div');
   controls.className = 'manual-map-workspace__controls';
-  const search = document.createElement('input');
-  search.className = 'manual-map-workspace__search';
-  search.type = 'search';
-  search.value = manualMapSearchQuery;
-  search.placeholder = 'Search map';
-  search.setAttribute('aria-label', 'Search manual map');
-  search.addEventListener('input', () => {
-    manualMapSearchQuery = search.value;
-    renderManualMapWorkbenchState();
-  });
+  if (!retainedControls) {
+    controls.dataset.manualMapSearchControls = 'true';
+    const context = captureManualMapControlContext(host);
+    controls.manualMapControlCurrent = () => controls.parentElement === host && context();
+    const search = document.createElement('input');
+    search.className = 'manual-map-workspace__search'; search.type = 'search';
+    search.dataset.manualMapSearch = 'true'; search.value = manualMapSearchQuery;
+    search.placeholder = 'Search map'; search.setAttribute('aria-label', 'Search manual map');
+    search.addEventListener('input', () => {
+      if (!controls.manualMapControlCurrent()) return;
+      manualMapSearchQuery = search.value;
+      renderManualMapWorkbenchState();
+    });
+    controls.appendChild(search); host.appendChild(controls);
+  }
   const zoomOut = document.createElement('button');
   zoomOut.type = 'button';
   zoomOut.className = 'manual-map-workspace__chip';
@@ -15878,8 +15944,7 @@ function renderManualMapWorkbenchInto(host, options = {}) {
     }, runtime.presentationGraph);
     renderManualMapWorkbenchState();
   });
-  controls.append(search, zoomOut, zoomIn, fit);
-  host.appendChild(controls);
+  controls.append(zoomOut, zoomIn, fit);
 
   const body = document.createElement('div');
   body.className = 'manual-map-workspace__body';

@@ -446,7 +446,8 @@
       "docs/tasks/2026-10-23--mac-manual-map-pdf.md",
       "docs/tasks/2026-10-23--mac-manual-map-markdown.md",
       "src/import/mindmap/v1/manualMapMarkdownPortabilityBridge.mjs",
-      "src/preload.bundle.cjs"
+      "src/preload.bundle.cjs",
+      "docs/tasks/2026-10-23--mac-map-live-controls.md"
     ]
   },
   "allowPrefixByPhase": {

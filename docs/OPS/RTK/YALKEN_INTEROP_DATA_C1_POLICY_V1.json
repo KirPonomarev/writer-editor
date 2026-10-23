@@ -769,7 +769,8 @@
     "src/import/mindmap/v1/manualMapMarkdownPortabilityBridge.mjs",
     "src/renderer/design-os/atlasFeatureIntegrationManifest.mjs",
     "test/contracts/yalken-atlas-v5-e02d-c03-manual-map-markdown-portability-bridge.contract.test.js",
-    "test/contracts/yalken-atlas-v5-e10-c02-revision-history-projection-author-truth.contract.test.js"
+    "test/contracts/yalken-atlas-v5-e10-c02-revision-history-projection-author-truth.contract.test.js",
+    "docs/tasks/2026-10-23--mac-map-live-controls.md"
   ],
   "protectedFiles": [
     {
@@ -1010,7 +1011,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "44fa3c9a540f6fff9f509974974094d26a2de7ad4dd8e0ce81162053dea2fddc"
+        "sha256": "ee6893f241abadd8e28406f9dba9e854df46dc1b277fcdf6db96e1bdd057298d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1174,7 +1175,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "87a5a7254266505136f6101ecfa3c90916b57274f45abab299cb13c454dceea0"
+        "sha256": "f196732404cfc15b59886b3c6c602bd417670c50d8c283eb0a84485860f34712"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1734,7 +1735,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "7e6f5ca287618c6343f3822f9cba9d5df0c7588ae320f056d06f75208e6cfe7f"
+        "sha256": "8f9967fb60cfb3d57e16d60b8006a1a15957688c0051e956352128aa12e42872"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2690,15 +2691,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5d2bfb12598c8fef9abde073515ce3bc2ee326bada09c976cf6e77f434f1653e"
+        "sha256": "be9158fcfb9ef2874dc1659fdc21fad56792c391a7f84332dd12257df12e8338"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "2b769ffa444be6a19599a42395479208700f3123c51a7b708ae0b4b9c648aea0"
+        "sha256": "15f91561116e36c1eee48711ce65193978dd0515305c4a23bb0e41ac58ddac99"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5e65bb0e46f7bee6677235b357e865680501199a81b554fa803f50b42ee41726"
+        "sha256": "cac7bf1ec88affa04f69e12342bfe966dc30c970d7f55f70bbebabe252d2315c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3238,7 +3239,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "dd70ee7ec50b1a18a44753a13572184ba2adcd7177c2d4e6c26a334d19738b50"
+        "sha256": "8a82fbfb624ec45eef823dda352e1474f7585d2871d43698f9ac75f6e6cc166d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3370,11 +3371,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "b5f81617a93154acaf42868e9887d132c2d6d974c85cb65c1e4e6f6130f2e250"
+        "sha256": "cf070af6b04da4907787a9d88851318c74ba5a5080818275bcef2ffd4e9550a4"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "c99ecc3dc19f47d035012e57007d80fce50bc414c0bddc30d73d0012033b750f"
+        "sha256": "3f7dbf06797ee5b154426b2789f62e5bb2e68513c068afc89c8a680b0f87bcff"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3442,7 +3443,7 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-manual-map-markdown.md",
-        "sha256": "b7e189cab578858ae1d55247ebf7a0f93061cbe0d4600251afe758577dcfb9a3"
+        "sha256": "d787d94017e4cd23aa437598e3e8bdb135679e98a07dc965f41c13d45ba82999"
       },
       {
         "path": "src/core/registry.ts",
@@ -3471,6 +3472,10 @@
       {
         "path": "test/contracts/yalken-atlas-v5-e10-c02-revision-history-projection-author-truth.contract.test.js",
         "sha256": "13e9117c3fa79ec28f749ec754ce9eb2dbce8df119be88908ed3b2a00af30d0b"
+      },
+      {
+        "path": "docs/tasks/2026-10-23--mac-map-live-controls.md",
+        "sha256": "8322ccada1bd635e47a8513401fb73f662b33c646a334c38e1de1246b36ff3e4"
       }
     ],
     "followupRepair": {
