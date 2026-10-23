@@ -15,12 +15,53 @@ const law = require(path.join(ROOT, 'src', 'core', 'entitlement-law-v1.cjs'));
 
 const readMain = () => fs.readFileSync(path.join(ROOT, 'src', 'main.js'), 'utf8');
 
+function mainFunction(source, name) {
+  const start = source.indexOf(`function ${name}(`);
+  const end = source.indexOf('\n}\n', start);
+  assert.ok(start >= 0 && end > start, `actual Main function required: ${name}`);
+  return source.slice(start, end + 2);
+}
+
 test('port adoption: both command dispatch ports consult the one table with the product-owned tier', () => {
   const main = readMain();
   assert.ok(main.includes("require('./core/entitlement-law-v1.cjs')"));
   const calls = main.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || [];
-  assert.equal(calls.length, 2, 'menu dispatch and product bridge must both decide through the one table');
+  assert.equal(calls.length, 3, 'two dispatch decisions and the separate async preparation revalidation');
+  for (const name of ['dispatchMenuCommand', 'dispatchProductCommandBridge']) {
+    const body = mainFunction(main, name);
+    assert.equal((body.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, name);
+    assert.equal((body.match(/if \(!entitlement\.available\) \{/g) || []).length, 1, `${name} must retain its own refusal`);
+  }
+  const guard = mainFunction(main, 'captureManualMapPreparationGuard');
+  assert.equal((guard.match(/!decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)\.available/g) || []).length, 1);
   assert.equal(main.includes('MAIN_FREE_PRO_COMPLEXITY_COMMAND_IDS'), false, 'the duplicated main-side set is gone');
+});
+
+test('async preparation guard executes the product-owned decision before and after its awaited source check', async () => {
+  const vm = require('node:vm'), source = mainFunction(readMain(), 'captureManualMapPreparationGuard');
+  for (const denial of ['none', 'before', 'after-await']) {
+    const projectRoot = '/owned/project', commandId = 'manualMap.attachment.add', decisions = [];
+    let allowed = denial !== 'before', sourceChecks = 0;
+    const owner = { getProjectId: () => 'project' }, window = { isDestroyed: () => false, webContents: { isDestroyed: () => false } };
+    // Finite identity/capability/source ports; execute the actual guard. The
+    // decision port can deny, and otherwise delegates to the actual ENT0 law.
+    const context = { mainWindow: window, activeStage10ApplicationBootstrap: owner, currentProjectName: 'Project',
+      getProjectRootPath: () => projectRoot, commentAuthoringSessionId: 'session', currentLifecycleSubjectId: () => 'subject',
+      currentFilePath: '/owned/project/scene.txt', lastSignaledEditGeneration: 1,
+      evaluateCommandCapabilityAuthority: () => ({ ok: true }), DEFAULT_AUTHORITY_PLATFORM_ID: 'node',
+      readAuthorityCapabilityMatrixDoc: () => ({}), getProductEntitlementTier: law.getProductEntitlementTier,
+      decideCommandEntitlement: (id, tier) => { decisions.push([id, tier]); return allowed ? law.decideCommandEntitlement(id, tier) : { available: false }; },
+      evaluateWriterLocalCommandAccess: () => ({ allowed: true }), getWriterLocalRuntimeProfile: () => ({}),
+      assertProductCommandManifestUnchanged: async () => { sourceChecks++; await Promise.resolve(); if (denial === 'after-await') allowed = false; return { ok: true }; } };
+    vm.createContext(context); vm.runInContext(source, context);
+    const guard = context.captureManualMapPreparationGuard(commandId, { capabilityId: 'cap.manualMap.edit' });
+    const checked = guard({ projectRoot, projectId: 'project' }, 'manifest-hash');
+    if (denial === 'none') await assert.doesNotReject(checked);
+    else await assert.rejects(checked, { code: 'E_MANUAL_MAP_PREPARATION_STALE' });
+    assert.equal(decisions.length, denial === 'before' ? 1 : 2);
+    assert.equal(sourceChecks, denial === 'before' ? 0 : 1);
+    for (const decision of decisions) assert.deepEqual(decision, [commandId, law.getProductEntitlementTier()]);
+  }
 });
 
 test('port tier source: no renderer payload field can steer the port decision', () => {

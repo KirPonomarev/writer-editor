@@ -1,3 +1,93 @@
+Exact6efd native all16 manual-map commands, picker cancel/selection, portal/template/JSON overwrite/SVG/import, manuscript Unicode/Paste/Cut/Undo/Redo/Save and normal Quit/cold preservation are reviewed; four completed artifacts are byte/content matched on T777. CI39883326364 failed only the new A4 report integration and its dependent gates. C4 preserves every assertion, actual publication/fault branch and strict parser: whole A4 13/13, unchanged A7/A10 18/18, actual production CLI 39/39 across17 rows,0fail/cancel/skip/todo. Runtime/package inputs remain byte exact to6efd. Fresh current bindings, required baseline/RTK/CI and normal merge/merged verification remain pending; full first Mac/Atlas/WSE/Pulse/epochs/true binary PDF stays open.
+
+## 2026-10-23 — manual-map attachment transport corrected, native delivery pending
+
+Actual fc81 package preserved manuscript, maps and all15 command/event records; native title selection/caret works. Attachment then refused before picker because actual UI adds editorMode. The failed native run/178-member profile and full baseline2563pass/5fail/59named skips remain retained as failures.
+
+Semantic checkpointbc248 contains the seven-line bounded Main mode copy/strip and three maintained test corrections. Actual execution HEADfc81: causal whole integration35:31pass/4fail becomes same-test35/35; six complete files61/61,0fail/cancel/skip/todo, and22-suite126-mutant meta proof passes. All prior cases and five wiring mutants remain. Exact source hashes are unchanged onbc248.
+
+Fresh clean15-path root-only binding preflight precedes current companions. Full baseline/official RTK/CI, new exact package and genuine all16/picker/portal/template/JSON/SVG/import/Save/Quit/cold/ordinary T777 completed-artifact readback and normal merge/merged verification remain required. Full first Mac/Atlas/WSE/Pulse/epochs stays open; Black Box later.
+
+## 2026-10-23 — native manual-map draft keys, same delivery still open
+
+Exact406be unsigned V3 native run created a synthetic project and preserved Unicode through Paste, ordinary keys, Cut, Undo, Redo and Save. Raw manuscript text remains exact. Focused draft arrows instead panned the graph and replaced the input; the journey failed before all16/export/cold. Normal Quit root86732 exit0 and all153 failed profile archive members are retained/readmatched on T777.
+
+The same-task C2 admission/preflight on clean406be precedes the minimal three-line renderer editable-target guard. Whole actual R2 unchanged-runtime RED164:138pass/26fail became GREEN164/164 on identical test bytes; every prior case remains. Root review, normal bundle, current companions, required source/full baseline/RTK/CI, rebuilt genuine native/cold/export and normal delivery remain pending. Current menu Select All limitation is recorded with native line-selection workaround pending proof; no global menu repair is included.
+
+Full first Mac product remains open, including true binary PDF and remaining Atlas/WSE/Pulse/epochs; Black Box later. MM-FS-01 owner T777 ordinary completed-artifact save/readback decision remains settled. Owner checkout, installed app/private profile and previous evidence are preserved.
+
+# Same manual-map delivery — integration correction, 2026-10-23
+
+TASK_ID: YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023
+STATUS: CURRENT_BINDING_AND_FIXTURE_CORRECTION_NATIVE_AND_DELIVERY_PENDING
+CORRECTION_BASE_SHA: 82db09bd2bd91d260dfb9a2374c4accf35e92b30
+ORIGINAL_DELIVERY_BASE_SHA: ba42e0c1925a6d536b18c445fdfcaf523c4864db
+
+The retained full89 affected run exposed current release-cut binding drift and
+three fixture causes: inherited Review dependencies/lexical/slice errors,
+inherited noncanonical temp roots, and newly added Darwin bootstrap dependencies.
+This dependent correction is limited to current pins/profile and actual fixture
+dependencies; all14 frozen runtime/test/bundle hashes remain exact. Historical
+certificates, predicates, inventory classes/lanes/skips and169 protected files stay.
+
+Owner T777 decision is settled: ordinary completed JSON/SVG artifact save with
+full bytes/hash/content readback is allowed. Positive app export uses declared
+APFS runtime; direct app T777 publication remains unsupported and is not credited.
+Project/manuscript persistence is unchanged. See current MM-FS-01 in the task;
+earlier pending-reply text below is historical. No additional FS portability work.
+
+Next: qualify the actually rebuilt app's selected-map authoring, attachments and
+portal, Save, normal Quit, cold reopen and JSON/SVG artifacts. Required baseline,
+CI, normal merge and fresh merged verification remain. No native/full-Mac/release
+acceptance is asserted. Black Box remains later.
+
+---
+
+# Current bounded task — Mac manual-map authoring and portability, 2026-10-23
+
+TASK_ID: YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023
+STATUS: SOURCE_REVIEWED_FOR_BINDINGS_NATIVE_AND_DELIVERY_PENDING
+BASE_SHA: ba42e0c1925a6d536b18c445fdfcaf523c4864db
+BRANCH: codex/mac-manual-map-authoring-20261023
+
+PR2146 is independently closed as ACCEPTED_BOUNDED_DELIVERY at actual normal
+merge ba42e0c1925a6d536b18c445fdfcaf523c4864db. Closure SHA
+0793b06401654688f1f04ded283e8b5c5fa6ae8a859c8b9588f5876eb24ab7f2;
+full first-Mac acceptance is false. Earlier pending prefixes below are historical.
+Fresh merged source/gates/build/native/raw cold preservation were reviewed;
+prior complete candidate baseline and official CI retain their own identities.
+Known unchanged Electron audit findings were not labelled security PASS.
+
+New task: docs/tasks/2026-10-23--mac-manual-map-authoring.md. One existing-seam
+vertical for closed packaged V3/all16 existing map commands, map selection,
+real bounded native attachment metadata, cross-map portals and JSON/SVG
+portability with preserved draft/manuscript/history and reserved artifacts.
+Clean architecture preflight and task E0 actual0 preceded implementation.
+Separate code agent froze7 runtime/6 test paths; root independently read the
+complete diff and protected originals. Latest3 complete files passed177/177,
+zero cancelled/skipped/TODO. Normal renderer build actual0. These are source
+checks only; whole6/current bindings, package/native/CI/merge are still pending.
+
+Actual causal failures and repairs include restarted renderer ID collisions,
+portal caret loss/rejected queries, manifest A-to-B lost update, and unsupported
+publication leaving an old target unnamed. Real APFS capability/publication and
+four interruption/recovery schedules pass. Actual T777 read-only capability
+refusal preserves the old name/inode/bytes. Direct positive T777 export remains
+blocked pending owner scope reply; refusal is not positive export acceptance.
+Original fs.link/RENAME_EXCL failures and all raw evidence remain retained.
+
+New reports/materials: dated 2026-10-23--mac-manual-map-authoring directories
+on verified T777; code in the registered T7-Secure worktree. Owner checkout,
+profiles/projects and prior evidence remain untouched.
+Defects stay in this task's existing Known limitations and deferred defects
+section. Data loss, wrong save, security/ownership/isolation, new regressions
+and affected mandatory-gate blockers cannot pass dependent acceptance.
+Full first-Mac scope, including true binary PDF, remaining Atlas, WSE/Pulse
+and epochs, stays required. SVG does not satisfy PDF. Black Box remains later.
+No native outcome, full-Mac completion or public release claim yet.
+
+---
+
 # 2026-10-22 — Atlas reports capability contract: source parity repaired, delivery open
 
 The current71e4 direct-caller scan covers2754 tracked maintained test and harness files. Existing41 complete affected files passed619 tests; supplementary8 complete files ran61 tests with60 pass and one required reports capability literal failure. That contract, capabilityPolicy and shared registry are byte-identical to original b113: this is a stale source-location oracle, not a new runtime regression. Raw failures stay retained. After exact clean71e4 declaration/preflight and taskE0, the reports contract now imports the actual capability policy and requires atlas.savedQuery.save to map exactly to cap.atlas.savedQuery.save. Only3 lines were replaced; all4 cases and other assertions/negative boundaries are preserved byte-exact. Whole4of4 passed without skips or TODO. All runtime/bundles and earlier repaired tests remain frozen.

@@ -199,3 +199,34 @@ test('full Mac profile refuses malformed policy, near IDs and fabricated optiona
   for (const queryId of ['query.projectTree', 'query.sceneHistory', 'query.projectLibrary'])
     assert.equal(atlasProfile.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, true, queryId);
 });
+
+test('manual-map V3 is closed over all sixteen existing records while V1 and V2 stay unchanged', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  const records = require('../../src/shared/productCommandRegistry.cjs').PRODUCT_COMMAND_RECORDS;
+  const active = m.createWriterManualMapProfileProjection({ isPackaged: true, platform: 'darwin' });
+  assert.equal(active.profileId, 'WRITER_LOCAL_MANUAL_MAP_V3');
+  assert.equal(m.isActiveWriterManualMapProfile(active), true);
+  assert.equal(active.optionalSystemsEnabled, false);
+  assert.equal(Object.isFrozen(active.admittedCommandIds), true);
+  assert.equal(active.admittedCommandIds.length, 16);
+  assert.deepEqual([...active.admittedCommandIds].sort(), records.filter(r => r.domain === 'manualMap').map(r => r.id).sort());
+  for (const r of records) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: r.id, productCommandRecord: r }).allowed,
+    r.domain === 'manualMap', r.id);
+  for (const queryId of OPTIONAL_QUERY_IDS) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed,
+    ['query.atlasCurrentScene', 'query.manualMapWorkbench'].includes(queryId), queryId);
+  const record = records.find(r => r.id === 'manualMap.node.update');
+  for (const old of [m.createWriterLocalProfileProjection, m.createWriterAtlasProfileProjection])
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: old({ isPackaged: true, platform: 'darwin' }), commandId: record.id, productCommandRecord: record }).allowed, false);
+  for (const options of [{}, { isPackaged: true, platform: 'linux' }, { isPackaged: false, platform: 'darwin' }])
+    assert.deepEqual(m.createWriterManualMapProfileProjection(options), m.createWriterLocalProfileProjection(options));
+  for (const patch of [{ optionalSystemsEnabled: true }, { extra: true }, { admittedCommandIds: [...active.admittedCommandIds, 'atlas.entity.create'] },
+    { admittedQueryIds: [...active.admittedQueryIds].reverse() }, { platform: 'linux' }]) {
+    const profile = { ...active, ...patch };
+    assert.equal(m.isActiveWriterManualMapProfile(profile), false);
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId: record.id, productCommandRecord: record }).allowed, false);
+  }
+  for (const commandId of ['manualMap.node.update ', 'manualMap.node.update.extra', ' manualMap.node.update'])
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId, productCommandRecord: { ...record, id: commandId } }).allowed, false);
+  for (const productCommandRecord of [null, { ...record, domain: 'atlas' }, { ...record, id: 'manualMap.create' }])
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: record.id, productCommandRecord }).allowed, false);
+});

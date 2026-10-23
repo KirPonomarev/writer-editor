@@ -283,15 +283,29 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
     ipcMain: { on: (name, handler) => h.listeners.set(name, handler), handle: (name, handler) => h.handlers.set(name, handler) },
     session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
   const mainPath = path.join(ROOT, 'src/main.js'), filePath = path.join(ROOT, 'src/utils/fileManager.js');
+  h.dialog = electron.dialog;
   const originalLoad = Module._load; delete require.cache[filePath];
   try {
-    Module._load = function(request, ...args) { return request === 'electron' ? electron : originalLoad.call(this, request, ...args); };
+    Module._load = function(request, ...args) {
+      if (request === 'electron') return electron;
+      const loaded = originalLoad.call(this, request, ...args);
+      if (request !== './main/projectArchiveDarwinPublication.cjs') return loaded;
+      return { ...loaded, createDarwinExclusiveFilePublisher: options => {
+        const current = () => h.filePublication || loaded.createDarwinExclusiveFilePublisher({ ...options, helperPath: h.helperPath });
+        const publish = input => current()(input); publish.assertAvailable = input => current().assertAvailable(input); return publish;
+      } };
+    };
     const compiled = new Module(mainPath, module); compiled.filename = mainPath;
     compiled.paths = Module._nodeModulePaths(path.dirname(mainPath));
     const host = `const process = new Proxy(global.process, {get(t,k){return k==='platform'?${JSON.stringify(platform)}:Reflect.get(t,k)}});\n`;
     compiled._compile(host + read('src/main.js') + `\nmodule.exports.__profile = () => getWriterLocalRuntimeProfile();
       module.exports.__host = {
         revokeOwner() { activeStage10ApplicationBootstrap = null; },
+        invalidateSession() { commentAuthoringSessionId = crypto.randomUUID(); },
+        invalidateGeneration() { lastSignaledEditGeneration += 1; },
+        afterCoreBinding(callback) { const build = buildProductCoreStateForCurrentProject; let armed = true;
+          buildProductCoreStateForCurrentProject = async (...args) => { const result = await build(...args);
+            if (armed) { armed = false; await callback(result); } return result; }; },
         denyCapability() { const read = readAuthorityCapabilityMatrixDoc; readAuthorityCapabilityMatrixDoc = () => {
           const matrix = read(); matrix.items.find(row => row.platformId === 'node').capabilities['cap.manualMap.edit'] = false; return matrix; }; },
         afterTruth(callback) { const prepare = prepareCanonicalProjectTruthCommand; prepareCanonicalProjectTruthCommand = async (...args) => {
@@ -317,6 +331,39 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
     if (s.isDirectory()) visit(file);
   } } visit(documents); return rows; };
   return h;
+}
+
+async function fullMacRendererCommandPort(h) {
+  const vm = require('node:vm');
+  const registryModule = await import('../../src/renderer/commands/registry.mjs');
+  const projectModule = await import('../../src/renderer/commands/projectCommands.mjs');
+  const runnerModule = await import('../../src/renderer/commands/runCommand.mjs');
+  const busModule = await import('../../src/renderer/commands/commandBusGuard.mjs');
+  const registry = registryModule.createCommandRegistry(); let last;
+  // Finite IPC transport uses the real envelope/Main fixture; no renderer
+  // normalization, registry, capability runner or command bus is replaced.
+  projectModule.registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    const mainResult = await h.command(request.commandId, structuredClone(request.payload));
+    last = { request, mainResult }; return mainResult;
+  } } });
+  const context = { isTiptapMode: true, COMMAND_BUS_ROUTE: 'command.bus',
+    runCommandThroughBus: busModule.runCommandThroughBus,
+    runCommand: runnerModule.createCommandRunner(registry, { capability: { platformId: 'node', editorMode: 'tiptap' } }),
+    updateStatusText() {}, mapCommandErrorToUi: error => ({ userMessage: error.reason, severity: 'INFO' }) };
+  const editor = read('src/renderer/editor.js');
+  const actual = name => {
+    const start = editor.indexOf((name === 'dispatchUiCommand' ? 'async ' : '') + 'function ' + name + '(');
+    const end = editor.indexOf('\n}\n', start); assert.ok(start >= 0 && end > start, name);
+    return editor.slice(start, end + 2);
+  };
+  vm.createContext(context); vm.runInContext(actual('withEditorModeCommandPayload') + '\n' + actual('dispatchUiCommand'), context);
+  return async (id, payload, tiptap = true) => {
+    context.isTiptapMode = tiptap; last = null;
+    const result = await context.dispatchUiCommand(id, payload);
+    assert.ok(last, 'actual renderer registry/runner/bus must reach Main');
+    assert.equal(result.ok, last.mainResult.ok, 'renderer result must agree with Main');
+    return { ...last, result };
+  };
 }
 
 test('full Mac actual guarded Main admits FREE map create add and queries under the ordinary project owner', async t => {
@@ -352,9 +399,9 @@ test('full Mac actual guarded Main admits FREE map create add and queries under 
 
 test('full Mac actual Main keeps profile caller entitlement and optional refusals before effects', async t => {
   const h = await fullMacMainFixture(t), before = h.roster();
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_V2');
-  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_V2');
-  const unselected = ['manualMap', 'atlas', 'idea', 'meaning', 'blackBox', 'stage10'].map(domain =>
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_MANUAL_MAP_V3');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_MANUAL_MAP_V3');
+  const unselected = ['atlas', 'idea', 'meaning', 'blackBox', 'stage10'].map(domain =>
     productRegistry.PRODUCT_COMMAND_RECORDS.find(row => row.domain === domain && !['manualMap.create', 'manualMap.node.add'].includes(row.id)).id);
   for (const id of unselected) {
     const result = await h.command(id, { projectId: 'forged', profileId: 'WRITER_LOCAL_ATLAS_V2', tier: 'pro', optionalSystemsEnabled: true });
@@ -366,7 +413,7 @@ test('full Mac actual Main keeps profile caller entitlement and optional refusal
   for (const id of ['query.atlasCurrentScene.extra', 'query.manualMapWorkbench ']) assert.equal((await h.query(id)).ok, false, id);
   const event = h.event();
   for (const forged of [{ ...event, sender: { ...event.sender, id: 999 } }, { ...event, sender: { ...event.sender, session: {} } },
-    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_V1') } }])
+    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_V1') } }])
     await assert.rejects(h.command('manualMap.create', {}, forged), /E_IPC_/u);
   assert.deepEqual(h.roster(), before);
   const source = await fullMacMainFixture(t, { packaged: false });
@@ -403,7 +450,7 @@ test('full Mac actual Main consumes current project capability owner and source 
 test('full Mac flags preserve the old cut and expose only the existing Atlas tab for the new hint', () => {
   const vm = require('node:vm'), selectors = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]',
     '[data-right-tab="atlas"]', '[data-toolbar-item-key="review-comment"]', '[data-atlas-reachability-opener]'];
-  for (const id of ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_ATLAS_V2.extra', '']) {
+  for (const id of ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_ATLAS_V2.extra', '']) {
     const elements = Object.fromEntries(selectors.map(selector => [selector, { hidden: false, disabled: false, tabIndex: 0,
       attrs: {}, style: { setProperty(name, value, priority) { this[name] = [value, priority]; } },
       setAttribute(name, value) { this.attrs[name] = value; } }]));
@@ -413,11 +460,206 @@ test('full Mac flags preserve the old cut and expose only the existing Atlas tab
     vm.runInNewContext(read('src/renderer/flags.js'), { window, document, URLSearchParams, console: { log() {} } });
     callbacks.forEach(callback => callback());
     for (const selector of selectors) {
-      const hidden = id === 'WRITER_LOCAL_V1' || id === 'WRITER_LOCAL_ATLAS_V2' && selector !== '[data-right-tab="atlas"]';
+      const hidden = id === 'WRITER_LOCAL_V1' || ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3'].includes(id) && selector !== '[data-right-tab="atlas"]';
       assert.equal(elements[selector].hidden, hidden, id + selector); assert.equal(elements[selector].disabled, hidden);
       assert.equal(elements[selector].tabIndex, hidden ? -1 : 0);
       if (hidden) { assert.equal(elements[selector].attrs['aria-hidden'], 'true'); assert.deepEqual(elements[selector].style.display, ['none', 'important']); }
     }
-    assert.equal(window.__PRODUCT_PROFILE, ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2'].includes(id) ? id : '');
+    assert.equal(window.__PRODUCT_PROFILE, ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3'].includes(id) ? id : '');
   }
+});
+
+test('manual-map authoring actual packaged Main updates an explicitly selected node without touching manuscript', async t => {
+  const h = await fullMacMainFixture(t);
+  const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Manual authoring RED' });
+  assert.equal(created.ok, true);
+  const payload = { projectId: created.projectId, mapId: 'map-a' };
+  assert.equal((await h.command('manualMap.create', { ...payload, title: 'Map A' })).ok, true);
+  assert.equal((await h.command('manualMap.node.add', { ...payload, nodeId: 'a', label: 'Before' })).ok, true);
+  const manifestPath = path.join(h.documents, 'craftsman', 'Manual authoring RED', 'project.craftsman.json');
+  const before = JSON.parse(fs.readFileSync(manifestPath));
+  const changed = await h.command('manualMap.node.update', { ...payload, nodeId: 'a', label: 'После e\u0301 🧭' });
+  assert.equal(changed.ok, true, JSON.stringify(changed));
+  const after = JSON.parse(fs.readFileSync(manifestPath));
+  assert.equal(after.manualMaps.maps['map-a'].nodes.a.label, 'После e\u0301 🧭');
+  for (const value of [before, after]) { delete value.manualMaps; delete value.lastCommandId; }
+  assert.deepEqual(after, before);
+});
+
+test('manual-map authoring actual Main executes all sixteen commands with real Core and Stage10 persistence', async t => {
+  const h = await fullMacMainFixture(t), executed = new Set();
+  const uiCommand = await fullMacRendererCommandPort(h);
+  if (process.platform === 'darwin') {
+    h.helperPath = path.join(h.root, 'project-archive-fs');
+    const built = require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({ outputPath: h.helperPath });
+    t.diagnostic('ACTUAL_DARWIN_FILE_PUBLICATION ' + JSON.stringify(built));
+  } else {
+    // Finite filesystem effect boundary for non-Darwin CI only. This is Main/
+    // Core/Stage10 behavior, never physical Darwin publication evidence.
+    h.filePublication = async ({ sourcePath, targetPath, assertCurrent }) => {
+      await assertCurrent(); await fs.promises.copyFile(sourcePath, targetPath, fs.constants.COPYFILE_EXCL);
+    };
+    h.filePublication.assertAvailable = async ({ assertCurrent }) => { await assertCurrent(); return { available: true, readOnly: true }; };
+    t.diagnostic('FINITE_NON_DARWIN_FILE_EFFECT_NOT_PHYSICAL_PUBLICATION');
+  }
+  const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Complete manual maps' });
+  assert.equal(created.ok, true);
+  const projectId = created.projectId, mapId = 'map-a';
+  const command = async (id, payload) => {
+    const { mainResult: result, request } = await uiCommand(id, { projectId, mapId, ...payload });
+    assert.equal(request.payload.editorMode, 'tiptap');
+    assert.equal(result.ok, true, id + ': ' + JSON.stringify(result)); executed.add(id); return result;
+  };
+  const manifestPath = path.join(h.documents, 'craftsman', 'Complete manual maps', 'project.craftsman.json');
+  const before = JSON.parse(fs.readFileSync(manifestPath)), roster = h.roster();
+  const made = await command('manualMap.create', { title: 'Source e\u0301 🧭' });
+  assert.equal(made.value.mapId, mapId);
+  await command('manualMap.create', { mapId: 'map-b', title: 'Target' });
+  for (const nodeId of ['a', 'b', 'c']) await command('manualMap.node.add', { nodeId, label: nodeId, nodeKind: 'note' });
+  await command('manualMap.node.add', { mapId: 'map-b', nodeId: 'z', label: 'Target node' });
+  await command('manualMap.node.update', { nodeId: 'a', label: 'Edited', position: { x: 30, y: 80 } });
+  for (const edgeId of ['e', 'e2']) await command('manualMap.edge.add', { edgeId, fromNodeId: 'a', toNodeId: 'b', label: 'Link' });
+  await command('manualMap.edge.update', { edgeId: 'e', label: 'Edited link' });
+  await command('manualMap.edge.delete', { edgeId: 'e2' });
+  for (const groupId of ['g', 'g2']) await command('manualMap.group.create', { groupId, label: 'Group', nodeIds: ['a', 'b'] });
+  await command('manualMap.group.update', { groupId: 'g', label: 'Edited group', nodeIds: ['a', 'b'], colorTag: 'neutral' });
+  await command('manualMap.group.delete', { groupId: 'g2' });
+  const donor = path.join(h.root, 'reference.txt'), donorBytes = Buffer.from('Реальный reference e\u0301 🧭\n');
+  fs.writeFileSync(donor, donorBytes);
+  h.dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [donor] });
+  await command('manualMap.attachment.add', { nodeId: 'a', attachmentId: 'att', label: 'Selected file', attachmentKind: 'reference' });
+  await command('manualMap.portal.add', { portalId: 'p', fromNodeId: 'a', targetMapId: 'map-b', targetNodeId: 'z', label: 'Cross map' });
+  await command('manualMap.template.apply', { templateInstanceId: 'starter', templateId: 'two', templateName: 'Two nodes',
+    nodes: [{ nodeId: 't1', label: 'One' }, { nodeId: 't2', label: 'Two' }], edges: [{ edgeId: 'te', fromNodeId: 't1', toNodeId: 't2' }] });
+  await command('manualMap.node.delete', { nodeId: 'c' });
+  const exportedJson = path.join(h.root, 'manual-map.json'), exportedSvg = path.join(h.root, 'manual-map.svg');
+  h.dialog.showSaveDialog = async (...args) => ({ canceled: false, filePath: args.at(-1).title.includes('JSON') ? exportedJson : exportedSvg });
+  await command('manualMap.export.json', {}); await command('manualMap.export.imagePdf', {});
+  const json = JSON.parse(fs.readFileSync(exportedJson));
+  assert.equal(json.attachments[0].source.sourceHash, crypto.createHash('sha256').update(donorBytes).digest('hex'));
+  assert.equal(json.attachments[0].source.byteLength, donorBytes.length);
+  assert.equal(json.attachments[0].source.name, 'reference.txt'); assert.equal(json.attachments[0].source.mediaType, 'text/plain');
+  assert.equal(json.attachments[0].storedContent, false); assert.equal(JSON.stringify(json).includes(h.root), false);
+  assert.match(fs.readFileSync(exportedSvg, 'utf8'), /<svg/u);
+  h.dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [exportedJson] });
+  const imported = await command('manualMap.import.jsonRepeat', { targetMapId: 'imported', title: 'Imported' });
+  assert.equal(imported.value.mapId, 'imported');
+  assert.deepEqual([...executed].sort(), [...profile.WRITER_MANUAL_MAP_COMMAND_IDS].sort());
+  let manifest = JSON.parse(fs.readFileSync(manifestPath));
+  assert.deepEqual(manifest.manualMaps.maps['map-a'].portals.p.target, { mapId: 'map-b', nodeId: 'z' });
+  assert.equal(manifest.manualMaps.maps.imported.nodes.a.label, 'Edited');
+  const protectedAfter = { ...manifest }; delete protectedAfter.manualMaps; delete protectedAfter.lastCommandId;
+  assert.deepEqual(protectedAfter, before);
+  for (const row of roster.filter(([name]) => !name.includes('/.stage10-local') && !name.endsWith('/project.craftsman.json')))
+    assert.deepEqual(h.roster().find(([name]) => name === row[0]), row, row[0]);
+  assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId })).ok, true);
+  assert.deepEqual(JSON.parse(fs.readFileSync(manifestPath)).manualMaps, manifest.manualMaps);
+  const queried = await h.query('query.manualMapWorkbench', { projectId, mapId: 'map-b' });
+  assert.equal(queried.manualMapWorkbench.mapId, 'map-b'); assert.equal(queried.manualMapWorkbench.mapRows.length, 3);
+  const empty = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'First imported map' });
+  assert.equal(empty.ok, true);
+  const { mainResult: first } = await uiCommand('manualMap.import.jsonRepeat', { projectId: empty.projectId, targetMapId: 'first', title: 'First' });
+  assert.equal(first.ok, true, JSON.stringify(first)); assert.equal(first.value.mapId, 'first');
+});
+
+test('manual-map actual renderer transport prepares real attachments in both editor modes', async t => {
+  for (const tiptap of [true, false]) await t.test(tiptap ? 'tiptap' : 'legacy', async t => {
+    const h = await fullMacMainFixture(t), uiCommand = await fullMacRendererCommandPort(h);
+    const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Transport attachment' });
+    assert.equal(created.ok, true); const projectId = created.projectId, mapId = 'map';
+    assert.equal((await h.command('manualMap.create', { projectId, mapId, title: 'A' })).ok, true);
+    assert.equal((await h.command('manualMap.node.add', { projectId, mapId, nodeId: 'n', label: 'A' })).ok, true);
+    const donor = path.join(h.root, 'reference.txt'), bytes = Buffer.from('Реальный e\u0301 🧭\n'); fs.writeFileSync(donor, bytes);
+    let pickerCalls = 0; h.dialog.showOpenDialog = async () => { pickerCalls++; return { canceled: false, filePaths: [donor] }; };
+    const before = h.roster(), input = { projectId, mapId, nodeId: 'n', attachmentId: 'a', label: 'Selected', attachmentKind: 'reference' };
+    const { mainResult, request } = await uiCommand('manualMap.attachment.add', input, tiptap);
+    t.diagnostic(JSON.stringify({ transported: request.payload, mainResult, pickerCalls, canonicalUnchanged: JSON.stringify(h.roster()) === JSON.stringify(before) }));
+    assert.equal(request.payload.editorMode, tiptap ? 'tiptap' : 'legacy'); assert.equal(Object.hasOwn(input, 'editorMode'), false);
+    assert.equal(mainResult.ok, true, JSON.stringify(mainResult)); assert.equal(pickerCalls, 1);
+    const manifest = JSON.parse(fs.readFileSync(path.join(h.documents, 'craftsman', 'Transport attachment', 'project.craftsman.json')));
+    const attachment = manifest.manualMaps.maps.map.attachments.a;
+    assert.equal(attachment.source.sourceHash, crypto.createHash('sha256').update(bytes).digest('hex'));
+    assert.equal(attachment.source.byteLength, bytes.length); assert.equal(attachment.storedContent, false);
+    assert.equal(Object.hasOwn(attachment, 'editorMode'), false); assert.equal(JSON.stringify(attachment).includes(h.root), false);
+  });
+});
+
+test('manual-map attachment transport rejects malformed mode and author authority before picker or writes', async t => {
+  const h = await fullMacMainFixture(t), created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Transport refusals' });
+  assert.equal(created.ok, true); const projectId = created.projectId, mapId = 'map';
+  assert.equal((await h.command('manualMap.create', { projectId, mapId, title: 'A' })).ok, true);
+  assert.equal((await h.command('manualMap.node.add', { projectId, mapId, nodeId: 'n', label: 'A' })).ok, true);
+  let pickerCalls = 0; h.dialog.showOpenDialog = async () => { pickerCalls++; return { canceled: true }; };
+  const before = h.roster();
+  const payloads = [null, false, {}, ['tiptap'], '', 'TIPTAP', 'tiptap.extra', 'x'.repeat(1001)].map(editorMode => ({ editorMode }));
+  for (const key of ['source', 'sourceHash', 'byteLength', 'mediaType', 'path', 'targetPath', 'extra']) payloads.push({ editorMode: 'tiptap', [key]: 'forged' });
+  for (const extra of payloads) {
+    const result = await h.command('manualMap.attachment.add', { projectId, mapId, nodeId: 'n', attachmentId: 'a', label: 'Selected', ...extra });
+    assert.equal(result.ok, false, JSON.stringify(extra)); assert.equal(result.reason, 'MANUAL_MAP_ATTACHMENT_INTENT_INVALID');
+    assert.equal(pickerCalls, 0); assert.deepEqual(h.roster(), before);
+  }
+});
+
+test('manual-map attachment real picker refuses forged metadata and cancelled/stale/revoked/changed input without canonical writes', async t => {
+  for (const fault of ['forged', 'cancel', 'owner', 'session', 'generation', 'window', 'project-away-back', 'capability', 'capability-after-read', 'revision', 'oversize', 'symlink', 'changed-read']) await t.test(fault, async t => {
+    const h = await fullMacMainFixture(t);
+    const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Attachment guards' });
+    assert.equal(created.ok, true); const projectId = created.projectId, mapId = 'a';
+    assert.equal((await h.command('manualMap.create', { projectId, mapId, title: 'A' })).ok, true);
+    assert.equal((await h.command('manualMap.node.add', { projectId, mapId, nodeId: 'a', label: 'A' })).ok, true);
+    const donor = path.join(h.root, 'selected.txt'); fs.writeFileSync(donor, 'real selected bytes');
+    if (fault === 'oversize') fs.truncateSync(donor, 8 * 1024 * 1024 + 1);
+    if (fault === 'symlink') { fs.renameSync(donor, donor + '.original'); fs.symlinkSync(donor + '.original', donor); }
+    const manifestPath = path.join(h.documents, 'craftsman', 'Attachment guards', 'project.craftsman.json');
+    let pickerCalls = 0;
+    h.dialog.showOpenDialog = async () => {
+      pickerCalls++;
+      if (fault === 'owner') h.main.__host.revokeOwner();
+      if (fault === 'session') h.main.__host.invalidateSession();
+      if (fault === 'generation') h.main.__host.invalidateGeneration();
+      if (fault === 'window') h.window.isDestroyed = () => true;
+      if (fault === 'project-away-back') assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId })).ok, true);
+      if (fault === 'capability') h.main.__host.denyCapability();
+      if (fault === 'revision') {
+        const value = JSON.parse(fs.readFileSync(manifestPath)); value.foreign = 'preserved'; fs.writeFileSync(manifestPath, JSON.stringify(value));
+      }
+      return { canceled: fault === 'cancel', filePaths: [donor] };
+    };
+    const originalOpen = fs.promises.open;
+    if (['changed-read', 'capability-after-read'].includes(fault)) fs.promises.open = async (file, ...args) => {
+      const handle = await originalOpen(file, ...args);
+      if (file !== donor) return handle;
+      const read = handle.read.bind(handle); handle.read = async (...params) => {
+        const value = await read(...params);
+        if (fault === 'changed-read') fs.appendFileSync(donor, 'changed'); else h.main.__host.denyCapability();
+        return value;
+      };
+      return handle;
+    };
+    const before = h.roster();
+    let result; try { result = await h.command('manualMap.attachment.add', { projectId, mapId, nodeId: 'a', attachmentId: 'att', label: 'Reference',
+      ...(fault === 'forged' ? { source: { sourceHash: 'a'.repeat(64) } } : {}) }); }
+    finally { fs.promises.open = originalOpen; }
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(pickerCalls, fault === 'forged' ? 0 : 1);
+    if (fault === 'revision') {
+      const expected = h.roster().filter(([name]) => !name.endsWith('/project.craftsman.json'));
+      assert.deepEqual(expected, before.filter(([name]) => !name.endsWith('/project.craftsman.json')));
+      assert.equal(JSON.parse(fs.readFileSync(manifestPath)).foreign, 'preserved');
+    } else assert.deepEqual(h.roster(), before);
+  });
+});
+
+test('manual-map actual Main refuses a manifest changed after the real Core binding without overwriting newer unrelated bytes', async t => {
+  const h = await fullMacMainFixture(t);
+  const created = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Manifest binding race' });
+  assert.equal(created.ok, true); let newerRaw, expectedRoster, manifestPath;
+  h.main.__host.afterCoreBinding(binding => {
+    manifestPath = binding.manifestPath;
+    newerRaw = JSON.stringify({ ...binding.manifest, newerUnrelatedAuthorData: { owner: 'concurrent', text: 'Сохранить e\u0301 🧭' } }, null, 2) + '\n';
+    fs.writeFileSync(manifestPath, newerRaw); expectedRoster = h.roster();
+  });
+  const result = await h.command('manualMap.create', { projectId: created.projectId, mapId: 'stale', title: 'Must not write' });
+  assert.equal(result.ok, false, JSON.stringify(result));
+  assert.equal(fs.readFileSync(manifestPath, 'utf8'), newerRaw);
+  assert.deepEqual(h.roster(), expectedRoster);
 });

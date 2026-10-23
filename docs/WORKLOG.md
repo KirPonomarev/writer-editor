@@ -1,3 +1,5 @@
+Exact6efd native all16 manual-map commands, picker cancel/selection, portal/template/JSON overwrite/SVG/import, manuscript Unicode/Paste/Cut/Undo/Redo/Save and normal Quit/cold preservation are reviewed; four completed artifacts are byte/content matched on T777. CI39883326364 failed only the new A4 report integration and its dependent gates. C4 preserves every assertion, actual publication/fault branch and strict parser: whole A4 13/13, unchanged A7/A10 18/18, actual production CLI 39/39 across17 rows,0fail/cancel/skip/todo. Runtime/package inputs remain byte exact to6efd. Fresh current bindings, required baseline/RTK/CI and normal merge/merged verification remain pending; full first Mac/Atlas/WSE/Pulse/epochs/true binary PDF stays open.
+
 # 2026-10-22 — Atlas reports capability contract: source parity repaired, delivery open
 
 The current71e4 direct-caller scan covers2754 tracked maintained test and harness files. Existing41 complete affected files passed619 tests; supplementary8 complete files ran61 tests with60 pass and one required reports capability literal failure. That contract, capabilityPolicy and shared registry are byte-identical to original b113: this is a stale source-location oracle, not a new runtime regression. Raw failures stay retained. After exact clean71e4 declaration/preflight and taskE0, the reports contract now imports the actual capability policy and requires atlas.savedQuery.save to map exactly to cap.atlas.savedQuery.save. Only3 lines were replaced; all4 cases and other assertions/negative boundaries are preserved byte-exact. Whole4of4 passed without skips or TODO. All runtime/bundles and earlier repaired tests remain frozen.
@@ -4861,3 +4863,32 @@ remain open. Do not attempt or credit native bookUndoRedo from this proof. A
 shared Main/Worker resource admission is the next bounded hypothesis after the
 current required delivery closes. Native OPEN-only verification may be admitted
 separately; native history/finite16/fullfeature status remains NOT_READY.
+
+
+## 2026-10-23 — Mac manual-map authoring/JSON/SVG source frozen
+
+PR2146 independently closed at normal merge ba42e0c1 (bounded only). Clean
+new registered branch at that exact SHA passed startup/preflight/task E0 before
+implementation. Separate code agent froze7 runtime/6 maintained test paths.
+Root read the complete delta and protected originals; latest3 whole files pass
+177/177 without skips/TODO; normal renderer build0. Current source binding,
+whole6/affected/required gates, native package, CI/normal merge remain pending.
+Actual T777 read-only capability refusal preserves existing export; positive
+T777 publication stays blocked pending owner reply, never counted as success.
+Full first Mac, true PDF, remaining Atlas/WSE/Pulse/epochs remains active.
+
+## 2026-10-23 — Same manual-map delivery integration correction
+
+- Task YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023 continues on clean82db after fresh fetch/preflight and amended task E0.
+- Full89 remains actual FAIL:3046 tests,2665 pass,381 fail,0 cancelled/skipped/TODO; failures are limited to three known files. Three owned generated files/11members were archived and atomically isolated without deleting evidence.
+- Minimal current V3/four-pin binding and real fixture dependencies/canonical roots are corrected; whole3 executes800/800 with zero fail/cancel/skip/TODO. Runtime14 and169 protected hashes remain exact; no general FS/Review/recovery repair.
+- Owner T777 ordinary completed-artifact save decision is settled; verify complete bytes/hashes after APFS app export. Project/manuscript persistence is unchanged.
+- Current bindings, actually rebuilt app map/save/normal Quit/cold/JSON-SVG, required baseline/CI and normal merged delivery remain pending. Full first Mac remains open; Black Box later.
+
+## 2026-10-23 — same manual-map native keyboard correction
+
+406be native draft arrows caused graph PAN/control replacement; all raw failures and failed profile153-member archive are preserved. Minimal renderer guard plus existing R2 actual-function coverage: RED164/138pass/26fail -> GREEN164/164, zero skips; all prior cases retained. Normal bundle/current companions/native/cold/export/full required delivery remain pending; full Mac remains open.
+
+# 2026-10-23 — same manual-map attachment correction, semantic checkpointbc248
+
+Actual unchanged-Main real UI transport RED35/31/4 and same-test GREEN35/35; full six-file61/61 and actual22-suite126-mutant meta proof passed without skips. Seven Main lines copy/validate/remove editorMode before unchanged author validation; exact dispatch/async entitlement oracles replace stale global2 counting. All original cases/guards/five-mutant receipt preserved. Root reviewed and committed task plus four source files, then obtained clean15-path OPS preflight before current binding companions. Old failed baseline/native/profile evidence retained; full source/baseline/RTK/CI/new native/cold/export and normal delivery remain open.

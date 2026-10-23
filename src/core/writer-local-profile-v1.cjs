@@ -146,7 +146,49 @@ function atlasProfileAccess(allowed) {
     profileId: WRITER_ATLAS_PROFILE_ID });
 }
 
+// V1 and V2 remain stable. V3 opens only the existing manual-map workbench.
+const WRITER_MANUAL_MAP_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v3';
+const WRITER_MANUAL_MAP_PROFILE_ID = 'WRITER_LOCAL_MANUAL_MAP_V3';
+const WRITER_MANUAL_MAP_COMMAND_IDS = Object.freeze([
+  'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
+  'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
+  'manualMap.group.create', 'manualMap.group.update', 'manualMap.group.delete',
+  'manualMap.attachment.add', 'manualMap.portal.add', 'manualMap.template.apply',
+  'manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.import.jsonRepeat',
+]);
+function createWriterManualMapProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_MANUAL_MAP_PROFILE_SCHEMA_VERSION, profileId: WRITER_MANUAL_MAP_PROFILE_ID,
+    admittedCommandIds: WRITER_MANUAL_MAP_COMMAND_IDS, admittedQueryIds: WRITER_ATLAS_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterManualMapProfileCandidate(profile) {
+  return isPlainObject(profile) && (profile.profileId === WRITER_MANUAL_MAP_PROFILE_ID
+    || profile.schemaVersion === WRITER_MANUAL_MAP_PROFILE_SCHEMA_VERSION);
+}
+function isActiveWriterManualMapProfile(profile) {
+  if (!isWriterManualMapProfileCandidate(profile)) return false;
+  const expected = createWriterManualMapProfileProjection({ isPackaged: true, platform: 'darwin' });
+  return Object.keys(profile).length === Object.keys(expected).length && Object.keys(expected).every(key =>
+    Array.isArray(expected[key]) ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && expected[key].every((id, index) => profile[key][index] === id) : profile[key] === expected[key]);
+}
+function manualMapProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterManualMapProfile(profile) && (optional ? selected : true);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_MANUAL_MAP_PROFILE_ID });
+}
+
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterManualMapProfileCandidate(profile)) {
+    const id = normalizeIdentity(commandId);
+    return manualMapProfileAccess(profile, WRITER_MANUAL_MAP_COMMAND_IDS.includes(commandId)
+      && isPlainObject(productCommandRecord) && productCommandRecord.id === commandId
+      && productCommandRecord.domain === 'manualMap',
+    isOptionalWriterLocalCommand(commandId, productCommandRecord)
+      || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+  }
   if (isWriterAtlasProfileCandidate(profile)) {
     const id = normalizeIdentity(commandId);
     const selected = WRITER_ATLAS_COMMAND_SET.has(commandId) && isPlainObject(productCommandRecord)
@@ -165,6 +207,11 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterManualMapProfileCandidate(profile)) {
+    const id = normalizeIdentity(queryId);
+    return manualMapProfileAccess(profile, WRITER_ATLAS_QUERY_IDS.includes(queryId),
+      OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
+  }
   if (isWriterAtlasProfileCandidate(profile)) {
     const id = normalizeIdentity(queryId);
     const optional = OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.'));
@@ -198,4 +245,9 @@ module.exports = Object.freeze({
   WRITER_ATLAS_QUERY_IDS,
   createWriterAtlasProfileProjection,
   isActiveWriterAtlasProfile,
+  WRITER_MANUAL_MAP_PROFILE_SCHEMA_VERSION,
+  WRITER_MANUAL_MAP_PROFILE_ID,
+  WRITER_MANUAL_MAP_COMMAND_IDS,
+  createWriterManualMapProfileProjection,
+  isActiveWriterManualMapProfile,
 });

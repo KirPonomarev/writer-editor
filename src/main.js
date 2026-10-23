@@ -264,7 +264,7 @@ const {
 } = require('./export/docx/fullManuscriptDocxReviewReturnRouter');
 const { writeBufferAtomic } = require('./export/docx/atomicWriteBuffer');
 const { runPdfExport } = require('./export/pdf/pdfExportHandler');
-const { createProjectArchiveDarwinPublisher } = require('./main/projectArchiveDarwinPublication.cjs');
+const { createProjectArchiveDarwinPublisher, createDarwinExclusiveFilePublisher } = require('./main/projectArchiveDarwinPublication.cjs');
 const {
   collectProjectArchiveSourceEntries,
   readProjectArchivePayload,
@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterAtlasProfileProjection,
+  createWriterManualMapProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -16235,6 +16235,7 @@ async function bootstrapStage10ApplicationForProject(projectRoot, manifest, mode
     anchorRoot: path.join(app.getPath('userData'), 'stage10-integrity-anchors'),
     writeFileAtomic: (targetPath, content) => fileManager.writeFileAtomic(targetPath, content),
     transactionAuthority,
+    ...(process.platform === 'darwin' ? { publishFileExclusive: createDarwinExclusiveFilePublisher() } : {}),
   });
   const bootstrap = createStage10ApplicationBootstrap({
     persistencePort,
@@ -36083,7 +36084,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterAtlasProfileProjection({
+  return createWriterManualMapProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -38427,6 +38428,72 @@ function getProjectAuthorDomainForPersistence(project, manifestKey, createEmpty)
 
 const MANUAL_MAP_LOCAL_FILE_MAX_BYTES = 8 * 1024 * 1024;
 
+function captureManualMapPreparationGuard(commandId, record) {
+  const window = mainWindow, owner = activeStage10ApplicationBootstrap, projectName = currentProjectName;
+  const root = getProjectRootPath(), session = commentAuthoringSessionId, subject = currentLifecycleSubjectId();
+  const file = currentFilePath, generation = lastSignaledEditGeneration;
+  const check = () => {
+    const capability = evaluateCommandCapabilityAuthority({ commandId, capabilityId: record.capabilityId,
+      platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc: readAuthorityCapabilityMatrixDoc() });
+    if (mainWindow !== window || !window || window.isDestroyed() || window.webContents.isDestroyed()
+      || owner !== activeStage10ApplicationBootstrap || !owner || projectName !== currentProjectName
+      || root !== getProjectRootPath() || session !== commentAuthoringSessionId
+      || subject !== currentLifecycleSubjectId() || file !== currentFilePath || generation !== lastSignaledEditGeneration
+      || !capability.ok || !decideCommandEntitlement(commandId, getProductEntitlementTier()).available
+      || !evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId, productCommandRecord: record }).allowed) {
+      throw Object.assign(new Error('MANUAL_MAP_PREPARATION_STALE'), { code: 'E_MANUAL_MAP_PREPARATION_STALE' });
+    }
+  };
+  return async (binding, expectedHash) => {
+    check();
+    if (binding.projectRoot !== root || binding.projectId !== owner.getProjectId()) {
+      throw Object.assign(new Error('MANUAL_MAP_PROJECT_STALE'), { code: 'E_MANUAL_MAP_PREPARATION_STALE' });
+    }
+    if (expectedHash) {
+      const unchanged = await assertProductCommandManifestUnchanged(binding, expectedHash, commandId, record);
+      if (!unchanged.ok) throw Object.assign(new Error('PRODUCT_COMMAND_REVISION_CONFLICT'), { code: 'E_PRODUCT_COMMAND_REVISION_CONFLICT' });
+    }
+    check();
+  };
+}
+
+async function prepareManualMapAttachmentCommand(commandId, payload, binding, assertCurrent) {
+  if (Object.hasOwn(payload, 'editorMode')) {
+    const { editorMode, ...authorPayload } = payload;
+    if (editorMode !== 'tiptap' && editorMode !== 'legacy') {
+      return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_ATTACHMENT_INTENT_INVALID', 'MANUAL_MAP_ATTACHMENT_INTENT_INVALID');
+    }
+    payload = authorPayload;
+  }
+  const allowed = ['projectId', 'mapId', 'nodeId', 'attachmentId', 'label', 'attachmentKind'];
+  if (Object.keys(payload).some(key => !allowed.includes(key)) || allowed.slice(1, 5).some(key =>
+    typeof payload[key] !== 'string' || !payload[key].trim() || payload[key].length > 1000)
+    || payload.attachmentKind !== undefined && (typeof payload.attachmentKind !== 'string' || payload.attachmentKind.length > 100)) {
+    return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_ATTACHMENT_INTENT_INVALID', 'MANUAL_MAP_ATTACHMENT_INTENT_INVALID');
+  }
+  const map = binding.coreState?.data?.projects?.[binding.projectId]?.manualMaps?.maps?.[payload.mapId];
+  if (!map?.nodes?.[payload.nodeId] || map.attachments?.[payload.attachmentId]) {
+    return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_ATTACHMENT_TARGET_INVALID', 'MANUAL_MAP_ATTACHMENT_TARGET_INVALID');
+  }
+  const mediaTypes = { '.txt': 'text/plain', '.md': 'text/markdown', '.json': 'application/json', '.pdf': 'application/pdf',
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
+  const selected = await showOpenDialogWithAutonomousPath(mainWindow, {
+    title: 'Add Manual Map attachment', defaultPath: fileManager.getDocumentsPath(), properties: ['openFile'],
+    filters: [{ name: 'Reference files', extensions: Object.keys(mediaTypes).map(ext => ext.slice(1)) }],
+  }, 'YALKEN_AUTONOMOUS_FILE_DIALOG_OPEN_MANUAL_MAP_ATTACHMENT');
+  await assertCurrent();
+  if (selected?.canceled || !Array.isArray(selected?.filePaths) || selected.filePaths.length !== 1) {
+    return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_ATTACHMENT_CANCELED', 'MANUAL_MAP_ATTACHMENT_CANCELED');
+  }
+  const loaded = await readExternalFileBounded(selected.filePaths[0], { projectRoot: binding.projectRoot,
+    allowedExtensions: Object.keys(mediaTypes), maxBytes: MANUAL_MAP_LOCAL_FILE_MAX_BYTES, allowEmpty: true });
+  await assertCurrent();
+  return { ok: true, payload: { ...payload, projectId: binding.projectId, source: {
+    name: path.basename(loaded.filePath), mediaType: mediaTypes[path.extname(loaded.filePath).toLowerCase()],
+    sourceHash: computeHash(loaded.bytes), byteLength: loaded.byteLength,
+  } } };
+}
+
 function manualMapPortabilityError(commandId, code, reason, details = {}) {
   return {
     ok: false,
@@ -38445,7 +38512,10 @@ async function buildManualMapExternalArtifactMutation({ targetPath, content, for
   let previousExists = false;
   let previousText = '';
   try {
-    previousText = await fs.readFile(targetPath, 'utf8');
+    const stat = await fs.lstat(targetPath);
+    const loaded = await readExternalFileBounded(targetPath, { maxBytes: MANUAL_MAP_LOCAL_FILE_MAX_BYTES,
+      expectedBytes: stat.size, allowEmpty: true, projectRoot: getProjectRootPath() });
+    previousText = new TextDecoder('utf-8', { fatal: true }).decode(loaded.bytes);
     previousExists = true;
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
@@ -38469,7 +38539,7 @@ async function buildManualMapExternalArtifactMutation({ targetPath, content, for
   };
 }
 
-async function prepareManualMapPortabilityCommand(commandId, payload, binding, record) {
+async function prepareManualMapPortabilityCommand(commandId, payload, binding, record, assertCurrent) {
   const safePayload = normalizeManualMapPortabilityPayload(payload);
   if (commandId === 'manualMap.import.jsonRepeat') {
     const selection = await showOpenDialogWithAutonomousPath(mainWindow, {
@@ -38478,6 +38548,7 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
       filters: [{ name: 'Manual Map JSON', extensions: ['json'] }],
       properties: ['openFile'],
     }, 'YALKEN_AUTONOMOUS_FILE_DIALOG_OPEN_MANUAL_MAP_JSON');
+    await assertCurrent();
     const sourcePath = !selection?.canceled && Array.isArray(selection.filePaths)
       ? selection.filePaths[0]
       : '';
@@ -38492,6 +38563,7 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
         allowEmpty: false,
         maxBytes: MANUAL_MAP_LOCAL_FILE_MAX_BYTES,
       });
+      await assertCurrent();
     } catch (error) {
       return manualMapPortabilityError(
         commandId,
@@ -38500,6 +38572,7 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
       );
     }
     const importModule = await loadManualMapImportModule();
+    await assertCurrent();
     const targetMapId = safePayload.targetMapId || `${safePayload.mapId || 'manual-map'}-imported`;
     let exportJson;
     try {
@@ -38553,6 +38626,7 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
   }
 
   const derived = await deriveManualMapGraphForProductCommand(binding, safePayload, commandId, record);
+  await assertCurrent();
   if (!derived.ok) return { ok: false, error: derived.error?.error || derived.error };
   let content;
   let format;
@@ -38618,6 +38692,7 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
     defaultPath: `manual-map.${extension}`,
     filters: [{ name: format === 'json' ? 'Manual Map JSON' : 'Scalable Vector Graphics', extensions: [extension] }],
   }, `manual-map.${extension}`);
+  await assertCurrent();
   if (!save || save.canceled || !save.filePath) {
     return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_EXPORT_CANCELED', 'MANUAL_MAP_EXPORT_CANCELED');
   }
@@ -38641,6 +38716,7 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
     format,
     mediaType,
   });
+  await assertCurrent();
   return {
     ok: true,
     payload: {
@@ -38667,7 +38743,9 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     error.code = 'E_STAGE10_CANONICAL_PROJECT_TRUTH_COMMAND_NOT_SUPPORTED';
     throw error;
   }
+  const guard = record.domain === 'manualMap' ? captureManualMapPreparationGuard(commandId, record) : null;
   const binding = await buildProductCoreStateForCurrentProject();
+  if (guard) await guard(binding);
   const requestedProjectId = typeof payload?.projectId === 'string' ? payload.projectId.trim() : '';
   if (requestedProjectId && requestedProjectId !== binding.projectId) {
     const error = new Error('CANONICAL_PROJECT_TRUTH_PROJECT_MISMATCH');
@@ -38678,14 +38756,22 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
   if (schemaFailure) return schemaFailure;
   const rawRecord = await readProjectManifestRawAtPath(binding.manifestPath);
   const previousHash = computeHash(rawRecord.raw);
+  if (guard && binding.coreState?.data?.projects?.[binding.projectId]?.manifestRevision !== `sha256:${previousHash}`) {
+    throw Object.assign(new Error('PRODUCT_COMMAND_REVISION_CONFLICT'), { code: 'E_PRODUCT_COMMAND_REVISION_CONFLICT' });
+  }
+  const assertCurrent = () => guard ? guard(binding, previousHash) : Promise.resolve();
   const portability = [
     'manualMap.export.json',
     'manualMap.export.imagePdf',
     'manualMap.import.jsonRepeat',
   ].includes(commandId)
-    ? await prepareManualMapPortabilityCommand(commandId, payload, binding, record)
+    ? await prepareManualMapPortabilityCommand(commandId, payload, binding, record, assertCurrent)
+    : commandId === 'manualMap.attachment.add'
+      ? await prepareManualMapAttachmentCommand(commandId, payload, binding, assertCurrent)
     : null;
   if (portability && portability.ok !== true) return portability;
+  await assertCurrent();
+  const publicResult = portability?.publicResult || (commandId === 'manualMap.create' ? {} : null);
   return {
     schemaVersion: 'yalken.stage10.canonicalProjectTruthCommand.v1',
     projectId: binding.projectId,
@@ -38693,13 +38779,19 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     sourceRevision: Number(binding.manifest?.lastCommandId || 0),
     coreState: cloneJsonSafe(binding.coreState),
     payload: portability?.payload || cloneJsonSafe(payload),
-    publicResult: portability?.publicResult || null,
+    publicResult,
     async prepareMutation(result = {}) {
+      await assertCurrent();
       const nextProject = result.nextCoreState?.data?.projects?.[binding.projectId];
       if (!isPlainObjectValue(nextProject)) {
         const error = new Error('CANONICAL_PROJECT_TRUTH_NEXT_PROJECT_MISSING');
         error.code = 'E_STAGE10_CANONICAL_PROJECT_TRUTH_NEXT_PROJECT_MISSING';
         throw error;
+      }
+      if (commandId === 'manualMap.create' || commandId === 'manualMap.import.jsonRepeat') {
+        const appliedMap = nextProject.manualMaps?.maps?.[portability?.payload?.mapId || payload.mapId];
+        if (!appliedMap?.id) throw new Error('MANUAL_MAP_RESULT_IDENTITY_MISSING');
+        publicResult.mapId = appliedMap.id;
       }
       const unchanged = await assertProductCommandManifestUnchanged(
         binding,
@@ -38715,6 +38807,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         error.details = failure?.details || {};
         throw error;
       }
+      await assertCurrent();
       const nextManifest = {
         ...binding.manifest,
         [spec.manifestKey]: getProjectAuthorDomainForPersistence(
