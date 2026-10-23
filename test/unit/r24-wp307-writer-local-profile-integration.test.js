@@ -257,7 +257,17 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
   const documents = path.join(root, 'Documents'), userData = path.join(root, 'userData');
   fs.mkdirSync(path.join(documents, 'craftsman'), { recursive: true }); fs.mkdirSync(userData);
   const h = { root, documents, userData, handlers: new Map(), listeners: new Map(), sent: [], shellUrl: '', editor: { content: '', generation: 0 } };
-  function InertWindow() {
+  function InertWindow(options = {}) {
+    if (options.webPreferences?.javascript === false) {
+      // Finite print effect, NOT physical Electron/PDF acceptance. The real
+      // renderPdfBufferFromHtml owns this window and all security options.
+      h.printCalls = (h.printCalls || 0) + 1; h.printOptions = options;
+      this.webContents = { on() {}, setWindowOpenHandler() {}, printToPDF: async options => {
+        h.pdfOptions = options; return h.print ? h.print() : finiteManualMapPdf();
+      } };
+      this.loadURL = async url => { h.printHtml = decodeURIComponent(url.split(',').slice(1).join(',')); };
+      this.isDestroyed = () => false; this.destroy = () => { h.printDestroyed = true; }; return;
+    }
     h.window = this; this.isDestroyed = () => false; this.on = () => {};
     this.webContents = { id: 713, session: {}, isDestroyed: () => false, on() {}, setWindowOpenHandler() {},
       getURL: () => h.shellUrl, send: (channel, payload) => {
@@ -331,6 +341,28 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
     if (s.isDirectory()) visit(file);
   } } visit(documents); return rows; };
   return h;
+}
+
+function finiteManualMapPdf() {
+  const objects = ['<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Contents 4 0 R >>', '<< /Length 0 >>\nstream\n\nendstream'];
+  let text = '%PDF-1.7\n%\xff\xfe\xfd\xfc\n'; const offsets = [0];
+  objects.forEach((body, i) => { offsets.push(Buffer.byteLength(text, 'latin1')); text += `${i + 1} 0 obj\n${body}\nendobj\n`; });
+  const xref = Buffer.byteLength(text, 'latin1');
+  text += `xref\n0 5\n0000000000 65535 f \n${offsets.slice(1).map(n => String(n).padStart(10, '0') + ' 00000 n \n').join('')}trailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Buffer.from(text, 'latin1');
+}
+
+function fullMacPdfPublication(h) {
+  if (process.platform === 'darwin') {
+    h.helperPath = path.join(h.root, 'project-archive-fs');
+    require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({ outputPath: h.helperPath });
+  } else {
+    h.filePublication = async ({ sourcePath, targetPath, assertCurrent }) => {
+      await assertCurrent(); await fs.promises.copyFile(sourcePath, targetPath, fs.constants.COPYFILE_EXCL);
+    };
+    h.filePublication.assertAvailable = async ({ assertCurrent }) => { await assertCurrent(); return { available: true, readOnly: true }; };
+  }
 }
 
 async function fullMacRendererCommandPort(h) {
@@ -662,4 +694,123 @@ test('manual-map actual Main refuses a manifest changed after the real Core bind
   assert.equal(result.ok, false, JSON.stringify(result));
   assert.equal(fs.readFileSync(manifestPath, 'utf8'), newerRaw);
   assert.deepEqual(h.roster(), expectedRoster);
+});
+
+test('manual-map PDF actual renderer-to-Main exports binary through the real print helper [FINITE_PRINT_NOT_PHYSICAL_PDF_PROOF]', async t => {
+  const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h);
+  fullMacPdfPublication(h);
+  const made = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Binary PDF' }); assert.equal(made.ok, true);
+  const payload = { projectId: made.projectId, mapId: 'map' };
+  assert.equal((await ui('manualMap.create', { ...payload, title: 'Карта <script> e\u0301 🧭' })).mainResult.ok, true);
+  assert.equal((await ui('manualMap.node.add', { ...payload, nodeId: 'n', label: '<img src="file:///private"> & e\u0301 🧭' })).mainResult.ok, true);
+  const svg = path.join(h.root, 'map.svg'), pdf = path.join(h.root, 'map.pdf'); let saves = 0;
+  h.dialog.showSaveDialog = async () => ({ canceled: false, filePath: ++saves === 1 ? svg : pdf });
+  assert.equal((await ui('manualMap.export.imagePdf', payload)).mainResult.ok, true);
+  assert.match(fs.readFileSync(svg, 'utf8'), /<svg/u);
+  const before = h.roster(), window = h.window;
+  const { mainResult: result, request } = await ui('manualMap.export.imagePdf', { ...payload, requestedFormat: 'pdf' });
+  const unchanged = JSON.stringify(before) === JSON.stringify(h.roster());
+  t.diagnostic(JSON.stringify({ result, saves, printCalls: h.printCalls || 0, canonicalUnchanged: unchanged }));
+  assert.equal(request.payload.editorMode, 'tiptap'); assert.equal(request.payload.requestedFormat, 'pdf');
+  if (!result.ok) { assert.equal(unchanged, true); assert.equal(saves, 1); assert.equal(h.printCalls || 0, 0); }
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(h.window, window); assert.equal(h.printCalls, 1); assert.equal(h.printDestroyed, true);
+  assert.deepEqual(h.printOptions.webPreferences, { contextIsolation: true, javascript: false, nodeIntegration: false, sandbox: true, webSecurity: true });
+  assert.deepEqual(h.pdfOptions, { printBackground: true, preferCSSPageSize: true });
+  assert.match(h.printHtml, /Content-Security-Policy/u); assert.match(h.printHtml, /&lt;img/u); assert.doesNotMatch(h.printHtml, /<img src=/u);
+  const bytes = fs.readFileSync(pdf); assert.equal(bytes.equals(finiteManualMapPdf()), true);
+  assert.equal(result.value.export.pdf.binaryGenerated, true);
+  assert.equal(result.value.export.sha256, crypto.createHash('sha256').update(bytes).digest('hex'));
+  assert.equal(result.value.export.byteLength, bytes.length); assert.equal(result.value.export.mediaType, 'application/pdf');
+  assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId: made.projectId })).ok, true);
+  assert.equal((await h.query('query.manualMapWorkbench', payload)).manualMapWorkbench.graph.nodes[0].id, 'n');
+});
+
+test('manual-map PDF actual Main preserves empty and invalid UTF8 previous files [FINITE_PRINT_NOT_PHYSICAL_PDF_PROOF]', async t => {
+  const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h); fullMacPdfPublication(h);
+  const made = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Opaque PDF overwrite' }); assert.equal(made.ok, true);
+  const payload = { projectId: made.projectId, mapId: 'map', requestedFormat: 'pdf' };
+  assert.equal((await ui('manualMap.create', { ...payload, title: 'A' })).mainResult.ok, true);
+  assert.equal((await ui('manualMap.node.add', { ...payload, nodeId: 'n', label: 'A' })).mainResult.ok, true);
+  for (const previous of [Buffer.alloc(0), Buffer.from([0xff, 0xfe, 0, 0x80, 0x81])]) {
+    const target = path.join(h.root, 'opaque.pdf'); fs.writeFileSync(target, previous);
+    h.dialog.showSaveDialog = async () => ({ canceled: false, filePath: target });
+    const result = (await ui('manualMap.export.imagePdf', payload)).mainResult;
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.deepEqual(fs.readFileSync(target), finiteManualMapPdf());
+    assert.equal(fs.readdirSync(h.root).some(name => name.includes('.stage10-cas.')), false);
+  }
+});
+
+test('manual-map PDF print, cancellation and after-await guards refuse without canonical writes [FINITE_PRINT_NOT_PHYSICAL_PDF_PROOF]', async t => {
+  for (const fault of ['print-error', 'empty', 'html', 'high-bit-header', 'missing-eof', 'oversize', 'owner', 'session',
+    'generation', 'window', 'capability', 'revision', 'cancel', 'dialog-capability', 'changed-read', 'read-capability']) await t.test(fault, async t => {
+    const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h);
+    const made = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'PDF guards' }); assert.equal(made.ok, true);
+    const payload = { projectId: made.projectId, mapId: 'map', requestedFormat: 'pdf' };
+    assert.equal((await ui('manualMap.create', { ...payload, title: 'A' })).mainResult.ok, true);
+    assert.equal((await ui('manualMap.node.add', { ...payload, nodeId: 'n', label: 'A' })).mainResult.ok, true);
+    const target = path.join(h.root, 'guard.pdf'), old = Buffer.from([0xff, 0xfe, 0, 0x81]);
+    const manifest = path.join(h.documents, 'craftsman', 'PDF guards', 'project.craftsman.json');
+    if (fault.includes('read')) fs.writeFileSync(target, old);
+    let saves = 0, newer, readChanged = false;
+    h.print = async () => {
+      if (fault === 'print-error') throw Error('FINITE_PRINT_REFUSAL');
+      if (fault === 'empty') return Buffer.alloc(0);
+      if (fault === 'html') return Buffer.from('<html>not PDF</html>');
+      if (fault === 'oversize') return Buffer.alloc(8 * 1024 * 1024 + 1);
+      const bytes = finiteManualMapPdf();
+      if (fault === 'high-bit-header') bytes[0] |= 0x80;
+      if (fault === 'missing-eof') return bytes.subarray(0, bytes.length - 8);
+      if (fault === 'owner') h.main.__host.revokeOwner();
+      if (fault === 'session') h.main.__host.invalidateSession();
+      if (fault === 'generation') h.main.__host.invalidateGeneration();
+      if (fault === 'window') h.window.isDestroyed = () => true;
+      if (fault === 'capability') h.main.__host.denyCapability();
+      if (fault === 'revision') { newer = JSON.stringify({ ...JSON.parse(fs.readFileSync(manifest)), concurrent: 'preserve' }); fs.writeFileSync(manifest, newer); }
+      return bytes;
+    };
+    h.dialog.showSaveDialog = async () => {
+      saves++; if (fault === 'dialog-capability') h.main.__host.denyCapability();
+      return { canceled: fault === 'cancel', filePath: target };
+    };
+    const originalOpen = fs.promises.open;
+    if (fault.includes('read')) fs.promises.open = async (file, ...args) => {
+      const handle = await originalOpen(file, ...args); if (file !== target) return handle;
+      const read = handle.read.bind(handle); handle.read = async (...params) => {
+        const value = await read(...params);
+        if (!readChanged) {
+          readChanged = true;
+          if (fault === 'changed-read') fs.appendFileSync(target, Buffer.from([0xff])); else h.main.__host.denyCapability();
+        }
+        return value;
+      }; return handle;
+    };
+    const before = h.roster(); let result;
+    try { result = (await ui('manualMap.export.imagePdf', payload)).mainResult; } finally { fs.promises.open = originalOpen; }
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(h.printCalls, 1); assert.equal(h.printDestroyed, true);
+    assert.equal(saves, ['cancel', 'dialog-capability', 'changed-read', 'read-capability'].includes(fault) ? 1 : 0);
+    if (fault === 'revision') {
+      assert.equal(fs.readFileSync(manifest, 'utf8'), newer);
+      assert.deepEqual(h.roster().filter(([name]) => !name.endsWith('/project.craftsman.json')), before.filter(([name]) => !name.endsWith('/project.craftsman.json')));
+    } else assert.deepEqual(h.roster(), before);
+    if (!fault.includes('read')) assert.equal(fs.existsSync(target), false);
+    else { assert.equal(readChanged, true); assert.deepEqual(fs.readFileSync(target), fault === 'changed-read' ? Buffer.concat([old, Buffer.from([0xff])]) : old); }
+  });
+});
+
+test('manual-map Core admits strict PDF metadata only through existing imagePdf command', async () => {
+  const core = await import('../../src/core/runtime.mjs');
+  let result = core.reduceCoreState(core.createInitialCoreState(), { type: core.CORE_COMMAND_IDS.PROJECT_CREATE, payload: { projectId: 'pdf-core', title: 'A' } });
+  assert.equal(result.ok, true);
+  result = core.reduceCoreState(result.state, { type: core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE, payload: { projectId: 'pdf-core', mapId: 'map', title: 'A' } });
+  assert.equal(result.ok, true); const state = result.state, bytes = finiteManualMapPdf();
+  const artifact = { schemaVersion: 'manualMap.localArtifactIntent.v1', format: 'pdf', mediaType: 'application/pdf',
+    sha256: crypto.createHash('sha256').update(bytes).digest('hex'), byteLength: bytes.length };
+  const run = (extra, type = core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_IMAGE_PDF) => core.reduceCoreState(state,
+    { type, payload: { projectId: 'pdf-core', mapId: 'map', artifact: { ...artifact, ...extra } } });
+  assert.equal(run({}).ok, true); assert.equal(run({}, core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_JSON).ok, false);
+  for (const extra of [{ format: ' pdf ' }, { mediaType: 'image/svg+xml' }, { byteLength: '420' }, { byteLength: 0 },
+    { byteLength: 8 * 1024 * 1024 + 1 }, { byteLength: 1.5 }, { sha256: ' ' + artifact.sha256 }, { sha256: 'z'.repeat(64) }]) {
+    const refused = run(extra); assert.equal(refused.ok, false, JSON.stringify(extra)); assert.deepEqual(refused.state, state);
+  }
 });

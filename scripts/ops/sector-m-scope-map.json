@@ -442,7 +442,8 @@
       "src/main/projectArchiveDarwinPublication.cjs",
       "test/unit/project-archive-darwin-publication.test.js",
       "test/unit/r24-ent0-port-enforcement.test.js",
-      "test/unit/r24-wp100-wiring-matrix.test.js"
+      "test/unit/r24-wp100-wiring-matrix.test.js",
+      "docs/tasks/2026-10-23--mac-manual-map-pdf.md"
     ]
   },
   "allowPrefixByPhase": {

@@ -1414,9 +1414,12 @@ function applyManualMapExportIntent(state, payload, op, expectedFormat) {
   if (!mapId || !isPlainObject(maps[mapId])) {
     return fail(state, 'E_MANUAL_MAP_NOT_FOUND', op, 'MAP_NOT_FOUND', { projectId, mapId });
   }
+  const pdf = expectedFormat === 'svg' && artifact.format === 'pdf';
   if (
     artifact.schemaVersion !== 'manualMap.localArtifactIntent.v1'
-    || trimString(artifact.format) !== expectedFormat
+    || (pdf ? artifact.mediaType !== 'application/pdf' || typeof artifact.byteLength !== 'number'
+      || typeof artifact.sha256 !== 'string' || !/^[a-f0-9]{64}$/u.test(artifact.sha256)
+      || artifact.byteLength > 8 * 1024 * 1024 : trimString(artifact.format) !== expectedFormat)
     || !/^[a-f0-9]{64}$/u.test(trimString(artifact.sha256))
     || !Number.isSafeInteger(Number(artifact.byteLength))
     || Number(artifact.byteLength) <= 0

@@ -817,6 +817,67 @@ function manualAuthoringDomHarness() {
   return { ...h, c, toolbar, button, input };
 }
 
+test('manual-map labelled PDF control sends only selected map intent and preserves working inputs in both hosts', async () => {
+  for (const host of ['rail', 'plan']) {
+    const h = manualAuthoringDomHarness();
+    h.loadActual('runManualMapExportCommand', 'renderManualMapPortabilityCommandReadback');
+    h.c.manualMapPortabilityCommandState.pdfTypedLoss = 'OLD_TYPED_LOSS';
+    h.toolbar(); const oldPdf = h.rail.querySelectorAll('[data-manual-map-portability-action]').find(node => node.textContent === 'Export PDF');
+    assert.equal(oldPdf.disabled, false);
+    h.open(); const input = h.field(h[host]); input.focus(); input.setSelectionRange(2, 4);
+    const draft = h.draft(), buttons = h[host].querySelectorAll('[data-manual-map-portability-action]');
+    const pdf = buttons.find(node => node.dataset.manualMapPortabilityAction === 'export-pdf');
+    const svg = buttons.find(node => node.dataset.manualMapPortabilityAction === 'export-image-pdf');
+    assert.equal(pdf.tagName, 'BUTTON'); assert.equal(pdf.type, 'button'); assert.equal(pdf.textContent, 'Export PDF');
+    assert.equal(pdf.className, svg.className); assert.equal(svg.textContent, 'Export SVG'); assert.equal(pdf.disabled, true);
+    assert.equal(pdf.title, 'Apply or cancel the current draft before exporting PDF');
+    assert.equal(pdf.dataset.productCommandId, 'manualMap.export.imagePdf');
+    for (const state of ['draft', 'applying', 'failed']) {
+      h.c.manualMapCommandDraft.state = state; const retained = h.draft();
+      await pdf.emit('click'); await oldPdf.emit('click'); await h.settle();
+      assert.deepEqual(h.calls, []); assert.deepEqual(h.draft(), retained);
+      assert.equal(h.field(h[host]) === input, true); assert.equal(h.document.activeElement === input, true);
+      assert.equal(input.selectionStart, 2); assert.equal(input.selectionEnd, 4);
+    }
+    h.c.manualMapCommandDraft.state = 'draft'; assert.deepEqual(h.draft(), draft);
+    h.c.cancelManualMapCommandDraft(); assert.equal(h.draft().state, 'cancelled');
+    const readyPdf = h[host].querySelectorAll('[data-manual-map-portability-action]').find(node => node.textContent === 'Export PDF');
+    assert.equal(readyPdf.disabled, false);
+    h.c.commandResult = { ok: true, value: { mapId: 'map-a', export: { format: 'pdf', mediaType: 'application/pdf',
+      sha256: 'a'.repeat(64), byteLength: 420, pdf: { binaryGenerated: true } } } };
+    await readyPdf.emit('click'); await h.settle();
+    assert.deepEqual(h.calls, [{ commandId: 'manualMap.export.imagePdf', payload: { mapId: 'map-a', requestedFormat: 'pdf' } }]);
+    assert.equal(h.c.manualMapPortabilityCommandState.pdfSha256, 'a'.repeat(64));
+    assert.equal(h.c.manualMapPortabilityCommandState.pdfTypedLoss, '');
+    assert.equal(h.draft().state, 'cancelled');
+    assert.match(h[host].querySelectorAll('[data-manual-map-portability-command-state]').find(node =>
+      node.dataset.manualMapPortabilityCommandState === 'pdf').textContent, /aaaaaaaaaaaa/u);
+    h.c.manualMapWorkbenchState.mapId = ''; h[host].innerHTML = '';
+    h.c.renderManualMapToolbar(h[host], h.c.manualMapWorkbenchState, { sourceGraph: {}, presentationGraph: {} });
+    const disabled = h[host].querySelectorAll('[data-manual-map-portability-action]').find(node => node.textContent === 'Export PDF');
+    assert.equal(disabled.disabled, true); await disabled.emit('click'); assert.equal(h.calls.length, 1);
+  }
+});
+
+test('manual-map PDF receipt publishes only for the current project and latest export sequence', async () => {
+  for (const stale of ['project', 'sequence']) {
+    const h = publicationHarness(), first = h.deferred(), second = h.deferred();
+    h.c.manualMapPortabilityCommandState.pdfTypedLoss = 'PRESERVE';
+    h.c.commandPort = () => h.commands.length === 1 ? first.promise : second.promise;
+    const pending = h.c.runManualMapExportCommand('manualMap.export.imagePdf', { mapId: 'map-a', requestedFormat: 'pdf' });
+    if (stale === 'project') { h.c.currentProjectId = 'replacement'; h.c.invalidateAtlasPublications(); }
+    else {
+      const newer = h.c.runManualMapExportCommand('manualMap.export.imagePdf', { mapId: 'map-a', requestedFormat: 'pdf' });
+      second.resolve({ ok: true, value: { export: { format: 'pdf', sha256: 'b'.repeat(64), pdf: { binaryGenerated: true } } } });
+      await newer; assert.equal(h.c.manualMapPortabilityCommandState.pdfSha256, 'b'.repeat(64));
+    }
+    const expected = JSON.stringify(h.c.manualMapPortabilityCommandState), manuscript = h.working(), draft = h.draft();
+    first.resolve({ ok: true, value: { export: { format: 'pdf', sha256: 'a'.repeat(64), pdf: { binaryGenerated: true } } } });
+    await pending; assert.equal(JSON.stringify(h.c.manualMapPortabilityCommandState), expected);
+    assert.equal(h.working(), manuscript); assert.deepEqual(h.draft(), draft);
+  }
+});
+
 test('manual-map actual selector blocks retained/applying/failed drafts without removing working input or caret', async () => {
   const h = manualAuthoringDomHarness(); h.open();
   const input = h.field(); input.focus(); input.setSelectionRange(2, 4);
