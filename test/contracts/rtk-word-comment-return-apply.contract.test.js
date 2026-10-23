@@ -36,7 +36,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   assert.ok(literal, 'candidate must declare its complete Atlas reports binding successor');
   const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
   assert.equal(current.id, 'YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024');
-  assert.equal(current.bindings.length, 305);
+  assert.equal(current.bindings.length, 306);
   assert.equal(current.guards.length, 1);
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');

@@ -17185,7 +17185,7 @@ function isAtlasReattachmentSource(source) {
 function getAtlasReattachmentContext() {
   return { projectId: currentProjectId, sceneId: currentDocumentId, entityId: atlasSelectedEntityId,
     epoch: atlasPublicationEpoch, publicationId: currentTreeContentPublicationId, generation: localEditGeneration,
-    tab: currentRightTab, surface: currentAtlasSurface };
+    tab: currentRightTab };
 }
 
 function isAtlasReattachmentCurrent(context) {
@@ -17255,7 +17255,8 @@ async function runAtlasReattachmentCommand() {
   }
   const id = atlasJourneyDraft.reattachmentId, context = captureAtlasPublication();
   const sequence = ++atlasCommandPublicationSequence;
-  const current = () => context() && sequence === atlasCommandPublicationSequence
+  const tab = currentRightTab, surface = currentAtlasSurface;
+  const current = () => context() && tab === currentRightTab && surface === currentAtlasSurface && sequence === atlasCommandPublicationSequence
     && atlasJourneyDraft.reattachmentId === id && hashCanonicalValue({ ...getAtlasReattachmentIntent(), context: atlasJourneyDraft.reattachmentContext }) === key;
   atlasJourneyDraft.reattachmentPending = true;
   atlasJourneyState = { status: 'running', lastCommandId: 'atlas.evidence.reattach', lastResult: '', commandSeq: sequence };
@@ -17268,7 +17269,7 @@ async function runAtlasReattachmentCommand() {
   atlasJourneyState = { status: accepted ? 'applied' : 'failed', lastCommandId: 'atlas.evidence.reattach',
     lastResult: accepted ? 'persisted' : result?.error?.reason || result?.reason || 'ATLAS_REATTACHMENT_NOT_APPLIED', commandSeq: sequence };
   renderAtlasJourneyState();
-  const refreshCurrent = () => context() && sequence === atlasCommandPublicationSequence;
+  const refreshCurrent = () => context() && tab === currentRightTab && surface === currentAtlasSurface && sequence === atlasCommandPublicationSequence;
   await refreshAtlasCurrentScene({ force: true, isCurrent: refreshCurrent });
   if (refreshCurrent()) void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: refreshCurrent }).catch(error => console.warn('Atlas reattachment refresh failed', error));
   return result;

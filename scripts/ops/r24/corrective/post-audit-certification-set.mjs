@@ -27183,7 +27183,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "2e53d802e1c816028bb8cd1e34293d04510f53e3090b78922f5f06bb23943d98"
+      "sha256": "67a9edb02ed0434a7041178a266313a47a4a72d96b9fd94f5a10e8b55172c8df"
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
@@ -27291,7 +27291,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "cba0bdf6959709c8b7c816eb272785ece0bde34866bf8e5396c5d9976a7e7f87"
+      "sha256": "4f134a97b8cb655b98d5ceacbac907b1a803bbdf7668d4c77a4cff20d23610b0"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -27427,7 +27427,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "0dc6d6c6b52a2dd82c5c6b4df81b6a611f8071b15daeb0949eee1a1cef1737c9"
+      "sha256": "15148f8006a21c262fa8760d70b97865645b485cab5e741574b2c41c6c302b78"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -27567,15 +27567,15 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "365c698df7a4e3c3a7a8d960ccb4e6c118311d1f2303a0b6874238addcb8ba9c"
+      "sha256": "47bd5447bcdb0e5796d8b39184700c29dfc5980ff0cf675803d481619298bc35"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "b2cbd96b74fe50b063747788d9648617937ef1066b5da12d9ed9659daca3a62c"
+      "sha256": "b44ed0880043441170c4ea723c47d4859f7e0df4f13ac3d3e849fb8248bd6670"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "e0000c901a3831c405a64d74daa8d9ca744f193684eafede4282355466781c3c"
+      "sha256": "1ea566388bf8cc0659193e16e42fe63243e468a2adf29b19b96fa7cd69679837"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -27963,7 +27963,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "322ee2b16656389cf65a22e5cfbb109633f0fc652910c129e421947da9856c8c"
+      "sha256": "38449490f235080a8912eb576d7d646105df24e4b2ea36438869e5ec91bd24f3"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -27971,7 +27971,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "d72978bdf2046e122971114bcc4520a384ebfbc07f52436019fca3a707e463bc"
+      "sha256": "f9b283923e0b35121283229b16ec9852bc731f9b3e27e0da0e66638fe56dfc9f"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -28127,7 +28127,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-      "sha256": "bd130b52a475490f84e9d47de7383d066f88a4ac95f0222fb857c319fe7e1b4c"
+      "sha256": "b1d20c2637620680711152a5f3b7dbc392b373921a83050de30605b493769e95"
     },
     {
       "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -28323,7 +28323,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-24--atlas-evidence-reattachment.md",
-      "sha256": "2edb14d4a002da0d32a6e5e44a13de17bb1d2d9dbd017d6089254496d838f48a"
+      "sha256": "b35123d5d33bf63fc43e269a05e30be15e986e754477979999edc33f3fc3ffa2"
     },
     {
       "path": "src/derived/atlas/deriveAtlasEntityDossier.mjs",
@@ -28340,12 +28340,16 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     {
       "path": "test/contracts/yalken-atlas-v5-e05-c02-entity-dossier-evidence-ledger-read-surface.contract.test.js",
       "sha256": "9fe46da522e8a4080864dec94eda53af8155125d812ad0cdac9c38705194931e"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e07-c02-unicode-evidence-anchor-offset-domain-normalization-map.contract.test.js",
+      "sha256": "2abbd4162b606ef87f00907906b24decf0a931f963951e2f5bdce29ada46822f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "2de8abea1e64da57858f54f7a4e8dedce42abda4897d549255f783c207ff78ab"
+      "sha256": "0afa1646caf236f755c1023f67c6cc4abd9cce8930b78bd272ecedd9463266ea"
     }
   ]
 });
