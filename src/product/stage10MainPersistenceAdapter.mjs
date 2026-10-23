@@ -188,7 +188,10 @@ function normalizeExternalArtifactMutation(input) {
     mutation.schemaVersion !== STAGE10_EXTERNAL_ARTIFACT_MUTATION_SCHEMA
     || !path.isAbsolute(mutation.targetPath)
     || mutation.targetPath === path.parse(mutation.targetPath).root
-    || !['json', 'svg'].includes(mutation.format)
+    || !['json', 'svg', 'markdown'].includes(mutation.format)
+    || (mutation.format === 'markdown' && (input.format !== 'markdown' || input.mediaType !== 'text/markdown'
+      || typeof input.previousExists !== 'boolean' || input.nextHash !== mutation.nextHash || input.previousHash !== mutation.previousHash
+      || Buffer.byteLength(mutation.previousText || '', 'utf8') > 8 * 1024 * 1024))
     || !mutation.mediaType
     || mutation.nextText === null
     || mutation.nextText.length === 0
@@ -689,9 +692,15 @@ export function createStage10MainPersistenceAdapter(input = {}) {
     } finally { if (handle) await handle.close(); }
   }
 
+  async function readMarkdownArtifactText(targetPath) {
+    const bytes = await readPdfArtifactBytes(targetPath);
+    return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
+  }
+
   async function readExternalArtifactText(mutation) {
     try {
       if (mutation.schemaVersion === PDF_ARTIFACT_SCHEMA) return (await readPdfArtifactBytes(mutation.targetPath)).toString('base64');
+      if (mutation.format === 'markdown') return await readMarkdownArtifactText(mutation.targetPath);
       return await fs.readFile(mutation.targetPath, 'utf8');
     } catch (error) {
       if (error?.code === 'ENOENT') return null;
@@ -740,7 +749,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
         const bytes = await readPdfArtifactBytes(targetPath);
         return { exists: true, text: bytes.toString('base64'), hash: createHash('sha256').update(bytes).digest('hex') };
       }
-      const text = await fs.readFile(targetPath, 'utf8');
+      const text = mutation?.format === 'markdown' ? await readMarkdownArtifactText(targetPath) : await fs.readFile(targetPath, 'utf8');
       return { exists: true, text, hash: hashText(text) };
     } catch (error) {
       if (error?.code === 'ENOENT') return { exists: false, text: '', hash: '' };
@@ -1355,7 +1364,8 @@ export function createStage10MainPersistenceAdapter(input = {}) {
             projectTruthMutation.previousHash,
             'PROJECT_TRUTH_REVISION_CONFLICT',
           );
-          if (projectTruthMutation.externalArtifactMutation?.schemaVersion === PDF_ARTIFACT_SCHEMA) {
+          if (projectTruthMutation.externalArtifactMutation?.schemaVersion === PDF_ARTIFACT_SCHEMA
+            || projectTruthMutation.externalArtifactMutation?.format === 'markdown') {
             await assertExternalArtifactBefore(projectTruthMutation.externalArtifactMutation);
           }
           await writeProjectTruthRecovery(

@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterManualMapProfileProjection,
+  createWriterManualMapMarkdownProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -19213,6 +19213,7 @@ const MANUAL_MAP_WORKBENCH_COMMAND_IDS = Object.freeze([
   'manualMap.template.apply',
   'manualMap.export.json',
   'manualMap.export.imagePdf',
+  'manualMap.export.markdown',
   'manualMap.import.jsonRepeat',
 ]);
 
@@ -36084,7 +36085,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterManualMapProfileProjection({
+  return createWriterManualMapMarkdownProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -38518,7 +38519,7 @@ async function buildManualMapExternalArtifactMutation({ targetPath, content, for
     const loaded = await readExternalFileBounded(targetPath, { maxBytes: MANUAL_MAP_LOCAL_FILE_MAX_BYTES,
       expectedBytes: stat.size, allowEmpty: true, projectRoot: getProjectRootPath() });
     if (binary) previousBytes = loaded.bytes;
-    else previousText = new TextDecoder('utf-8', { fatal: true }).decode(loaded.bytes);
+    else previousText = new TextDecoder('utf-8', { fatal: true, ignoreBOM: format === 'markdown' }).decode(loaded.bytes);
     previousExists = true;
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
@@ -38657,6 +38658,22 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
         localFileWritten: true,
       },
     };
+  } else if (commandId === 'manualMap.export.markdown') {
+    const importModule = await loadManualMapImportModule();
+    await assertCurrent();
+    const packet = importModule.buildManualMapMarkdownPortabilityBridge({ graph: derived.value.graph, title: derived.value.graph.title });
+    if (!packet?.ok || typeof packet.value?.markdown !== 'string') {
+      return manualMapPortabilityError(commandId, packet?.error?.code || 'E_MANUAL_MAP_MARKDOWN_EXPORT_FAILED',
+        packet?.error?.reason || 'MANUAL_MAP_MARKDOWN_EXPORT_FAILED');
+    }
+    content = packet.value.markdown; format = 'markdown'; mediaType = 'text/markdown';
+    const byteLength = Buffer.byteLength(content, 'utf8');
+    if (!byteLength || byteLength > MANUAL_MAP_LOCAL_FILE_MAX_BYTES) {
+      return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_MARKDOWN_SIZE_INVALID', 'MANUAL_MAP_MARKDOWN_SIZE_INVALID');
+    }
+    const sha256 = computeHash(content);
+    publicResult = { export: { format, mediaType, sha256, markdownSha256: sha256, byteLength,
+      payloadHash: packet.value.payloadHash, bridgeHash: packet.value.meta?.bridgeHash || '', localFileWritten: true } };
   } else {
     const exportModule = await loadManualMapExportModule();
     await assertCurrent();
@@ -38705,11 +38722,11 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
         evidenceHash: evidence.value.meta?.evidenceHash || '', localFileWritten: true, pdf: { binaryGenerated: true } } };
     }
   }
-  const extension = format;
+  const extension = format === 'markdown' ? 'md' : format;
   const save = await showSaveDialogWithAutonomousPath(mainWindow, {
     title: `Export Manual Map ${format.toUpperCase()}`,
     defaultPath: `manual-map.${extension}`,
-    filters: [{ name: format === 'json' ? 'Manual Map JSON' : format === 'pdf' ? 'Portable Document Format' : 'Scalable Vector Graphics', extensions: [extension] }],
+    filters: [{ name: format === 'markdown' ? 'Markdown' : format === 'json' ? 'Manual Map JSON' : format === 'pdf' ? 'Portable Document Format' : 'Scalable Vector Graphics', extensions: [extension] }],
   }, `manual-map.${extension}`);
   await assertCurrent();
   if (!save || save.canceled || !save.filePath) {
@@ -38782,6 +38799,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
   const portability = [
     'manualMap.export.json',
     'manualMap.export.imagePdf',
+    'manualMap.export.markdown',
     'manualMap.import.jsonRepeat',
   ].includes(commandId)
     ? await prepareManualMapPortabilityCommand(commandId, payload, binding, record, assertCurrent)
@@ -39098,6 +39116,13 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
         storageWritten: false,
       },
     );
+  }
+
+  if (commandId === 'manualMap.export.markdown' && (Object.keys(payload).some(key => !['projectId', 'mapId', 'editorMode'].includes(key))
+    || typeof payload.mapId !== 'string' || !payload.mapId.trim() || payload.mapId.length > 1000
+    || payload.projectId !== undefined && (typeof payload.projectId !== 'string' || !payload.projectId.trim() || payload.projectId.length > 1000)
+    || Object.hasOwn(payload, 'editorMode') && !['tiptap', 'legacy'].includes(payload.editorMode))) {
+    return makeProductCommandBridgeError(commandId, 'E_MANUAL_MAP_MARKDOWN_INTENT_INVALID', 'MANUAL_MAP_MARKDOWN_INTENT_INVALID');
   }
 
   const capability = evaluateCommandCapabilityAuthority({

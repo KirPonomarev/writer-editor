@@ -223,3 +223,21 @@ test('E02D C03: manual map Markdown bridge adds no storage, network, renderer, o
     }
   }
 });
+
+
+test('E02D C03: Markdown export displays hostile headings literally without changing the versioned payload', async () => {
+  const { exportPayload } = await buildPortableMarkdownFixture();
+  const importer = await loadModule(path.join('src', 'import', 'mindmap', 'v1', 'index.mjs'));
+  const title = 'Карта e\u0301 🧭\r\n<script>x</script> [x](javascript:alert(1)) `f` *b* #h ! _ | ~ > & <\u2028Z';
+  exportPayload.title = title; exportPayload.nodes[0].label = '```\r\n# <img> 👩‍🚀';
+  const result = importer.buildManualMapMarkdownPortabilityBridge({ payload: exportPayload, title }); assert.equal(result.ok, true);
+  const heading = result.value.markdown.split('\n')[0];
+  assert.equal(heading.includes('\r'), false); assert.equal(heading.includes('\u2028'), false);
+  assert.match(heading, /&lt;script&gt;/u); assert.doesNotMatch(heading, /<script>/u);
+  for (const literal of ['[', ']', '(', ')', '`', '*', '#', '!', '_', '|', '~']) assert.equal(heading.includes('\\' + literal), true, literal);
+  const parsed = importer.parseManualMapMarkdownPortabilityBridge({ markdown: result.value.markdown }); assert.equal(parsed.ok, true);
+  assert.deepEqual(parsed.value.payload, exportPayload); assert.equal(parsed.value.payloadHash, result.value.payloadHash);
+  assert.equal((result.value.markdown.match(/^```json yalken-manual-map-portability-v1$/gmu) || []).length, 1);
+  const raw = require('node:crypto').createHash('sha256').update(result.value.markdown, 'utf8').digest('hex');
+  assert.notEqual(raw, result.value.markdownHash);
+});

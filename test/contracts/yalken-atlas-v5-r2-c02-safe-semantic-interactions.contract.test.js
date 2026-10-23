@@ -1115,3 +1115,64 @@ test('manual-map actual keyboard ignores non-host targets but keeps noneditable 
   assert.equal(h.key(child, 'ArrowRight').defaultPrevented, true); assert.equal(h.c.manualMapTransientViewState.viewport.x, 64);
   assert.equal(h.calls.length, 0); assert.equal(h.counters.queries, 0);
 });
+
+test('manual-map labelled Markdown control sends only selected map intent and preserves working inputs in both hosts', async () => {
+  for (const host of ['rail', 'plan']) {
+    const h = manualAuthoringDomHarness();
+    h.loadActual('runManualMapExportCommand', 'renderManualMapPortabilityCommandReadback');
+    h.c.manualMapPortabilityCommandState.markdownPreviousMarker = 'OLD_TYPED_LOSS';
+    h.toolbar(); const oldPdf = h.rail.querySelectorAll('[data-manual-map-portability-action]').find(node => node.textContent === 'Export Markdown');
+    assert.equal(oldPdf.disabled, false);
+    h.open(); const input = h.field(h[host]); input.focus(); input.setSelectionRange(2, 4);
+    const draft = h.draft(), buttons = h[host].querySelectorAll('[data-manual-map-portability-action]');
+    const pdf = buttons.find(node => node.dataset.manualMapPortabilityAction === 'export-markdown');
+    const svg = buttons.find(node => node.dataset.manualMapPortabilityAction === 'export-image-pdf');
+    assert.equal(pdf.tagName, 'BUTTON'); assert.equal(pdf.type, 'button'); assert.equal(pdf.textContent, 'Export Markdown');
+    assert.equal(pdf.className, svg.className); assert.equal(svg.textContent, 'Export SVG'); assert.equal(pdf.disabled, true);
+    assert.equal(pdf.title, 'Apply or cancel the current draft before exporting Markdown');
+    assert.equal(pdf.dataset.productCommandId, 'manualMap.export.markdown');
+    for (const state of ['draft', 'applying', 'failed']) {
+      h.c.manualMapCommandDraft.state = state; const retained = h.draft();
+      await pdf.emit('click'); await oldPdf.emit('click'); await h.settle();
+      assert.deepEqual(h.calls, []); assert.deepEqual(h.draft(), retained);
+      assert.equal(h.field(h[host]) === input, true); assert.equal(h.document.activeElement === input, true);
+      assert.equal(input.selectionStart, 2); assert.equal(input.selectionEnd, 4);
+    }
+    h.c.manualMapCommandDraft.state = 'draft'; assert.deepEqual(h.draft(), draft);
+    h.c.cancelManualMapCommandDraft(); assert.equal(h.draft().state, 'cancelled');
+    const readyPdf = h[host].querySelectorAll('[data-manual-map-portability-action]').find(node => node.textContent === 'Export Markdown');
+    assert.equal(readyPdf.disabled, false);
+    h.c.commandResult = { ok: true, value: { mapId: 'map-a', export: { format: 'markdown', mediaType: 'text/markdown',
+      sha256: 'a'.repeat(64), byteLength: 420, markdownSha256: 'a'.repeat(64) } } };
+    await readyPdf.emit('click'); await h.settle();
+    assert.deepEqual(h.calls, [{ commandId: 'manualMap.export.markdown', payload: { mapId: 'map-a' } }]);
+    assert.equal(h.c.manualMapPortabilityCommandState.markdownSha256, 'a'.repeat(64));
+    assert.equal(h.c.manualMapPortabilityCommandState.markdownPreviousMarker, 'OLD_TYPED_LOSS');
+    assert.equal(h.draft().state, 'cancelled');
+    assert.match(h[host].querySelectorAll('[data-manual-map-portability-command-state]').find(node =>
+      node.dataset.manualMapPortabilityCommandState === 'markdown').textContent, /aaaaaaaaaaaa/u);
+    h.c.manualMapWorkbenchState.mapId = ''; h[host].innerHTML = '';
+    h.c.renderManualMapToolbar(h[host], h.c.manualMapWorkbenchState, { sourceGraph: {}, presentationGraph: {} });
+    const disabled = h[host].querySelectorAll('[data-manual-map-portability-action]').find(node => node.textContent === 'Export Markdown');
+    assert.equal(disabled.disabled, true); await disabled.emit('click'); assert.equal(h.calls.length, 1);
+  }
+});
+
+test('manual-map Markdown receipt publishes only for the current project and latest export sequence', async () => {
+  for (const stale of ['project', 'sequence']) {
+    const h = publicationHarness(), first = h.deferred(), second = h.deferred();
+    h.c.manualMapPortabilityCommandState.markdownPreviousMarker = 'PRESERVE';
+    h.c.commandPort = () => h.commands.length === 1 ? first.promise : second.promise;
+    const pending = h.c.runManualMapExportCommand('manualMap.export.markdown', { mapId: 'map-a' });
+    if (stale === 'project') { h.c.currentProjectId = 'replacement'; h.c.invalidateAtlasPublications(); }
+    else {
+      const newer = h.c.runManualMapExportCommand('manualMap.export.markdown', { mapId: 'map-a' });
+      second.resolve({ ok: true, value: { export: { format: 'markdown', sha256: 'b'.repeat(64), markdownSha256: 'b'.repeat(64) } } });
+      await newer; assert.equal(h.c.manualMapPortabilityCommandState.markdownSha256, 'b'.repeat(64));
+    }
+    const expected = JSON.stringify(h.c.manualMapPortabilityCommandState), manuscript = h.working(), draft = h.draft();
+    first.resolve({ ok: true, value: { export: { format: 'markdown', sha256: 'a'.repeat(64), markdownSha256: 'a'.repeat(64) } } });
+    await pending; assert.equal(JSON.stringify(h.c.manualMapPortabilityCommandState), expected);
+    assert.equal(h.working(), manuscript); assert.deepEqual(h.draft(), draft);
+  }
+});

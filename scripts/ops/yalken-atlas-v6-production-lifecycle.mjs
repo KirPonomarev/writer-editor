@@ -68,6 +68,8 @@ export const PRODUCTION_NEGATIVE_EVIDENCE_MAP = Object.freeze([
     "manual-map PDF v2 refuses reservationless legacy recovery while v1 tuple and recovery remain exact",
     "manual-map PDF v2 non-regular FIFO or directory input refuses without blocking or replacing opaque bytes",
     "manual-map PDF v2 late foreign targets survive refusal and actual recovery",
+    "manual-map Markdown text-v1 actual publication and four interruption schedules preserve UTF8 bytes [FINITE_NON_DARWIN_EFFECT]",
+    "manual-map Markdown text-v1 bounded reads refuse malformed and foreign inputs without overwriting [FINITE_NON_DARWIN_EFFECT]",
     'manual-map actual Stage10 regular-file publication retains reserved sources and recovers every artifact interruption',
     'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: missing-method [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
     'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: unavailable [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',

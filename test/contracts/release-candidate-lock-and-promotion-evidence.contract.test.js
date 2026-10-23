@@ -534,14 +534,15 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
-  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_MANUAL_MAP_V3'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v3');
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_MANUAL_MAP_V4'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v4');
   assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
     'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
     'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
     'manualMap.group.create', 'manualMap.group.update', 'manualMap.group.delete',
     'manualMap.attachment.add', 'manualMap.portal.add', 'manualMap.template.apply',
     'manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.import.jsonRepeat',
+    'manualMap.export.markdown',
   ]);
   const result = fullMacVerify(input);
   assert.equal(result.scopeValidity, 'VALID', JSON.stringify(result)); assert.equal(result.readiness, 'NOT_READY');

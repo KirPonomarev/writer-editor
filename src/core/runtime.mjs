@@ -45,6 +45,7 @@ export const CORE_COMMAND_IDS = Object.freeze({
   MANUAL_MAP_TEMPLATE_APPLY: 'manualMap.template.apply',
   MANUAL_MAP_EXPORT_JSON: 'manualMap.export.json',
   MANUAL_MAP_EXPORT_IMAGE_PDF: 'manualMap.export.imagePdf',
+  MANUAL_MAP_EXPORT_MARKDOWN: 'manualMap.export.markdown',
   MANUAL_MAP_IMPORT_JSON_REPEAT: 'manualMap.import.jsonRepeat',
 });
 
@@ -1417,6 +1418,9 @@ function applyManualMapExportIntent(state, payload, op, expectedFormat) {
   const pdf = expectedFormat === 'svg' && artifact.format === 'pdf';
   if (
     artifact.schemaVersion !== 'manualMap.localArtifactIntent.v1'
+    || (expectedFormat === 'markdown' && (artifact.format !== 'markdown' || artifact.mediaType !== 'text/markdown'
+      || typeof artifact.byteLength !== 'number' || artifact.byteLength > 8 * 1024 * 1024
+      || typeof artifact.sha256 !== 'string' || !/^[a-f0-9]{64}$/u.test(artifact.sha256)))
     || (pdf ? artifact.mediaType !== 'application/pdf' || typeof artifact.byteLength !== 'number'
       || typeof artifact.sha256 !== 'string' || !/^[a-f0-9]{64}$/u.test(artifact.sha256)
       || artifact.byteLength > 8 * 1024 * 1024 : trimString(artifact.format) !== expectedFormat)
@@ -4135,6 +4139,9 @@ function reduceCoreStateWithoutDomainEvents(state, command, type) {
   }
   if (type === CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_IMAGE_PDF) {
     return applyManualMapExportIntent(state, command.payload || {}, CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_IMAGE_PDF, 'svg');
+  }
+  if (type === CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_MARKDOWN) {
+    return applyManualMapExportIntent(state, command.payload || {}, CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_MARKDOWN, 'markdown');
   }
   if (type === CORE_COMMAND_IDS.MANUAL_MAP_IMPORT_JSON_REPEAT) {
     return applyManualMapImportPlan(state, command.payload || {});

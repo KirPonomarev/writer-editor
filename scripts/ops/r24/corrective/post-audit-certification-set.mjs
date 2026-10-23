@@ -27114,6 +27114,1146 @@ export const R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR=Object.freeze({
   ]
 });
 
+const R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR = Object.freeze({
+  "id": "YALKEN_MAC_MANUAL_MAP_MARKDOWN_EXPORT_20261023",
+  "baseSha": "4a9779ae8b21d269db4ed4007c8a7ad0c553304e",
+  "baseTree": "550cae3566db5b7f3b447a874fb929e8d889a967",
+  "successorBaseSha": "cfc2ec463907fba92ba42eab99281a9808267cc3",
+  "successorBaseTree": "1615016307b015aad48c9063a840a2cd64bd445d",
+  "bindings": [
+    {
+      "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "917bf2423fe94cbe3f846f335bbc3ca63f16e3dc0ade75ef4f307f22f81d9bbe"
+    },
+    {
+      "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "a2e9108261962d9ab6779e44a8a7af5fa276aeb00e64275ce13b97dddcbd94e7"
+    },
+    {
+      "path": "test/unit/r24-wp104-evidence-integrity.test.js",
+      "sha256": "608037c614e73482e2788e6f8facf62a689f1140d2338033fa38b38200a08f57"
+    },
+    {
+      "path": "src/main/wordReturnConfirmation.cjs",
+      "sha256": "0fab12a1399dcffbad810aa7e268cd541b73cff2e8118d5f586bed7179b9791a"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "c5f527fb64b1d1003454e89ec4cd22f190e628633ca1ed52ba2df8183ba65b75"
+    },
+    {
+      "path": "src/core/word-note-return-delta-v1.cjs",
+      "sha256": "2a1596f9cf053498d80a0bec8676a11bd236b26206adb8ce949b27fafd523eea"
+    },
+    {
+      "path": "src/core/word-pending-comment-return-v1.cjs",
+      "sha256": "11ae91f2900e3f531d8ccd8b5b8f4a0dd9c8cdf0b63bfa218ac80eaf93a400cb"
+    },
+    {
+      "path": "src/core/word-comment-return-delta-v1.cjs",
+      "sha256": "1cac6c296fa5206759efa114f20ffbaece9d475b86808534c53df526545906ba"
+    },
+    {
+      "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+      "sha256": "2796aaaf0dc8abb255b9efd3c7f4afbe1da6776623fbabaddd2adeb994287404"
+    },
+    {
+      "path": "src/export/docx/docxReviewPacketNotes.js",
+      "sha256": "a5bbda740cb36861f7a7d95fb433d80118f8095990129c36f8d08dc1d5b2ca28"
+    },
+    {
+      "path": "src/export/docx/docxReviewPacketBuilder.js",
+      "sha256": "18e31058d74cd0e6e5ae31cde195bdcfac471ddb2ea7cb0c493433d473f73a94"
+    },
+    {
+      "path": "src/io/revisionBridge/index.mjs",
+      "sha256": "2d2ade78cd7b76b441d86b783924a4bb629b1188c06549aeb7b4987a58d6e620"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-notes.contract.test.js",
+      "sha256": "832008a275e26d59192f3cccc6016e4f6b631b1faf3da7522d5c70981e4d8e07"
+    },
+    {
+      "path": "test/contracts/rtk-word-mixed-return.contract.test.js",
+      "sha256": "d913724e699fef3076f839dc093359f1ccc9c53f368f2937c3aa24889a192951"
+    },
+    {
+      "path": "test/contracts/rtk-word-mixed-return-transaction.contract.test.js",
+      "sha256": "31a816a61fb9361fd69d633f04e54e8c4a58057f2fdda1b29c084c155f39dfb6"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "sha256": "0f077d7f438fc8e7d01e7ac9d0280731581bb617ca7729c62c6f7c33f2b1febe"
+    },
+    {
+      "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
+      "sha256": "d1894f5f0f62221659029e46e27c7b7b21472bf9f55548fd7e0fb19b01a34848"
+    },
+    {
+      "path": "src/core/word-pending-recording-v1.cjs",
+      "sha256": "6cf71665aa72ad3e62983bfb9cfea8c6ca82e749dc0c5f663cdcadfefb9401c2"
+    },
+    {
+      "path": "src/core/word-pending-recording-comments-v1.cjs",
+      "sha256": "1171b4ed97e9537d52bf9e9ee73ea03e51ca3492a949a097175b0b762c44c626"
+    },
+    {
+      "path": "src/core/word-manuscript-notes-v1.cjs",
+      "sha256": "9860ba84c949e05bea02910c7f0e50073f66ed0ce91fce421a4dd08ed4c20943"
+    },
+    {
+      "path": "src/core/word-pending-text-revisions-v1.cjs",
+      "sha256": "749c2cda0855f817517e3cf8e731bbde3895a94e3c174724509b880d1261d689"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-recording.contract.test.js",
+      "sha256": "35756f8c77044967d4d10607cabccf82c950e99973e5585e528cb8e9b60136ab"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-recording-intents.contract.test.js",
+      "sha256": "4be4a6bdf125b5a2276af5883bfa2e175e185e6ae5586a34c04b151e00d02777"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-recording-comments.contract.test.js",
+      "sha256": "134a9dfcd26688f149c7368c7a1d281670465e333c3a4e48bdc59bddc8ee1262"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "sha256": "fa57675e5f4c2ff8bf44c7739ac756da9e8c72fd5316950a06472e7bb6095858"
+    },
+    {
+      "path": "test/contracts/rtk-word-manuscript-notes-transaction.contract.test.js",
+      "sha256": "978fcfdbccbea8dd646fe623150f4f61bffa85189aa63fa44bfdfa4fb500ea4c"
+    },
+    {
+      "path": "docs/tasks/2026-10-06--word-recording-notes-mac.md",
+      "sha256": "c2f95d553f845237aa84784def407a1e65482c8f5f4a34e3ac3c0065101ea6cc"
+    },
+    {
+      "path": "test/contracts/rtk-word-note-return.contract.test.js",
+      "sha256": "05dc33495eb11afdf71c3d1c706f896340cb356b7ac6c0cec32da1557b42d77f"
+    },
+    {
+      "path": "test/contracts/rtk-word-note-return-runtime.contract.test.js",
+      "sha256": "708b81fcb521b99cff14bcf33e3041bb672840413ac291196504fcde9f6a7aab"
+    },
+    {
+      "path": "test/contracts/rtk-word-note-tables.contract.test.js",
+      "sha256": "7b48b34a2a41189a6d66e7ef39a76a3faaf3fdadd7ca3d0bf94ebd7731a4e40f"
+    },
+    {
+      "path": "docs/tasks/2026-10-07--word-book-body-typography-mac.md",
+      "sha256": "a43cc725cacd7a99ead7a47cf0b3d4ae352c57589b3969c29ebc658214a58d75"
+    },
+    {
+      "path": "src/core/word-comment-body-v1.cjs",
+      "sha256": "5cf4f7d34570787a128e1939e96d882f57efa51d0da014579f3d13c504f80019"
+    },
+    {
+      "path": "src/core/word-review-typography-v1.cjs",
+      "sha256": "f5fca9f5676719128b101518d310d7d2153ba1991707051ad5a78885b6f8e6b1"
+    },
+    {
+      "path": "src/export/docx/docxReviewPacketComments.js",
+      "sha256": "606ad8b1100522032948693172f0ffa326f87f17f941e7b4b3b38cb904e2c044"
+    },
+    {
+      "path": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+      "sha256": "ffcb6f777ab407b4ed58c7457a78a514bbd54eeedc7cd67b827d604a33382b85"
+    },
+    {
+      "path": "src/io/revisionBridge/reviewTransportMediaReturnV1.mjs",
+      "sha256": "88c53f4d68fd83a83bc673ad5bb641de6db8df00dfc29128d8d2926512b27884"
+    },
+    {
+      "path": "src/io/revisionBridge/reviewTransportStoriesV1.mjs",
+      "sha256": "69e41a0a093d4bf802f647bc05d8520edc619d9e50cffe70334d65ebef752c4b"
+    },
+    {
+      "path": "src/io/revisionBridge/reviewTransportUserBookmarksV1.mjs",
+      "sha256": "6e1bd3f39bd685b83fc865dfb572726ae9f1066df11482a512d0303465cfcc4f"
+    },
+    {
+      "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
+      "sha256": "fb8a41bcaceccbbbb4b39ede1d6c9614a4a73d4ef2b3bad29ba538f140909b2f"
+    },
+    {
+      "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "e90560684d0c454c0df579075a8525c9d71517c882944849776b69ada3210921"
+    },
+    {
+      "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
+      "sha256": "922caf08f8188d484da7fd87e8d1f08a9aef11d6a2260e68fc1d3c951c5426cd"
+    },
+    {
+      "path": "test/contracts/rtk-word-user-bookmarks.contract.test.js",
+      "sha256": "48b5a00c040c700211eb5dba4e0cc7a5fc7cfd715a5da9e51284d6d807c12830"
+    },
+    {
+      "path": "src/renderer/editor.bundle.js",
+      "sha256": "44fa3c9a540f6fff9f509974974094d26a2de7ad4dd8e0ce81162053dea2fddc"
+    },
+    {
+      "path": "src/export/docx/docxPendingRevisions.js",
+      "sha256": "fa6d8e914810b0dccf68e0bc4b35bfbeeddfb51bebe677a037626a35be02dad3"
+    },
+    {
+      "path": "src/io/revisionBridge/reviewTransportCore.mjs",
+      "sha256": "aab71904df48aba0121783b161ef522711bd4dc1f4f4ff6d4b631c086124f3de"
+    },
+    {
+      "path": "src/io/revisionBridge/reviewTransportZipEvidenceV1.mjs",
+      "sha256": "42889898eac3dd22cae9c4a9f63ff2f0152bfbea4105c7f90dd78430afa8a85a"
+    },
+    {
+      "path": "src/utils/docxImportLocalFilePreview.js",
+      "sha256": "fe5aa4377653a8f119a6772d8b5c4769797f4fbad57b0072e197f7ef818b9ba6"
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js",
+      "sha256": "f5838c8f259f75ec0ca2c26b4471871b08c61398637d9ed93a482b5144377f98"
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
+      "sha256": "6e38c3aa0f0961f58a909b016cb15c838a5859713de76083abb1265493d15177"
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-intake-gate-command-surface.contract.test.js",
+      "sha256": "451c1e0fabc7f8196b642ded81b3791fa1f962d31fc49b7f5d5f7a1bdd26fd51"
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+      "sha256": "ed327e15d72f449b83a54f915ce34bd2f1051e21273e43418b0da5358a3aed95"
+    },
+    {
+      "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
+      "sha256": "b2ecf144f5c57189567b8d9b9c667b56f8ac01908bcfa77c4627b3e95f7fda76"
+    },
+    {
+      "path": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
+      "sha256": "d24dad28bec2048bf1f33e63e1cdf692106618f38e2a5b06aee590e1af9f692c"
+    },
+    {
+      "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
+      "sha256": "06ac6673b9e374dfeb95a4b22556b7ada7575c9df722f57ff5fd7bef5de0ace7"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-points.contract.test.js",
+      "sha256": "99cfc7b5e2fc9491bb133f09ef04f86b1819527a7cfdf06e78c623a939d787a8"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+      "sha256": "f15ebf9d6dd811a17f9a3003cbca802b8d54ccef40234bda99dce46e5c1aacf6"
+    },
+    {
+      "path": "test/contracts/rtk-word-http-links.contract.test.js",
+      "sha256": "03cb808fa0cfa78f79024260ffe1f320f69aafbfa3cf6d5bd1ace23983e33b97"
+    },
+    {
+      "path": "test/contracts/rtk-word-list-pattern-parser.contract.test.js",
+      "sha256": "074ef2a3ca68c0de7849d10cee23a9896d9c1a007435902eb57e31395803eb01"
+    },
+    {
+      "path": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+      "sha256": "3c90503ab0d7c64a45aaf6f68e98a2177d7673b76eb1bd4abd68bfe762c40405"
+    },
+    {
+      "path": "test/contracts/rtk-word-move-recording.contract.test.js",
+      "sha256": "aa5046415963c04be3a862460c078691cc6fb1e616d9c0d2ab8510d28a966916"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-formatting.contract.test.js",
+      "sha256": "54e6121c6129a8f8f10073749ba81f2127c233009b0bced4344df892f98057bd"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-paragraph-boundaries.contract.test.js",
+      "sha256": "a844754016c2d994f0319716bd9da9e6bf1268ee37196071abe96401ac14185a"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-return-runtime.contract.test.js",
+      "sha256": "cee37ac3e97f55d8e14e82df97285bd19acf5e161e51ef4c6a6f23a9ff7e1f48"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-rich-blocks.contract.test.js",
+      "sha256": "98c8590878c9465a3a780d95d32e9bedd1206ff6dcb5d08e31c5a2d8886f7bfc"
+    },
+    {
+      "path": "test/contracts/rtk-word-table-cell-shift.contract.test.js",
+      "sha256": "7bb9e366cb9df3cc2a9c4cd10207d05a57ba4ef52639ad998cb392dbcb75e35f"
+    },
+    {
+      "path": "test/contracts/rtk-word-table-review.contract.test.js",
+      "sha256": "d15681d7017e8beb3c60ed11c49c5c4cfc7912d70b018981d7aec3bb889e23ee"
+    },
+    {
+      "path": "test/contracts/rtk-word-table-row-revisions.contract.test.js",
+      "sha256": "0c93b71d6c43f78ed01688f9c558e80cd8ecf2a3b2802255945b76b9a48fafc4"
+    },
+    {
+      "path": "test/contracts/rtk-word-tables.contract.test.js",
+      "sha256": "64bd24e9b75bc515a19b4553dafe81527ede29e6c87ba8d33cd442e80becc535"
+    },
+    {
+      "path": "src/core/word-comment-anchor-save-v1.cjs",
+      "sha256": "d8c1ab57d782ebf8d0a6e8191171b1798ef1bc56e34da4e6526da94889821a45"
+    },
+    {
+      "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
+      "sha256": "a56c4c6b9de1ee81b3ea37d5aa8eceedd0879d7f54fea232fc97bf6568b42f20"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
+      "sha256": "724ee0bd0e721d8efd946e15d9ebfcc6b12c1347d9319d0d646e4f3bc61e54a9"
+    },
+    {
+      "path": "test/contracts/rtk-word-manuscript-notes.contract.test.js",
+      "sha256": "bf60d7c8308ddc1135cfb10e6ccaf631d96978c8b389eae4114de29f159a1e9b"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-return.contract.test.js",
+      "sha256": "7dfefa6cd11c6d4d3fa2fb85161af4bf1ec74f5ef67ec894a0f4377644f2f06d"
+    },
+    {
+      "path": "src/core/browser-safe-hash.cjs",
+      "sha256": "8f4ecc2a648d7dd9f55d8d55ab5bef4c9b37e4924f72e4e1474a82fc4215d6f0"
+    },
+    {
+      "path": "src/io/inlineTypography.cjs",
+      "sha256": "ebaeb13c58e6f01478ac293e7a3b1cb64da7b48de07309a479730ae376999282"
+    },
+    {
+      "path": "test/contracts/rtk-word-core-hash-parity.contract.test.js",
+      "sha256": "e065f4a9da4423508e5571c5f498d8d94d182ec2f98631e501046ec3d177917b"
+    },
+    {
+      "path": "src/renderer/editor.js",
+      "sha256": "87a5a7254266505136f6101ecfa3c90916b57274f45abab299cb13c454dceea0"
+    },
+    {
+      "path": "test/unit/project-tree-pathless-contract.test.js",
+      "sha256": "071cac522c2d1d11660140368acc9d66f759ab916ae9b803739de530df23d9ae"
+    },
+    {
+      "path": "test/unit/export-book-profile-binding.test.js",
+      "sha256": "a7130f590d6efa0895f914f014fe42a9c0d9c6f4b2876c55a81accac5e7a53fa"
+    },
+    {
+      "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "sha256": "1ece1618bc151f223699d78e0126f574532445ccb70d51f277f6845d19d9c4f5"
+    },
+    {
+      "path": "docs/tasks/2026-10-08--word-scene-save-observation-performance-mac.md",
+      "sha256": "5035537f4183982194710643bcc5506706bd8b831cd69f6b4a5ca6cac534b254"
+    },
+    {
+      "path": "test/contracts/rtk-word-structural-comment-history.contract.test.js",
+      "sha256": "bd1bac45c44ceb67245d29d87cbf6f2f4cde2f96ba3e14a0fe69bb7a8678c7a5"
+    },
+    {
+      "path": "docs/tasks/2026-10-08--word-full-export-profile-propagation-mac.md",
+      "sha256": "86e95680fb120e6ab8e27098003b8b35c501ed72435df6f57549cb900f667230"
+    },
+    {
+      "path": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
+      "sha256": "cd71021cf682828085c3d1d9257cdf16c805c2e82644d64f4e71986cc26718fe"
+    },
+    {
+      "path": "docs/tasks/2026-10-08--word-parser-query-performance-mac.md",
+      "sha256": "9e5985999a7b2f027d03d0d7939eed499b90e221a2183949ab2f4dec39168e66"
+    },
+    {
+      "path": "src/main/rtkDocxReturnIntakeWorker.cjs",
+      "sha256": "d767b9c7bae4e304b09988e78514983674ebce763f0df358cb2f041ab2d7d278"
+    },
+    {
+      "path": "test/contracts/rtk-evid01-return-evidence-packet.contract.test.js",
+      "sha256": "f4c665f0d454e829122a4e8239e9596aa930c3a17e2032efd8721cd54296f3b4"
+    },
+    {
+      "path": "docs/tasks/2026-10-08--word-return-worker-single-projection-mac.md",
+      "sha256": "c54600d11d8d1ff1b24e1f79a4d982ddc2f9ca0164b31bdeff51f2191932989c"
+    },
+    {
+      "path": "src/preload.js",
+      "sha256": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2"
+    },
+    {
+      "path": "test/unit/r24-s1-envelope-integration.test.js",
+      "sha256": "454b4ab3318552b6e5ae5fe0be345c7255b80461a612d3295cc0c9345e3afaee"
+    },
+    {
+      "path": "src/preload.bundle.cjs",
+      "sha256": "741780a819134ada437c8725ffa8c9c144df11e2890ce8397897d72c082be65d"
+    },
+    {
+      "path": "docs/tasks/2026-10-08--word-preview-native-wait-mac.md",
+      "sha256": "7e736604805aad4bf09fac3c824256ea170752ae9008249ce612b5878ea1a59f"
+    },
+    {
+      "path": "docs/tasks/2026-10-08--word-book-note-defaults-mac.md",
+      "sha256": "68f6572dcce29aabfd5d05476289503a03f2f3f22e3835635add74488fa0f88f"
+    },
+    {
+      "path": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "81d6d987cca86f39846efbb672d30c2cef8ff096d465606254870c6a85505dc4"
+    },
+    {
+      "path": "docs/tasks/2026-10-09--word-origin-novel-partition-mac.md",
+      "sha256": "69441e9a95838111120f88713f2d6ef9eb0342c5af7043dfa346eea661c0f19d"
+    },
+    {
+      "path": "src/utils/docxImportSafeCreate.js",
+      "sha256": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70"
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+      "sha256": "51981d23dfd55d12164428d79cdb604ba5c18107ff77ec97d6a3b968bad01b8b"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "de11ca9010369372b8d0c0489bf99bc443b6d7985e89a970e87b50089132c0a6"
+    },
+    {
+      "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "sha256": "9be52467e9fbc2f2ba1a418ea47ac36d8ab6c1672731b287d4bd458e107debd7"
+    },
+    {
+      "path": "test/unit/r24-wp201-project-transaction.test.js",
+      "sha256": "1eb0625643a8fdc0aed3c83f8ce40d6be35c3bf81f134c7c1e1b263d1cb55a37"
+    },
+    {
+      "path": "test/unit/word-import-transaction-resources.test.js",
+      "sha256": "24a7b344ffdbf7261b7744ff1fc3d2d63e475508498b84d4517577485d129d81"
+    },
+    {
+      "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
+      "sha256": "20bd176788404fe2a7d91dd39fe6a04b9d0338c2de69f526b1e9945b8094c7c5"
+    },
+    {
+      "path": "src/renderer/tiptap/manuscriptNotes.mjs",
+      "sha256": "a9fbd6280c8338d1c5d5e0ad682f0dbea377b50faa0b37510325261440abfe38"
+    },
+    {
+      "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
+      "sha256": "7167574da3d53015a5000b79019a31ceaa3fd8b6ad33c3c58df9af596619b2be"
+    },
+    {
+      "path": "docs/tasks/2026-10-09--word-novel-atomic-note-return-mac.md",
+      "sha256": "6cae839c46166d92eaee010599d227c1bacacdea1589cfb9ebc420cf91fb9eb9"
+    },
+    {
+      "path": "test/contracts/rtk-word-pending-revisions-runtime.contract.test.js",
+      "sha256": "13fba3c1fc5fc903a231b7f6ee1e35307d3c1665e7ffc0d0f720e5c634779769"
+    },
+    {
+      "path": "test/contracts/menu-presentation-modes.contract.test.js",
+      "sha256": "724dd6915283ee7fc04088294948a2e9adb8a846191765837779be91cb5bd235"
+    },
+    {
+      "path": "docs/tasks/2026-10-10--mac-normal-quit-novel.md",
+      "sha256": "7d22a56d7b1bc28c333ebe76106ddb5ffff5cba2107799302c910b96e2c80c76"
+    },
+    {
+      "path": "src/core/project-transaction-v1.cjs",
+      "sha256": "e4aab760ae3e0508cd99bb51a955f0d3c669e79a8be3425afd49cce5bc00e544"
+    },
+    {
+      "path": "src/core/project-tree-cohort-v1.mjs",
+      "sha256": "d9483cff4c6652f2b30a398598807d9944891690f8499a03efe99a198a8e3a91"
+    },
+    {
+      "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "sha256": "192c59f8b173a264bd6e46f02d9779c7b0cc11a6e6605e21df61f59bf2abb1b8"
+    },
+    {
+      "path": "docs/CONTEXT.md",
+      "sha256": "5d2bfb12598c8fef9abde073515ce3bc2ee326bada09c976cf6e77f434f1653e"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "sha256": "2b769ffa444be6a19599a42395479208700f3123c51a7b708ae0b4b9c648aea0"
+    },
+    {
+      "path": "docs/WORKLOG.md",
+      "sha256": "5e65bb0e46f7bee6677235b357e865680501199a81b554fa803f50b42ee41726"
+    },
+    {
+      "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
+      "sha256": "e9911c48f537255d45354ed2c31fd3772e7a39919ff25cac74296d03b3da5c00"
+    },
+    {
+      "path": "docs/tasks/2026-10-10--yalken-origin-novel-word-return.md",
+      "sha256": "13ac1c42b561c2830bf3bef7eea243125c3a22253833ba1c7ea7a02bec15bc45"
+    },
+    {
+      "path": "scripts/run-rtk-tests.mjs",
+      "sha256": "9f3a5c9adfd61e0156afeb4af6b03c6cfeeaf0c4e7e7743fbc49a5a162596b2b"
+    },
+    {
+      "path": "test/contracts/rtk-test-graph-catalog.contract.test.js",
+      "sha256": "f19a008c718842fa61b8155949e350486ee10fc7fbbf6a3ad6ae46c53440ab68"
+    },
+    {
+      "path": "docs/tasks/2026-10-11--word-comment-transient-history-return-mac.md",
+      "sha256": "5a1da42d7e64c0e5fdaa1d73392de0d232be8f1a7ee73e882d011a83d8ac124c"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "af4fdeb93def4476134c376ba8c3679f76d0837d895478628841b91a35cd37da"
+    },
+    {
+      "path": "README.md",
+      "sha256": "adb972685c09e9aba2205891b3a509f8414535c0c8fa689beae7c49b1b227e36"
+    },
+    {
+      "path": "docs/STORAGE_MAP.md",
+      "sha256": "6bbfa15f187354b14e8cf8226d26bfb0edee11f0717981b1d4a544326a4deb46"
+    },
+    {
+      "path": "docs/tasks/2026-10-12--yalken-storage-map.md",
+      "sha256": "6a681d7903b178d42acd3de43e8945b4f61ebaaa52ff719b7e5c442f7e9cadcb"
+    },
+    {
+      "path": "docs/tasks/2026-10-13--word-notes-transport-precision-mac.md",
+      "sha256": "c7831b1f808a40223b2da6eac51e254a91b6062c56b7eddf1c14521eb193189d"
+    },
+    {
+      "path": "docs/tasks/2026-10-13--word-note-free-language-return-mac.md",
+      "sha256": "07e10862c68cf69f204f2159d41006786c99079a4b547f1353f5a670af4c51be"
+    },
+    {
+      "path": "docs/tasks/2026-10-13--word-opaque-color-canonicalization-mac.md",
+      "sha256": "b1699867e0ca7876e35790c7b586e66e93c610153ab817b92555d79171ce416a"
+    },
+    {
+      "path": "src/main/projectTreeReadPort.cjs",
+      "sha256": "2cce63b9fdc0f8fae8c112566bc92465c636667e5b4439cdf0cd94aa84c99031"
+    },
+    {
+      "path": "src/main/projectTreeReadWorker.cjs",
+      "sha256": "b2a21c70cbf56d2efd6ff24c50c7c5f05b60bf2efffa3add0e21213deafa9a9a"
+    },
+    {
+      "path": "docs/tasks/2026-10-14--main-tree-read-worker-mac.md",
+      "sha256": "d913e1b881f19cff18bdf17630b7d386113e50789d428b51455f1e51824273ee"
+    },
+    {
+      "path": "docs/tasks/2026-10-14--rtk-retired-member-identity-mac.md",
+      "sha256": "be20c755143f8af4b36aa1c3f72e9c933583642e9c0bec0b928a8d92be491e7d"
+    },
+    {
+      "path": "docs/tasks/2026-10-14--word-tree-project-query-scope-mac.md",
+      "sha256": "c50542e916be2e1e13ae3ed6254520e50fa60c634aa295f330ffbbb7ab2bc2a6"
+    },
+    {
+      "path": "docs/tasks/2026-10-14--word-pending-book-export-phase-reuse-mac.md",
+      "sha256": "408fc301ffb78db555cf90182bad765288c89d87746e432f248bfc1d7a1216e3"
+    },
+    {
+      "path": "docs/tasks/2026-10-15--word-novel-manifest-continuation-mac.md",
+      "sha256": "9fe63c489b705ab9533997e1aa746c6dac5edbeb9cdf494bea27ef559b803f4e"
+    },
+    {
+      "path": "docs/tasks/2026-10-15--word-novel-native-primitives-mac.md",
+      "sha256": "b90a0940411b6f5f2fa820dea878de47176164176d1964119ec9ca24c90cab77"
+    },
+    {
+      "path": "scripts/ops-gate.mjs",
+      "sha256": "be537364427d416abd1db7dafc1d95b2abf2315b4d837034d72468876c51b2b4"
+    },
+    {
+      "path": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
+      "sha256": "828a810dd57d5c4d72793c025abfc44274d18e83f76e89939ea85ff781623978"
+    },
+    {
+      "path": "docs/ARCH_DIFF_LOG.md",
+      "sha256": "77d9e38d799f76cfd5ffb304e4475bb89f796af05d56cace4ba5a55a1465e0d3"
+    },
+    {
+      "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
+      "sha256": "1191c94dd6d67499f0e4a1f5edcefeeb28293c87a260d32894325e68faef7d99"
+    },
+    {
+      "path": "src/core/word-review-authority-codec-v1.cjs",
+      "sha256": "47f5ec36443e02d4b41f192862f76a60c96c40e9cb1f08a8dfbed785ec95781b"
+    },
+    {
+      "path": "src/export/docx/docxReviewPacketExportHandler.js",
+      "sha256": "7cd0724e26081319ebd1effd7126ab79dae5f43f23dc31b283bdd81f5354b2ed"
+    },
+    {
+      "path": "test/contracts/rtk-word-review-authority-codec.contract.test.js",
+      "sha256": "93d4eb15ae6ed2e33e2b9b264d87700b4af6ff6e9297c5214ff9ee1e0513e80a"
+    },
+    {
+      "path": "docs/tasks/2026-10-15--word-export-activation-mac.md",
+      "sha256": "dc751beaea7f1af07879c8dcf7de733cf9d7928d5a0b506f5e60b9d614bbfb49"
+    },
+    {
+      "path": "test/contracts/rtk-word-scene-comment-export.contract.test.js",
+      "sha256": "8e8c95957979a3e7da27e0f24edc29fd6aa67ced64fd9eeaebbc4205bcad8913"
+    },
+    {
+      "path": "src/core/word-note-reference-typography-v1.cjs",
+      "sha256": "7a36d315d5cf2606246851649c51167a56902c0bffc63315f937869b24bfaa67"
+    },
+    {
+      "path": "src/export/docx/docxMinBuilder.js",
+      "sha256": "6b97e6330888443a780e5778296433dbf74df008616f8c302bf67853e6de5edb"
+    },
+    {
+      "path": "test/contracts/rtk-word-note-reference-typography.contract.test.js",
+      "sha256": "af27ea3c71964d527b7ac6fb670a2f5f7596226819ff10f73a5dee6028c850a0"
+    },
+    {
+      "path": "docs/tasks/2026-10-15--word-note-reference-typography-mac.md",
+      "sha256": "b0831cfb7221d205aa15ecde28c59bd6f84be00b11bffa159a8bf3f54d8627eb"
+    },
+    {
+      "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+      "sha256": "2731e0ad429215146403bf971f27f519ba058602f889aa8a3db7ba2ab854c046"
+    },
+    {
+      "path": "src/command/commandSurfaceKernel.js",
+      "sha256": "01c51a8129147e6567ab6d67bae42b79e7eda17b6b01ba8936f6ae3da1c42f43"
+    },
+    {
+      "path": "src/product/stage10IntegrityAnchor.mjs",
+      "sha256": "27aa96598e6a7d9929ce231777976230caff5ce5251a3ad0f560ed381f91ea27"
+    },
+    {
+      "path": "src/product/stage10ProductWiring.mjs",
+      "sha256": "c72402fc77d654500b6dac2c9d940e1ec18c1ab425f37e32e2ab45ccb3148479"
+    },
+    {
+      "path": "src/product/stage10MainPersistenceAdapter.mjs",
+      "sha256": "1d258e7b71346c2ca5243a9272cde2216dcba4276b52d26f520a6acfaffd9c91"
+    },
+    {
+      "path": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
+      "sha256": "1f06703827391d400777e0a916db4aac816ebe204493b18d207e5b28af904a84"
+    },
+    {
+      "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "6f1b83a4a106ef46d5f39ff8d7d72e4f79ff1b0a27df93a8c49eb7c49a5c2352"
+    },
+    {
+      "path": "test/contracts/b2c09-command-surface-kernel.contract.test.js",
+      "sha256": "8d9adc765359ff9191bd7b3d5d063ad6cf29d731d7839896c05cc88e9ae66768"
+    },
+    {
+      "path": "scripts/ops/b2c09-command-surface-kernel.mjs",
+      "sha256": "c2da0b6bac1b289d4eaa889ebc68181d8e49490a4ace5131204499a7b2d81244"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-missing-anchor-recovery-mac.md",
+      "sha256": "f77e8bc8de7c258be70ee1892fdd79eda255b8e495a92999dba08c18fa7dbf59"
+    },
+    {
+      "path": "test/unit/r24-wp302-session-continuity.test.mjs",
+      "sha256": "16b4295febd49f7a735f91ecc2eb9fee4108c1280e8e4977c62ffa1e70a3a0f5"
+    },
+    {
+      "path": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
+      "sha256": "d7f07a04bc0f32d7e3cd338b0743615bd58ab5a93732c80a64c3ac3a00cef2a0"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-comment-revision-boundary-mac.md",
+      "sha256": "2b0135661033070a7e40da072a7a474f2550c17b15f304aad3433de04b425143"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-book-history-memory-mac.md",
+      "sha256": "50560cc2485228636f1ca95cce9b91a2048d9c2dbc8a1eda49f500b1e70d5e89"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-tree-read-lifecycle-mac.md",
+      "sha256": "a3beb739e62099f93bdd49580b75efe9e3bcbdd1ada9db906db4c2b27743d498"
+    },
+    {
+      "path": "docs/tasks/2026-10-16--word-tree-read-process-mac.md",
+      "sha256": "f167bda07f1790393134d21f9b677db38b6815c0ce2365e11a716cfba578c096"
+    },
+    {
+      "path": "src/io/revisionBridge/genericWordComments.mjs",
+      "sha256": "6849ed42dddbd0ce00995624fc570a3044abd36ccbbd054087fd0defc6eb1c79"
+    },
+    {
+      "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
+      "sha256": "fe587df366aebd842342cc9c2b3d1242f19cec2c831520f79c9c5241f1c149a8"
+    },
+    {
+      "path": "test/fixtures/docx-pending-deleted-comment-import.docx",
+      "sha256": "796093baf899f924a0e9f401cbc9c241144931a96beecab71e20655a2641fabf"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-deleted-comment-anchor.md",
+      "sha256": "2c04556655a0358bf61401c8e2c701b1549c971982d4e6b42d9e8200b1401973"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-new-project-15k-public-path.md",
+      "sha256": "ed893106aa8c16e7ec4067e7e4939f0115b1fb1fd99ee0d39701d2d5a7990bc2"
+    },
+    {
+      "path": "src/core/docx-new-project-v1.mjs",
+      "sha256": "2a6effe7eefb2dfcf3905cb804bd5f7e49b8216226a22633a90bcc7cc04e9e24"
+    },
+    {
+      "path": "src/product/docxNewProjectCreateV1.mjs",
+      "sha256": "0a8f34280f938deef0681fc776a3bf36f5c8f607b1955cfbbd6b4ee74d2ac09a"
+    },
+    {
+      "path": "src/renderer/commands/command-catalog.v1.mjs",
+      "sha256": "50b4366abfe29931c4241a77a579a32237082f28e7dee2d861af4d55191e321b"
+    },
+    {
+      "path": "src/renderer/commands/projectCommands.mjs",
+      "sha256": "f08b362a966a452b1463423bd14f4d74a319cd9dd036dfe20c7b4a0e70ed62e7"
+    },
+    {
+      "path": "test/contracts/rtk-word-manuscript-notes-import.contract.test.js",
+      "sha256": "3757016bb03009e94644984cb41a16709fd22818acd73f2a7f39a8c72d94cc1e"
+    },
+    {
+      "path": "test/unit/docx-import-preview-ui-flow.test.js",
+      "sha256": "16eb398da3e93808e821748d0ebc553315dd2e69fc5aa3800a5300d1451f1f64"
+    },
+    {
+      "path": "test/unit/docx-import-product-flow-command.test.js",
+      "sha256": "28e46c2dddbd4f2f4edd042270f6eddf9804daf9c742c435dd4c03d723179fc9"
+    },
+    {
+      "path": "test/unit/sector-m-s29-import-surface-existing.test.js",
+      "sha256": "714c32f554bbcd710682b0d804e691e8cb618f93b8276c962530b4aa0ce96018"
+    },
+    {
+      "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "sha256": "56a85485764362190e5910bfee0e380afc4b8addcb8beb7d402bf35d71a62c01"
+    },
+    {
+      "path": ".github/workflows/rtk-required.yml",
+      "sha256": "9608a6af83b15a39c40dfe549647a16b749bcbb7c55cd72c38c4786df3f7ed86"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-new-project-source-guard.md",
+      "sha256": "9a2edd3709a26d30011c48fb6633ba7308e6515fb59b4c7249830634969267b0"
+    },
+    {
+      "path": "src/utils/docxImportPreviewReferences.js",
+      "sha256": "6861a9d8bef905f7eb0314ecdcb5b5df80a71948cd6700093a7ca032a36ddf6f"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-new-project-word-profile.md",
+      "sha256": "1f11956ca14c179cdb1d03fd5cb5eee488698cdb2378e8d297b118a4a5903ab3"
+    },
+    {
+      "path": "test/fixtures/docx-word-native-manuscript-profile.docx",
+      "sha256": "fae1413613e75d1f476201c4aa6b61bde7f7ea59f1c3d7eb194116fccc867027"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-new-project-usable-import.md",
+      "sha256": "0d00562c3d8524c06a7a7f575da9a3619df65f784f36593eba32f7179012c308"
+    },
+    {
+      "path": "test/unit/sector-m-review-surface-ui.test.js",
+      "sha256": "0e9dd32b836f71d50e9f3abf5fadb22df74a6c74f849cf7a6f433eb97c98988f"
+    },
+    {
+      "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
+      "sha256": "7d601ed81a7d83feca892d5e74ee2cacc33e6bcdfbdfef75548e52968f4ae0ba"
+    },
+    {
+      "path": "test/unit/sector-m-s18-notes-commands-read-models.test.js",
+      "sha256": "54033e01cf32219511a6780f7672260e1e3e277cc361fc7f32e9a12998036f8f"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-responsive-user-build.md",
+      "sha256": "4ce32a49d87679fa88a30f7eea9b718ff3f13bde285f1a6be55f17af1339b6d1"
+    },
+    {
+      "path": "src/main/docxImportComputePort.cjs",
+      "sha256": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab"
+    },
+    {
+      "path": "src/main/docxImportComputeWorker.cjs",
+      "sha256": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4"
+    },
+    {
+      "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+      "sha256": "592ca3ee5fea6e382eeb5043af0b12d2ccf1927073c1d29472992ac948ab3e82"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--docx-theme-colors.md",
+      "sha256": "c87a50f38292d4c2d7be057835e7d5405adbab79ef967d8465f0e3923d414abb"
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
+      "sha256": "6963635eedfb7b46d7b1195547f74455064104bb758df13d1ec2f718d8a1fa2f"
+    },
+    {
+      "path": "docs/tasks/2026-10-17--google-docx-small-manuscript.md",
+      "sha256": "0e71caa6944dc307a9418258b1b2addbbdbe6ba17c8be8ab56c96e517b4ad648"
+    },
+    {
+      "path": "test/contracts/rtk-docx-google-manuscript-small.contract.test.js",
+      "sha256": "23fff74e55b4f4f3f53810d341fcd3d4e8bf1a7eb9c30bdd73b8379cf0fd3105"
+    },
+    {
+      "path": "docs/tasks/2026-10-18--docx-million-hardening.md",
+      "sha256": "ec7ad32501477be006de02f027d0d715ae2796adbd9d55fb71e9b7c03125a461"
+    },
+    {
+      "path": "docs/tasks/2026-10-21--mac-archive-correctness.md",
+      "sha256": "55f545c3756d4242561cce18c9a17da6dff6dc43919558173c74d61465db7646"
+    },
+    {
+      "path": "scripts/after-pack.cjs",
+      "sha256": "42e68f0987abffccaa9b0bb715910de6257e72888f35cad8849541452fb32a90"
+    },
+    {
+      "path": "scripts/build-project-archive-native.cjs",
+      "sha256": "c163114ec879805ea42cfb4290c9498ac04d2911b9773757fbde6a72ef6f76a5"
+    },
+    {
+      "path": "scripts/build-renderer.mjs",
+      "sha256": "4c0e1247773b1ce58f3ecb0de194f6502cf3de294bf173deec4b8dc8e7b33205"
+    },
+    {
+      "path": "scripts/native/projectArchiveFilesystem.c",
+      "sha256": "062ae1f76675ecc868058c7cfa897abc8ae527abe3cf96b9ce400222ae9b555a"
+    },
+    {
+      "path": "scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs",
+      "sha256": "6d2f195723cf7ea906abbb8379ccedc0f0bceb7f4bf63efa99860a18bed6c0aa"
+    },
+    {
+      "path": "src/export/archive/projectArchiveExportHandler.js",
+      "sha256": "a5a302fc6242913acece3ed2fdff171bbbc5b50fbed804c70209d9b63ee4fe44"
+    },
+    {
+      "path": "src/main/projectArchiveDarwinPublication.cjs",
+      "sha256": "d399803cf10ae36d70d97a56232d85ba43a5ae6eb89942f921101c008fa3ee42"
+    },
+    {
+      "path": "src/main/projectArchiveOutputPublication.cjs",
+      "sha256": "dd3b5141566d81a0f4df869eb0614c48b22cadd5676603a12c0cc8112fc40532"
+    },
+    {
+      "path": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+      "sha256": "1c4e16183744b8ea9c20780ad68a2c0634fa700cdee4f725c65fadcafc21aedb"
+    },
+    {
+      "path": "test/unit/macos-package-network-policy.test.js",
+      "sha256": "5b8ef91112aede599272bb9777ec0a42e645226ddfbb205f148fb5fb6e5c0af9"
+    },
+    {
+      "path": "test/unit/project-archive-correctness.test.js",
+      "sha256": "8c43387217aa0c3c33d7cc77402502a1104dda908e618dd86e94d8074d0ff84f"
+    },
+    {
+      "path": "test/unit/project-archive-darwin-publication.test.js",
+      "sha256": "135171c5fb1b4d1ac7c9160b93377018678076f35641daaa6ad06ef8cde726c7"
+    },
+    {
+      "path": "test/unit/project-archive-export-handler.test.js",
+      "sha256": "9aaca2dace7dfcd374c2c2519896d7a70b4a4f028c4d724da1685e63a926f9a8"
+    },
+    {
+      "path": "test/unit/sector-m-s33-full-archive-import.test.js",
+      "sha256": "c9beab32d88ecebb1d1d06ce2dd846cfecbb8a323e9cd3346507bddc95a18b9e"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "6d65575c6bd80dd6bdca659608a416fcb34b07b609a09eabb4ab9d2a4b7c7584"
+    },
+    {
+      "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
+      "sha256": "0fc1c7208fff32cb3dd5764b93b4b52b6f940683156987d77593100e2709f50e"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "086e410056b4ef5eeba2dde323b881be556a0d5ba551d71f1c3b560c126c967f"
+    },
+    {
+      "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
+      "sha256": "fd3511f14c438c58362a7965824ada4ca351fb30b98910b179da00d9a4df423e"
+    },
+    {
+      "path": "test/unit/sector-m-s32-full-archive-export.test.js",
+      "sha256": "149e53c43584d0dc649605360547f505b1fdcb1c4a9b938b2bb2d98152e5b866"
+    },
+    {
+      "path": "src/core/minimum-interchange-v1.cjs",
+      "sha256": "143750fca1e434ad2081ce42102c512370f07323b1e18e64d1be9ef7850dd561"
+    },
+    {
+      "path": "test/unit/r24-wp305-minimum-interchange.test.js",
+      "sha256": "3450f55531dfee8800c09b117cbe3a6c51f2c66f557e49f5063e2cf08681b67e"
+    },
+    {
+      "path": "test/contracts/post-mvp-project-txt-export.contract.test.js",
+      "sha256": "4b965a88019ea6181dfbc098785e3758ba43e99b89c83a91a9813c443099b4dc"
+    },
+    {
+      "path": "test/contracts/post-mvp-txt-import-command-surface.contract.test.js",
+      "sha256": "35121b3a8d3c5324e5301abb6fa12b98fe9ba9c5dfb50a89e7243bd7f6ec8039"
+    },
+    {
+      "path": "scripts/ops/release-candidate.mjs",
+      "sha256": "90dba5e12cbf6825d005062eaef79db73a5f4bfcfb2b614835f63f2943d1cdea"
+    },
+    {
+      "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+      "sha256": "98cdb6d151aeada564c612257e91ca7e00ad34fd9f4690c0bd571a2ac4c69fed"
+    },
+    {
+      "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
+      "sha256": "6c29bd28bde708df484dbb20056fff2b633fa0ed67028680ba389bc80dccc76e"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--mac-first-release-scope.md",
+      "sha256": "1eaf0f8a0f999bbef4bc534c5110b644ae41af4e15602b45c854be22014a99bc"
+    },
+    {
+      "path": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
+      "sha256": "a1a89206abe332a2b054007c812401d4a6f098cfb95d0be374784d08357afda2"
+    },
+    {
+      "path": ".github/workflows/oss-policy.yml",
+      "sha256": "6c7aed71f2953007cc8634bee6445229bff9929dcefd54887cba15d14f7d348a"
+    },
+    {
+      "path": "test/contracts/r24-postbuild-lanes.contract.test.mjs",
+      "sha256": "3badf4561e10b76a6db50be820cf3abf3af0b8a7abb79cd2f6e114c4fb64e952"
+    },
+    {
+      "path": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
+      "sha256": "8844b36feaef87427b9f9e26bababed47bc375ade4e77b55b7babb8b1ac6a24c"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--ci-single-rtk.md",
+      "sha256": "ed4e59bfc6c8c9973b69e7754f3e6bb9ec471b54c0eeb297952e7ad31b7391cd"
+    },
+    {
+      "path": "docs/AGENT_START_PROTOCOL.md",
+      "sha256": "3a86699d6320666c84ec1316e2e51cf78f843893759ba2d1b3eb98a9c5ee1b4f"
+    },
+    {
+      "path": "docs/PROCESS.md",
+      "sha256": "0cd4601aa777296caf5c76509541f665263f29b8c61260ad494208eed461ea13"
+    },
+    {
+      "path": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json",
+      "sha256": "54bfb9d25026d4692b3ad611e809eda4f92b03ba2df9f9628624bd5691973f75"
+    },
+    {
+      "path": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_STATUS.json",
+      "sha256": "0ed3662528b9d2a5f435681208f5ad0f8e34085f2a1fa6a3ba056b7a0be43658"
+    },
+    {
+      "path": "scripts/agent-guardrails-lib.mjs",
+      "sha256": "963268c34013dfecb9a22f1b215e8ffdd2bd69a6ec74124f4adf90444a93d5a1"
+    },
+    {
+      "path": "scripts/agent-bootstrap.mjs",
+      "sha256": "fb262985be51181c9c9d1b7e20e1e78d832f76281e156f096d2814d7940b71c8"
+    },
+    {
+      "path": "docs/architecture/AGENT_CONTEXT_PACKET_V1.schema.json",
+      "sha256": "9df153859a96e92f372f4f7730d77c89e25301f7c5eacbbd67ef1d8132764e0b"
+    },
+    {
+      "path": "test/contracts/agent-architecture-guardrails.contract.test.js",
+      "sha256": "f1fc96736335b142ec80c536d7cec4a1007e4b6ba56abf1cb8a63b8e518c962f"
+    },
+    {
+      "path": "test/contracts/agent-context-restoration.contract.test.mjs",
+      "sha256": "043be16d9452ab4573a016723f5c579196780b96e7cb4924b92087ab252c0066"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--agent-scoped-context.md",
+      "sha256": "79bb05db5510a9986ba0065b57078fb18f91ce45c4c4d2f92ff17e827718084b"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--mac-project-open-content.md",
+      "sha256": "aa4d99e29d14645b9a4856dfd497b64e09813d18af6caaf16f85413162ec0219"
+    },
+    {
+      "path": "src/renderer/centralSheetStripProofDecision.js",
+      "sha256": "d8d95a42da7ac60aaade90e569e5e9d7c259a0c6128d610fe570dfcdbb951888"
+    },
+    {
+      "path": "test/unit/central-sheet-strip-proof-decision.test.js",
+      "sha256": "27bdf738ea15cd1cd0cb9a4b8b87e320dc9f7882b44708f9c200fa8d584cc454"
+    },
+    {
+      "path": "test/unit/central-sheet-strip-proof.test.js",
+      "sha256": "918721b452530111ecc6aa8dce47cd52cb38210f2e41965f29a90637f202f840"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--mac-longform-visible-editor.md",
+      "sha256": "b49e583450c7e00f760d26e0a35ce272ecfc72672458522a5634cf5b49303423"
+    },
+    {
+      "path": "test/contracts/rtk-word-media-editor.contract.test.js",
+      "sha256": "92d1839c1b27a2abe5ef9feac3ade0ee204bbeed3a96428e594e63109f1ee1d4"
+    },
+    {
+      "path": "test/contracts/rtk-word-table-editor.contract.test.js",
+      "sha256": "0a705c7739a4fb1a8e2aa96aaab988a9262c735f617c10a411fc2894f32844b7"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--mac-archive-directory-roundtrip.md",
+      "sha256": "c85ed97826071353a58cecbc4ae5ffcc29464912f21ffc135e4632c740f7bc8b"
+    },
+    {
+      "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "71c2ba4bf10413ab86860da0a74efeacfd03afd962232d79858f91904e4a5799"
+    },
+    {
+      "path": "src/renderer/flags.js",
+      "sha256": "5b486c284dbbf0b56f6c54c45618bcc35963a4ad52efa295ba9abf3f88e2a1f0"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--full-mac-atlas-map.md",
+      "sha256": "cbdf7d76dd6ba4aa8629c4f831971ed6a8c2596b8af424a28d029106b8a5f1b2"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js",
+      "sha256": "56b457a5e61a37001b4272b7b2786832507f1c06bc2de377d39fa46dd20cdc55"
+    },
+    {
+      "path": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "b5f81617a93154acaf42868e9887d132c2d6d974c85cb65c1e4e6f6130f2e250"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
+      "sha256": "c99ecc3dc19f47d035012e57007d80fce50bc414c0bddc30d73d0012033b750f"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
+      "sha256": "f9dc3a4d96b085c2435fad6e82de75411b7d16db02d183745dd2466b98cb5380"
+    },
+    {
+      "path": "test/unit/paste-focus-signal.test.js",
+      "sha256": "42e0e9f60ecf0c30a42c0f28fa1cb824fac321797e842e93cd0ddc034bf5b125"
+    },
+    {
+      "path": "test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js",
+      "sha256": "59731a41f16205bfe97a26bc25a4fba81eb6f0d0a8ff177882d10ddec2459637"
+    },
+    {
+      "path": "test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js",
+      "sha256": "85d268c8b860f3b02154b38a65cfc8569ba674c06aa29d413e1664acdfe12813"
+    },
+    {
+      "path": "test/unit/metadata-inspector-read-model-main.test.js",
+      "sha256": "df1e350e5f87cb3d696cda35ee7690b4b4fc92efbfe8b0f361c67f57515589b8"
+    },
+    {
+      "path": "test/unit/sector-m-preload-ui-command-bridge.test.js",
+      "sha256": "b6203a560a5b15766593cfe157d0eedac013f345692b896a23f6a6cfd1709114"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--mac-atlas-async-publication.md",
+      "sha256": "609fd9f214980af0f3395248e8765068e0f5a7d573308421805a8b456efc38cb"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
+      "sha256": "0c8cd5fb4af80321cfb4ac18e8a9b167489ffdcf7b9f0b26aafddb3d02a75696"
+    },
+    {
+      "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+      "sha256": "7df2331aa0c1a54806a5b512699b08f45bbcde71dc33aef3dc537a02fb53c407"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e05-c06-atlas-reports-saved-queries-boundary.contract.test.js",
+      "sha256": "31d6ccd7c2ee8f8554c2394bcd2a94f7c732f4c3f63bf971b647817674d92808"
+    },
+    {
+      "path": "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
+      "sha256": "ce641372a3d27709f2a1338f089753648dd48c48620f2e07faf344a3e5afa79d"
+    },
+    {
+      "path": "src/core/writer-local-profile-v1.cjs",
+      "sha256": "f76904db9c00bb68b21df2702acd5439e8a0e720aadf2bbcf718650fc0dd3caf"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
+      "sha256": "e7523889cca5d1baf8e14441f8745e5fbaa9aee347bbcc9c8c98824b04fbe26e"
+    },
+    {
+      "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "sha256": "3ca5647d347762241a1c754dfeafb36cd86129a7f0a46915b7615b61b21ff9b9"
+    },
+    {
+      "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
+      "sha256": "c8ef463bab5c27e8f79a10ca29c5107aa3b22f34111d539a4722897dd0900868"
+    },
+    {
+      "path": "test/unit/r24-wp307-writer-local-profile.test.js",
+      "sha256": "8fce4bdfa1ba6a35e63b8c3554b442e23c6b3e61210a90b0eb57d80af6e293dd"
+    },
+    {
+      "path": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "sha256": "699ed0c089ecb07f97c49a82f3b6920352534a7d4e1bcb5a179dd902c4f9ecb6"
+    },
+    {
+      "path": "test/unit/r24-ent0-port-enforcement.test.js",
+      "sha256": "c9c259b10814e9fa594b1e3109cec260be70cc2364e6af8c45d2d52ee45035be"
+    },
+    {
+      "path": "test/unit/r24-wp100-wiring-matrix.test.js",
+      "sha256": "86f37802fd8eb94f5df5731c81b85ab1379dc628ed1c63eeb875133aaf0ae689"
+    },
+    {
+      "path": "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs",
+      "sha256": "af309ce126538ce5e616fc2dac557cb135ffb3ef2b34606396f0ba1f4bce67fd"
+    },
+    {
+      "path": "src/core/runtime.mjs",
+      "sha256": "64f054c7555aac4a02dd31f47c138f5d25ad24028c7b8cf7b07576f8bb9f8122"
+    },
+    {
+      "path": "docs/tasks/2026-10-23--mac-manual-map-pdf.md",
+      "sha256": "375e9a3c6034ddd2b8baa99bc378279e5a69d8ebf9a9177e7a81ce299fab350a"
+    },
+    {
+      "path": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
+      "sha256": "a8dac9ffd24d6754d9a105000725f7f6b15242853bd83a40a79c146661fad7a9"
+    },
+    {
+      "path": "docs/tasks/2026-10-23--mac-manual-map-markdown.md",
+      "sha256": "587e316535b98aaf52f52dd49fab6d10d1e5148517a85787354be3685d5bed59"
+    },
+    {
+      "path": "src/core/registry.ts",
+      "sha256": "a44da04376a9b8d4887d9933a31c0fef73f61a052afafe63f27404dcc1b07e6b"
+    },
+    {
+      "path": "src/import/mindmap/v1/manualMapMarkdownPortabilityBridge.mjs",
+      "sha256": "179b218c1a0a23534d85fd1eb56c0bae19a5e318bb26011e8be3bf53355da5d3"
+    },
+    {
+      "path": "src/renderer/design-os/atlasFeatureIntegrationManifest.mjs",
+      "sha256": "24cc3917a4af72b278106c80e270dc69ee375ae3acb6bc9194a2df1dc46959d1"
+    },
+    {
+      "path": "src/shared/productCommandRegistry.cjs",
+      "sha256": "0d5edc3569c399e8143d1cdb0dcacfc312c7db777f8146e045567b426977d5d5"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e02d-c03-manual-map-markdown-portability-bridge.contract.test.js",
+      "sha256": "322ff3212890a8868e4faa2f479bc002b3e167b5753bd4b3ee0ae493355f5ba0"
+    }
+  ],
+  "guards": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c4f8990da57ffb8087152e22a2e8ebf867cf38dd9b62a97bb2ed3a31c435ebbe"
+    }
+  ]
+});
+
 const R24_INTEROP_MAC_MANUAL_MAP_PDF_EXPORT_SUCCESSOR = Object.freeze({
   "id": "YALKEN_MAC_MANUAL_MAP_PDF_EXPORT_20261023",
   "baseSha": "4a9779ae8b21d269db4ed4007c8a7ad0c553304e",
@@ -64032,7 +65172,7 @@ const R24_INTEROP_MAC_ARCHIVE_CORRECTNESS_SUCCESSOR = Object.freeze({
 
 export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
   const candidate=gitText(git,['rev-parse',candidateSha]);
-  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,R24_INTEROP_WORD_HOSTILE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_SUCCESSOR,R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR,R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR,R24_INTEROP_WORD_IMPORT_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_IMPORT_LOSS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_DISPLAY_SUCCESSOR,R24_INTEROP_WORD_MEDIA_TEXT_SUCCESSOR,R24_INTEROP_WORD_TABLE_PROPERTIES_SUCCESSOR,R24_INTEROP_WORD_COMPOSITE_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_CURRENT_STRUCTURE_SUCCESSOR,R24_INTEROP_WORD_MACOS27_SUCCESSOR,R24_INTEROP_WORD_IMPORT_CONTRACT_SUCCESSOR,R24_INTEROP_WORD_PROOF_SUCCESSOR,R24_INTEROP_WORD_READER_PIN_SUCCESSOR,R24_INTEROP_WORD_INLINE_ATOMS_SUCCESSOR,R24_INTEROP_WORD_VISIBILITY_RUBY_SUCCESSOR,R24_INTEROP_WORD_HTTP_LINKS_SUCCESSOR,R24_INTEROP_WORD_ROUND_KEY_DURABILITY_SUCCESSOR,R24_INTEROP_WORD_CLEAN_LINK_LABEL_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_AUTHORED_TOPOLOGY_SUCCESSOR,R24_INTEROP_WORD_LINK_LABEL_CONTEXT_SUCCESSOR,R24_INTEROP_WORD_NODE_NAME_INPUT_SUCCESSOR,R24_INTEROP_WORD_REVIEW_DEFAULT_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_COMBINED_LINK_RETURN_SUCCESSOR,R24_INTEROP_WORD_GENERIC_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_AUTHORING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHOR_SAVE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_DELTA_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_CLOSURE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_PROOFING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_SHADOW_REPLAY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_REPLY_RETURN_SUCCESSOR,R24_INTEROP_WORD_WATCHDOG_TEST_SUCCESSOR,R24_INTEROP_WORD_COMMENT_THREAD_DELETION_SUCCESSOR,R24_INTEROP_WORD_REVIEW_SELECTION_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_LITERAL_FONT_SUCCESSOR,R24_INTEROP_WORD_NEW_COMMENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETION_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETE_UI_SUCCESSOR,R24_INTEROP_WORD_COMMENT_PARAGRAPH_REBASE_SUCCESSOR,R24_INTEROP_WORD_DELIVERY_HISTORICAL_LOOKUP_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_JPEG_MEDIA_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_RETURN_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_REVISIONS_SUCCESSOR,R24_INTEROP_WORD_SCENE_DEFAULT_PROFILE_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_LISTS_SUCCESSOR,R24_INTEROP_WORD_PENDING_RICH_BLOCKS_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_MOVES_SUCCESSOR,R24_INTEROP_WORD_PENDING_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_TABLE_ROWS_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_SHIFT_SUCCESSOR,R24_INTEROP_WORD_CELL_SHIFT_CHAINS_SUCCESSOR,R24_INTEROP_WORD_USER_BOOKMARKS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_LISTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_FIRST_NOTE_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLES_SUCCESSOR,R24_INTEROP_WORD_NOTE_PANEL_FIT_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_MEDIA_SUCCESSOR,R24_INTEROP_WORD_LOCAL_IMAGE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_NOTES_SUCCESSOR,R24_INTEROP_WORD_NESTED_TABLES_SUCCESSOR,R24_INTEROP_WORD_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOKMARK_PARAGRAPHS_SUCCESSOR,R24_INTEROP_WORD_SCENE_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_SCENE_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_SPLIT_MERGE_SUCCESSOR,R24_INTEROP_WORD_CONCURRENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_LIST_FORMAT_SUCCESSOR,R24_INTEROP_WORD_LIST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_SCENE_CLEAN_RETURN_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_TYPED_BREAKS_SUCCESSOR,R24_INTEROP_WORD_SECTIONS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_HEADER_FOOTER_SUCCESSOR,R24_INTEROP_WORD_EFFECTIVE_STYLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_LAYOUT_SUCCESSOR,R24_INTEROP_WORD_RICH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_LIST_PATTERNS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHORS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_ATTEMPTS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_RESTART_SUCCESSOR,R24_INTEROP_WORD_MULTIPARAGRAPH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_BREAK_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_PENDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_DECISIONS_SUCCESSOR,R24_INTEROP_WORD_RECORDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOVEL_EDITORIAL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_MARK_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_NATIVE_EFFECTIVE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EDITOR_CODE_SCHEMA_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PROTECTED_CODE_REPRESENTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FINITE_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_LANGUAGE_PENDING_READBACK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_MARKER_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_PARAGRAPH_EXPECTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_REPLAY_PRESERVATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_NO_CHANGE_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_HANDLED_UNCHANGED_BOOK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_EMPTY_LEAF_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_GENERATED_ARTIFACT_DELIVERY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PENDING_TRANSPORT_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_MARKER_SOURCE_BINDING_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_CHECKED_MARK_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ORIGINAL_BOOKMARK_FIXTURE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_BOUNDED_NOVEL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_BOOK_FIXTURE_CONTINUITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PLAIN_SOURCE_PARAGRAPH_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_OWNED_OFFICE_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_SOURCE_INTERACTION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FULL_INTAKE_PROFILE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_IMPORTED_AUTHORING_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_IMPORTED_REPLAY_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PURE_ALLOCATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STOP_PUBLICATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STATIC_REPLAY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_RHS_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_EQUALITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_FULL_MANUSCRIPT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EXPLICIT_COMMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_EFFECTIVE_COMMENT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_SCENE_SOURCE_GROUP_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_PROJECTION_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_WINDOWS_ARGV_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_TAP_COMPAT_SUCCESSOR,R24_INTEROP_WORD_SCENE_SAVE_OBSERVATION_SUCCESSOR,R24_INTEROP_WORD_FULL_EXPORT_PROFILE_PROPAGATION_SUCCESSOR,R24_INTEROP_WORD_PARSER_QUERY_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_RETURN_SINGLE_PROJECTION_SUCCESSOR,R24_INTEROP_WORD_PREVIEW_NATIVE_WAIT_SUCCESSOR,R24_INTEROP_WORD_BOOK_NOTE_DEFAULTS_SUCCESSOR,R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_FULL500K_ATOMIC_IMPORT_SUCCESSOR,R24_INTEROP_WORD_NOVEL_ATOMIC_NOTE_RETURN_SUCCESSOR,R24_INTEROP_WORD_MAC_NORMAL_QUIT_SUCCESSOR,R24_INTEROP_WORD_YALKEN_ORIGIN_NOVEL_RETURN_SUCCESSOR,R24_INTEROP_WORD_RECORDING_STRUCTURAL_UNDO_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NATIVE_NOTES_SUCCESSOR,R24_INTEROP_WORD_COMMENT_TRANSIENT_HISTORY_SUCCESSOR,R24_INTEROP_WORD_STORAGE_DOCUMENTATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_TRANSPORT_PRECISION_SUCCESSOR,R24_INTEROP_WORD_NOTE_FREE_LANGUAGE_SUCCESSOR,R24_INTEROP_WORD_OPAQUE_COLOR_SUCCESSOR,R24_INTEROP_WORD_MAIN_TREE_READ_WORKER_SUCCESSOR,R24_INTEROP_WORD_RTK_RETIRED_MEMBER_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_TREE_PROJECT_QUERY_SCOPE_SUCCESSOR,R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MANIFEST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_NATIVE_PRIMITIVES_SUCCESSOR,R24_INTEROP_WORD_HISTORY_PRIVATE_PREPARATION_SUCCESSOR,R24_INTEROP_WORD_EXPORT_ACTIVATION_SUCCESSOR,R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CORRECTNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CONTRACTS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TEST_SCHEDULING_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_FS_PROFILES_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_OUTPUT_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TXT_ASSURANCE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_FIXTURE_SUCCESSOR,R24_INTEROP_CI_SINGLE_RTK_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_P03_ACTIVATION_SUCCESSOR,R24_INTEROP_MAC_PROJECT_OPEN_CONTENT_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_VISIBLE_EDITOR_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_CONTRACT_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_POST_OPEN_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_NATIVE_INPUT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SYNOPSIS_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_TRANSACTION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_RECONCILIATION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_CALLER_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_BINDING_COUNT_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ASYNC_PUBLICATION_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ER_QUERY_PARITY_SUCCESSOR,R24_INTEROP_MAC_ATLAS_SCENE_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ATLAS_REPORTS_BINDING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_AUTHORING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_CURRENT_BINDINGS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_NATIVE_DRAFT_KEYS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_ATTACHMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PRODUCTION_MATRIX_REPORTING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PDF_EXPORT_SUCCESSOR].find(set=>
+  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,R24_INTEROP_WORD_HOSTILE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_SUCCESSOR,R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR,R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR,R24_INTEROP_WORD_IMPORT_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_IMPORT_LOSS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_DISPLAY_SUCCESSOR,R24_INTEROP_WORD_MEDIA_TEXT_SUCCESSOR,R24_INTEROP_WORD_TABLE_PROPERTIES_SUCCESSOR,R24_INTEROP_WORD_COMPOSITE_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_CURRENT_STRUCTURE_SUCCESSOR,R24_INTEROP_WORD_MACOS27_SUCCESSOR,R24_INTEROP_WORD_IMPORT_CONTRACT_SUCCESSOR,R24_INTEROP_WORD_PROOF_SUCCESSOR,R24_INTEROP_WORD_READER_PIN_SUCCESSOR,R24_INTEROP_WORD_INLINE_ATOMS_SUCCESSOR,R24_INTEROP_WORD_VISIBILITY_RUBY_SUCCESSOR,R24_INTEROP_WORD_HTTP_LINKS_SUCCESSOR,R24_INTEROP_WORD_ROUND_KEY_DURABILITY_SUCCESSOR,R24_INTEROP_WORD_CLEAN_LINK_LABEL_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_AUTHORED_TOPOLOGY_SUCCESSOR,R24_INTEROP_WORD_LINK_LABEL_CONTEXT_SUCCESSOR,R24_INTEROP_WORD_NODE_NAME_INPUT_SUCCESSOR,R24_INTEROP_WORD_REVIEW_DEFAULT_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_COMBINED_LINK_RETURN_SUCCESSOR,R24_INTEROP_WORD_GENERIC_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_AUTHORING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHOR_SAVE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_DELTA_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_CLOSURE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_PROOFING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_SHADOW_REPLAY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_REPLY_RETURN_SUCCESSOR,R24_INTEROP_WORD_WATCHDOG_TEST_SUCCESSOR,R24_INTEROP_WORD_COMMENT_THREAD_DELETION_SUCCESSOR,R24_INTEROP_WORD_REVIEW_SELECTION_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_LITERAL_FONT_SUCCESSOR,R24_INTEROP_WORD_NEW_COMMENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETION_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETE_UI_SUCCESSOR,R24_INTEROP_WORD_COMMENT_PARAGRAPH_REBASE_SUCCESSOR,R24_INTEROP_WORD_DELIVERY_HISTORICAL_LOOKUP_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_JPEG_MEDIA_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_RETURN_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_REVISIONS_SUCCESSOR,R24_INTEROP_WORD_SCENE_DEFAULT_PROFILE_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_LISTS_SUCCESSOR,R24_INTEROP_WORD_PENDING_RICH_BLOCKS_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_MOVES_SUCCESSOR,R24_INTEROP_WORD_PENDING_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_TABLE_ROWS_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_SHIFT_SUCCESSOR,R24_INTEROP_WORD_CELL_SHIFT_CHAINS_SUCCESSOR,R24_INTEROP_WORD_USER_BOOKMARKS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_LISTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_FIRST_NOTE_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLES_SUCCESSOR,R24_INTEROP_WORD_NOTE_PANEL_FIT_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_MEDIA_SUCCESSOR,R24_INTEROP_WORD_LOCAL_IMAGE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_NOTES_SUCCESSOR,R24_INTEROP_WORD_NESTED_TABLES_SUCCESSOR,R24_INTEROP_WORD_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOKMARK_PARAGRAPHS_SUCCESSOR,R24_INTEROP_WORD_SCENE_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_SCENE_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_SPLIT_MERGE_SUCCESSOR,R24_INTEROP_WORD_CONCURRENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_LIST_FORMAT_SUCCESSOR,R24_INTEROP_WORD_LIST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_SCENE_CLEAN_RETURN_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_TYPED_BREAKS_SUCCESSOR,R24_INTEROP_WORD_SECTIONS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_HEADER_FOOTER_SUCCESSOR,R24_INTEROP_WORD_EFFECTIVE_STYLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_LAYOUT_SUCCESSOR,R24_INTEROP_WORD_RICH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_LIST_PATTERNS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHORS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_ATTEMPTS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_RESTART_SUCCESSOR,R24_INTEROP_WORD_MULTIPARAGRAPH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_BREAK_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_PENDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_DECISIONS_SUCCESSOR,R24_INTEROP_WORD_RECORDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOVEL_EDITORIAL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_MARK_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_NATIVE_EFFECTIVE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EDITOR_CODE_SCHEMA_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PROTECTED_CODE_REPRESENTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FINITE_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_LANGUAGE_PENDING_READBACK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_MARKER_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_PARAGRAPH_EXPECTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_REPLAY_PRESERVATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_NO_CHANGE_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_HANDLED_UNCHANGED_BOOK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_EMPTY_LEAF_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_GENERATED_ARTIFACT_DELIVERY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PENDING_TRANSPORT_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_MARKER_SOURCE_BINDING_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_CHECKED_MARK_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ORIGINAL_BOOKMARK_FIXTURE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_BOUNDED_NOVEL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_BOOK_FIXTURE_CONTINUITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PLAIN_SOURCE_PARAGRAPH_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_OWNED_OFFICE_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_SOURCE_INTERACTION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FULL_INTAKE_PROFILE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_IMPORTED_AUTHORING_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_IMPORTED_REPLAY_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PURE_ALLOCATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STOP_PUBLICATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STATIC_REPLAY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_RHS_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_EQUALITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_FULL_MANUSCRIPT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EXPLICIT_COMMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_EFFECTIVE_COMMENT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_SCENE_SOURCE_GROUP_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_PROJECTION_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_WINDOWS_ARGV_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_TAP_COMPAT_SUCCESSOR,R24_INTEROP_WORD_SCENE_SAVE_OBSERVATION_SUCCESSOR,R24_INTEROP_WORD_FULL_EXPORT_PROFILE_PROPAGATION_SUCCESSOR,R24_INTEROP_WORD_PARSER_QUERY_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_RETURN_SINGLE_PROJECTION_SUCCESSOR,R24_INTEROP_WORD_PREVIEW_NATIVE_WAIT_SUCCESSOR,R24_INTEROP_WORD_BOOK_NOTE_DEFAULTS_SUCCESSOR,R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_FULL500K_ATOMIC_IMPORT_SUCCESSOR,R24_INTEROP_WORD_NOVEL_ATOMIC_NOTE_RETURN_SUCCESSOR,R24_INTEROP_WORD_MAC_NORMAL_QUIT_SUCCESSOR,R24_INTEROP_WORD_YALKEN_ORIGIN_NOVEL_RETURN_SUCCESSOR,R24_INTEROP_WORD_RECORDING_STRUCTURAL_UNDO_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NATIVE_NOTES_SUCCESSOR,R24_INTEROP_WORD_COMMENT_TRANSIENT_HISTORY_SUCCESSOR,R24_INTEROP_WORD_STORAGE_DOCUMENTATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_TRANSPORT_PRECISION_SUCCESSOR,R24_INTEROP_WORD_NOTE_FREE_LANGUAGE_SUCCESSOR,R24_INTEROP_WORD_OPAQUE_COLOR_SUCCESSOR,R24_INTEROP_WORD_MAIN_TREE_READ_WORKER_SUCCESSOR,R24_INTEROP_WORD_RTK_RETIRED_MEMBER_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_TREE_PROJECT_QUERY_SCOPE_SUCCESSOR,R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MANIFEST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_NATIVE_PRIMITIVES_SUCCESSOR,R24_INTEROP_WORD_HISTORY_PRIVATE_PREPARATION_SUCCESSOR,R24_INTEROP_WORD_EXPORT_ACTIVATION_SUCCESSOR,R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CORRECTNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CONTRACTS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TEST_SCHEDULING_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_FS_PROFILES_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_OUTPUT_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TXT_ASSURANCE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_FIXTURE_SUCCESSOR,R24_INTEROP_CI_SINGLE_RTK_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_P03_ACTIVATION_SUCCESSOR,R24_INTEROP_MAC_PROJECT_OPEN_CONTENT_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_VISIBLE_EDITOR_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_CONTRACT_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_POST_OPEN_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_NATIVE_INPUT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SYNOPSIS_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_TRANSACTION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_RECONCILIATION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_CALLER_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_BINDING_COUNT_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ASYNC_PUBLICATION_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ER_QUERY_PARITY_SUCCESSOR,R24_INTEROP_MAC_ATLAS_SCENE_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ATLAS_REPORTS_BINDING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_AUTHORING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_CURRENT_BINDINGS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_NATIVE_DRAFT_KEYS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_ATTACHMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PRODUCTION_MATRIX_REPORTING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PDF_EXPORT_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR].find(set=>
     [...set.bindings,...(set.guards||[])].every(binding=>{
       try{return h(objectBytes(git,candidate,binding.path))===binding.sha256;}
       catch{return false;}
