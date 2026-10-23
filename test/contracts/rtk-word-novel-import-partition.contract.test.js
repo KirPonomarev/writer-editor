@@ -1638,7 +1638,7 @@ async function actualRichRecordingSavePort(t,f,scene,options={}) {
     COMMAND_SURFACE_KERNEL_COMMAND_IDS:{PROJECT_SAVE:'cmd.project.save'},saveLastFile:async()=>{},dialog:{showMessageBox:async()=>({response:0})},
   });
   const r=vm.createContext({...envelope,parseDocumentContent:envelope.parseObservablePayload,currentEditorInstance:editor,
-    currentProjectId:f.projectId,currentDocumentId:scene.relativeFile,currentTreeContentPublicationId:'',isTiptapMode:true,
+    currentProjectId:f.projectId,currentDocumentId:scene.relativeFile,currentTreeContentPublicationId:'',currentRightTab:'notes',isTiptapMode:true,
     centralSheetStripLargePayloadFastPathActive:false,localEditGeneration:0,lastAckedGeneration:0,localDirty:false,
     wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),storyDrafts:new Map(),flowModeState:{active:false},
     notesMutationPending:false,storyMutationPending:false,pendingStoryRequestId:null,

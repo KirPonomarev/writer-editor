@@ -249,7 +249,7 @@ test('WP307 profile contract carries no persistence, network or external authori
 // Actual Main under an inert Electron host: no app/renderer/native launch.
 // Only the host platform is explicit so the packaged-Darwin policy is also
 // exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
-async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = {}) {
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false } = {}) {
   const os = require('node:os'), Module = require('node:module');
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
   const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
@@ -270,7 +270,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
     }
     h.window = this; this.isDestroyed = () => false; this.on = () => {};
     this.webContents = { id: 713, session: {}, isDestroyed: () => false, on() {}, setWindowOpenHandler() {},
-      getURL: () => h.shellUrl, send: (channel, payload) => {
+      getURL: () => h.shellUrl, setZoomFactor() {}, send: (channel, payload) => {
         h.sent.push([channel, payload]);
         if (channel === 'editor:set-text') h.editor = { ...payload, generation: 0 };
         if (channel === 'editor:snapshot-request') queueMicrotask(() => h.listeners.get('editor:snapshot-response')(
@@ -279,7 +279,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
     this.loadFile = (file, { query }) => {
       const url = require('node:url').pathToFileURL(file);
       for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
-      h.shellUrl = url.href; return new Promise(() => {}); // No renderer/startup.
+      h.shellUrl = url.href; return rendererLoaded ? Promise.resolve() : new Promise(() => {}); // Finite load completion only when requested; no renderer.
     };
   }
   InertWindow.getAllWindows = () => [h.window]; InertWindow.getFocusedWindow = () => h.window;
@@ -310,6 +310,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
     const host = `const process = new Proxy(global.process, {get(t,k){return k==='platform'?${JSON.stringify(platform)}:Reflect.get(t,k)}});\n`;
     compiled._compile(host + read('src/main.js') + `\nmodule.exports.__profile = () => getWriterLocalRuntimeProfile();
       module.exports.__host = {
+        async editorReady() { await editorStartupReadyPromise; },
         revokeOwner() { activeStage10ApplicationBootstrap = null; },
         invalidateSession() { commentAuthoringSessionId = crypto.randomUUID(); },
         invalidateGeneration() { lastSignaledEditGeneration += 1; },
@@ -322,6 +323,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin' } = 
           const result = await prepare(...args); await callback(); return result; }; }
       };`, mainPath);
     h.main = compiled.exports; h.main.createWindow();
+    if (rendererLoaded) await h.main.__host.editorReady();
     const manager = require(filePath), previous = manager.getDocumentsPath;
     manager.getDocumentsPath = () => path.join(documents, 'craftsman');
     t.after(() => { manager.getDocumentsPath = previous; delete require.cache[filePath]; });
@@ -1067,4 +1069,46 @@ test('exact Atlas actual Main rejects stale source evidence without altering aut
   assert.equal(refused.ok, false, JSON.stringify(refused)); assert.match(JSON.stringify(refused), /E_ATLAS_EVIDENCE_STALE/u);
   assert.deepEqual(fs.readFileSync(f.scenePath), newer); assert.deepEqual(h.roster(), before);
   assert.equal(JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions?.stale, undefined);
+});
+
+
+test('AF1 actual renderer Main SaveACK and canonical source queries preserve author truth across append prefix restoration and reopen [FINITE_IPC_NOT_NATIVE_ACCEPTANCE]', async t => {
+  const h = await fullMacMainFixture(t, { rendererLoaded: true }), f = await exactAtlasScene(h, 'Source evidence continuity'), ui = await fullMacRendererCommandPort(h);
+  const { projectId, sceneId } = f, entityId = 'continuity-mira', decisionId = 'continuity-first';
+  assert.equal((await ui('atlas.entity.create', { projectId, entityId, name: 'Мира', entityKind: 'character' })).mainResult.ok, true);
+  const query = async () => {
+    const before = h.roster(), result = await h.query('query.atlasCurrentScene', { projectId, nodeId: sceneId });
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.deepEqual(h.roster(), before, 'query must not mutate manifest scene or history'); return result.atlasCurrentScene;
+  };
+  const first = (await query()).mentions.find(m => m.startOffset === 14); assert.ok(first);
+  assert.equal((await ui('atlas.mention.confirm', { projectId, sceneId, entityId, mentionId: first.mentionId, evidenceAnchor: first.evidenceAnchor, decisionId })).mainResult.ok, true);
+  const originalDecision = JSON.stringify(JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions[decisionId]);
+  assert.equal((await query()).mentions[0].trustState, 'AUTHOR_CONFIRMED');
+  const opened = await h.main.handleUiOpenDocumentCommand({ projectId, nodeId: sceneId }); assert.equal(opened.ok, true, JSON.stringify(opened));
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs'); let generation = 0;
+  const save = async text => {
+    const built = envelope.composeDocumentContentFromBase({ baseContent: h.editor.content, nextVisibleText: text }); assert.equal(built.ok, true);
+    h.editor = { ...h.editor, projectId, documentId: sceneId, content: built.content, plainText: text, generation: ++generation };
+    const signal = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', 'signal.localDirty.set', { state: true, generation });
+    const raised = await h.handlers.get('ui:save-lifecycle-signal-bridge')(h.event(), signal); assert.equal(raised.ok, true, JSON.stringify(raised));
+    const unsavedBytes = fs.readFileSync(f.scenePath); await query(); assert.deepEqual(fs.readFileSync(f.scenePath), unsavedBytes);
+    const saved = (await ui('cmd.project.save', {})).mainResult; assert.equal(saved.ok, true, JSON.stringify(saved));
+    const ack = h.sent.filter(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED').at(-1)?.[1]?.ack;
+    assert.ok(ack, 'actual current Main must publish a durable SaveACK'); assert.equal(ack.savedGeneration, generation);
+    const raw = fs.readFileSync(f.scenePath), parsed = envelope.parseObservablePayload(raw.toString('utf8'));
+    assert.equal(parsed.issue, null); assert.equal(parsed.text, text);
+    assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions[decisionId]), originalDecision);
+    return query();
+  };
+  const appended = await save(EXACT_ATLAS_TEXT + ' Автор дописал абзац.');
+  assert.equal(appended.mentions[0].mentionId, first.mentionId); assert.notDeepEqual(appended.mentions[0].evidenceAnchor, first.evidenceAnchor);
+  assert.equal(appended.mentions[0].trustState, 'ALGORITHMIC_OBSERVATION'); assert.equal(appended.mentions[0].decisionId, '');
+  const shifted = await save('Добавлено. ' + EXACT_ATLAS_TEXT);
+  assert.deepEqual(shifted.mentions.map(m => [m.matchedText, m.startOffset, m.endOffset, m.trustState]), [
+    ['Мира', 25, 29, 'ALGORITHMIC_OBSERVATION'], ['Мира', 68, 72, 'ALGORITHMIC_OBSERVATION']]);
+  const restored = await save(EXACT_ATLAS_TEXT); assert.equal(restored.mentions[0].trustState, 'AUTHOR_CONFIRMED');
+  assert.equal(restored.mentions[0].decisionId, decisionId); const restoredBytes = fs.readFileSync(f.scenePath);
+  assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId })).ok, true);
+  assert.equal((await query()).mentions[0].trustState, 'AUTHOR_CONFIRMED'); assert.deepEqual(fs.readFileSync(f.scenePath), restoredBytes);
+  assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(f.manifestPath)).atlas.decisions[decisionId]), originalDecision);
 });

@@ -122,3 +122,9 @@ Exactly one text block with19keys from AGENT_FINAL_REPORT_V1.schema.json, basena
 ## FAIL_PROTOCOL
 
 Keep every actual failure with source/method/raw identity, classify fixture versus product cause without weakening assertions. Current exact-profile path evidence is bounded; no full language/performance/IME/a11y or release authority. Owner app/private data and unaccepted draft stay untouched. New reports/materials remain T777; APFS runtime only declared temporary. Original policy/authority/gates and complete Mac scope remain.
+
+## 2026-10-23 — Terminal delivery closure
+
+PR2152 normally merged4bb9129653afe5e1843845511f3d8d94a8bb8eea from18cbd1670c142d27fb50d1d5e3c2185cac5c18cb with identical tree1609080c3a9c443596951760b22e9b8a98e2c52b. Independent closure7faf0e482a1a3d59ae5e3c1f02f3516607079dc6fc9534f2b485c9530a2700a0 binds exact clean merged source,1642of1642whole affected,83focused,724release,47production across17named negative rows,172E0/40killed mutants,19Apply corruptions, and actual main20of20CI including4416RTK/full baseline on exact merged checkout. Prior native source/build/package hash identities and all1475ASAR/530bundle plus complete warm/cold profile archive members independently re-read; author data/scene preservation and normal native Quit/cold proven. Scope is one frozen unchanged scene; all17Mac qualification remains UNKNOWN, full Atlas/Mac/release is not accepted.
+
+Source edits are a distinct next product dependency. Native unchanged-M stale navigation and source-witness mismatch are routed through YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023 with fresh clean admission, owned synthetic project and protected prior data. Existing adjacent nonblocking defects stay deferred. No predecessor evidence is retagged as current edited-source proof.

@@ -1,3 +1,24 @@
+## 2026-10-23 — Atlas source-evidence continuity under exact source proof
+
+TASK_ID: YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_REVIEWED_FULL_GATES_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 4bb9129653afe5e1843845511f3d8d94a8bb8eea
+
+PR2152 is terminally closed: candidate18cbd167 normally merged4bb9129653afe5e1843845511f3d8d94a8bb8eea with identical tree1609080c3a9c443596951760b22e9b8a98e2c52b. Independent closure7faf0e482a1a3d59ae5e3c1f02f3516607079dc6fc9534f2b485c9530a2700a0 binds current source and whole affected1642of1642, main20of20CI with actual4416of4416RTK and full baseline, exact merged package/native entity/alias/three literal Unicode mentions/confirmation/normal Quit/cold and all archives. This qualifies one unchanged-scene journey; earlier pending predecessor entries are historical, not current failures.
+
+Fresh clean21path declaration/preflight actual0 preceded all current task edits. The code agent owns2runtime and4test paths; root owns bundle/docs/mechanical companions/delivery. All9979protected source paths, old profiles/Main/Core/inbox/coordinate semantics/storage/IPC/HTML/styles/typing path remain exact. Current bootstrap again resolves the same canon/HEAD; no dirty preflight rerun or scope expansion. Existing Core shared envelope is consumed only for saved source identity, never to map or relocate offsets.
+
+Unchanged-M actual native RED selects old14–18 as `ало ` after prefix `Добавлено. ` even after durable SAVED generation3. Fresh query selects correct25–29; restoration SAVED4 returns canonical scene bytes exactly. Original authored records and all66prior document files stay byte-exact. Normal native Quit exits0. Independent full503member closed-profile archive SHA872f0cb72a5620184ab90d7915e9980ee2a83f876bac55ca0358738703518064 and closurea160ef4850780c907df0e24497a0a29603d546cd78f6fe58697c5b2bd39d8823 retained. One new readable backup appeared during query/focus interval and exactly equals saved prefixed source; no zero-filesystem-write claim. Closed result78document files are the next preservation baseline.
+
+Maintained whole causal tests run before correction; retained RED02 is323tests278pass45causal failures,zero cancelled/skip/todo. Initial inert startup fixture cancellation and all later method/refusal/source-pin findings remain recorded. Pure dossier now requires exact current full-source witness, retains legal historical omitted identity, refuses malformed identity, and honours only validated latest explicit reattachment without rewriting original records. Renderer refuses dirty/unacknowledged/stale source before selection or publication; only exact current SAVED refreshes active journey/currentScene. No per-input hash/query or new authority.
+
+Independent production Tiptap/shared-envelope review exposed legal trailing-empty-paragraph compatibility; same actual adapters now admit unchanged coordinates only when canonical source is the exact raw-live prefix followed solely by LF. Leading or internally collapsed coordinates are explicitly unavailable; no heuristic relocation or new coordinate policy. Final whole R2 same-test238of238,zero cancelled/skip/todo, includes trailing1/2/3LF, NFD/astral/repeated names, source shifts and forged ranges extending into discarded LF. Earlier whole3files338of339 retains one expected root-owned current source-pin mismatch until mechanical rebinding. These finite/source results are not native acceptance.
+
+Normal bundle build actual0 follows source freeze. Current companions derive775DATA/635source/299certificate from unique existing sets, preserving all296historical tuples/predicates and1603inventory members/classes/lanes/skips;3genuinelymissing paths and2DONE admissions only. Final required source/whole40affected plus release/full baseline/officialRTK/CI, new exact package/native edits/current Save/correct navigation/author no-loss/Quit/cold/full readback, ordinary merge and exact merged verification remain mandatory. Full Atlas12stages/15cells/4projections and full first Mac/maps/WSE/Pulse/epochs remain incomplete; Black Box later.
+
+Known native field Undo/Open Project menu/Cancel/long-dialog/exFAT, moderate Electron and59pre-existing named baseline skips remain open. All17full-Mac qualification UNKNOWN and release permission unchanged. Owner checkout/private state and all historical evidence preserved; new reports/artifacts on verified T777, only declared owned APFS runtime.
+
 ## 2026-10-23 — Exact Atlas scene journey source reviewed; actual app proof pending
 
 TASK_ID: YALKEN_MAC_ATLAS_EXACT_JOURNEY_20261023

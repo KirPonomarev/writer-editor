@@ -80,20 +80,57 @@ function listDecisions(project) {
     .sort()
     .map((decisionId) => {
       const decision = isPlainObject(decisions[decisionId]) ? decisions[decisionId] : {};
-      return { decisionId, ...decision };
+      return { ...decision, decisionId };
     });
 }
 
-function buildDecisionLookup(project) {
-  const byMentionId = new Map();
-  const byAnchorId = new Map();
+function boundWitness(anchor, projectId, sceneId, entityId) {
+  if (!isPlainObject(anchor) || anchor.schemaVersion !== 'atlas.evidenceAnchor.v1' || !plainString(anchor.anchorId)
+    || !sceneId || !entityId || !Number.isSafeInteger(anchor.startOffset) || anchor.startOffset < 0
+    || !Number.isSafeInteger(anchor.endOffset) || anchor.endOffset <= anchor.startOffset
+    || typeof anchor.quote !== 'string' || anchor.quote.length !== anchor.endOffset - anchor.startOffset
+    || anchor.quoteHash !== hashCanonicalValue(anchor.quote) || !/^[a-f0-9]{64}$/u.test(plainString(anchor.sceneTextHash))) return null;
+  for (const [key, expected] of Object.entries({ projectId, sceneId, entityId })) {
+    if (Object.hasOwn(anchor, key) && typeof anchor[key] !== 'string') return null;
+    if (plainString(anchor[key]) && anchor[key] !== expected) return null;
+  }
+  return { ...anchor, projectId, sceneId, entityId };
+}
+
+function sameWitness(left, right) {
+  return Boolean(left && right) && ['projectId', 'sceneId', 'entityId', 'startOffset', 'endOffset', 'quote', 'quoteHash', 'sceneTextHash']
+    .every((key) => left[key] === right[key]);
+}
+
+function buildDecisionLookup(project, projectId) {
+  const byEntityId = new Map();
+  const reattachments = Object.values(isPlainObject(project?.atlas?.evidenceReattachments) ? project.atlas.evidenceReattachments : {});
   for (const decision of listDecisions(project)) {
     if (decision.decisionKind !== 'mention.confirm' || decision.trustState !== ATLAS_TRUST_STATES.AUTHOR_CONFIRMED) continue;
-    if (plainString(decision.mentionId)) byMentionId.set(plainString(decision.mentionId), decision);
-    const anchorId = isPlainObject(decision.evidenceAnchor) ? plainString(decision.evidenceAnchor.anchorId) : '';
-    if (anchorId) byAnchorId.set(anchorId, decision);
+    if (decision.projectId !== projectId || decision.id !== decision.decisionId) continue;
+    const original = boundWitness(decision.evidenceAnchor, projectId, decision.sceneId, decision.entityId);
+    if (!original) continue;
+    const records = reattachments.filter((record) => isPlainObject(record)
+      && record.sourceRecordKind === 'decision' && record.sourceRecordId === decision.decisionId);
+    let anchor = original;
+    if (records.length) {
+      // Sequence is canonical chronology; bucket-key order cannot select author intent.
+      if (records.some((record) => !Number.isSafeInteger(record.createdByCommandSeq)
+        || record.createdByCommandSeq <= decision.createdByCommandSeq)) continue;
+      const sequence = Math.max(...records.map((record) => record.createdByCommandSeq));
+      const latest = records.filter((record) => record.createdByCommandSeq === sequence);
+      if (latest.length !== 1) continue;
+      const record = latest[0], rawDecision = project.atlas.decisions[decision.decisionId];
+      const stale = boundWitness(record.staleEvidenceAnchor, projectId, decision.sceneId, decision.entityId);
+      anchor = boundWitness(record.newEvidenceAnchor, projectId, plainString(record.newEvidenceAnchor?.sceneId), decision.entityId);
+      if (record.operationKind !== 'evidence.reattach' || record.projectId !== projectId
+        || record.automaticReattachment !== false || record.sourceRecordHash !== hashCanonicalValue(rawDecision)
+        || !sameWitness(stale, original) || stale.anchorId !== original.anchorId || !anchor) continue;
+    }
+    if (!byEntityId.has(decision.entityId)) byEntityId.set(decision.entityId, []);
+    byEntityId.get(decision.entityId).push({ decision, anchor, reattached: records.length > 0 });
   }
-  return { byMentionId, byAnchorId };
+  return byEntityId;
 }
 
 function buildContext(text, startOffset, endOffset) {
@@ -111,10 +148,10 @@ function buildContext(text, startOffset, endOffset) {
 function normalizeMentionForDossier(mention, sceneText, decisionLookup) {
   const startOffset = Number.isFinite(Number(mention.startOffset)) ? Number(mention.startOffset) : 0;
   const endOffset = Number.isFinite(Number(mention.endOffset)) ? Number(mention.endOffset) : startOffset;
-  const anchorId = isPlainObject(mention.evidenceAnchor) ? plainString(mention.evidenceAnchor.anchorId) : '';
-  const decision = decisionLookup.byMentionId.get(plainString(mention.mentionId))
-    || (anchorId ? decisionLookup.byAnchorId.get(anchorId) : null)
-    || null;
+  const witness = mention.evidenceAnchor;
+  const match = (decisionLookup.get(mention.entityId) || []).findLast(({ decision, anchor, reattached }) => sameWitness(anchor, witness)
+    && (reattached || decision.mentionId === mention.mentionId || anchor.anchorId === witness?.anchorId));
+  const decision = match?.decision || null;
   return {
     mentionId: plainString(mention.mentionId),
     sceneId: plainString(mention.sceneId),
@@ -180,7 +217,7 @@ function buildDossierFromIndex({ coreState, projectId, sceneId, sceneTitle, inde
     );
   }
   const sceneText = plainString(scene.text);
-  const decisionLookup = buildDecisionLookup(project);
+  const decisionLookup = buildDecisionLookup(project, projectId);
   const mentions = sortAtlasMentions(indexResult.value.mentions)
     .filter((mention) => mention.sceneId === sceneId)
     .map((mention) => normalizeMentionForDossier(mention, sceneText, decisionLookup));
