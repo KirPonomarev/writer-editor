@@ -4,8 +4,9 @@ TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
-HEAD_SHA_AT_START: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+BINDING_BASE_SHA: 30d691d468842c257c9970b53a81e22e644354c9
+HEAD_SHA_AT_START: 30d691d468842c257c9970b53a81e22e644354c9
+ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-select-all-20261023
 DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
@@ -20,7 +21,7 @@ T: Canonical menu config -> existing normalizer/successor snapshot -> artifact a
 H: Current canonical and packaged Edit menus contain only copy, despite an unused selectAll Main template. A single declared selectAll role through the actual packaged pipeline should restore Cmd+A; no renderer handler or global keyboard interception is needed.
 B: Preserve every other menu action, current filtering/capability/role policy, clipboard routes, Core/renderer/preload/IPC/storage, all authoring and project bytes, old snapshots/certificates and release/qualification truth. One coherent outcome and rollback.
 P: Append faithful maintained actual config/normalizer/artifact/Main regression; whole unchanged-source causal RED and same-test GREEN. Complete affected and required gates, exact package/native/cold, ordinary delivery and fresh merged proof.
-I: Clean exact M/source/tree/branch/fresh main, declared22paths/9976protected tracked paths, current snapshot/artifact/lock hashes, actual app/build/profile and focused target identity.
+I: Exact original M and clean same-task doc checkpoint30d691d4/source/tree/branch/fresh main, declared24paths/9974protected tracked paths, current snapshot/artifact/lock hashes, actual app/build/profile and focused target identity.
 
 ## ARTIFACT
 
@@ -40,9 +41,11 @@ Separate code agent owns only menu-config.v2.json, the Main runtime expectedSnap
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/release-candidate.mjs
 - scripts/ops/sector-m-scope-map.json
 - src/main.js
 - src/menu/menu-config.v2.json
@@ -53,13 +56,15 @@ Separate code agent owns only menu-config.v2.json, the Main runtime expectedSnap
 
 ## DENYLIST
 
-Everything else. In particular Core/renderer/bundles/preload/IPC/schema/persistence, generic menu normalizer/role builder/allowlist/lock verifier, dependencies and build scripts, snapshot old row, frozen release locks/qualification/authority and historical certificates/predicates stay exact. No reset/stash/clean/rebase/amend/force, hidden retry, filtered/deleted/skipped tests, raw-config runtime fallback, direct webContents.selectAll or global keyboard handler. No optional service discovery or licensing work.
+Everything else. In particular Core/renderer/bundles/preload/IPC/schema/persistence, generic menu normalizer/role builder/allowlist/lock verifier, dependencies and build scripts, snapshot old row, frozen release locks/qualification/authority and historical certificates/predicates stay exact. The current release-cut and matching release-candidate Main hash may follow actual Main bytes only; their other65bindings and every policy/qualification field stay exact. No reset/stash/clean/rebase/amend/force, hidden retry, filtered/deleted/skipped tests, raw-config runtime fallback, direct webContents.selectAll or global keyboard handler. No optional service discovery or licensing work.
 
 ## CONTRACT / SHAPES
 
 CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
 
 Fresh branch bootstrap actual0 and clean pre-edit architecture actual0 precede this first repository edit. Declaration8323ffe0362507dff13391755084570eee6fabf965d276d66230343eceaf99ad freezes22scope paths and9976other tracked paths on exact M. Ordered normative reads on identical M are retained from the continuing first-Mac task; AGENTS/resolver/protocol and current menu/code/factual terms are revisited. No full factual/P03 checkpoint or validated-cache claim. PRE checks never rerun after editing.
+
+Read-only separate-agent diagnosis identified two dependent current Main source pins after the initial task write. Original admission, taskE0 and doc-only guardrails actual0 are retained; ordinary checkpoint30d691d468842c257c9970b53a81e22e644354c9 contains only that task. Fresh clean bootstrap/preflight actual0 on checkpoint30d precede all runtime edits and this amendment. Declarationc79e10c009297e17c7e6879039d85fb23f49c3ea4a0d862f9266f342fe9ad62b adds only FIRST_MAC_RELEASE_CUT_V2 and release-candidate current Main pin paths:24scoped/9974protected tracked. This is a fresh clean same-contour admission, not rerun of PRE after dirty edits. Original delivery base remains M; no runtime or native acceptance at this checkpoint.
 
 ### Native role
 
@@ -79,7 +84,7 @@ Build from exact current inputs offline; inspect all ASAR leaves, native helper 
 
 ### Budgets and companions
 
-menu-config <=24 added lines; Main <=2 added+deleted, only expectedSnapshotId; keyboard maintained test <=320 appended lines. New task <=300lines; prior task <=16appended lines; each factual log <=60newlines preserving prior bytes. Generated artifacts may add only the new role plus actual successor metadata; snapshot registry only appends one row. Renderer/preload bundles and9997source denominator outside declared scope stay pinned.
+menu-config <=24 added lines; Main <=2 added+deleted, only expectedSnapshotId; keyboard maintained test <=320 appended lines. New task <=300lines; prior task <=16appended lines; each factual log <=60newlines preserving prior bytes. Generated artifacts may add only the new role plus actual successor metadata; snapshot registry only appends one row. FIRST_MAC_RELEASE_CUT_V2 and release-candidate each change only the actual current Main hash literal; other bytes stay exact. Renderer/preload bundles and9974protected tracked sources stay pinned.
 
 Root admits only this task and exact genuinely missing generated paths into DATA/DONE/current certificate. Derive real counts; add complete successor retaining all historical tuples/predicates. Inventory remains1603members/classes/lanes/skip policy with only actual changed test hashes. Approval witnesses append only exact current outputs. Apply corruption contract changes only successor ID/carrier/count literals; every corrupt-each-binding/mixed-source/ancestry predicate remains. No graph catalog, release cut, stage truth, skip or security policy widening.
 
@@ -87,7 +92,7 @@ Root admits only this task and exact genuinely missing generated paths into DATA
 
 1. Root closes predecessor, verifies registry/volumes/current main/clean worktree, reads current authority/code/evidence, freezes architecture/source and passes preflight before task write; taskE0 precedes code-agent ticket.
 2. Separate code agent appends causal tests, runs complete unchanged-M negative, changes only native role and expected snapshot literal; freezes source/tests and returns HOLD. Root independently reviews full diff and retained originals.
-3. Root uses existing explicit successor snapshot/export/lock CLI and exact mirrors; verifies single-role semantics and all9976protected paths. Updates bounded current mechanical companions/factual predecessor closure.
+3. Root uses existing explicit successor snapshot/export/lock CLI and exact mirrors; verifies single-role semantics and all9974protected paths. Updates bounded current mechanical companions/factual predecessor closure and two current Main source-pin literals.
 4. Complete whole focused/affected/source/full baseline/official RTK/CI with skips/audit truth and actual terminal/stream/cleanup proof. Build/native/cold actual outcomes and independent full archive readbacks.
 5. Ordinary commit/push/PR/current CI/normal merge, fetched clean exact merged relevant checks/build/native/closure; then continue complete first-Mac objective.
 
@@ -112,3 +117,7 @@ Exactly one text block with required19keys: TASK_ID, STATUS, HEAD_SHA_BEFORE, HE
 ## FAIL_PROTOCOL
 
 Retain each actual nonzero execution and source/method/log bindings. Distinguish fixture/reader preparation mistakes from unchanged-source causal failure without relaxing product oracle. Existing moderate Electron advisory,59named skips, old menu/release drift warnings, Cancel affordance and long-dialog limitation remain explicit. All17first-Mac qualification rows UNKNOWN; no full IME/numeric/security/signing/notary/distribution/owner permit claim. Full Atlas/maps/WSE/Pulse/epochs remains the overall task.
+
+### Actual bounded source and generated-menu checkpoint
+
+Root runtime review a68c13ba3b571ae2a45b20d0ab2beb81b48713df474a1e842fa330a2ec8e0a84 actual0 verifies11config/2Main/117appended-test lines and original3cases/9974protected files. Same final7case test bytes: unchanged-runtime3pass4fail; role/snapshot-source6pass1artifactfail; existing normal successor/create/export/lock and exact mirrors then7of7,0fail/cancel/skip/todo. Old snapshot row preserved; only native Select All menu semantic delta. Main9745522d and current two mechanical pins reviewed, no other65release-cut bindings or qualification fields changed. Finite child-role96context/sevenmutation coverage is not native OS acceptance. All required affected/gates/full baseline/RTK/CI/new package/native/cold/normal delivery and exact merged verification remain pending.

@@ -226,6 +226,17 @@
             "op": "flag",
             "name": "selectionExists"
           }
+        },
+        {
+          "id": "edit-select-all",
+          "role": "selectAll",
+          "mode": ["offline", "web_subset"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "all",
+            "args": []
+          }
         }
       ]
     },

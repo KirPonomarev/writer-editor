@@ -37974,7 +37974,7 @@ function verifyMenuArtifactLockAtRuntime() {
   const mode = resolveRuntimeMenuArtifactMode();
   const state = evaluateMenuArtifactLockState({
     mode,
-    expectedSnapshotId: 'menu-default-desktop-minimal',
+    expectedSnapshotId: 'menu-default-desktop-minimal-select-all-20261023',
   });
 
   if (state.result === MENU_ARTIFACT_RESULT_FAIL) {
