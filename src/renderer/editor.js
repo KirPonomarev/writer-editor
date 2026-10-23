@@ -14685,6 +14685,7 @@ async function runManualMapExportCommand(commandId, payload = {}) {
       lastCommandId: commandId,
       exportMapId: receipt.mapId || payload.mapId || '',
       exportJsonSha256: exported.jsonSha256 || manualMapPortabilityCommandState.exportJsonSha256,
+      markdownSha256: exported.markdownSha256 || manualMapPortabilityCommandState.markdownSha256,
       imageEvidenceHash: exported.evidenceHash || manualMapPortabilityCommandState.imageEvidenceHash,
       pdfSha256: exported.pdf?.binaryGenerated === true ? exported.sha256 : manualMapPortabilityCommandState.pdfSha256,
       pdfTypedLoss: exported.pdf?.binaryGenerated === true ? '' : exported.pdf?.typedLoss?.code || manualMapPortabilityCommandState.pdfTypedLoss,
@@ -15344,6 +15345,19 @@ function renderManualMapToolbar(parent, state, runtime, options = {}) {
     void runManualMapExportCommand('manualMap.export.imagePdf', { mapId, requestedFormat: 'pdf' });
   });
   actionBar.appendChild(pdfButton);
+  const markdownButton = document.createElement('button');
+  markdownButton.type = 'button';
+  markdownButton.className = imagePdfButton.className;
+  markdownButton.textContent = 'Export Markdown';
+  markdownButton.dataset.manualMapPortabilityAction = 'export-markdown';
+  markdownButton.dataset.productCommandId = 'manualMap.export.markdown';
+  markdownButton.disabled = !state.mapId || manualMapHasRetainedDraft();
+  markdownButton.title = 'Apply or cancel the current draft before exporting Markdown';
+  markdownButton.addEventListener('click', () => {
+    if (markdownButton.disabled || manualMapHasRetainedDraft()) return;
+    void runManualMapExportCommand('manualMap.export.markdown', { mapId });
+  });
+  actionBar.appendChild(markdownButton);
   actionBar.appendChild(makeManualMapDraftButton('Import JSON file', () => {
     const targetMapId = makeManualMapAuthorId('manual-map-imported');
     return {
@@ -15587,6 +15601,11 @@ function renderManualMapPortabilityCommandReadback(parent, options = {}) {
       key: 'pdf',
       label: 'PDF export',
       value: state.pdfSha256 ? state.pdfSha256.slice(0, 12) : 'not exported',
+    },
+    {
+      key: 'markdown',
+      label: 'Markdown export',
+      value: state.markdownSha256 ? state.markdownSha256.slice(0, 12) : 'not exported',
     },
     {
       key: 'import',

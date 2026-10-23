@@ -645,6 +645,14 @@
     {
       "commandId": "cmd.project.documentStories.options",
       "capabilityId": "cap.project.stories.authoring"
+    },
+    {
+      "commandId": "manualMap.export.markdown",
+      "capabilityId": "cap.manualMap.edit"
+    },
+    {
+      "commandId": "cmd.project.list.configureNumbering",
+      "capabilityId": "cap.project.list.configureNumbering"
     }
   ]
 }

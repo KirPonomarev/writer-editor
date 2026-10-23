@@ -77,7 +77,9 @@ function validateManualMapExportPayload(payload) {
 }
 
 function markdownEscapeHeading(value) {
-  return normalizeText(value).replaceAll('\n', ' ') || 'Manual map portability packet';
+  return normalizeText(value).replace(/\r\n|[\r\n\u2028\u2029]/gu, ' ')
+    .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+    .replace(/[\\`*_{}[\]()#+.!|~"']/gu, '\\$&') || 'Manual map portability packet';
 }
 
 function buildMarkdown(payload, options = {}) {

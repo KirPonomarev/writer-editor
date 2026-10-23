@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterManualMapProfileCandidate(profile)) {
     const id = normalizeIdentity(commandId);
     return manualMapProfileAccess(profile, WRITER_MANUAL_MAP_COMMAND_IDS.includes(commandId)
@@ -207,6 +208,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownQueryAccess(profile, queryId);
   if (isWriterManualMapProfileCandidate(profile)) {
     const id = normalizeIdentity(queryId);
     return manualMapProfileAccess(profile, WRITER_ATLAS_QUERY_IDS.includes(queryId),
@@ -224,6 +226,46 @@ function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
     reason: denied ? WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED : '',
     profileId: isActiveWriterLocalProfile(profile) ? WRITER_LOCAL_PROFILE_ID : '',
   });
+}
+
+// V4 adds only saved-map Markdown; historical projections remain closed.
+const WRITER_MANUAL_MAP_MARKDOWN_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v4';
+const WRITER_MANUAL_MAP_MARKDOWN_PROFILE_ID = 'WRITER_LOCAL_MANUAL_MAP_V4';
+const WRITER_MANUAL_MAP_MARKDOWN_COMMAND_IDS = Object.freeze([...WRITER_MANUAL_MAP_COMMAND_IDS, 'manualMap.export.markdown']);
+function createWriterManualMapMarkdownProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_MANUAL_MAP_MARKDOWN_PROFILE_SCHEMA_VERSION, profileId: WRITER_MANUAL_MAP_MARKDOWN_PROFILE_ID,
+    admittedCommandIds: WRITER_MANUAL_MAP_MARKDOWN_COMMAND_IDS, admittedQueryIds: WRITER_ATLAS_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterManualMapMarkdownProfileCandidate(profile) {
+  return isPlainObject(profile) && (profile.profileId === WRITER_MANUAL_MAP_MARKDOWN_PROFILE_ID
+    || profile.schemaVersion === WRITER_MANUAL_MAP_MARKDOWN_PROFILE_SCHEMA_VERSION);
+}
+function isActiveWriterManualMapMarkdownProfile(profile) {
+  if (!isWriterManualMapMarkdownProfileCandidate(profile)) return false;
+  const expected = createWriterManualMapMarkdownProfileProjection({ isPackaged: true, platform: 'darwin' });
+  return Object.keys(profile).length === Object.keys(expected).length && Object.keys(expected).every(key =>
+    Array.isArray(expected[key]) ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && expected[key].every((id, index) => profile[key][index] === id) : profile[key] === expected[key]);
+}
+function markdownProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterManualMapMarkdownProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_MANUAL_MAP_MARKDOWN_PROFILE_ID });
+}
+function evaluateMarkdownCommandAccess(profile, commandId, productCommandRecord) {
+  const id = normalizeIdentity(commandId);
+  const selected = WRITER_MANUAL_MAP_MARKDOWN_COMMAND_IDS.includes(commandId) && isPlainObject(productCommandRecord)
+    && productCommandRecord.id === commandId && productCommandRecord.domain === 'manualMap';
+  return markdownProfileAccess(profile, selected, isOptionalWriterLocalCommand(commandId, productCommandRecord)
+    || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+}
+function evaluateMarkdownQueryAccess(profile, queryId) {
+  const id = normalizeIdentity(queryId);
+  return markdownProfileAccess(profile, WRITER_ATLAS_QUERY_IDS.includes(queryId),
+    OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
 module.exports = Object.freeze({
@@ -250,4 +292,9 @@ module.exports = Object.freeze({
   WRITER_MANUAL_MAP_COMMAND_IDS,
   createWriterManualMapProfileProjection,
   isActiveWriterManualMapProfile,
+  WRITER_MANUAL_MAP_MARKDOWN_PROFILE_SCHEMA_VERSION,
+  WRITER_MANUAL_MAP_MARKDOWN_PROFILE_ID,
+  WRITER_MANUAL_MAP_MARKDOWN_COMMAND_IDS,
+  createWriterManualMapMarkdownProfileProjection,
+  isActiveWriterManualMapMarkdownProfile,
 });

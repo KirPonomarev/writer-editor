@@ -214,3 +214,34 @@ test('manual-map V3 independent oracles kill capability overgrant, malformed pol
     assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
   }
 });
+
+
+test('manual-map V4 independent oracles kill Markdown policy and query mutants without changing legacy mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8');
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'manual-map-v4-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const check = (m, commandId, allowed, patch = {}, record = { id: commandId, domain: commandId.startsWith('atlas.') ? 'atlas' : 'manualMap' }) => {
+    const profile = { ...m.createWriterManualMapMarkdownProfileProjection({ isPackaged: true, platform: 'darwin' }), ...patch };
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord: record }).allowed, allowed);
+  };
+  const mutants = [
+    ['overgrant', s => s.replace('isActiveWriterManualMapMarkdownProfile(profile) && (!optional || selected)', 'isActiveWriterManualMapMarkdownProfile(profile)'),
+      m => check(m, 'atlas.entity.create', false)],
+    ['malformed', s => s.replace('if (!isWriterManualMapMarkdownProfileCandidate(profile)) return false;', 'if (!isWriterManualMapMarkdownProfileCandidate(profile)) return false; return true;'),
+      m => check(m, 'manualMap.export.markdown', false, { optionalSystemsEnabled: true })],
+    ['missing Markdown', s => s.replace("...WRITER_MANUAL_MAP_COMMAND_IDS, 'manualMap.export.markdown'", "...WRITER_MANUAL_MAP_COMMAND_IDS, 'manualMap.export.markdown.disabled'"),
+      m => check(m, 'manualMap.export.markdown', true)],
+    ['wrong domain', s => s.replace("    && productCommandRecord.id === commandId && productCommandRecord.domain === 'manualMap';\n  return markdownProfileAccess", '    && productCommandRecord.id === commandId;\n  return markdownProfileAccess'),
+      m => check(m, 'manualMap.export.markdown', false, {}, { id: 'manualMap.export.markdown', domain: 'atlas' })],
+    ['query overgrant', s => s.replace('markdownProfileAccess(profile, WRITER_ATLAS_QUERY_IDS.includes(queryId),', 'markdownProfileAccess(profile, true,'), m => {
+      const profile = m.createWriterManualMapMarkdownProfileProjection({ isPackaged: true, platform: 'darwin' });
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.collabScopeLocal' }).allowed, false);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    const changed = transform(source); assert.notEqual(changed, source, name);
+    const file = path.join(root, name + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic(`MANUAL_MAP_V4_MUTANTS=${mutants.length}/${mutants.length}`);
+});

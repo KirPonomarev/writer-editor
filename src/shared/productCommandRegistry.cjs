@@ -274,6 +274,14 @@ const PRODUCT_COMMAND_ROWS = Object.freeze([
     capabilityId: 'cap.manualMap.edit',
   },
   {
+    key: 'MANUAL_MAP_EXPORT_MARKDOWN',
+    id: 'manualMap.export.markdown',
+    label: 'Manual Map Export Markdown',
+    group: 'manualMap',
+    domain: 'manualMap',
+    capabilityId: 'cap.manualMap.edit',
+  },
+  {
     key: 'MANUAL_MAP_IMPORT_JSON_REPEAT',
     id: 'manualMap.import.jsonRepeat',
     label: 'Manual Map Import JSON Repeat',

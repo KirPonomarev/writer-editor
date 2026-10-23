@@ -135,3 +135,7 @@ Exactly19 AGENT_FINAL_REPORT_V1.schema.json fields, one text block KEY: VALUE, b
 ## FAIL_PROTOCOL
 
 Retain original raw failure and source/build/profile/volume identities. Fixture/method failure is not causal product RED. Exit0 is process evidence, not user acceptance. Missing/stale/skipped/self-authored/different-head coverage is UNKNOWN or FAIL. Do not relabel prior native evidence, clear known defects, hide baseline warnings or broaden product claims.
+
+### Delivery closure retained before the next Markdown vertical
+
+PR2148 normally merged cfc2ec463907fba92ba42eab99281a9808267cc3 with exact main20/20CI including actual4414/4414RTK, clean relevant source/1222affected checks and independently verified fresh package/native PDF/Quit/cold raw preservation. Root closure32020e317d75b1bc4e21db1ee2d66a0bca467540999022d76176dc0ffb1745e3 is DELIVERY_CLOSED_WITH_KNOWN_LIMITATIONS. The failed top-level node_modules symlink package attempt remains rejected and unlaunched; corrected physical9910-member dependencies produced the completely verified package. MM-POSTMERGE-10/MM-PDF-UI-01/moderate audit/direct exFAT limits remain open. Full first-Mac product remains active; the next separately admitted outcome is saved-map Markdown export. Old execution/source/native identities are not relabelled.

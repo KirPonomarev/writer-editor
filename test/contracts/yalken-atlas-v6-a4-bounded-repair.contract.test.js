@@ -947,3 +947,111 @@ test('manual-map PDF v2 late foreign targets survive refusal and actual recovery
     assert.equal(fs.existsSync(reservation.candidatePath), false); assert.equal(fs.existsSync(reservation.backupPath), false);
   }
 });
+
+
+let markdownFixtureSequence = 0;
+async function markdownPersistenceFixture(t, previous = null, options = {}) {
+  const core = await importModule('src/core/runtime.mjs'), boot = await importModule('src/product/stage10ApplicationBootstrap.mjs');
+  const projectId = 'md-carrier-' + ++markdownFixtureSequence, h = await createHarness('md-carrier', projectId), identity = fs.lstatSync(h.root);
+  t.after(() => { const now = fs.lstatSync(h.root); assert.equal(now.dev, identity.dev); assert.equal(now.ino, identity.ino); fs.rmSync(h.root, { recursive: true }); });
+  const targetPath = path.join(fs.realpathSync(h.root), 'map.md'), manifestPath = path.join(h.projectRoot, 'project.craftsman.json');
+  if (previous !== null) fs.writeFileSync(targetPath, previous);
+  fs.writeFileSync(manifestPath, manifestTextForState(h.bootstrap.getRuntime().getSession().coreState, projectId, { protected: 'keep é 🧭' }));
+  let publisher;
+  if (process.platform === 'darwin') {
+    const helperPath = path.join(fs.realpathSync(h.root), 'helper');
+    require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({ outputPath: helperPath });
+    publisher = require('../../src/main/projectArchiveDarwinPublication.cjs').createDarwinExclusiveFilePublisher({ helperPath });
+  } else {
+    // Finite non-Darwin effect; NOT physical Darwin publication proof.
+    publisher = async ({ sourcePath, targetPath, assertCurrent }) => { await assertCurrent(); await fs.promises.copyFile(sourcePath, targetPath, fs.constants.COPYFILE_EXCL); };
+    publisher.assertAvailable = async ({ assertCurrent }) => { await assertCurrent(); return { available: true, readOnly: true }; };
+  }
+  const adapter = h.makeAdapter({ publishFileExclusive: publisher, onKillpoint: options.onKillpoint });
+  const bootstrap = boot.createStage10ApplicationBootstrap({ persistencePort: adapter }); await bootstrap.reopenProjectRuntime({ projectId });
+  const command = async (type, payload, external) => {
+    const state = bootstrap.getRuntime().getSession().coreState, text = fs.readFileSync(manifestPath, 'utf8');
+    return bootstrap.dispatchCanonicalProjectCommand(type, { projectId, mapId: 'map', ...payload },
+      { projectId, coreState: state, sourceHash: hashText(text), sourceRevision: state.data.lastCommandId,
+        prepareMutation: ({ nextCoreState }) => projectTruthMutation(projectId, text, manifestTextForState(nextCoreState, projectId, { protected: 'keep é 🧭' }), external) });
+  };
+  assert.equal((await command(core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE, { title: 'Map é 🧭' })).ok, true);
+  const derived = await importModule('src/derived/mindmap/deriveManualMapGraph.mjs'), bridge = await importModule('src/import/mindmap/v1/manualMapMarkdownPortabilityBridge.mjs');
+  const graph = derived.deriveManualMapGraph({ coreState: bootstrap.getRuntime().getSession().coreState, params: { projectId, mapId: 'map' }, capabilitySnapshot: { platformId: 'node', capabilities: { manualMapView: true } } });
+  assert.equal(graph.ok, true); const packet = bridge.buildManualMapMarkdownPortabilityBridge({ graph: graph.value, title: graph.value.title }); assert.equal(packet.ok, true);
+  const next = packet.value.markdown, carrier = (text = next) => ({ ...artifactMutation(targetPath, text, previous), format: 'markdown', mediaType: 'text/markdown' });
+  const dispatch = (external = carrier()) => command(core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_MARKDOWN,
+    { artifact: { schemaVersion: 'manualMap.localArtifactIntent.v1', format: 'markdown', mediaType: 'text/markdown', sha256: hashText(external.nextText), byteLength: Buffer.byteLength(external.nextText) } }, external);
+  return { ...h, adapter, targetPath, manifestPath, next, previous, carrier, dispatch, bridge,
+    reopen: () => h.makeAdapter({ publishFileExclusive: publisher }).readStage10State(projectId) };
+}
+
+test('manual-map Markdown text-v1 actual publication and four interruption schedules preserve UTF8 bytes [FINITE_NON_DARWIN_EFFECT]', async t => {
+  for (const previous of [null, '', '\ufeffPrevious e\u0301 👩‍🚀\n']) {
+    const h = await markdownPersistenceFixture(t, previous);
+    assert.equal((await h.dispatch()).ok, true); assert.deepEqual(fs.readFileSync(h.targetPath), Buffer.from(h.next));
+    assert.equal(h.bridge.parseManualMapMarkdownPortabilityBridge({ markdown: fs.readFileSync(h.targetPath, 'utf8') }).ok, true);
+    assert.equal((await h.reopen()).session.projectId, h.projectId); assert.equal(JSON.parse(fs.readFileSync(h.manifestPath)).protected, 'keep é 🧭');
+  }
+  for (const point of ['after-external-artifact-candidate', 'after-external-artifact-reserve', 'after-external-artifact-write', 'after-anchor-write']) {
+    let armed = false;
+    const h = await markdownPersistenceFixture(t, '\ufeffPrevious e\u0301 👩‍🚀\n', { onKillpoint(name) { if (armed && name === point) { armed = false; throw Error('MD_INTERRUPTION:' + point); } } });
+    const manifest = fs.readFileSync(h.manifestPath); armed = true; await assert.rejects(h.dispatch(), /MD_INTERRUPTION/u);
+    const journal = JSON.parse(fs.readFileSync(h.adapter.paths(h.projectId).transaction)), r = journal.externalArtifactReservation;
+    assert.deepEqual(journal.projectTruthMutation.externalArtifactMutation, h.carrier()); assert.equal(Object.keys(journal.projectTruthMutation.externalArtifactMutation).length, 9);
+    assert.deepEqual(fs.readFileSync(r.candidatePath), Buffer.from(h.next));
+    if (point !== 'after-external-artifact-candidate') assert.deepEqual(fs.readFileSync(r.backupPath), Buffer.from(h.previous));
+    assert.equal((await h.reopen()).recoveryConsumed, true);
+    assert.deepEqual(fs.readFileSync(h.targetPath), Buffer.from(point === 'after-anchor-write' ? h.next : h.previous));
+    if (point !== 'after-anchor-write') assert.deepEqual(fs.readFileSync(h.manifestPath), manifest);
+    assert.equal(fs.existsSync(r.candidatePath), false); assert.equal(fs.existsSync(r.backupPath), false);
+  }
+  const h = await markdownPersistenceFixture(t), text = h.next + ' '.repeat(8 * 1024 * 1024 - Buffer.byteLength(h.next));
+  assert.equal((await h.dispatch(h.carrier(text))).ok, true); assert.equal(fs.statSync(h.targetPath).size, 8 * 1024 * 1024);
+});
+
+test('manual-map Markdown text-v1 bounded reads refuse malformed and foreign inputs without overwriting [FINITE_NON_DARWIN_EFFECT]', async t => {
+  for (const patch of [{ format: ' markdown ' }, { mediaType: 'text/html' }, { previousExists: 1 }, { nextHash: '0'.repeat(64) },
+    { previousText: 'wrong' }, { previousText: 'x'.repeat(8 * 1024 * 1024 + 1) }]) {
+    const h = await markdownPersistenceFixture(t, 'Previous'), before = directoryDigest(h.projectRoot);
+    await assert.rejects(h.dispatch({ ...h.carrier(), ...patch }), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_MUTATION_INVALID');
+    assert.equal(directoryDigest(h.projectRoot), before); assert.equal(fs.readFileSync(h.targetPath, 'utf8'), 'Previous');
+  }
+  for (const location of ['target', 'candidate', 'backup', 'conflict']) for (const fault of ['invalid-utf8', 'oversize', 'symlink', 'changed']) {
+    let armed = false; const point = location === 'backup' ? 'after-external-artifact-reserve' : location === 'conflict' ? 'after-external-artifact-write' : 'after-external-artifact-candidate';
+    const h = await markdownPersistenceFixture(t, 'Previous', { onKillpoint(name) { if (armed && name === point) { armed = false; throw Error('MD_READ_FIXTURE'); } } });
+    let r; if (location !== 'target') { armed = true; await assert.rejects(h.dispatch(), /MD_READ_FIXTURE/u); r = JSON.parse(fs.readFileSync(h.adapter.paths(h.projectId).transaction)).externalArtifactReservation; }
+    const file = location === 'target' ? h.targetPath : r[location + 'Path'];
+    if (location === 'conflict') fs.writeFileSync(file, 'Concurrent');
+    if (fault === 'invalid-utf8') fs.writeFileSync(file, Buffer.from([0xff, 0xfe]));
+    if (fault === 'oversize') fs.truncateSync(file, 8 * 1024 * 1024 + 1);
+    if (fault === 'symlink') { fs.renameSync(file, file + '.original'); fs.symlinkSync(file + '.original', file); }
+    const before = fs.readFileSync(file), canonical = directoryDigest(h.projectRoot), originalOpen = fs.promises.open; let changed = false;
+    if (fault === 'changed') fs.promises.open = async (name, ...args) => {
+      const handle = await originalOpen(name, ...args); if (name !== file) return handle;
+      const read = handle.read.bind(handle); handle.read = async (...params) => { const result = await read(...params);
+        if (!changed) { changed = true; fs.appendFileSync(file, 'foreign'); } return result; }; return handle;
+    };
+    try { await assert.rejects(location === 'target' ? h.dispatch() : h.reopen(), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_READ_FAILED'); }
+    finally { fs.promises.open = originalOpen; }
+    assert.deepEqual(fs.readFileSync(file), fault === 'changed' ? Buffer.concat([before, Buffer.from('foreign')]) : before);
+    if (fault === 'changed') assert.equal(changed, true); assert.equal(directoryDigest(h.projectRoot), canonical);
+    if (r) { assert.equal(fs.existsSync(h.adapter.paths(h.projectId).transaction), true); assert.equal(fs.existsSync(r.candidatePath), true); }
+    else assert.equal(fs.existsSync(h.adapter.paths(h.projectId).transaction), false);
+  }
+  for (const point of ['after-external-artifact-candidate', 'after-external-artifact-reserve']) {
+    let armed = false, injected = false, h; const foreign = 'Concurrent e\u0301 👩‍🚀\n';
+    h = await markdownPersistenceFixture(t, 'Previous', { onKillpoint(name) {
+      if (armed && name === point) { armed = false; injected = true; fs.writeFileSync(h.targetPath, foreign); }
+    } });
+    const manifest = fs.readFileSync(h.manifestPath); armed = true;
+    await assert.rejects(h.dispatch(), error => error.code === 'E_STAGE10_EXTERNAL_ARTIFACT_CAS_FAILED');
+    assert.equal(injected, true); assert.deepEqual(fs.readFileSync(h.targetPath), Buffer.from(foreign));
+    const journal = JSON.parse(fs.readFileSync(h.adapter.paths(h.projectId).transaction)), r = journal.externalArtifactReservation;
+    assert.deepEqual(fs.readFileSync(r.candidatePath), Buffer.from(h.next));
+    if (point === 'after-external-artifact-reserve') assert.deepEqual(fs.readFileSync(r.backupPath), Buffer.from(h.previous));
+    assert.equal((await h.reopen()).recoveryConsumed, true); assert.deepEqual(fs.readFileSync(h.targetPath), Buffer.from(foreign));
+    assert.deepEqual(fs.readFileSync(h.manifestPath), manifest);
+    assert.equal(fs.existsSync(r.candidatePath), false); assert.equal(fs.existsSync(r.backupPath), false);
+  }
+});

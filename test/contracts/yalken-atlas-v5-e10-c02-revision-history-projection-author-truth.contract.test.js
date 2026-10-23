@@ -16,46 +16,33 @@ const HEX_D = 'd'.repeat(64);
 
 async function buildEventLog() {
   const collab = await loadModule('src/collab/eventLog.mjs');
-  const first = collab.appendEventLogEntry({
-    eventLog: collab.createEmptyEventLog(),
-    entry: {
-      opId: 'evt-project-create',
-      ts: '2026-07-30T16:20:00.000Z',
-      actorId: 'writer-A',
-      commandId: 'project.create',
-      payloadHash: `sha256:${HEX_A}`,
-      preStateHash: `sha256:${HEX_B}`,
-      postStateHash: `sha256:${HEX_C}`,
-    },
-  });
-  assert.equal(first.ok, true);
-  const second = collab.appendEventLogEntry({
-    eventLog: first.eventLog,
-    entry: {
-      opId: 'evt-language-tag',
-      ts: '2026-07-30T16:20:01.000Z',
-      actorId: 'writer-A',
-      commandId: 'atlas.languageTag.set',
-      payloadHash: `sha256:${HEX_B}`,
-      preStateHash: `sha256:${HEX_C}`,
-      postStateHash: `sha256:${HEX_D}`,
-    },
-  });
-  assert.equal(second.ok, true);
-  const third = collab.appendEventLogEntry({
-    eventLog: second.eventLog,
-    entry: {
-      opId: 'evt-text-edit',
-      ts: '2026-07-30T16:20:02.000Z',
-      actorId: 'writer-A',
-      commandId: 'project.applyTextEdit',
-      payloadHash: `sha256:${HEX_C}`,
-      preStateHash: `sha256:${HEX_D}`,
-      postStateHash: `sha256:${HEX_A}`,
-    },
-  });
-  assert.equal(third.ok, true);
-  return third.eventLog;
+  const core = await loadModule('src/core/runtime.mjs');
+  const productDomainEvents = await loadModule('src/product/domainEventPort.mjs');
+  const domainEventPort = productDomainEvents.createCoreDomainEventProductPort();
+  let currentState = core.createInitialCoreState();
+  let eventLog = collab.createEmptyEventLog();
+  const sequence = [
+    { opId: 'evt-project-create', ts: '2026-07-30T16:20:00.000Z',
+      commandId: core.CORE_COMMAND_IDS.PROJECT_CREATE,
+      payload: { projectId: PROJECT_ID, title: 'History Projection', sceneId: 'scene-1' } },
+    { opId: 'evt-language-tag', ts: '2026-07-30T16:20:01.000Z',
+      commandId: core.CORE_COMMAND_IDS.ATLAS_LANGUAGE_TAG_SET,
+      payload: { projectId: PROJECT_ID, scopeKind: 'project', languageCode: 'ru' } },
+    { opId: 'evt-text-edit', ts: '2026-07-30T16:20:02.000Z',
+      commandId: core.CORE_COMMAND_IDS.PROJECT_APPLY_TEXT_EDIT,
+      payload: { projectId: PROJECT_ID, sceneId: 'scene-1', text: '# must-not-copy manuscript\n' } },
+  ];
+  for (const step of sequence) {
+    const applied = collab.applyCommandWithEventLog({
+      eventLog, currentState, currentStateHash: core.hashCoreState(currentState), domainEventPort,
+      ...step, eventId: step.opId, actorId: 'writer-A', projectId: PROJECT_ID,
+      applyCommand: (state, command) => core.reduceCoreState(state, command),
+    });
+    assert.equal(applied.ok, true, JSON.stringify(applied.error || {}));
+    eventLog = applied.eventLog;
+    currentState = applied.state;
+  }
+  return eventLog;
 }
 
 function buildReviewOutcome() {

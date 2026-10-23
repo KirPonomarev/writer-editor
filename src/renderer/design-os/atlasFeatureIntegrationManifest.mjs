@@ -67,6 +67,7 @@ const ATLAS_SURFACE_CONTRIBUTIONS = Object.freeze([
       'manualMap.template.apply',
       'manualMap.export.json',
       'manualMap.export.imagePdf',
+      'manualMap.export.markdown',
       'manualMap.import.jsonRepeat',
     ],
     capabilityIds: ['cap.manualMap.edit'],

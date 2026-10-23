@@ -365,7 +365,7 @@ function fullMacPdfPublication(h) {
   }
 }
 
-async function fullMacRendererCommandPort(h) {
+async function fullMacRendererCommandPort(h, { allowUnregistered = false } = {}) {
   const vm = require('node:vm');
   const registryModule = await import('../../src/renderer/commands/registry.mjs');
   const projectModule = await import('../../src/renderer/commands/projectCommands.mjs');
@@ -392,6 +392,7 @@ async function fullMacRendererCommandPort(h) {
   return async (id, payload, tiptap = true) => {
     context.isTiptapMode = tiptap; last = null;
     const result = await context.dispatchUiCommand(id, payload);
+    if (allowUnregistered && !last) return { request: null, mainResult: null, result };
     assert.ok(last, 'actual renderer registry/runner/bus must reach Main');
     assert.equal(result.ok, last.mainResult.ok, 'renderer result must agree with Main');
     return { ...last, result };
@@ -431,8 +432,8 @@ test('full Mac actual guarded Main admits FREE map create add and queries under 
 
 test('full Mac actual Main keeps profile caller entitlement and optional refusals before effects', async t => {
   const h = await fullMacMainFixture(t), before = h.roster();
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_MANUAL_MAP_V3');
-  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_MANUAL_MAP_V3');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_MANUAL_MAP_V4');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_MANUAL_MAP_V4');
   const unselected = ['atlas', 'idea', 'meaning', 'blackBox', 'stage10'].map(domain =>
     productRegistry.PRODUCT_COMMAND_RECORDS.find(row => row.domain === domain && !['manualMap.create', 'manualMap.node.add'].includes(row.id)).id);
   for (const id of unselected) {
@@ -445,7 +446,7 @@ test('full Mac actual Main keeps profile caller entitlement and optional refusal
   for (const id of ['query.atlasCurrentScene.extra', 'query.manualMapWorkbench ']) assert.equal((await h.query(id)).ok, false, id);
   const event = h.event();
   for (const forged of [{ ...event, sender: { ...event.sender, id: 999 } }, { ...event, sender: { ...event.sender, session: {} } },
-    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_V1') } }])
+    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_V1') } }])
     await assert.rejects(h.command('manualMap.create', {}, forged), /E_IPC_/u);
   assert.deepEqual(h.roster(), before);
   const source = await fullMacMainFixture(t, { packaged: false });
@@ -482,7 +483,7 @@ test('full Mac actual Main consumes current project capability owner and source 
 test('full Mac flags preserve the old cut and expose only the existing Atlas tab for the new hint', () => {
   const vm = require('node:vm'), selectors = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]',
     '[data-right-tab="atlas"]', '[data-toolbar-item-key="review-comment"]', '[data-atlas-reachability-opener]'];
-  for (const id of ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_ATLAS_V2.extra', '']) {
+  for (const id of ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_MANUAL_MAP_V4.extra', 'WRITER_LOCAL_ATLAS_V2.extra', '']) {
     const elements = Object.fromEntries(selectors.map(selector => [selector, { hidden: false, disabled: false, tabIndex: 0,
       attrs: {}, style: { setProperty(name, value, priority) { this[name] = [value, priority]; } },
       setAttribute(name, value) { this.attrs[name] = value; } }]));
@@ -492,12 +493,12 @@ test('full Mac flags preserve the old cut and expose only the existing Atlas tab
     vm.runInNewContext(read('src/renderer/flags.js'), { window, document, URLSearchParams, console: { log() {} } });
     callbacks.forEach(callback => callback());
     for (const selector of selectors) {
-      const hidden = id === 'WRITER_LOCAL_V1' || ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3'].includes(id) && selector !== '[data-right-tab="atlas"]';
+      const hidden = id === 'WRITER_LOCAL_V1' || ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4'].includes(id) && selector !== '[data-right-tab="atlas"]';
       assert.equal(elements[selector].hidden, hidden, id + selector); assert.equal(elements[selector].disabled, hidden);
       assert.equal(elements[selector].tabIndex, hidden ? -1 : 0);
       if (hidden) { assert.equal(elements[selector].attrs['aria-hidden'], 'true'); assert.deepEqual(elements[selector].style.display, ['none', 'important']); }
     }
-    assert.equal(window.__PRODUCT_PROFILE, ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3'].includes(id) ? id : '');
+    assert.equal(window.__PRODUCT_PROFILE, ['WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4'].includes(id) ? id : '');
   }
 });
 
@@ -812,5 +813,140 @@ test('manual-map Core admits strict PDF metadata only through existing imagePdf 
   for (const extra of [{ format: ' pdf ' }, { mediaType: 'image/svg+xml' }, { byteLength: '420' }, { byteLength: 0 },
     { byteLength: 8 * 1024 * 1024 + 1 }, { byteLength: 1.5 }, { sha256: ' ' + artifact.sha256 }, { sha256: 'z'.repeat(64) }]) {
     const refused = run(extra); assert.equal(refused.ok, false, JSON.stringify(extra)); assert.deepEqual(refused.state, state);
+  }
+});
+
+
+test('manual-map Markdown actual renderer-to-Main exports a saved UTF8 packet [FINITE_IPC_NOT_NATIVE_ACCEPTANCE]', async t => {
+  const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h, { allowUnregistered: true });
+  fullMacPdfPublication(h);
+  const made = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Markdown packet' }); assert.equal(made.ok, true);
+  const payload = { projectId: made.projectId, mapId: 'map' }, title = 'Карта <script> e\u0301 🧭';
+  assert.equal((await ui('manualMap.create', { ...payload, title })).mainResult.ok, true);
+  assert.equal((await ui('manualMap.node.add', { ...payload, nodeId: 'n', label: '```\n# <img> e\u0301 👩‍🚀' })).mainResult.ok, true);
+  const svg = path.join(h.root, 'map.svg'), target = path.join(h.root, 'map.md'); let saves = 0, options;
+  h.dialog.showSaveDialog = async (...args) => { options = args.at(-1); return { canceled: false, filePath: ++saves === 1 ? svg : target }; };
+  assert.equal((await ui('manualMap.export.imagePdf', payload)).mainResult.ok, true);
+  assert.match(fs.readFileSync(svg, 'utf8'), /<svg/u);
+  const before = h.roster(), response = await ui('manualMap.export.markdown', payload);
+  const unchanged = JSON.stringify(before) === JSON.stringify(h.roster());
+  t.diagnostic(JSON.stringify({ result: response.result, saves, canonicalUnchanged: unchanged, reachedMain: !!response.mainResult }));
+  if (!response.result.ok) { assert.equal(unchanged, true); assert.equal(saves, 1); assert.equal(response.result.error.code, 'E_COMMAND_NOT_FOUND'); }
+  assert.equal(response.result.ok, true, JSON.stringify(response.result));
+  assert.equal(response.request.payload.editorMode, 'tiptap'); assert.equal(response.mainResult.ok, true);
+  assert.deepEqual(options.filters, [{ name: 'Markdown', extensions: ['md'] }]); assert.match(options.defaultPath, /\.md$/u);
+  const bytes = fs.readFileSync(target), receipt = response.mainResult.value.export;
+  assert.equal(receipt.format, 'markdown'); assert.equal(receipt.mediaType, 'text/markdown');
+  assert.equal(receipt.sha256, crypto.createHash('sha256').update(bytes).digest('hex')); assert.equal(receipt.byteLength, bytes.length);
+  const bridge = await import('../../src/import/mindmap/v1/manualMapMarkdownPortabilityBridge.mjs');
+  const parsed = bridge.parseManualMapMarkdownPortabilityBridge({ markdown: bytes.toString('utf8') }); assert.equal(parsed.ok, true);
+  assert.equal(parsed.value.mapId, payload.mapId); assert.equal(parsed.value.payload.title, title);
+  assert.equal(parsed.value.payload.nodes[0].label, '```\n# <img> e\u0301 👩‍🚀'); assert.notEqual(receipt.sha256, parsed.value.markdownHash);
+  assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId: made.projectId })).ok, true);
+  assert.equal((await h.query('query.manualMapWorkbench', payload)).manualMapWorkbench.graph.nodes[0].id, 'n');
+});
+
+
+test('manual-map Markdown transport rejects unknown authority before the Save effect', async t => {
+  const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h);
+  const made = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Markdown intent guards' }); assert.equal(made.ok, true);
+  const payload = { projectId: made.projectId, mapId: 'map' };
+  assert.equal((await ui('manualMap.create', { ...payload, title: 'Saved' })).mainResult.ok, true);
+  let saves = 0; h.dialog.showSaveDialog = async () => { saves++; return { canceled: true }; }; const before = h.roster();
+  for (const key of ['path', 'targetPath', 'source', 'payload', 'artifact', 'content', 'markdown', 'sha256', 'byteLength', 'requestedFormat', 'extra']) {
+    const result = (await ui('manualMap.export.markdown', { ...payload, [key]: 'forged' })).mainResult;
+    assert.equal(result.ok, false, key); assert.equal(result.reason, 'MANUAL_MAP_MARKDOWN_INTENT_INVALID');
+    assert.equal(saves, 0); assert.deepEqual(h.roster(), before);
+  }
+  for (const key of ['mapId', 'projectId']) for (const value of [null, false, {}, [], '', '   ', 'x'.repeat(1001)]) {
+    const result = (await ui('manualMap.export.markdown', { ...payload, [key]: value })).mainResult;
+    assert.equal(result.ok, false, key + ':' + JSON.stringify(value));
+    assert.equal(saves, 0, key + ':' + JSON.stringify(value) + ':' + JSON.stringify(result)); assert.deepEqual(h.roster(), before);
+  }
+  for (const editorMode of [null, false, {}, ['tiptap'], '', 'TIPTAP', 'legacy.extra']) {
+    const result = await h.command('manualMap.export.markdown', { ...payload, editorMode });
+    assert.equal(result.ok, false, JSON.stringify(editorMode)); assert.equal(result.reason, 'MANUAL_MAP_MARKDOWN_INTENT_INVALID');
+    assert.equal(saves, 0); assert.deepEqual(h.roster(), before);
+  }
+});
+
+test('manual-map Markdown actual Main cancellation and after-await refusals retain source and external bytes', async t => {
+  for (const fault of ['cancel', 'owner', 'session', 'generation', 'window', 'project-away-back', 'capability', 'revision',
+    'read-capability', 'changed-read', 'invalid-utf8', 'oversize', 'symlink', 'inside-project']) {
+    const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h);
+    const made = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Markdown guards' }); assert.equal(made.ok, true);
+    const payload = { projectId: made.projectId, mapId: 'map' };
+    assert.equal((await ui('manualMap.create', { ...payload, title: 'Saved' })).mainResult.ok, true);
+    const manifest = path.join(h.documents, 'craftsman', 'Markdown guards', 'project.craftsman.json');
+    const target = fault === 'inside-project' ? path.join(path.dirname(manifest), 'map.md') : path.join(h.root, 'map.md');
+    const previous = Buffer.from('\ufeffPrevious e\u0301 🧭\n'); let expected = previous;
+    fs.writeFileSync(target, previous);
+    if (fault === 'invalid-utf8') { expected = Buffer.from([0xff, 0xfe]); fs.writeFileSync(target, expected); }
+    if (fault === 'oversize') fs.truncateSync(target, 8 * 1024 * 1024 + 1);
+    if (fault === 'symlink') { fs.renameSync(target, target + '.original'); fs.symlinkSync(target + '.original', target); }
+    let newer, saves = 0, changed = false;
+    h.dialog.showSaveDialog = async () => {
+      saves++; await Promise.resolve();
+      if (fault === 'owner') h.main.__host.revokeOwner();
+      if (fault === 'session') h.main.__host.invalidateSession();
+      if (fault === 'generation') h.main.__host.invalidateGeneration();
+      if (fault === 'window') h.window.isDestroyed = () => true;
+      if (fault === 'project-away-back') assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId: made.projectId })).ok, true);
+      if (fault === 'capability') h.main.__host.denyCapability();
+      if (fault === 'revision') { newer = JSON.stringify({ ...JSON.parse(fs.readFileSync(manifest)), concurrent: 'keep' }); fs.writeFileSync(manifest, newer); }
+      return { canceled: fault === 'cancel', filePath: target };
+    };
+    const originalOpen = fs.promises.open;
+    if (['changed-read', 'read-capability'].includes(fault)) fs.promises.open = async (name, ...args) => {
+      const handle = await originalOpen(name, ...args); if (name !== target) return handle;
+      const read = handle.read.bind(handle); handle.read = async (...params) => {
+        const result = await read(...params); if (!changed) { changed = true;
+          if (fault === 'changed-read') { expected = Buffer.concat([previous, Buffer.from('foreign')]); fs.writeFileSync(target, expected); }
+          else h.main.__host.denyCapability();
+        } return result;
+      }; return handle;
+    };
+    const before = h.roster(), oldManifest = fs.readFileSync(manifest); let result;
+    try { result = (await ui('manualMap.export.markdown', payload)).mainResult; } finally { fs.promises.open = originalOpen; }
+    assert.equal(result.ok, false, fault + ':' + JSON.stringify(result)); assert.equal(saves, 1);
+    if (fault === 'revision') {
+      assert.equal(fs.readFileSync(manifest, 'utf8'), newer);
+      assert.deepEqual(h.roster().filter(([name]) => !name.endsWith('/project.craftsman.json')), before.filter(([name]) => !name.endsWith('/project.craftsman.json')));
+    } else { assert.deepEqual(fs.readFileSync(manifest), oldManifest); assert.deepEqual(h.roster(), before); }
+    if (['changed-read', 'read-capability'].includes(fault)) assert.equal(changed, true);
+    if (!['oversize', 'symlink'].includes(fault)) assert.deepEqual(fs.readFileSync(target), expected);
+    if (fault === 'symlink') assert.equal(fs.lstatSync(target).isSymbolicLink(), true);
+  }
+});
+
+test('manual-map Markdown Core metadata stays format-specific with exact raw hash and safe UTF8 length', async () => {
+  const core = await import('../../src/core/runtime.mjs');
+  const built = core.applyCoreSequence(core.createInitialCoreState(), [
+    { type: core.CORE_COMMAND_IDS.PROJECT_CREATE, payload: { projectId: 'md-core', title: 'A' } },
+    { type: core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE, payload: { projectId: 'md-core', mapId: 'map', title: 'A' } },
+  ]); assert.equal(built.ok, true); const state = built.state;
+  const artifact = { schemaVersion: 'manualMap.localArtifactIntent.v1', format: 'markdown', mediaType: 'text/markdown', sha256: 'a'.repeat(64), byteLength: 1 };
+  const run = (extra, type = core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_MARKDOWN) => core.reduceCoreState(state,
+    { type, payload: { projectId: 'md-core', mapId: 'map', artifact: { ...artifact, ...extra } } });
+  assert.equal(run({}).ok, true); assert.equal(run({ byteLength: 8 * 1024 * 1024 }).ok, true);
+  for (const type of [core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_JSON, core.CORE_COMMAND_IDS.MANUAL_MAP_EXPORT_IMAGE_PDF]) assert.equal(run({}, type).ok, false);
+  for (const extra of [{ format: 'json' }, { format: ' markdown ' }, { mediaType: 'application/json' }, { sha256: ' ' + artifact.sha256 },
+    { sha256: 'z'.repeat(64) }, { byteLength: '1' }, { byteLength: 0 }, { byteLength: 1.5 }, { byteLength: 8 * 1024 * 1024 + 1 }]) {
+    const refused = run(extra); assert.equal(refused.ok, false, JSON.stringify(extra)); assert.deepEqual(refused.state, state);
+  }
+});
+
+
+test('manual-map Markdown actual Main overwrites empty and BOM UTF8 targets in both editor modes', async t => {
+  const h = await fullMacMainFixture(t), ui = await fullMacRendererCommandPort(h); fullMacPdfPublication(h);
+  const made = await h.main.handleProjectLifecycleCreateCommand({ projectName: 'Markdown previous bytes' }); assert.equal(made.ok, true);
+  const payload = { projectId: made.projectId, mapId: 'map' };
+  assert.equal((await ui('manualMap.create', { ...payload, title: 'e\u0301 🧭' })).mainResult.ok, true);
+  const target = path.join(h.root, 'map.md'); h.dialog.showSaveDialog = async () => ({ canceled: false, filePath: target });
+  for (const [previous, tiptap] of [['', true], ['\ufeffPrevious e\u0301 👩‍🚀\n', false]]) {
+    fs.writeFileSync(target, previous); const { mainResult: result, request } = await ui('manualMap.export.markdown', payload, tiptap);
+    assert.equal(request.payload.editorMode, tiptap ? 'tiptap' : 'legacy'); assert.equal(result.ok, true, JSON.stringify(result));
+    const bytes = fs.readFileSync(target); assert.equal(result.value.export.sha256, crypto.createHash('sha256').update(bytes).digest('hex'));
+    assert.equal(result.value.export.byteLength, bytes.length); assert.equal(fs.readdirSync(h.root).some(name => name.includes('.stage10-cas.')), false);
   }
 });
