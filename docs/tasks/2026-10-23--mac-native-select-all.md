@@ -1,0 +1,114 @@
+# Restore native Select All through the governed menu
+
+TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
+TYPE: CORE
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+BINDING_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+HEAD_SHA_AT_START: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+TARGET_BRANCH: main
+PUSH_BRANCH: codex/mac-native-select-all-20261023
+DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
+OWNER_AUTHORITY: Continuing complete first-Mac product, full Atlas/maps/WSE/Pulse/environment epochs and unrestricted synthetic/native testing; ordinary delivery authorized. Black Box later. Ignore unsolicited licensing message from another chat.
+PREDECESSOR: PR2150 normal merge ad9209ace5b27543c1ff27c0e34549f828bf6c9a, H5a3e722266ed977e6cf1db6006ac71fa508d2fc4, same treeb89c1d68304e94942c6a91e09aeda70ef4e0c46b. Independent terminal closure6d70223f0b8cfda8f54ee9e5b0e7751df3d983b9b6b4e799cb81a309398deaa7 actual0 is DELIVERY_CLOSED_WITH_KNOWN_LIMITATIONS, not full Mac acceptance.
+STORAGE: Registered encrypted unlocked writable T7-Secure linked worktree; verified T777 dated2026-10-23--mac-native-select-all evidence/materials. Owned declared temporary APFS runtime for native tests/build only. Final exports/profile archives/reports T777. Existing owner checkout6decd915, installed app/private state and old evidence preserved. Qualified physical offline9910member410036997byte dependencies matched completely, no install or root symlink.
+
+## MICRO_GOAL
+
+O: Cmd+A selects the complete current focused native input, textarea or Writer target through the existing Electron native menu role, without changing the working text or project. Explicit subsequent editing/Undo/Save remains correct.
+T: Canonical menu config -> existing normalizer/successor snapshot -> artifact and active lock -> exact packaged mirror -> artifact-first Main resolver/context/presentation -> existing allowlisted native role -> focused-control transient selection. Product writes retain their existing Command Kernel/Core path.
+H: Current canonical and packaged Edit menus contain only copy, despite an unused selectAll Main template. A single declared selectAll role through the actual packaged pipeline should restore Cmd+A; no renderer handler or global keyboard interception is needed.
+B: Preserve every other menu action, current filtering/capability/role policy, clipboard routes, Core/renderer/preload/IPC/storage, all authoring and project bytes, old snapshots/certificates and release/qualification truth. One coherent outcome and rollback.
+P: Append faithful maintained actual config/normalizer/artifact/Main regression; whole unchanged-source causal RED and same-test GREEN. Complete affected and required gates, exact package/native/cold, ordinary delivery and fresh merged proof.
+I: Clean exact M/source/tree/branch/fresh main, declared22paths/9976protected tracked paths, current snapshot/artifact/lock hashes, actual app/build/profile and focused target identity.
+
+## ARTIFACT
+
+Separate code agent owns only menu-config.v2.json, the Main runtime expectedSnapshotId literal and appended keyboard-shortcuts.test.js cases. Root owns this task, factual closure, normal generated menu/snapshot/lock mirrors, current mechanical companions, independent review/tests/native and Git delivery. No renderer bundle change.
+
+## ALLOWLIST
+
+- docs/CONTEXT.md
+- docs/HANDOFF.md
+- docs/WORKLOG.md
+- docs/tasks/2026-10-23--mac-map-live-controls.md
+- docs/tasks/2026-10-23--mac-native-select-all.md
+- docs/OPS/ARTIFACTS/menu/menu.normalized.json
+- docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json
+- docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/sector-m-scope-map.json
+- src/main.js
+- src/menu/menu-config.v2.json
+- src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json
+- src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json
+- test/unit/keyboard-shortcuts.test.js
+- test/contracts/rtk-word-comment-return-apply.contract.test.js
+
+## DENYLIST
+
+Everything else. In particular Core/renderer/bundles/preload/IPC/schema/persistence, generic menu normalizer/role builder/allowlist/lock verifier, dependencies and build scripts, snapshot old row, frozen release locks/qualification/authority and historical certificates/predicates stay exact. No reset/stash/clean/rebase/amend/force, hidden retry, filtered/deleted/skipped tests, raw-config runtime fallback, direct webContents.selectAll or global keyboard handler. No optional service discovery or licensing work.
+
+## CONTRACT / SHAPES
+
+CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
+
+Fresh branch bootstrap actual0 and clean pre-edit architecture actual0 precede this first repository edit. Declaration8323ffe0362507dff13391755084570eee6fabf965d276d66230343eceaf99ad freezes22scope paths and9976other tracked paths on exact M. Ordered normative reads on identical M are retained from the continuing first-Mac task; AGENTS/resolver/protocol and current menu/code/factual terms are revisited. No full factual/P03 checkpoint or validated-cache claim. PRE checks never rerun after editing.
+
+### Native role
+
+Add only edit-select-all with role selectAll, using the same admitted modes/profiles/stages as current Edit support and unconditional enabledWhen all with empty args. Select All must work with selectionExists=false and hasDocument=false. Do not attach a command, action, label, accelerator or custom callback; existing Electron role defaults supply native behavior. The existing Main role branch and ALLOWED_MENU_ROLES stay byte-exact.
+
+Append successor menu-default-desktop-minimal-select-all-20261023 to the snapshot registry; preserve the entire original row. Use existing CLI with explicit successor ID to create/export/lock the current menu. Canonical artifact and runtime-governance mirror must match exactly; likewise both active lock bytes. Main changes only expectedSnapshotId to that successor. Preserve known mirror lock artifactPath behavior and report its old advisory instead of broadening scope.
+
+All other normalized items, commands, locale, context, sourceRefs and policy remain equivalent after removing the one new role and expected version metadata. A new generated timestamp/base commit describes actual generation; it is not exact final-commit execution evidence. No false signing/release/qualification grant follows from regeneration.
+
+### Proof
+
+Keep all3 original keyboard test cases and helpers byte-exact; append actual config/normalizer/artifact resolver/Main builder tests. A regex finding an unused template is insufficient. Run the whole maintained file with unchanged M input first; retain actual failure causes and same test bytes for corrected proof. Test supported context/profile/stage, absent selection/document, no product-command/extra role mutation and preserved copy/paste/cut route behavior. Actual native Cmd+A remains required; finite tests do not prove OS input.
+
+Root regenerates artifacts separately after semantic source review. If only the artifact-dependent case remains RED before generation, retain it honestly; do not construct a fake successful artifact. Any independently needed test correction must retain the original old case/predicate and actual failure identity.
+
+Build from exact current inputs offline; inspect all ASAR leaves, native helper and complete bundle archive. Native CUA on owned synthetic profile only, with passive read-only observation; no DOM/AX product value or selection assignment. Verify whole Unicode input/textarea/Writer selection and unchanged bytes, explicit replacement then Undo/Save via native UI, normal Quit/cold re-open, raw history/manuscript/map preservation and full closed profile archives on T777. Preserve installed owner app. Use source-derived independence for expected outcomes; no artifact-fitted PASS.
+
+### Budgets and companions
+
+menu-config <=24 added lines; Main <=2 added+deleted, only expectedSnapshotId; keyboard maintained test <=320 appended lines. New task <=300lines; prior task <=16appended lines; each factual log <=60newlines preserving prior bytes. Generated artifacts may add only the new role plus actual successor metadata; snapshot registry only appends one row. Renderer/preload bundles and9997source denominator outside declared scope stay pinned.
+
+Root admits only this task and exact genuinely missing generated paths into DATA/DONE/current certificate. Derive real counts; add complete successor retaining all historical tuples/predicates. Inventory remains1603members/classes/lanes/skip policy with only actual changed test hashes. Approval witnesses append only exact current outputs. Apply corruption contract changes only successor ID/carrier/count literals; every corrupt-each-binding/mixed-source/ancestry predicate remains. No graph catalog, release cut, stage truth, skip or security policy widening.
+
+## IMPLEMENTATION_STEPS
+
+1. Root closes predecessor, verifies registry/volumes/current main/clean worktree, reads current authority/code/evidence, freezes architecture/source and passes preflight before task write; taskE0 precedes code-agent ticket.
+2. Separate code agent appends causal tests, runs complete unchanged-M negative, changes only native role and expected snapshot literal; freezes source/tests and returns HOLD. Root independently reviews full diff and retained originals.
+3. Root uses existing explicit successor snapshot/export/lock CLI and exact mirrors; verifies single-role semantics and all9976protected paths. Updates bounded current mechanical companions/factual predecessor closure.
+4. Complete whole focused/affected/source/full baseline/official RTK/CI with skips/audit truth and actual terminal/stream/cleanup proof. Build/native/cold actual outcomes and independent full archive readbacks.
+5. Ordinary commit/push/PR/current CI/normal merge, fetched clean exact merged relevant checks/build/native/closure; then continue complete first-Mac objective.
+
+## CHECKS
+
+CHECK_01_PRE_ADMISSION: Registered exact M/branch/fresh remote, clean/protected source, storage/owner state, predecessor closure and startup, actual clean architecture0 before edit.
+CHECK_02_POST_TASK_RED: Actual taskE0 and whole unchanged-source keyboard causal negative before runtime edits; original3cases preserved.
+CHECK_03_POST_SOURCE: Whole corrected keyboard file; exact minimal runtime diff/budgets and independent preserved originals/source review, artifact-dependent result honest.
+CHECK_04_POST_ARTIFACT: Existing CLI successor/create/export/lock and exact mirror readback; single role semantic delta; original snapshot row preserved; current Main ID and artifact/lock hash match, old path advisory declared.
+CHECK_05_POST_REQUIRED: Whole affected callers/menu/clipboard/context/packaging/current-certification contracts and mandatory guardrails/taskE0/fullE0mutants/doctor/governance/inventory/C2A/OSS/audit/bundle/DATA/Apply/perf-lite, required full baseline/official RTK/current CI. Simulations are not native MR06.
+CHECK_06_POST_NATIVE: Exact new app/ASAR/helper/profile, actual native Cmd+A full selection/no text mutation/explicit edit+Undo+Save, normal Quit/cold raw preservation and complete bundle/profile archives independently read on T777.
+CHECK_07_POST_DELIVERY: Scope/budgets/staged/hash proof; ordinary commit/push/PR/requiredCI/normalmerge and fresh exact merged evidence/closure before next contour.
+
+## STOP_CONDITION
+
+Stop on source/base/authority ambiguity, foreign dirty state, protected/source drift, widened product authority, role not reachable through actual packaged menu, loss of working text/history, unresolved required gate, out-of-budget edit or semantic change outside this outcome. Third same failure stops its loop with actual expected/actual/seed/source/hash and one next hypothesis. No silent bypass or false PASS.
+
+## REPORT_FORMAT
+
+Exactly one text block with required19keys: TASK_ID, STATUS, HEAD_SHA_BEFORE, HEAD_SHA_AFTER, COMMIT_SHA, MERGED_SHA, CHANGED_BASENAMES, STAGED_SCOPE_MATCH, TEST_RESULTS, COMMIT_OUTCOME, PUSH_RESULT, PR_RESULT, CI_RESULT, MERGE_RESULT, POST_MERGE_VERIFICATION, CURRENT_CLAIM_SCOPE, OPEN_LIMITATIONS, ROLLBACK, NEXT_STEP. Basenames only, no slash/URL. One next action.
+
+## FAIL_PROTOCOL
+
+Retain each actual nonzero execution and source/method/log bindings. Distinguish fixture/reader preparation mistakes from unchanged-source causal failure without relaxing product oracle. Existing moderate Electron advisory,59named skips, old menu/release drift warnings, Cancel affordance and long-dialog limitation remain explicit. All17first-Mac qualification rows UNKNOWN; no full IME/numeric/security/signing/notary/distribution/owner permit claim. Full Atlas/maps/WSE/Pulse/epochs remains the overall task.
