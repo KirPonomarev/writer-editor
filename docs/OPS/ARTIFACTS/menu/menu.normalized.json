@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "cd9ecb9dbc6f2a7d1a6f42b6fcfc4dcabc6c2688e4a893193a1d20940b5f6569",
-  "generatedAt": "2026-08-14T19:46:40.725Z",
-  "generatedFromCommit": "59ed787fb75769222d880cb9d5769e02ed614b0e",
+  "snapshotId": "menu-default-desktop-minimal-select-all-20261023",
+  "normalizedHashSha256": "50aa09a87b32a7989fc908ee86c172e317fe22954bafe4c338a1dfd04ec5c541",
+  "generatedAt": "2026-10-23T11:52:30.354Z",
+  "generatedFromCommit": "30d691d468842c257c9970b53a81e22e644354c9",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -831,6 +831,36 @@
             "guru"
           ],
           "role": "copy",
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": null,
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "edit-select-all",
+          "mode": [
+            "offline",
+            "web_subset"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "role": "selectAll",
           "sourceRefs": [
             "src/menu/menu-config.v2.json"
           ],

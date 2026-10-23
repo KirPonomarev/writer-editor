@@ -1,3 +1,49 @@
+## 2026-10-23 — Select All current wording fixtures repaired; complete delivery still pending
+
+TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CURRENT_FIXTURE_SOURCE_REVIEWED_FULL_PROOFS_PENDING
+BINDING_BASE_SHA: c95797cdefea68d7843501936f88a9678d4d4a9f
+ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+
+All12source gates on c95797cd executed; audit1 remains moderate1/high0/critical0. Full50whole affected707tests704pass3fail,zero skips/todo/cancel and unchanged source is preserved. Exact old-M whole2files64tests63pass1fail proves one pre-existing stale DOCX palette expectation; two additional current failures bind the old normalized menu and historical menu surface digest. No full baseline/official RTK/build/native/push was started or claimed. Fresh clean29path bootstrap/preflight0 and taskE0 precede any correction;9969protected and13held original role/runtime/artifact/current-pin/runner/CLI/keyboard/promotion paths stay exact.
+
+Separate code agent changes only two truthful expected values in the discoverability test, adds14strict current-menu binding helper lines and60appended integration/negative-test lines in the terminal-claim contract. Existing pinned C1 current menu digest must be unique, valid and equal actual current bytes; menu surface identity must be unique and exact. Historical chain, registry, generic production evaluator, every old assertion/claim/nonClaim/status/profile/terminal rollup remain byte-exact. Root independently verifies complete78-line diff, inverse originals, source/receipt hashes and same appended assertion bodies. Whole2files on unchanged helper/expectations:66tests61pass5fail; corrected66of66,0fail/cancel/skip/todo, including15typed missing/duplicate/malformed/stale/forged/ambiguous negatives. Current wording scanner and NOT_MADE terminal blockers remain exercised; no product source or wording change.
+
+Current companion refresh derives771DATA/631source/295certificate with1603unchanged inventory membership, preserving prior294carrier and all predicates. Full affected/source/E0/baseline/official RTK/exact package/native Cmd+A/Undo/Save/Quit/cold/closed-profile readback/current CI/normal merge/exact merged closure remain pending. Known moderate Electron,59named baseline skips, old menu-path, long-dialog/exFAT and cancelled-form affordance limitations remain explicit; all17Mac qualification UNKNOWN. Full first-Mac Atlas/maps/WSE/Pulse/environment epochs task continues; Black Box later. Owner state and historical evidence retained.
+
+## 2026-10-23 — Select All maintained gate identity aligned; full acceptance pending
+
+TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SAME_OUTCOME_SOURCE_REVIEWED_REQUIRED_FULL_PROOFS_PENDING
+BINDING_BASE_SHA: dda461fa77d9b0284433d24d6bba666c2cc27bb7
+ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+
+Original role/menu candidate5d2cd43f and its actual12source gates remain historical exact evidence. Before full baseline, read-only dependency review finds three maintained runner snapshot arguments and one CLI default still historical; export would rewrite the new artifact. Full baseline was held, not falsely reported as a failed run. Fresh clean same-outcome admissions on H then doc-only dda461fa precede every correction. Current27paths and9971protected sources plus9held original role/Main/artifact/pin paths remain exact.
+
+Separate code agent changes only4production snapshot-ID literals and one expected-ID literal in the whole promotion contract. Appends70keyboard lines preserving all previous7case/helper bytes. Whole2files on unchanged production source: actual15tests12pass3causal failures; same test bytes with the4production literals:15of15,0fail/cancel/skip/todo. Root independently reviews complete diff, raw receipts and four child outputs with exact TAP roundtrip. Actual CLI implicit promotion selects successor PASS0; explicit historical ID continues mismatch FAIL1. Finite18production-function argv calls are child-boundary checks, not product/native execution. No artifacts regenerated, no Main/config/renderer/clipboard/Core/storage change in correction.
+
+Current DATA/source/certificate/inventory/approval companions are being refreshed without weakening historical tuples, predicates, test classes/lanes or skip policy. Full50whole affected files, release/production regressions, source gates/E0, full baseline/official RTK, exact package/native Cmd+A/Save/Quit/cold/closed archives/current CI/normal merge and exact merged proof remain pending. All17Mac qualification UNKNOWN. Unchanged moderate Electron advisory,59named baseline skips, old menu path advisory, long-dialog/exFAT and cancelled-form affordance limitations remain explicit. Full Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later. Owner state and old evidence retained.
+
+## 2026-10-23 — live-map delivery closed; native Select All source and menu under proof
+
+TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_AND_GOVERNED_MENU_REVIEWED_NOT_NATIVE_OR_DELIVERY_ACCEPTANCE
+BINDING_BASE_SHA: 30d691d468842c257c9970b53a81e22e644354c9
+ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
+
+PR2150 normally merged ad9209ace5b27543c1ff27c0e34549f828bf6c9a. Independent terminal closure6d70223f0b8cfda8f54ee9e5b0e7751df3d983b9b6b4e799cb81a309398deaa7 actual0 binds candidate/main20of20CI each and4414of4414RTK each, fresh merged253focused/435affected/724release/47production across17negative rows and19Apply-corruption tests. Exact merged source/build/ASAR, all1475leaves/530bundle archive members, genuine JSON/SVG control continuity/search/explicit two-node Apply/Cancel/unchanged-manuscript Save and normal Quit/cold are reviewed. All296warm/297cold profile archive members re-read; closed project rosters match final raw33/34files. Cold retains every33original source file byte-exact and adds only one decoded empty backup. Default map selection was explicit; no selection-restoration claim. One default-name dialog method deviation and deliberate second named export remain recorded as actual45to51events. Earlier pending live-map entries are historical; this is DELIVERY_CLOSED_WITH_KNOWN_LIMITATIONS, not full first-Mac acceptance.
+
+Continuing bounded Select All repair starts from exact M. Initial22-path preflight/taskE0 actual0 precede task write; read-only diagnosis finds two dependent Main hash pins. Ordinary doc-only checkpoint30d691d4 contains just the task. Fresh clean24-path declaration/preflight and amended taskE0 actual0 precede every runtime edit;9974other tracked paths remain protected. No dirty preflight rerun or implicit scope widening.
+
+Separate code agent preserves all3old keyboard tests/helper bytes and adds117lines. Whole final7case file on unchanged Main/config/artifact runs3pass/4causal failures; adding only11config lines and one Main snapshot-ID literal yields6pass/1honest artifact-dependent failure. Root independently reviews exact source/whole logs. Existing CLI creates explicit successor snapshot/export/lock, both mirrors match bytes and the original snapshot row stays exact; only Select All changes menu semantics. Same unchanged test bytes now run7of7,0fail/cancel/skip/todo. The96contexts cover child-role projection, not web/native OS qualification.
+
+Main role builder/allowlist, generic normalizer/lock verifier, renderer/bundles/preload/Core/IPC/clipboard/schema/persistence remain unchanged. Two current Main digest literals in FIRST_MAC_RELEASE_CUT_V2 and release-candidate follow actual Main9745522d only; other65bindings and every qualification/authority field stay exact. Current mechanical bindings, all42affected whole files plus release regression, mandatory source/full baseline/official RTK/CI, exact new package/genuine native Cmd+A/Save/Quit/cold/full archive and normal merged verification remain required. Source wiring alone does not prove native selection.
+
+Known mirror LOCK_ARTIFACT_PATH_MISMATCH, long-dialog/exFAT limitations, cancelled-form button affordance, unchanged moderate Electron advisory and59named baseline skips remain explicit. All17full-Mac qualification UNKNOWN; no numeric/IME/security/signing/notary/distribution/owner-permit acceptance. Full Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later. Owner checkout/app/private state and all historical evidence are preserved. New reports/materials use verified T777 and declared owned APFS runtime.
+
 ## 2026-10-23 — live manual-map controls: source proof, native and delivery pending
 
 TASK_ID: YALKEN_MAC_MAP_LIVE_CONTROLS_20261023

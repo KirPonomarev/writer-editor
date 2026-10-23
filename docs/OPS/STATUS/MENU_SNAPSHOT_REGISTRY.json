@@ -7,6 +7,13 @@
       "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
       "createdAt": "2026-08-14T19:46:59.205Z",
       "createdFromCommit": "59ed787fb75769222d880cb9d5769e02ed614b0e"
+    },
+    {
+      "id": "menu-default-desktop-minimal-select-all-20261023",
+      "normalizedHashSha256": "50aa09a87b32a7989fc908ee86c172e317fe22954bafe4c338a1dfd04ec5c541",
+      "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
+      "createdAt": "2026-10-23T11:52:30.228Z",
+      "createdFromCommit": "30d691d468842c257c9970b53a81e22e644354c9"
     }
   ]
 }

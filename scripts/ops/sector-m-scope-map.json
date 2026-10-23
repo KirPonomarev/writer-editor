@@ -447,7 +447,11 @@
       "docs/tasks/2026-10-23--mac-manual-map-markdown.md",
       "src/import/mindmap/v1/manualMapMarkdownPortabilityBridge.mjs",
       "src/preload.bundle.cjs",
-      "docs/tasks/2026-10-23--mac-map-live-controls.md"
+      "docs/tasks/2026-10-23--mac-map-live-controls.md",
+      "docs/tasks/2026-10-23--mac-native-select-all.md",
+      "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "test/unit/keyboard-shortcuts.test.js"
     ]
   },
   "allowPrefixByPhase": {

@@ -770,7 +770,15 @@
     "src/renderer/design-os/atlasFeatureIntegrationManifest.mjs",
     "test/contracts/yalken-atlas-v5-e02d-c03-manual-map-markdown-portability-bridge.contract.test.js",
     "test/contracts/yalken-atlas-v5-e10-c02-revision-history-projection-author-truth.contract.test.js",
-    "docs/tasks/2026-10-23--mac-map-live-controls.md"
+    "docs/tasks/2026-10-23--mac-map-live-controls.md",
+    "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+    "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+    "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
+    "docs/tasks/2026-10-23--mac-native-select-all.md",
+    "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+    "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+    "scripts/ops/menu-config-normalize.mjs",
+    "test/contracts/review-bridge-product-discoverability-labels.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -999,7 +1007,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c5f527fb64b1d1003454e89ec4cd22f190e628633ca1ed52ba2df8183ba65b75"
+        "sha256": "9745522d8fecebaa323f561c5de6daec80adc36e0ee13c6f822624e1a5fd78ce"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1191,7 +1199,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "56a85485764362190e5910bfee0e380afc4b8addcb8beb7d402bf35d71a62c01"
+        "sha256": "8fe586be974f922d227b18852550a6b5deba5d54b3b5b7bb83294e3d13b90a46"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -1735,7 +1743,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "8f9967fb60cfb3d57e16d60b8006a1a15957688c0051e956352128aa12e42872"
+        "sha256": "b2b99b615f7bb7308934005344ee9fa7ce7870f78a692a283a134ad496dc23ea"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2579,7 +2587,7 @@
       },
       {
         "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
-        "sha256": "fa8d3ea4ac1c5fe2523c5f03792453bfd9b0f38ded93cd7fa58a8d3464a88d43"
+        "sha256": "06d34c1f2a34bb6b5a5b08d7749e89dde285f2e84fcf59df43b82233f4cf5524"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
@@ -2691,15 +2699,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "be9158fcfb9ef2874dc1659fdc21fad56792c391a7f84332dd12257df12e8338"
+        "sha256": "0e3d48e8590163890ad256fe8723e9029749645ff6d9b8f380bd0151391643c6"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "15f91561116e36c1eee48711ce65193978dd0515305c4a23bb0e41ac58ddac99"
+        "sha256": "7e8c2a0540840a1d28fd94320dae3631b93220ce6f9f54113ed73241b8590196"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "cac7bf1ec88affa04f69e12342bfe966dc30c970d7f55f70bbebabe252d2315c"
+        "sha256": "a87acdbc5b6194509a9320760e62b58c30672e2701e2dc2e483e09c165e1ed45"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3239,7 +3247,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "8a82fbfb624ec45eef823dda352e1474f7585d2871d43698f9ac75f6e6cc166d"
+        "sha256": "e654a1828a1685d2e3175ffd622bdc5fd73f0d6b229c9616843f1964c21211c9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3263,7 +3271,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "90dba5e12cbf6825d005062eaef79db73a5f4bfcfb2b614835f63f2943d1cdea"
+        "sha256": "df3b2c8236aed88ec914590df7ea7282c62b327dfc02a15d4fd84d0c159f71c8"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3355,7 +3363,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "71c2ba4bf10413ab86860da0a74efeacfd03afd962232d79858f91904e4a5799"
+        "sha256": "db8c77997d03bfc023643753d263ab3c1e8a6a8a527cc43cef61c045ede754f4"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3371,7 +3379,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "cf070af6b04da4907787a9d88851318c74ba5a5080818275bcef2ffd4e9550a4"
+        "sha256": "fad65213fe2ddf8e30fd3492c70ea29b1b788aca8e1bd89af4cebb475ecef34d"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3475,7 +3483,51 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-map-live-controls.md",
-        "sha256": "8322ccada1bd635e47a8513401fb73f662b33c646a334c38e1de1246b36ff3e4"
+        "sha256": "b3839486ff0127d6e18774b501f88cdfd2c1c200d5c9753e5903137a67910649"
+      },
+      {
+        "path": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+        "sha256": "f71d66126d4f269adfb491a5580ff6e34ab22ad140e95f9b8cfbc05fa725e1be"
+      },
+      {
+        "path": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+        "sha256": "7415ecd6aa99ced006785cc56e7e557bdd666360cf3edd88f741f77d196c086f"
+      },
+      {
+        "path": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
+        "sha256": "39f9134b407a40723460b15772f163b4578bbd89843a6ced0db2a794c6546964"
+      },
+      {
+        "path": "docs/tasks/2026-10-23--mac-native-select-all.md",
+        "sha256": "a08d297c324a2df531652c02d98f2506f31b5b5c4ef084ae61efafa6e3f58dcc"
+      },
+      {
+        "path": "src/menu/menu-config.v2.json",
+        "sha256": "f9ebf2c2f3cbe09efbbcd664f2fde5e0a71d29b5543a53fbeaa04485ea927c16"
+      },
+      {
+        "path": "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+        "sha256": "f71d66126d4f269adfb491a5580ff6e34ab22ad140e95f9b8cfbc05fa725e1be"
+      },
+      {
+        "path": "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+        "sha256": "7415ecd6aa99ced006785cc56e7e557bdd666360cf3edd88f741f77d196c086f"
+      },
+      {
+        "path": "test/unit/keyboard-shortcuts.test.js",
+        "sha256": "9618a3db494120179c1657f21db603a755179feddd95ac8c7dfdb5c32d73f186"
+      },
+      {
+        "path": "scripts/ops/menu-config-normalize.mjs",
+        "sha256": "8b2773317a673d647e3101a06846e9b427ef0e38c7c59c8b8cf97af4c049688c"
+      },
+      {
+        "path": "scripts/run-tests.js",
+        "sha256": "3851d49105e2f714e480e3375329001224a63d742a3fb55826cc13cbde698a9a"
+      },
+      {
+        "path": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
+        "sha256": "136790a9431b601f82a6da5003078943c8ef98a58c5724a95dab606ebe35aca7"
       }
     ],
     "followupRepair": {
