@@ -4,8 +4,8 @@ TASK_ID: YALKEN_MAC_NATIVE_SELECT_ALL_20261023
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 30d691d468842c257c9970b53a81e22e644354c9
-HEAD_SHA_AT_START: 30d691d468842c257c9970b53a81e22e644354c9
+BINDING_BASE_SHA: 5d2cd43fac708bb03c87a828e3672a964c7b0c4f
+HEAD_SHA_AT_START: 5d2cd43fac708bb03c87a828e3672a964c7b0c4f
 ORIGINAL_DELIVERY_BASE_SHA: ad9209ace5b27543c1ff27c0e34549f828bf6c9a
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/mac-native-select-all-20261023
@@ -25,7 +25,7 @@ I: Exact original M and clean same-task doc checkpoint30d691d4/source/tree/branc
 
 ## ARTIFACT
 
-Separate code agent owns only menu-config.v2.json, the Main runtime expectedSnapshotId literal and appended keyboard-shortcuts.test.js cases. Root owns this task, factual closure, normal generated menu/snapshot/lock mirrors, current mechanical companions, independent review/tests/native and Git delivery. No renderer bundle change.
+Separate code agent owns the original menu-config/Main literal repair, appended keyboard tests and the same-outcome maintained runner/CLI current snapshot-ID literal correction below. Original role/Main/5generated artifacts and2Main pins are held exact during the correction. Root owns task/factual/current mechanical companions, independent review/tests/native and Git delivery. No renderer bundle change.
 
 ## ALLOWLIST
 
@@ -47,6 +47,8 @@ Separate code agent owns only menu-config.v2.json, the Main runtime expectedSnap
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/release-candidate.mjs
 - scripts/ops/sector-m-scope-map.json
+- scripts/ops/menu-config-normalize.mjs
+- scripts/run-tests.js
 - src/main.js
 - src/menu/menu-config.v2.json
 - src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json
@@ -65,6 +67,18 @@ CHECK_01 выполняется ДО любых изменений; CHECK_02+ в
 Fresh branch bootstrap actual0 and clean pre-edit architecture actual0 precede this first repository edit. Declaration8323ffe0362507dff13391755084570eee6fabf965d276d66230343eceaf99ad freezes22scope paths and9976other tracked paths on exact M. Ordered normative reads on identical M are retained from the continuing first-Mac task; AGENTS/resolver/protocol and current menu/code/factual terms are revisited. No full factual/P03 checkpoint or validated-cache claim. PRE checks never rerun after editing.
 
 Read-only separate-agent diagnosis identified two dependent current Main source pins after the initial task write. Original admission, taskE0 and doc-only guardrails actual0 are retained; ordinary checkpoint30d691d468842c257c9970b53a81e22e644354c9 contains only that task. Fresh clean bootstrap/preflight actual0 on checkpoint30d precede all runtime edits and this amendment. Declarationc79e10c009297e17c7e6879039d85fb23f49c3ea4a0d862f9266f342fe9ad62b adds only FIRST_MAC_RELEASE_CUT_V2 and release-candidate current Main pin paths:24scoped/9974protected tracked. This is a fresh clean same-contour admission, not rerun of PRE after dirty edits. Original delivery base remains M; no runtime or native acceptance at this checkpoint.
+
+### Same-outcome maintained gate identity amendment
+
+Ordinary candidate5d2cd43fac708bb03c87a828e3672a964c7b0c4f is clean, parent30d, tree8631ea3b5bf2c3827ab6c2cece22a31143cc8db0; source7of7 and all12source gates execute, audit actual1 remains unchanged moderate1/high0/critical0. Root then reads actual maintained runner before any full baseline/RTK/native/push: snapshot/export/lock guards explicitly pass historical menu-default-desktop-minimal and the CLI default is also historical. The export guard would rewrite the current canonical artifact under the old ID. This is a source-derived prediction, not an executed baseline failure; full baseline is held before it can mutate the artifact.
+
+Fresh clean H bootstrap/preflight actual0 and declaratione458141d179a91b1e5757fb4d6b3f14765724fccb0da52ad8c0475acd50a93ed precede this amendment and every correction edit. Scope26,9972protected tracked sources,9held runtime/artifact/pin paths. This remains the same unfinished native Select All outcome and ordinary delivery, original base M; no second contour or authority grant. Initial22/24-path records, C/H identities and every actual result remain preserved.
+
+Separate code agent changes only3 current snapshot-ID literals in runMenuSnapshotGuard/runMenuArtifactExportGuard/runMenuArtifactLockGuard and1 CLI DEFAULT_SNAPSHOT_ID literal to the already generated successor. Every other runner/CLI byte, algorithm, writer path, argument, error/promotion law, skip, timeout and inventory policy stays exact. CLI default and maintained callers must agree with actual current artifact identity; the old snapshot row stays byte-value exact. No artifact regeneration or original role/Main changes in this correction.
+
+Append to the existing whole keyboard file, preserving every original7case/helper byte. Causal negative on unchanged H executes real maintained runner functions at a finite child-spawn argv boundary for release/promotion, and actual CLI implicit-default snapshot-check with promotion mode and owned APFS outPath; it must expose the historical-ID mismatch without writing any repository artifact. Same finaltest bytes must pass after4literal correction. Finite argv capture proves selection of a child argument, not execution of a product mutation. Actual baseline later must preserve all current artifacts/locks/snapshot rows byte-exact. No test-name filters, fake artifacts or hidden source rewrites.
+
+Correction budgets: runner6added+deleted, CLI2added+deleted, keyboard<=100new appended lines above H and<=320total above original M. Original menu/Main/artifacts/2current pins held exact. Root precise new DATA/source/current complete certificate successor, inventory/current approvals and factual update preserve the old291carrier and all historical tuples/predicates. All source/affected/full baseline/official RTK/new package/native/current CI/normal merge and exact merged proof remain mandatory on the final corrected identity.
 
 ### Native role
 
