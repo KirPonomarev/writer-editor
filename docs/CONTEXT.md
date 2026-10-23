@@ -1,3 +1,7 @@
+## 2026-10-24 — Atlas evidence reattachment: native composition correction in progress
+
+Task `YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024`, PR2154, candidate11a700ac03cc05f1038c058acd4d44aa533ee82f is unaccepted. Focused1207of1207 and fully read unsigned package passed, but actual native entity-dossier source selection followed by Flow/current68–72 remains disabled: source lifetime incorrectly includes surface identity. Original source selection itself succeeds. Native normal Quit0; no reattachment command issued, prefix88UTF16 saved. Same30path fresh C-bound preflight0 precedes correction; maintained actual navigation RED first, then minimal renderer source/presentation separation and current-source qualification. Earlier green receipts remain historical. Full npm audit now OPEN_HIGH_NOT_REMEDIATED for Electron GHSA-jr5w-w6x2-84p9; production-only audit0 is a narrower graph result. No full product/release acceptance. Original decisions/history,9971protected source files and unrelated owner state remain protected.
+
 ## 2026-10-24 — Explicit saved Atlas evidence correction source frozen
 
 TASK_ID: YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024

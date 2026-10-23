@@ -1443,7 +1443,7 @@ function continuityRendererHarness() {
 }
 
 // Existing finite DOM/query ports with the actual dossier, journey, listeners and dispatch.
-function savedReattachmentRendererHarness() {
+function savedReattachmentRendererHarness({ composition = false } = {}) {
   const h = publicationHarness(), c = h.c, vm = require('node:vm'), issued = [];
   const make = tag => h.document.createElement(tag), walk = node => [node, ...node.children.flatMap(walk)];
   Object.assign(c, { atlasJourneyHost: make('section'), atlasEntityDossierHost: make('section'),
@@ -1487,6 +1487,20 @@ function savedReattachmentRendererHarness() {
     assert.ok(select); select.value = id; await select.emit('change'); };
   const button = () => walk(c.atlasJourneyHost).find(node => node.dataset.atlasJourneyAction === 'reattach-evidence');
   const apply = async () => { const b = button(); assert.ok(b); await b.emit('click'); await h.settle(); };
+  if (composition) {
+    Object.assign(c, { rightAtlasPanel: make('aside'), atlasSurfaceButtons: [], atlasSurfaceShells: [],
+      ATLAS_DEFERRED_SURFACE_IDS: ['heatmap', 'temporal', 'continuity'],
+      ATLAS_SURFACE_PROVIDER_BY_ID: { entity: c.ATLAS_ENTITY_DOSSIER_QUERY_ID, journey: c.ATLAS_CURRENT_SCENE_QUERY_ID },
+      atlasReachabilityOpener: null, atlasReachabilityCaption: null, rightRailOverlayOpen: false,
+      getSpatialLayoutViewportWidth: () => 1280, getSpatialLayoutConstraintsForViewport: () => ({ rightRailMode: 'docked' }) });
+    for (const [surface, host] of [['entity', c.atlasEntityDossierHost], ['journey', c.atlasJourneyHost]]) {
+      const shell = make('section'); shell.dataset.atlasSurfaceShell = surface; shell.append(host);
+      c.atlasSurfaceShells.push(shell); c.rightAtlasPanel.append(shell);
+    }
+    h.document.body.append(c.rightAtlasPanel);
+    h.loadActual('setCurrentAtlasSurface', 'syncAtlasSurfaceCompositionState', 'syncAtlasReachabilityOpenerState', 'isAtlasSupportedViewportWidth');
+    c.syncAtlasSurfaceCompositionState();
+  }
   publish();
   return { ...h, c, issued, source, original, publish, render, walk, pickButton, pick, target, button, apply,
     dossier: () => structuredClone(dossier), setDossier: value => { dossier = value; c.atlasEntityDossierState = c.normalizeAtlasEntityDossier(value); render(); } };
@@ -1601,6 +1615,35 @@ test('actual saved confirmation picker keeps suppression and reassignment source
     const picker = h.pickButton(); if (picker) await picker.emit('click');
     await h.target(); await h.apply();
     assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0); assert.equal(h.button().disabled, true);
+  });
+});
+
+test('actual entity-to-journey composition retains explicitly selected saved source through the required current-scene refresh', async () => {
+  const h = savedReattachmentRendererHarness({ composition: true }), c = h.c;
+  assert.equal(c.atlasEntityDossierHost.parentElement.hidden, false); assert.equal(c.atlasJourneyHost.parentElement.hidden, true);
+  await h.pick(); const source = JSON.stringify(c.atlasJourneyDraft.reattachmentSource), text = c.getPlainText(), before = h.queries.length;
+  c.setCurrentAtlasSurface('journey'); await h.settle();
+  assert.equal(c.atlasEntityDossierHost.parentElement.hidden, true); assert.equal(c.atlasJourneyHost.parentElement.hidden, false);
+  assert.equal(c.rightAtlasPanel.dataset.activeAtlasSurface, 'journey'); assert.equal(c.atlasCurrentSceneState.state, 'ready');
+  assert.equal(h.queries.length, before + 1); assert.equal(h.queries.at(-1).row[2], 'atlasCurrentScene');
+  assert.equal(JSON.stringify(c.atlasJourneyDraft.reattachmentSource), source); await h.target('mira-68');
+  assert.equal(h.button().disabled, false, 'ordinary dossier-to-Flow navigation must retain valid source intent'); await h.apply();
+  assert.equal(h.commands.length, 1); const sent = h.commands[0]; assert.equal(sent.id, 'atlas.evidence.reattach');
+  assert.equal(sent.payload.sourceRecordId, 'saved-confirmation'); assert.equal(sent.payload.expectedSourceRecordHash, h.source.sourceRecordHash);
+  assert.deepEqual(sent.payload.staleEvidenceAnchor, h.original); assert.equal(sent.payload.newEvidenceAnchor.startOffset, 68);
+  assert.equal(sent.payload.newEvidenceAnchor.endOffset, 72); assert.equal(h.issued.length, 1); assert.equal(c.getPlainText(), text);
+});
+
+test('actual pending reattachment cannot publish or refresh after its dispatch presentation changes', async t => {
+  for (const fault of ['surface', 'tab']) await t.test(fault, async () => {
+    const h = savedReattachmentRendererHarness({ composition: true }), c = h.c, pending = h.deferred();
+    await h.pick(); c.setCurrentAtlasSurface('journey'); await h.settle(); await h.target('mira-68');
+    c.commandPort = () => pending.promise; await h.apply(); assert.equal(h.commands.length, 1, 'actual Flow dispatch reached pending transport');
+    if (fault === 'surface') c.setCurrentAtlasSurface('overview'); else c.currentRightTab = 'comments';
+    await h.settle(); const before = JSON.stringify(c.atlasJourneyDraft), queries = h.queries.length;
+    pending.resolve({ ok: true, value: { status: 'APPLIED' } }); await h.settle();
+    assert.notEqual(c.atlasJourneyState.status, 'applied'); assert.equal(JSON.stringify(c.atlasJourneyDraft), before);
+    assert.equal(h.queries.length, queries); assert.equal(h.commands.length, 1); assert.equal(h.issued.length, 1);
   });
 });
 
