@@ -779,7 +779,10 @@
     "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
     "scripts/ops/menu-config-normalize.mjs",
     "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
-    "docs/tasks/2026-10-23--mac-atlas-exact-journey.md"
+    "docs/tasks/2026-10-23--mac-atlas-exact-journey.md",
+    "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
+    "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs",
+    "test/contracts/yalken-atlas-v5-e01-c03-current-scene-dossier-surface.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1020,7 +1023,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "ee6893f241abadd8e28406f9dba9e854df46dc1b277fcdf6db96e1bdd057298d"
+        "sha256": "54d7f157217763588b7c526b422278a418e13faa74f45b2b0085106a84f44c1c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1032,7 +1035,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "a4fabca994964a078d156500c98de5c51355f626a6f752d349ff3654322471c3"
+        "sha256": "8229375f0aee93b0c3f5adcfddf21bea122a0a6f4c183379b0a7f7a97170475f"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1184,7 +1187,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "f196732404cfc15b59886b3c6c602bd417670c50d8c283eb0a84485860f34712"
+        "sha256": "59f8d23bce9e3e2ab5460fa41fa629fc8ebdccf1ad4066c267a8bb299d021e1e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1744,7 +1747,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "fede0459a376d74e6c88172a5280692aa1534b35be65f594857ed15c3559ead0"
+        "sha256": "d3616ea1dba94e5cbda2520a863d6ae7ddaf68cdfa6c515de1b796610d4ee907"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2628,7 +2631,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-        "sha256": "db91f5755986c930d9c7817d2845cc9cf6b8542973268aeb3a066f5efad49d02"
+        "sha256": "0a6f6c29e9b7b4956e3140b50a54e7e714116751361df42f49a7c85d36625d8d"
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
@@ -2700,15 +2703,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b55e8c0d94aba32e04464dd13a6ff1840b6ca7d0301a390ca504d98835582b8e"
+        "sha256": "047a81f5dfec0625c66ade1ef39c12190a3afbf0049348cdc97763aa406cfabc"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5537f552e75a4b05c79b707bf8c50b511e7522caf42779f55165131c4ca6f383"
+        "sha256": "094f4c531adeaf0e55b5d5c681b3a9111250b04839db81bba0dffcd1776994d0"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "fcca7bea01322b3c95538dc94c871a44484819b835cf7cbe7ba62b602a2c3453"
+        "sha256": "a850447ac3654549e2fe54be5cbe7b8ae550d53bb1fc7e51eda69e3b04f1714d"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -2968,7 +2971,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "9be52467e9fbc2f2ba1a418ea47ac36d8ab6c1672731b287d4bd458e107debd7"
+        "sha256": "247060e8e38bf31abf13594d5f769ba8fdc3357453fdea7511aa2c7bf8e93a14"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -3248,7 +3251,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "166ec70469a4275dfff7c207b8fd99bedfb2411464fb99d5ec063dfda5d7bd34"
+        "sha256": "9137ba2bdedbfa53956fa4df5b1ed342a542e6596e11c97087489aed307af03b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3380,11 +3383,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "9dc2270f681087dcee075ef85628eeecf271e389f0f23d7634edf9b3c916606a"
+        "sha256": "9fe1b1855b075aeb228d1c686ae316ff40110fae345925a6bffa29a667305d63"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "3f7dbf06797ee5b154426b2789f62e5bb2e68513c068afc89c8a680b0f87bcff"
+        "sha256": "c98c582e9c5dbad0caa994c84f99434c5622c8dc94e5fda1bb28ee724f03aeb2"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3532,7 +3535,19 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-atlas-exact-journey.md",
-        "sha256": "8327ad3f9ffaf2bee7e8e57170407c63cd38c85ddbfe2268f048ae9a250eeca5"
+        "sha256": "f226b1af6171a24e3521cf53d0ceb823d31a6ef6621d722a48b93db554ba03d8"
+      },
+      {
+        "path": "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
+        "sha256": "3a17dc1ad9be85a3e6ddedd550b4bde39684230629ddc55e97b22b9cb5699e59"
+      },
+      {
+        "path": "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs",
+        "sha256": "ddfee7d5aef4f7140ea2e7bc1477da53fd41eaf76273c2b615773cf969886356"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-e01-c03-current-scene-dossier-surface.contract.test.js",
+        "sha256": "e1f31ee2b81d1778afe213379e5075682a8d2dd2a90a7bc7cec04780a30330cf"
       }
     ],
     "followupRepair": {

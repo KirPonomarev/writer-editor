@@ -336,6 +336,7 @@ test('R2 C02 detached controls cannot alter a replacement with identical command
 // They are typed transport fixtures, not a claim of real Core/native execution.
 function publicationHarness(transform) {
   const h = draftDomHarness(transform), vm = require('node:vm'), c = h.context;
+  vm.runInContext(fs.readFileSync(path.join(repoRoot, 'src/core/browser-safe-hash.mjs'), 'utf8').replace(/^export /gm, ''), c);
   const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
   const text = name => {
     const start = editor.indexOf('async function ' + name + '(') >= 0
@@ -384,7 +385,8 @@ function publicationHarness(transform) {
     manuscriptDrafts: new Map(), notesMutationPending: false, flowModeState: { active: false },
     localDirty: false, lastAckedGeneration: 1, currentMetadataBaselineHash: '', metadataUpdatePending: false,
     composeDocumentContent: () => working,
-    parseDocumentContent: value => ({ text: value, meta: {}, cards: [] }),
+    getPlainText: () => working,
+    parseDocumentContent: require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload,
     shouldUseCentralSheetLargePayloadFastPath: () => false, reviewSurfaceResolveIncomingPayload: () => null,
     revealActiveDocumentAncestors: () => ({ found: false }), requestAnimationFrame() {},
     setPlainText: value => { working = value; }, showEditorPanelFor: value => { c.currentDocumentTitle = value; },
@@ -401,7 +403,7 @@ function publicationHarness(transform) {
     requestedEntityId: c.atlasSelectedEntityId || '', requestedPairId: c.atlasSelectedRelation.pairId || '',
     requestedLeftEntityId: c.atlasSelectedRelation.leftEntityId || '', requestedRightEntityId: c.atlasSelectedRelation.rightEntityId || '',
     entities: [], mentions: [], graph: { projectId, mapId: 'map-a', nodes: [], edges: [], groups: [], meta: { marker } },
-    summary: { mapCount: 1, workbenchHash: marker },
+    summary: { mapCount: 1, workbenchHash: marker, sceneTextHash: c.hashCanonicalValue(working) },
   } });
   for (const row of leaves) {
     c[row[1]] = 'query.' + row[2]; c[row[4]] = projection(row)[row[2]];
@@ -1411,4 +1413,197 @@ test('manual-map focused portal select defers option writes then resyncs only it
     await select.emit('blur'); assert.equal(syncs, 0, 'retired Select must not resync a replacement owner');
     assert.deepEqual(h.draft(), draft); assert.equal(h.document.activeElement, field); assert.equal(h.calls.length, 0);
   }
+});
+
+
+const SOURCE_CONTINUITY_TEXT = 'Начало e\u0301 🧭. Мира увидела маяк. Северная ответила Мире. Мира сохранила знак.';
+const SOURCE_CONTINUITY_PREFIX = 'Добавлено. ';
+function continuityRendererHarness() {
+  const h = publicationHarness(), vm = require('node:vm'), c = h.c, selected = [], focused = [];
+  const fn = name => { const match = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(editor); assert.ok(match, name);
+    const end = editor.indexOf('\n}\n', match.index); assert.ok(end > match.index); return editor.slice(match.index, end + 2); };
+  c.currentAtlasSurface = 'currentScene'; c.setPlainText(SOURCE_CONTINUITY_TEXT); c.localEditGeneration = 1; c.lastAckedGeneration = 1; c.localDirty = false;
+  c.focusEditorSurface = owner => focused.push(owner); c.setSelectionRange = (start, end) => selected.push({ start, end, quote: c.getPlainText().slice(start, end) });
+  vm.runInContext(fn('focusAtlasMention'), c);
+  const digest = text => require('node:crypto').createHash('sha256').update(JSON.stringify(text)).digest('hex');
+  const projection = (text = SOURCE_CONTINUITY_TEXT, start = 14) => {
+    const end = start + 4, quote = 'Мира', projectId = c.currentProjectId, sceneId = c.currentDocumentId;
+    return { ok: true, atlasCurrentScene: { state: 'ready', schemaVersion: 'derived.atlas.currentSceneDossier.v1', projectId, sceneId,
+      summary: { entityCount: 1, mentionCount: 1, sceneTextHash: digest(text) }, entities: [], mentions: [{ mentionId: 'selected-mira', entityId: 'mira',
+        sceneId, matchedText: quote, startOffset: start, endOffset: end, context: { quote }, trustState: 'ALGORITHMIC_OBSERVATION',
+        evidenceAnchor: { schemaVersion: 'atlas.evidenceAnchor.v1', anchorId: 'bounded-source-anchor', projectId, sceneId, entityId: 'mira',
+          startOffset: start, endOffset: end, quote, quoteHash: digest(quote), sceneTextHash: digest(text) } }] } };
+  };
+  c.atlasCurrentSceneState = c.normalizeAtlasCurrentSceneDossier(projection().atlasCurrentScene);
+  let dirty;
+  c.window.electronAPI.onSetDirty = fn => { dirty = fn; };
+  const start = editor.indexOf('  window.electronAPI.onSetDirty((message) => {'), end = editor.indexOf('\n  });', start); assert.ok(start >= 0 && end > start);
+  vm.runInContext(editor.slice(start, end + 6), c);
+  return { ...h, selected, focused, projection, digest, dirty: message => dirty(message) };
+}
+
+test('AF1 actual current-scene focus refuses dirty shifted source without selecting unrelated text', async () => {
+  const h = continuityRendererHarness(), c = h.c;
+  c.focusAtlasMention('selected-mira'); assert.deepEqual(h.selected, [{ start: 14, end: 18, quote: 'Мира' }]);
+  h.selected.length = 0; h.focused.length = 0; h.statuses.length = 0;
+  c.setPlainText(SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT); c.localEditGeneration = 2; c.localDirty = true;
+  c.focusAtlasMention('selected-mira');
+  assert.deepEqual(h.selected, []); assert.deepEqual(h.focused, []);
+  assert.equal(h.statuses.some(s => s.value === 'Atlas evidence открыт в тексте'), false);
+  assert.equal(c.getPlainText().slice(14, 18), 'ало '); assert.equal(c.getPlainText().slice(25, 29), 'Мира');
+  await c.refreshAtlasCurrentScene(); assert.equal(h.queries.length, 0, 'dirty source must not request saved source as current');
+  assert.equal(c.atlasCurrentSceneState.state, 'unavailable');
+});
+
+test('AF1 actual focus requires complete current project scene source quote and integral range', async t => {
+  for (const [name, mutate] of [
+    ['state', c => { c.atlasCurrentSceneState.state = 'loading'; }], ['project', c => { c.atlasCurrentSceneState.projectId = 'foreign'; }],
+    ['scene', c => { c.atlasCurrentSceneState.sceneId = 'foreign'; }], ['mention-scene', c => { c.atlasCurrentSceneState.mentions[0].sceneId = 'foreign'; }],
+    ['unacked', c => { c.lastAckedGeneration = 0; }], ['anchor-project', c => { c.atlasCurrentSceneState.mentions[0].evidenceAnchor.projectId = 'foreign'; }],
+    ['anchor-entity', c => { c.atlasCurrentSceneState.mentions[0].evidenceAnchor.entityId = 'foreign'; }],
+    ['anchor-scene', c => { c.atlasCurrentSceneState.mentions[0].evidenceAnchor.sceneId = 'foreign'; }],
+    ['anchor-range', c => { c.atlasCurrentSceneState.mentions[0].evidenceAnchor.startOffset = 13; }],
+    ['quote', c => { c.atlasCurrentSceneState.mentions[0].evidenceAnchor.quote = 'Лира'; }],
+    ['quote-hash', c => { c.atlasCurrentSceneState.mentions[0].evidenceAnchor.quoteHash = '0'.repeat(64); }],
+    ['source-hash', c => { c.atlasCurrentSceneState.mentions[0].evidenceAnchor.sceneTextHash = '0'.repeat(64); }],
+    ['summary-hash', c => { c.atlasCurrentSceneState.summary.sceneTextHash = '0'.repeat(64); }],
+    ['saved-source-append', c => { c.setPlainText(SOURCE_CONTINUITY_TEXT + ' append'); }],
+    ['fractional', c => { c.atlasCurrentSceneState.mentions[0].startOffset = 14.5; }],
+    ['empty', c => { c.atlasCurrentSceneState.mentions[0].endOffset = 14; }],
+    ['negative', c => { c.atlasCurrentSceneState.mentions[0].startOffset = -1; }],
+    ['too-far', c => { c.atlasCurrentSceneState.mentions[0].endOffset = 999; }],
+    ['missing-anchor', c => { delete c.atlasCurrentSceneState.mentions[0].evidenceAnchor; }],
+  ]) await t.test(name, () => {
+    const h = continuityRendererHarness(); mutate(h.c); const before = h.c.getPlainText(); h.c.focusAtlasMention('selected-mira');
+    assert.deepEqual(h.selected, [], name); assert.deepEqual(h.focused, [], name); assert.equal(h.c.getPlainText(), before);
+    assert.equal(h.statuses.some(s => s.value === 'Atlas evidence открыт в тексте'), false);
+  });
+});
+
+test('AF1 actual query cannot publish source mismatch and exact current SAVED refreshes correct shifted evidence', async () => {
+  const h = continuityRendererHarness(), c = h.c, shifted = SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT;
+  c.setPlainText(shifted); c.localEditGeneration = 2; c.lastAckedGeneration = 2;
+  c.queryPort = () => h.projection(); await c.refreshAtlasCurrentScene();
+  assert.equal(c.atlasCurrentSceneState.state, 'unavailable', 'saved projection must agree with current live text');
+  c.localDirty = true; c.lastAckedGeneration = 1; h.queries.length = 0;
+  c.queryPort = () => h.projection(shifted, 25);
+  h.dirty({ state: false, ack: { kind: 'SAVED', savedGeneration: 2 } }); await h.settle();
+  assert.equal(c.localDirty, false); assert.equal(h.queries.length, 1);
+  assert.equal(c.atlasCurrentSceneState.state, 'ready'); assert.equal(c.atlasCurrentSceneState.mentions[0].startOffset, 25);
+  c.focusAtlasMention('selected-mira'); assert.deepEqual(h.selected, [{ start: 25, end: 29, quote: 'Мира' }]);
+  c.setPlainText(SOURCE_CONTINUITY_TEXT); c.localEditGeneration = 3; c.localDirty = true; h.selected.length = 0;
+  c.queryPort = () => h.projection(); h.dirty({ state: false, ack: { kind: 'SAVED', savedGeneration: 3 } }); await h.settle();
+  c.focusAtlasMention('selected-mira'); assert.deepEqual(h.selected, [{ start: 14, end: 18, quote: 'Мира' }]);
+});
+
+test('AF1 actual SaveACK never admits stale protected at-risk or legacy-false source and hidden surfaces do not refresh', async t => {
+  for (const [name, message] of [ ['stale', { state: false, ack: { kind: 'SAVED', savedGeneration: 1 } }],
+    ['protected', { state: true, ack: { kind: 'PROTECTED' } }], ['at-risk', { state: true, ack: { kind: 'AT_RISK' } }], ['legacy', false] ]) await t.test(name, async () => {
+    const h = continuityRendererHarness(), c = h.c; c.setPlainText(SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT); c.localEditGeneration = 2; c.localDirty = true;
+    h.dirty(message); await h.settle(); assert.equal(h.queries.length, 0); c.focusAtlasMention('selected-mira'); assert.deepEqual(h.selected, []);
+  });
+  for (const surface of ['manualMap', 'entity']) {
+    const h = continuityRendererHarness(); h.c.currentAtlasSurface = surface; h.c.localDirty = true;
+    h.dirty({ state: false, ack: { kind: 'SAVED', savedGeneration: 1 } }); await h.settle(); assert.equal(h.queries.length, 0);
+  }
+});
+
+test('AF1 actual query pending across edits project scene publication or surface switches cannot publish late evidence', async t => {
+  for (const [name, mutate] of [ ['edit', c => { c.localEditGeneration++; c.localDirty = true; }],
+    ['dirty-only', c => { c.localDirty = true; }],
+    ['project', c => { c.currentProjectId = 'foreign'; }], ['scene', c => { c.currentDocumentId = 'foreign'; }],
+    ['publication', c => { c.currentTreeContentPublicationId = 'new'; }], ['surface', c => { c.currentAtlasSurface = 'manualMap'; }],
+    ['away-back', c => { c.invalidateAtlasPublications(); c.invalidateAtlasPublications(); }] ]) await t.test(name, async () => {
+    const h = continuityRendererHarness(), gate = h.deferred(); h.c.queryPort = () => gate.promise;
+    const pending = h.c.refreshAtlasCurrentScene(); assert.equal(h.queries.length, 1); mutate(h.c);
+    const before = JSON.stringify(h.c.atlasCurrentSceneState); gate.resolve(h.projection()); await pending;
+    assert.equal(JSON.stringify(h.c.atlasCurrentSceneState), before); assert.deepEqual(h.selected, []);
+  });
+});
+
+
+test('AF1 actual current-scene query preserves typed upstream refusal failure and no-scene empty reasons', async t => {
+  for (const kind of ['unavailable', 'query-failed', 'no-scene-empty', 'source-bearing-empty']) await t.test(kind, async () => {
+    const h = continuityRendererHarness(), c = h.c;
+    let result = h.projection();
+    if (kind === 'unavailable') result = { ok: true, atlasCurrentScene: { state: 'unavailable', unavailableReason: 'ATLAS_CAPABILITY_DENIED', projectId: c.currentProjectId, sceneId: c.currentDocumentId } };
+    if (kind === 'query-failed') result = { ok: false, error: { code: 'E_ATLAS_CAPABILITY_DENIED' } };
+    if (kind === 'no-scene-empty') { c.currentDocumentId = ''; result = { ok: true, atlasCurrentScene: { state: 'empty', unavailableReason: '', projectId: c.currentProjectId, sceneId: '' } }; }
+    if (kind === 'source-bearing-empty') result.atlasCurrentScene.state = 'empty';
+    c.queryPort = () => result; await c.refreshAtlasCurrentScene();
+    assert.equal(c.atlasCurrentSceneState.state, kind.endsWith('empty') ? 'empty' : 'unavailable');
+    assert.equal(c.atlasCurrentSceneState.unavailableReason, kind === 'unavailable' ? 'ATLAS_CAPABILITY_DENIED' : kind === 'query-failed' ? 'ATLAS_QUERY_FAILED' : '');
+    assert.deepEqual(h.selected, []); assert.deepEqual(h.focused, []);
+  });
+});
+
+
+function productionContinuityTextAdapter() {
+  const Module = require('node:module'), tiptap = fs.readFileSync(path.join(repoRoot, 'src/renderer/tiptap/index.js'), 'utf8');
+  const imports = tiptap.slice(0, tiptap.indexOf('let currentEditorInstance'));
+  const extensions = tiptap.slice(tiptap.indexOf('    extensions: [') + '    extensions: '.length, tiptap.indexOf("    content: '<p></p>'")).trim().replace(/,$/, '');
+  const readers = tiptap.slice(tiptap.indexOf('function readEditorText('), tiptap.indexOf('function normalizeFormattingColor('));
+  const actual = name => { const start = tiptap.indexOf('export function ' + name + '('), end = tiptap.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start); return tiptap.slice(start, end + 2); };
+  const output = require('esbuild').buildSync({ stdin: { contents: imports + '\nlet currentEditorInstance=null;\n' + readers
+    + '\nconst extensions=' + extensions + ';export {Editor,extensions};export const bindEditor=editor=>{currentEditorInstance=editor};\n'
+    + actual('getTiptapPlainText') + '\n' + actual('getTiptapDocumentSnapshot'), resolveDir: path.join(repoRoot, 'src/renderer/tiptap') },
+    bundle: true, platform: 'node', format: 'cjs', write: false, logLevel: 'silent' }).outputFiles[0].text;
+  // In-memory production module, no repository/temp output or invented text reader.
+  const file = path.join(repoRoot, 'finite-atlas-text-adapter.cjs'), compiled = new Module(file, module);
+  compiled.filename = file; compiled.paths = Module._nodeModulePaths(repoRoot); compiled._compile(output, file); return compiled.exports;
+}
+
+test('AF1 actual production Tiptap shared envelope preserves trailing empty paragraphs and refuses incompatible source coordinates [HEADLESS_NOT_NATIVE]', async t => {
+  const production = productionContinuityTextAdapter(), envelope = require('../../src/core/document-content-envelope-v1.cjs'), vm = require('node:vm');
+  for (const [kind, rawText, start, compatible] of [
+    ['normal-unicode-repeated', SOURCE_CONTINUITY_TEXT, 57, true],
+    ['multiple-paragraphs', SOURCE_CONTINUITY_TEXT + '\nПослесловие.', 57, true],
+    ['trailing-one-LF', SOURCE_CONTINUITY_TEXT + '\n', 57, true],
+    ['trailing-two-LF', SOURCE_CONTINUITY_TEXT + '\n\n', 57, true],
+    ['trailing-three-LF', SOURCE_CONTINUITY_TEXT + '\n\n\n', 57, true],
+    ['leading-empty', '\n' + SOURCE_CONTINUITY_TEXT, 57, false],
+    ['internal-collapsed-before', SOURCE_CONTINUITY_TEXT.replace('. Мира', '.\n\n\nМира'), 58, false],
+    ['internal-collapsed-after-matching-quote', SOURCE_CONTINUITY_TEXT + '\n\n\nМира', 14, false],
+  ]) await t.test(kind, async () => {
+    const h = continuityRendererHarness(), c = h.c, doc = envelope.buildParagraphDocumentFromText(rawText);
+    const editor = new production.Editor({ element: null, extensions: production.extensions, content: doc });
+    try {
+      production.bindEditor(editor);
+      Object.assign(c, { isTiptapMode: true, centralSheetStripLargePayloadFastPathActive: false, plainTextBuffer: '',
+        metaEnabled: false, currentMeta: envelope.createDefaultDocumentMeta(), currentCards: [],
+        composeObservablePayload: envelope.composeObservablePayload, parseObservablePayload: envelope.parseObservablePayload,
+        getTiptapPlainText: production.getTiptapPlainText, getTiptapDocumentSnapshot: production.getTiptapDocumentSnapshot });
+      for (const name of ['getPlainText', 'composeDocumentContent', 'parseDocumentContent']) {
+        const at = editorSourceFunction(name); vm.runInContext(at, c);
+      }
+      const savedRaw = c.composeDocumentContent(), saved = envelope.parseObservablePayload(savedRaw), before = JSON.stringify(editor.getJSON());
+      assert.equal(saved.issue, null); assert.equal(c.getPlainText(), rawText); assert.equal(saved.text.slice(start, start + 4), 'Мира');
+      c.queryPort = () => h.projection(saved.text, start); await c.refreshAtlasCurrentScene();
+      assert.equal(c.atlasCurrentSceneState.state, compatible ? 'ready' : 'unavailable', kind);
+      c.focusAtlasMention('selected-mira');
+      assert.deepEqual(h.selected, compatible ? [{ start, end: start + 4, quote: 'Мира' }] : [], kind);
+      assert.equal(h.statuses.some(s => s.value === 'Atlas evidence открыт в тексте'), compatible, kind);
+      assert.equal(c.getPlainText(), rawText); assert.equal(JSON.stringify(editor.getJSON()), before); assert.equal(c.composeDocumentContent(), savedRaw);
+      if (kind === 'internal-collapsed-after-matching-quote') assert.equal(rawText.slice(start, start + 4), 'Мира', 'matching local quote cannot certify incompatible whole source');
+    } finally { editor.destroy(); }
+  });
+});
+
+function editorSourceFunction(name) {
+  const match = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(editor), end = match && editor.indexOf('\n}\n', match.index);
+  assert.ok(match && end > match.index, name); return editor.slice(match.index, end + 2);
+}
+
+
+test('AF1 actual focus refuses a forged source witness extending into discarded trailing LF despite consistent raw quote and canonical hash', async () => {
+  const h = continuityRendererHarness(), c = h.c, text = SOURCE_CONTINUITY_TEXT + '\n'; c.setPlainText(text);
+  c.queryPort = () => h.projection(); await c.refreshAtlasCurrentScene(); assert.equal(c.atlasCurrentSceneState.state, 'ready');
+  const mention = c.atlasCurrentSceneState.mentions[0], start = SOURCE_CONTINUITY_TEXT.length - 1, end = text.length, quote = text.slice(start, end);
+  assert.equal(quote, '.\n'); assert.equal(end > SOURCE_CONTINUITY_TEXT.length, true); assert.equal(end <= text.length, true);
+  Object.assign(mention, { matchedText: quote, startOffset: start, endOffset: end });
+  Object.assign(mention.evidenceAnchor, { startOffset: start, endOffset: end, quote, quoteHash: h.digest(quote), sceneTextHash: h.digest(SOURCE_CONTINUITY_TEXT) });
+  assert.equal(c.atlasCurrentSceneState.summary.sceneTextHash, h.digest(SOURCE_CONTINUITY_TEXT));
+  c.focusAtlasMention('selected-mira'); assert.deepEqual(h.selected, []); assert.deepEqual(h.focused, []);
+  assert.equal(h.statuses.some(s => s.value === 'Atlas evidence открыт в тексте'), false); assert.equal(c.getPlainText(), text);
 });

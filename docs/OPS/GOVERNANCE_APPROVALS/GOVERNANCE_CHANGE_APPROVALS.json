@@ -18621,6 +18621,306 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same bounded exact Atlas delivery. Remove exactly one unintended trailing LF from the newly appended WORKLOG entry after final git diff --check identified it. Rebind only its current source digest, existing DATA policy guard, current certificate carrier and append-only exact-path witnesses. All runtime, maintained tests, dependencies, prior certificate carriers and all predicate bodies remain byte-exact. Original Q source/native/full baseline/RTK/CI evidence remains pinned at Q; required current-head checks and CI will execute on the correction, with no silent relabel or gate waiver.",
       "sha256": "26b747eeabef61d6c376021af67be1af3d665c6f745a9b3946509e3055ce24b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "2e245bd8b8061beb2966d80cd4e67691865e1734e501da6542c6a20309d6d683"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "219f4e5314094fb3f9945717bcd5cbe4ae188a54e87632ae87875d5386af1d2d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "ff83aa30edc626d6e262c9a7ebe5f652618d8ca17a701af62e09df631ec6b527"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "c9c8c17593bec9c8bea81b31f9c9ac8f084edbb240d6fb7b607400a4e59c8a90"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "abf2b2fb0fad104b998fce7e7e97001512cb967b20901a345d9124d7f7492c1f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "e74c1f2090b3bf8c39aee4a21a11685fc45a7ca0f15d0984fc1113c42b5dc015"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "f48b91af21d8760101675656edc844c163b78bc8201b252fa39ded7602f203a8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-23--mac-atlas-exact-journey.md",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "f226b1af6171a24e3521cf53d0ceb823d31a6ef6621d722a48b93db554ba03d8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "d3bcb39a86dfd27be4acf0e813498ac859d5afe5a996957b082440b4bc0975f3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "45019f1a94c01e23f43763bb0fa22713168294f3837f1495159deee33913efb5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "9fe1b1855b075aeb228d1c686ae316ff40110fae345925a6bffa29a667305d63"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "ddfee7d5aef4f7140ea2e7bc1477da53fd41eaf76273c2b615773cf969886356"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "54d7f157217763588b7c526b422278a418e13faa74f45b2b0085106a84f44c1c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "59f8d23bce9e3e2ab5460fa41fa629fc8ebdccf1ad4066c267a8bb299d021e1e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "e9146ab63130fc0ed2173946900d5c27f0235a6763dfa5917ef9d772db44de42"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "247060e8e38bf31abf13594d5f769ba8fdc3357453fdea7511aa2c7bf8e93a14"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-e01-c03-current-scene-dossier-surface.contract.test.js",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "e1f31ee2b81d1778afe213379e5075682a8d2dd2a90a7bc7cec04780a30330cf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "c98c582e9c5dbad0caa994c84f99434c5622c8dc94e5fda1bb28ee724f03aeb2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:17:49.246250+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Owner continuing complete first Mac P16 AF1 AF5 Atlas source-evidence and navigation continuity. Original authored records and manuscript stay protected; stale derived confirmation and source focus are guarded through existing seams. Native unchanged-M causal failure and independent full raw archive proof precede correction; root reviews actual current maintained negatives and source before mechanical bindings. Preserve all296 historical certificate tuples and verifier predicates, all1603 inventory members classes lanes and named skips, unchanged profiles cut source inputs and all17 qualification UNKNOWN. Only3 genuinely missing exact members and2 DONE paths append. Full applicable source affected baseline RTK CI corrected native ordinary merge and exact merged proof remain mandatory; evidence creates no new capability stage lease or release permission",
+      "sha256": "8229375f0aee93b0c3f5adcfddf21bea122a0a6f4c183379b0a7f7a97170475f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "047a81f5dfec0625c66ade1ef39c12190a3afbf0049348cdc97763aa406cfabc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "094f4c531adeaf0e55b5d5c681b3a9111250b04839db81bba0dffcd1776994d0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "eb326b640b7d36c6722c992bd1331e7a5131c551ed9a45f17b69c878794c00c1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "9137ba2bdedbfa53956fa4df5b1ed342a542e6596e11c97087489aed307af03b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "4e7778950889c44572d70c898e61a6e06f1304af84505a0a6ca2871766ada81f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "a850447ac3654549e2fe54be5cbe7b8ae550d53bb1fc7e51eda69e3b04f1714d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "3a17dc1ad9be85a3e6ddedd550b4bde39684230629ddc55e97b22b9cb5699e59"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "4098cea1b04d2ff1399b7baf495f7aa4c97b406bd37e97197579118a42e929dd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "01bb5a286f150cfc4b21835c21ce02d67234448c405fd00fa1ed543f88a790c7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "0a6f6c29e9b7b4956e3140b50a54e7e714116751361df42f49a7c85d36625d8d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-23T19:54:10.627624+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same unfinished Atlas source-evidence continuity delivery. Fresh clean22path admission on7bb18804 precedes one truthful currentRightTab comments VM dependency, one modified line; all original assertion bytes and seven implementation paths exact. Root reviews actual whole-file causal failure and corrected result. Existing775DATA and635source memberships fixed, inventory1603classes/lanes/skips exact. Preserve all prior299carrier tuples and every verifier/corruption predicate; append one current300binding successor for this genuinely missing fixture. Current full gates/baseline/officialRTK/CI/normal merge/exact merged native remain mandatory. No stage lease capability or release authority. Original delivery base4bb91296 unchanged.",
+      "sha256": "d3616ea1dba94e5cbda2520a863d6ae7ddaf68cdfa6c515de1b796610d4ee907"
     }
   ],
   "evidenceStampIds": [

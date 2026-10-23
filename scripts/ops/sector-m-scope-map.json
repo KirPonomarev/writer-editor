@@ -452,7 +452,9 @@
       "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
       "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
       "test/unit/keyboard-shortcuts.test.js",
-      "docs/tasks/2026-10-23--mac-atlas-exact-journey.md"
+      "docs/tasks/2026-10-23--mac-atlas-exact-journey.md",
+      "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
+      "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs"
     ]
   },
   "allowPrefixByPhase": {

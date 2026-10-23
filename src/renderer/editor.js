@@ -19692,6 +19692,12 @@ async function refreshAtlasCurrentScene(options = {}) {
   if (currentRightTab !== 'atlas' && options.force !== true) return;
   const current = beginAtlasQueryPublication('atlasCurrentScene', options), requestProject = currentProjectId;
   if (!current) return;
+  if (localDirty || localEditGeneration !== lastAckedGeneration) {
+    atlasCurrentSceneState = normalizeAtlasCurrentSceneDossier({ state: 'unavailable', unavailableReason: 'ATLAS_SOURCE_UNSAVED',
+      projectId: requestProject, sceneId: currentDocumentId || '', sceneTitle: currentDocumentTitle || '' });
+    renderAtlasCurrentSceneState();
+    return;
+  }
   atlasCurrentSceneState = {
     ...atlasCurrentSceneState,
     state: currentDocumentId ? 'loading' : 'empty',
@@ -19703,22 +19709,40 @@ async function refreshAtlasCurrentScene(options = {}) {
     projectId: currentProjectId,
     nodeId: currentDocumentId || '',
   });
-  if (!current()) return;
-  const nextState = readAtlasQueryProjection(result, 'atlasCurrentScene', requestProject, currentDocumentId || '')
+  if (!current() || localDirty || localEditGeneration !== lastAckedGeneration) return;
+  let nextState = readAtlasQueryProjection(result, 'atlasCurrentScene', requestProject, currentDocumentId || '')
     || { state: 'unavailable', unavailableReason: 'ATLAS_QUERY_FAILED', projectId: requestProject };
+  if (currentDocumentId && (nextState.state === 'ready' || nextState.state === 'empty')) {
+    const liveText = getPlainText(), source = parseDocumentContent(composeDocumentContent());
+    // The shared Core text must retain every existing coordinate; only its
+    // discarded trailing empty paragraphs may remain beyond that exact prefix.
+    if (source.issue || typeof source.text !== 'string' || !liveText.startsWith(source.text)
+      || !/^\n*$/u.test(liveText.slice(source.text.length)) || nextState.summary?.sceneTextHash !== hashCanonicalValue(source.text)) {
+      nextState = { state: 'unavailable', unavailableReason: 'ATLAS_SOURCE_CHANGED', projectId: requestProject, sceneId: currentDocumentId || '' };
+    }
+  }
   atlasCurrentSceneState = normalizeAtlasCurrentSceneDossier(nextState);
   renderAtlasCurrentSceneState();
 }
 
 function focusAtlasMention(mentionId = '') {
   const mention = atlasCurrentSceneState.mentions.find((item) => item.mentionId === mentionId);
-  if (!mention || mention.sceneId !== currentDocumentId) {
+  if (!mention || atlasCurrentSceneState.state !== 'ready' || atlasCurrentSceneState.projectId !== currentProjectId
+    || atlasCurrentSceneState.sceneId !== currentDocumentId || mention.sceneId !== currentDocumentId
+    || localDirty || localEditGeneration !== lastAckedGeneration) {
     updateStatusText('Упоминание Atlas недоступно для текущей сцены');
     return;
   }
-  const start = Number(mention.startOffset);
-  const end = Number(mention.endOffset);
-  if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) {
+  const start = mention.startOffset, end = mention.endOffset, anchor = mention.evidenceAnchor;
+  const text = getPlainText(), source = parseDocumentContent(composeDocumentContent());
+  const sceneTextHash = hashCanonicalValue(source.text);
+  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || end <= start || end > text.length
+    || source.issue || typeof source.text !== 'string' || end > source.text.length
+    || !text.startsWith(source.text) || !/^\n*$/u.test(text.slice(source.text.length))
+    || !anchor || anchor.projectId !== currentProjectId || anchor.sceneId !== currentDocumentId || anchor.entityId !== mention.entityId
+    || anchor.startOffset !== start || anchor.endOffset !== end || anchor.quote !== text.slice(start, end)
+    || anchor.quoteHash !== hashCanonicalValue(text.slice(start, end)) || anchor.sceneTextHash !== sceneTextHash
+    || atlasCurrentSceneState.summary.sceneTextHash !== sceneTextHash) {
     updateStatusText('Atlas anchor устарел');
     return;
   }
@@ -25636,8 +25660,11 @@ if (window.electronAPI) {
       if (ack && ack.kind === 'SAVED') {
         if (isTiptapMode) checkpointTiptapCommentEditIntents(ack.commentEditIntentsSha256);
         if (ack.savedGeneration === localEditGeneration) {
+          const refreshAtlasSource = localDirty || lastAckedGeneration !== ack.savedGeneration;
           lastAckedGeneration = ack.savedGeneration;
           localDirty = false;
+          if (refreshAtlasSource && currentRightTab === 'atlas'
+            && (currentAtlasSurface === 'journey' || currentAtlasSurface === 'currentScene')) refreshActiveAtlasSurface();
         }
       } else {
         localDirty = Boolean(message.state);

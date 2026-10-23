@@ -240,3 +240,155 @@ test('E01 C03: surface wiring uses query bridge and does not bypass command or s
   assert.match(htmlSource, /data-atlas-current-scene-host/u);
   assert.match(htmlSource, /data-atlas-current-scene-provider="query\.atlasCurrentScene"/u);
 });
+
+
+const CONTINUITY_TEXT = 'Начало e\u0301 🧭. Мира увидела маяк. Северная ответила Мире. Мира сохранила знак.';
+const CONTINUITY_PREFIX = 'Добавлено. ';
+async function continuityFixture({ legacy = false } = {}) {
+  const runtime = await loadModule('src/core/runtime.mjs'), derived = await loadModule('src/derived/index.mjs');
+  const projectId = 'source-continuity', sceneId = 'scene-continuity', entityId = 'mira', decisionId = 'confirmed-first';
+  const built = runtime.applyCoreSequence(runtime.createInitialCoreState(), [
+    { type: runtime.CORE_COMMAND_IDS.PROJECT_CREATE, payload: { projectId, sceneId, title: 'Continuity' } },
+    { type: runtime.CORE_COMMAND_IDS.PROJECT_APPLY_TEXT_EDIT, payload: { projectId, sceneId, text: CONTINUITY_TEXT } },
+    { type: runtime.CORE_COMMAND_IDS.ATLAS_ENTITY_CREATE, payload: { projectId, entityId, name: 'Мира', entityKind: 'character' } },
+    { type: runtime.CORE_COMMAND_IDS.ATLAS_ALIAS_ADD, payload: { projectId, entityId, aliasId: 'north', value: 'Северная', scope: 'scene', sceneId } },
+  ]); assert.equal(built.ok, true);
+  const query = state => derived.deriveAtlasCurrentSceneDossier({ coreState: state, params: { projectId, sceneId } });
+  const first = query(built.state).value.mentions.find(m => m.startOffset === 14); assert.ok(first);
+  const evidenceAnchor = { ...first.evidenceAnchor };
+  if (legacy) for (const key of ['projectId', 'sceneId', 'entityId']) delete evidenceAnchor[key];
+  const confirmed = runtime.reduceCoreState(built.state, { type: runtime.CORE_COMMAND_IDS.ATLAS_MENTION_CONFIRM,
+    payload: { projectId, sceneId, entityId, mentionId: first.mentionId, evidenceAnchor, decisionId } });
+  assert.equal(confirmed.ok, true); const originalDecision = JSON.stringify(confirmed.state.data.projects[projectId].atlas.decisions[decisionId]);
+  const edit = (state, text) => { const r = runtime.reduceCoreState(state, { type: runtime.CORE_COMMAND_IDS.PROJECT_APPLY_TEXT_EDIT,
+    payload: { projectId, sceneId, text } }); assert.equal(r.ok, true); return r.state; };
+  return { runtime, derived, projectId, sceneId, entityId, decisionId, state: confirmed.state, first, query, edit, originalDecision };
+}
+function continuityTrust(projection) {
+  assert.equal(projection.ok, true);
+  return projection.value.mentions.map(m => [m.matchedText, m.startOffset, m.endOffset, m.trustState]);
+}
+
+test('AF1 AF5 exact source witness gates confirmation after append prefix and exact restoration without author writes', async () => {
+  const f = await continuityFixture(), original = JSON.stringify(f.state);
+  assert.deepEqual(continuityTrust(f.query(f.state)), [
+    ['Мира', 14, 18, 'AUTHOR_CONFIRMED'], ['Северная', 33, 41, 'ALGORITHMIC_OBSERVATION'], ['Мира', 57, 61, 'ALGORITHMIC_OBSERVATION']]);
+  const appended = f.edit(f.state, CONTINUITY_TEXT + ' Автор дописал абзац.');
+  const before = JSON.stringify(appended), old = f.query(f.state).value.mentions[0], observed = f.query(appended).value.mentions[0];
+  assert.equal(observed.mentionId, old.mentionId); assert.notDeepEqual(observed.evidenceAnchor, old.evidenceAnchor);
+  assert.equal(observed.trustState, 'ALGORITHMIC_OBSERVATION', 'unchanged mentionId cannot certify a changed full source witness');
+  assert.equal(observed.decisionId, ''); assert.equal(f.query(appended).value.summary.confirmedMentionCount, 0);
+  assert.equal(f.derived.deriveAtlasEvidenceReattachmentInbox({ coreState: appended, params: { projectId: f.projectId } }).value.items[0].status, 'REVIEW_REQUIRED');
+  assert.equal(JSON.stringify(appended), before);
+  const shifted = f.edit(appended, CONTINUITY_PREFIX + CONTINUITY_TEXT);
+  assert.deepEqual(continuityTrust(f.query(shifted)), [
+    ['Мира', 25, 29, 'ALGORITHMIC_OBSERVATION'], ['Северная', 44, 52, 'ALGORITHMIC_OBSERVATION'], ['Мира', 68, 72, 'ALGORITHMIC_OBSERVATION']]);
+  const restored = f.edit(shifted, CONTINUITY_TEXT), restoredBefore = JSON.stringify(restored);
+  assert.equal(f.query(restored).value.mentions[0].trustState, 'AUTHOR_CONFIRMED');
+  assert.equal(f.query(restored).value.mentions[0].decisionId, f.decisionId);
+  for (const state of [appended, shifted, restored]) assert.equal(JSON.stringify(state.data.projects[f.projectId].atlas.decisions[f.decisionId]), f.originalDecision);
+  assert.equal(JSON.stringify(restored), restoredBefore); assert.equal(JSON.stringify(f.state), original);
+});
+
+test('AF1 AF5 malformed or foreign original witness never promotes by retained mention ID', async t => {
+  const f = await continuityFixture();
+  for (const [name, patch] of [
+    ['project', d => { d.projectId = 'foreign'; }], ['scene', d => { d.sceneId = 'foreign'; }], ['entity', d => { d.entityId = 'foreign'; }],
+    ['anchor-project', d => { d.evidenceAnchor.projectId = 'foreign'; }], ['anchor-scene', d => { d.evidenceAnchor.sceneId = 'foreign'; }],
+    ['anchor-entity', d => { d.evidenceAnchor.entityId = 'foreign'; }], ['quote', d => { d.evidenceAnchor.quote = 'Лира'; }],
+    ['quoteHash', d => { d.evidenceAnchor.quoteHash = '0'.repeat(64); }], ['sourceHash', d => { d.evidenceAnchor.sceneTextHash = '0'.repeat(64); }],
+    ['fractional-range', d => { d.evidenceAnchor.startOffset = 14.5; }], ['range', d => { d.evidenceAnchor.endOffset = 19; }],
+  ]) await t.test(name, () => {
+    const state = JSON.parse(JSON.stringify(f.state)); patch(state.data.projects[f.projectId].atlas.decisions[f.decisionId]); const before = JSON.stringify(state);
+    const projected = f.query(state); assert.equal(projected.ok, true);
+    assert.equal(projected.value.mentions[0].trustState, 'ALGORITHMIC_OBSERVATION', name);
+    assert.equal(projected.value.mentions[0].decisionId, ''); assert.equal(JSON.stringify(state), before);
+  });
+});
+
+test('AF1 AF5 legal historical omitted optional anchor identity remains readable without migration', async () => {
+  const f = await continuityFixture({ legacy: true }), before = JSON.stringify(f.state);
+  assert.equal(f.query(f.state).value.mentions[0].trustState, 'AUTHOR_CONFIRMED');
+  const changed = f.edit(f.state, CONTINUITY_TEXT + ' Новый абзац.');
+  assert.equal(f.query(changed).value.mentions[0].trustState, 'ALGORITHMIC_OBSERVATION');
+  assert.equal(JSON.stringify(f.state), before); assert.equal(JSON.stringify(changed.data.projects[f.projectId].atlas.decisions[f.decisionId]), f.originalDecision);
+});
+
+async function continuityReattached() {
+  const f = await continuityFixture(), text = CONTINUITY_PREFIX + CONTINUITY_TEXT, moved = f.edit(f.state, text);
+  const inbox = f.derived.deriveAtlasEvidenceReattachmentInbox({ coreState: moved, params: { projectId: f.projectId } });
+  assert.equal(inbox.ok, true); const item = inbox.value.items[0], candidate = item.candidates.find(c => c.evidenceAnchor.startOffset === 68);
+  assert.ok(candidate); assert.equal(item.candidateCount, 2); assert.equal(candidate.evidenceAnchor.quote, 'Мира');
+  const reattach = (state, id, target) => {
+    const result = f.runtime.reduceCoreState(state, { type: f.runtime.CORE_COMMAND_IDS.ATLAS_EVIDENCE_REATTACH,
+      payload: { projectId: f.projectId, sourceRecordKind: 'decision', sourceRecordId: f.decisionId,
+        staleEvidenceAnchor: item.staleEvidenceAnchor, newEvidenceAnchor: target.evidenceAnchor,
+        expectedSourceRecordHash: item.sourceRecordHash, reattachmentId: id, reason: 'Explicit selected exact source' } });
+    assert.equal(result.ok, true, JSON.stringify(result.error)); return result.state;
+  };
+  return { ...f, text, moved, item, candidate, reattach, attached: reattach(moved, 'z-earlier', candidate) };
+}
+
+test('AF1 AF5 explicit real Core reattachment binds only selected current witness and preserves original raw decision', async () => {
+  const f = await continuityReattached(), before = JSON.stringify(f.attached), projected = f.query(f.attached);
+  assert.deepEqual(continuityTrust(projected), [
+    ['Мира', 25, 29, 'ALGORITHMIC_OBSERVATION'], ['Северная', 44, 52, 'ALGORITHMIC_OBSERVATION'], ['Мира', 68, 72, 'AUTHOR_CONFIRMED']]);
+  assert.equal(projected.value.mentions[2].decisionId, f.decisionId);
+  assert.notEqual(projected.value.mentions[2].evidenceAnchor.anchorId, f.candidate.evidenceAnchor.anchorId, 'legitimate candidate and term anchor IDs differ');
+  assert.notEqual(projected.value.mentions[2].mentionId, f.first.mentionId);
+  assert.equal(JSON.stringify(f.attached.data.projects[f.projectId].atlas.decisions[f.decisionId]), f.originalDecision);
+  assert.equal(JSON.stringify(f.attached), before);
+  const changed = f.edit(f.attached, f.text + ' Позже.'); assert.equal(f.query(changed).value.summary.confirmedMentionCount, 0);
+  const restored = f.edit(changed, f.text); assert.equal(f.query(restored).value.mentions[2].trustState, 'AUTHOR_CONFIRMED');
+  const firstTarget = f.item.candidates.find(c => c.evidenceAnchor.startOffset === 25); assert.ok(firstTarget);
+  const latest = f.reattach(f.attached, 'a-later', firstTarget);
+  assert.deepEqual(f.query(latest).value.mentions.map(m => m.trustState), ['AUTHOR_CONFIRMED', 'ALGORITHMIC_OBSERVATION', 'ALGORITHMIC_OBSERVATION']);
+  assert.equal(JSON.stringify(latest.data.projects[f.projectId].atlas.decisions[f.decisionId]), f.originalDecision);
+});
+
+test('AF1 AF5 stale malformed or ambiguous explicit reattachment metadata cannot promote evidence', async t => {
+  const f = await continuityReattached();
+  for (const [name, patch] of [
+    ['source-hash', r => { r.sourceRecordHash = '0'.repeat(64); }], ['source-id', r => { r.sourceRecordId = 'foreign'; }],
+    ['source-kind', r => { r.sourceRecordKind = 'suppression'; }], ['project', r => { r.projectId = 'foreign'; }],
+    ['stale-witness', r => { r.staleEvidenceAnchor.quote = 'Лира'; }], ['new-project', r => { r.newEvidenceAnchor.projectId = 'foreign'; }],
+    ['new-entity', r => { r.newEvidenceAnchor.entityId = 'foreign'; }], ['new-scene-hash', r => { r.newEvidenceAnchor.sceneTextHash = '0'.repeat(64); }],
+    ['sequence', r => { r.createdByCommandSeq = -1; }], ['fractional-sequence', r => { r.createdByCommandSeq = 1.5; }],
+    ['operation', r => { r.operationKind = 'automatic'; }],
+  ]) await t.test(name, () => {
+    const state = JSON.parse(JSON.stringify(f.attached)); patch(state.data.projects[f.projectId].atlas.evidenceReattachments['z-earlier']); const before = JSON.stringify(state);
+    const result = f.query(state); assert.equal(result.ok, true); assert.equal(result.value.summary.confirmedMentionCount, 0, name);
+    assert.equal(JSON.stringify(state), before);
+  });
+  const ambiguous = JSON.parse(JSON.stringify(f.attached)), bucket = ambiguous.data.projects[f.projectId].atlas.evidenceReattachments;
+  bucket['same-sequence'] = { ...bucket['z-earlier'], id: 'same-sequence', newEvidenceAnchor: f.item.candidates[0].evidenceAnchor };
+  const before = JSON.stringify(ambiguous); assert.equal(f.query(ambiguous).value.summary.confirmedMentionCount, 0);
+  assert.equal(JSON.stringify(ambiguous), before);
+});
+
+
+test('AF1 AF5 latest explicit source selection supersedes the original witness on original-source restoration', async () => {
+  const f = await continuityReattached(), restored = f.edit(f.attached, CONTINUITY_TEXT), before = JSON.stringify(restored);
+  assert.equal(f.query(restored).value.summary.confirmedMentionCount, 0, 'latest explicit witness must not fall back to original author anchor');
+  assert.equal(JSON.stringify(restored), before);
+  assert.equal(JSON.stringify(restored.data.projects[f.projectId].atlas.decisions[f.decisionId]), f.originalDecision);
+});
+
+
+test('AF1 AF5 present nonstring optional witness identity is malformed while historical omission remains legal', async t => {
+  const f = await continuityFixture();
+  for (const key of ['projectId', 'sceneId', 'entityId']) for (const value of [null, 17, { foreign: true }]) await t.test(key + ':' + JSON.stringify(value), () => {
+    const state = JSON.parse(JSON.stringify(f.state)); state.data.projects[f.projectId].atlas.decisions[f.decisionId].evidenceAnchor[key] = value;
+    const before = JSON.stringify(state); assert.equal(f.query(state).value.summary.confirmedMentionCount, 0);
+    assert.equal(JSON.stringify(state), before);
+  });
+});
+
+test('AF1 AF5 equally valid original confirmations retain deterministic last decision-ID precedence', async () => {
+  const f = await continuityFixture(), decisionId = 'z-confirmed-again';
+  const confirmed = f.runtime.reduceCoreState(f.state, { type: f.runtime.CORE_COMMAND_IDS.ATLAS_MENTION_CONFIRM,
+    payload: { projectId: f.projectId, sceneId: f.sceneId, entityId: f.entityId, mentionId: f.first.mentionId, evidenceAnchor: f.first.evidenceAnchor, decisionId } });
+  assert.equal(confirmed.ok, true); const before = JSON.stringify(confirmed.state), projected = f.query(confirmed.state);
+  assert.equal(projected.value.mentions[0].trustState, 'AUTHOR_CONFIRMED'); assert.equal(projected.value.mentions[0].decisionId, decisionId);
+  assert.equal(JSON.stringify(confirmed.state), before);
+});
