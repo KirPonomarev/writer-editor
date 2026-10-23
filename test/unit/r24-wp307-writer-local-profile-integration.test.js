@@ -1254,3 +1254,78 @@ test('actual reattachment route refuses stale target revoked capability owner fo
     x.assertOriginal();
   });
 });
+
+test('actual registered Main result and whole Atlas journey agree on persistence while corrupt response ports fail closed', async t => {
+  const x = await reattachmentMainFixture(t), { h } = x, vm = require('node:vm');
+  const dossier = (await h.query('query.atlasEntityDossier', { projectId: x.projectId, entityId: x.entityId })).atlasEntityDossier;
+  const source = dossier.evidenceLedger.sourceRecords.find(row => row.sourceRecordId === x.decisionId);
+  const target = x.shifted.mentions.find(row => row.startOffset === 68); assert.ok(source); assert.ok(target);
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs'), sceneBytes = fs.readFileSync(x.f.scenePath);
+  const liveText = envelope.parseObservablePayload(sceneBytes.toString('utf8')).text, issued = [], renders = [], refreshes = [];
+  let actualResult, sent, backendCalls = 0;
+  const c = { currentProjectId: x.projectId, currentDocumentId: x.sceneId, atlasSelectedEntityId: x.entityId,
+    currentRightTab: 'atlas', currentAtlasSurface: 'journey', currentTreeContentPublicationId: 'finite-real-dispatch-publication',
+    localDirty: false, localEditGeneration: h.editor.generation, lastAckedGeneration: h.editor.generation,
+    atlasPublicationEpoch: 0, atlasJourneyDraftRevision: 0, manualMapDraftOwnership: 0, manualMapDraftRevision: 0,
+    atlasCommandPublicationSequence: 0, atlasJourneyState: { status: 'idle', commandSeq: 0 },
+    atlasCurrentSceneState: structuredClone(x.shifted), atlasEntityDossierState: structuredClone(dossier),
+    hashCanonicalValue: x.hash, parseDocumentContent: envelope.parseObservablePayload,
+    getPlainText: () => liveText, composeDocumentContent: () => sceneBytes.toString('utf8'),
+    crypto: { randomUUID: () => { const id = crypto.randomUUID(); issued.push(id); return id; } }, console,
+    updateStatusText() {}, renderAtlasJourneyState: () => renders.push(c.atlasJourneyState.status),
+    refreshAtlasCurrentScene: async options => { assert.equal(options.isCurrent(), true); refreshes.push('scene'); c.atlasCurrentSceneState = await x.query(); },
+    refreshAtlasProductSurfaces: async options => { assert.equal(options.isCurrent(), true); refreshes.push('surfaces'); },
+    dispatchUiCommand: async (id, payload) => { backendCalls++; sent = structuredClone(payload); actualResult = (await x.ui(id, payload)).result; return actualResult; },
+  };
+  const editor = read('src/renderer/editor.js');
+  const names = ['getAtlasJourneyMentions', 'findAtlasJourneyMention', 'captureAtlasPublication',
+    'getAtlasReattachmentSources', 'isAtlasReattachmentSource', 'getAtlasReattachmentContext',
+    'isAtlasReattachmentCurrent', 'getAtlasReattachmentIntent', 'runAtlasReattachmentCommand'];
+  const actual = name => { const start = editor.indexOf((name.startsWith('runAtlas') ? 'async ' : '') + 'function ' + name + '(');
+    assert.ok(start >= 0); const end = editor.indexOf('\n}\n', start); assert.ok(end > start); return editor.slice(start, end + 2); };
+  vm.createContext(c); vm.runInContext(names.map(actual).join('\n'), c);
+  c.atlasJourneyDraft = { reattachmentSource: structuredClone(source), reattachmentContext: c.getAtlasReattachmentContext(),
+    reattachmentTarget: target.mentionId, reattachmentId: '', reattachmentIntentKey: '', reattachmentPending: false };
+  await c.runAtlasReattachmentCommand();
+  const receipt = actualResult.value.result.receipt, persisted = JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.evidenceReattachments[sent.reattachmentId];
+  assert.equal(actualResult.ok, true); assert.equal(actualResult.value.performed, true);
+  assert.equal(actualResult.value.commandAuthority, 'CommandKernel'); assert.equal(actualResult.value.commandId, 'atlas.evidence.reattach');
+  assert.equal(actualResult.value.result.ok, true); assert.equal(receipt.schemaVersion, 'command-kernel.receipt.v1');
+  assert.equal(receipt.commandId, 'atlas.evidence.reattach'); assert.equal(receipt.status, 'APPLIED');
+  assert.equal(receipt.capabilityRevalidated, true); assert.equal(receipt.storageWritten, true); assert.ok(persisted);
+  assert.equal(persisted.newEvidenceAnchor.startOffset, 68); assert.equal(persisted.sourceRecordHash, x.originalHash); x.assertOriginal();
+  t.diagnostic(JSON.stringify({ realRegisteredResponse: true, receiptSchema: receipt.schemaVersion, receiptStatus: receipt.status,
+    commandId: receipt.commandId, persistedId: persisted.id, backendCalls }));
+  await t.test('real canonical write reports applied persisted and retires its intent UUID', () => {
+    assert.equal(c.atlasJourneyState.status, 'applied', 'real saved operation must not be shown as failed');
+    assert.equal(c.atlasJourneyState.lastResult, 'persisted'); assert.equal(c.atlasJourneyDraft.reattachmentId, '');
+    assert.equal(c.atlasJourneyDraft.reattachmentTarget, ''); assert.equal(issued.length, 1); assert.ok(renders.includes('applied'));
+  });
+  const afterCanonical = reattachmentWholeFixtureRoster(h);
+  const corruptions = [
+    ['bare-ok', () => ({ ok: true })], ['unknown-object', () => ({ ok: true, value: { notice: 'UNKNOWN' } })],
+    ['shallow-status', r => ({ ok: true, value: { status: r.value.result.receipt.status } })],
+    ['missing-performed', r => { delete r.value.performed; return r; }],
+    ['wrong-authority', r => { r.value.commandAuthority = 'renderer'; return r; }],
+    ['wrong-command', r => { r.value.commandId = 'atlas.mention.confirm'; return r; }],
+    ['inner-failure', r => { r.value.result.ok = false; return r; }],
+    ['missing-receipt', r => { delete r.value.result.receipt; return r; }],
+    ['wrong-schema', r => { r.value.result.receipt.schemaVersion = 'unknown'; return r; }],
+    ['wrong-receipt-command', r => { r.value.result.receipt.commandId = 'atlas.mention.confirm'; return r; }],
+    ['unknown-status', r => { r.value.result.receipt.status = 'UNKNOWN'; return r; }],
+    ['unvalidated-capability', r => { r.value.result.receipt.capabilityRevalidated = false; return r; }],
+    ['storage-not-written', r => { r.value.result.receipt.storageWritten = false; return r; }],
+  ];
+  for (const [name, corrupt] of corruptions) await t.test('finite UI response corruption: ' + name, async () => {
+    const response = corrupt(structuredClone(actualResult)); let retryId;
+    c.atlasJourneyDraft = { ...c.atlasJourneyDraft, reattachmentContext: c.getAtlasReattachmentContext(),
+      reattachmentTarget: target.mentionId, reattachmentId: '', reattachmentIntentKey: '', reattachmentPending: false };
+    // This finite response port does not invoke Main or establish a canonical refusal.
+    c.dispatchUiCommand = async (_id, payload) => { retryId = payload.reattachmentId; return response; };
+    await c.runAtlasReattachmentCommand();
+    assert.equal(c.atlasJourneyState.status, 'failed', name); assert.notEqual(c.atlasJourneyState.lastResult, 'persisted');
+    assert.ok(retryId); assert.equal(c.atlasJourneyDraft.reattachmentId, retryId, 'unconfirmed response retains retry identity');
+    assert.equal(backendCalls, 1); assert.deepEqual(reattachmentWholeFixtureRoster(h), afterCanonical); x.assertOriginal();
+  });
+  assert.deepEqual(fs.readFileSync(x.f.scenePath), sceneBytes); assert.ok(refreshes.includes('scene'));
+});

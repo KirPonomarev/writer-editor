@@ -27291,7 +27291,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "4f134a97b8cb655b98d5ceacbac907b1a803bbdf7668d4c77a4cff20d23610b0"
+      "sha256": "4f1b170c54a89cc5dbae77a10474a66e5cac59877cddb00d8bfb78aa0be70fa3"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -27427,7 +27427,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "15148f8006a21c262fa8760d70b97865645b485cab5e741574b2c41c6c302b78"
+      "sha256": "7f96f3bde8f81778823bce7863b18ec751f0bc41ee5b8db57f97be9056d3e2bb"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -27567,15 +27567,15 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "47bd5447bcdb0e5796d8b39184700c29dfc5980ff0cf675803d481619298bc35"
+      "sha256": "e198df1461bd2b9ccf0f87d8bc18d919330fa3c89f5a712b333e81abf4193a7f"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "b44ed0880043441170c4ea723c47d4859f7e0df4f13ac3d3e849fb8248bd6670"
+      "sha256": "018bcc0e88b0aa6de2577e08e1c938cbc9e9cbfde9dfa305307acfc8c7a886aa"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "1ea566388bf8cc0659193e16e42fe63243e468a2adf29b19b96fa7cd69679837"
+      "sha256": "a5eab24044040c7c477df2df293f42e9018d0f75d206010cdd26ef3d3bac8d9c"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -27963,7 +27963,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "38449490f235080a8912eb576d7d646105df24e4b2ea36438869e5ec91bd24f3"
+      "sha256": "a01adba60fc567cfeb90afeb52d113ae6bcf212e565bc066322a2d5fe342f091"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -27971,7 +27971,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f9b283923e0b35121283229b16ec9852bc731f9b3e27e0da0e66638fe56dfc9f"
+      "sha256": "586b8808ee9b39fb3df0748f143a2401c2973fa2242556bfb8a65f3e94041200"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -28127,7 +28127,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-      "sha256": "b1d20c2637620680711152a5f3b7dbc392b373921a83050de30605b493769e95"
+      "sha256": "903acb3440f892633ae3314c255b7ecfba4196d54288f28f4c10ab342a87b42a"
     },
     {
       "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -28183,7 +28183,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "sha256": "7c643d96aa0d42a9a5a1a161149e3bf11439b29fc6bbb4489de09f5d03d2687f"
+      "sha256": "1b59aaf3e70d89599e5dcc2aa1e5aca52339fb9f598b76e201d9c41c61f1c801"
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
@@ -28323,7 +28323,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-24--atlas-evidence-reattachment.md",
-      "sha256": "b35123d5d33bf63fc43e269a05e30be15e986e754477979999edc33f3fc3ffa2"
+      "sha256": "901b8d67294715eff2c3ce4fbd05bdd57785739d51e04bd4ef07ffb333cd8e6a"
     },
     {
       "path": "src/derived/atlas/deriveAtlasEntityDossier.mjs",
@@ -28349,7 +28349,7 @@ const R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "0afa1646caf236f755c1023f67c6cc4abd9cce8930b78bd272ecedd9463266ea"
+      "sha256": "4aee56838313cc8404b2668c6f5f89c74a7a709017531f910eb184ce0252c0bf"
     }
   ]
 });

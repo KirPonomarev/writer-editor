@@ -17263,7 +17263,12 @@ async function runAtlasReattachmentCommand() {
   renderAtlasJourneyState();
   const result = await dispatchUiCommand('atlas.evidence.reattach', { ...payload, projectId: currentProjectId, reattachmentId: id }, { isCurrentPresentation: current });
   if (!current()) return result;
-  const accepted = result?.ok === true && (result.value?.status === 'APPLIED' || result.value?.receipt?.status === 'APPLIED' || result.receipt?.status === 'APPLIED');
+  const receipt = result?.value?.result?.receipt;
+  const accepted = result?.ok === true && result.value?.performed === true
+    && result.value.commandAuthority === 'CommandKernel' && result.value.commandId === 'atlas.evidence.reattach'
+    && result.value.result?.ok === true && receipt?.schemaVersion === 'command-kernel.receipt.v1'
+    && receipt.commandId === 'atlas.evidence.reattach' && receipt.status === 'APPLIED'
+    && receipt.capabilityRevalidated === true && receipt.storageWritten === true;
   atlasJourneyDraft.reattachmentPending = false;
   if (accepted) { atlasJourneyDraft.reattachmentId = ''; atlasJourneyDraft.reattachmentIntentKey = ''; atlasJourneyDraft.reattachmentTarget = ''; }
   atlasJourneyState = { status: accepted ? 'applied' : 'failed', lastCommandId: 'atlas.evidence.reattach',

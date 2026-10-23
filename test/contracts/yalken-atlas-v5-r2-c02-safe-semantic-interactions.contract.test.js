@@ -1457,6 +1457,11 @@ function savedReattachmentRendererHarness({ composition = false } = {}) {
     'renderAtlasEntityDossierState', 'appendAtlasOverviewRow', 'appendAtlasOverviewSection', 'makeManualMapAuthorId'];
   for (const match of editor.matchAll(/^(?:async )?function (\w*AtlasReattachment\w*)\(/gm)) if (!names.includes(match[1])) names.push(match[1]);
   h.loadActual(...names);
+  // Finite registered response shape; the real Main oracle is the integration test.
+  const appliedResponse = () => ({ ok: true, value: { performed: true, commandAuthority: 'CommandKernel', commandId: 'atlas.evidence.reattach',
+    result: { ok: true, receipt: { schemaVersion: 'command-kernel.receipt.v1', commandId: 'atlas.evidence.reattach', status: 'APPLIED',
+      capabilityRevalidated: true, storageWritten: true } } } });
+  c.commandPort = id => id === 'atlas.evidence.reattach' ? appliedResponse() : { ok: true, value: { status: 'APPLIED' } };
   let current, dossier;
   const original = { schemaVersion: 'atlas.evidenceAnchor.v1', anchorId: 'saved-original-anchor', projectId: 'project-a', sceneId: 'scene-a',
     entityId: 'mira', startOffset: 14, endOffset: 18, quote: 'Мира', quoteHash: c.hashCanonicalValue('Мира'),
@@ -1502,7 +1507,7 @@ function savedReattachmentRendererHarness({ composition = false } = {}) {
     c.syncAtlasSurfaceCompositionState();
   }
   publish();
-  return { ...h, c, issued, source, original, publish, render, walk, pickButton, pick, target, button, apply,
+  return { ...h, c, issued, source, original, publish, render, walk, pickButton, pick, target, button, apply, appliedResponse,
     dossier: () => structuredClone(dossier), setDossier: value => { dossier = value; c.atlasEntityDossierState = c.normalizeAtlasEntityDossier(value); render(); } };
 }
 
@@ -1576,7 +1581,7 @@ test('actual same-intent retry retains UUID while accepted next source correctio
   h.c.commandPort = () => ({ ok: false, error: { code: 'E_RETRY', reason: 'EXPLICIT_RETRY' } });
   await h.apply(); const first = h.commands[0].payload.reattachmentId;
   await h.apply(); assert.equal(h.commands[1].payload.reattachmentId, first); assert.equal(h.issued.length, 1);
-  h.c.commandPort = () => ({ ok: true, value: { status: 'APPLIED' } }); await h.apply();
+  h.c.commandPort = h.appliedResponse; await h.apply();
   assert.equal(h.commands[2].payload.reattachmentId, first);
   h.publish(SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT + ' Позже.', 2); await h.pick(); await h.target('mira-25'); await h.apply();
   const second = h.commands[3].payload.reattachmentId; assert.notEqual(second, first); assert.equal(h.issued.length, 2);
@@ -1596,7 +1601,7 @@ test('actual pending reattachment blocks duplicate dispatch and ignores stale as
     if (fault === 'source') h.c.setPlainText(h.c.getPlainText() + ' Позже.');
     if (fault === 'publication') h.c.invalidateAtlasPublications();
     const queries = h.queries.length, before = JSON.stringify(h.c.atlasJourneyDraft);
-    pending.resolve({ ok: true, value: { status: 'APPLIED' } }); await h.settle();
+    pending.resolve(h.appliedResponse()); await h.settle();
     assert.notEqual(h.c.atlasJourneyState.status, 'applied', 'stale completion must not publish success');
     assert.equal(JSON.stringify(h.c.atlasJourneyDraft), before); assert.equal(h.queries.length, queries);
   });
@@ -1641,7 +1646,7 @@ test('actual pending reattachment cannot publish or refresh after its dispatch p
     c.commandPort = () => pending.promise; await h.apply(); assert.equal(h.commands.length, 1, 'actual Flow dispatch reached pending transport');
     if (fault === 'surface') c.setCurrentAtlasSurface('overview'); else c.currentRightTab = 'comments';
     await h.settle(); const before = JSON.stringify(c.atlasJourneyDraft), queries = h.queries.length;
-    pending.resolve({ ok: true, value: { status: 'APPLIED' } }); await h.settle();
+    pending.resolve(h.appliedResponse()); await h.settle();
     assert.notEqual(c.atlasJourneyState.status, 'applied'); assert.equal(JSON.stringify(c.atlasJourneyDraft), before);
     assert.equal(h.queries.length, queries); assert.equal(h.commands.length, 1); assert.equal(h.issued.length, 1);
   });
