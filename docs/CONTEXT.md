@@ -1,3 +1,5 @@
+Exact6efd native all16 manual-map commands, picker cancel/selection, portal/template/JSON overwrite/SVG/import, manuscript Unicode/Paste/Cut/Undo/Redo/Save and normal Quit/cold preservation are reviewed; four completed artifacts are byte/content matched on T777. CI39883326364 failed only the new A4 report integration and its dependent gates. C4 preserves every assertion, actual publication/fault branch and strict parser: whole A4 13/13, unchanged A7/A10 18/18, actual production CLI 39/39 across17 rows,0fail/cancel/skip/todo. Runtime/package inputs remain byte exact to6efd. Fresh current bindings, required baseline/RTK/CI and normal merge/merged verification remain pending; full first Mac/Atlas/WSE/Pulse/epochs/true binary PDF stays open.
+
 ## 2026-10-23 — manual-map attachment transport corrected, native delivery pending
 
 Actual fc81 package preserved manuscript, maps and all15 command/event records; native title selection/caret works. Attachment then refused before picker because actual UI adds editorMode. The failed native run/178-member profile and full baseline2563pass/5fail/59named skips remain retained as failures.

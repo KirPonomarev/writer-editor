@@ -760,7 +760,8 @@
     "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
     "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
     "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
-    "test/unit/r24-wp100-wiring-matrix.test.js"
+    "test/unit/r24-wp100-wiring-matrix.test.js",
+    "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs"
   ],
   "protectedFiles": [
     {
@@ -1725,7 +1726,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "db988faabcbdc4f3c08f61a7dfcb6faa1fafd2cbc5c6a58138edaa2ac9ea22cd"
+        "sha256": "f78e8d6b87c53d227d39c113b305afb341e8963bd91ad6be7bcd00306dfb086a"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2681,15 +2682,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9330ece58750ca600991e053b18ab521d60f217c50c47d774a4e49e15111a5c4"
+        "sha256": "49542fb2531a0fad8f2d98bf4b95643b8ee2e56113c2a8354c4b8cccf65a61a3"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3e879cc84b907da5d035b754ff97e571fe2f5e4f1f5fd69bf7b8f2ad685abcf5"
+        "sha256": "9c8598b5777dfa284321813b8d0c5e8103e89473e00c5f6b7979415901a1905f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "059b6fb4ce93c41ce6aad57d957fac4ea240d0114755f5b8cda41167afcb91b8"
+        "sha256": "948caabe3284de493d7382da361732b722f02332747262520bb4f9a94abd63e5"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3229,7 +3230,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "974533f183ce2e7c73eb24d8ec9b17a60bc0a7c2378722e01cbb657a1f6a8357"
+        "sha256": "944a0106b6840a4f6242357d66f6bcb5cd42f6ead20de32f7e0e292f4d0c97d9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3397,11 +3398,11 @@
       },
       {
         "path": "docs/tasks/2026-10-23--mac-manual-map-authoring.md",
-        "sha256": "8f07153e04991eb60b0b45a0b488571e03d2935e2743bda88b7de88b1bacdd48"
+        "sha256": "33b20a2c15a739d601b9a0033d9a9430307db7c30f35393a10ecbe0beffac761"
       },
       {
         "path": "test/contracts/yalken-atlas-v6-a4-bounded-repair.contract.test.js",
-        "sha256": "28f5a7197b7e6b83aaa75f420bf9c17f3a688f05b643ac1050f7032295028a30"
+        "sha256": "aff429735fc00366ac8cf23548e1ec3dd20566bf0ff22d5f156035d231b45978"
       },
       {
         "path": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
@@ -3414,6 +3415,10 @@
       {
         "path": "test/unit/r24-wp100-wiring-matrix.test.js",
         "sha256": "86f37802fd8eb94f5df5731c81b85ab1379dc628ed1c63eeb875133aaf0ae689"
+      },
+      {
+        "path": "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs",
+        "sha256": "274c895156b22f5b6a8c1baedf8d45eb2b39cc8c89f8d1c1a5f8536ed2a2757f"
       }
     ],
     "followupRepair": {

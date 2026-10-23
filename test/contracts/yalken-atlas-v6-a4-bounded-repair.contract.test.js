@@ -617,7 +617,7 @@ test('manual-map actual Stage10 regular-file publication retains reserved source
   const external = process.env.YALKEN_MANUAL_MAP_TEST_ARTIFACT_ROOT;
   for (const volume of ['APFS', ...(external ? ['external'] : [])]) {
     for (const point of ['after-external-artifact-candidate', 'after-external-artifact-reserve', 'after-external-artifact-write', 'after-anchor-write']) {
-      await t.test(volume + ':' + point, async t => {
+      await (async () => {
         const projectId = `map-file-${volume}-${point}`, h = await createHarness('file-publication', projectId);
         t.after(() => fs.rmSync(h.root, { recursive: true, force: true }));
         const helperPath = path.join(fs.realpathSync(h.root), 'helper');
@@ -669,14 +669,14 @@ test('manual-map actual Stage10 regular-file publication retains reserved source
         assert.equal(fs.existsSync(adapter.paths(projectId).transaction), false);
         assert.equal(fs.readdirSync(outputRoot).some(name => name.startsWith('.stage10-publish-')), false);
         if (point === 'after-external-artifact-write' || committed) assert.ok(captured >= 1);
-      });
+      })();
     }
   }
 });
 
-test('manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation', async t => {
-  const core = await importModule('src/core/runtime.mjs'), bootstrapModule = await importModule('src/product/stage10ApplicationBootstrap.mjs');
-  for (const fault of ['missing-method', 'unavailable', 'false', 'unknown', 'malformed', 'stale-lease']) await t.test(fault, async t => {
+for (const fault of ['missing-method', 'unavailable', 'false', 'unknown', 'malformed', 'stale-lease']) {
+  test('manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: ' + fault + ' [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]', async t => {
+    const core = await importModule('src/core/runtime.mjs'), bootstrapModule = await importModule('src/product/stage10ApplicationBootstrap.mjs');
     const projectId = 'map-capability-' + fault, h = await createHarness('capability-refusal', projectId);
     t.after(() => fs.rmSync(h.root, { recursive: true, force: true }));
     const targetPath = path.join(fs.realpathSync(h.root), 'map.json'), previousText = '{"state":"PREVIOUS"}\n', nextText = '{"state":"NEXT"}\n';
@@ -696,7 +696,6 @@ test('manual-map actual adapter refuses unavailable file capability before journ
       }
       return fault === 'false' ? { available: false, readOnly: true } : fault === 'malformed' ? { available: 'true', readOnly: true } : {};
     };
-    t.diagnostic('FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF');
     const adapter = h.makeAdapter({ publishFileExclusive: publisher }), bootstrap = bootstrapModule.createStage10ApplicationBootstrap({ persistencePort: adapter });
     await bootstrap.reopenProjectRuntime({ projectId }); let state = bootstrap.getRuntime().getSession().coreState;
     assert.equal((await bootstrap.dispatchCanonicalProjectCommand(core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE,
@@ -714,4 +713,4 @@ test('manual-map actual adapter refuses unavailable file capability before journ
     assert.equal(fs.lstatSync(targetPath).ino, targetIdentity.ino); assert.equal(fs.existsSync(adapter.paths(projectId).transaction), false);
     assert.equal(fs.readdirSync(fs.realpathSync(h.root)).some(name => name.includes('.stage10-cas.')), false);
   });
-});
+}

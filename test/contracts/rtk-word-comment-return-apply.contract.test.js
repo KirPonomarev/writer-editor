@@ -32,11 +32,11 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
   // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
   const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
-  const literal = committed.match(/^const R24_INTEROP_MAC_MANUAL_MAP_ATTACHMENT_TRANSPORT_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
+  const literal = committed.match(/^const R24_INTEROP_MAC_MANUAL_MAP_PRODUCTION_MATRIX_REPORTING_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
   assert.ok(literal, 'candidate must declare its complete Atlas reports binding successor');
   const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
-  assert.equal(current.id, 'YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023_ATTACHMENT_TRANSPORT_03');
-  assert.equal(current.bindings.length, 271);
+  assert.equal(current.id, 'YALKEN_MAC_MANUAL_MAP_AUTHORING_PORTABILITY_20261023_PRODUCTION_MATRIX_REPORTING_04');
+  assert.equal(current.bindings.length, 272);
   assert.equal(current.guards.length, 1);
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');

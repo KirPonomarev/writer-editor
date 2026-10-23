@@ -62,6 +62,13 @@ export const PRODUCTION_NEGATIVE_EVIDENCE_MAP = Object.freeze([
   evidenceRow('reserved-external-artifact-cas-and-crash-reconciliation', [
     'Atlas V6 A4: child changes to absent and existing artifact targets after preflight are preserved and recovered',
     'Atlas V6 A4: interrupted artifact reservation restores prior bytes and stale recovery leaves no reservation files',
+    'manual-map actual Stage10 regular-file publication retains reserved sources and recovers every artifact interruption',
+    'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: missing-method [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
+    'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: unavailable [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
+    'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: false [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
+    'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: unknown [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
+    'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: malformed [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
+    'manual-map actual adapter refuses unavailable file capability before journal or existing-target relocation: stale-lease [FINITE_READ_ONLY_CAPABILITY_FAULT_NOT_PHYSICAL_VOLUME_PROOF]',
   ]),
   evidenceRow('unicode-project-id-domain-parity-and-foreign-alias-fail-closed', [
     'Atlas V6 A4: Stage-10 project identity exactly shares the valid Unicode main domain without normalization',
