@@ -63,7 +63,7 @@ test('R2 C02 styles command forms without adding a new UI framework or dependenc
 });
 
 // Execute the actual draft listeners and actual workbench clear/rebuild path.
-// The finite DOM port models focused-subtree removal; it is not native/IME proof.
+// The finite DOM port models focused-subtree removal/movement; it is not native/IME proof.
 function draftDomHarness(transform = text => text) {
   const vm = require('node:vm');
   const document = { activeElement: null };
@@ -75,6 +75,7 @@ function draftDomHarness(transform = text => text) {
       this._text = ''; this.checked = false; this.hidden = false; this.disabled = false;
       this.selectionStart = 0; this.selectionEnd = 0; this.selectionDirection = 'none';
       this.attributes = {}; this.style = {};
+      this.disconnects = 0; this.focusCalls = 0;
       this.classList = { add: name => { this.className = `${this.className || ''} ${name}`.trim(); } };
     }
     get isContentEditable() {
@@ -97,8 +98,18 @@ function draftDomHarness(transform = text => text) {
     get isConnected() { return this === document.body || !!this.parentElement?.isConnected; }
     contains(node) { return this === node || this.children.some((child) => child.contains(node)); }
     append(...nodes) { nodes.forEach((node) => this.appendChild(node)); }
-    appendChild(node) { node.parentElement = this; this.children.push(node); return node; }
+    appendChild(node) { return this.insertBefore(node, null); }
+    insertBefore(node, anchor) {
+      assert.ok(anchor === null || anchor.parentElement === this);
+      if (node.fragment) { [...node.children].forEach(child => this.insertBefore(child, anchor)); return node; }
+      if (node.parentElement) node.remove();
+      node.parentElement = this;
+      this.children.splice(anchor === null ? this.children.length : this.children.indexOf(anchor), 0, node); return node;
+    }
     remove() {
+      if (this.isConnected) {
+        const mark = node => { node.disconnects++; node.children.forEach(mark); }; mark(this);
+      }
       if (this.contains(document.activeElement)) document.activeElement = document.body;
       if (this.parentElement) this.parentElement.children = this.parentElement.children.filter((node) => node !== this);
       this.parentElement = null;
@@ -118,7 +129,7 @@ function draftDomHarness(transform = text => text) {
     setSelectionRange(start, end, direction = 'none') {
       this.selectionStart = start; this.selectionEnd = end; this.selectionDirection = direction;
     }
-    focus() { document.activeElement = this; }
+    focus() { this.focusCalls++; document.activeElement = this; }
     setAttribute(name, value) {
       this.attributes[name] = String(value);
       if (name.startsWith('data-')) this.dataset[dataName(name.slice(5))] = String(value);
@@ -145,6 +156,7 @@ function draftDomHarness(transform = text => text) {
   document.body = new Element('body'); document.activeElement = document.body;
   document.createElement = (tag) => new Element(tag);
   document.createElementNS = (namespace, tag) => new Element(tag);
+  document.createDocumentFragment = () => Object.assign(new Element('fragment'), { fragment: true });
   const rail = new Element('div'), plan = new Element('div'), workspace = new Element('section');
   document.body.append(rail, workspace); workspace.append(plan);
   const calls = [], counters = { renders: 0, queries: 0 };
@@ -183,6 +195,7 @@ function draftDomHarness(transform = text => text) {
     'applyManualMapCommandDraft', 'renderManualMapCommandDraft', 'renderManualMapWorkbenchInto',
     'renderManualMapWorkbenchState'];
   if (editor.includes('function syncManualMapCommandDraftControls(')) names.push('syncManualMapCommandDraftControls');
+  if (editor.includes('function captureManualMapControlContext(')) names.push('captureManualMapControlContext');
   names.push('unwrapManualMapProductCommandReceipt');
   names.push('invalidateAtlasPublications', 'captureAtlasPublication', 'beginAtlasQueryPublication', 'readAtlasQueryProjection');
   const stateStart = editor.indexOf('let atlasPublicationEpoch =');
@@ -485,7 +498,7 @@ for (let index = 0; index < 12; index++) {
     const h = publicationHarness(), row = h.leaves[index], response = h.deferred(); h.open('label');
     h.c.queryPort = () => response.promise;
     const pending = callPublicationLeaf(h, row);
-    if (index === 0) { // Loading intentionally hides the form; a newer real projection restores it.
+    if (index === 0) { // A newer current query makes the earlier response stale, including its loading phase.
       h.c.queryPort = request => h.projection(request.row); await callPublicationLeaf(h, row);
     }
     const input = h.field(); assert.ok(input); input.focus(); input.setSelectionRange(2, 2);
@@ -1174,5 +1187,228 @@ test('manual-map Markdown receipt publishes only for the current project and lat
     first.resolve({ ok: true, value: { export: { format: 'markdown', sha256: 'a'.repeat(64), markdownSha256: 'a'.repeat(64) } } });
     await pending; assert.equal(JSON.stringify(h.c.manualMapPortabilityCommandState), expected);
     assert.equal(h.working(), manuscript); assert.deepEqual(h.draft(), draft);
+  }
+});
+
+// Actual renderer/filter/layout/list/canvas functions; deferred transport is finite,
+// not physical export, browser composition, or native IME qualification.
+async function liveControlHarness() {
+  const h = publicationHarness(), c = h.c, { pathToFileURL } = require('node:url');
+  for (const name of ['derived/mindmap/manualMapInteraction.mjs', 'derived/mindmap/manualMapViewportPlanner.mjs',
+    'derived/mindmap/manualMapLayoutScheduler.mjs', 'derived/mindmap/manualMapListKeyboardParity.mjs', 'core/text-fold-tape-v1.mjs']) {
+    Object.assign(c, await import(pathToFileURL(path.join(repoRoot, 'src', name)).href));
+  }
+  const start = editor.indexOf('const MANUAL_MAP_SVG_NS ='), end = editor.indexOf('\nconst isTiptapMode =', start);
+  require('node:vm').runInContext(editor.slice(start, end), c);
+  Object.assign(c, { manualMapLayoutMode: 'manual-fixed-position', manualMapLayoutGeneration: 0,
+    manualMapPinnedNodeIds: new Set(), manualMapListState: { activeRowId: 'node:a' },
+    manualMapTransientViewState: c.normalizeManualMapViewState({}, {}) });
+  h.loadActual('cloneManualMapJson', 'getManualMapGraph', 'buildManualMapHierarchyPresentationGraph',
+    'filterManualMapGraphForWorkbench', 'buildManualMapWorkbenchRuntimeModel', 'manualMapNumber', 'manualMapNodePosition',
+    'getManualMapEdgeById', 'renderManualMapList', 'renderManualMapGraphCanvas', 'appendAtlasReportsRow',
+    'renderManualMapPortabilityCommandReadback');
+  const result = (marker = 'current', state = 'ready') => {
+    const value = h.projection(h.leaves[0], c.currentProjectId, marker);
+    Object.assign(value.manualMapWorkbench, { state, unavailableReason: state === 'unavailable' ? 'CURRENT_REFUSAL' : '' });
+    value.manualMapWorkbench.graph.nodes = [{ id: 'a', label: 'Café one', position: { x: 0, y: 0 } },
+      { id: 'b', label: 'Beta', position: { x: 200, y: 0 } }, { id: marker, label: marker, position: { x: 300, y: 0 } }];
+    value.manualMapWorkbench.summary.nodeCount = 3;
+    return value;
+  };
+  c.manualMapWorkbenchState = c.normalizeManualMapWorkbench(result('initial').manualMapWorkbench);
+  c.queryPort = request => request.row[0] === 'refreshManualMapWorkbench' ? result('fresh') : h.projection(request.row);
+  const search = () => {
+    const walk = node => [node, ...node.children.flatMap(walk)];
+    return walk(h.plan).find(node => node.tagName === 'INPUT' && node.type === 'search');
+  };
+  const rows = host => host.querySelectorAll('[data-manual-map-row-id]').map(node => node.dataset.itemId);
+  c.renderManualMapWorkbenchState();
+  return { ...h, result, search, rows };
+}
+
+function liveWitness(h, input) {
+  return { input, parent: input.parentElement, form: input.closest('form'), value: input.value,
+    selection: [input.selectionStart, input.selectionEnd, input.selectionDirection],
+    writes: input.valueWrites, disconnects: input.disconnects, focuses: input.focusCalls };
+}
+function assertLiveControl(h, witness) {
+  const input = witness.input;
+  assert.equal(input.isConnected, true, 'editing ancestor must remain continuously connected');
+  assert.equal(input.parentElement, witness.parent); assert.equal(input.closest('form'), witness.form);
+  assert.equal(h.document.activeElement, input); assert.equal(input.value, witness.value);
+  assert.deepEqual([input.selectionStart, input.selectionEnd, input.selectionDirection], witness.selection);
+  assert.equal(input.valueWrites, witness.writes, 'no active/composing value restoration');
+  assert.equal(input.disconnects, witness.disconnects, 'same-node remove/reappend is still a disconnect');
+  assert.equal(input.focusCalls, witness.focuses, 'no focus restoration hides a disconnect');
+}
+
+test('manual-map finite DOM witnesses removal and movement as editing disconnects', () => {
+  for (const move of [false, true]) {
+    const h = draftDomHarness(), input = h.open(), form = h.form(); input.focus();
+    if (move) h.rail.append(form); else { form.remove(); h.rail.append(form); }
+    assert.equal(input.isConnected, true); assert.equal(input.disconnects, 1);
+    assert.equal(h.document.activeElement, h.document.body);
+  }
+});
+
+for (const placement of ['rail', 'plan']) for (const kind of ['title', 'label']) {
+  test(`manual-map current export running ready and refusal preserve ${placement} ${kind} editing`, async () => {
+    for (const ok of [true, false]) {
+      const h = await liveControlHarness(); h.open(kind, 'semantic');
+      const input = h.field(h[placement]); input.focus(); input.setSelectionRange(2, 5, 'backward');
+      await input.emit('compositionstart'); const witness = liveWitness(h, input), draft = h.draft();
+      const gate = h.deferred(); h.c.commandPort = () => gate.promise;
+      const pending = h.c.runManualMapExportCommand(ok ? 'manualMap.export.json' : 'manualMap.export.imagePdf', { mapId: 'map-a' });
+      assertLiveControl(h, witness); assert.equal(h.field(h[placement]), input);
+      assert.match(h[placement].querySelectorAll('[data-manual-map-portability-command-state]')[0].textContent, /running/u);
+      const receipt = ok ? { ok: true, value: { export: { jsonSha256: 'a'.repeat(64) } } }
+        : { ok: false, error: { code: 'E_COMMAND_FAILED', reason: 'CAPABILITY_DISABLED_FOR_COMMAND' } };
+      gate.resolve(receipt); assert.equal(await pending, receipt);
+      assertLiveControl(h, witness); assert.deepEqual(h.draft(), draft);
+      assert.equal(h[placement].dataset.manualMapWorkbenchStatus, 'ready');
+      assert.equal(h.rows(h[placement]).includes('fresh'), true); assert.equal(h.rows(h[placement]).includes('initial'), false);
+      assert.equal(h.plan.querySelectorAll('[data-manual-map-node-id]').some(node => node.dataset.manualMapNodeId === 'fresh'), true);
+      assert.match(h[placement].querySelectorAll('[data-manual-map-portability-command-state]')[0].textContent,
+        ok ? /exported/u : /CAPABILITY_DISABLED_FOR_COMMAND/u);
+      assert.equal(h.commands.length, 1); assert.ok(h.queries.length > 0);
+      await input.emit('compositionend'); await h.edit(input, 'にほん', 'insertCompositionText');
+      assert.equal(h.draft().payload[kind], input.value); assert.equal(h.field(h[placement]), input);
+    }
+  });
+}
+
+for (const placement of ['rail', 'plan']) test(`manual-map current loading and unavailable retain ${placement} working control without stale graph`, async () => {
+  for (const outcome of ['ready', 'unavailable']) {
+    const h = await liveControlHarness(); h.open('label');
+    const input = h.field(h[placement]); input.focus(); input.setSelectionRange(2, 4, 'backward');
+    const witness = liveWitness(h, input), gate = h.deferred(); h.c.queryPort = () => gate.promise;
+    const pending = h.c.refreshManualMapWorkbench({ force: true });
+    assertLiveControl(h, witness); assert.equal(h[placement].dataset.manualMapWorkbenchStatus, 'loading');
+    assert.equal(h[placement].querySelector('[data-manual-map-canvas]'), null);
+    assert.match(h[placement].textContent, /Graph workbench обновляется/u);
+    await h.form(h[placement]).emit('submit'); assert.equal(h.commands.length, 0, 'loading is no mutation authority');
+    gate.resolve(h.result('current', outcome)); await pending; assertLiveControl(h, witness);
+    assert.equal(h[placement].dataset.manualMapWorkbenchStatus, outcome);
+    if (outcome === 'unavailable') {
+      assert.match(h[placement].textContent, /CURRENT_REFUSAL/u); assert.deepEqual(h.rows(h[placement]), []);
+      await h.form(h[placement]).emit('submit'); assert.equal(h.commands.length, 0);
+    } else assert.equal(h.rows(h[placement]).includes('current'), true);
+    h.c.queryPort = () => h.result('restored'); await h.c.refreshManualMapWorkbench({ force: true });
+    assertLiveControl(h, witness); assert.equal(h.rows(h[placement]).includes('restored'), true);
+  }
+});
+
+test('manual-map actual current missing-map refusal retains only owned editing buffers and explicit other map retires them', async () => {
+  for (const refusal of ['malformed-query', 'unavailable-no-map', 'explicit-other-map']) {
+    const h = await liveControlHarness(); h.open('label'); const input = h.field(), form = h.form(), search = h.search();
+    input.focus(); input.setSelectionRange(2, 4, 'backward'); const witness = liveWitness(h, input), draft = h.draft();
+    const result = refusal === 'malformed-query' ? {} : h.result('refusal', 'unavailable');
+    if (result.manualMapWorkbench) result.manualMapWorkbench.mapId = refusal === 'explicit-other-map' ? 'other-map' : '';
+    h.c.queryPort = () => result; await h.c.refreshManualMapWorkbench();
+    assert.equal(h.rail.dataset.manualMapWorkbenchStatus, 'unavailable'); assert.deepEqual(h.rows(h.rail), []);
+    assert.equal(h.plan.querySelector('[data-manual-map-canvas]'), null);
+    if (refusal === 'explicit-other-map') {
+      assert.equal(input.isConnected, false); assert.equal(search.isConnected, false);
+      await h.edit(input, 'stale'); await h.edit(search, 'stale'); assert.equal(h.c.manualMapSearchQuery, '');
+    } else { assertLiveControl(h, witness); assert.equal(h.form(), form); assert.equal(h.search(), search); }
+    await form.emit('submit'); await h.c.applyManualMapCommandDraft(); assert.equal(h.commands.length, 0);
+    assert.deepEqual(h.draft(), draft); h.c.queryPort = () => h.result('recovered'); await h.c.refreshManualMapWorkbench();
+    if (refusal !== 'explicit-other-map') assertLiveControl(h, witness);
+    assert.equal(h.rows(h.rail).includes('recovered'), true); assert.equal(h.commands.length, 0);
+  }
+});
+
+test('manual-map actual PLAN search keeps one live control through Unicode filtering draft opening and current refresh', async () => {
+  const h = await liveControlHarness(), input = h.search(); input.focus(); input.setSelectionRange(0, 0);
+  const disconnects = input.disconnects, writes = input.valueWrites, focuses = input.focusCalls;
+  await h.edit(input, 'CAFÉ'); assert.equal(h.search(), input); assert.equal(h.document.activeElement, input);
+  assert.deepEqual(h.rows(h.plan), ['a']); assert.deepEqual(h.rows(h.rail), ['a']);
+  await input.emit('compositionstart'); await h.edit(input, ' one', 'insertCompositionText', true);
+  assert.equal(input.value, 'CAFÉ one'); assert.equal(h.c.manualMapSearchQuery, input.value);
+  assert.deepEqual(h.plan.querySelectorAll('[data-manual-map-node-id]').map(node => node.dataset.manualMapNodeId), ['a']);
+  h.open('label'); assert.equal(h.search(), input, 'draft ownership does not retire search');
+  const draft = h.draft(); input.setSelectionRange(0, input.value.length, 'backward'); await h.edit(input, '  Beta  ');
+  assert.deepEqual(h.rows(h.plan), ['b']); assert.deepEqual(h.draft(), draft);
+  input.setSelectionRange(2, 6, 'backward'); const witness = liveWitness(h, input), gate = h.deferred();
+  h.c.queryPort = () => gate.promise; const pending = h.c.refreshManualMapWorkbench();
+  assertLiveControl(h, witness); assert.equal(h.search(), input); assert.equal(h.plan.querySelector('[data-manual-map-canvas]'), null);
+  gate.resolve(h.result('new-current')); await pending; assertLiveControl(h, witness);
+  assert.deepEqual(h.rows(h.plan), ['b']); assert.equal(input.disconnects, disconnects);
+  assert.equal(input.valueWrites, writes); assert.equal(input.focusCalls, focuses); assert.equal(h.commands.length, 0);
+});
+
+for (const placement of ['rail', 'plan']) test(`manual-map ${placement} pending Apply accepts queued native field input but never duplicates or falsely cancels effect`, async () => {
+  const h = await liveControlHarness(); h.open('label'); const gate = h.deferred(); h.c.commandPort = () => gate.promise;
+  const input = h.field(h[placement]); input.focus(); input.setSelectionRange(2, 4, 'backward');
+  const witness = liveWitness(h, input), form = h.form(h[placement]), pending = h.c.applyManualMapCommandDraft();
+  assertLiveControl(h, witness); assert.equal(h.commands.length, 1); assert.equal(h.draft().state, 'applying');
+  await input.emit('compositionstart'); await h.edit(input, 'late é 🧭', 'insertCompositionText', true);
+  assert.equal(h.draft().payload.label, input.value, 'actual queued input listener owns working bytes while Apply waits');
+  const working = h.draft(), edited = liveWitness(h, input);
+  assert.equal(form.querySelector('[data-manual-map-command-apply]').disabled, true);
+  await form.emit('submit'); await h.c.applyManualMapCommandDraft();
+  await form.querySelector('[data-manual-map-command-cancel]').emit('click');
+  assert.equal(h.commands.length, 1); assert.deepEqual(h.draft(), working, 'an in-flight mutation is not a cancel no-op');
+  const receipt = { ok: true, value: { status: 'APPLIED', receiptId: 'actual-finite-effect' } };
+  gate.resolve(receipt); await pending; assertLiveControl(h, edited); assert.deepEqual(h.draft(), working);
+  assert.equal(h.delivered[0], receipt); assert.equal(h.commands.length, 1);
+  assert.equal(form.querySelector('[data-manual-map-command-apply]').disabled, false);
+  await input.emit('compositionend'); await form.querySelector('[data-manual-map-command-cancel]').emit('click');
+  assert.equal(h.draft().result.status, 'CANCELLED_NOOP'); assert.equal(h.commands.length, 1);
+});
+
+test('manual-map composing inactive field is never assigned while the other placement changes working text', async () => {
+  const h = await liveControlHarness(); h.open('label'); const input = h.field(); input.focus();
+  await input.emit('compositionstart'); const value = input.value, writes = input.valueWrites;
+  const other = h.field(h.plan); other.focus(); other.setSelectionRange(0, other.value.length); await h.edit(other, 'other pending');
+  h.c.renderManualMapWorkbenchState(); assert.equal(h.field(), input); assert.equal(input.value, value);
+  assert.equal(input.valueWrites, writes); assert.equal(input.disconnects, 0);
+  await input.emit('compositionend'); input.focus(); input.setSelectionRange(0, input.value.length); await h.edit(input, 'exact composed 🧭');
+  assert.equal(h.draft().payload.label, input.value); assert.equal(h.field(h.plan).value, input.value);
+});
+
+for (const change of ['project', 'map', 'document', 'publication', 'generation', 'lifecycle', 'schema']) {
+  test(`manual-map ${change} replacement retires captured form and search owners without rebinding callbacks`, async () => {
+    const h = await liveControlHarness(); h.open('label'); const old = h.field(), form = h.form(), search = h.search();
+    const keys = { project: 'currentProjectId', document: 'currentDocumentId', publication: 'currentTreeContentPublicationId', generation: 'localEditGeneration' };
+    if (keys[change]) { const key = keys[change], original = h.c[key]; h.c[key] = change === 'generation' ? 2 : 'away';
+      h.c.renderManualMapWorkbenchState(); h.c[key] = original; h.c.invalidateAtlasPublications(); }
+    if (change === 'map') { h.c.manualMapWorkbenchState.mapId = 'away'; h.c.renderManualMapWorkbenchState();
+      h.c.manualMapWorkbenchState.mapId = 'map-a'; h.c.invalidateAtlasPublications(); }
+    if (change === 'lifecycle') h.c.invalidateAtlasPublications();
+    if (change === 'schema') h.c.manualMapCommandDraft.fields[0].type = 'textarea';
+    else h.open('label');
+    h.c.renderManualMapWorkbenchState(); const current = h.field(), expected = h.draft(), query = h.c.manualMapSearchQuery;
+    assert.notEqual(current, old); assert.equal(old.isConnected, false);
+    await h.edit(old, 'late'); await form.emit('submit'); await form.querySelector('[data-manual-map-command-cancel]').emit('click');
+    assert.deepEqual(h.draft(), expected); assert.equal(h.commands.length, 0);
+    if (change !== 'schema') {
+      assert.notEqual(h.search(), search); await h.edit(search, 'foreign'); assert.equal(h.c.manualMapSearchQuery, query);
+    }
+    assert.equal(h.field(), current); assert.equal(current.isConnected, true);
+  });
+}
+
+test('manual-map focused portal select defers option writes then resyncs only its captured owner on blur', async () => {
+  for (const placement of ['rail', 'plan']) {
+    const h = manualAuthoringDomHarness(); h.toolbar(); await h.button('Add portal').emit('click');
+    let reply; h.c.invokeWorkspaceQueryBridge = () => new Promise(resolve => { reply = resolve; });
+    h.input('targetMapId').value = 'map-b'; await h.input('targetMapId').emit('change');
+    const select = h[placement].querySelectorAll('[data-manual-map-command-field]').find(input => input.dataset.manualMapCommandField === 'targetNodeId');
+    select.focus(); const writes = select.valueWrites;
+    reply({ ok: true, manualMapWorkbench: { state: 'ready', projectId: 'project-a', mapId: 'map-b',
+      graph: { mapId: 'map-b', nodes: [{ id: 'b-node', label: 'Target B' }] } } }); await h.settle();
+    assert.deepEqual(select.children.map(option => option.value), ['']); assert.equal(select.valueWrites, writes);
+    assert.equal(h.draft().fields.find(field => field.name === 'targetNodeId').options.length, 2);
+    const label = h.input('label'); label.focus(); label.setSelectionRange(2, 4, 'backward');
+    // Finite focus transition followed by the actual blur listener, not native Select/IME proof.
+    await select.emit('blur'); assert.deepEqual(select.children.map(option => option.value), ['', 'b-node']);
+    assert.equal(select.isConnected, true); assert.equal(select.disconnects, 0); assert.equal(h.document.activeElement, label);
+    assert.deepEqual([label.selectionStart, label.selectionEnd, label.selectionDirection], [2, 4, 'backward']);
+    h.open('label'); const draft = h.draft(), field = h.field(); field.focus();
+    let syncs = 0; const sync = h.c.syncManualMapCommandDraftControls;
+    h.c.syncManualMapCommandDraftControls = (...args) => { syncs++; return sync(...args); };
+    await select.emit('blur'); assert.equal(syncs, 0, 'retired Select must not resync a replacement owner');
+    assert.deepEqual(h.draft(), draft); assert.equal(h.document.activeElement, field); assert.equal(h.calls.length, 0);
   }
 });

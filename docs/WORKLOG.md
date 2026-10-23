@@ -1,3 +1,20 @@
+## 2026-10-23 — live manual-map controls: source proof, native and delivery pending
+
+TASK_ID: YALKEN_MAC_MAP_LIVE_CONTROLS_20261023
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_REVIEWED_NOT_NATIVE_OR_DELIVERY_ACCEPTANCE
+BINDING_BASE_SHA: d18c03013d8c978933108e645343002c9766935f
+
+PR2149 is independently closed at normal merged d18c03013d8c978933108e645343002c9766935f. Full PR/main CI20/20 each and4414/4414RTK each, fresh merged source267focused/66dependent/724release/47production across17rows, actual new package/native Markdown and normal Quit/cold32-file raw preservation were reviewed. Closurefcb0d531ab3efbf0b2f25ab0b841ecd0c9d78f43a003f32e4e83b97277c2559d is DELIVERY_CLOSED_WITH_KNOWN_LIMITATIONS, not full first-Mac acceptance. Earlier pending Markdown entries below are historical.
+
+Fresh registered clean d18 bootstrap/pre-edit architecture0 and taskE0 precede this bounded repair. Existing separate code agent changed137renderer and244maintained R2test lines, within260/450 budgets. Root independently read the full diff, preserved original168cases/mutants and9980other tracked paths. The same final188-case file on byte-exact d18 source in an owned evidence-only APFS fixture actually runs170pass/18fail; corrected source188/188 with0skip/todo/cancel. Historical intermediate failures and their actual source/test identities remain retained.
+
+Owned form/search ancestors stay continuously connected while current derived graph/list/status/receipt siblings update. Captured lifecycle/project/document/publication/generation/map/placement and exact draft owner/schema refuse stale callbacks; search does not borrow draft revision authority. Current loading/unavailable without mapId retains only the original working buffer, shows refusal/no graph and blocks Apply; explicit different-map or ready identity retires controls. Queued pending input reaches working payload, one effect blocks duplicate Apply/false pending Cancel, and actual receipt/publication guards remain. Review found stale focused portal SELECT options; actual188/187RED became188/188 on the same finaltest after three guarded blur-sync lines. No compositionend resync.
+
+Normal renderer build actual0 changes only the declared bundle. Core/Main/preload/IPC/persistence/capabilities/profile/registry/CSS/release-cut bytes remain exact. Current mechanical bindings, complete affected/required baseline/official RTK/CI, new exact package/genuine native sequential input/export/Save/Quit/cold/full archive readback and normal merged verification remain required. Finite DOM/composition/transport is not native IME or physical publication evidence.
+
+MM-PDF-UI-01 remains OPEN until native/delivery proof; MM-POSTMERGE-10 long-dialog, MM-FS-01 APFS plus ordinary completed-artifact T777 copy, unchanged moderate Electron advisory and59named baseline skips stay explicit. All17full-Mac qualification rows remain UNKNOWN. Complete Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later. Owner checkout/app/private state and historical evidence are preserved. Reports/materials use verified T777 and declared owned APFS runtime.
+
 Exact6efd native all16 manual-map commands, picker cancel/selection, portal/template/JSON overwrite/SVG/import, manuscript Unicode/Paste/Cut/Undo/Redo/Save and normal Quit/cold preservation are reviewed; four completed artifacts are byte/content matched on T777. CI39883326364 failed only the new A4 report integration and its dependent gates. C4 preserves every assertion, actual publication/fault branch and strict parser: whole A4 13/13, unchanged A7/A10 18/18, actual production CLI 39/39 across17 rows,0fail/cancel/skip/todo. Runtime/package inputs remain byte exact to6efd. Fresh current bindings, required baseline/RTK/CI and normal merge/merged verification remain pending; full first Mac/Atlas/WSE/Pulse/epochs/true binary PDF stays open.
 
 ## 2026-10-23 — saved manual-map Markdown candidate after delivered PDF
