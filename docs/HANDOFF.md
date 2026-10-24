@@ -5566,3 +5566,14 @@ remain open. Do not attempt or credit native bookUndoRedo from this proof. A
 shared Main/Worker resource admission is the next bounded hypothesis after the
 current required delivery closes. Native OPEN-only verification may be admitted
 separately; native history/finite16/fullfeature status remains NOT_READY.
+
+## 2026-10-24 — Atlas read surfaces: same-chain temporal contract compatibility
+
+- Task YALKEN_ATLAS_READ_SURFACES_20261024 remains open in PR2156; original delivery base52c0078d, clean compatibility checkpoint66145d91. No merge/full Mac or release acceptance.
+- Exact66145source:589of589whole focused cases, full twelve-panel native CUA, normal Quit/cold; all104Documents/twelve events/two suppressions/six reattachments preserved. Unsigned1475leaf ASAR and530member bundle archive independently reread. These are66145proofs, not later-head acceptance.
+- Additional whole35at66145runs1007tests1006pass1fail,0cancel/skip/todo: temporal source-wiring regex requires obsolete no-args calls. The reviewed current router forwards options and returns the real child.
+- Same original scope/outcome/rollback admits exactly one existing temporal contract assertion:26paths,9977outside files protected, valid clean preflight0/taskE00 before edit. New strict branch requires current signature, explicit-open flag, render and returned null,options call; all other file bytes remain exact. Whole temporal contract then actual0.
+- Every runtime/bundle/release projection and four589case causal file remains exact66145; all1481package inputs rehashed unchanged. No source trick, alternate obsolete regex, filter/skip or weakened explicit-open/currentness/no-write assertion. Existing RTK consumer changes three exact current certificate references only.
+- Current companions add temporal test only:786DATA646source311certificate; append a successor preserving entire committed310carrier/predicates/history. Inventory1603membership/classes/lanes/skips unchanged, only two test hashes relative66145. All66release pins and17UNKNOWN qualification fields unchanged.
+- Required53whole affected paths remain covered by actual focused files, complete current provider graph/post-build logs, full unmodified473unit local baseline and35other local whole contracts. The redundant local53invocation was intentionally interrupted(actualexit1,no credit); full baseline has not run before this compatibility amendment. Original failure/cancellation/declaration-method outputs retained.
+- Final coherent-source checks, new ordinary commit/push/current-headCI on same PR, fresh source-bound package/native/cold, normal merge and literal merged verification remain required. Audit2high9moderate unchanged/open;59named baseline skips never count as executed. Full Atlas/maps/WSE/Pulse/epochs and first Mac remain incomplete; Black Box later.
