@@ -534,8 +534,8 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
-  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v8');
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v9');
   assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
     'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
     'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
@@ -543,6 +543,7 @@ test('full Mac V2 derives the complete original dependency cut while every quali
     'manualMap.attachment.add', 'manualMap.portal.add', 'manualMap.template.apply',
     'manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.import.jsonRepeat',
     'manualMap.export.markdown', 'atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm', 'atlas.evidence.reattach', 'atlas.observation.suppress',
+    'atlas.calendar.define', 'atlas.sceneTemporalAnchor.set', 'atlas.continuityFact.record', 'atlas.savedQuery.save',
   ]);
   assert.deepEqual(cut.profiles.runtime.admittedQueryIds, ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier',
     'query.atlasOverview', 'query.atlasRelationDossier', 'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout',
