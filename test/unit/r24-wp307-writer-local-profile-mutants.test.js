@@ -405,3 +405,49 @@ test('V8 independent oracles kill reader omission command overgrant and malforme
   }
   t.diagnostic(`ATLAS_READ_SURFACES_V8_MUTANTS=${mutants.length}/${mutants.length}`);
 });
+
+test('V9 independent oracles kill temporal omission overgrant policy forgery and record authority mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), original = loadFresh(MODULE_PATH);
+  assert.equal(typeof original.createWriterAtlasTemporalAuthoringProfileProjection, 'function', 'missing V9 is not mutant-kill credit');
+  const marker = source.indexOf("'writer-local-profile.v9'"); assert.ok(marker > 0);
+  const boundary = source.lastIndexOf('const ', marker); assert.ok(boundary > 0);
+  const active = m => m.createWriterAtlasTemporalAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const command = (m, id, patch = {}, record = { id, domain: 'atlas' }) => m.evaluateWriterLocalCommandAccess({
+    profile: { ...active(m), ...patch }, commandId: id, productCommandRecord: record }).allowed;
+  const query = (m, id, patch = {}) => m.evaluateWriterLocalQueryAccess({ profile: { ...active(m), ...patch }, queryId: id }).allowed;
+  for (const id of ['atlas.calendar.define', 'atlas.sceneTemporalAnchor.set', 'atlas.continuityFact.record', 'atlas.savedQuery.save'])
+    assert.equal(command(original, id), true, 'lawful V9 control ' + id);
+  assert.equal(command(original, 'atlas.entity.merge'), false); assert.equal(query(original, 'query.atlasReportsSavedQueries'), true);
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'atlas-temporal-v9-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mutants = [
+    ...['atlas.calendar.define', 'atlas.sceneTemporalAnchor.set', 'atlas.continuityFact.record', 'atlas.savedQuery.save'].map(id =>
+      ['lost ' + id, s => s.replace("'" + id + "'", "'" + id + ".disabled'"), m => assert.equal(command(m, id), true)]),
+    ['all optional commands', s => s.replace('isActiveWriterAtlasTemporalAuthoringProfile(profile) && (!optional || selected)',
+      'isActiveWriterAtlasTemporalAuthoringProfile(profile)'), m => assert.equal(command(m, 'atlas.entity.merge'), false)],
+    ['forged record', s => s.replace('productCommandRecord.id === commandId &&', 'true &&'),
+      m => assert.equal(command(m, 'atlas.calendar.define', {}, { id: 'atlas.entity.merge', domain: 'atlas' }), false)],
+    ['wrong domain', s => s.replace("productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap')", 'true'),
+      m => assert.equal(command(m, 'atlas.savedQuery.save', {}, { id: 'atlas.savedQuery.save', domain: 'meaning' }), false)],
+    ['active policy bypass', s => s.replace('if (!isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return false;',
+      'if (!isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return false; return true;'),
+      m => assert.equal(command(m, 'atlas.calendar.define', { optionalSystemsEnabled: true }), false)],
+    ['extra own key', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'),
+      m => assert.equal(command(m, 'atlas.continuityFact.record', { extra: true }), false)],
+    ['ordered array identity', s => s.replace('profile[key][index] === id', 'true'),
+      m => assert.equal(command(m, 'atlas.calendar.define', { admittedCommandIds: [...active(m).admittedCommandIds].reverse() }), false)],
+    ['inherited command index', s => s.replace('Object.hasOwn(profile[key], index)', 'true'), m => {
+      const values = [...active(m).admittedCommandIds], index = values.length - 1; delete values[index];
+      Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active(m).admittedCommandIds[index] }));
+      values.extra = true;
+      assert.equal(command(m, 'atlas.savedQuery.save', { admittedCommandIds: values }), false);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    oracle(original);
+    const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(/[^a-z0-9.-]/gi, '-') + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic('ATLAS_TEMPORAL_AUTHORING_V9_MUTANTS=' + mutants.length + '/' + mutants.length);
+});

@@ -249,7 +249,7 @@ test('WP307 profile contract carries no persistence, network or external authori
 // Actual Main under an inert Electron host: no app/renderer/native launch.
 // Only the host platform is explicit so the packaged-Darwin policy is also
 // exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
-async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false } = {}) {
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false } = {}) {
   const os = require('node:os'), Module = require('node:module');
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
   const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
@@ -304,7 +304,13 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         // Default/current-Main tests never select or substitute a profile factory.
         assert.equal(packaged, true); assert.equal(platform, 'darwin');
         t.diagnostic('HISTORICAL_V7_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
-        return { ...loaded, createWriterAtlasReadSurfacesProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
+        return { ...loaded, createWriterAtlasReadSurfacesProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
+          createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
+      }
+      if (request === './core/writer-local-profile-v1.cjs' && historicalV8Constructor) {
+        assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor, false);
+        t.diagnostic('HISTORICAL_V8_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
+        return { ...loaded, createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
       }
       if (request !== './main/projectArchiveDarwinPublication.cjs') return loaded;
       return { ...loaded, createDarwinExclusiveFilePublisher: options => {
@@ -321,6 +327,9 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         revokeOwner() { activeStage10ApplicationBootstrap = null; },
         invalidateSession() { commentAuthoringSessionId = crypto.randomUUID(); },
         invalidateGeneration() { lastSignaledEditGeneration += 1; },
+        invalidateLifecycle() { currentFilePath += '.retired-synthetic-subject'; },
+        invalidateProjectRoot() { currentProjectName += ' retired-synthetic-root'; },
+        holdProjectQueue(operation) { return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, operation); },
         afterCoreBinding(callback) { const build = buildProductCoreStateForCurrentProject; let armed = true;
           buildProductCoreStateForCurrentProject = async (...args) => { const result = await build(...args);
             if (armed) { armed = false; await callback(result); } return result; }; },
@@ -1129,8 +1138,8 @@ function reattachmentWholeFixtureRoster(h) {
   } }; visit(h.root); return rows;
 }
 
-async function reattachmentMainFixture(t, packaged = false, beforeProject, { historicalV7Constructor = false } = {}) {
-  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true, historicalV7Constructor }), ui = await fullMacRendererCommandPort(h);
+async function reattachmentMainFixture(t, packaged = false, beforeProject, { historicalV7Constructor = false, historicalV8Constructor = false } = {}) {
+  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true, historicalV7Constructor, historicalV8Constructor }), ui = await fullMacRendererCommandPort(h);
   if (beforeProject) beforeProject(h); // Actual lifecycle bootstrap captures the observer before constructing its prepare port.
   const f = await exactAtlasScene(h, 'Explicit saved reattachment'), { projectId, sceneId } = f;
   const entityId = 'saved-mira', decisionId = 'saved-confirmation';
@@ -1550,8 +1559,8 @@ test('real registered suppression producer agrees with whole journey result and 
   });
 });
 
-// These use the literal current Main constructor by default. The explicit
-// historical selector above is never used for current-reader/policy evidence.
+// Current tests use the literal Main constructor. Explicitly named V7/V8
+// selection fixtures preserve historical policy without claiming current coverage.
 const READ_SURFACE_QUERY_IDS = Object.freeze(['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier',
   'query.atlasOverview', 'query.atlasRelationDossier', 'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout',
   'query.atlasContinuityLedgerSurface', 'query.atlasReportsSavedQueries', 'query.atlasDiagnosticsStageAcceptance', 'query.projectionInspector']);
@@ -1568,8 +1577,8 @@ function assertDiagnosticNoAcceptance(value) {
   assert.equal(value.finalUiAuditReceipt.externalEvidence.allRequiredArtifactsPresent, false);
 }
 
-test('current literal packaged Main selects strict V8 while all twenty-two author command identities remain V7 exact', async t => {
-  const h = await fullMacMainFixture(t), current = h.main.__profile();
+test('historical V8 constructor-selection fixture retains strict V8 and all twenty-two V7 command identities', async t => {
+  const h = await fullMacMainFixture(t, { historicalV8Constructor: true }), current = h.main.__profile();
   assert.equal(current.profileId, 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8'); assert.equal(current.schemaVersion, 'writer-local-profile.v8');
   assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), current.profileId);
   assert.deepEqual(current.admittedQueryIds, READ_SURFACE_QUERY_IDS);
@@ -1597,8 +1606,8 @@ test('current literal packaged Main returns each existing Atlas read projection 
   });
 });
 
-test('current Main reader envelope caller foreign identities and spoofed authority are refused without filesystem effects', async t => {
-  const x = await reattachmentMainFixture(t, true), { h } = x;
+test('historical V8 constructor-selection fixture retains reader caller foreign identity and spoofed authority refusals', async t => {
+  const x = await reattachmentMainFixture(t, true, undefined, { historicalV8Constructor: true }), { h } = x;
   const control = await x.query(); assert.equal(control.projectId, x.projectId);
   const before = reattachmentWholeFixtureRoster(h), envelope = require('../../src/core/ipc-envelope-v1.cjs');
   const handler = h.handlers.get('ui:workspace-query-bridge');
@@ -1710,4 +1719,386 @@ test('V8 flags accepts only its exact presentation identity and preserves the ex
   for (const id of ['WRITER_LOCAL_ATLAS_READ_SURFACES_V8.extra', ' WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8 ']) {
     const denied = execute(id); assert.equal(denied.id, ''); assert.equal(denied.body, undefined); assert.deepEqual(denied.calls, []);
   }
+});
+
+const TEMPORAL_MAIN_COMMAND_IDS = Object.freeze(['atlas.calendar.define', 'atlas.sceneTemporalAnchor.set',
+  'atlas.continuityFact.record', 'atlas.savedQuery.save']);
+
+function assertTemporalMainReceipt(result, commandId) {
+  const packet = JSON.stringify(result);
+  assert.equal(result.ok, true, packet);
+  assert.ok(result.value && typeof result.value === 'object' && !Array.isArray(result.value), packet);
+  assert.equal(result.value.ok, true, packet);
+  const receipt = result.value.receipt; assert.ok(receipt && typeof receipt === 'object' && !Array.isArray(receipt), packet);
+  assert.equal(receipt.schemaVersion, 'command-kernel.receipt.v1'); assert.equal(receipt.commandId, commandId);
+  assert.equal(receipt.status, 'APPLIED'); assert.equal(receipt.capabilityRevalidated, true); assert.equal(receipt.storageWritten, true);
+  for (const key of ['commandKernel', 'projectTruthMutation', 'canonicalProjectTruthPort']) assert.equal(receipt.details?.[key], true, key + ': ' + packet);
+  for (const key of ['preStateHash', 'postStateHash', 'domainEventDigest']) {
+    assert.equal(typeof receipt[key], 'string', key + ': ' + packet); assert.match(receipt[key], /^[a-f0-9]{64}$/u);
+  }
+  return receipt;
+}
+
+async function temporalMainPayload(x, commandId, suffix = 'next') {
+  if (commandId === 'atlas.calendar.define') return { projectId: x.projectId, calendarId: 'calendar-' + suffix,
+    name: 'Авторский календарь é 🧭', calendarKind: 'fictional', calendarSystem: 'local-bells', dayZeroLabel: 'Первый звон',
+    conversionRules: [{ ruleId: 'rule-local', ruleKind: 'dayOffset', sourceScale: 'bell-day', targetScale: 'story-day', offsetDays: 3, precision: 'approximate' }] };
+  const exactDay = dayIndex => ({ rangeKind: 'exact', start: { pointKind: 'ordinalDay', dayIndex }, end: { pointKind: 'ordinalDay', dayIndex } });
+  if (commandId === 'atlas.sceneTemporalAnchor.set') return { projectId: x.projectId, sceneId: x.sceneId,
+    anchorId: 'temporal-' + suffix, storyRange: exactDay(7), narrativeRange: exactDay(2), note: 'Авторское время é 🧭' };
+  if (commandId === 'atlas.continuityFact.record') {
+    const projection = await x.query(), mention = projection.mentions.find(row => row.entityId === x.entityId); assert.ok(mention);
+    return { projectId: x.projectId, factId: 'fact-' + suffix, ledgerKind: 'promise', sceneId: x.sceneId,
+      subjectEntityId: x.entityId, factLabel: 'Вернуться к маяку', factValue: 'Обещание é 🧭', promiseState: 'open',
+      relatedEntityIds: [], evidenceAnchor: mention.evidenceAnchor, note: 'Точная сохранённая цитата' };
+  }
+  assert.equal(commandId, 'atlas.savedQuery.save');
+  const before = reattachmentWholeFixtureRoster(x.h), result = await x.h.query('query.atlasReportsSavedQueries', { projectId: x.projectId });
+  assert.equal(result.ok, true, JSON.stringify(result)); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  assert.match(result.atlasReportsSavedQueries.summary.sourceHash, /^[a-f0-9]{64}$/u);
+  return { projectId: x.projectId, savedQueryId: 'query-' + suffix, name: 'Авторский отчёт é 🧭', reportType: 'overview',
+    sourceHash: result.atlasReportsSavedQueries.summary.sourceHash, filter: { entityIds: [x.entityId], sceneIds: [x.sceneId], relationPairIds: [], queryText: 'Мира' } };
+}
+
+function temporalStored(x, commandId, payload) {
+  const atlas = JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas;
+  if (commandId === 'atlas.calendar.define') return ['calendarDefinitions', atlas.calendarDefinitions[payload.calendarId]];
+  if (commandId === 'atlas.sceneTemporalAnchor.set') return ['sceneTemporalAnchors', atlas.sceneTemporalAnchors[payload.sceneId]];
+  if (commandId === 'atlas.continuityFact.record') return ['continuityFactLedgers', atlas.continuityFactLedgers[payload.ledgerKind][payload.factId]];
+  return ['savedQueries', atlas.savedQueries[payload.savedQueryId]];
+}
+
+function assertTemporalCanonicalReadback(x, commandId, payload) {
+  const [, record] = temporalStored(x, commandId, payload); assert.ok(record, commandId);
+  assert.ok(Number.isInteger(record.createdByCommandSeq)); assert.ok(Number.isInteger(record.updatedByCommandSeq));
+  if (commandId === 'atlas.calendar.define') {
+    assert.equal(record.name, payload.name); assert.equal(record.calendarSystem, payload.calendarSystem);
+    assert.equal(record.calendarKind, 'fictional'); assert.equal(record.dayZeroLabel, payload.dayZeroLabel);
+    assert.deepEqual(record.conversionRules.map(row => [row.id, row.offsetDays, row.precision]), [['rule-local', 3, 'approximate']]);
+  } else if (commandId === 'atlas.sceneTemporalAnchor.set') {
+    assert.equal(record.id, payload.anchorId); assert.equal(record.sceneId, x.sceneId); assert.equal(record.projectId, x.projectId);
+    assert.equal(record.storyRange.rangeKind, 'exact'); assert.equal(record.narrativeRange.rangeKind, 'exact');
+    assert.equal(record.storyRange.start.dayIndex, 7); assert.equal(record.storyRange.end.dayIndex, 7);
+    assert.equal(record.narrativeRange.start.dayIndex, 2); assert.equal(record.narrativeRange.end.dayIndex, 2); assert.equal(record.note, payload.note);
+  } else if (commandId === 'atlas.continuityFact.record') {
+    for (const key of ['factLabel', 'factValue', 'promiseState', 'sceneId', 'subjectEntityId', 'note']) assert.equal(record[key], payload[key]);
+    assert.equal(record.projectId, x.projectId); assert.equal(record.ledgerKind, 'promise'); assert.deepEqual(record.evidenceAnchor, payload.evidenceAnchor);
+  } else {
+    assert.equal(record.id, payload.savedQueryId); assert.equal(record.name, payload.name); assert.equal(record.reportType, payload.reportType);
+    assert.equal(record.sourceHash, payload.sourceHash); assert.deepEqual(record.filter, payload.filter);
+  }
+  if (commandId !== 'atlas.savedQuery.save') {
+    const { sourceHash, ...authored } = record;
+    const actualHash = crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(authored))).digest('hex');
+    assert.equal(sourceHash, actualHash, 'source hash binds the complete independently reread author record');
+  }
+  x.assertOriginal(); return record;
+}
+
+function canonicalTemporalValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalTemporalValue);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalTemporalValue(value[key])]));
+}
+
+async function persistTemporalControl(x, commandId, suffix) {
+  const payload = await temporalMainPayload(x, commandId, suffix), before = JSON.parse(fs.readFileSync(x.f.manifestPath));
+  const sessionPath = path.join(x.f.projectRoot, '.stage10-local', 'product-session.v2.json');
+  const authorityPath = path.join(x.f.projectRoot, '.stage10-local', 'command-receipt-authority-store.v2.json');
+  const oldEvents = JSON.parse(fs.readFileSync(sessionPath)).eventLog.events, oldReceipts = JSON.parse(fs.readFileSync(authorityPath)).receipts;
+  const response = await x.ui(commandId, { ...payload, opId: 'temporal-' + suffix }), result = response.mainResult;
+  const receipt = assertTemporalMainReceipt(result, commandId), [bucket] = temporalStored(x, commandId, payload);
+  const rendered = response.result; assert.equal(rendered.ok, true, JSON.stringify(response));
+  assert.ok(rendered.value && typeof rendered.value === 'object' && !Array.isArray(rendered.value), JSON.stringify(response));
+  assert.equal(rendered.value.performed, true); assert.equal(rendered.value.commandAuthority, 'CommandKernel');
+  assert.equal(rendered.value.commandId, commandId); assert.equal(rendered.value.result?.ok, true);
+  assert.deepEqual(rendered.value.result, result.value, 'actual renderer wrapper carries the same complete Main packet');
+  assertTemporalCanonicalReadback(x, commandId, payload);
+  const after = JSON.parse(fs.readFileSync(x.f.manifestPath)), strip = input => { const v = structuredClone(input); delete v.lastCommandId; delete v.atlas[bucket]; return v; };
+  assert.deepEqual(strip(after), strip(before), 'only the selected author bucket and command sequence may change');
+  const targetId = commandId === 'atlas.sceneTemporalAnchor.set' ? payload.sceneId : payload.calendarId || payload.factId || payload.savedQueryId;
+  const withoutTarget = atlas => {
+    const value = structuredClone(atlas[bucket]);
+    if (commandId === 'atlas.continuityFact.record') delete value[payload.ledgerKind][targetId]; else delete value[targetId];
+    return value;
+  };
+  assert.deepEqual(withoutTarget(after.atlas), withoutTarget(before.atlas), 'all previous other records inside the selected bucket are exact');
+  const oldTarget = commandId === 'atlas.continuityFact.record' ? before.atlas[bucket][payload.ledgerKind][targetId] : before.atlas[bucket][targetId];
+  if (oldTarget) assert.equal(temporalStored(x, commandId, payload)[1].createdByCommandSeq, oldTarget.createdByCommandSeq);
+  assert.equal(after.lastCommandId, before.lastCommandId + 1);
+  const events = JSON.parse(fs.readFileSync(sessionPath)).eventLog.events, receipts = JSON.parse(fs.readFileSync(authorityPath)).receipts;
+  assert.deepEqual(events.slice(0, -1), oldEvents); assert.deepEqual(receipts.slice(0, -1), oldReceipts);
+  assert.equal(events.length, oldEvents.length + 1); assert.equal(receipts.length, oldReceipts.length + 1);
+  assert.equal(events.at(-1).commandId, commandId); assert.equal(events.at(-1).opId, 'temporal-' + suffix);
+  assert.equal(receipts.at(-1).commandId, commandId); assert.equal(receipts.at(-1).domainEventDigest, events.at(-1).domainEventDigest);
+  assert.equal(receipts.at(-1).postStateHash, receipt.postStateHash); return payload;
+}
+
+test('current literal packaged Main selects strict V9 with precisely four extra commands and the complete twelve readers', async t => {
+  const h = await fullMacMainFixture(t), current = h.main.__profile();
+  assert.equal(current.profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'); assert.equal(current.schemaVersion, 'writer-local-profile.v9');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), current.profileId);
+  const old = profile.createWriterAtlasReadSurfacesProfileProjection({ isPackaged: true, platform: 'darwin' });
+  assert.deepEqual(current.admittedCommandIds, [...old.admittedCommandIds, ...TEMPORAL_MAIN_COMMAND_IDS]);
+  assert.equal(current.admittedCommandIds.length, 26); assert.deepEqual(current.admittedQueryIds, READ_SURFACE_QUERY_IDS);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation'])
+    assert.equal(current[key], false, key);
+});
+
+for (const packaged of [false, true]) test('actual ' + (packaged ? 'packaged V9' : 'unpackaged') + ' Main persists all four existing author commands and cold reads their canonical values [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await reattachmentMainFixture(t, packaged), payloads = [];
+  for (const [index, commandId] of TEMPORAL_MAIN_COMMAND_IDS.entries()) payloads.push(await persistTemporalControl(x, commandId, 'positive-' + index));
+  const manifest = JSON.parse(fs.readFileSync(x.f.manifestPath)), beforeDocuments = x.h.roster();
+  const beforeCold = reattachmentWholeFixtureRoster(x.h), identity = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
+  assert.equal(identity.ok, true);
+  const metadata = [path.join('userData', 'project-library-index.v1.json'), path.join('userData', 'stage10-integrity-anchors', identity.canonicalKey, 'fencing-generation.v1.json')];
+  const [oldIndex, oldFence] = metadata.map(file => JSON.parse(fs.readFileSync(path.join(x.h.root, file))));
+  const startedAt = Date.now(); assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true); const endedAt = Date.now();
+  const [index, fence] = metadata.map(file => JSON.parse(fs.readFileSync(path.join(x.h.root, file))));
+  const entry = oldIndex.entries.find(row => row.projectId === x.projectId); assert.ok(entry);
+  const opened = index.entries[0]; assert.equal(opened.projectId, x.projectId);
+  for (const value of [opened.lastOpenedAtUtc, opened.lastSeenAtUtc, index.updatedAtUtc]) assert.ok(Date.parse(value) >= startedAt && Date.parse(value) <= endedAt);
+  assert.deepEqual(index, { schemaVersion: 'project-library-index.v1', updatedAtUtc: index.updatedAtUtc, entries: [{ ...entry,
+    projectName: manifest.projectName, createdAtUtc: manifest.createdAtUtc, lastOpenedAtUtc: opened.lastOpenedAtUtc,
+    lastSeenAtUtc: opened.lastOpenedAtUtc, manifestHash: crypto.createHash('sha256').update(JSON.stringify(x.h.main.getProjectManifestComparable(manifest))).digest('hex') },
+  ...oldIndex.entries.filter(row => row.projectRoot !== entry.projectRoot)] });
+  assert.match(fence.ownerTokenDigest, /^[a-f0-9]{64}$/u); assert.notEqual(fence.ownerTokenDigest, oldFence.ownerTokenDigest);
+  assert.ok(fence.issuedAtMs >= startedAt && fence.issuedAtMs <= endedAt); assert.ok(Number.isSafeInteger(fence.monotonicIssuedAtMs));
+  assert.deepEqual(fence, { ...oldFence, fencingGeneration: oldFence.fencingGeneration + 2,
+    ownerTokenDigest: fence.ownerTokenDigest, issuedAtMs: fence.issuedAtMs, monotonicIssuedAtMs: fence.monotonicIssuedAtMs });
+  const validated = new Map(metadata.map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(x.h.root, file))).digest('hex')]));
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), beforeCold.map(([file, hash]) => [file, validated.get(file) || hash]));
+  assert.deepEqual(x.h.roster(), beforeDocuments); assert.deepEqual(JSON.parse(fs.readFileSync(x.f.manifestPath)), manifest);
+  for (const [i, commandId] of TEMPORAL_MAIN_COMMAND_IDS.entries()) assertTemporalCanonicalReadback(x, commandId, payloads[i]);
+  const beforeRead = reattachmentWholeFixtureRoster(x.h);
+  const temporal = await x.h.query('query.atlasTemporalLayout', { projectId: x.projectId, explicitOpen: true });
+  const ledger = await x.h.query('query.atlasContinuityLedgerSurface', { projectId: x.projectId, explicitOpen: true });
+  const reports = await x.h.query('query.atlasReportsSavedQueries', { projectId: x.projectId });
+  for (const result of [temporal, ledger, reports]) assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(temporal.atlasTemporalLayout.projectId, x.projectId); assert.equal(ledger.atlasContinuityLedgerSurface.projectId, x.projectId);
+  const event = temporal.atlasTemporalLayout.layoutPacket.events.find(row => row.sceneId === x.sceneId); assert.ok(event);
+  assert.equal(event.anchorState, 'anchored'); assert.equal(event.timeValue, 7);
+  const evidence = ledger.atlasContinuityLedgerSurface.rows.flatMap(row => row.evidenceRows).find(row => row.factId === payloads[2].factId); assert.ok(evidence);
+  assert.equal(evidence.sceneId, x.sceneId); assert.equal(evidence.subjectEntityId, x.entityId);
+  assert.equal(evidence.quote, payloads[2].evidenceAnchor.quote); assert.equal(evidence.evidenceState, 'current');
+  assert.equal(reports.atlasReportsSavedQueries.savedQueries.some(row => row.id === payloads[3].savedQueryId && row.stale === false), true);
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), beforeRead); x.assertOriginal();
+});
+
+for (const commandId of TEMPORAL_MAIN_COMMAND_IDS) test('actual unpackaged ' + commandId + ' revalidates trusted capability after waiting in the real project queue', async t => {
+  const x = await reattachmentMainFixture(t, false); await persistTemporalControl(x, commandId, 'queued-control');
+  const payload = await temporalMainPayload(x, commandId, 'queued-refusal'); let release, enter, settled = false;
+  const gate = new Promise(resolve => { release = resolve; }), entered = new Promise(resolve => { enter = resolve; }); t.after(() => release());
+  const held = x.h.main.__host.holdProjectQueue(async () => { enter(); await gate; }); await entered;
+  const pending = x.h.command(commandId, payload).then(value => { settled = true; return value; });
+  await new Promise(setImmediate); assert.equal(settled, false, 'request is pending behind the actual Main project transaction');
+  x.h.main.__host.denyCapability(productRegistry.getProductCommandRecord(commandId).capabilityId);
+  const before = reattachmentWholeFixtureRoster(x.h); release(); await held; const result = await pending;
+  t.diagnostic(JSON.stringify({ causalReach: 'TEMPORAL_TRUSTED_REVOCATION_WHILE_QUEUED', commandId, result }));
+  try { assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before); x.assertOriginal(); }
+});
+
+for (const commandId of TEMPORAL_MAIN_COMMAND_IDS) for (const fault of ['capability', 'owner', 'session', 'lifecycle', 'generation', 'root', 'manifest-cas', 'binding-manifest'])
+  test('actual unpackaged ' + commandId + ' refuses ' + fault + ' drift after lawful persistence [FINITE_STATE_INJECTION_NOT_NATIVE]', async t => {
+    let armedCallback = () => {};
+    const x = await reattachmentMainFixture(t, false, h => h.main.__host.afterTruth(() => armedCallback()));
+    await persistTemporalControl(x, commandId, 'drift-control');
+    const payload = await temporalMainPayload(x, commandId, 'drift-refusal'); let reached = false, expected;
+    const mutate = () => {
+      reached = true;
+      if (fault === 'capability') x.h.main.__host.denyCapability(productRegistry.getProductCommandRecord(commandId).capabilityId);
+      if (fault === 'owner') x.h.main.__host.revokeOwner(); if (fault === 'session') x.h.main.__host.invalidateSession();
+      if (fault === 'lifecycle') x.h.main.__host.invalidateLifecycle(); if (fault === 'generation') x.h.main.__host.invalidateGeneration();
+      if (fault === 'root') x.h.main.__host.invalidateProjectRoot();
+      if (fault === 'manifest-cas' || fault === 'binding-manifest') {
+        const m = JSON.parse(fs.readFileSync(x.f.manifestPath)); m.concurrentTemporalAuthor = 'preserve é 🧭'; m.lastCommandId += 17;
+        fs.writeFileSync(x.f.manifestPath, JSON.stringify(m));
+      }
+      expected = reattachmentWholeFixtureRoster(x.h);
+    };
+    if (fault === 'binding-manifest') x.h.main.__host.afterCoreBinding(mutate); else armedCallback = mutate;
+    const result = await x.h.command(commandId, payload);
+    t.diagnostic(JSON.stringify({ causalReach: 'TEMPORAL_AFTER_PREPARATION_DRIFT', commandId, fault, reached, result }));
+    try { assert.equal(reached, true, 'actual Main canonical preparation executes'); assert.equal(result.ok, false, JSON.stringify(result));
+      assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+      if (fault.includes('manifest')) assert.match(JSON.stringify(result), /E_PRODUCT_COMMAND_REVISION_CONFLICT|E_STAGE10_PROJECT_TRUTH_STALE/u); }
+    finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+  });
+
+for (const commandId of TEMPORAL_MAIN_COMMAND_IDS) test('actual unpackaged ' + commandId + ' refuses foreign project and invalid Core payload after a successful control', async t => {
+  const x = await reattachmentMainFixture(t, false); await persistTemporalControl(x, commandId, 'refusal-control');
+  const payload = await temporalMainPayload(x, commandId, 'refusal');
+  const invalid = commandId === 'atlas.calendar.define' ? { conversionRules: [] } : commandId === 'atlas.sceneTemporalAnchor.set'
+    ? { storyRange: { rangeKind: 'implicit' } } : commandId === 'atlas.continuityFact.record' ? { evidenceAnchor: null } : { name: '' };
+  const invalidCode = { 'atlas.calendar.define': 'E_ATLAS_CALENDAR_CONVERSION_RULE_REQUIRED',
+    'atlas.sceneTemporalAnchor.set': 'E_ATLAS_SCENE_TEMPORAL_RANGE_KIND_INVALID', 'atlas.continuityFact.record': 'E_ATLAS_EVIDENCE_ANCHOR_REQUIRED',
+    'atlas.savedQuery.save': 'E_ATLAS_SAVED_QUERY_NAME_REQUIRED' }[commandId];
+  const stale = commandId === 'atlas.calendar.define' ? [{ expectedCalendarHash: 'stale-calendar' }, 'E_ATLAS_CALENDAR_STALE']
+    : commandId === 'atlas.sceneTemporalAnchor.set' ? [{ expectedAnchorHash: 'stale-anchor' }, 'E_ATLAS_SCENE_TEMPORAL_ANCHOR_STALE']
+      : commandId === 'atlas.continuityFact.record' ? [{ expectedFactHash: 'stale-fact' }, 'E_ATLAS_CONTINUITY_FACT_STALE'] : null;
+  const cases = [[{ projectId: 'foreign-temporal-project' }, 'E_STAGE10_APPLICATION_PROJECT_MISMATCH'],
+    [{ projectId: 17 }, ['E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'E_CORE_PROJECT_ID_REQUIRED']],
+    [{ projectId: [] }, ['E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'E_CORE_PROJECT_ID_REQUIRED']], [invalid, invalidCode], ...(stale ? [stale] : [])];
+  for (const [patch, expectedCode] of cases) await t.test(JSON.stringify(patch), async () => {
+    const before = reattachmentWholeFixtureRoster(x.h), result = await x.h.command(commandId, { ...payload, ...patch });
+    if (Object.hasOwn(patch, 'projectId')) t.diagnostic(JSON.stringify({ causalReach: 'TEMPORAL_RAW_PROJECT_ID_VALIDATION', commandId, inputProjectId: patch.projectId, result }));
+    try { assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+      const codes = [], visit = value => { if (!value || typeof value !== 'object') return;
+        for (const [key, child] of Object.entries(value)) { if (['code', 'reason'].includes(key) && typeof child === 'string') codes.push(child); visit(child); } };
+      visit(result); const accepted = Array.isArray(expectedCode) ? expectedCode : [expectedCode];
+      assert.equal(accepted.some(code => codes.includes(code)), true, accepted.join('|') + ': ' + JSON.stringify(result)); }
+    finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before); x.assertOriginal(); }
+  });
+});
+
+test('actual unpackaged continuity refuses a stale fact witness both before dispatch and after canonical preparation', async t => {
+  for (const late of [false, true]) await t.test(late ? 'source changes after preparation' : 'source is stale before dispatch', async t => {
+    let armedCallback = () => {};
+    const x = await reattachmentMainFixture(t, false, h => h.main.__host.afterTruth(() => armedCallback())), id = 'atlas.continuityFact.record';
+    await persistTemporalControl(x, id, 'fact-control');
+    const payload = await temporalMainPayload(x, id, 'stale-fact'); let expected, reached = false;
+    const change = () => { reached = true; fs.writeFileSync(x.f.scenePath, fs.readFileSync(x.f.scenePath, 'utf8').replaceAll('Мира', 'Лира')); expected = reattachmentWholeFixtureRoster(x.h); };
+    if (late) armedCallback = change; else change();
+    const result = await x.h.command(id, payload);
+    t.diagnostic(JSON.stringify({ causalReach: 'TEMPORAL_FACT_SCENE_SOURCE', late, reached, result }));
+    try { assert.equal(reached, true); assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+      if (!late) assert.match(JSON.stringify(result), /E_ATLAS_EVIDENCE_STALE/u); }
+    finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+  });
+});
+
+test('actual unpackaged prepared temporal intent cannot write after a real Main project switch', async t => {
+  let armedCallback = () => {};
+  const x = await reattachmentMainFixture(t, false, h => h.main.__host.afterTruth(() => armedCallback())), id = 'atlas.calendar.define';
+  await persistTemporalControl(x, id, 'project-control');
+  const other = await x.h.main.handleProjectLifecycleCreateCommand({ projectName: 'Other temporal project' }); assert.equal(other.ok, true);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  const payload = await temporalMainPayload(x, id, 'foreign-active'); let reached = false, expected;
+  armedCallback = async () => {
+    reached = true; assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: other.projectId })).ok, true);
+    expected = reattachmentWholeFixtureRoster(x.h);
+  };
+  const result = await x.h.command(id, payload);
+  t.diagnostic(JSON.stringify({ causalReach: 'TEMPORAL_REAL_PROJECT_SWITCH', reached, result }));
+  try { assert.equal(reached, true); assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+});
+
+test('current packaged V9 refuses exact command near IDs forged callers and capability hints without writes', async t => {
+  const x = await reattachmentMainFixture(t, true), id = 'atlas.calendar.define'; await persistTemporalControl(x, id, 'caller-control');
+  const payload = await temporalMainPayload(x, id, 'caller-refusal'), before = reattachmentWholeFixtureRoster(x.h);
+  for (const commandId of [' ' + id, id + ' ', id + '.extra', 'atlas.entity.merge', 'idea.create', 'meaning.promote']) {
+    const result = await x.h.command(commandId, { ...payload, profileId: 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', tier: 'pro', capabilities: { [commandId]: true } });
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  }
+  const envelope = require('../../src/core/ipc-envelope-v1.cjs'), handler = x.h.handlers.get('ui:command-bridge');
+  const request = envelope.createEnvelope('ui:command-bridge', id, payload), event = x.h.event();
+  for (const caller of [{ ...event, sender: { ...event.sender, id: 999 } }, { ...event, sender: { ...event.sender, session: {} } },
+    { ...event, senderFrame: { url: x.h.shellUrl.replace(/PRODUCT_PROFILE=[^&]*/u, 'PRODUCT_PROFILE=WRITER_LOCAL_ATLAS_READ_SURFACES_V8') } }]) {
+    await assert.rejects(async () => handler(caller, request), /E_IPC_/u); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  }
+  x.h.main.__host.denyCapability('cap.atlas.calendar.define');
+  const result = await x.h.command(id, { ...payload, capabilities: { 'cap.atlas.calendar.define': true }, tier: 'pro', optionalSystemsEnabled: true });
+  assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before); x.assertOriginal();
+});
+
+test('V9 exact presentation identity retains V8 control cut while near hints remain inactive [FINITE_DOM_NOT_AUTHORITY]', () => {
+  const execute = id => {
+    const calls = [], document = { body: { dataset: {} }, querySelectorAll: selector => { calls.push(selector); return []; }, addEventListener() {} };
+    const window = { location: { search: '?PRODUCT_PROFILE=' + encodeURIComponent(id) } };
+    require('node:vm').runInNewContext(read('src/renderer/flags.js'), { document, window, URLSearchParams, console: { log() {} } });
+    return { id: window.__PRODUCT_PROFILE, body: document.body.dataset.productProfile, calls };
+  };
+  const id = 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', current = execute(id), old = execute('WRITER_LOCAL_ATLAS_READ_SURFACES_V8');
+  assert.equal(current.id, id); assert.equal(current.body, id); assert.deepEqual(current.calls, old.calls);
+  for (const near of [' ' + id, id + ' ', id + '.extra']) assert.deepEqual(execute(near), { id: '', body: undefined, calls: [] });
+});
+
+function actualTemporalFactRenderer(x, projection) {
+  const vm = require('node:vm'), source = read('src/renderer/editor.js');
+  const context = { window: { __PRODUCT_PROFILE: 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9' },
+    currentProjectId: x.projectId, currentDocumentId: x.sceneId, atlasCurrentSceneState: structuredClone(projection) };
+  const counter = source.indexOf('let atlasStableUiIdSeq = 0;'), draft = source.indexOf('let atlasContinuityAuthorDraft = {');
+  const draftEnd = source.indexOf('\n};', draft); assert.ok(counter > 0 && draft > counter && draftEnd > draft);
+  const actual = name => {
+    const start = source.indexOf('function ' + name + '('), end = source.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start, name); return source.slice(start, end + 2);
+  };
+  const names = ['getAtlasJourneyMentions', 'findAtlasJourneyMention', 'makeStableUiId', 'ensureAtlasSurfaceDraftId',
+    'getAtlasContinuityFactPayload', 'setAtlasContinuityDraftField'];
+  vm.createContext(context);
+  vm.runInContext(source.slice(counter, source.indexOf('\n', counter)) + '\n' + source.slice(draft, draftEnd + 3)
+    + '\n' + names.map(actual).join('\n'), context);
+  const mention = projection.mentions.find(row => row.entityId === x.entityId); assert.ok(mention);
+  for (const [field, value] of [['ledgerKind', 'promise'], ['promiseState', 'open'], ['entityId', x.entityId], ['mentionId', mention.mentionId]])
+    context.setAtlasContinuityDraftField(field, value);
+  return {
+    intent(label, value) { context.setAtlasContinuityDraftField('factLabel', label); context.setAtlasContinuityDraftField('factValue', value); },
+    payload() { return JSON.parse(JSON.stringify(context.getAtlasContinuityFactPayload())); },
+  };
+}
+
+async function persistActualRendererFact(t, x, payload, operationId) {
+  const before = JSON.parse(fs.readFileSync(x.f.manifestPath)), beforeDocuments = x.h.roster(), sceneBytes = fs.readFileSync(x.f.scenePath);
+  const sessionPath = path.join(x.f.projectRoot, '.stage10-local', 'product-session.v2.json');
+  const authorityPath = path.join(x.f.projectRoot, '.stage10-local', 'command-receipt-authority-store.v2.json');
+  const oldEvents = JSON.parse(fs.readFileSync(sessionPath)).eventLog.events, oldReceipts = JSON.parse(fs.readFileSync(authorityPath)).receipts;
+  const response = await x.ui('atlas.continuityFact.record', { ...payload, projectId: x.projectId, opId: operationId });
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_RENDERER_FACT_WRITE', payload, response }));
+  const receipt = assertTemporalMainReceipt(response.mainResult, 'atlas.continuityFact.record');
+  assert.equal(response.result.ok, true); assert.equal(response.result.value.performed, true);
+  assert.equal(response.result.value.commandAuthority, 'CommandKernel'); assert.equal(response.result.value.commandId, 'atlas.continuityFact.record');
+  assert.deepEqual(response.result.value.result, response.mainResult.value);
+  const after = JSON.parse(fs.readFileSync(x.f.manifestPath)), events = JSON.parse(fs.readFileSync(sessionPath)).eventLog.events;
+  const receipts = JSON.parse(fs.readFileSync(authorityPath)).receipts;
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_RENDERER_FACT_READBACK', operationId, beforeLedgers: before.atlas.continuityFactLedgers,
+    afterLedgers: after.atlas.continuityFactLedgers, receipt, lastEvent: events.at(-1), lastStoredReceipt: receipts.at(-1) }));
+  assert.deepEqual(events.slice(0, -1), oldEvents); assert.equal(events.length, oldEvents.length + 1);
+  assert.deepEqual(receipts.slice(0, -1), oldReceipts); assert.equal(receipts.length, oldReceipts.length + 1);
+  assert.equal(events.at(-1).opId, operationId); assert.equal(events.at(-1).commandId, 'atlas.continuityFact.record');
+  assert.deepEqual(receipts.at(-1), receipt); assert.equal(receipt.domainEventDigest, events.at(-1).domainEventDigest);
+  const unrelated = manifest => { const value = structuredClone(manifest); delete value.lastCommandId; delete value.atlas.continuityFactLedgers; return value; };
+  assert.deepEqual(unrelated(after), unrelated(before)); assert.equal(after.lastCommandId, before.lastCommandId + 1);
+  for (const kind of ['location', 'knowledge', 'object']) assert.deepEqual(after.atlas.continuityFactLedgers[kind], before.atlas.continuityFactLedgers[kind]);
+  const prefix = path.relative(x.h.documents, x.f.projectRoot) + path.sep;
+  const unaffected = rows => rows.filter(([name]) => name !== prefix + 'project.craftsman.json' && !name.startsWith(prefix + '.stage10-local'));
+  assert.deepEqual(unaffected(x.h.roster()), unaffected(beforeDocuments)); assert.deepEqual(fs.readFileSync(x.f.scenePath), sceneBytes); x.assertOriginal();
+  return { response, ledger: structuredClone(after.atlas.continuityFactLedgers.promise) };
+}
+
+for (const cold of [false, true]) test('actual V9 fact producer preserves two distinct labels across ' + (cold ? 'fresh renderer VM after real Main reopen' : 'one warm renderer VM') + ' [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await reattachmentMainFixture(t, false), initialLedger = structuredClone(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.continuityFactLedgers.promise);
+  let renderer = actualTemporalFactRenderer(x, await x.query());
+  renderer.intent('Первое обещание é 🧭', 'Вернуться к маяку'); const firstPayload = renderer.payload();
+  assert.deepEqual(renderer.payload(), firstPayload, 'unchanged unconfirmed producer intent has the same actual payload');
+  const first = await persistActualRendererFact(t, x, firstPayload, 'fact-producer-first');
+  const firstRecord = Object.values(first.ledger).find(row => row.factLabel === firstPayload.factLabel && row.subjectEntityId === x.entityId); assert.ok(firstRecord);
+  assert.equal(firstRecord.factValue, firstPayload.factValue); assert.equal(firstRecord.sceneId, x.sceneId);
+  const firstBytes = Buffer.from(JSON.stringify(canonicalTemporalValue(firstRecord))), firstHash = crypto.createHash('sha256').update(firstBytes).digest('hex');
+  if (cold) {
+    assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+    assert.deepEqual(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.continuityFactLedgers.promise[firstRecord.id], firstRecord);
+    renderer = actualTemporalFactRenderer(x, await x.query());
+  }
+  renderer.intent('Второе независимое обещание é 🧭', 'Сохранить знак'); const secondPayload = renderer.payload();
+  const second = await persistActualRendererFact(t, x, secondPayload, 'fact-producer-second');
+  t.diagnostic(JSON.stringify({ causalReach: 'TWO_ACTUAL_FACT_WRITES_COMPLETED_BEFORE_IDENTITY_ORACLE', cold, firstPayload, secondPayload,
+    firstResponse: first.response, secondResponse: second.response, firstRecord, firstHash, afterRecords: second.ledger }));
+  await t.test('the complete first authored record remains exact after the second actual write', () => {
+    assert.deepEqual(second.ledger[firstRecord.id], firstRecord);
+    const actualBytes = Buffer.from(JSON.stringify(canonicalTemporalValue(second.ledger[firstRecord.id])));
+    assert.deepEqual(actualBytes, firstBytes); assert.equal(crypto.createHash('sha256').update(actualBytes).digest('hex'), firstHash);
+  });
+  await t.test('two authored meanings exist as independently persisted records', () => {
+    const records = Object.values(second.ledger), savedFirst = records.find(row => row.factLabel === firstPayload.factLabel);
+    const savedSecond = records.find(row => row.factLabel === secondPayload.factLabel); assert.ok(savedFirst); assert.ok(savedSecond);
+    assert.equal(savedFirst.factValue, firstPayload.factValue); assert.equal(savedSecond.factValue, secondPayload.factValue);
+    assert.notEqual(savedFirst.id, savedSecond.id); assert.equal(records.length, Object.keys(initialLedger).length + 2);
+  });
+  await t.test('all previously existing records and original author decisions remain exact', () => {
+    for (const [id, record] of Object.entries(initialLedger)) assert.deepEqual(second.ledger[id], record);
+    x.assertOriginal();
+  });
 });
