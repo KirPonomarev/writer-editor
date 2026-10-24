@@ -2314,3 +2314,53 @@ for (const cold of [false, true]) test('actual V9 identical canonical confirmati
   assert.deepEqual(after.roster, before.roster); assertAuthorIdentityCanonical(after.manifest, before.manifest);
   assertAuthorIdentityCanonical(after.events, before.events); assertAuthorIdentityCanonical(after.receipts, before.receipts); x.assertOriginal();
 });
+
+test('actual V9 Source entity selection persists alias under the explicitly chosen real entity [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await reattachmentMainFixture(t, true), targetId = 'source-selection-beacon';
+  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
+  assert.equal((await x.h.main.handleProjectLifecycleCreateCommand({ projectName: 'Foreign source selection project' })).ok, true);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  const identity = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
+  assert.equal(identity.ok, true);
+  const setupPayload = { projectId: x.projectId, entityId: targetId, name: 'Маяк', entityKind: 'character' };
+  const setupBefore = authorIdentitySnapshot(x), setup = await x.ui('atlas.entity.create', setupPayload), setupAfter = authorIdentitySnapshot(x);
+  assertTemporalMainReceipt(setup.mainResult, 'atlas.entity.create');
+  assertAuthorIdentityPreservation(x, setupBefore, setupAfter, 'atlas.entity.create', setupPayload, true, identity.canonicalKey);
+  const queryBefore = authorIdentitySnapshot(x), projection = await x.query(), queryAfter = authorIdentitySnapshot(x);
+  assert.deepEqual(queryAfter.roster, queryBefore.roster);
+  for (const id of [x.entityId, targetId]) {
+    assert.equal(projection.entities.some(row => row.entityId === id), true, 'real Main query must expose entity ' + id);
+    assert.equal(projection.mentions.some(row => row.entityId === id && row.evidenceAnchor?.entityId === id), true,
+      'real Main query must expose the matching occurrence ' + id);
+  }
+  const targetMention = projection.mentions.find(row => row.entityId === targetId);
+  assert.equal(targetMention.matchedText.toLowerCase(), 'маяк');
+  for (const mode of ['source-picker', 'explicit-mention-positive']) await t.test(mode, async child => {
+    const current = await x.query(), renderer = authorIdentityMainRenderer(x, current, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
+    await renderer.target(x.entityId, 25);
+    if (mode === 'source-picker') await renderer.field('sourceEntityId', targetId);
+    else await renderer.target(targetId, targetMention.startOffset);
+    const walk = node => [node, ...node.children.flatMap(walk)];
+    const sourceControl = walk(renderer.c.atlasJourneyHost).find(node => node.dataset.atlasJourneyField === 'sourceEntityId');
+    const mentionControl = walk(renderer.c.atlasJourneyHost).find(node => node.dataset.atlasJourneyField === 'mentionId');
+    if (mode === 'explicit-mention-positive') {
+      assert.equal(sourceControl.value, targetId); assert.equal(mentionControl.value, targetMention.mentionId);
+    }
+    await renderer.field('aliasValue', 'Псевдоним маяка é 🧭 ' + mode);
+    const selection = { requestedSourceEntityId: targetId, renderedSourceEntityId: sourceControl.value, renderedMentionId: mentionControl.value };
+    const before = authorIdentitySnapshot(x), response = await renderer.click('add-alias'), after = authorIdentitySnapshot(x);
+    child.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_TWO_ENTITY_SOURCE_SELECTION_PERSISTENCE', mode, selection,
+      response, before, after }));
+    const payload = response.request.payload, receipt = assertTemporalMainReceipt(response.mainResult, 'atlas.alias.add');
+    assert.equal(response.result.ok, true); assert.equal(response.result.value.performed, true);
+    assert.deepEqual(response.result.value.result, response.mainResult.value); assert.deepEqual(after.receipts.at(-1), receipt);
+    assert.equal(payload.value, 'Псевдоним маяка é 🧭 ' + mode);
+    assertAuthorIdentityPreservation(x, before, after, 'atlas.alias.add', payload, true, identity.canonicalKey);
+    assert.equal(after.manifest.atlas.entities[payload.entityId].aliases[payload.aliasId].value, payload.value,
+      'actual APPLIED owner and complete success footprint are checked before requested destination');
+    assert.equal(payload.entityId, targetId, 'alias intent must address the entity explicitly selected by the author');
+    assert.equal(selection.renderedSourceEntityId, targetId); assert.equal(selection.renderedMentionId, targetMention.mentionId);
+    assertAuthorIdentityCanonical(after.manifest.atlas.entities[x.entityId], before.manifest.atlas.entities[x.entityId]);
+    assert.equal(after.manifest.atlas.entities[targetId].aliases[payload.aliasId].value, payload.value);
+  });
+});

@@ -1,3 +1,18 @@
+## 2026-10-24 — Preserve the existing Atlas source choice for alias authoring
+
+TASK_ID: YALKEN_ATLAS_SOURCE_ENTITY_SELECTION_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: RUNTIME_SOURCE_REVIEWED_REQUIRED_PROOFS_AND_DELIVERY_EXTERNAL
+BINDING_BASE_SHA: 58de4967c185023dacd044bdd45d9003a04cff9b
+
+PR2158 independently CLOSED on this literal M5/treec8badc3a, candidate46c5445f: whole733focused/1090additional, configured473unit files2849pass59unchangednamedskips, official240RTK4416, main20CI/18literal source checkouts, fresh1475ASAR/530package and actual3warm/3cold/full724member closed profile. All104Documents and34event/receipt history preserved. Closure9297b926ef82f213bcd6408b0e92ee2165a33c1a8aad7787590d79a83165fcf3 supersedes earlier pending identity-task checkpoints; full Mac remains incomplete.
+
+Fresh clean18path declaration/preflight0, taskE00,10005source/9988protected and9910physical offline dependency readback precede this contour. Actual unchanged-M5 native trusted Source entity choice Маяк immediately renders Мира again; no author command, all104Documents/34events exact through normalQuit0/full724archive SHAe582b09a10ec90c3e4c148ca339efebad09f2762f000bf7aa69b640a38d63ef2. Native raw Main packets are not observed. Actual whole two-file RED02 executes712tests707pass5failure records/0cancel-skip-todo: three new finite source-choice assertions plus real source-picker child/parent. Real Main accepts and persists alias under old A after requested B, with complete expected manifest/event/receipt/manuscript/foreign-state footprint checked before destination assertion. Lawful explicit-mention-B positive passes and persists under B. RED01 input-order method fault and raw failure are retained; only new alias input moves after selection with two positive preconditions, all original assertions/source prefixes exact.
+
+Separate required executor changes only reconcileAtlasJourneyDraft +4/-1, editor9aa974e5; independent inverse restores complete M5. Exact currentV9 plus valid original source keeps a same-owner selected mention or matching-or-empty fallback; invalid source and all legacy/near/absent/windowless behavior remain. Existing explicit mention listener, saved-source objects, publication/suppression/reattachment/currentness guards and all Core/Main/profile/schema/IPC/storage/typing semantics stay untouched. R2+90/-0 and integration+50/-0 remain frozen. Normal bundle/current companions and full unchanged GREEN/source/affected/fullbaseline/officialRTK/currentCI/fresh candidate and literal merged native/cold/fullarchive/ordinary delivery are required. Later exact outcome belongs only to executed dated task receipts/final closure; this source checkpoint claims no corrected-source, native or full-product acceptance.
+
+All17fullMac qualification UNKNOWN, releasecut NOT_READY, audit2high1moderate and59named baseline skips remain explicit. New dated2026-10-24--atlas-source-entity-selection evidence/materials use verified T777 with separately admitted owned APFS runtime; canonical6decd915 and retained clean M5 verification remain preserved. Complete Atlas/maps/WSE/Pulse/environment epochs continue; Black Box later.
+
 ## 2026-10-24 — Restart-safe existing Atlas author records: admitted diagnosis
 
 TASK_ID: YALKEN_ATLAS_AUTHORING_IDENTITIES_20261024

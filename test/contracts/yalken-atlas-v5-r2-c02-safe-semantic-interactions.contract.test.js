@@ -2247,3 +2247,93 @@ test('V9 pending confirmation completion cannot replace a newer selected source 
     assert.equal(h.queries.length, queries); assert.equal(h.statuses.length, statuses); assert.equal(h.commands.length, 1);
   });
 });
+
+// Finite projection inputs exercise actual selectors/reconciliation; real Core coverage is in WP307.
+function sourceEntitySelectionDom(profileId = AUTHOR_IDENTITY_V9) {
+  const h = authorIdentityDom(profileId), c = h.c, projection = structuredClone(c.atlasCurrentSceneState);
+  const text = c.getPlainText(), start = text.indexOf('маяк'); assert.ok(start >= 0);
+  projection.entities.push({ entityId: 'beacon', name: 'Маяк', entityKind: 'character' });
+  const anchor = { ...projection.mentions[0].evidenceAnchor, anchorId: 'current-beacon', entityId: 'beacon',
+    startOffset: start, endOffset: start + 4, quote: 'маяк', quoteHash: c.hashCanonicalValue('маяк') };
+  projection.mentions.push({ mentionId: 'beacon-mention', entityId: 'beacon', sceneId: 'scene-a', startOffset: start,
+    endOffset: start + 4, matchedText: 'маяк', context: { quote: 'маяк' }, evidenceAnchor: anchor });
+  projection.summary = { ...projection.summary, entityCount: projection.entities.length, mentionCount: projection.mentions.length };
+  c.atlasCurrentSceneState = c.normalizeAtlasCurrentSceneDossier(structuredClone(projection));
+  c.queryPort = request => request.row[2] === 'atlasCurrentScene' ? { ok: true, atlasCurrentScene: structuredClone(projection) }
+    : request.row[2] === 'atlasEntityDossier' ? { ok: true, atlasEntityDossier: h.dossier() } : h.projection(request.row);
+  h.render();
+  const value = name => h.walk(c.atlasJourneyHost).find(node => node.dataset.atlasJourneyField === name)?.value;
+  return { ...h, selectionProjection: projection, value };
+}
+
+test('V9 actual Source entity selection owns the subsequent alias intent after reconciliation [FINITE_DOM]', async t => {
+  const h = sourceEntitySelectionDom(); await h.target('mira-25'); await h.field('aliasValue', 'Выбранный маяк é 🧭');
+  await h.field('sourceEntityId', 'beacon');
+  const selected = h.draft(), visibleSource = h.value('sourceEntityId'), sent = await h.click('add-alias');
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SOURCE_SELECTOR_AND_ALIAS_PRODUCER', selected, visibleSource, sent }));
+  assert.equal(sent.id, 'atlas.alias.add'); assert.equal(sent.payload.value, 'Выбранный маяк é 🧭');
+  assert.equal(selected.sourceEntityId, 'beacon'); assert.equal(visibleSource, 'beacon');
+  assert.equal(selected.mentionId, 'beacon-mention'); assert.equal(sent.payload.entityId, 'beacon');
+});
+
+test('V9 same-source and explicit mention choices keep coherent source ownership [FINITE_DOM]', async () => {
+  const h = sourceEntitySelectionDom(); await h.target('mira-68'); await h.field('sourceEntityId', 'mira');
+  assert.equal(h.draft().sourceEntityId, 'mira'); assert.equal(h.draft().mentionId, 'mira-68');
+  await h.field('mentionId', 'beacon-mention');
+  assert.equal(h.draft().sourceEntityId, 'beacon'); assert.equal(h.value('sourceEntityId'), 'beacon');
+  assert.equal((await h.click('add-alias')).payload.entityId, 'beacon');
+  await h.field('mentionId', 'mira-25'); assert.equal(h.draft().sourceEntityId, 'mira');
+  assert.equal(h.draft().mentionId, 'mira-25');
+});
+
+test('V9 valid source without a matching finite mention stays selected with an empty mention', async () => {
+  const h = sourceEntitySelectionDom();
+  h.selectionProjection.mentions = h.selectionProjection.mentions.filter(row => row.entityId !== 'beacon');
+  h.c.atlasCurrentSceneState = h.c.normalizeAtlasCurrentSceneDossier(structuredClone(h.selectionProjection)); h.render();
+  await h.field('sourceEntityId', 'beacon');
+  assert.equal(h.draft().sourceEntityId, 'beacon'); assert.equal(h.draft().mentionId, '');
+  assert.equal(h.value('mentionId'), ''); assert.equal(h.button('confirm-mention').disabled, true);
+  assert.equal(h.commands.length, 0);
+});
+
+test('V9 empty or retired source retains the existing valid projection fallback', async () => {
+  for (const value of ['', 'retired-source']) {
+    const h = sourceEntitySelectionDom(); await h.field('sourceEntityId', value);
+    assert.equal(h.draft().sourceEntityId, 'mira'); assert.equal(h.draft().mentionId, 'mira-25');
+    assert.equal(h.commands.length, 0);
+  }
+});
+
+test('legacy near absent and windowless source reconciliation retains mention-owned selection', async () => {
+  for (const id of ['', 'WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3',
+    'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5', 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6',
+    'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7', 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8',
+    AUTHOR_IDENTITY_V9 + '.extra', ' ' + AUTHOR_IDENTITY_V9, AUTHOR_IDENTITY_V9 + ' ']) {
+    const h = sourceEntitySelectionDom(id); await h.field('sourceEntityId', 'beacon');
+    assert.equal(h.draft().sourceEntityId, 'mira'); assert.equal(h.draft().mentionId, 'mira-25'); assert.equal(h.commands.length, 0);
+  }
+  const absent = sourceEntitySelectionDom(); delete absent.c.window.__PRODUCT_PROFILE;
+  await absent.field('sourceEntityId', 'beacon'); assert.equal(absent.draft().sourceEntityId, 'mira');
+  delete absent.c.window; absent.c.atlasJourneyDraft = { ...absent.c.atlasJourneyDraft, sourceEntityId: 'beacon' };
+  absent.c.reconcileAtlasJourneyDraft(); assert.equal(absent.draft().sourceEntityId, 'mira'); assert.equal(absent.commands.length, 0);
+});
+
+test('V9 source choice preserves separately selected saved evidence and author text [FINITE_DOM]', async () => {
+  const h = sourceEntitySelectionDom(); await h.pick(); await h.field('aliasValue', 'Сохранить é 🧭');
+  const before = h.draft(), queries = h.queries.length, working = h.working(); await h.field('sourceEntityId', 'beacon');
+  for (const key of ['decisionId', 'decisionEvidenceAnchor', 'reattachmentSource', 'reattachmentContext'])
+    assert.deepEqual(h.draft()[key], before[key], key);
+  assert.equal(h.draft().aliasValue, before.aliasValue); assert.equal(h.working(), working);
+  assert.equal(h.queries.length, queries); assert.equal(h.commands.length, 0); assert.equal(h.draft().sourceEntityId, 'beacon');
+});
+
+test('V9 pending alias completion cannot clobber a newer source choice or saved-source draft [FINITE_DOM]', async () => {
+  const h = sourceEntitySelectionDom(), gate = h.deferred(); await h.pick();
+  h.c.commandPort = () => gate.promise; await h.click('add-alias'); assert.equal(h.commands.length, 1);
+  await h.field('sourceEntityId', 'beacon'); await h.field('aliasValue', 'Более новый черновик é 🧭');
+  const before = h.draft(), state = JSON.stringify(h.c.atlasJourneyState), queries = h.queries.length, statuses = h.statuses.length;
+  const response = h.appliedResponse(); response.value.commandId = 'atlas.alias.add'; response.value.result.receipt.commandId = 'atlas.alias.add';
+  gate.resolve(response); await h.settle(); await h.settle();
+  assert.deepEqual(h.draft(), before); assert.equal(JSON.stringify(h.c.atlasJourneyState), state);
+  assert.equal(h.queries.length, queries); assert.equal(h.statuses.length, statuses); assert.equal(h.commands.length, 1);
+});

@@ -795,7 +795,8 @@
     "docs/tasks/2026-10-24--atlas-read-surfaces.md",
     "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
     "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
-    "docs/tasks/2026-10-24--atlas-authoring-identities.md"
+    "docs/tasks/2026-10-24--atlas-authoring-identities.md",
+    "docs/tasks/2026-10-24--atlas-source-entity-selection.md"
   ],
   "protectedFiles": [
     {
@@ -1036,7 +1037,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "1d69486bcb4c877bfc8d0b36f1d27ae723e0439fe7d1d84c7938959fae5a35ba"
+        "sha256": "17d34bf67fbb580ae3066a584f9f980c795cbd81a2c30c3c39b222e9ae5c70d4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1048,7 +1049,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "2469ac9ceca06e333084c033eeceda7ac21b1d61771bac6176ba9e3e59904417"
+        "sha256": "c72501cc3404cc258dd4de842bc12d3e251a26c4bb1aae21dcd20762e9c3fe58"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1200,7 +1201,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "63a7845e3914e9c82c9780dbadef648e2852005c24e44204d5e1f208a3300538"
+        "sha256": "9aa974e59b6b814de1a00f3e9d5aa10b563c9f947a5b151f29318d915f416215"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1760,7 +1761,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "0f8ec4440e3e1e61ba6183ff13437227271faedcc36c66da29710b43b52e544b"
+        "sha256": "b1c9f85b35649f9f7fa23e87e1abc70de8cf02119af9a208c9b3661723e966f3"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2716,15 +2717,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "c22dc08ff1af53150c3b13f0174a00a7996f6f04987483a6a2fa114bff8e9eb1"
+        "sha256": "6c2fb9d0548b5fec47ffc72a0899bd5f37215903fecfb3166f332110ddc753c1"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5f915e43c80182ef47a2c7bed72afe37ebd85cd5f6f70232d3030e3212ac006f"
+        "sha256": "4fca41fcd6dbe3939dfdee4f03d970a69c4c904f19e611052bf4a47389afa421"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "10f906b58bba9108827df5ada6264bb08e3f6ebd1629b82e948405b33314323c"
+        "sha256": "f9ecf7e9e10730587dc053646e4b302e4eff1b665e56897c0a96c0b36e65ecb4"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3264,7 +3265,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "9a222f8cd261632130a86c435c19a6998c202e3216c27dc8c8a84748878b9219"
+        "sha256": "0d30c13097ccc5a1f51da6e2dd72ba2ee4b4604b3f4df841ded4004b2cf80252"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3396,11 +3397,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "c6f025a0a1db7ba5cd3dfbf2d7035b01c4ed916223a2d2604a0059c3d7bb9f1e"
+        "sha256": "9953b2fcb7b95a18de5ad638c4d0e81c783cdc8165736ffa36b47de689d54667"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "dba491d58d9abaffd54612505e7eb8cb23d3ce8a6cc1d35ef12d1e89695437b7"
+        "sha256": "362cd96ae6760a2c93af175d31d6f4d69c844f773eebb82252627f52be8122e7"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3613,6 +3614,10 @@
       {
         "path": "docs/tasks/2026-10-24--atlas-authoring-identities.md",
         "sha256": "9e75686934b521559e4119205e0e268189300b3d2ef2fde69ae51ecce9e9d879"
+      },
+      {
+        "path": "docs/tasks/2026-10-24--atlas-source-entity-selection.md",
+        "sha256": "0cedec7af5214dfc023ca67b9be1eef63749d7c08a758efdac3ea791c82bf023"
       }
     ],
     "followupRepair": {
