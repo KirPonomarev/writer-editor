@@ -451,3 +451,35 @@ test('V9 independent oracles kill temporal omission overgrant policy forgery and
   }
   t.diagnostic('ATLAS_TEMPORAL_AUTHORING_V9_MUTANTS=' + mutants.length + '/' + mutants.length);
 });
+
+test('V10 independent oracles kill entity correction omission overgrant and forged authority mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), original = loadFresh(MODULE_PATH);
+  assert.equal(typeof original.createWriterAtlasEntityCorrectionsProfileProjection, 'function', 'missing V10 gives no mutant-kill credit');
+  const marker = source.indexOf("'writer-local-profile.v10'"), boundary = source.lastIndexOf('const ', marker); assert.ok(marker > 0 && boundary > 0);
+  const active = m => m.createWriterAtlasEntityCorrectionsProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const command = (m, id, patch = {}, record = { id, domain: 'atlas' }) => m.evaluateWriterLocalCommandAccess({
+    profile: { ...active(m), ...patch }, commandId: id, productCommandRecord: record }).allowed;
+  const ids = ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'];
+  for (const id of ids) assert.equal(command(original, id), true);
+  assert.equal(command(original, 'atlas.languageTag.set'), false); assert.equal(active(original).admittedQueryIds.length, 12);
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'atlas-entity-v10-mutants-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mutants = [
+    ...ids.map(id => ['lost-' + id, s => s.replace("'" + id + "'", "'" + id + ".disabled'"), m => assert.equal(command(m, id), true)]),
+    ['all-optional', s => s.replace('isActiveWriterAtlasEntityCorrectionsProfile(profile) && (!optional || selected)',
+      'isActiveWriterAtlasEntityCorrectionsProfile(profile)'), m => assert.equal(command(m, 'atlas.languageTag.set'), false)],
+    ['forged-record', s => s.replace('productCommandRecord.id === commandId &&', 'true &&'),
+      m => assert.equal(command(m, ids[0], {}, { id: ids[1], domain: 'atlas' }), false)],
+    ['wrong-domain', s => s.replace("productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap')", 'true'),
+      m => assert.equal(command(m, ids[1], {}, { id: ids[1], domain: 'meaning' }), false)],
+    ['extra-own-key', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'),
+      m => assert.equal(command(m, ids[2], { extra: true }), false)],
+    ['ordered-identities', s => s.replace('profile[key][index] === id', 'true'),
+      m => assert.equal(command(m, ids[1], { admittedCommandIds: [...active(m).admittedCommandIds].reverse() }), false)],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    oracle(original); const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(/[^a-z0-9.-]/gi, '-') + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic('ATLAS_ENTITY_CORRECTIONS_V10_MUTANTS=' + mutants.length + '/' + mutants.length);
+});

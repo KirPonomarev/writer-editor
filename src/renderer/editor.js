@@ -1105,6 +1105,9 @@ let atlasJourneyDraft = {
   mergeOperationId: '',
   restoreOperationId: '',
   reattachmentId: '',
+  savedMergeOperation: null,
+  savedMergeContext: null,
+  correctionIntent: null,
 };
 let atlasTemporalAuthorDraft = {
   calendarId: 'calendar-r3-c02-story',
@@ -15989,14 +15992,19 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
     button.setAttribute('aria-label', `${label}. ${options.reason}`);
   }
   button.addEventListener('click', () => {
-    if (['atlas.evidence.reattach', 'atlas.observation.suppress'].includes(commandId) && (button.disabled || !button.isConnected)) return;
+    const correction = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+      && ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'].includes(commandId);
+    if ((correction || ['atlas.evidence.reattach', 'atlas.observation.suppress'].includes(commandId)) && (button.disabled || !button.isConnected)) return;
+    if (correction && atlasJourneyState.correctionPending?.active) return;
     let nextPayload;
     try {
       nextPayload = typeof payload === 'function' ? payload() : payload;
+      if (correction) nextPayload = prepareAtlasCorrectionIntent(commandId, nextPayload);
     } catch (error) {
-      if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'
-        && ['atlas.entity.create', 'atlas.alias.add'].includes(commandId)
-        && error?.code === 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE') {
+      if (correction && ['E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE', 'E_ATLAS_CORRECTION_SELECTION_REQUIRED'].includes(error?.code)
+        || typeof window !== 'undefined'
+        && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)
+        && ['atlas.entity.create', 'atlas.alias.add'].includes(commandId) && error?.code === 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE') {
         updateStatusText(error.code, { visible: true });
         return;
       }
@@ -16066,8 +16074,9 @@ function findAtlasJourneyMention(mentionId = '') {
 }
 
 function makeStableUiId(prefix) {
-  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'
-    && ['atlas-entity', 'atlas-alias'].includes(prefix)) {
+  if (typeof window !== 'undefined' && (['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)
+    && ['atlas-entity', 'atlas-alias'].includes(prefix) || window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+      && ['atlas-reassign', 'atlas-merge', 'atlas-split-restore'].includes(prefix))) {
     try {
       if (typeof globalThis.crypto?.randomUUID !== 'function') throw new Error('ATLAS_AUTHOR_IDENTITY_UNAVAILABLE');
       return `${prefix}-${globalThis.crypto.randomUUID()}`;
@@ -16114,7 +16123,7 @@ function reconcileAtlasJourneyDraft() {
   if (!targetEntityId || targetEntityId === sourceEntityId) {
     targetEntityId = entities.find((entity) => entity.entityId !== sourceEntityId)?.entityId || '';
   }
-  const preserveSource = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'
+  const preserveSource = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)
     && entityIds.has(atlasJourneyDraft.sourceEntityId);
   const mentions = getAtlasJourneyMentions();
   const mentionIds = new Set(mentions.map((mention) => mention.mentionId));
@@ -16341,7 +16350,7 @@ function getAtlasContinuityFactPayload() {
   const ledgerKind = atlasContinuityAuthorDraft.ledgerKind || 'promise';
   return {
     ledgerKind,
-    ...(window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9' ? {} : {
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE) ? {} : {
       factId: ensureAtlasSurfaceDraftId(
         atlasContinuityAuthorDraft,
         'factId',
@@ -16590,7 +16599,7 @@ function appendAtlasSavedQueryControls(parent) {
 
 async function refreshAtlasProductSurfaces(options = {}) {
   if (options.isCurrent && !options.isCurrent()) return;
-  if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'].includes(window.__PRODUCT_PROFILE)) return refreshActiveAtlasSurface(options);
+  if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)) return refreshActiveAtlasSurface(options);
   const refreshes = [
     refreshAtlasOverview(options),
     refreshAtlasEntityDossier(options),
@@ -16607,7 +16616,64 @@ async function refreshAtlasProductSurfaces(options = {}) {
   await Promise.all(refreshes);
 }
 
+function prepareAtlasCorrectionIntent(commandId, payload) {
+  if (!currentProjectId || localDirty || localEditGeneration !== lastAckedGeneration) {
+    throw Object.assign(new Error('ATLAS_CORRECTION_SELECTION_REQUIRED'), { code: 'E_ATLAS_CORRECTION_SELECTION_REQUIRED' });
+  }
+  const selected = commandId === 'atlas.entity.splitRestore' ? getAtlasSavedMergeSelection() : null;
+  if (commandId === 'atlas.entity.splitRestore' && (!selected || selected.operationId !== payload.operationId)) {
+    throw Object.assign(new Error('ATLAS_CORRECTION_SELECTION_REQUIRED'), { code: 'E_ATLAS_CORRECTION_SELECTION_REQUIRED' });
+  }
+  const key = JSON.stringify({ commandId, payload, source: selected, context: getAtlasSavedMergeContext() });
+  let intent = atlasJourneyDraft.correctionIntent;
+  const field = commandId === 'atlas.observation.reassign' ? 'reassignmentId' : commandId === 'atlas.entity.merge' ? 'operationId' : 'restoreOperationId';
+  if (intent?.commandId !== commandId || intent.key !== key) {
+    const prefix = commandId === 'atlas.observation.reassign' ? 'atlas-reassign' : commandId === 'atlas.entity.merge' ? 'atlas-merge' : 'atlas-split-restore';
+    intent = { commandId, key, id: makeStableUiId(prefix) };
+    atlasJourneyDraft = { ...atlasJourneyDraft, correctionIntent: intent };
+  }
+  return { ...payload, [field]: intent.id };
+}
+
+async function runAtlasCorrectionCommand(commandId, payload) {
+  const intent = atlasJourneyDraft.correctionIntent;
+  if (!intent || intent.commandId !== commandId || atlasJourneyState.correctionPending?.active) return { ok: false, reason: 'ATLAS_CORRECTION_INTENT_REQUIRED' };
+  const field = commandId === 'atlas.observation.reassign' ? 'reassignmentId' : commandId === 'atlas.entity.merge' ? 'operationId' : 'restoreOperationId';
+  const { [field]: id, ...body } = payload;
+  const selected = commandId === 'atlas.entity.splitRestore' ? getAtlasSavedMergeSelection() : null;
+  if (id !== intent.id || JSON.stringify({ commandId, payload: body, source: selected, context: getAtlasSavedMergeContext() }) !== intent.key) {
+    return { ok: false, reason: 'ATLAS_CORRECTION_INTENT_STALE' };
+  }
+  const context = captureAtlasPublication(), source = getAtlasSavedMergeContext(), surface = currentAtlasSurface;
+  const sequence = ++atlasCommandPublicationSequence, pending = { active: true };
+  const presentation = () => context() && isAtlasSavedMergeCurrent(source) && surface === currentAtlasSurface && sequence === atlasCommandPublicationSequence;
+  const current = () => presentation() && atlasJourneyDraft.correctionIntent?.id === intent.id && atlasJourneyDraft.correctionIntent?.key === intent.key
+    && (commandId !== 'atlas.entity.splitRestore' || getAtlasSavedMergeSelection()?.operationId === payload.operationId);
+  atlasJourneyState = { status: 'running', lastCommandId: commandId, lastResult: '', commandSeq: sequence, correctionPending: pending };
+  renderAtlasJourneyState();
+  let result;
+  try { result = await dispatchUiCommand(commandId, { ...payload, projectId: currentProjectId }, { isCurrentPresentation: current }); }
+  catch (error) { result = { ok: false, error: { code: 'E_ATLAS_CORRECTION_DISPATCH_FAILED', op: commandId,
+    reason: error?.reason || error?.message || 'ATLAS_CORRECTION_DISPATCH_FAILED' } }; }
+  finally { pending.active = false; }
+  if (!current()) return result;
+  const receipt = result?.value?.result?.receipt;
+  const accepted = result?.ok === true && result.value?.performed === true && result.value.commandAuthority === 'CommandKernel'
+    && result.value.commandId === commandId && result.value.result?.ok === true && receipt?.schemaVersion === 'command-kernel.receipt.v1'
+    && receipt.commandId === commandId && receipt.status === 'APPLIED' && receipt.capabilityRevalidated === true && receipt.storageWritten === true;
+  if (accepted) atlasJourneyDraft = { ...atlasJourneyDraft, correctionIntent: null,
+    ...(commandId === 'atlas.entity.splitRestore' ? { savedMergeOperation: null, savedMergeContext: null } : {}) };
+  atlasJourneyState = { status: accepted ? 'applied' : 'failed', lastCommandId: commandId,
+    lastResult: accepted ? 'persisted' : result?.error?.reason || result?.reason || 'ATLAS_CORRECTION_NOT_APPLIED', commandSeq: sequence };
+  renderAtlasJourneyState();
+  await refreshAtlasCurrentScene({ force: true, isCurrent: presentation });
+  if (presentation()) void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: presentation }).catch(error => console.warn('Atlas correction refresh failed', error));
+  return result;
+}
+
 async function runProductJourneyCommand(commandId, payload = {}) {
+  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+    && ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'].includes(commandId)) return runAtlasCorrectionCommand(commandId, payload);
   if (commandId === 'atlas.observation.suppress') return runAtlasSuppressionCommand();
   if (commandId === 'atlas.evidence.reattach') return runAtlasReattachmentCommand();
   const nextCommandSeq = Math.max(atlasCommandPublicationSequence, Number(atlasJourneyState.commandSeq || 0)) + 1;
@@ -16627,7 +16693,7 @@ async function runProductJourneyCommand(commandId, payload = {}) {
   }, { isCurrentPresentation: current });
   if (!current()) return result;
   if (commandId === 'atlas.mention.confirm' && result && result.ok
-    && (typeof window === 'undefined' || window.__PRODUCT_PROFILE !== 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9')) {
+    && (typeof window === 'undefined' || !['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE))) {
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
       decisionId: payload?.decisionId || atlasJourneyDraft.decisionId,
@@ -16681,6 +16747,9 @@ function renderAtlasJourneyState() {
   const sourceEntity = findAtlasJourneyEntity(atlasJourneyDraft.sourceEntityId);
   const targetEntity = findAtlasJourneyEntity(atlasJourneyDraft.targetEntityId);
   const mention = findAtlasJourneyMention(atlasJourneyDraft.mentionId);
+  const corrections = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10';
+  const savedMerge = corrections && atlasJourneyDraft.savedMergeOperation ? getAtlasSavedMergeSelection() : null;
+  const correctionPending = corrections && atlasJourneyState.correctionPending?.active === true;
   const suppressionSelected = isAtlasSuppressionCurrent(atlasJourneyDraft.suppressionContext) && Boolean(atlasJourneyDraft.suppressionTarget)
     && atlasJourneyDraft.suppressionTarget === mention?.mentionId && atlasCurrentSceneState.state === 'ready';
 
@@ -16751,7 +16820,7 @@ function renderAtlasJourneyState() {
     entityId: mention?.entityId || atlasJourneyDraft.sourceEntityId || '',
     mentionId: mention?.mentionId || '',
     evidenceAnchor: mention?.evidenceAnchor || null,
-    ...(typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9' ? {} : {
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE) ? {} : {
       decisionId: ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'),
     }),
   }), { actionId: 'confirm-mention', disabled: !mention, reason: mention ? '' : 'Select an exact mention' }));
@@ -16765,19 +16834,20 @@ function renderAtlasJourneyState() {
     targetEntityId: atlasJourneyDraft.targetEntityId || '',
     mentionId: mention?.mentionId || '',
     evidenceAnchor: mention?.evidenceAnchor || null,
-    reassignmentId: ensureAtlasJourneyDraftId('reassignmentId', 'atlas-reassign'),
+    ...(corrections ? {} : { reassignmentId: ensureAtlasJourneyDraftId('reassignmentId', 'atlas-reassign') }),
     reason: 'author-reviewed',
-  }), { actionId: 'reassign-observation', disabled: !mention || !targetEntity, reason: targetEntity ? '' : 'Select a different target entity' }));
+  }), { actionId: 'reassign-observation', disabled: !mention || !targetEntity || correctionPending, reason: targetEntity ? '' : 'Select a different target entity' }));
   actionBar.appendChild(makeAtlasCommandButton('Merge', 'atlas.entity.merge', () => ({
     sourceEntityId: atlasJourneyDraft.sourceEntityId || '',
     targetEntityId: atlasJourneyDraft.targetEntityId || '',
-    operationId: ensureAtlasJourneyDraftId('mergeOperationId', 'atlas-merge'),
+    ...(corrections ? {} : { operationId: ensureAtlasJourneyDraftId('mergeOperationId', 'atlas-merge') }),
     reason: 'author-reviewed',
-  }), { actionId: 'merge-entities', disabled: !sourceEntity || !targetEntity, reason: targetEntity ? '' : 'Select source and target entities' }));
+  }), { actionId: 'merge-entities', disabled: !sourceEntity || !targetEntity || correctionPending, reason: targetEntity ? '' : 'Select source and target entities' }));
   actionBar.appendChild(makeAtlasCommandButton('Split restore', 'atlas.entity.splitRestore', () => ({
-    operationId: atlasJourneyDraft.mergeOperationId || '',
-    restoreOperationId: ensureAtlasJourneyDraftId('restoreOperationId', 'atlas-split-restore'),
-  }), { actionId: 'split-restore', disabled: !atlasJourneyDraft.mergeOperationId, reason: atlasJourneyDraft.mergeOperationId ? '' : 'Merge first' }));
+    operationId: corrections ? savedMerge?.operationId || '' : atlasJourneyDraft.mergeOperationId || '',
+    ...(corrections ? {} : { restoreOperationId: ensureAtlasJourneyDraftId('restoreOperationId', 'atlas-split-restore') }),
+  }), { actionId: 'split-restore', disabled: corrections ? !savedMerge || correctionPending : !atlasJourneyDraft.mergeOperationId,
+    reason: corrections ? 'Select a current saved merge in the entity dossier' : atlasJourneyDraft.mergeOperationId ? '' : 'Merge first' }));
   actionBar.appendChild(makeAtlasCommandButton('Reattach evidence', 'atlas.evidence.reattach', () => ({
     reason: 'author-reviewed',
   }), { actionId: 'reattach-evidence', disabled: !atlasJourneyDraft.reattachmentSource || !getAtlasReattachmentIntent() || atlasJourneyDraft.reattachmentPending === true,
@@ -17381,12 +17451,74 @@ async function runAtlasSuppressionCommand() {
   return result;
 }
 
+function getAtlasSavedMergeContext() {
+  return { projectId: currentProjectId, sceneId: currentDocumentId, entityId: atlasSelectedEntityId,
+    epoch: atlasPublicationEpoch, publicationId: currentTreeContentPublicationId, generation: localEditGeneration, tab: currentRightTab };
+}
+
+function isAtlasSavedMergeCurrent(context) {
+  return context && !localDirty && localEditGeneration === lastAckedGeneration
+    && Object.entries(getAtlasSavedMergeContext()).every(([key, value]) => context[key] === value);
+}
+
+function getAtlasSavedMergeSelection() {
+  const selected = atlasJourneyDraft.savedMergeOperation;
+  if (!selected || !isAtlasSavedMergeCurrent(atlasJourneyDraft.savedMergeContext)) return null;
+  const state = normalizeAtlasEntityDossier(atlasEntityDossierState);
+  if (!['ready', 'empty'].includes(state.state) || state.projectId !== currentProjectId || state.selectedEntityId !== atlasSelectedEntityId) return null;
+  return state.savedMergeOperations?.rows.find(row => row.operationId === selected.operationId && row.restoreState === 'RESTORABLE'
+    && row.restoredByCommandSeq === 0 && JSON.stringify(row) === JSON.stringify(selected)) || null;
+}
+
+function renderAtlasSavedMergeSelection(parent, state) {
+  const packet = state.savedMergeOperations, field = document.createElement('label'), caption = document.createElement('span');
+  field.className = 'right-rail-atlas-journey-field'; caption.className = 'right-rail-atlas-journey-field__label';
+  caption.textContent = `Saved merges · ${packet.rows.length} of ${packet.totalCount}${packet.complete ? '' : ' · partial'}`;
+  const select = document.createElement('select'); select.className = 'right-rail-atlas-journey-field__control';
+  select.dataset.atlasSavedMergeSelect = 'true';
+  const empty = document.createElement('option'); empty.value = ''; empty.textContent = 'Select a saved merge'; select.appendChild(empty);
+  for (const row of packet.rows) {
+    const option = document.createElement('option'); option.value = row.operationId;
+    option.textContent = `${row.sourceName || row.sourceEntityId} → ${row.targetName || row.targetEntityId} · ${row.restoreState}`;
+    option.disabled = row.restoreState !== 'RESTORABLE' || row.restoredByCommandSeq !== 0; select.appendChild(option);
+  }
+  select.value = packet.rows.some(row => row.operationId === atlasJourneyDraft.savedMergeOperation?.operationId)
+    ? atlasJourneyDraft.savedMergeOperation.operationId : '';
+  const context = getAtlasSavedMergeContext(), surface = currentAtlasSurface, dossierHash = state.summary.dossierHash;
+  select.addEventListener('change', () => {
+    const live = normalizeAtlasEntityDossier(atlasEntityDossierState);
+    if (!select.isConnected || !isAtlasSavedMergeCurrent(context) || surface !== currentAtlasSurface
+      || !['ready', 'empty'].includes(live.state) || live.projectId !== currentProjectId
+      || live.selectedEntityId !== atlasSelectedEntityId || live.summary.dossierHash !== dossierHash) return;
+    const selected = packet.rows.find(row => row.operationId === select.value && row.restoreState === 'RESTORABLE' && row.restoredByCommandSeq === 0);
+    const row = selected && live.savedMergeOperations?.rows.find(value => JSON.stringify(value) === JSON.stringify(selected));
+    atlasJourneyDraftRevision += 1;
+    atlasJourneyDraft = { ...atlasJourneyDraft, savedMergeOperation: row ? { ...row } : null,
+      savedMergeContext: row ? getAtlasSavedMergeContext() : null, correctionIntent: null };
+    renderAtlasJourneyState(); updateStatusText(row ? 'Saved merge selected. Open Flow to restore.' : 'Select a current saved merge.');
+  });
+  field.append(caption, select); parent.appendChild(field);
+}
+
 function normalizeAtlasEntityDossier(result = {}) {
   const source = result && typeof result === 'object' && !Array.isArray(result) ? result : {};
   const summary = source.summary && typeof source.summary === 'object' && !Array.isArray(source.summary) ? source.summary : {};
   const ledger = source.evidenceLedger && typeof source.evidenceLedger === 'object' && !Array.isArray(source.evidenceLedger)
     ? source.evidenceLedger
     : {};
+  const merges = reviewSurfaceIsPlainObject(source.savedMergeOperations) ? source.savedMergeOperations : null;
+  const mergeKeys = ['operationId', 'projectId', 'sourceEntityId', 'targetEntityId', 'sourceName', 'targetName',
+    'operationHash', 'sourceEntityHash', 'targetEntityHash', 'createdByCommandSeq', 'restoredByCommandSeq', 'restoreState'];
+  const mergeRows = (Array.isArray(merges?.rows) ? merges.rows.slice(0, 24) : []).filter(row => reviewSurfaceIsPlainObject(row)
+    && ['operationId', 'projectId', 'sourceEntityId', 'targetEntityId'].every(key => typeof row[key] === 'string' && row[key].trim() && row[key].length <= 1000)
+    && row.projectId === source.projectId && row.sourceEntityId !== row.targetEntityId
+    && [row.sourceEntityId, row.targetEntityId].includes(source.selectedEntityId)
+    && ['sourceName', 'targetName'].every(key => typeof row[key] === 'string' && row[key].length <= 1000)
+    && ['operationHash', 'sourceEntityHash', 'targetEntityHash'].every(key => typeof row[key] === 'string' && /^[a-f0-9]{64}$/u.test(row[key]))
+    && Number.isSafeInteger(row.createdByCommandSeq) && row.createdByCommandSeq > 0
+    && Number.isSafeInteger(row.restoredByCommandSeq) && row.restoredByCommandSeq >= 0
+    && ['RESTORABLE', 'STALE', 'RESTORED'].includes(row.restoreState))
+    .map(row => Object.fromEntries(mergeKeys.map(key => [key, row[key]])));
   return {
     schemaVersion: typeof source.schemaVersion === 'string' ? source.schemaVersion : 'derived.atlas.entityDossier.v1',
     state: typeof source.state === 'string' ? source.state : 'empty',
@@ -17396,6 +17528,9 @@ function normalizeAtlasEntityDossier(result = {}) {
     selectedEntityId: typeof source.selectedEntityId === 'string' ? source.selectedEntityId : '',
     entity: source.entity && typeof source.entity === 'object' && !Array.isArray(source.entity) ? source.entity : null,
     aliases: Array.isArray(source.aliases) ? source.aliases.filter(reviewSurfaceIsPlainObject) : [],
+    savedMergeOperations: merges && Array.isArray(merges.rows) && Number.isSafeInteger(merges.totalCount)
+      && merges.totalCount >= merges.rows.length && typeof merges.complete === 'boolean'
+      ? { rows: mergeRows, totalCount: merges.totalCount, complete: merges.complete && mergeRows.length === merges.rows.length } : null,
     summary: {
       observationCount: Number.isInteger(summary.observationCount) ? Math.max(0, summary.observationCount) : 0,
       activeObservationCount: Number.isInteger(summary.activeObservationCount) ? Math.max(0, summary.activeObservationCount) : 0,
@@ -17477,6 +17612,8 @@ function renderAtlasEntityDossierState() {
   appendAtlasOverviewMetric(metrics, 'evidence', state.summary.evidenceRowCount, state.summary.evidenceHealth);
   appendAtlasOverviewMetric(metrics, 'review', state.summary.reviewRequiredEvidenceCount, state.summary.reviewRequiredEvidenceCount > 0 ? 'reviewRequired' : 'current');
   atlasEntityDossierHost.appendChild(metrics);
+  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+    && state.savedMergeOperations) renderAtlasSavedMergeSelection(atlasEntityDossierHost, state);
 
   if (state.aliases.length > 0) {
     const aliases = appendAtlasOverviewSection(atlasEntityDossierHost, 'Aliases');
@@ -25401,7 +25538,7 @@ if (window.electronAPI) {
       refreshSceneHistory('');
     }
     if (currentRightTab === 'atlas') {
-      if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'].includes(window.__PRODUCT_PROFILE)) {
+      if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)) {
         void refreshActiveAtlasSurface();
       } else {
         renderAtlasJourneyState();

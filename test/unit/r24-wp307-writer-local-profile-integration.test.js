@@ -249,7 +249,7 @@ test('WP307 profile contract carries no persistence, network or external authori
 // Actual Main under an inert Electron host: no app/renderer/native launch.
 // Only the host platform is explicit so the packaged-Darwin policy is also
 // exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
-async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false } = {}) {
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false } = {}) {
   const os = require('node:os'), Module = require('node:module');
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
   const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
@@ -305,12 +305,19 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         assert.equal(packaged, true); assert.equal(platform, 'darwin');
         t.diagnostic('HISTORICAL_V7_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
         return { ...loaded, createWriterAtlasReadSurfacesProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
-          createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
+          createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
+          createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV8Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor, false);
         t.diagnostic('HISTORICAL_V8_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
-        return { ...loaded, createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
+        return { ...loaded, createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
+          createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
+      }
+      if (request === './core/writer-local-profile-v1.cjs' && historicalV9Constructor) {
+        assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor || historicalV8Constructor, false);
+        t.diagnostic('HISTORICAL_V9_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
+        return { ...loaded, createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection };
       }
       if (request !== './main/projectArchiveDarwinPublication.cjs') return loaded;
       return { ...loaded, createDarwinExclusiveFilePublisher: options => {
@@ -1138,8 +1145,8 @@ function reattachmentWholeFixtureRoster(h) {
   } }; visit(h.root); return rows;
 }
 
-async function reattachmentMainFixture(t, packaged = false, beforeProject, { historicalV7Constructor = false, historicalV8Constructor = false } = {}) {
-  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true, historicalV7Constructor, historicalV8Constructor }), ui = await fullMacRendererCommandPort(h);
+async function reattachmentMainFixture(t, packaged = false, beforeProject, { historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false } = {}) {
+  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true, historicalV7Constructor, historicalV8Constructor, historicalV9Constructor }), ui = await fullMacRendererCommandPort(h);
   if (beforeProject) beforeProject(h); // Actual lifecycle bootstrap captures the observer before constructing its prepare port.
   const f = await exactAtlasScene(h, 'Explicit saved reattachment'), { projectId, sceneId } = f;
   const entityId = 'saved-mira', decisionId = 'saved-confirmation';
@@ -1835,7 +1842,7 @@ async function persistTemporalControl(x, commandId, suffix) {
 }
 
 test('current literal packaged Main selects strict V9 with precisely four extra commands and the complete twelve readers', async t => {
-  const h = await fullMacMainFixture(t), current = h.main.__profile();
+  const h = await fullMacMainFixture(t, { historicalV9Constructor: true }), current = h.main.__profile();
   assert.equal(current.profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'); assert.equal(current.schemaVersion, 'writer-local-profile.v9');
   assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), current.profileId);
   const old = profile.createWriterAtlasReadSurfacesProfileProjection({ isPackaged: true, platform: 'darwin' });
@@ -1986,7 +1993,7 @@ test('actual unpackaged prepared temporal intent cannot write after a real Main 
 });
 
 test('current packaged V9 refuses exact command near IDs forged callers and capability hints without writes', async t => {
-  const x = await reattachmentMainFixture(t, true), id = 'atlas.calendar.define'; await persistTemporalControl(x, id, 'caller-control');
+  const x = await reattachmentMainFixture(t, true, undefined, { historicalV9Constructor: true }), id = 'atlas.calendar.define'; await persistTemporalControl(x, id, 'caller-control');
   const payload = await temporalMainPayload(x, id, 'caller-refusal'), before = reattachmentWholeFixtureRoster(x.h);
   for (const commandId of [' ' + id, id + ' ', id + '.extra', 'atlas.entity.merge', 'idea.create', 'meaning.promote']) {
     const result = await x.h.command(commandId, { ...payload, profileId: 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', tier: 'pro', capabilities: { [commandId]: true } });
@@ -2243,7 +2250,7 @@ function assertAuthorIdentityPreservation(x, before, after, commandId, payload, 
 }
 
 test('actual V9 cold producers independently create entity alias and confirmation after historical counter records [FINITE_IPC_NOT_NATIVE]', async t => {
-  const x = await reattachmentMainFixture(t, true);
+  const x = await reattachmentMainFixture(t, true, undefined, { historicalV9Constructor: true });
   assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
   assert.equal((await x.h.main.handleProjectLifecycleCreateCommand({ projectName: 'Foreign identity project' })).ok, true);
   assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
@@ -2316,7 +2323,7 @@ for (const cold of [false, true]) test('actual V9 identical canonical confirmati
 });
 
 test('actual V9 Source entity selection persists alias under the explicitly chosen real entity [FINITE_IPC_NOT_NATIVE]', async t => {
-  const x = await reattachmentMainFixture(t, true), targetId = 'source-selection-beacon';
+  const x = await reattachmentMainFixture(t, true, undefined, { historicalV9Constructor: true }), targetId = 'source-selection-beacon';
   assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
   assert.equal((await x.h.main.handleProjectLifecycleCreateCommand({ projectName: 'Foreign source selection project' })).ok, true);
   assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
@@ -2362,5 +2369,298 @@ test('actual V9 Source entity selection persists alias under the explicitly chos
     assert.equal(selection.renderedSourceEntityId, targetId); assert.equal(selection.renderedMentionId, targetMention.mentionId);
     assertAuthorIdentityCanonical(after.manifest.atlas.entities[x.entityId], before.manifest.atlas.entities[x.entityId]);
     assert.equal(after.manifest.atlas.entities[targetId].aliases[payload.aliasId].value, payload.value);
+  });
+});
+
+const CORRECTION_MAIN_IDS = ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'];
+const CORRECTION_V10 = 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10';
+
+function assertCorrectionPersistence(x, before, after, commandId, payload, applied) {
+  const seq = before.manifest.lastCommandId + (applied ? 1 : 0);
+  assertAuthorIdentityCanonical(after.events.slice(0, before.events.length), before.events);
+  assertAuthorIdentityCanonical(after.receipts.slice(0, before.receipts.length), before.receipts);
+  assert.deepEqual(after.scene, before.scene); x.assertOriginal();
+  if (!applied) { assert.deepEqual(after.roster, before.roster); assertAuthorIdentityCanonical(after.manifest, before.manifest); return; }
+  assert.equal(after.events.length, before.events.length + 1); assert.equal(after.receipts.length, before.receipts.length + 1);
+  assert.equal(after.events.at(-1).commandId, commandId); assert.equal(after.receipts.at(-1).commandId, commandId);
+  assert.equal(after.events.at(-1).domainEventDigest, after.receipts.at(-1).domainEventDigest);
+  const atlas = structuredClone(before.manifest.atlas), sourceId = payload.sourceEntityId, targetId = payload.targetEntityId;
+  if (commandId === 'atlas.observation.reassign') {
+    atlas.entities[sourceId].updatedByCommandSeq = seq; atlas.entities[targetId].updatedByCommandSeq = seq;
+    atlas.reassignments = { ...(atlas.reassignments || {}), [payload.reassignmentId]: { id: payload.reassignmentId,
+      operationKind: 'observation.reassign', projectId: x.projectId, sceneId: payload.sceneId, sourceEntityId: sourceId,
+      targetEntityId: targetId, observationId: payload.observationId || '', mentionId: payload.mentionId || '', reason: payload.reason || '',
+      evidenceAnchor: payload.evidenceAnchor, createdByCommandSeq: seq } };
+  } else if (commandId === 'atlas.entity.merge') {
+    const beforeSourceEntity = structuredClone(atlas.entities[sourceId]), beforeTargetEntity = structuredClone(atlas.entities[targetId]);
+    atlas.entities[sourceId] = { ...beforeSourceEntity, mergeState: 'MERGED', mergedIntoEntityId: targetId,
+      mergeOperationId: payload.operationId, mergedByCommandSeq: seq, updatedByCommandSeq: seq };
+    atlas.entities[targetId] = { ...beforeTargetEntity, mergedSourceEntityIds: [...new Set([...(beforeTargetEntity.mergedSourceEntityIds || []), sourceId])].sort(), updatedByCommandSeq: seq };
+    atlas.entityOperations = { ...(atlas.entityOperations || {}), [payload.operationId]: { id: payload.operationId,
+      operationKind: 'entity.merge', projectId: x.projectId, sourceEntityId: sourceId, targetEntityId: targetId, reason: payload.reason || '',
+      beforeSourceEntity, beforeTargetEntity, afterSourceEntity: structuredClone(atlas.entities[sourceId]),
+      afterTargetEntity: structuredClone(atlas.entities[targetId]), createdByCommandSeq: seq, restoredByCommandSeq: 0, restoreOperationId: '' } };
+  } else {
+    const operation = atlas.entityOperations[payload.operationId]; assert.ok(operation);
+    atlas.entities[operation.sourceEntityId] = structuredClone(operation.beforeSourceEntity);
+    atlas.entities[operation.targetEntityId] = structuredClone(operation.beforeTargetEntity);
+    atlas.entityOperations[payload.operationId] = { ...operation, restoredByCommandSeq: seq, restoreOperationId: payload.restoreOperationId };
+  }
+  assertAuthorIdentityCanonical(after.manifest, { ...before.manifest, lastCommandId: seq, atlas });
+  const projectPrefix = path.relative(x.h.root, x.f.projectRoot) + path.sep;
+  const anchorPrefix = path.join('userData', 'stage10-integrity-anchors', x.identityKey) + path.sep;
+  const digest = value => crypto.createHash('sha256').update(value).digest('hex');
+  const previousHash = digest(before.manifestRaw), nextHash = digest(after.manifestRaw);
+  const base = path.join('userData', 'stage10-integrity-anchors', 'manifest-transitions');
+  const transitionRoot = path.join(base, digest(x.projectId + '\0' + x.f.manifestPath)), transitionDir = path.join(transitionRoot, previousHash);
+  const transitionFile = path.join(transitionDir, nextHash + '.json');
+  const transition = JSON.stringify({ schemaVersion: 'yalken.manifest-transition.v1', projectId: x.projectId,
+    targetPath: x.f.manifestPath, previousHash, nextHash });
+  assert.equal(fs.readFileSync(path.join(x.h.root, transitionFile), 'utf8'), transition);
+  const oldRoster = new Map(before.roster), newRoster = new Map(after.roster), added = new Set([transitionFile]);
+  assert.equal(oldRoster.has(transitionFile), false); assert.equal(newRoster.get(transitionFile), digest(transition));
+  for (const name of [base, transitionRoot, transitionDir]) { assert.equal(newRoster.get(name), 'directory'); if (!oldRoster.has(name)) added.add(name); }
+  const mutable = new Set([projectPrefix + 'project.craftsman.json',
+    ...['product-session.v2.json', 'command-receipt-authority-store.v2.json', path.join('recovery', 'project-truth.latest.v1.json')]
+      .map(name => projectPrefix + path.join('.stage10-local', name)),
+    ...['integrity-anchor.v1.json', 'integrity-anchor.recovery.v1.json', 'fencing-generation.v1.json'].map(name => anchorPrefix + name)]);
+  const fixed = rows => rows.filter(([name]) => !mutable.has(name) && !added.has(name));
+  assert.deepEqual(fixed(after.roster), fixed(before.roster), 'complete foreign state manuscript and prior transition records stay exact');
+  const previousAnchor = before.anchors[anchorPrefix + 'integrity-anchor.v1.json'], head = after.authorityStore.currentHead;
+  assertAuthorIdentityCanonical(after.anchors[anchorPrefix + 'integrity-anchor.recovery.v1.json'], previousAnchor);
+  const anchorCore = { schemaVersion: 'yalken.stage10.mainIntegrityAnchor.v1', anchorVersion: 1, projectId: x.projectId,
+    authorityGeneration: head.authorityGeneration, receiptCount: head.receiptCount, receiptRootDigest: head.receiptRootDigest,
+    eventLogDigest: head.eventLogDigest, authorityHeadDigest: head.authorityHeadDigest, authorityStoreDigest: x.hash(after.authorityStore),
+    sessionDigest: x.hash(after.session), previousIntegrityAnchorDigest: previousAnchor.integrityAnchorDigest };
+  assert.equal(anchorCore.authorityGeneration, previousAnchor.authorityGeneration + 1);
+  assertAuthorIdentityCanonical(after.anchors[anchorPrefix + 'integrity-anchor.v1.json'], { ...anchorCore, integrityAnchorDigest: x.hash(anchorCore) });
+  const fence = after.anchors[anchorPrefix + 'fencing-generation.v1.json'], oldFence = before.anchors[anchorPrefix + 'fencing-generation.v1.json'];
+  assert.match(fence.ownerTokenDigest, /^[a-f0-9]{64}$/u); assert.notEqual(fence.ownerTokenDigest, oldFence.ownerTokenDigest);
+  assert.ok(fence.issuedAtMs >= before.observedAtMs && fence.issuedAtMs <= after.observedAtMs);
+  assert.ok(Number.isSafeInteger(fence.monotonicIssuedAtMs) && fence.monotonicIssuedAtMs >= oldFence.monotonicIssuedAtMs);
+  assertAuthorIdentityCanonical(fence, { ...oldFence, fencingGeneration: oldFence.fencingGeneration + 1,
+    ownerTokenDigest: fence.ownerTokenDigest, issuedAtMs: fence.issuedAtMs, monotonicIssuedAtMs: fence.monotonicIssuedAtMs });
+  const recovery = JSON.parse(fs.readFileSync(path.join(x.f.projectRoot, '.stage10-local', 'recovery', 'project-truth.latest.v1.json')));
+  assertAuthorIdentityCanonical(recovery, { schemaVersion: 'yalken.stage10.projectTruthRecovery.v1', projectId: x.projectId,
+    reason: commandId, previousIntegrityAnchorDigest: previousAnchor.integrityAnchorDigest, previousHash, intendedNextHash: nextHash, previousText: before.manifestRaw });
+}
+
+async function correctionMainFixture(t, packaged = false, beforeProject, historicalV9Constructor = false) {
+  const x = await reattachmentMainFixture(t, packaged, beforeProject, { historicalV9Constructor });
+  x.targetEntityId = 'correction-beacon';
+  assertTemporalMainReceipt(await x.command('atlas.entity.create', { entityId: x.targetEntityId, name: 'Маяк', entityKind: 'character' }), 'atlas.entity.create');
+  const foreign = await x.h.main.handleProjectLifecycleCreateCommand({ projectName: 'Foreign correction project' }); assert.equal(foreign.ok, true);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  x.foreignProjectId = foreign.projectId;
+  const identity = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId); assert.equal(identity.ok, true);
+  x.identityKey = identity.canonicalKey;
+  const current = await x.query(); for (const id of [x.entityId, x.targetEntityId]) {
+    assert.equal(current.entities.some(row => row.entityId === id), true); assert.equal(current.mentions.some(row => row.entityId === id), true);
+  }
+  x.payloadFor = async (id, tag) => {
+    if (id === 'atlas.entity.splitRestore') {
+      const merge = { projectId: x.projectId, sourceEntityId: x.entityId, targetEntityId: x.targetEntityId, operationId: 'prepare-' + tag, reason: 'Owned restore setup' };
+      const before = authorIdentitySnapshot(x), response = await x.ui('atlas.entity.merge', merge), after = authorIdentitySnapshot(x);
+      assertTemporalMainReceipt(response.mainResult, 'atlas.entity.merge'); assertCorrectionPersistence(x, before, after, 'atlas.entity.merge', merge, true);
+      return { projectId: x.projectId, operationId: merge.operationId, restoreOperationId: 'restore-' + tag };
+    }
+    if (id === 'atlas.entity.merge') return { projectId: x.projectId, sourceEntityId: x.entityId,
+      targetEntityId: x.targetEntityId, operationId: 'merge-' + tag, reason: 'Explicit author merge é 🧭' };
+    const mention = (await x.query()).mentions.find(row => row.entityId === x.entityId && row.startOffset === 68); assert.ok(mention);
+    return { projectId: x.projectId, sceneId: x.sceneId, sourceEntityId: x.entityId, targetEntityId: x.targetEntityId,
+      mentionId: mention.mentionId, evidenceAnchor: mention.evidenceAnchor, reassignmentId: 'reassign-' + tag, reason: 'Explicit author correction é 🧭' };
+  };
+  x.apply = async (id, payload) => {
+    const before = authorIdentitySnapshot(x), response = await x.ui(id, payload), after = authorIdentitySnapshot(x);
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_CORRECTION_PERSISTENCE', id, response, before, after }));
+    const applied = response.mainResult.ok === true; assertCorrectionPersistence(x, before, after, id, payload, applied);
+    const receipt = assertTemporalMainReceipt(response.mainResult, id); assert.equal(response.result.ok, true);
+    assert.equal(response.result.value.performed, true); assert.equal(response.result.value.commandAuthority, 'CommandKernel');
+    assert.equal(response.result.value.commandId, id); assert.deepEqual(response.result.value.result, response.mainResult.value);
+    assert.deepEqual(after.receipts.at(-1), receipt); return { response, before, after };
+  };
+  x.control = async id => {
+    const payload = await x.payloadFor(id, 'positive-control'); await x.apply(id, payload);
+    if (id === 'atlas.entity.merge') await x.apply('atlas.entity.splitRestore', { projectId: x.projectId,
+      operationId: payload.operationId, restoreOperationId: 'restore-positive-control' });
+  };
+  return x;
+}
+
+test('current literal Main selects strict V10 and only twenty-nine commands with the same twelve queries', async t => {
+  const h = await fullMacMainFixture(t), active = h.main.__profile();
+  assert.equal(active.profileId, CORRECTION_V10); assert.equal(active.schemaVersion, 'writer-local-profile.v10');
+  assert.deepEqual(active.admittedCommandIds, [...profile.createWriterAtlasTemporalAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' }).admittedCommandIds, ...CORRECTION_MAIN_IDS]);
+  assert.equal(active.admittedCommandIds.length, 29); assert.deepEqual(active.admittedQueryIds, READ_SURFACE_QUERY_IDS);
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), CORRECTION_V10);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation']) assert.equal(active[key], false);
+});
+
+for (const id of CORRECTION_MAIN_IDS) test('lawful unpackaged actual Main persists ' + id + ' with complete canonical footprint [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await correctionMainFixture(t), payload = await x.payloadFor(id, 'real-positive'); await x.apply(id, payload);
+  const before = authorIdentitySnapshot(x), dossier = await x.h.query('query.atlasEntityDossier', { projectId: x.projectId, entityId: x.targetEntityId });
+  assert.equal(dossier.ok, true); assert.deepEqual(authorIdentitySnapshot(x).roster, before.roster);
+  if (id === 'atlas.observation.reassign') assert.equal(dossier.atlasEntityDossier.evidenceLedger.rows.some(row => row.quote === payload.evidenceAnchor.quote), true);
+});
+
+test('historical trusted V9 refuses all three correction commands before Core with complete no-write', async t => {
+  const x = await correctionMainFixture(t, true, undefined, true); assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
+  for (const id of CORRECTION_MAIN_IDS) {
+    const before = authorIdentitySnapshot(x), payload = id === 'atlas.entity.splitRestore' ? { projectId: x.projectId, operationId: 'not-yet-admitted' } : await x.payloadFor(id, 'historical');
+    const response = await x.ui(id, payload); assert.equal(response.mainResult.ok, false);
+    assert.match(JSON.stringify(response), /WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED/u); assert.deepEqual(authorIdentitySnapshot(x).roster, before.roster);
+  }
+});
+
+for (const id of ['atlas.observation.reassign', 'atlas.entity.merge']) test('current packaged correction ' + id + ' reaches actual persisted truth', async t => {
+  const x = await correctionMainFixture(t, true), payload = await x.payloadFor(id, 'packaged-current'); await x.apply(id, payload);
+});
+
+for (const id of CORRECTION_MAIN_IDS) test('actual correction ' + id + ' revalidates capability after waiting in the project queue', async t => {
+  const x = await correctionMainFixture(t); await x.control(id); const payload = await x.payloadFor(id, 'queue-refusal');
+  let enter, release, settled = false; const entered = new Promise(resolve => { enter = resolve; }), gate = new Promise(resolve => { release = resolve; });
+  t.after(() => release()); const held = x.h.main.__host.holdProjectQueue(async () => { enter(); await gate; }); await entered;
+  const pending = x.h.command(id, payload).then(value => { settled = true; return value; }); await new Promise(setImmediate); assert.equal(settled, false);
+  x.h.main.__host.denyCapability(productRegistry.getProductCommandRecord(id).capabilityId); const before = authorIdentitySnapshot(x); release(); await held;
+  const result = await pending; t.diagnostic(JSON.stringify({ causalReach: 'CORRECTION_QUEUE_REVOKE', id, result }));
+  try { assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assertCorrectionPersistence(x, before, authorIdentitySnapshot(x), id, payload, false); }
+});
+
+for (const id of CORRECTION_MAIN_IDS) for (const fault of ['capability', 'owner', 'session', 'lifecycle', 'generation', 'root', 'manifest-cas', 'binding-manifest'])
+  test('actual correction ' + id + ' refuses prepared ' + fault + ' drift after a lawful control', async t => {
+    let armed = () => {}; const x = await correctionMainFixture(t, false, h => h.main.__host.afterTruth(() => armed())); await x.control(id);
+    const payload = await x.payloadFor(id, 'prepared-refusal'); let reached = false, expected;
+    const mutate = () => {
+      reached = true;
+      if (fault === 'capability') x.h.main.__host.denyCapability(productRegistry.getProductCommandRecord(id).capabilityId);
+      if (fault === 'owner') x.h.main.__host.revokeOwner(); if (fault === 'session') x.h.main.__host.invalidateSession();
+      if (fault === 'lifecycle') x.h.main.__host.invalidateLifecycle(); if (fault === 'generation') x.h.main.__host.invalidateGeneration();
+      if (fault === 'root') x.h.main.__host.invalidateProjectRoot();
+      if (fault.includes('manifest')) { const manifest = JSON.parse(fs.readFileSync(x.f.manifestPath)); manifest.concurrentCorrection = 'preserve é 🧭'; manifest.lastCommandId += 13; fs.writeFileSync(x.f.manifestPath, JSON.stringify(manifest)); }
+      expected = reattachmentWholeFixtureRoster(x.h);
+    };
+    if (fault === 'binding-manifest') x.h.main.__host.afterCoreBinding(mutate); else armed = mutate;
+    const result = await x.h.command(id, payload); t.diagnostic(JSON.stringify({ causalReach: 'CORRECTION_AFTER_PREPARATION', id, fault, reached, result }));
+    try { assert.equal(reached, true); assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+    finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+  });
+
+for (const id of CORRECTION_MAIN_IDS) for (const projectId of [17, []]) test('actual correction ' + id + ' refuses raw project identity ' + JSON.stringify(projectId), async t => {
+  const x = await correctionMainFixture(t); await x.control(id); const payload = await x.payloadFor(id, 'raw-project'), before = authorIdentitySnapshot(x);
+  const result = await x.h.command(id, { ...payload, projectId, profileId: CORRECTION_V10, tier: 'pro', capabilities: { [id]: true } });
+  t.diagnostic(JSON.stringify({ causalReach: 'CORRECTION_RAW_PROJECT_ID', id, projectId, result }));
+  try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), /E_PRODUCT_COMMAND_PAYLOAD_INVALID|E_CORE_PROJECT_ID_REQUIRED/u); }
+  finally { assertCorrectionPersistence(x, before, authorIdentitySnapshot(x), id, payload, false); }
+});
+
+test('actual prepared reassign refuses a late saved scene edit and preserves the concurrent bytes', async t => {
+  let armed = () => {}; const x = await correctionMainFixture(t, false, h => h.main.__host.afterTruth(() => armed()));
+  await x.control('atlas.observation.reassign'); const payload = await x.payloadFor('atlas.observation.reassign', 'late-source'); let reached = false, expected;
+  armed = () => { reached = true; fs.writeFileSync(x.f.scenePath, fs.readFileSync(x.f.scenePath, 'utf8').replaceAll('Мира', 'Лира')); expected = reattachmentWholeFixtureRoster(x.h); };
+  const result = await x.h.command('atlas.observation.reassign', payload); t.diagnostic(JSON.stringify({ causalReach: 'CORRECTION_LATE_REASSIGN_SOURCE', reached, result }));
+  try { assert.equal(reached, true); assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+});
+
+test('actual correction cannot persist after a real Main project switch during preparation', async t => {
+  let armed = () => {}; const x = await correctionMainFixture(t, false, h => h.main.__host.afterTruth(() => armed()));
+  await x.control('atlas.entity.merge'); const payload = await x.payloadFor('atlas.entity.merge', 'project-switch'); let reached = false, expected;
+  armed = async () => { reached = true; assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.foreignProjectId })).ok, true); expected = reattachmentWholeFixtureRoster(x.h); };
+  const result = await x.h.command('atlas.entity.merge', payload); t.diagnostic(JSON.stringify({ causalReach: 'CORRECTION_REAL_PROJECT_SWITCH', reached, result }));
+  try { assert.equal(reached, true); assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+});
+
+test('actual persisted merge survives reopen and is selectable through a cold production dossier [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await correctionMainFixture(t), payload = await x.payloadFor('atlas.entity.merge', 'cold-saved'); await x.apply('atlas.entity.merge', payload);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  const beforeQuery = authorIdentitySnapshot(x), result = await x.h.query('query.atlasEntityDossier', { projectId: x.projectId, entityId: x.targetEntityId });
+  assert.equal(result.ok, true); assert.deepEqual(authorIdentitySnapshot(x).roster, beforeQuery.roster);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_COLD_SAVED_MERGE_DOSSIER', payload, result, stored: beforeQuery.manifest.atlas.entityOperations[payload.operationId] }));
+  const packet = result.atlasEntityDossier.savedMergeOperations; assert.ok(packet, 'actual cold dossier must return saved merge rows');
+  assert.equal(packet.complete, true); assert.equal(packet.totalCount, 1); assert.equal(packet.rows[0].operationId, payload.operationId);
+  assert.equal(packet.rows[0].restoreState, 'RESTORABLE');
+  const renderer = authorIdentityMainRenderer(x, await x.query(), CORRECTION_V10), vm = require('node:vm'), source = read('src/renderer/editor.js');
+  const walk = node => [node, ...node.children.flatMap(walk)];
+  renderer.c.atlasEntityDossierHost = renderer.c.document.createElement('section'); renderer.c.document.body.append(renderer.c.atlasEntityDossierHost);
+  renderer.c.atlasEntityDossierState = result.atlasEntityDossier; renderer.c.atlasSelectedEntityId = x.targetEntityId;
+  renderer.c.currentAtlasSurface = 'entity';
+  const names = new Set(['normalizeAtlasEntityDossier', 'renderAtlasEntityDossierState', 'appendAtlasOverviewRow', 'appendAtlasOverviewSection', 'appendAtlasOverviewMetric',
+    ...[...source.matchAll(/^(?:async )?function (\w*Atlas\w*(?:Correction|SavedMerge)\w*)\(/gm)].map(match => match[1])]);
+  for (const name of names) {
+    let a = source.indexOf('async function ' + name + '('); if (a < 0) a = source.indexOf('function ' + name + '(');
+    const b = source.indexOf('\n}\n', a); assert.ok(a >= 0 && b > a); vm.runInContext(source.slice(a, b + 2), renderer.c);
+  }
+  renderer.c.reviewSurfaceIsPlainObject = value => value && typeof value === 'object' && !Array.isArray(value);
+  renderer.c.renderAtlasReattachmentSources = () => {}; renderer.c.renderAtlasEntityDossierState();
+  const select = walk(renderer.c.atlasEntityDossierHost).find(node => Object.hasOwn(node.dataset, 'atlasSavedMergeSelect'));
+  assert.ok(select, 'cold actual dossier rendering exposes one native saved merge select');
+  assert.equal(select.tagName, 'SELECT'); select.value = payload.operationId; await select.emit('change');
+  const before = authorIdentitySnapshot(x), response = await renderer.click('split-restore'), after = authorIdentitySnapshot(x);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_COLD_SELECTED_SPLIT_RESTORE', response, before, after }));
+  assertTemporalMainReceipt(response.mainResult, 'atlas.entity.splitRestore');
+  assert.equal(response.request.payload.operationId, payload.operationId);
+  assertCorrectionPersistence(x, before, after, 'atlas.entity.splitRestore', response.request.payload, true);
+});
+
+function correctionMainRenderer(x, projection) {
+  const renderer = authorIdentityMainRenderer(x, projection, CORRECTION_V10), source = read('src/renderer/editor.js'), vm = require('node:vm');
+  for (const match of source.matchAll(/^(?:async )?function (\w*Atlas\w*(?:Correction|SavedMerge)\w*)\(/gm)) {
+    const a = match.index, b = source.indexOf('\n}\n', a); assert.ok(b > a); vm.runInContext(source.slice(a, b + 2), renderer.c);
+  }
+  return renderer;
+}
+
+for (const cold of [false, true]) test('actual distinct reassignment intents retain both records ' + (cold ? 'after cold renderer reopen' : 'while warm'), async t => {
+  const x = await correctionMainFixture(t); let renderer = correctionMainRenderer(x, await x.query());
+  for (const [i, offset] of [25, 68].entries()) {
+    if (i && cold) { assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true); renderer = correctionMainRenderer(x, await x.query()); }
+    await renderer.target(x.entityId, offset); await renderer.field('targetEntityId', x.targetEntityId);
+    const before = authorIdentitySnapshot(x), response = await renderer.click('reassign-observation'), after = authorIdentitySnapshot(x);
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_WARM_COLD_REASSIGN_IDENTITY', cold, offset, response, before, after }));
+    assertCorrectionPersistence(x, before, after, 'atlas.observation.reassign', response.request.payload, response.mainResult.ok === true);
+    await t.test('actual receipt and opaque identity for occurrence ' + offset, () => {
+      assertTemporalMainReceipt(response.mainResult, 'atlas.observation.reassign');
+      assert.match(response.request.payload.reassignmentId, /^atlas-reassign-[a-f0-9-]{36}$/u);
+    });
+  }
+  assert.equal(Object.keys(authorIdentitySnapshot(x).manifest.atlas.reassignments).length, 2);
+});
+
+test('actual merge restore then cold merge preserves the prior saved operation under a new intent ID', async t => {
+  const x = await correctionMainFixture(t); let firstId = '';
+  for (let i = 0; i < 2; i++) {
+    const renderer = correctionMainRenderer(x, await x.query()); await renderer.target(x.entityId, 25); await renderer.field('targetEntityId', x.targetEntityId);
+    const before = authorIdentitySnapshot(x), response = await renderer.click('merge-entities'), after = authorIdentitySnapshot(x);
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_REPEATED_COLD_MERGE_IDENTITY', i, response, before, after }));
+    assertCorrectionPersistence(x, before, after, 'atlas.entity.merge', response.request.payload, response.mainResult.ok === true);
+    const id = response.request.payload.operationId, priorId = firstId; firstId = id;
+    await t.test('actual merge receipt and opaque identity ' + i, () => {
+      assertTemporalMainReceipt(response.mainResult, 'atlas.entity.merge');
+      assert.match(id, /^atlas-merge-[a-f0-9-]{36}$/u); assert.notEqual(id, priorId);
+    });
+    if (response.mainResult.ok === true) await x.apply('atlas.entity.splitRestore', {
+      projectId: x.projectId, operationId: id, restoreOperationId: 'owned-between-merges-' + i });
+    assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  }
+  assert.equal(Object.keys(authorIdentitySnapshot(x).manifest.atlas.entityOperations).length, 2);
+});
+
+test('actual Main keeps restored foreign and stale merge refusals with immediate complete no-write', async t => {
+  for (const kind of ['restored', 'foreign', 'stale']) await t.test(kind, async t => {
+    const x = await correctionMainFixture(t), payload = await x.payloadFor('atlas.entity.splitRestore', 'refusal-' + kind);
+    if (kind === 'restored') await x.apply('atlas.entity.splitRestore', payload);
+    if (kind === 'stale') {
+      const before = authorIdentitySnapshot(x), alias = { projectId: x.projectId, entityId: x.targetEntityId,
+        aliasId: 'later-author-alias', value: 'Later preserved correction', scope: 'project', sceneId: '' };
+      const response = await x.ui('atlas.alias.add', alias), after = authorIdentitySnapshot(x); assertTemporalMainReceipt(response.mainResult, 'atlas.alias.add');
+      assertAuthorIdentityPreservation(x, before, after, 'atlas.alias.add', alias, true, x.identityKey);
+    }
+    const before = authorIdentitySnapshot(x), result = await x.h.command('atlas.entity.splitRestore', {
+      ...payload, ...(kind === 'foreign' ? { operationId: 'foreign-operation' } : {}), restoreOperationId: 'must-not-write' });
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SAVED_MERGE_REFUSAL', kind, result }));
+    try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), new RegExp({ restored: 'E_ATLAS_OPERATION_ALREADY_RESTORED', foreign: 'E_ATLAS_OPERATION_NOT_FOUND', stale: 'E_ATLAS_OPERATION_STALE' }[kind], 'u')); }
+    finally { assertCorrectionPersistence(x, before, authorIdentitySnapshot(x), 'atlas.entity.splitRestore', payload, false); }
   });
 });

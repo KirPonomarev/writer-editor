@@ -272,3 +272,54 @@ test('E05 C02: renderer and main wire entity dossier through typed read-only hos
   assert.match(cssSource, /\.right-rail-surface--atlas-entity-dossier/u);
   assert.match(cssSource, /\.right-rail-atlas-entity__head\[role="button"\]:focus-visible/u);
 });
+
+test('saved merge rows survive cold derivation on the effective target without exposing Core snapshots', async () => {
+  const f = await buildEntityDossierFixture(), runtime = await loadModule('src/core/runtime.mjs');
+  const merged = runtime.reduceCoreState(f.state, { type: 'atlas.entity.merge', payload: { projectId: f.projectId,
+    sourceEntityId: 'entity-mira', targetEntityId: 'entity-anna', operationId: 'saved-merge', reason: 'Explicit correction' } });
+  assert.equal(merged.ok, true); const state = structuredClone(merged.state), before = JSON.stringify(state);
+  const result = f.derived.deriveAtlasEntityDossier({ coreState: state, params: { projectId: f.projectId, entityId: 'entity-anna', limit: 2 } });
+  assert.equal(result.ok, true); assert.equal(result.value.selectedEntityId, 'entity-anna');
+  const packet = result.value.savedMergeOperations; assert.ok(packet, 'cold dossier must expose persisted merge selection');
+  assert.equal(packet.totalCount, 1); assert.equal(packet.complete, true); assert.equal(packet.rows.length, 1);
+  const row = packet.rows[0], atlas = state.data.projects[f.projectId].atlas;
+  const { hashCanonicalValue: hash } = await loadModule('src/core/browser-safe-hash.mjs');
+  assert.equal(row.operationId, 'saved-merge'); assert.equal(row.projectId, f.projectId);
+  assert.equal(row.sourceEntityId, 'entity-mira'); assert.equal(row.targetEntityId, 'entity-anna');
+  assert.equal(row.sourceName, 'Mira'); assert.equal(row.targetName, 'Anna'); assert.equal(row.restoreState, 'RESTORABLE');
+  assert.equal(row.operationHash, hash(atlas.entityOperations['saved-merge']));
+  assert.equal(row.sourceEntityHash, hash(atlas.entities['entity-mira'])); assert.equal(row.targetEntityHash, hash(atlas.entities['entity-anna']));
+  for (const key of ['beforeSourceEntity', 'afterSourceEntity', 'beforeTargetEntity', 'afterTargetEntity']) assert.equal(Object.hasOwn(row, key), false);
+  assert.equal(JSON.stringify(state), before);
+  assert.deepEqual(f.derived.deriveAtlasEntityDossier({ coreState: structuredClone(state), params: { projectId: f.projectId, entityId: 'entity-anna', limit: 2 } }).value, result.value);
+  const edited = runtime.reduceCoreState(state, { type: 'atlas.alias.add', payload: { projectId: f.projectId,
+    entityId: 'entity-anna', aliasId: 'later', value: 'Later author correction' } }); assert.equal(edited.ok, true);
+  const stale = f.derived.deriveAtlasEntityDossier({ coreState: edited.state, params: { projectId: f.projectId, entityId: 'entity-anna' } }).value;
+  assert.equal(stale.savedMergeOperations.rows[0].restoreState, 'STALE'); assert.notEqual(stale.summary.dossierHash, result.value.summary.dossierHash);
+  const restored = runtime.reduceCoreState(state, { type: 'atlas.entity.splitRestore', payload: { projectId: f.projectId, operationId: 'saved-merge' } });
+  assert.equal(restored.ok, true);
+  const readback = f.derived.deriveAtlasEntityDossier({ coreState: restored.state, params: { projectId: f.projectId, entityId: 'entity-anna' } }).value;
+  assert.equal(readback.savedMergeOperations.rows[0].restoreState, 'RESTORED'); assert.ok(readback.savedMergeOperations.rows[0].restoredByCommandSeq > 0);
+  assert.notEqual(readback.summary.dossierHash, result.value.summary.dossierHash);
+});
+
+test('saved merge projection is bounded deterministic honest about partial history and foreign records [PURE_INPUT_BOUNDARY]', async () => {
+  const f = await buildEntityDossierFixture(), runtime = await loadModule('src/core/runtime.mjs');
+  const merged = runtime.reduceCoreState(f.state, { type: 'atlas.entity.merge', payload: { projectId: f.projectId,
+    sourceEntityId: 'entity-mira', targetEntityId: 'entity-anna', operationId: 'original' } }); assert.equal(merged.ok, true);
+  const state = structuredClone(merged.state), operations = state.data.projects[f.projectId].atlas.entityOperations;
+  for (let i = 1; i < 5; i++) operations['copy-' + i] = { ...structuredClone(operations.original), id: 'copy-' + i, createdByCommandSeq: 100 + i };
+  operations.foreign = { ...structuredClone(operations.original), id: 'foreign', projectId: 'other-project' };
+  operations.malformed = { id: 'malformed', projectId: f.projectId, operationKind: 'not-a-merge' };
+  const before = JSON.stringify(state), params = { projectId: f.projectId, entityId: 'entity-anna', limit: 2 };
+  const first = f.derived.deriveAtlasEntityDossier({ coreState: state, params }).value;
+  assert.ok(first.savedMergeOperations); assert.equal(first.savedMergeOperations.totalCount, 5);
+  assert.equal(first.savedMergeOperations.complete, false); assert.equal(first.savedMergeOperations.rows.length, 2);
+  assert.equal(first.savedMergeOperations.rows.every(row => row.projectId === f.projectId && !['foreign', 'malformed'].includes(row.operationId)), true);
+  assert.deepEqual(f.derived.deriveAtlasEntityDossier({ coreState: state, params }).value, first); assert.equal(JSON.stringify(state), before);
+  const empty = f.derived.deriveAtlasEntityDossier({ coreState: f.state, params }).value.savedMergeOperations;
+  assert.deepEqual(empty, { rows: [], totalCount: 0, complete: true });
+  const unavailable = f.derived.deriveAtlasEntityDossier({ coreState: state, params,
+    capabilitySnapshot: { capabilities: { atlasEvidenceReattachmentInbox: false } } }).value;
+  assert.equal(unavailable.state, 'unavailable'); assert.deepEqual(unavailable.savedMergeOperations, { rows: [], totalCount: 0, complete: false });
+});
