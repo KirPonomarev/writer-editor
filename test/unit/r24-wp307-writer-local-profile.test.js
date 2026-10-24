@@ -397,3 +397,54 @@ test('V6 identity markers on arrays cannot bypass strict rejection through inact
     productCommandRecord: { id: 'atlas.evidence.reattach', domain: 'atlas' } }).allowed, false));
   await t.test('query', () => assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.atlasEntityDossier' }).allowed, false));
 });
+
+test('V7 adds only explicit suppression to the exact V6 policy and preserves inactive and historical profiles', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs'), registry = require('../../src/shared/productCommandRegistry.cjs');
+  const options = { isPackaged: true, platform: 'darwin' }, old = m.createWriterAtlasEvidenceReattachmentProfileProjection(options);
+  assert.equal(typeof m.createWriterAtlasExplicitSuppressionProfileProjection, 'function', 'declared V7 policy must exist');
+  assert.equal(typeof m.isActiveWriterAtlasExplicitSuppressionProfile, 'function');
+  const active = m.createWriterAtlasExplicitSuppressionProfileProjection(options);
+  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7'); assert.equal(active.schemaVersion, 'writer-local-profile.v7');
+  assert.deepEqual(active.admittedCommandIds, [...old.admittedCommandIds, 'atlas.observation.suppress']); assert.equal(active.admittedCommandIds.length, 22);
+  assert.deepEqual(active.admittedQueryIds, ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier']);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation'])
+    assert.equal(active[key], false, key);
+  assert.equal(Object.isFrozen(active), true); assert.equal(m.isActiveWriterAtlasExplicitSuppressionProfile(active), true);
+  for (const record of registry.PRODUCT_COMMAND_RECORDS.filter(r => m.OPTIONAL_PRODUCT_DOMAINS.includes(r.domain)))
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: record.id, productCommandRecord: record }).allowed,
+      active.admittedCommandIds.includes(record.id), record.id);
+  for (const queryId of m.OPTIONAL_QUERY_IDS) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed,
+    active.admittedQueryIds.includes(queryId), queryId);
+  assert.equal(m.evaluateWriterLocalCommandAccess({ profile: old, commandId: 'atlas.observation.suppress',
+    productCommandRecord: registry.getProductCommandRecord('atlas.observation.suppress') }).allowed, false, 'historical V6 remains closed');
+  for (const options of [{ isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' }, { isPackaged: true, platform: 'win32' }])
+    assert.deepEqual(m.createWriterAtlasExplicitSuppressionProfileProjection(options), m.createWriterLocalProfileProjection(options));
+});
+
+test('V7 rejects malformed policy identity own-key holes reordered arrays and forged product records', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  assert.equal(typeof m.createWriterAtlasExplicitSuppressionProfileProjection, 'function');
+  const active = m.createWriterAtlasExplicitSuppressionProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const commandId = 'atlas.observation.suppress', record = { id: commandId, domain: 'atlas' };
+  const command = (profile, productCommandRecord = record, id = commandId) => m.evaluateWriterLocalCommandAccess({ profile, commandId: id, productCommandRecord }).allowed;
+  const variants = [{ ...active, extra: true }, { ...active, active: false }, { ...active, optionalSystemsEnabled: true }, { ...active, userDataMutation: true },
+    { ...active, profileId: active.profileId + '.forged' }, { ...active, schemaVersion: active.schemaVersion + '.extra' },
+    { ...active, admittedCommandIds: active.admittedCommandIds.slice(0, -1) }, { ...active, admittedCommandIds: [...active.admittedCommandIds, 'atlas.entity.merge'] },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds].reverse() }, { ...active, admittedQueryIds: [...active.admittedQueryIds].reverse() },
+    { ...active, admittedQueryIds: [...active.admittedQueryIds, 'query.atlasOverview'] }, Object.assign([], active)];
+  for (const key of Reflect.ownKeys(active)) { const v = Object.assign(Object.create({ [key]: active[key] }), active); delete v[key]; v.extra = true; variants.push(v); }
+  for (const key of ['admittedCommandIds', 'admittedQueryIds']) {
+    const values = [...active[key]], index = values.length - 1; delete values[index];
+    Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active[key][index] })); values.extra = true;
+    variants.push({ ...active, [key]: values });
+  }
+  for (const profile of variants) {
+    assert.equal(m.isActiveWriterAtlasExplicitSuppressionProfile(profile), false); assert.equal(command(profile), false);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId: 'query.atlasEntityDossier' }).allowed, false);
+  }
+  for (const forged of [null, { id: commandId }, { id: 'atlas.entity.merge', domain: 'atlas' }, { id: commandId, domain: 'manualMap' }])
+    assert.equal(command(active, forged), false);
+  for (const id of [commandId + ' ', ' ' + commandId, commandId + '.extra']) assert.equal(command(active, { id, domain: 'atlas' }, id), false);
+  for (const id of m.WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS) assert.equal(command(active, undefined, id), true);
+  assert.equal(command(active, undefined, 'cmd.project.save'), true);
+});

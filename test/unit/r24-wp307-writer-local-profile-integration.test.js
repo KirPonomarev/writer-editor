@@ -1329,3 +1329,177 @@ test('actual registered Main result and whole Atlas journey agree on persistence
   });
   assert.deepEqual(fs.readFileSync(x.f.scenePath), sceneBytes); assert.ok(refreshes.includes('scene'));
 });
+
+// Actual Main/Kernel/Core/Stage10 route; unpackaged is explicit and is never a packaged-policy bypass claim.
+async function explicitSuppressionMainFixture(t, { packaged = false, beforeProject } = {}) {
+  const x = await reattachmentMainFixture(t, packaged, beforeProject);
+  const payload = (projection = x.shifted, id = 'suppression-control', offset = 25) => {
+    const mention = projection.mentions.find(m => m.startOffset === offset); assert.ok(mention);
+    return { projectId: x.projectId, sceneId: x.sceneId, entityId: x.entityId, mentionId: mention.mentionId, suppressionId: id,
+      evidenceAnchor: { ...structuredClone(mention.evidenceAnchor), retainedSuppressionData: { unicode: 'é 🧭', values: [null, 3, { keep: true }] } }, reason: 'Explicit mistaken occurrence' };
+  };
+  const dispatch = p => x.ui('atlas.observation.suppress', p);
+  const dossier = async () => { const r = await x.h.query('query.atlasEntityDossier', { projectId: x.projectId, entityId: x.entityId }); assert.equal(r.ok, true); return r.atlasEntityDossier; };
+  const stored = id => JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.suppressions[id];
+  return { ...x, payload, dispatch, dossier, stored };
+}
+function assertActualSuppressionReceipt(result) {
+  assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.value.performed, true); assert.equal(result.value.commandAuthority, 'CommandKernel');
+  assert.equal(result.value.commandId, 'atlas.observation.suppress'); assert.equal(result.value.result.ok, true);
+  const receipt = result.value.result.receipt; assert.equal(receipt.schemaVersion, 'command-kernel.receipt.v1');
+  assert.equal(receipt.commandId, 'atlas.observation.suppress'); assert.equal(receipt.status, 'APPLIED');
+  assert.equal(receipt.capabilityRevalidated, true); assert.equal(receipt.storageWritten, true); return receipt;
+}
+
+test('actual unpackaged registered suppression reaches canonical Core and persists one exact occurrence with typed APPLIED and cold readback', async t => {
+  let reached = false, armed = false;
+  const x = await explicitSuppressionMainFixture(t, { beforeProject: h => h.main.__host.afterTruth(() => { if (armed) reached = true; }) });
+  const scene = fs.readFileSync(x.f.scenePath), p = x.payload(); armed = true;
+  const response = await x.dispatch(p); assert.equal(reached, true); const receipt = assertActualSuppressionReceipt(response.result);
+  assert.equal(response.mainResult.ok, true); const original = structuredClone(x.stored(p.suppressionId)); assert.ok(original);
+  assert.equal(original.mentionId, p.mentionId); assert.deepEqual(original.evidenceAnchor, p.evidenceAnchor); x.assertOriginal();
+  const dossier = await x.dossier(); assert.equal(dossier.summary.observationCount, 2); assert.equal(dossier.summary.activeObservationCount, 1);
+  assert.equal(dossier.summary.suppressedObservationCount, 1); assert.equal(dossier.evidenceLedger.rows.some(r => r.evidenceState === 'SUPPRESSED'), true);
+  const source = dossier.evidenceLedger.sourceRecords.find(r => r.sourceRecordKind === 'suppression' && r.sourceRecordId === p.suppressionId);
+  assert.ok(source); assert.equal(source.sourceRecordHash, x.hash(original)); assert.deepEqual(source.evidenceAnchor, original.evidenceAnchor);
+  const beforeRead = reattachmentWholeFixtureRoster(x.h); await x.query(); await x.dossier(); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), beforeRead);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  assert.deepEqual(x.stored(p.suppressionId), original); assert.equal(x.hash(x.stored(p.suppressionId)), x.hash(original));
+  assert.equal((await x.dossier()).summary.suppressedObservationCount, 1); assert.deepEqual(fs.readFileSync(x.f.scenePath), scene); x.assertOriginal();
+  t.diagnostic(JSON.stringify({ actualRegisteredProducer: true, canonicalReach: reached, receipt, persistedSuppression: original }));
+});
+
+test('packaged V6 suppression denial is configuration evidence and the declared successor must admit only that additional command', async t => {
+  const x = await explicitSuppressionMainFixture(t, { packaged: true }), before = reattachmentWholeFixtureRoster(x.h), profile = x.h.main.__profile();
+  const legacy = require('../../src/core/writer-local-profile-v1.cjs').createWriterAtlasEvidenceReattachmentProfileProjection({ isPackaged: true, platform: 'darwin' });
+  assert.equal(require('../../src/core/writer-local-profile-v1.cjs').evaluateWriterLocalCommandAccess({ profile: legacy, commandId: 'atlas.observation.suppress',
+    productCommandRecord: productRegistry.getProductCommandRecord('atlas.observation.suppress') }).allowed, false);
+  if (profile.profileId === 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6') {
+    const denied = await x.dispatch(x.payload()); assert.equal(denied.mainResult.ok, false);
+    assert.equal(denied.mainResult.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+    t.diagnostic('CONFIGURATION_ONLY: actual packaged V6 refuses suppression before Core; this is not semantic refusal evidence');
+  }
+  assert.equal(profile.profileId, 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7', 'declared packaged successor is not yet selected');
+  assert.equal(profile.admittedCommandIds.length, 22); assertActualSuppressionReceipt((await x.dispatch(x.payload())).result);
+});
+
+test('actual unpackaged suppression raw identity refusals reach Core after lawful positive and preserve complete Documents and userData rosters', async t => {
+  for (const key of ['projectId', 'sceneId', 'entityId']) for (const value of ['foreign', null, 42, { forged: true }, 'PADDED'])
+    await t.test(`${key}-${JSON.stringify(value)}`, async t => {
+      let armed = false, reached = false;
+      const x = await explicitSuppressionMainFixture(t, { beforeProject: h => h.main.__host.afterTruth(() => { if (armed) reached = true; }) });
+      assertActualSuppressionReceipt((await x.dispatch(x.payload())).result);
+      const first = structuredClone(x.stored('suppression-control')), physicalFirst = JSON.stringify(first), p = x.payload(x.shifted, 'must-not-write', 68);
+      p.evidenceAnchor[key] = value === 'PADDED' ? ' ' + p.evidenceAnchor[key] + ' ' : value;
+      const before = reattachmentWholeFixtureRoster(x.h); armed = true; const response = await x.dispatch(p), after = reattachmentWholeFixtureRoster(x.h);
+      t.diagnostic(JSON.stringify({ canonicalReach: reached, key, value: p.evidenceAnchor[key], mainResult: response.mainResult,
+        beforeRosterHash: x.hash(before), afterRosterHash: x.hash(after), unexpectedSuppression: x.stored('must-not-write') || null }));
+      assert.equal(reached, true, 'observer installed before actual lifecycle captured canonical prepare');
+      assert.equal(response.mainResult.ok, false, JSON.stringify(response.mainResult)); assert.notEqual(response.mainResult.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+      assert.equal(response.mainResult.value?.applyResult?.error?.op, 'atlas.observation.suppress', 'typed Core refusal, not absent route');
+      assert.deepEqual(after, before); assert.deepEqual(x.stored('suppression-control'), first);
+      assert.equal(JSON.stringify(x.stored('suppression-control')), physicalFirst); assert.equal(x.stored('must-not-write'), undefined); x.assertOriginal();
+    });
+});
+
+test('actual suppression stale capability owner foreign project and source CAS refusals preserve author data', async t => {
+  for (const fault of ['stale', 'capability', 'owner', 'foreign-project', 'revision']) await t.test(fault, async t => {
+    let armed = false, reached = false, expected, x;
+    x = await explicitSuppressionMainFixture(t, { beforeProject: h => h.main.__host.afterTruth(() => {
+      if (!armed || fault !== 'revision') return; reached = true;
+      const m = JSON.parse(fs.readFileSync(x.f.manifestPath)); m.concurrentSuppressionAuthor = 'preserved'; m.lastCommandId += 5;
+      fs.writeFileSync(x.f.manifestPath, JSON.stringify(m)); expected = reattachmentWholeFixtureRoster(h);
+    }) });
+    assertActualSuppressionReceipt((await x.dispatch(x.payload())).result); const p = x.payload(x.shifted, 'must-not-write', 68);
+    if (fault === 'stale') await x.save('Добавлено. ' + EXACT_ATLAS_TEXT + ' Позже.');
+    if (fault === 'capability') x.h.main.__host.denyCapability('cap.atlas.observation.suppress');
+    if (fault === 'owner') x.h.main.__host.revokeOwner(); if (fault === 'foreign-project') p.projectId = 'foreign';
+    const original = structuredClone(x.stored('suppression-control')), physical = JSON.stringify(original);
+    expected = reattachmentWholeFixtureRoster(x.h); armed = true; const r = await x.dispatch(p);
+    assert.equal(r.mainResult.ok, false, JSON.stringify(r.mainResult)); assert.notEqual(r.mainResult.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+    if (fault === 'revision') { assert.equal(reached, true); assert.equal(r.mainResult.reason, 'PRODUCT_COMMAND_REVISION_CONFLICT'); }
+    if (fault === 'stale') assert.equal(r.mainResult.value?.applyResult?.error?.code, 'E_ATLAS_EVIDENCE_STALE');
+    assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); assert.deepEqual(x.stored('suppression-control'), original);
+    assert.equal(JSON.stringify(x.stored('suppression-control')), physical); x.assertOriginal();
+  });
+});
+
+test('actual Main suppression re-edit reattachment repeated correction and cold readback agree with original raw source and history', async t => {
+  const x = await explicitSuppressionMainFixture(t), p = x.payload(); assertActualSuppressionReceipt((await x.dispatch(p)).result);
+  const original = structuredClone(x.stored(p.suppressionId)), originalHash = x.hash(original), originalCanonical = x.canonicalSerialize(original);
+  const assertSaved = () => { assert.deepEqual(x.stored(p.suppressionId), original); assert.equal(x.hash(x.stored(p.suppressionId)), originalHash);
+    assert.equal(x.canonicalSerialize(x.stored(p.suppressionId)), originalCanonical); x.assertOriginal(); };
+  const changed = await x.save('Добавлено. ' + EXACT_ATLAS_TEXT + ' Позже.'); assertSaved();
+  const review = await x.dossier(); assert.equal(review.summary.reviewRequiredEvidenceCount >= 1, true);
+  assert.equal(review.summary.suppressedObservationCount, 0, 'unchanged mention ID is not a current source witness');
+  const attach = async (projection, id, offset) => {
+    const target = projection.mentions.find(m => m.startOffset === offset); assert.ok(target);
+    const r = await x.command('atlas.evidence.reattach', { projectId: x.projectId, sourceRecordKind: 'suppression', sourceRecordId: original.id,
+      expectedSourceRecordHash: originalHash, staleEvidenceAnchor: original.evidenceAnchor, newEvidenceAnchor: target.evidenceAnchor, reattachmentId: id, reason: 'Explicit correction' });
+    assert.equal(r.ok, true, JSON.stringify(r)); assertSaved(); return structuredClone(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.evidenceReattachments[id]);
+  };
+  const first = await attach(changed, 'z-first-suppression-correction', 68); assert.equal((await x.dossier()).summary.suppressedObservationCount, 1);
+  const later = await x.save('Добавлено. ' + EXACT_ATLAS_TEXT + ' Снова.'); assert.equal((await x.dossier()).summary.suppressedObservationCount, 0);
+  const second = await attach(later, 'a-later-suppression-correction', 25);
+  assert.equal((await x.dossier()).summary.suppressedObservationCount, 1); assert.notEqual(first.id, second.id);
+  const manifest = JSON.parse(fs.readFileSync(x.f.manifestPath)); assert.deepEqual(manifest.atlas.evidenceReattachments[first.id], first);
+  const beforeCold = reattachmentWholeFixtureRoster(x.h); assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), beforeCold); assertSaved();
+  assert.equal((await x.dossier()).summary.suppressedObservationCount, 1); assert.deepEqual(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.evidenceReattachments[second.id], second);
+});
+
+// Execute existing runProductJourneyCommand and actual select listener, with only presentation/transport ports finite.
+async function actualSuppressionJourneyContext(x) {
+  const vm = require('node:vm'), envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const current = await x.query(), target = current.mentions.find(m => m.startOffset === 68), bytes = fs.readFileSync(x.f.scenePath), issued = [];
+  let actualResult, sent, backendCalls = 0;
+  const c = { currentProjectId: x.projectId, currentDocumentId: x.sceneId, atlasSelectedEntityId: x.entityId, currentRightTab: 'atlas', currentAtlasSurface: 'journey',
+    currentTreeContentPublicationId: 'real-suppression-publication', localDirty: false, localEditGeneration: x.h.editor.generation, lastAckedGeneration: x.h.editor.generation,
+    atlasPublicationEpoch: 0, atlasJourneyDraftRevision: 0, manualMapDraftOwnership: 0, manualMapDraftRevision: 0, atlasCommandPublicationSequence: 0,
+    atlasStableUiIdSeq: 0, atlasJourneyState: { status: 'idle', commandSeq: 0 }, atlasJourneyDraft: { sourceEntityId: x.entityId, mentionId: '', suppressionId: '' },
+    atlasCurrentSceneState: current, hashCanonicalValue: x.hash, parseDocumentContent: envelope.parseObservablePayload,
+    getPlainText: () => envelope.parseObservablePayload(bytes.toString('utf8')).text, composeDocumentContent: () => bytes.toString('utf8'),
+    crypto: { randomUUID: () => { const id = crypto.randomUUID(); issued.push(id); return id; } }, console, updateStatusText() {}, renderAtlasJourneyState() {},
+    refreshAtlasCurrentScene: async () => { c.atlasCurrentSceneState = await x.query(); }, refreshAtlasProductSurfaces: async () => {},
+    dispatchUiCommand: async (id, payload) => { sent = structuredClone(payload); backendCalls++; actualResult = (await x.ui(id, payload)).result; return actualResult; },
+    document: { createElement: tag => ({ tagName: tag.toUpperCase(), children: [], parentElement: null, dataset: {}, listeners: {}, value: '',
+      get isConnected() { return this === c.document.body || !!this.parentElement?.isConnected; },
+      appendChild(n) { n.parentElement = this; this.children.push(n); }, append(...nodes) { nodes.forEach(n => this.appendChild(n)); },
+      addEventListener(name, fn) { this.listeners[name] = fn; } }) } };
+  const source = read('src/renderer/editor.js'), names = ['getAtlasJourneyMentions', 'findAtlasJourneyMention', 'getAtlasJourneyEntities', 'findAtlasJourneyEntity',
+    'captureAtlasPublication', 'runProductJourneyCommand', 'appendAtlasJourneySelect', 'makeStableUiId', 'ensureAtlasJourneyDraftId'];
+  for (const match of source.matchAll(/^(?:async )?function (\w*AtlasSuppression\w*)\(/gm)) names.push(match[1]);
+  const actual = name => { const m = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(m, 'existing actual handler: ' + name);
+    const end = source.indexOf('\n}\n', m.index); assert.ok(end > m.index); return source.slice(m.index, end + 2); };
+  vm.createContext(c); vm.runInContext([...new Set(names)].map(actual).join('\n'), c);
+  c.document.body = c.document.createElement('body'); const host = c.document.createElement('section'); c.document.body.append(host);
+  const select = c.appendAtlasJourneySelect(host, { fieldName: 'mentionId', value: '', options: current.mentions.map(m => ({ value: m.mentionId, label: m.matchedText })) });
+  const choose = async () => { select.value = target.mentionId; await select.listeners.change(); };
+  const apply = async () => c.runProductJourneyCommand('atlas.observation.suppress', { ...x.payload(current, c.ensureAtlasJourneyDraftId('suppressionId', 'atlas-suppression'), 68) });
+  return { c, issued, choose, apply, target, actualResult: () => actualResult, sent: () => sent, backendCalls: () => backendCalls };
+}
+
+test('real registered suppression producer agrees with whole journey result and finite corrupt ports never invent acceptance', async t => {
+  const x = await explicitSuppressionMainFixture(t), h = await actualSuppressionJourneyContext(x); await h.choose(); await h.apply();
+  const actual = h.actualResult(); assertActualSuppressionReceipt(actual); assert.ok(x.stored(h.sent().suppressionId)); x.assertOriginal();
+  t.diagnostic(JSON.stringify({ actualRegisteredSuppressionResponse: actual, persistedId: h.sent().suppressionId, issued: h.issued }));
+  await t.test('actual persisted result retires only this suppression intent UUID', () => {
+    assert.equal(h.c.atlasJourneyState.status, 'applied'); assert.equal(h.c.atlasJourneyState.lastResult, 'persisted');
+    assert.equal(h.c.atlasJourneyDraft.suppressionId, ''); assert.equal(h.issued.length, 1);
+    assert.match(h.sent().suppressionId, /^atlas-suppression-[a-f0-9-]{36}$/u);
+  });
+  const roster = reattachmentWholeFixtureRoster(x.h);
+  const corruptions = [['bare-ok', () => ({ ok: true })], ['unknown', () => ({ ok: true, value: { notice: 'unknown' } })],
+    ['shallow', () => ({ ok: true, value: { status: 'APPLIED' } })], ['performed', r => { delete r.value.performed; return r; }],
+    ['authority', r => { r.value.commandAuthority = 'renderer'; return r; }], ['command', r => { r.value.commandId = 'atlas.mention.confirm'; return r; }],
+    ['inner', r => { r.value.result.ok = false; return r; }], ['receipt', r => { delete r.value.result.receipt; return r; }],
+    ['schema', r => { r.value.result.receipt.schemaVersion = 'unknown'; return r; }], ['receipt-command', r => { r.value.result.receipt.commandId = 'atlas.evidence.reattach'; return r; }],
+    ['status', r => { r.value.result.receipt.status = 'UNKNOWN'; return r; }], ['capability', r => { r.value.result.receipt.capabilityRevalidated = false; return r; }],
+    ['storage', r => { r.value.result.receipt.storageWritten = false; return r; }]];
+  for (const [name, corrupt] of corruptions) await t.test('finite UI-only producer corruption: ' + name, async () => {
+    await h.choose(); let retryId; h.c.dispatchUiCommand = async (_id, payload) => { retryId = payload.suppressionId; return corrupt(structuredClone(actual)); };
+    await h.apply(); assert.equal(h.c.atlasJourneyState.status, 'failed'); assert.notEqual(h.c.atlasJourneyState.lastResult, 'persisted');
+    assert.ok(retryId); assert.equal(h.c.atlasJourneyDraft.suppressionId, retryId); assert.equal(h.backendCalls(), 1);
+    assert.deepEqual(reattachmentWholeFixtureRoster(x.h), roster); x.assertOriginal();
+  });
+});

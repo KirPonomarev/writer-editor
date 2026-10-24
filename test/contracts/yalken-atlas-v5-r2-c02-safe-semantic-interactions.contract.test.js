@@ -1455,7 +1455,7 @@ function savedReattachmentRendererHarness({ composition = false } = {}) {
     'findAtlasJourneyMention', 'makeStableUiId', 'ensureAtlasJourneyDraftId', 'getAtlasJourneyEntityName', 'getAtlasJourneyAliasValue',
     'reconcileAtlasJourneyDraft', 'formatAtlasJourneyEntityOption', 'formatAtlasJourneyMentionOption', 'renderAtlasJourneyState',
     'renderAtlasEntityDossierState', 'appendAtlasOverviewRow', 'appendAtlasOverviewSection', 'makeManualMapAuthorId'];
-  for (const match of editor.matchAll(/^(?:async )?function (\w*AtlasReattachment\w*)\(/gm)) if (!names.includes(match[1])) names.push(match[1]);
+  for (const match of editor.matchAll(/^(?:async )?function (\w*Atlas(?:Reattachment|Suppression)\w*)\(/gm)) if (!names.includes(match[1])) names.push(match[1]);
   h.loadActual(...names);
   // Finite registered response shape; the real Main oracle is the integration test.
   const appliedResponse = () => ({ ok: true, value: { performed: true, commandAuthority: 'CommandKernel', commandId: 'atlas.evidence.reattach',
@@ -1613,8 +1613,8 @@ test('actual reattachment UUID absence refuses dispatch without falling back to 
   assert.notEqual(h.c.atlasJourneyState.status, 'applied');
 });
 
-test('actual saved confirmation picker keeps suppression and reassignment sources closed', async t => {
-  for (const sourceRecordKind of ['suppression', 'reassignment']) await t.test(sourceRecordKind, async () => {
+test('actual saved confirmation picker keeps reassignment sources closed', async t => {
+  for (const sourceRecordKind of ['reassignment']) await t.test(sourceRecordKind, async () => {
     const h = savedReattachmentRendererHarness(), dossier = h.dossier();
     dossier.evidenceLedger.sourceRecords[0].sourceRecordKind = sourceRecordKind; h.setDossier(dossier);
     const picker = h.pickButton(); if (picker) await picker.emit('click');
@@ -1816,4 +1816,147 @@ test('AF1 actual focus refuses a forged source witness extending into discarded 
   assert.equal(c.atlasCurrentSceneState.summary.sceneTextHash, h.digest(SOURCE_CONTINUITY_TEXT));
   c.focusAtlasMention('selected-mira'); assert.deepEqual(h.selected, []); assert.deepEqual(h.focused, []);
   assert.equal(h.statuses.some(s => s.value === 'Atlas evidence открыт в тексте'), false); assert.equal(c.getPlainText(), text);
+});
+
+function explicitSuppressionRendererHarness() {
+  const h = savedReattachmentRendererHarness({ composition: true }), c = h.c;
+  // New local helpers, when present, are actual production functions. On T the existing generic route remains executable.
+  const names = [...editor.matchAll(/^(?:async )?function (\w*AtlasSuppression\w*)\(/gm)].map(m => m[1]); if (names.length) h.loadActual(...names);
+  c.atlasJourneyDraft = { ...c.atlasJourneyDraft, suppressionId: '', suppressionTarget: '', suppressionIntentKey: '', suppressionPending: false };
+  // Finite registered protocol fixture based on the existing actual command producer; integration separately obtains the real suppression packet.
+  const response = id => { const r = h.appliedResponse(); r.value.commandId = id; r.value.result.receipt.commandId = id; return r; };
+  c.commandPort = id => response(id);
+  const button = () => h.walk(c.atlasJourneyHost).find(n => n.dataset.atlasJourneyAction === 'suppress-observation');
+  const suppress = async () => { const b = button(); assert.ok(b, 'existing visible Suppress action'); await b.emit('click'); await h.settle(); };
+  const enter = async () => { c.setCurrentAtlasSurface('journey'); await h.settle(); };
+  const choose = async id => { await enter(); await h.target(id || 'mira-68'); };
+  return { ...h, c, response, suppressionButton: button, suppress, choose, enter };
+}
+
+test('actual Suppress needs deliberate occurrence choice rather than the reconciled first mention', async () => {
+  const h = explicitSuppressionRendererHarness(); await h.enter();
+  assert.equal(h.c.atlasJourneyDraft.mentionId, 'mira-25', 'existing presentation may reconcile a first row');
+  await h.suppress(); assert.equal(h.commands.length, 0, 'first-row presentation is not author suppression authority'); assert.equal(h.issued.length, 0);
+  assert.notEqual(h.c.atlasJourneyState.status, 'applied');
+  await h.choose('mira-68'); const b = h.suppressionButton(); assert.equal(b.tagName, 'BUTTON'); assert.equal(b.type, 'button');
+  assert.equal(b.disabled, false); assert.match(b.textContent, /Suppress/u); await h.suppress();
+  assert.equal(h.commands.length, 1); const sent = h.commands[0]; assert.equal(sent.id, 'atlas.observation.suppress');
+  assert.equal(sent.payload.mentionId, 'mira-68'); assert.equal(sent.payload.evidenceAnchor.startOffset, 68); assert.equal(sent.payload.evidenceAnchor.endOffset, 72);
+  assert.equal(sent.payload.evidenceAnchor.sceneTextHash, h.c.hashCanonicalValue(h.c.getPlainText()));
+  assert.equal(sent.payload.evidenceAnchor.quote, 'Мира'); assert.equal(sent.payload.entityId, 'mira');
+  assert.match(sent.payload.suppressionId, /^atlas-suppression-[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
+  assert.equal(h.issued.length, 1); assert.equal(h.c.atlasJourneyState.status, 'applied'); assert.equal(h.c.atlasJourneyState.lastResult, 'persisted');
+  assert.equal(h.c.atlasJourneyDraft.suppressionId, '', 'confirmed effect retires only its intent identity');
+});
+
+test('actual suppression two distinct warm intents and fresh cold intent never reuse a persisted session-counter ID', async () => {
+  const h = explicitSuppressionRendererHarness(); await h.choose('mira-68'); await h.suppress(); await h.choose('mira-25'); await h.suppress();
+  assert.equal(h.commands.length, 2); const ids = h.commands.map(r => r.payload.suppressionId); assert.notEqual(ids[0], ids[1]);
+  assert.deepEqual(h.commands.map(r => r.payload.evidenceAnchor.startOffset), [68, 25]); assert.equal(h.issued.length, 2);
+  const cold = explicitSuppressionRendererHarness(); await cold.choose('mira-68'); await cold.suppress();
+  assert.equal(cold.commands.length, 1); assert.equal(ids.includes(cold.commands[0].payload.suppressionId), false); assert.equal(cold.issued.length, 1);
+});
+
+test('actual suppression unconfirmed exact retry retains UUID while a changed explicit target creates another intent', async () => {
+  const h = explicitSuppressionRendererHarness(); await h.choose('mira-68'); h.c.commandPort = () => ({ ok: false, reason: 'CAPABILITY_DISABLED_FOR_COMMAND' });
+  await h.suppress(); await h.suppress(); assert.equal(h.commands.length, 2);
+  const first = h.commands[0].payload.suppressionId; assert.ok(first); assert.equal(h.commands[1].payload.suppressionId, first); assert.equal(h.issued.length, 1);
+  assert.equal(h.c.atlasJourneyDraft.suppressionId, first); assert.notEqual(h.c.atlasJourneyState.status, 'applied');
+  await h.choose('mira-25'); await h.suppress(); assert.equal(h.commands.length, 3); assert.notEqual(h.commands[2].payload.suppressionId, first);
+  assert.equal(h.issued.length, 2); assert.equal(h.commands[2].payload.evidenceAnchor.startOffset, 25);
+});
+
+test('actual suppression refuses missing crypto without a counter fallback', async () => {
+  const h = explicitSuppressionRendererHarness(); await h.choose(); h.c.crypto = {}; await h.suppress();
+  assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0); assert.notEqual(h.c.atlasJourneyState.status, 'applied');
+});
+
+test('actual suppression current selection guards dirty ACK live full source identity range and projection state before dispatch', async t => {
+  for (const fault of ['dirty', 'unacked', 'project', 'document', 'entity', 'source', 'projection', 'range', 'anchor-owner', 'lifecycle']) await t.test(fault, async () => {
+    const h = explicitSuppressionRendererHarness(); await h.choose(); const c = h.c;
+    if (fault === 'dirty') c.localDirty = true; if (fault === 'unacked') c.lastAckedGeneration = 0;
+    if (fault === 'project') c.currentProjectId = 'foreign'; if (fault === 'document') c.currentDocumentId = 'foreign';
+    if (fault === 'entity') c.atlasSelectedEntityId = 'foreign';
+    if (fault === 'source') c.setPlainText(c.getPlainText() + ' append');
+    if (fault === 'projection') c.atlasCurrentSceneState.state = 'unavailable';
+    if (fault === 'range') c.atlasCurrentSceneState.mentions.find(m => m.mentionId === 'mira-68').evidenceAnchor.endOffset = 73;
+    if (fault === 'anchor-owner') c.atlasCurrentSceneState.mentions.find(m => m.mentionId === 'mira-68').evidenceAnchor.projectId = 'foreign';
+    if (fault === 'lifecycle') c.invalidateAtlasPublications();
+    await h.suppress(); assert.equal(h.commands.length, 0, fault); assert.equal(h.issued.length, 0); assert.notEqual(c.atlasJourneyState.status, 'applied');
+  });
+});
+
+test('actual suppression source change and restoration cannot revive an earlier explicit selection', async () => {
+  const h = explicitSuppressionRendererHarness(); await h.choose(); const text = h.c.getPlainText();
+  h.publish(text + ' Позже.', 2); h.publish(text, 3); await h.suppress(); assert.equal(h.commands.length, 0);
+  await h.choose('mira-25'); await h.suppress(); assert.equal(h.commands.length, 1); assert.equal(h.commands[0].payload.evidenceAnchor.startOffset, 25);
+});
+
+test('actual suppression rejects detached stale target callbacks and detached action callbacks without acquiring a fresh intent', async () => {
+  const h = explicitSuppressionRendererHarness(); await h.choose();
+  const oldSelect = h.walk(h.c.atlasJourneyHost).find(n => n.dataset.atlasJourneyField === 'mentionId'), oldButton = h.suppressionButton();
+  h.publish(h.c.getPlainText() + ' Позже.', 2); await h.enter(); const before = JSON.stringify(h.c.atlasJourneyDraft);
+  oldSelect.value = 'mira-25'; await oldSelect.emit('change'); await oldButton.emit('click'); await h.settle();
+  assert.equal(h.commands.length, 0); assert.equal(JSON.stringify(h.c.atlasJourneyDraft), before);
+  await h.suppress(); assert.equal(h.commands.length, 0, 'stale callback cannot manufacture current explicit choice');
+});
+
+test('actual pending suppression deduplicates both current and previously captured action callbacks', async () => {
+  const h = explicitSuppressionRendererHarness(), gate = h.deferred(); await h.choose(); const old = h.suppressionButton();
+  h.c.commandPort = () => gate.promise; await old.emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+  assert.equal(h.suppressionButton().disabled, true); await old.emit('click'); await h.suppress(); assert.equal(h.commands.length, 1);
+  const id = h.commands[0].payload.suppressionId; gate.resolve(h.response('atlas.observation.suppress')); await h.settle();
+  assert.equal(h.c.atlasJourneyState.status, 'applied'); assert.equal(h.c.atlasJourneyDraft.suppressionId, ''); assert.ok(id); assert.equal(h.issued.length, 1);
+});
+
+test('actual pending suppression never publishes or refreshes after source lifecycle selection or shell presentation changes', async t => {
+  for (const fault of ['project', 'document', 'entity', 'generation', 'dirty-only', 'publication', 'lifecycle', 'target', 'surface', 'tab']) await t.test(fault, async () => {
+    const h = explicitSuppressionRendererHarness(), gate = h.deferred(); await h.choose(); h.c.commandPort = () => gate.promise;
+    await h.suppress(); assert.equal(h.commands.length, 1); const c = h.c;
+    if (fault === 'project') c.currentProjectId = 'foreign'; if (fault === 'document') c.currentDocumentId = 'foreign';
+    if (fault === 'entity') c.atlasSelectedEntityId = 'foreign'; if (fault === 'generation') c.localEditGeneration++;
+    if (fault === 'dirty-only') c.localDirty = true; if (fault === 'publication') c.currentTreeContentPublicationId = 'new';
+    if (fault === 'lifecycle') c.invalidateAtlasPublications(); if (fault === 'target') await h.target('mira-25');
+    if (fault === 'surface') c.setCurrentAtlasSurface('entity'); if (fault === 'tab') c.currentRightTab = 'comments';
+    await h.settle(); const before = JSON.stringify(c.atlasJourneyDraft), queries = h.queries.length;
+    gate.resolve(h.response('atlas.observation.suppress')); await h.settle();
+    assert.notEqual(c.atlasJourneyState.status, 'applied', fault); assert.equal(JSON.stringify(c.atlasJourneyDraft), before); assert.equal(h.queries.length, queries);
+  });
+});
+
+test('finite suppression UI result ports refuse bare shallow unknown or unconfirmed receipts and preserve retry identity', async t => {
+  for (const [name, corrupt] of [
+    ['bare', () => ({ ok: true })], ['unknown', () => ({ ok: true, value: { message: 'UNKNOWN' } })], ['shallow', () => ({ ok: true, value: { status: 'APPLIED' } })],
+    ['performed', r => { r.value.performed = false; return r; }], ['authority', r => { r.value.commandAuthority = 'renderer'; return r; }],
+    ['command', r => { r.value.commandId = 'atlas.mention.confirm'; return r; }], ['inner', r => { r.value.result.ok = false; return r; }],
+    ['schema', r => { r.value.result.receipt.schemaVersion = 'unknown'; return r; }], ['receipt-command', r => { r.value.result.receipt.commandId = 'atlas.evidence.reattach'; return r; }],
+    ['status', r => { r.value.result.receipt.status = 'UNKNOWN'; return r; }], ['capability', r => { r.value.result.receipt.capabilityRevalidated = false; return r; }],
+    ['storage', r => { r.value.result.receipt.storageWritten = false; return r; }],
+  ]) await t.test(name, async () => {
+    const h = explicitSuppressionRendererHarness(); await h.choose(); h.c.commandPort = () => corrupt(h.response('atlas.observation.suppress'));
+    await h.suppress(); assert.equal(h.commands.length, 1); assert.equal(h.c.atlasJourneyState.status, 'failed'); assert.notEqual(h.c.atlasJourneyState.lastResult, 'persisted');
+    assert.equal(h.c.atlasJourneyDraft.suppressionId, h.commands[0].payload.suppressionId); assert.equal(h.issued.length, 1);
+  });
+});
+
+test('existing cold source picker admits a full saved suppression through dossier-to-Flow and explicit current target only', async () => {
+  const h = explicitSuppressionRendererHarness(), dossier = h.dossier(); dossier.evidenceLedger.sourceRecords[0].sourceRecordKind = 'suppression';
+  dossier.evidenceLedger.sourceRecordsComplete = false; dossier.evidenceLedger.sourceRecordCount = 3; h.setDossier(dossier);
+  assert.match(h.c.atlasEntityDossierHost.textContent, /1\s*(?:из|of|\/)\s*3/iu); await h.pick(); assert.equal(h.commands.length, 0);
+  h.c.setCurrentAtlasSurface('journey'); await h.settle(); await h.target('mira-68'); assert.equal(h.button().disabled, false); await h.apply();
+  assert.equal(h.commands.length, 1); const sent = h.commands[0]; assert.equal(sent.id, 'atlas.evidence.reattach'); assert.equal(sent.payload.sourceRecordKind, 'suppression');
+  assert.equal(sent.payload.sourceRecordId, h.source.sourceRecordId); assert.equal(sent.payload.expectedSourceRecordHash, h.source.sourceRecordHash);
+  assert.deepEqual(sent.payload.staleEvidenceAnchor, h.original); assert.equal(sent.payload.newEvidenceAnchor.startOffset, 68);
+  assert.equal(sent.payload.newEvidenceAnchor.endOffset, 72); assert.equal(h.commands.some(r => r.id === 'atlas.observation.suppress'), false);
+});
+
+test('saved suppression picker remains closed for unavailable incomplete or malformed source packets', async t => {
+  for (const fault of ['unavailable', 'missing-count', 'missing-completeness', 'missing-hash', 'foreign', 'truncated-anchor']) await t.test(fault, async () => {
+    const h = explicitSuppressionRendererHarness(), dossier = h.dossier(), source = dossier.evidenceLedger.sourceRecords[0]; source.sourceRecordKind = 'suppression';
+    if (fault === 'unavailable') dossier.state = 'unavailable'; if (fault === 'missing-count') delete dossier.evidenceLedger.sourceRecordCount;
+    if (fault === 'missing-completeness') delete dossier.evidenceLedger.sourceRecordsComplete; if (fault === 'missing-hash') source.sourceRecordHash = '';
+    if (fault === 'foreign') source.projectId = 'foreign'; if (fault === 'truncated-anchor') delete source.evidenceAnchor.quoteHash;
+    h.setDossier(dossier); const pick = h.pickButton(); if (pick) await pick.emit('click'); await h.choose(); await h.apply();
+    assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0); assert.equal(h.button().disabled, true);
+  });
 });

@@ -5083,3 +5083,11 @@ Fresh clean23path bootstrap/preflight0 on task-only checkpoint precedes the same
 Current release runtime object and only3V2source pins follow actual source; other63bindings and all17qualification UNKNOWN stay exact. Mechanical companions derive772DATA/632source/296certificate with1603unchanged inventory membership/classes/lanes/skips, preserving every prior295carrier and corruption predicate. Native temporary profile disappeared at restart; its preserved306member archive was fully read and304non-owner members restored byte-exact at the original absolute temporary path with NEW actual physical owner identity. Original fixture creation source remains6efd19d6, archived native source92068bb7; neither is relabelled as current execution. All34old project files have an independently read baseline. No app launched or current native acceptance yet.
 
 Early exact rebuilt app smoke follows applicable source gates and clean commit; full baseline/officialRTK/CI/normal merge/exact merged package/native closure remain mandatory. Old native field Undo, Open Project menu, Cancel affordance, long-dialog/exFAT, moderate Electron and59named baseline skips remain explicit OPEN records. All15cells/4projections/12stages and full Atlas/maps/WSE/Pulse/environment epochs remain required before first Mac release; Black Box later. No signing/notary/public distribution or release permit claim. Owner checkout and unrelated data remain untouched.
+
+
+## 2026-10-24 — Explicit Atlas suppression admitted, tests only
+
+- PR2154 exact merged18a0d5cc delivery closed independently, actual mainCI20of20 and full local/package/native proof retained; full product remains open.
+- Fresh clean27path declaration/preflight0 and E0 precede test-only suppression slice;9975outside tracked sources protected, no dependency installation.
+- Actual unchangedT native one deliberate Suppress attempt refused without any immediate profile byte change; all103Documents/five reattachments/nine-event chain survive normal Quit0 and complete670member archive readback. No Core-refusal or feature acceptance from configuration denial.
+- Separate code agent prepares five maintained causal files; runtime remains held until whole RED/root review. All17full-Mac rows UNKNOWN; full audit2high9moderate11 open.
