@@ -2134,3 +2134,116 @@ for (const [commandId, surface, queryId] of [['atlas.calendar.define', 'temporal
     assert.equal(h.delivered.at(-1), receipt); assert.equal(h.working(), 'manuscript é 🧭');
   });
 }
+
+
+// Current V9 author identity: actual controls/listeners with finite response ports, not Core/native proof.
+const AUTHOR_IDENTITY_V9 = 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9';
+function authorIdentityDom(profileId) {
+  const h = savedReattachmentRendererHarness(), c = h.c;
+  if (profileId === undefined) delete c.window.__PRODUCT_PROFILE; else c.window.__PRODUCT_PROFILE = profileId;
+  const draft = () => JSON.parse(JSON.stringify(c.atlasJourneyDraft));
+  const button = action => h.walk(c.atlasJourneyHost).find(node => node.dataset.atlasJourneyAction === action);
+  const field = async (name, value) => {
+    const node = h.walk(c.atlasJourneyHost).find(row => row.dataset.atlasJourneyField === name); assert.ok(node, name);
+    node.value = value; await node.emit(node.tagName === 'SELECT' ? 'change' : 'input');
+  };
+  c.commandPort = id => {
+    const value = h.appliedResponse(); value.value.commandId = id; value.value.result.receipt.commandId = id; return value;
+  };
+  const click = async action => { const n = h.commands.length; await button(action).emit('click'); await h.settle(); return h.commands[n]; };
+  return { ...h, draft, button, field, click };
+}
+
+test('V9 actual cold entity and alias producers use restart-safe opaque identity while drafts remain editable', async t => {
+  const ids = [], attempts = [];
+  for (let cold = 0; cold < 2; cold++) {
+    const h = authorIdentityDom(AUTHOR_IDENTITY_V9);
+    await h.field('entityName', 'Лира é 🧭 ' + cold); const entity = await h.click('create-entity');
+    await h.field('aliasValue', 'Новый псевдоним ' + cold); const alias = await h.click('add-alias');
+    attempts.push({ h, entity, alias, cold });
+  }
+  t.diagnostic(JSON.stringify(attempts.map(({ entity, alias, cold }) => ({ cold, entity, alias }))));
+  for (const { h, entity, alias, cold } of attempts) {
+    assert.equal(entity.id, 'atlas.entity.create'); assert.equal(alias.id, 'atlas.alias.add');
+    assert.equal(entity.payload.name, 'Лира é 🧭 ' + cold); assert.equal(alias.payload.value, 'Новый псевдоним ' + cold);
+    for (const [id, prefix] of [[entity.payload.entityId, 'atlas-entity-'], [alias.payload.aliasId, 'atlas-alias-']]) {
+      assert.equal(id.startsWith(prefix), true); assert.match(id.slice(prefix.length), /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
+      assert.equal(ids.includes(id), false); ids.push(id);
+    }
+    assert.equal(h.draft().entityName, entity.payload.name); assert.equal(h.draft().aliasValue, alias.payload.value);
+  }
+});
+
+test('V9 actual distinct warm confirmation producers preserve the separately selected saved source', async t => {
+  const h = authorIdentityDom(AUTHOR_IDENTITY_V9); await h.pick();
+  const selected = h.draft(), expected = { decisionId: selected.decisionId, decisionEvidenceAnchor: selected.decisionEvidenceAnchor,
+    reattachmentSource: selected.reattachmentSource, reattachmentContext: selected.reattachmentContext };
+  const attempts = [];
+  for (const occurrence of ['mira-25', 'mira-68']) {
+    await h.target(occurrence); const sent = await h.click('confirm-mention'); attempts.push({ sent, occurrence, draft: h.draft() });
+  }
+  const cold = authorIdentityDom(AUTHOR_IDENTITY_V9); await cold.target('mira-68');
+  const coldSent = await cold.click('confirm-mention');
+  await t.test('warm and cold producers delegate exact confirmation identity to Core', () => {
+    for (const { sent, occurrence } of attempts) {
+      assert.equal(sent.id, 'atlas.mention.confirm'); assert.equal(sent.payload.mentionId, occurrence);
+      assert.equal(Object.hasOwn(sent.payload, 'decisionId'), false, 'Core chooses current confirmation identity');
+    }
+    assert.equal(Object.hasOwn(coldSent.payload, 'decisionId'), false);
+  });
+  await t.test('all separately selected saved-source fields remain coherent after each completion', () => {
+    for (const { draft: current } of attempts) for (const [key, value] of Object.entries(expected)) assert.deepEqual(current[key], value, key);
+    assert.equal(cold.draft().decisionId, ''); assert.equal(cold.draft().decisionEvidenceAnchor, null);
+  });
+});
+
+test('V9 actual entropy refusal is visible without dispatch fallback or draft loss', async t => {
+  for (const action of ['create-entity', 'add-alias']) for (const fault of ['missing', 'throws']) await t.test(action + '-' + fault, async () => {
+    const h = authorIdentityDom(AUTHOR_IDENTITY_V9); await h.field('entityName', 'Keep é 🧭'); await h.field('aliasValue', 'Keep alias');
+    h.c.crypto = fault === 'missing' ? undefined : { randomUUID() { throw new Error('entropy offline'); } };
+    const before = h.draft(), state = JSON.stringify(h.c.atlasJourneyState), queries = h.queries.length;
+    await assert.doesNotReject(() => h.click(action));
+    assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0); assert.equal(h.c.atlasStableUiIdSeq, 0);
+    assert.deepEqual(h.draft(), before); assert.equal(JSON.stringify(h.c.atlasJourneyState), state); assert.equal(h.queries.length, queries);
+    assert.equal(h.statuses.some(row => row.value === 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE'), true);
+    h.c.crypto = { randomUUID: () => require('node:crypto').randomUUID() };
+    const retry = await h.click(action); assert.ok(retry); assert.equal(h.commands.length, 1);
+    assert.deepEqual(h.draft(), before, 'lawful retry keeps the author fields');
+  });
+});
+
+test('legacy near absent and windowless identity helpers retain exact counters and sticky decisions', async () => {
+  for (const id of [undefined, '', 'WRITER_LOCAL_V1', 'WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3',
+    'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5', 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6',
+    'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7', 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8',
+    AUTHOR_IDENTITY_V9 + '.extra', ' ' + AUTHOR_IDENTITY_V9, AUTHOR_IDENTITY_V9 + ' ']) {
+    const h = authorIdentityDom(id);
+    assert.equal(h.c.makeStableUiId('atlas-entity'), 'atlas-entity-00001'); assert.equal(h.c.makeStableUiId('atlas-alias'), 'atlas-alias-00002');
+    assert.equal(h.c.ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'), 'atlas-decision-00003');
+    assert.equal(h.c.ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'), 'atlas-decision-00003'); assert.equal(h.issued.length, 0);
+  }
+  const absent = authorIdentityDom(); delete absent.c.window;
+  assert.equal(absent.c.makeStableUiId('atlas-entity'), 'atlas-entity-00001');
+  const current = authorIdentityDom(AUTHOR_IDENTITY_V9);
+  for (const [i, prefix] of ['atlas-temporal-anchor', 'atlas-continuity-fact', 'atlas-merge', 'atlas-split-restore', 'atlas-reassign', 'other'].entries())
+    assert.equal(current.c.makeStableUiId(prefix), prefix + '-' + (i + 1).toString(36).padStart(5, '0'));
+  assert.equal(current.issued.length, 0);
+});
+
+test('V9 pending confirmation completion cannot replace a newer selected source or author draft', async t => {
+  for (const fault of ['source', 'draft', 'scene', 'project']) await t.test(fault, async () => {
+    const h = authorIdentityDom(AUTHOR_IDENTITY_V9), gate = h.deferred(); await h.target('mira-25');
+    h.c.commandPort = () => gate.promise; await h.click('confirm-mention'); assert.equal(h.commands.length, 1);
+    if (fault === 'source') await h.pick();
+    if (fault === 'draft') await h.field('entityName', 'New working draft é 🧭');
+    if (fault === 'scene' || fault === 'project') {
+      h.incoming({ projectId: fault === 'project' ? 'project-b' : 'project-a', documentId: 'scene-b',
+        kind: 'scene', title: 'Replacement', metaEnabled: true, content: h.working() }); await h.settle();
+    }
+    const before = h.draft(), state = JSON.stringify(h.c.atlasJourneyState), queries = h.queries.length, statuses = h.statuses.length;
+    const response = h.appliedResponse(); response.value.commandId = 'atlas.mention.confirm'; response.value.result.receipt.commandId = 'atlas.mention.confirm';
+    gate.resolve(response); await h.settle(); await h.settle();
+    assert.deepEqual(h.draft(), before); assert.equal(JSON.stringify(h.c.atlasJourneyState), state);
+    assert.equal(h.queries.length, queries); assert.equal(h.statuses.length, statuses); assert.equal(h.commands.length, 1);
+  });
+});
