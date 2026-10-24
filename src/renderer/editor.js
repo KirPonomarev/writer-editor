@@ -13603,68 +13603,59 @@ function syncAtlasSurfaceCompositionState() {
   syncAtlasReachabilityOpenerState();
 }
 
-function refreshActiveAtlasSurface() {
+function refreshActiveAtlasSurface(options = {}) {
+  if (options.isCurrent && !options.isCurrent()) return;
   if (currentRightTab !== 'atlas') return;
   const surface = normalizeAtlasSurface(currentAtlasSurface);
   syncAtlasSurfaceCompositionState();
+  if (options.currentScene === false && (surface === 'currentScene' || surface === 'journey')) return;
   if (surface === 'journey') {
     renderAtlasJourneyState();
-    const current = beginAtlasQueryPublication('activeJourney');
+    const current = beginAtlasQueryPublication('activeJourney', options);
+    if (!current) return;
     // This immediate child captures the same live context; no parent await precedes it.
-    void refreshAtlasCurrentScene({ force: true }).finally(() => { if (current?.()) renderAtlasJourneyState(); });
-    return;
+    return refreshAtlasCurrentScene({ force: true, isCurrent: current }).finally(() => { if (current()) renderAtlasJourneyState(); });
   }
   if (surface === 'manualMap') {
-    refreshManualMapWorkbench();
-    return;
+    return refreshManualMapWorkbench(options);
   }
   if (surface === 'projection') {
-    refreshProjectionInspector();
-    return;
+    return refreshProjectionInspector(options);
   }
   if (surface === 'overview') {
-    refreshAtlasOverview();
-    return;
+    return refreshAtlasOverview(options);
   }
   if (surface === 'entity') {
-    refreshAtlasEntityDossier();
-    return;
+    return refreshAtlasEntityDossier(options);
   }
   if (surface === 'relation') {
-    refreshAtlasRelationDossier();
-    return;
+    return refreshAtlasRelationDossier(options);
   }
   if (surface === 'matrices') {
-    refreshAtlasMatrices();
-    return;
+    return refreshAtlasMatrices(options);
   }
   if (surface === 'reports') {
-    refreshAtlasReportsSavedQueries();
-    return;
+    return refreshAtlasReportsSavedQueries(options);
   }
   if (surface === 'diagnostics') {
-    refreshAtlasDiagnosticsStageAcceptance();
-    return;
+    return refreshAtlasDiagnosticsStageAcceptance(options);
   }
   if (surface === 'heatmap') {
     atlasHeatmapExplicitOpen = true;
     renderAtlasHeatmapState();
-    refreshAtlasHeatmap();
-    return;
+    return refreshAtlasHeatmap(options);
   }
   if (surface === 'temporal') {
     atlasTemporalLayoutExplicitOpen = true;
     renderAtlasTemporalLayoutState();
-    refreshAtlasTemporalLayout();
-    return;
+    return refreshAtlasTemporalLayout(null, options);
   }
   if (surface === 'continuity') {
     atlasContinuityLedgerExplicitOpen = true;
     renderAtlasContinuityLedgerState();
-    refreshAtlasContinuityLedgerSurface();
-    return;
+    return refreshAtlasContinuityLedgerSurface(options);
   }
-  refreshAtlasCurrentScene();
+  return refreshAtlasCurrentScene(options);
 }
 
 function setCurrentAtlasSurface(surfaceId, options = {}) {
@@ -16574,6 +16565,7 @@ function appendAtlasSavedQueryControls(parent) {
 
 async function refreshAtlasProductSurfaces(options = {}) {
   if (options.isCurrent && !options.isCurrent()) return;
+  if (window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8') return refreshActiveAtlasSurface(options);
   const refreshes = [
     refreshAtlasOverview(options),
     refreshAtlasEntityDossier(options),
@@ -25381,16 +25373,20 @@ if (window.electronAPI) {
       refreshSceneHistory('');
     }
     if (currentRightTab === 'atlas') {
-      renderAtlasJourneyState();
-      refreshManualMapWorkbench();
-      refreshProjectionInspector();
-      refreshAtlasOverview();
-      refreshAtlasEntityDossier();
-      refreshAtlasRelationDossier();
-      refreshAtlasMatrices();
-      refreshAtlasReportsSavedQueries();
-      refreshAtlasDiagnosticsStageAcceptance();
-      refreshAtlasCurrentScene();
+      if (window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8') {
+        void refreshActiveAtlasSurface();
+      } else {
+        renderAtlasJourneyState();
+        refreshManualMapWorkbench();
+        refreshProjectionInspector();
+        refreshAtlasOverview();
+        refreshAtlasEntityDossier();
+        refreshAtlasRelationDossier();
+        refreshAtlasMatrices();
+        refreshAtlasReportsSavedQueries();
+        refreshAtlasDiagnosticsStageAcceptance();
+        refreshAtlasCurrentScene();
+      }
     }
     applyPendingProjectSearchJump(currentDocumentId || '');
     if (previousProjectId !== currentProjectId) refreshTreeForProjectPublication(previousProjectId);

@@ -534,8 +534,8 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
-  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v7');
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v8');
   assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
     'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
     'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
@@ -544,7 +544,9 @@ test('full Mac V2 derives the complete original dependency cut while every quali
     'manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.import.jsonRepeat',
     'manualMap.export.markdown', 'atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm', 'atlas.evidence.reattach', 'atlas.observation.suppress',
   ]);
-  assert.deepEqual(cut.profiles.runtime.admittedQueryIds, ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier']);
+  assert.deepEqual(cut.profiles.runtime.admittedQueryIds, ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier',
+    'query.atlasOverview', 'query.atlasRelationDossier', 'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout',
+    'query.atlasContinuityLedgerSurface', 'query.atlasReportsSavedQueries', 'query.atlasDiagnosticsStageAcceptance', 'query.projectionInspector']);
   const result = fullMacVerify(input);
   assert.equal(result.scopeValidity, 'VALID', JSON.stringify(result)); assert.equal(result.readiness, 'NOT_READY');
   assert.equal(result.missingQualification.length, 17); assert.equal(result.candidate.status, 'UNFROZEN');

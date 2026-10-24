@@ -360,3 +360,48 @@ test('V7 independent mutation oracles kill suppression overgrant malformed array
   }
   t.diagnostic(`ATLAS_EXPLICIT_SUPPRESSION_V7_MUTANTS=${mutants.length}/${mutants.length}`);
 });
+
+test('V8 independent oracles kill reader omission command overgrant and malformed policy authority', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), original = loadFresh(MODULE_PATH);
+  assert.equal(typeof original.createWriterAtlasReadSurfacesProfileProjection, 'function', 'missing V8 is a policy gap, not a mutant kill');
+  const boundary = source.indexOf('// V8 admits only the existing Atlas read surfaces.'); assert.ok(boundary > 0);
+  const active = m => m.createWriterAtlasReadSurfacesProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const query = (m, id, patch = {}) => m.evaluateWriterLocalQueryAccess({ profile: { ...active(m), ...patch }, queryId: id }).allowed;
+  const command = (m, id, patch = {}, record = { id, domain: 'atlas' }) => m.evaluateWriterLocalCommandAccess({
+    profile: { ...active(m), ...patch }, commandId: id, productCommandRecord: record }).allowed;
+  assert.equal(query(original, 'query.atlasOverview'), true); assert.equal(query(original, 'query.projectionInspector'), true);
+  assert.equal(command(original, 'atlas.observation.suppress'), true); assert.equal(command(original, 'atlas.entity.merge'), false);
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'atlas-read-v8-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mutants = [
+    ['lost reader', s => s.replace("'query.atlasOverview'", "'query.atlasOverview.disabled'"), m => assert.equal(query(m, 'query.atlasOverview'), true)],
+    ['all optional commands', s => s.replace('isActiveWriterAtlasReadSurfacesProfile(profile) && (!optional || selected)', 'isActiveWriterAtlasReadSurfacesProfile(profile)'),
+      m => assert.equal(command(m, 'atlas.entity.merge'), false)],
+    ['all optional queries', s => s.replace('readSurfacesProfileAccess(profile, WRITER_ATLAS_READ_SURFACES_QUERY_IDS.includes(queryId),', 'readSurfacesProfileAccess(profile, true,'),
+      m => assert.equal(query(m, 'query.stage10ProductState'), false)],
+    ['forged record', s => s.replace('productCommandRecord.id === commandId &&', 'true &&'),
+      m => assert.equal(command(m, 'atlas.observation.suppress', {}, { id: 'atlas.entity.merge', domain: 'atlas' }), false)],
+    ['wrong domain', s => s.replace("productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap')", 'true'),
+      m => assert.equal(command(m, 'atlas.observation.suppress', {}, { id: 'atlas.observation.suppress', domain: 'manualMap' }), false)],
+    ['policy active bypass', s => s.replace('if (!isWriterAtlasReadSurfacesProfileCandidate(profile)) return false;',
+      'if (!isWriterAtlasReadSurfacesProfileCandidate(profile)) return false; return true;'),
+      m => assert.equal(query(m, 'query.atlasOverview', { optionalSystemsEnabled: true }), false)],
+    ['extra own key', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'),
+      m => assert.equal(query(m, 'query.atlasOverview', { extra: true }), false)],
+    ['query array order', s => s.replace('profile[key][index] === id', 'true'),
+      m => assert.equal(query(m, 'query.atlasOverview', { admittedQueryIds: [...active(m).admittedQueryIds].reverse() }), false)],
+    ['inherited query index', s => s.replace('Object.hasOwn(profile[key], index)', 'true'), m => {
+      const values = [...active(m).admittedQueryIds], index = values.length - 1; delete values[index];
+      Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active(m).admittedQueryIds[index] }));
+      values.extra = true; // Keep the own-key count equal so the own-index oracle is independent.
+      assert.equal(query(m, 'query.atlasOverview', { admittedQueryIds: values }), false);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    oracle(original); // Each refusal oracle first executes against the lawful original policy.
+    const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(' ', '-') + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic(`ATLAS_READ_SURFACES_V8_MUTANTS=${mutants.length}/${mutants.length}`);
+});

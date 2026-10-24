@@ -458,7 +458,8 @@
       "docs/tasks/2026-10-24--atlas-evidence-reattachment.md",
       "src/derived/atlas/deriveAtlasEntityDossier.mjs",
       "docs/tasks/2026-10-24--atlas-explicit-suppression.md",
-      "src/derived/atlas/deriveAtlasObservationAggregate.mjs"
+      "src/derived/atlas/deriveAtlasObservationAggregate.mjs",
+      "docs/tasks/2026-10-24--atlas-read-surfaces.md"
     ]
   },
   "allowPrefixByPhase": {
