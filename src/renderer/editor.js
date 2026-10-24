@@ -16114,14 +16114,17 @@ function reconcileAtlasJourneyDraft() {
   if (!targetEntityId || targetEntityId === sourceEntityId) {
     targetEntityId = entities.find((entity) => entity.entityId !== sourceEntityId)?.entityId || '';
   }
+  const preserveSource = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'
+    && entityIds.has(atlasJourneyDraft.sourceEntityId);
   const mentions = getAtlasJourneyMentions();
   const mentionIds = new Set(mentions.map((mention) => mention.mentionId));
   let mentionId = mentionIds.has(atlasJourneyDraft.mentionId)
+    && (!preserveSource || mentions.some(mention => mention.mentionId === atlasJourneyDraft.mentionId && mention.entityId === sourceEntityId))
     ? atlasJourneyDraft.mentionId
     : '';
   if (!mentionId) {
     mentionId = mentions.find((mention) => !sourceEntityId || mention.entityId === sourceEntityId)?.mentionId
-      || mentions[0]?.mentionId
+      || (!preserveSource ? mentions[0]?.mentionId : '')
       || '';
   }
   const selectedMention = mentions.find((mention) => mention.mentionId === mentionId);

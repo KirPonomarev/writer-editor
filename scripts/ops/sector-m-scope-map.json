@@ -461,7 +461,8 @@
       "src/derived/atlas/deriveAtlasObservationAggregate.mjs",
       "docs/tasks/2026-10-24--atlas-read-surfaces.md",
       "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
-      "docs/tasks/2026-10-24--atlas-authoring-identities.md"
+      "docs/tasks/2026-10-24--atlas-authoring-identities.md",
+      "docs/tasks/2026-10-24--atlas-source-entity-selection.md"
     ]
   },
   "allowPrefixByPhase": {
