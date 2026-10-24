@@ -456,7 +456,9 @@
       "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
       "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs",
       "docs/tasks/2026-10-24--atlas-evidence-reattachment.md",
-      "src/derived/atlas/deriveAtlasEntityDossier.mjs"
+      "src/derived/atlas/deriveAtlasEntityDossier.mjs",
+      "docs/tasks/2026-10-24--atlas-explicit-suppression.md",
+      "src/derived/atlas/deriveAtlasObservationAggregate.mjs"
     ]
   },
   "allowPrefixByPhase": {

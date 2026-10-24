@@ -1858,7 +1858,7 @@ test('actual suppression two distinct warm intents and fresh cold intent never r
 });
 
 test('actual suppression unconfirmed exact retry retains UUID while a changed explicit target creates another intent', async () => {
-  const h = explicitSuppressionRendererHarness(); await h.choose('mira-68'); h.c.commandPort = () => ({ ok: false, reason: 'CAPABILITY_DISABLED_FOR_COMMAND' });
+  const h = explicitSuppressionRendererHarness(); await h.choose('mira-68'); h.c.commandPort = () => ({ ok: true, value: { message: 'UNCONFIRMED' } }); // Finite UI-only unconfirmed response.
   await h.suppress(); await h.suppress(); assert.equal(h.commands.length, 2);
   const first = h.commands[0].payload.suppressionId; assert.ok(first); assert.equal(h.commands[1].payload.suppressionId, first); assert.equal(h.issued.length, 1);
   assert.equal(h.c.atlasJourneyDraft.suppressionId, first); assert.notEqual(h.c.atlasJourneyState.status, 'applied');

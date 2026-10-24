@@ -434,10 +434,10 @@ test('full Mac actual guarded Main admits FREE map create add and queries under 
 
 test('full Mac actual Main keeps profile caller entitlement and optional refusals before effects', async t => {
   const h = await fullMacMainFixture(t), before = h.roster();
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6');
-  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7');
   const unselected = ['atlas', 'idea', 'meaning', 'blackBox', 'stage10'].map(domain =>
-    productRegistry.PRODUCT_COMMAND_RECORDS.find(row => row.domain === domain && !['atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm', 'atlas.evidence.reattach', 'manualMap.create', 'manualMap.node.add'].includes(row.id)).id);
+    productRegistry.PRODUCT_COMMAND_RECORDS.find(row => row.domain === domain && !['atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm', 'atlas.evidence.reattach', 'atlas.observation.suppress', 'manualMap.create', 'manualMap.node.add'].includes(row.id)).id);
   for (const id of unselected) {
     const result = await h.command(id, { projectId: 'forged', profileId: 'WRITER_LOCAL_ATLAS_V2', tier: 'pro', optionalSystemsEnabled: true });
     assert.equal(result.ok, false, id); assert.equal(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED', JSON.stringify(result));
@@ -448,7 +448,7 @@ test('full Mac actual Main keeps profile caller entitlement and optional refusal
   for (const id of ['query.atlasCurrentScene.extra', 'query.manualMapWorkbench ']) assert.equal((await h.query(id)).ok, false, id);
   const event = h.event();
   for (const forged of [{ ...event, sender: { ...event.sender, id: 999 } }, { ...event, sender: { ...event.sender, session: {} } },
-    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6', 'WRITER_LOCAL_V1') } }])
+    { ...event, senderFrame: { url: h.shellUrl.replace('WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7', 'WRITER_LOCAL_V1') } }])
     await assert.rejects(h.command('manualMap.create', {}, forged), /E_IPC_/u);
   assert.deepEqual(h.roster(), before);
   const source = await fullMacMainFixture(t, { packaged: false });
@@ -1171,7 +1171,7 @@ test('V6 actual packaged Main successor replaces separately observed V5 reattach
     assert.deepEqual(reattachmentWholeFixtureRoster(h), before);
     t.diagnostic('EXACT_BASE_PACKAGED_V5_DENIAL_OBSERVED; not a Core identity no-write proof');
   }
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7');
   assert.equal((await x.command('atlas.evidence.reattach', x.payload(x.shifted, 'packaged-first'))).ok, true);
   assert.equal((await x.query()).mentions.find(m => m.startOffset === 68).trustState, 'AUTHOR_CONFIRMED');
   x.assertOriginal();
@@ -1443,8 +1443,43 @@ test('actual Main suppression re-edit reattachment repeated correction and cold 
   const second = await attach(later, 'a-later-suppression-correction', 25);
   assert.equal((await x.dossier()).summary.suppressedObservationCount, 1); assert.notEqual(first.id, second.id);
   const manifest = JSON.parse(fs.readFileSync(x.f.manifestPath)); assert.deepEqual(manifest.atlas.evidenceReattachments[first.id], first);
-  const beforeCold = reattachmentWholeFixtureRoster(x.h); assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
-  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), beforeCold); assertSaved();
+  const identity = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId); assert.equal(identity.ok, true);
+  const metadataPaths = [path.join('userData', 'project-library-index.v1.json'), path.join('userData', 'stage10-integrity-anchors', identity.canonicalKey, 'fencing-generation.v1.json')];
+  const beforeCold = reattachmentWholeFixtureRoster(x.h), beforeDocuments = x.h.roster();
+  const beforeRaw = metadataPaths.map(file => fs.readFileSync(path.join(x.h.root, file))), [beforeIndex, beforeFence] = beforeRaw.map(raw => JSON.parse(raw));
+  const startedAt = Date.now(), startedMonotonic = Number(process.hrtime.bigint() / 1_000_000n);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  const endedAt = Date.now(), endedMonotonic = Number(process.hrtime.bigint() / 1_000_000n);
+  const afterRaw = metadataPaths.map(file => fs.readFileSync(path.join(x.h.root, file))), [afterIndex, afterFence] = afterRaw.map(raw => JSON.parse(raw));
+  t.diagnostic(JSON.stringify({ ordinaryReopenMetadata: metadataPaths.map((file, i) => ({ file, before: beforeRaw[i].toString('utf8'), after: afterRaw[i].toString('utf8') })),
+    startedAt, endedAt, startedMonotonic, endedMonotonic }));
+  const currentEntry = beforeIndex.entries.find(entry => entry.projectRoot === path.dirname(x.f.manifestPath)); assert.ok(currentEntry);
+  assert.equal(currentEntry.projectId, x.projectId); assert.equal(currentEntry.manifestPath, x.f.manifestPath); assert.equal(currentEntry.status, 'available');
+  const openedAt = afterIndex.entries[0].lastOpenedAtUtc, updatedAt = afterIndex.updatedAtUtc;
+  for (const timestamp of [openedAt, updatedAt]) { const ms = Date.parse(timestamp); assert.ok(ms >= startedAt && ms <= endedAt); assert.equal(new Date(ms).toISOString(), timestamp); }
+  assert.ok(Date.parse(updatedAt) >= Date.parse(openedAt));
+  const expectedIndex = { schemaVersion: 'project-library-index.v1', updatedAtUtc: updatedAt, entries: [{ ...currentEntry,
+    projectName: manifest.projectName, createdAtUtc: manifest.createdAtUtc, lastOpenedAtUtc: openedAt, lastSeenAtUtc: openedAt,
+    manifestHash: crypto.createHash('sha256').update(JSON.stringify(x.h.main.getProjectManifestComparable(manifest))).digest('hex') },
+  ...beforeIndex.entries.filter(entry => entry.projectRoot !== currentEntry.projectRoot)] };
+  assert.deepEqual(afterIndex, expectedIndex);
+  assert.equal(beforeFence.schemaVersion, 'yalken.mainProjectLeaseFence.v2'); assert.equal(beforeFence.projectId, x.projectId);
+  assert.ok(typeof beforeFence.processInstanceId === 'string' && beforeFence.processInstanceId); assert.equal(beforeFence.ownerPid, process.pid);
+  assert.ok(Number.isSafeInteger(beforeFence.fencingGeneration) && beforeFence.fencingGeneration > 0);
+  assert.match(afterFence.ownerTokenDigest, /^[a-f0-9]{64}$/u); assert.notEqual(afterFence.ownerTokenDigest, beforeFence.ownerTokenDigest);
+  assert.ok(Number.isSafeInteger(afterFence.issuedAtMs) && afterFence.issuedAtMs >= startedAt && afterFence.issuedAtMs <= endedAt);
+  assert.ok(Number.isSafeInteger(afterFence.monotonicIssuedAtMs) && afterFence.monotonicIssuedAtMs >= startedMonotonic && afterFence.monotonicIssuedAtMs <= endedMonotonic);
+  const expectedFence = { schemaVersion: 'yalken.mainProjectLeaseFence.v2', projectId: x.projectId, processInstanceId: beforeFence.processInstanceId,
+    fencingGeneration: beforeFence.fencingGeneration + 2, ownerTokenDigest: afterFence.ownerTokenDigest, ownerPid: process.pid,
+    issuedAtMs: afterFence.issuedAtMs, monotonicIssuedAtMs: afterFence.monotonicIssuedAtMs };
+  assert.deepEqual(afterFence, expectedFence);
+  for (const [i, expected] of [expectedIndex, expectedFence].entries()) {
+    assert.deepEqual(beforeRaw[i], Buffer.from(JSON.stringify(JSON.parse(beforeRaw[i]), null, 2) + '\n'));
+    assert.deepEqual(afterRaw[i], Buffer.from(JSON.stringify(expected, null, 2) + '\n'));
+  }
+  const validatedMetadata = new Map(metadataPaths.map((file, i) => [file, crypto.createHash('sha256').update(afterRaw[i]).digest('hex')]));
+  const expectedCold = beforeCold.map(([file, hash]) => [file, validatedMetadata.get(file) || hash]);
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expectedCold); assert.deepEqual(x.h.roster(), beforeDocuments); assertSaved();
   assert.equal((await x.dossier()).summary.suppressedObservationCount, 1); assert.deepEqual(JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.evidenceReattachments[second.id], second);
 });
 
@@ -1472,9 +1507,13 @@ async function actualSuppressionJourneyContext(x) {
   const actual = name => { const m = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(m, 'existing actual handler: ' + name);
     const end = source.indexOf('\n}\n', m.index); assert.ok(end > m.index); return source.slice(m.index, end + 2); };
   vm.createContext(c); vm.runInContext([...new Set(names)].map(actual).join('\n'), c);
-  c.document.body = c.document.createElement('body'); const host = c.document.createElement('section'); c.document.body.append(host);
-  const select = c.appendAtlasJourneySelect(host, { fieldName: 'mentionId', value: '', options: current.mentions.map(m => ({ value: m.mentionId, label: m.matchedText })) });
-  const choose = async () => { select.value = target.mentionId; await select.listeners.change(); };
+  c.document.body = c.document.createElement('body'); let host;
+  const choose = async () => {
+    if (host) { const index = c.document.body.children.indexOf(host); assert.ok(index >= 0); c.document.body.children.splice(index, 1); host.parentElement = null; }
+    host = c.document.createElement('section'); c.document.body.append(host);
+    const select = c.appendAtlasJourneySelect(host, { fieldName: 'mentionId', value: '', options: current.mentions.map(m => ({ value: m.mentionId, label: m.matchedText })) });
+    assert.equal(select.isConnected, true); select.value = target.mentionId; await select.listeners.change();
+  };
   const apply = async () => c.runProductJourneyCommand('atlas.observation.suppress', { ...x.payload(current, c.ensureAtlasJourneyDraftId('suppressionId', 'atlas-suppression'), 68) });
   return { c, issued, choose, apply, target, actualResult: () => actualResult, sent: () => sent, backendCalls: () => backendCalls };
 }
@@ -1497,8 +1536,8 @@ test('real registered suppression producer agrees with whole journey result and 
     ['status', r => { r.value.result.receipt.status = 'UNKNOWN'; return r; }], ['capability', r => { r.value.result.receipt.capabilityRevalidated = false; return r; }],
     ['storage', r => { r.value.result.receipt.storageWritten = false; return r; }]];
   for (const [name, corrupt] of corruptions) await t.test('finite UI-only producer corruption: ' + name, async () => {
-    await h.choose(); let retryId; h.c.dispatchUiCommand = async (_id, payload) => { retryId = payload.suppressionId; return corrupt(structuredClone(actual)); };
-    await h.apply(); assert.equal(h.c.atlasJourneyState.status, 'failed'); assert.notEqual(h.c.atlasJourneyState.lastResult, 'persisted');
+    await h.choose(); let retryId, finiteCalls = 0; h.c.dispatchUiCommand = async (_id, payload) => { finiteCalls++; retryId = payload.suppressionId; return corrupt(structuredClone(actual)); };
+    await h.apply(); assert.equal(finiteCalls, 1); assert.equal(h.c.atlasJourneyState.status, 'failed'); assert.notEqual(h.c.atlasJourneyState.lastResult, 'persisted');
     assert.ok(retryId); assert.equal(h.c.atlasJourneyDraft.suppressionId, retryId); assert.equal(h.backendCalls(), 1);
     assert.deepEqual(reattachmentWholeFixtureRoster(x.h), roster); x.assertOriginal();
   });

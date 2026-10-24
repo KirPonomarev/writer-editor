@@ -56,6 +56,7 @@ One working explicit suppression and correction workflow through existing author
 - `src/renderer/editor.js`
 - `src/renderer/flags.js`
 - `test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `test/contracts/yalken-atlas-v5-e04-c02-atlas-alias-scope-suppression-boundary.contract.test.js`
 - `test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js`
 - `test/unit/r24-wp307-writer-local-profile-integration.test.js`
@@ -114,3 +115,21 @@ Exactly AGENT_FINAL_REPORT_V1 nineteen keys; one text block KEY: VALUE, basename
 ## FAIL_PROTOCOL
 
 Retain original stdout/stderr/results/test freezes/seed/head/hash and failed native/profile archives. Classify fixture/method/configuration/causal product failure honestly; stop after third same signature and record one next hypothesis. Do not weaken semantic assertions, reset history or hide failures. No acceptance until complete canonical outcome and required delivery are independently observed.
+
+### Same-chain scope admission before current certificate consumer write
+
+Root companion reconnaissance proves new task/aggregate/E04C02 are absent from current DATA781/source641/certificate306. Append exactly three genuinely missing memberships ->784/644/309, inventory1603 unchanged. Keep the complete old certificate tuple/predicates byte-exact; append a new successor, change its maintained rtk-word-comment-return-apply consumer only in the three current regex-constant/task-ID/count literals306to309. The entire real verification/corruption body remains byte-exact. This is an OPS current-binding dependency of the same suppression outcome/rollback, not a new feature or authority.
+
+Initial27path admission remains historical. All five maintained tests are frozen (ROOT_FROZEN_RED_INPUTS_01.json); root independently read complete deltas and confirmed eleven runtime/current/added-consumer paths plus9975outside bytes exactT. Tests/docs-only UNACCEPTED ordinary checkpoint22c2ed633875afd4764e842191a3a148a4e0c38a preserves original delivery base18a0d5cce8cc4144014d033495c66f92d372cfb0. No runtime edits, test execution, push, PR, acceptance or new contour from that checkpoint. Fresh clean28path SCOPE_PREFLIGHT_01 actual0 with declaration SHA11301b2ce68fd3dfd5afdccf506be90fd92be4a1591c8d0d3c2d1bd3bb792cd0 precedes the added-path write;10002tracked/9974outside bytes frozen. Remote main remains originalT. Runtime still held until genuine wholeRED/root review. No source/CI/native outcome relabelled from T to checkpoint; unchanged runtime hashes are evidence, actual execution HEAD is recorded separately.
+
+The only R2 original-body fixture dependency delta is its actual function-extraction matcher including AtlasSuppression beside AtlasReattachment, so initial actual journey rendering can load its real new helper. Other two substitutions remove only the formerly suppression-closed branch/title, while reassignment stays closed. Everything else reconstructs exact original bytes; no stubs/new framework. All5tests and actual native denial stay causal inputs, not new acceptance. Native latest closed profile is670full archive members with103Documents/five reattachments/nine events, replacing only the next physical-baseline locator; original creation identity is unchanged.
+
+### Same-scope fixture correction after whole current-source execution
+
+Whole14pre-companion execution on checkpoint22c2ed63 retains actual1390tests1374pass16fail and0cancel/skip/todo. All12implementation inputs and9974outside source bytes remain frozen; all15raw identity cases actually reach Core, refuse and preserve complete immediate Documents/userData rosters. Whole aggregate/renderer366of366 is separate source proof. One failure is the pending current DATA editor/bundle binding; it receives only the already declared mechanical refresh.
+
+The other failures require fixture diagnosis before edits. The new repeated-cold case incorrectly treats successful project.lifecycle.open as a read-only query: current Main touches its private library index and existing Stage10 reacquires a fenced lease. Its corrected oracle must account for every full roster member, preserve all Documents and original/prior records, and independently validate only exact lawful library-index/fence metadata transitions. Immediate refused commands and read-only Atlas queries still require the entire physical roster unchanged. No product persistence or lifecycle code change is authorized by this method correction.
+
+The thirteen finite corruption cases reuse one select whose actual listener captured the old atlasJourneyDraftRevision. The first deliberate selection invalidates that control, while the finite presentation stub never rebuilds it. Refresh the fixture through the actual current appendAtlasJourneySelect listener for each new deliberate selection, retaining stale-control guards and every typed-result/retry/no-write assertion. Do not change production code to make an old control valid or turn a no-dispatch result into a command failure.
+
+Root must review the exact minimal new-fixture delta, retain frozen02 and whole1390failure inputs, freeze amended inputs, and rebind taskE0/current source review before companion generation. Only these two newly appended fixture seams may change after the earlier assertion freeze; all pre-existing assertion bodies, raw Core refusal controls and runtime bytes stay fixed. Current final whole focused/source/affected/baseline/officialRTK/native/CI/delivery proofs remain mandatory. This records a test-method correction within the same28paths and one rollback; it creates no new product, schema, writer, dependency, network or release authority.

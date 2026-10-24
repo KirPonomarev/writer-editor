@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterAtlasExplicitSuppressionProfileCandidate(profile)) return evaluateSuppressionCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasEvidenceReattachmentProfileCandidate(profile)) return evaluateReattachmentCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterExactAtlasProfileCandidate(profile)) return evaluateExactAtlasCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownCommandAccess(profile, commandId, productCommandRecord);
@@ -210,6 +211,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterAtlasExplicitSuppressionProfileCandidate(profile)) return evaluateSuppressionQueryAccess(profile, queryId);
   if (isWriterAtlasEvidenceReattachmentProfileCandidate(profile)) return evaluateReattachmentQueryAccess(profile, queryId);
   if (isWriterExactAtlasProfileCandidate(profile)) return evaluateExactAtlasQueryAccess(profile, queryId);
   if (isWriterManualMapMarkdownProfileCandidate(profile)) return evaluateMarkdownQueryAccess(profile, queryId);
@@ -367,7 +369,58 @@ function evaluateReattachmentQueryAccess(profile, queryId) {
     OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
+// V7 admits only explicit Atlas occurrence suppression.
+const WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v7';
+const WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_ID = 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7';
+const WRITER_ATLAS_EXPLICIT_SUPPRESSION_COMMAND_IDS = Object.freeze([...WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS, 'atlas.observation.suppress']);
+function createWriterAtlasExplicitSuppressionProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_SCHEMA_VERSION, profileId: WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_ID,
+    admittedCommandIds: WRITER_ATLAS_EXPLICIT_SUPPRESSION_COMMAND_IDS, admittedQueryIds: WRITER_EXACT_ATLAS_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterAtlasExplicitSuppressionProfileCandidate(profile) {
+  return Boolean(profile) && typeof profile === 'object' && (normalizeIdentity(profile.profileId).startsWith(WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_ID)
+    || normalizeIdentity(profile.schemaVersion).startsWith(WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_SCHEMA_VERSION)
+    || Array.isArray(profile.admittedCommandIds) && profile.admittedCommandIds.includes('atlas.observation.suppress'));
+}
+function isActiveWriterAtlasExplicitSuppressionProfile(profile) {
+  if (!isPlainObject(profile)) return false;
+  if (!isWriterAtlasExplicitSuppressionProfileCandidate(profile)) return false;
+  const expected = createWriterAtlasExplicitSuppressionProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const keys = Reflect.ownKeys(expected);
+  return Reflect.ownKeys(profile).length === keys.length && keys.every(key => Object.hasOwn(profile, key) && (Array.isArray(expected[key])
+    ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && Reflect.ownKeys(profile[key]).length === expected[key].length + 1
+      && expected[key].every((id, index) => Object.hasOwn(profile[key], index))
+      && expected[key].every((id, index) => profile[key][index] === id)
+    : profile[key] === expected[key]));
+}
+function suppressionProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterAtlasExplicitSuppressionProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_ID });
+}
+function evaluateSuppressionCommandAccess(profile, commandId, productCommandRecord) {
+  const id = normalizeIdentity(commandId);
+  const selected = WRITER_ATLAS_EXPLICIT_SUPPRESSION_COMMAND_IDS.includes(commandId) && isPlainObject(productCommandRecord)
+    && productCommandRecord.id === commandId && productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap');
+  return suppressionProfileAccess(profile, selected, isOptionalWriterLocalCommand(commandId, productCommandRecord)
+    || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+}
+function evaluateSuppressionQueryAccess(profile, queryId) {
+  const id = normalizeIdentity(queryId);
+  return suppressionProfileAccess(profile, WRITER_EXACT_ATLAS_QUERY_IDS.includes(queryId),
+    OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
+}
+
 module.exports = Object.freeze({
+  WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_SCHEMA_VERSION,
+  WRITER_ATLAS_EXPLICIT_SUPPRESSION_PROFILE_ID,
+  WRITER_ATLAS_EXPLICIT_SUPPRESSION_COMMAND_IDS,
+  createWriterAtlasExplicitSuppressionProfileProjection,
+  isActiveWriterAtlasExplicitSuppressionProfile,
   WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_SCHEMA_VERSION,
   WRITER_ATLAS_EVIDENCE_REATTACHMENT_PROFILE_ID,
   WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS,

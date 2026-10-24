@@ -95,10 +95,7 @@ function normalizeObservation(candidate, suppressionLookup, reassignmentLookup) 
     || reassignmentLookup.byMentionId.get(candidate.mentionId)
     || reassignmentLookup.byEvidenceAnchorId.get(candidate.evidenceAnchorId)
     || null;
-  const suppression = suppressionLookup.byObservationId.get(observationId)
-    || suppressionLookup.byMentionId.get(candidate.mentionId)
-    || suppressionLookup.byEvidenceAnchorId.get(candidate.evidenceAnchorId)
-    || null;
+  const suppression = suppressionLookup.byWitness.get(suppressionWitnessKey(candidate.evidenceAnchor)) || null;
   const originalEntityId = candidate.entityId;
   const entityId = reassignment ? reassignment.targetEntityId : originalEntityId;
   return {
@@ -186,21 +183,60 @@ function normalizeSuppression(value) {
   };
 }
 
-function buildSuppressionLookup(project) {
-  const suppressions = isPlainObject(project?.atlas?.suppressions) ? project.atlas.suppressions : {};
-  const normalized = Object.keys(suppressions)
-    .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'variant' }))
-    .map((suppressionId) => normalizeSuppression(suppressions[suppressionId]))
-    .filter(Boolean);
-  const byObservationId = new Map();
-  const byMentionId = new Map();
-  const byEvidenceAnchorId = new Map();
-  for (const suppression of normalized) {
-    if (suppression.observationId) byObservationId.set(suppression.observationId, suppression);
-    if (suppression.mentionId) byMentionId.set(suppression.mentionId, suppression);
-    if (suppression.evidenceAnchorId) byEvidenceAnchorId.set(suppression.evidenceAnchorId, suppression);
+function boundSuppressionWitness(anchor, projectId, sceneId, entityId) {
+  if (!isPlainObject(anchor) || anchor.schemaVersion !== 'atlas.evidenceAnchor.v1' || !plainString(anchor.anchorId)
+    || !sceneId || !entityId || !Number.isSafeInteger(anchor.startOffset) || anchor.startOffset < 0
+    || !Number.isSafeInteger(anchor.endOffset) || anchor.endOffset <= anchor.startOffset
+    || typeof anchor.quote !== 'string' || anchor.quote.length !== anchor.endOffset - anchor.startOffset
+    || anchor.quoteHash !== hashCanonicalValue(anchor.quote) || !/^[a-f0-9]{64}$/u.test(plainString(anchor.sceneTextHash))) return null;
+  for (const [key, expected] of Object.entries({ projectId, sceneId, entityId })) {
+    if (Object.hasOwn(anchor, key) && typeof anchor[key] !== 'string') return null;
+    if (plainString(anchor[key]) && anchor[key] !== expected) return null;
   }
-  return { suppressions: normalized, byObservationId, byMentionId, byEvidenceAnchorId };
+  return { ...anchor, projectId, sceneId, entityId };
+}
+
+function suppressionWitnessKey(anchor) {
+  return anchor ? hashCanonicalValue(['projectId', 'sceneId', 'entityId', 'startOffset', 'endOffset', 'quote', 'quoteHash', 'sceneTextHash']
+    .map(key => anchor[key])) : '';
+}
+
+function effectiveSuppressionWitness(project, projectId, source, records) {
+  if (source.projectId !== projectId || !isPlainObject(project?.atlas?.entities?.[source.entityId]) || !project?.scenes?.[source.sceneId]) return null;
+  const original = boundSuppressionWitness(source.evidenceAnchor, projectId, source.sceneId, source.entityId);
+  if (!original) return null;
+  let witness = original;
+  if (records.length) {
+    if (records.some(r => !Number.isSafeInteger(r.createdByCommandSeq) || !(r.createdByCommandSeq > source.createdByCommandSeq))) return null;
+    const sequence = Math.max(...records.map(r => r.createdByCommandSeq)), latest = records.filter(r => r.createdByCommandSeq === sequence);
+    if (latest.length !== 1) return null;
+    const r = latest[0], stale = boundSuppressionWitness(r.staleEvidenceAnchor, projectId, source.sceneId, source.entityId);
+    witness = boundSuppressionWitness(r.newEvidenceAnchor, projectId, plainString(r.newEvidenceAnchor?.sceneId), source.entityId);
+    if (!stale || !witness || r.operationKind !== 'evidence.reattach' || r.projectId !== projectId
+      || r.sourceRecordKind !== 'suppression' || r.sourceRecordId !== source.id || r.automaticReattachment !== false
+      || r.sourceRecordHash !== hashCanonicalValue(source) || stale.anchorId !== original.anchorId
+      || suppressionWitnessKey(stale) !== suppressionWitnessKey(original)) return null;
+  }
+  const scene = project?.scenes?.[witness.sceneId];
+  if (!scene || typeof scene.text !== 'string' || scene.text.slice(witness.startOffset, witness.endOffset) !== witness.quote
+    || hashCanonicalValue(scene.text) !== witness.sceneTextHash) return null;
+  return witness;
+}
+
+function buildSuppressionLookup(project, projectId) {
+  const suppressions = isPlainObject(project?.atlas?.suppressions) ? project.atlas.suppressions : {};
+  const reattachments = Object.values(isPlainObject(project?.atlas?.evidenceReattachments) ? project.atlas.evidenceReattachments : {});
+  const normalized = [], byWitness = new Map();
+  for (const id of Object.keys(suppressions).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'variant' }))) {
+    const source = suppressions[id], suppression = normalizeSuppression(source);
+    if (!suppression || source.id !== id) continue;
+    normalized.push(suppression);
+    // Keep every relevant record in chronology; an invalid latest record cannot revive older trust.
+    const records = reattachments.filter(r => normalizeString(r?.sourceRecordKind) === 'suppression' && normalizeString(r?.sourceRecordId) === id);
+    const witness = effectiveSuppressionWitness(project, projectId, source, records);
+    if (witness) byWitness.set(suppressionWitnessKey(witness), suppression);
+  }
+  return { suppressions: normalized, byWitness };
 }
 
 function normalizeReassignment(value) {
@@ -250,7 +286,7 @@ function buildAggregate({ coreState, projectId, indexResult, languageCode, meta 
     );
   }
   const languagePolicy = normalizeAtlasObservationLanguagePolicy(languageCode || project.languageCode || project.language || 'und');
-  const suppressionLookup = buildSuppressionLookup(project);
+  const suppressionLookup = buildSuppressionLookup(project, projectId);
   const reassignmentLookup = buildReassignmentLookup(project);
   const candidates = sortAtlasObservationCandidates((Array.isArray(indexResult.value.mentions) ? indexResult.value.mentions : [])
     .map((mention) => normalizeCandidate({ mention, languagePolicy })));

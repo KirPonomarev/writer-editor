@@ -976,8 +976,8 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/core/pulse-policy-codec-v1.mjs": "b7156aa083f855c25315afc1fb84814b69f6694323f3d14b0a6c2002c61a3a3a",
   "src/core/pulse-privacy-v1.mjs": "0aba8b0d3a53e6752e1b73480bacc476aa8e9de867053e5f86512bfb326f9eb5",
   "src/core/recovery-ledger-v1.cjs": "f6f0ab01ee768e374f07d2e830b2b4cca3b5a5a68278ca291b46229cffbb0e25",
-  "src/core/runtime.mjs": "b4378fd1d511792d7de177e267a96c69bcc502736cd4ffebc51afde9f70a8d08",
-  "src/core/writer-local-profile-v1.cjs": "4b9ef1784095ed2f6a1a7f842492f57d113457de68cb4cb81f51dd1f41f5a78b",
+  "src/core/runtime.mjs": "860a0486dc2b6ecbf4d72aacd248056c73038a55ab5b0bea069a14f14aa0c654",
+  "src/core/writer-local-profile-v1.cjs": "55082dec6217c4aedb25366cfffecaa7c56647b1c557617eaabe2157ab92e214",
   "src/core/wse-claims-v1.mjs": "e830fed3297b51faa1f48e19e7025aad4d585b60bbb5bd7a0b0e451683984b2a",
   "src/core/wse-revision-time-object-v1.mjs": "f134ff3e3f067de49ad74a5c710ec80d612accbefa9a6e6867bf9694cdd1a247",
   "src/core/wse-series-multi-layer-v1.mjs": "5b12ccae56ee1d649044dbd33c06feca1122644595dd01a6942e00201e93d240",
@@ -989,7 +989,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
   "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
   "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
-  "src/main.js": "3481761191c42a9e71f1663b3bc9ada876a84ae681698cf42df9869e18dfcc9a",
+  "src/main.js": "8531dd3a536394fe06e876e13708cf5adedf71d0388f289028d51e015c215b7a",
   "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
   "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
   "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
@@ -997,7 +997,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/product/stage10ApplicationCommandRoute.mjs": "cb0a4c93314e997cbca6ce9559a02fa42088989b803e11b24f8296d7024333e0",
   "src/product/stage10MainPersistenceAdapter.mjs": "1d258e7b71346c2ca5243a9272cde2216dcba4276b52d26f520a6acfaffd9c91",
   "src/renderer/design-os/designOsFormConfiguration.mjs": "9fb48989bfc52e2778ade241424c62a15f5965d385f35b9e82d6a32069969d7d",
-  "src/renderer/flags.js": "7d843defa72c39f60ddaea8850786ddbf03e333446629de529a6405d58977d01",
+  "src/renderer/flags.js": "cfaef213765f3d1f10f1bd0f3166abb5f429998a0f39d50df0572f6b58faf1e9",
   "src/renderer/index.html": "2b2d08a6ec5a33b545a4963a3e10978b6662353bc87fa555943d11a37429f60f",
   "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json": "5c2e1ae8ab18b67e55e891c2817ff78455da640fd2cac2f672ef0afcb05a02c1",
   "src/shared/productCommandRegistry.cjs": "0d5edc3569c399e8143d1cdb0dcacfc312c7db777f8146e045567b426977d5d5",
@@ -1106,7 +1106,7 @@ function fullMacProductScope(sources) {
       numericalAcceptance: 'UNKNOWN_REQUIRES_APPROVED_EXACT_WORKLOAD_AND_ARTIFACT', proxyTimingAccepted: false } };
 }
 function fullMacProfiles() {
-  return { ...macProfiles(), runtime: writerLocal.createWriterAtlasEvidenceReattachmentProfileProjection({ isPackaged: true, platform: 'darwin' }),
+  return { ...macProfiles(), runtime: writerLocal.createWriterAtlasExplicitSuppressionProfileProjection({ isPackaged: true, platform: 'darwin' }),
     legacyProfileMeaning: 'WRITER_LOCAL_V1_REMAINS_HISTORICAL_NOT_FULL_MAC_QUALIFICATION' };
 }
 function fullMacResult(valid, cutSha256, error = '', missingQualification = []) {
