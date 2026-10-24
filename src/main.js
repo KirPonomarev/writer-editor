@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterAtlasExplicitSuppressionProfileProjection,
+  createWriterAtlasReadSurfacesProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -19078,7 +19078,11 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
   }
   const synchronized = atlasAnalyticsScheduler.synchronizeSource(source);
   if (!synchronized.ok) return synchronized;
-  const requestKey = computeHash(JSON.stringify(canonicalizeComparableValue({ queryId, payload })));
+  const diagnosticsPolicy = queryId === ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_ID ? readAtlasDiagnosticsPolicySnapshot() : null;
+  const diagnosticsPolicyHash = diagnosticsPolicy ? computeHash(JSON.stringify(diagnosticsPolicy)) : '';
+  const requestKey = computeHash(JSON.stringify(canonicalizeComparableValue({ queryId, payload,
+    ...(diagnosticsPolicy ? { diagnosticsPolicyHash } : {}),
+  })));
   const dependencyKeys = Object.keys(source.dependencyRevisions).sort();
   const scheduled = await atlasAnalyticsScheduler.schedule({
     projectId: source.projectId,
@@ -19088,7 +19092,7 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     dependencyKeys,
     run: async ({ signal }) => {
       if (signal.aborted) throw Object.assign(new Error('ATLAS_ANALYTICS_JOB_CANCELLED'), { code: 'E_ATLAS_ANALYTICS_JOB_CANCELLED' });
-      const result = await handler(payload);
+      const result = await (diagnosticsPolicy ? handler(payload, diagnosticsPolicy) : handler(payload));
       if (signal.aborted) throw Object.assign(new Error('ATLAS_ANALYTICS_JOB_CANCELLED'), { code: 'E_ATLAS_ANALYTICS_JOB_CANCELLED' });
       return result;
     },
@@ -19104,6 +19108,12 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
         schemaVersion: atlasAnalyticsScheduler.schemaVersion,
         staleResultDiscarded: scheduled.error?.code === 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED',
       },
+    };
+  }
+  if (diagnosticsPolicy && diagnosticsPolicyHash !== computeHash(JSON.stringify(readAtlasDiagnosticsPolicySnapshot()))) {
+    return { ok: false,
+      error: { code: 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED', op: 'atlas.analyticsScheduler', reason: 'DIAGNOSTICS_POLICY_CHANGED' },
+      analyticsScheduler: { schemaVersion: atlasAnalyticsScheduler.schemaVersion, staleResultDiscarded: true },
     };
   }
   return {
@@ -19506,6 +19516,7 @@ async function handleWorkspaceProjectionInspectorQuery(payload = {}) {
       ok: true,
       projectionInspector: {
         ...result.value,
+        state: 'ready',
         surfaceManifest: {
           schemaVersion: 'surface.projection.inspector.v1',
           surfaceId: 'surface.projection.inspector',
@@ -20008,7 +20019,34 @@ async function handleWorkspaceAtlasReportsSavedQueriesQuery(payload = {}) {
   }
 }
 
-async function handleWorkspaceAtlasDiagnosticsStageAcceptanceQuery(payload = {}) {
+function readAtlasDiagnosticsPolicySnapshot() {
+  const profile = getWriterLocalRuntimeProfile(), entitlementTier = getProductEntitlementTier();
+  const matrixDoc = readAuthorityCapabilityMatrixDoc();
+  const readAllowed = queryId => evaluateWriterLocalQueryAccess({ profile, queryId }).allowed === true;
+  const capabilities = {
+    atlasDiagnosticsStageAcceptance: readAllowed(ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_ID),
+    atlasOverview: readAllowed(ATLAS_OVERVIEW_QUERY_ID), atlasMatrices: readAllowed(ATLAS_MATRICES_QUERY_ID),
+    atlasHeatmap: readAllowed(ATLAS_HEATMAP_QUERY_ID), atlasReportsSavedQueries: readAllowed(ATLAS_REPORTS_SAVED_QUERIES_QUERY_ID),
+    atlasTemporalLayout: readAllowed(ATLAS_TEMPORAL_LAYOUT_QUERY_ID), atlasContinuityLedgerSurface: readAllowed(ATLAS_CONTINUITY_LEDGER_SURFACE_QUERY_ID),
+    // Existing internal read derivations are not command capability keys.
+    atlasObservationAggregate: true, atlasTemporalContinuity: true, atlasLocalGraph: true,
+  };
+  for (const commandId of PRODUCT_COMMAND_ID_LIST) {
+    const record = getProductCommandRecord(commandId);
+    if (record?.domain !== 'atlas') continue;
+    capabilities[record.capabilityId] = evaluateCommandCapabilityAuthority({ commandId, capabilityId: record.capabilityId,
+      platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc }).ok === true
+      && decideCommandEntitlement(commandId, entitlementTier).available === true
+      && evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord: record }).allowed === true;
+  }
+  return Object.freeze({ platformId: DEFAULT_AUTHORITY_PLATFORM_ID, capabilities: Object.freeze(capabilities),
+    policyIdentity: Object.freeze({ profile, entitlementTier,
+      matrixHash: computeHash(JSON.stringify(canonicalizeComparableValue(matrixDoc))),
+    }),
+  });
+}
+
+async function handleWorkspaceAtlasDiagnosticsStageAcceptanceQuery(payload = {}, capabilitySnapshot = readAtlasDiagnosticsPolicySnapshot()) {
   const safePayload = normalizeAtlasDiagnosticsStageAcceptancePayload(payload);
   const diagnosticsModule = await loadAtlasDiagnosticsStageAcceptanceModule();
   try {
@@ -20024,28 +20062,7 @@ async function handleWorkspaceAtlasDiagnosticsStageAcceptanceQuery(payload = {})
       params: {
         projectId,
       },
-      capabilitySnapshot: {
-        platformId: 'node',
-        capabilities: {
-          atlasDiagnosticsStageAcceptance: true,
-          atlasOverview: true,
-          atlasMatrices: true,
-          atlasHeatmap: true,
-          atlasReportsSavedQueries: true,
-          atlasObservationAggregate: true,
-          atlasTemporalContinuity: true,
-          atlasLocalGraph: true,
-          'cap.atlas.entity.create': true,
-          'cap.atlas.alias.add': true,
-          'cap.atlas.mention.confirm': true,
-          'cap.atlas.observation.suppress': true,
-          'cap.atlas.entity.merge': true,
-          'cap.atlas.entity.splitRestore': true,
-          'cap.atlas.observation.reassign': true,
-          'cap.atlas.evidence.reattach': true,
-          'cap.atlas.savedQuery.save': true,
-        },
-      },
+      capabilitySnapshot,
     });
     if (!diagnostics.ok) {
       return {
@@ -36085,7 +36102,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterAtlasExplicitSuppressionProfileProjection({
+  return createWriterAtlasReadSurfacesProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });

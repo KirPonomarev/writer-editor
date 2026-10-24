@@ -448,3 +448,69 @@ test('V7 rejects malformed policy identity own-key holes reordered arrays and fo
   for (const id of m.WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS) assert.equal(command(active, undefined, id), true);
   assert.equal(command(active, undefined, 'cmd.project.save'), true);
 });
+
+test('V8 admits exactly twelve existing Atlas readers with the unchanged ordered V7 author commands', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs'), registry = require('../../src/shared/productCommandRegistry.cjs');
+  const queries = require('../../src/shared/workspaceQueryRegistry.cjs').ATLAS_WORKSPACE_QUERY_IDS;
+  assert.equal(typeof m.createWriterAtlasReadSurfacesProfileProjection, 'function', 'existing-reader successor is not implemented');
+  assert.equal(typeof m.isActiveWriterAtlasReadSurfacesProfile, 'function');
+  const options = { isPackaged: true, platform: 'darwin' }, old = m.createWriterAtlasExplicitSuppressionProfileProjection(options);
+  const active = m.createWriterAtlasReadSurfacesProfileProjection(options);
+  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8'); assert.equal(active.schemaVersion, 'writer-local-profile.v8');
+  assert.deepEqual(active.admittedCommandIds, old.admittedCommandIds); assert.equal(active.admittedCommandIds.length, 22);
+  assert.deepEqual(active.admittedQueryIds, [...old.admittedQueryIds, 'query.atlasOverview', 'query.atlasRelationDossier',
+    'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout', 'query.atlasContinuityLedgerSurface',
+    'query.atlasReportsSavedQueries', 'query.atlasDiagnosticsStageAcceptance', 'query.projectionInspector']);
+  assert.deepEqual([...active.admittedQueryIds].sort(), [...queries].sort()); assert.equal(active.admittedQueryIds.length, 12);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation'])
+    assert.equal(active[key], false, key);
+  for (const value of [active, active.admittedCommandIds, active.admittedQueryIds]) assert.equal(Object.isFrozen(value), true);
+  assert.equal(m.isActiveWriterAtlasReadSurfacesProfile(active), true);
+  for (const record of registry.PRODUCT_COMMAND_RECORDS) assert.equal(m.evaluateWriterLocalCommandAccess({
+    profile: active, commandId: record.id, productCommandRecord: record }).allowed, old.admittedCommandIds.includes(record.id), record.id);
+  for (const queryId of m.OPTIONAL_QUERY_IDS) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed,
+    active.admittedQueryIds.includes(queryId), queryId);
+  for (const queryId of active.admittedQueryIds) {
+    for (const near of [' ' + queryId, queryId + ' ', queryId + '.extra'])
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId: near }).allowed, false, near);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile: old, queryId }).allowed, old.admittedQueryIds.includes(queryId), 'historical V7 ' + queryId);
+  }
+  for (const options of [{}, { isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' },
+    { isPackaged: true, platform: 'win32' }, { isPackaged: 'true', platform: 'darwin' }])
+    assert.deepEqual(m.createWriterAtlasReadSurfacesProfileProjection(options), m.createWriterLocalProfileProjection(options));
+});
+
+test('V8 refuses malformed policy own keys arrays identities and forged command records without widening commands', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  assert.equal(typeof m.createWriterAtlasReadSurfacesProfileProjection, 'function');
+  const active = m.createWriterAtlasReadSurfacesProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const commandId = 'atlas.observation.suppress', record = { id: commandId, domain: 'atlas' };
+  const variants = [{ ...active, extra: true }, { ...active, active: false }, { ...active, packaged: false }, { ...active, platform: 'linux' },
+    { ...active, optionalSystemsEnabled: true }, { ...active, userDataMutation: true }, { ...active, cloudAuthority: true },
+    { ...active, profileId: active.profileId + '.forged' }, { ...active, schemaVersion: active.schemaVersion + '.extra' },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds, 'atlas.entity.merge'] },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds].reverse() }, { ...active, admittedCommandIds: active.admittedCommandIds.slice(1) },
+    { ...active, admittedQueryIds: [...active.admittedQueryIds, 'query.stage10ProductState'] },
+    { ...active, admittedQueryIds: [...active.admittedQueryIds].reverse() }, { ...active, admittedQueryIds: active.admittedQueryIds.slice(0, -1) },
+    Object.assign([], active), Object.assign(Object.create({ forged: true }), active)];
+  for (const key of Reflect.ownKeys(active)) { const v = Object.assign(Object.create({ [key]: active[key] }), active); delete v[key]; variants.push(v); }
+  const symbol = Symbol('extra'); variants.push({ ...active, [symbol]: true });
+  for (const key of ['admittedCommandIds', 'admittedQueryIds']) {
+    const values = [...active[key]], index = values.length - 1; delete values[index];
+    Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active[key][index] }));
+    variants.push({ ...active, [key]: values });
+    const extra = [...active[key]]; extra.extra = true; variants.push({ ...active, [key]: extra });
+    const symbolic = [...active[key]]; symbolic[symbol] = true; variants.push({ ...active, [key]: symbolic });
+  }
+  for (const profile of variants) {
+    assert.equal(m.isActiveWriterAtlasReadSurfacesProfile(profile), false);
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord: record }).allowed, false);
+    for (const queryId of active.admittedQueryIds) assert.equal(m.evaluateWriterLocalQueryAccess({ profile, queryId }).allowed, false, queryId);
+  }
+  for (const forged of [null, { id: commandId }, { id: 'atlas.entity.merge', domain: 'atlas' }, { id: commandId, domain: 'manualMap' }])
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId, productCommandRecord: forged }).allowed, false);
+  for (const id of [commandId + ' ', ' ' + commandId, commandId + '.extra']) assert.equal(m.evaluateWriterLocalCommandAccess({
+    profile: active, commandId: id, productCommandRecord: { id, domain: 'atlas' } }).allowed, false);
+  for (const commandId of ['cmd.project.save', ...m.WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS])
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId }).allowed, true, commandId);
+});

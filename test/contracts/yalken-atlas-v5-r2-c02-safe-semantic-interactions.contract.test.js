@@ -410,7 +410,8 @@ function publicationHarness(transform) {
     if (row[5] !== 'renderManualMapWorkbenchState') c[row[5]] = () => renders.push([row[2], JSON.stringify(c[row[4]])]);
   }
   c.WORKSPACE_QUERY_ID_SET = new Set([...leaves.map(row => c[row[1]]), c.PROJECT_TREE_QUERY_ID]);
-  c.window = { confirm: () => true, electronAPI: { onEditorSetText: fn => { incoming = fn; }, invokeWorkspaceQueryBridge: async ({ queryId, payload }) => {
+  // Preserve the historical eight-reader fanout assertions under explicit V7 presentation.
+  c.window = { __PRODUCT_PROFILE: 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7', confirm: () => true, electronAPI: { onEditorSetText: fn => { incoming = fn; }, invokeWorkspaceQueryBridge: async ({ queryId, payload }) => {
     if (queryId === c.PROJECT_TREE_QUERY_ID) return c.treePort(payload);
     const row = leaves.find(row => c[row[1]] === queryId); assert.ok(row);
     const request = { queryId, payload: JSON.parse(JSON.stringify(payload)), row };
@@ -422,7 +423,7 @@ function publicationHarness(transform) {
     return c.commandPort ? c.commandPort(id, payload) : { ok: true, value: { status: 'APPLIED' } };
   };
   const names = ['withEditorModeCommandPayload', 'dispatchUiCommand', 'invokeWorkspaceQueryBridge',
-    'runProductJourneyCommand', 'refreshAtlasProductSurfaces', 'refreshActiveAtlasSurface',
+    'runProductJourneyCommand', 'refreshAtlasProductSurfaces', 'refreshActiveAtlasSurface', 'setCurrentAtlasSurface',
     'runManualMapWorkbenchCommand', 'runManualMapExportCommand', 'unwrapManualMapProductCommandReceipt',
     'runAtlasSurfaceProductCommand', 'appendAtlasJourneyField', 'appendAtlasJourneySelect',
     'openDocumentNode', 'handleDeleteNode', 'loadTree',
@@ -432,7 +433,7 @@ function publicationHarness(transform) {
   const constantsStart = editor.indexOf('const ATLAS_SURFACE_IDS = Object.freeze([');
   const constantsEnd = editor.indexOf('const ATLAS_DEFERRED_SURFACE_IDS =', constantsStart);
   assert.ok(constantsStart >= 0 && constantsEnd > constantsStart);
-  vm.runInContext(editor.slice(constantsStart, constantsEnd) + names.map(text).join('\n'), c);
+  vm.runInContext(editor.slice(constantsStart, editor.indexOf('\n', constantsEnd)) + names.map(text).join('\n'), c);
   const listenerStart = editor.indexOf('window.electronAPI.onEditorSetText((payload) => {');
   const listenerEnd = editor.indexOf('  window.electronAPI.onEditorTextRequest(', listenerStart);
   assert.ok(listenerStart >= 0 && listenerEnd > listenerStart);
@@ -1959,4 +1960,104 @@ test('saved suppression picker remains closed for unavailable incomplete or malf
     h.setDossier(dossier); const pick = h.pickButton(); if (pick) await pick.emit('click'); await h.choose(); await h.apply();
     assert.equal(h.commands.length, 0); assert.equal(h.issued.length, 0); assert.equal(h.button().disabled, true);
   });
+});
+
+const V8_SURFACE_READERS = Object.freeze([
+  ['manualMap', 0], ['currentScene', 1], ['projection', 2], ['overview', 3], ['entity', 4], ['relation', 5],
+  ['matrices', 6], ['heatmap', 7], ['temporal', 8], ['continuity', 9], ['reports', 10], ['diagnostics', 11],
+]);
+
+function currentReadSurfaceHarness() {
+  const h = publicationHarness(); h.c.window.__PRODUCT_PROFILE = 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8';
+  return h;
+}
+
+for (const [surface, index] of V8_SURFACE_READERS) {
+  test('V8 command refresh requests only the selected existing ' + surface + ' surface', async () => {
+    const h = currentReadSurfaceHarness(); h.c.currentAtlasSurface = surface;
+    await h.c.refreshAtlasProductSurfaces(); await h.settle();
+    assert.deepEqual(h.queries.map(row => row.queryId), [h.c[h.leaves[index][1]]], 'no nonactive reader fanout');
+    assert.equal(h.commands.length, 0); assert.equal(h.working(), 'manuscript é 🧭');
+  });
+  test('V8 scene publication requests only the selected existing ' + surface + ' surface', async () => {
+    const h = currentReadSurfaceHarness(); h.c.currentAtlasSurface = surface;
+    h.incoming({ projectId: 'project-a', documentId: 'scene-a', kind: 'scene', metaEnabled: true, title: 'Current', content: h.working() });
+    await h.settle();
+    assert.deepEqual(h.queries.map(row => row.queryId), [h.c[h.leaves[index][1]]], 'scene replacement must not scan nonactive panels');
+    assert.equal(h.commands.length, 0); assert.equal(h.working(), 'manuscript é 🧭');
+  });
+  test('V8 actual active ' + surface + ' leaf retains every existing late-publication guard', async () => {
+    for (const fault of ['project', 'document', 'generation', 'epoch', 'query-sequence', 'command-sequence', 'tab', 'surface']) {
+      const h = currentReadSurfaceHarness(), gate = h.deferred(), row = h.leaves[index]; h.c.currentAtlasSurface = surface;
+      h.c.queryPort = () => gate.promise;
+      const pending = callPublicationLeaf(h, row); assert.equal(h.queries.length, 1);
+      const state = JSON.stringify(h.c[row[4]]), renders = h.renders.length, dom = h.counters.renders;
+      if (fault === 'project') h.c.currentProjectId = 'foreign-project'; if (fault === 'document') h.c.currentDocumentId = 'foreign-document';
+      if (fault === 'generation') h.c.localEditGeneration++; if (fault === 'epoch') h.c.invalidateAtlasPublications();
+      if (fault === 'query-sequence') h.c.beginAtlasQueryPublication(row[2]);
+      if (fault === 'command-sequence') require('node:vm').runInContext('atlasCommandPublicationSequence += 1', h.c);
+      if (fault === 'tab') h.c.currentRightTab = 'inspector'; if (fault === 'surface') h.c.currentAtlasSurface = surface === 'overview' ? 'entity' : 'overview';
+      gate.resolve(h.projection(row, 'project-a', 'late')); await pending;
+      assert.equal(JSON.stringify(h.c[row[4]]), state, surface + ':' + fault);
+      assert.equal(h.renders.length, renders); assert.equal(h.counters.renders, dom); assert.equal(h.commands.length, 0);
+    }
+  });
+}
+
+test('V8 currentScene false prevents duplicate scene and Journey work while preserving one selected non-scene child', async () => {
+  for (const surface of ['currentScene', 'journey', 'overview']) {
+    const h = currentReadSurfaceHarness(); h.c.currentAtlasSurface = surface;
+    await h.c.refreshAtlasProductSurfaces({ currentScene: false }); await h.settle();
+    assert.deepEqual(h.queries.map(row => row.queryId), surface === 'overview' ? ['query.atlasOverview'] : []);
+    assert.equal(h.commands.length, 0);
+  }
+});
+
+test('V8 active route returns its real child promise and forwards parent currentness before and after await', async () => {
+  const h = currentReadSurfaceHarness(), gate = h.deferred(); h.c.currentAtlasSurface = 'overview'; h.c.queryPort = () => gate.promise;
+  let current = true, settled = false;
+  const pending = Promise.resolve(h.c.refreshActiveAtlasSurface({ isCurrent: () => current })).then(() => { settled = true; });
+  await h.settle(); assert.equal(settled, false, 'active refresh must return the actual reader work'); assert.equal(h.queries.length, 1);
+  const state = JSON.stringify(h.c.atlasOverviewState), renders = h.renders.length; current = false;
+  gate.resolve(h.projection(h.leaves[3], 'project-a', 'stale-parent')); await pending;
+  assert.equal(JSON.stringify(h.c.atlasOverviewState), state); assert.equal(h.renders.length, renders);
+  const queries = h.queries.length, states = h.leaves.map(row => JSON.stringify(h.c[row[4]])), count = h.renders.length;
+  await h.c.refreshActiveAtlasSurface({ isCurrent: () => false }); await h.settle();
+  assert.equal(h.queries.length, queries); assert.deepEqual(h.leaves.map(row => JSON.stringify(h.c[row[4]])), states); assert.equal(h.renders.length, count);
+});
+
+test('V8 deliberate heavy tabs open one reader and retained open flags cannot trigger nonactive heavy refresh', async () => {
+  const h = currentReadSurfaceHarness();
+  h.c.atlasHeatmapExplicitOpen = h.c.atlasTemporalLayoutExplicitOpen = h.c.atlasContinuityLedgerExplicitOpen = false;
+  for (const [surface, index] of V8_SURFACE_READERS.filter(([, index]) => [7, 8, 9].includes(index))) {
+    const before = h.queries.length; h.c.setCurrentAtlasSurface(surface); await h.settle();
+    assert.deepEqual(h.queries.slice(before).map(row => row.queryId), [h.c[h.leaves[index][1]]]);
+    assert.equal(h.queries.at(-1).payload.explicitOpen, true);
+  }
+  const before = h.queries.length; h.c.setCurrentAtlasSurface('overview'); await h.settle();
+  await h.c.refreshAtlasProductSurfaces(); await h.settle();
+  assert.deepEqual(h.queries.slice(before).map(row => row.queryId), ['query.atlasOverview', 'query.atlasOverview']);
+  assert.equal(h.commands.length, 0);
+});
+
+test('V8 actual away-back tab selection retains the latest reader and never publishes its older child', async () => {
+  const h = currentReadSurfaceHarness(), old = h.deferred(); let first = true;
+  h.c.queryPort = request => { if (first) { first = false; return old.promise; } return h.projection(request.row, 'project-a', 'new'); };
+  h.c.setCurrentAtlasSurface('overview'); await h.settle();
+  h.c.setCurrentAtlasSurface('entity'); await h.settle();
+  h.c.setCurrentAtlasSurface('overview'); await h.settle();
+  const states = h.leaves.map(row => JSON.stringify(h.c[row[4]])), renders = h.renders.length;
+  old.resolve(h.projection(h.leaves[3], 'project-a', 'old')); await h.settle();
+  assert.deepEqual(h.leaves.map(row => JSON.stringify(h.c[row[4]])), states); assert.equal(h.renders.length, renders);
+  assert.deepEqual(h.queries.map(row => row.queryId), ['query.atlasOverview', 'query.atlasEntityDossier', 'query.atlasOverview']);
+});
+
+test('V8 lawful command completion refreshes current selection without cancelling its real receipt or refreshing hidden siblings', async () => {
+  const h = currentReadSurfaceHarness(), gate = h.deferred(); h.c.commandPort = () => gate.promise;
+  const pending = h.c.runProductJourneyCommand('atlas.entity.create', { entityId: 'entity-new', name: 'Mira' });
+  h.c.currentAtlasSurface = 'overview'; const receipt = { ok: true, value: { status: 'APPLIED' } };
+  gate.resolve(receipt); assert.equal(await pending, receipt); await h.settle();
+  assert.deepEqual(h.queries.map(row => row.queryId), ['query.atlasCurrentScene', 'query.atlasOverview']);
+  assert.equal(h.commands.length, 1); assert.equal(h.c.atlasJourneyState.status, 'applied');
+  assert.equal(h.delivered.at(-1), receipt); assert.equal(h.working(), 'manuscript é 🧭');
 });

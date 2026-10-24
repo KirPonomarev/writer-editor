@@ -249,7 +249,7 @@ test('WP307 profile contract carries no persistence, network or external authori
 // Actual Main under an inert Electron host: no app/renderer/native launch.
 // Only the host platform is explicit so the packaged-Darwin policy is also
 // exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
-async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false } = {}) {
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false } = {}) {
   const os = require('node:os'), Module = require('node:module');
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
   const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
@@ -299,6 +299,13 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
     Module._load = function(request, ...args) {
       if (request === 'electron') return electron;
       const loaded = originalLoad.call(this, request, ...args);
+      if (request === './core/writer-local-profile-v1.cjs' && historicalV7Constructor) {
+        // Historical compatibility only: real V7 factory, current Main body.
+        // Default/current-Main tests never select or substitute a profile factory.
+        assert.equal(packaged, true); assert.equal(platform, 'darwin');
+        t.diagnostic('HISTORICAL_V7_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
+        return { ...loaded, createWriterAtlasReadSurfacesProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
+      }
       if (request !== './main/projectArchiveDarwinPublication.cjs') return loaded;
       return { ...loaded, createDarwinExclusiveFilePublisher: options => {
         const current = () => h.filePublication || loaded.createDarwinExclusiveFilePublisher({ ...options, helperPath: h.helperPath });
@@ -433,7 +440,7 @@ test('full Mac actual guarded Main admits FREE map create add and queries under 
 });
 
 test('full Mac actual Main keeps profile caller entitlement and optional refusals before effects', async t => {
-  const h = await fullMacMainFixture(t), before = h.roster();
+  const h = await fullMacMainFixture(t, { historicalV7Constructor: true }), before = h.roster();
   assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7');
   assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7');
   const unselected = ['atlas', 'idea', 'meaning', 'blackBox', 'stage10'].map(domain =>
@@ -1122,8 +1129,8 @@ function reattachmentWholeFixtureRoster(h) {
   } }; visit(h.root); return rows;
 }
 
-async function reattachmentMainFixture(t, packaged = false, beforeProject) {
-  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true }), ui = await fullMacRendererCommandPort(h);
+async function reattachmentMainFixture(t, packaged = false, beforeProject, { historicalV7Constructor = false } = {}) {
+  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true, historicalV7Constructor }), ui = await fullMacRendererCommandPort(h);
   if (beforeProject) beforeProject(h); // Actual lifecycle bootstrap captures the observer before constructing its prepare port.
   const f = await exactAtlasScene(h, 'Explicit saved reattachment'), { projectId, sceneId } = f;
   const entityId = 'saved-mira', decisionId = 'saved-confirmation';
@@ -1164,7 +1171,7 @@ async function reattachmentMainFixture(t, packaged = false, beforeProject) {
 }
 
 test('V6 actual packaged Main successor replaces separately observed V5 reattachment denial [FINITE_IPC_NOT_NATIVE_ACCEPTANCE]', async t => {
-  const x = await reattachmentMainFixture(t, true), { h } = x, before = reattachmentWholeFixtureRoster(h);
+  const x = await reattachmentMainFixture(t, true, undefined, { historicalV7Constructor: true }), { h } = x, before = reattachmentWholeFixtureRoster(h);
   if (h.main.__profile().profileId === 'WRITER_LOCAL_EXACT_ATLAS_V5') {
     const denied = await x.command('atlas.evidence.reattach', x.payload(x.shifted, 'packaged-baseline'));
     assert.equal(denied.ok, false); assert.equal(denied.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
@@ -1331,8 +1338,8 @@ test('actual registered Main result and whole Atlas journey agree on persistence
 });
 
 // Actual Main/Kernel/Core/Stage10 route; unpackaged is explicit and is never a packaged-policy bypass claim.
-async function explicitSuppressionMainFixture(t, { packaged = false, beforeProject } = {}) {
-  const x = await reattachmentMainFixture(t, packaged, beforeProject);
+async function explicitSuppressionMainFixture(t, { packaged = false, beforeProject, historicalV7Constructor = false } = {}) {
+  const x = await reattachmentMainFixture(t, packaged, beforeProject, { historicalV7Constructor });
   const payload = (projection = x.shifted, id = 'suppression-control', offset = 25) => {
     const mention = projection.mentions.find(m => m.startOffset === offset); assert.ok(mention);
     return { projectId: x.projectId, sceneId: x.sceneId, entityId: x.entityId, mentionId: mention.mentionId, suppressionId: id,
@@ -1370,7 +1377,7 @@ test('actual unpackaged registered suppression reaches canonical Core and persis
 });
 
 test('packaged V6 suppression denial is configuration evidence and the declared successor must admit only that additional command', async t => {
-  const x = await explicitSuppressionMainFixture(t, { packaged: true }), before = reattachmentWholeFixtureRoster(x.h), profile = x.h.main.__profile();
+  const x = await explicitSuppressionMainFixture(t, { packaged: true, historicalV7Constructor: true }), before = reattachmentWholeFixtureRoster(x.h), profile = x.h.main.__profile();
   const legacy = require('../../src/core/writer-local-profile-v1.cjs').createWriterAtlasEvidenceReattachmentProfileProjection({ isPackaged: true, platform: 'darwin' });
   assert.equal(require('../../src/core/writer-local-profile-v1.cjs').evaluateWriterLocalCommandAccess({ profile: legacy, commandId: 'atlas.observation.suppress',
     productCommandRecord: productRegistry.getProductCommandRecord('atlas.observation.suppress') }).allowed, false);
@@ -1541,4 +1548,166 @@ test('real registered suppression producer agrees with whole journey result and 
     assert.ok(retryId); assert.equal(h.c.atlasJourneyDraft.suppressionId, retryId); assert.equal(h.backendCalls(), 1);
     assert.deepEqual(reattachmentWholeFixtureRoster(x.h), roster); x.assertOriginal();
   });
+});
+
+// These use the literal current Main constructor by default. The explicit
+// historical selector above is never used for current-reader/policy evidence.
+const READ_SURFACE_QUERY_IDS = Object.freeze(['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier',
+  'query.atlasOverview', 'query.atlasRelationDossier', 'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout',
+  'query.atlasContinuityLedgerSurface', 'query.atlasReportsSavedQueries', 'query.atlasDiagnosticsStageAcceptance', 'query.projectionInspector']);
+const READ_SURFACE_COMMAND_IDS = Object.freeze(['atlas.entity.create', 'atlas.alias.add', 'atlas.mention.confirm',
+  'atlas.observation.suppress', 'atlas.entity.merge', 'atlas.entity.splitRestore', 'atlas.observation.reassign',
+  'atlas.evidence.reattach', 'atlas.savedQuery.save', 'atlas.calendar.define', 'atlas.sceneTemporalAnchor.set', 'atlas.continuityFact.record']);
+
+function assertDiagnosticNoAcceptance(value) {
+  assert.equal(value.authority.commandAuthority, 'none'); assert.equal(value.authority.projectTruthMutation, false);
+  assert.equal(value.authority.storageMutation, false); assert.equal(value.authority.networkMutation, false);
+  assert.equal(value.authority.releaseReadinessClaim, false); assert.equal(value.stageAcceptanceProof.pass, false);
+  assert.equal(value.stage06AcceptanceProof.pass, false); assert.equal(value.summary.stageAcceptance, 'not_ready');
+  assert.equal(value.finalUiAuditReceipt.finalBar.status, 'NOT_READY');
+  assert.equal(value.finalUiAuditReceipt.externalEvidence.allRequiredArtifactsPresent, false);
+}
+
+test('current literal packaged Main selects strict V8 while all twenty-two author command identities remain V7 exact', async t => {
+  const h = await fullMacMainFixture(t), current = h.main.__profile();
+  assert.equal(current.profileId, 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8'); assert.equal(current.schemaVersion, 'writer-local-profile.v8');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), current.profileId);
+  assert.deepEqual(current.admittedQueryIds, READ_SURFACE_QUERY_IDS);
+  const legacy = profile.createWriterAtlasExplicitSuppressionProfileProjection({ isPackaged: true, platform: 'darwin' });
+  assert.deepEqual(current.admittedCommandIds, legacy.admittedCommandIds); assert.equal(current.admittedCommandIds.length, 22);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation'])
+    assert.equal(current[key], false, key);
+});
+
+test('current literal packaged Main returns each existing Atlas read projection with complete immediate no-write controls [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await reattachmentMainFixture(t, true), { h } = x;
+  for (const queryId of READ_SURFACE_QUERY_IDS) await t.test(queryId, async () => {
+    const before = reattachmentWholeFixtureRoster(h);
+    const result = await h.query(queryId, { projectId: x.projectId, nodeId: x.sceneId, entityId: x.entityId, explicitOpen: true });
+    t.diagnostic(JSON.stringify({ queryId, actualProfile: h.main.__profile().profileId, result }));
+    try {
+      assert.equal(result.ok, true, JSON.stringify(result));
+      const value = result[queryId.slice('query.'.length)]; assert.ok(value, queryId);
+      assert.equal(value.projectId, x.projectId); assert.notEqual(value.state, 'unavailable', JSON.stringify(value));
+      assert.equal(typeof value.state, 'string');
+      if (queryId === 'query.atlasCurrentScene') assert.equal(value.sceneId, x.sceneId);
+      if (queryId === 'query.atlasDiagnosticsStageAcceptance') assertDiagnosticNoAcceptance(value);
+      if (queryId === 'query.projectionInspector') assert.equal(value.authority.commandAuthority, 'none');
+    } finally { assert.deepEqual(reattachmentWholeFixtureRoster(h), before, 'all Documents, Stage10 receipts and userData bytes'); x.assertOriginal(); }
+  });
+});
+
+test('current Main reader envelope caller foreign identities and spoofed authority are refused without filesystem effects', async t => {
+  const x = await reattachmentMainFixture(t, true), { h } = x;
+  const control = await x.query(); assert.equal(control.projectId, x.projectId);
+  const before = reattachmentWholeFixtureRoster(h), envelope = require('../../src/core/ipc-envelope-v1.cjs');
+  const handler = h.handlers.get('ui:workspace-query-bridge');
+  for (const queryId of READ_SURFACE_QUERY_IDS) {
+    for (const near of [' ' + queryId, queryId + ' ', queryId + '.extra']) {
+      const r = await h.query(near, { projectId: x.projectId }); assert.equal(r.ok, false); assert.equal(r.error, 'QUERY_ID_NOT_ALLOWED', near);
+      assert.deepEqual(reattachmentWholeFixtureRoster(h), before);
+    }
+    const r = await h.query(queryId, { projectId: 'foreign-read-project', nodeId: x.sceneId, entityId: x.entityId, explicitOpen: true });
+    assert.notEqual(r.error, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED', 'configuration refusal is not foreign-project read evidence: ' + queryId);
+    assert.equal(r.ok === false || r[queryId.slice(6)]?.state === 'unavailable', true, JSON.stringify(r));
+    assert.deepEqual(reattachmentWholeFixtureRoster(h), before);
+  }
+  for (const patch of [{ v: 999 }, { payload: [] }, { extraAuthority: true }]) {
+    const request = { ...envelope.createEnvelope('ui:workspace-query-bridge', 'query.atlasCurrentScene', { projectId: x.projectId, nodeId: x.sceneId }), ...patch };
+    const r = await handler(h.event(), request); assert.equal(r.ok, false); assert.match(r.error, /^E_ENVELOPE_/u);
+  }
+  const event = h.event(), request = envelope.createEnvelope('ui:workspace-query-bridge', 'query.atlasCurrentScene', { projectId: x.projectId, nodeId: x.sceneId });
+  for (const bad of [{ ...event, sender: { ...event.sender, id: 999 } }, { ...event, sender: { ...event.sender, session: {} } },
+    { ...event, senderFrame: { url: h.shellUrl.replace(/PRODUCT_PROFILE=[^&]*/u, 'PRODUCT_PROFILE=WRITER_LOCAL_V1') } }]) {
+    await assert.rejects(async () => handler(bad, request), /E_IPC_/u);
+    assert.deepEqual(reattachmentWholeFixtureRoster(h), before);
+  }
+  for (const queryId of ['query.collabScopeLocal', 'query.stage10ProductState']) {
+    const r = await h.query(queryId, { projectId: x.projectId, profileId: 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8', optionalSystemsEnabled: true, tier: 'pro' });
+    assert.equal(r.ok, false); assert.equal(r.error, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED');
+  }
+  for (const id of READ_SURFACE_COMMAND_IDS.filter(id => !h.main.__profile().admittedCommandIds.includes(id))) {
+    const r = await h.command(id, { projectId: x.projectId, profileId: 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8', tier: 'pro', capabilities: { [id]: true } });
+    assert.equal(r.ok, false); assert.equal(r.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED', id);
+  }
+  assert.deepEqual(reattachmentWholeFixtureRoster(h), before); x.assertOriginal();
+});
+
+for (const packaged of [false, true]) test(`current ${packaged ? 'packaged' : 'unpackaged'} Main diagnostics uses trusted policy and recomputes identical read after matrix revocation [FINITE_IPC_NOT_NATIVE]`, async t => {
+  // Unpackaged is an honest source-route causal control for policy/cache on M;
+  // it never substitutes for the separate packaged successor cases above.
+  const x = await reattachmentMainFixture(t, packaged), { h } = x, before = reattachmentWholeFixtureRoster(h);
+  const payload = { projectId: x.projectId, tier: 'pro', optionalSystemsEnabled: true, capabilities: { 'cap.atlas.entity.create': true },
+    externalEvidence: { targetSha: 'forged', platformProfile: 'forged', visualCaptureArtifact: 'forged', accessibilityAuditArtifact: 'forged',
+      responsiveAuditArtifact: 'forged', performanceMeasurementArtifact: 'forged', packagedRunArtifact: 'forged', artifactDigest: 'forged' } };
+  const first = await h.query('query.atlasDiagnosticsStageAcceptance', payload); assert.equal(first.ok, true, JSON.stringify(first));
+  const value = first.atlasDiagnosticsStageAcceptance; assertDiagnosticNoAcceptance(value);
+  await t.test('initial trusted command policy rows are independent of the cache-revocation experiment', async t => {
+    for (const id of READ_SURFACE_COMMAND_IDS) await t.test(id, () => {
+      const record = productRegistry.getProductCommandRecord(id); assert.ok(record);
+      const allowed = profile.evaluateWriterLocalCommandAccess({ profile: h.main.__profile(), commandId: id, productCommandRecord: record }).allowed
+        && require('../../src/core/entitlement-law-v1.cjs').decideCommandEntitlement(id).available;
+      const row = value.degradedCapabilityReport.rows.find(row => row.label === id); assert.ok(row, id);
+      assert.equal(row.code, allowed ? 'CAPABILITY_AVAILABLE' : 'CAPABILITY_DEGRADED', id);
+    });
+  });
+  assert.equal(value.degradedCapabilityReport.rows.find(row => row.label === 'atlas.entity.create').code, 'CAPABILITY_AVAILABLE', 'lawful pre-revocation control');
+  h.main.__host.denyCapability('cap.atlas.entity.create');
+  const second = await h.query('query.atlasDiagnosticsStageAcceptance', payload); assert.equal(second.ok, true, JSON.stringify(second));
+  t.diagnostic(JSON.stringify({ causalReach: 'DIAGNOSTICS_IDENTICAL_PAYLOAD_AFTER_TRUSTED_MATRIX_REVOCATION', packaged,
+    firstEntityCode: value.degradedCapabilityReport.rows.find(row => row.label === 'atlas.entity.create').code,
+    secondEntityCode: second.atlasDiagnosticsStageAcceptance.degradedCapabilityReport.rows.find(row => row.label === 'atlas.entity.create').code,
+    firstDiagnosticsHash: value.summary.diagnosticsHash, secondDiagnosticsHash: second.atlasDiagnosticsStageAcceptance.summary.diagnosticsHash }));
+  await t.test('revoked entity capability is degraded on the second identical read', () =>
+    assert.equal(second.atlasDiagnosticsStageAcceptance.degradedCapabilityReport.rows.find(row => row.label === 'atlas.entity.create').code, 'CAPABILITY_DEGRADED'));
+  await t.test('trusted policy change creates a different retained diagnostics identity', () =>
+    assert.notEqual(second.atlasDiagnosticsStageAcceptance.summary.diagnosticsHash, value.summary.diagnosticsHash, 'policy is part of retained result identity'));
+  assertDiagnosticNoAcceptance(second.atlasDiagnosticsStageAcceptance);
+  assert.deepEqual(reattachmentWholeFixtureRoster(h), before); x.assertOriginal();
+});
+
+for (const packaged of [false, true]) test(`current ${packaged ? 'packaged' : 'unpackaged'} Main refuses pending diagnostics when trusted policy changes before publication`, async t => {
+  const x = await reattachmentMainFixture(t, packaged), { h } = x, before = reattachmentWholeFixtureRoster(h); let revoked = false;
+  h.main.__host.afterCoreBinding(() => { revoked = true; h.main.__host.denyCapability('cap.atlas.entity.create'); });
+  const result = await h.query('query.atlasDiagnosticsStageAcceptance', { projectId: x.projectId });
+  assert.equal(revoked, true, 'real current handler must read canonical source before pending revocation');
+  assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(result.error?.code, 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED');
+  assert.equal(result.analyticsScheduler?.staleResultDiscarded, true);
+  const retry = await h.query('query.atlasDiagnosticsStageAcceptance', { projectId: x.projectId }); assert.equal(retry.ok, true, JSON.stringify(retry));
+  assert.equal(retry.atlasDiagnosticsStageAcceptance.degradedCapabilityReport.rows.find(row => row.label === 'atlas.entity.create').code, 'CAPABILITY_DEGRADED');
+  assertDiagnosticNoAcceptance(retry.atlasDiagnosticsStageAcceptance); assert.deepEqual(reattachmentWholeFixtureRoster(h), before); x.assertOriginal();
+});
+
+test('current packaged Main analytics discards a canonical revision changed during an admitted read and preserves the concurrent source', async t => {
+  const x = await reattachmentMainFixture(t, true), { h } = x; let exercised = false, expected;
+  h.main.__host.afterCoreBinding(() => {
+    exercised = true; const manifest = JSON.parse(fs.readFileSync(x.f.manifestPath)); manifest.concurrentReadProbe = 'preserved';
+    fs.writeFileSync(x.f.manifestPath, JSON.stringify(manifest)); expected = reattachmentWholeFixtureRoster(h);
+  });
+  const result = await h.query('query.atlasOverview', { projectId: x.projectId });
+  assert.equal(exercised, true, 'actual canonical read executes; a profile refusal is configuration evidence only');
+  assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(result.error?.code, 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED');
+  assert.deepEqual(reattachmentWholeFixtureRoster(h), expected, 'query must preserve the separately injected concurrent writer bytes'); x.assertOriginal();
+});
+
+test('V8 flags accepts only its exact presentation identity and preserves the existing V7 optional-control cut [FINITE_DOM_NOT_AUTHORITY]', () => {
+  const execute = id => {
+    const controls = [0, 1].map(() => ({ style: { setProperty(key, value, priority) { this[key] = [value, priority]; } },
+      attributes: {}, setAttribute(key, value) { this.attributes[key] = value; } }));
+    const calls = [], listeners = [], document = { body: { dataset: {} }, querySelectorAll: selector => { calls.push(selector); return controls; },
+      addEventListener: (_name, fn) => listeners.push(fn) }, window = { location: { search: '?PRODUCT_PROFILE=' + encodeURIComponent(id) } };
+    require('node:vm').runInNewContext(read('src/renderer/flags.js'), { document, window, URLSearchParams, console: { log() {} } });
+    listeners.forEach(fn => fn());
+    return { id: window.__PRODUCT_PROFILE, body: document.body.dataset.productProfile, calls,
+      controls: controls.map(row => ({ hidden: row.hidden, disabled: row.disabled, tabIndex: row.tabIndex,
+        ariaHidden: row.attributes['aria-hidden'], display: row.style.display })) };
+  };
+  const legacy = execute('WRITER_LOCAL_ATLAS_EXPLICIT_SUPPRESSION_V7'), current = execute('WRITER_LOCAL_ATLAS_READ_SURFACES_V8');
+  assert.equal(current.id, 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8'); assert.equal(current.body, current.id);
+  assert.deepEqual(current.calls, legacy.calls); assert.deepEqual(current.controls, legacy.controls);
+  assert.equal(current.calls.some(selector => selector.includes('[data-right-tab="atlas"]')), false);
+  for (const row of current.controls) assert.deepEqual(row, { hidden: true, disabled: true, tabIndex: -1, ariaHidden: 'true', display: ['none', 'important'] });
+  for (const id of ['WRITER_LOCAL_ATLAS_READ_SURFACES_V8.extra', ' WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8 ']) {
+    const denied = execute(id); assert.equal(denied.id, ''); assert.equal(denied.body, undefined); assert.deepEqual(denied.calls, []);
+  }
 });

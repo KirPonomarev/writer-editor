@@ -5106,3 +5106,27 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Whole five maintained files at unaccepted checkpoint22c2ed63, runtime exactT:539total438pass101assertion failures,0cancel/skip/todo, no method faults; all10002tracked bytes verified unchanged through execution.
 - Lawful real Main typedAPPLIED/cold positive and five refusal controls pass; all15raw cases reach Core,13malformed accepted/two typed no-write refusals. RED01/new-port TypeError retained, one fixture response corrected without changing assertions.
 - Root source correction release remains six runtime paths plus named current literals; all required GREEN/companions/package/native/CI/normal delivery pending. No full product or release acceptance.
+
+
+## 2026-10-24 — Existing Atlas read surfaces admitted after complete suppression delivery
+
+- PR2155 exact merged52c0078d independently closed with actual current source/full baseline/RTK/CI/fresh package/native cold/full archive; all104Documents/twelve events preserved. Earlier suppression pending entries are historical, full product remains open.
+- Fresh25path clean preflight0 and taskE0 actual0,10002tracked/9978protected; current physical679member profile and exact offline dependencies verified, no install or private-state mutation.
+- TEST_ONLY four existing causal files for nine additional existing readers, selected-only refresh and current-policy diagnostics. Runtime remains unchanged until genuine whole RED/root review.22commands unchanged; no new storage/schema/registry/IPC/UI composition. All17Mac rows UNKNOWN; audit2high9moderate11 and59named baseline skips remain disclosed.
+
+- Frozen whole4causalRED actual574/523/51including parent aggregates,0cancel/skip/todo,88.12s; scoped/Git/9978outside bytes exact. Nine real packaged profile refusals, source-route matrix revoke/cache and pending stale publication plus selected-panel fanout failures independently reproduced. Four runtime correction paths only; tests frozen, full final/native/delivery acceptance pending.
+
+- Independent source review of four bounded runtime paths; legacy profile bodies inverse-exact, all four causal tests frozen. Normal bundle build0 and source-only syntax pass; host CommonJS/import method fault retained separately. CurrentV2runtime12queries/22unchanged commands and3of66pins only; remaining cut/consumer predicates exact. Mechanical current companions and full GREEN/native/delivery remain pending.
+
+- WholeGREEN01 actual589/586/3(two product/parent, one synchronous-assertion method),0cancel/skip/todo89.13s; all source fixed. Real projectionInspector Main-to-renderer readiness mismatch and exact new fixture invocation correction admitted in same25paths. Twelve Main reads/no-write, both policy revocation modes and9independent mutants execute successfully; full GREEN/native/delivery not claimed. Round1companion/approval history preserved before hash refresh.
+
+## 2026-10-24 — Atlas read surfaces: same-chain temporal contract compatibility
+
+- Task YALKEN_ATLAS_READ_SURFACES_20261024 remains open in PR2156; original delivery base52c0078d, clean compatibility checkpoint66145d91. No merge/full Mac or release acceptance.
+- Exact66145source:589of589whole focused cases, full twelve-panel native CUA, normal Quit/cold; all104Documents/twelve events/two suppressions/six reattachments preserved. Unsigned1475leaf ASAR and530member bundle archive independently reread. These are66145proofs, not later-head acceptance.
+- Additional whole35at66145runs1007tests1006pass1fail,0cancel/skip/todo: temporal source-wiring regex requires obsolete no-args calls. The reviewed current router forwards options and returns the real child.
+- Same original scope/outcome/rollback admits exactly one existing temporal contract assertion:26paths,9977outside files protected, valid clean preflight0/taskE00 before edit. New strict branch requires current signature, explicit-open flag, render and returned null,options call; all other file bytes remain exact. Whole temporal contract then actual0.
+- Every runtime/bundle/release projection and four589case causal file remains exact66145; all1481package inputs rehashed unchanged. No source trick, alternate obsolete regex, filter/skip or weakened explicit-open/currentness/no-write assertion. Existing RTK consumer changes three exact current certificate references only.
+- Current companions add temporal test only:786DATA646source311certificate; append a successor preserving entire committed310carrier/predicates/history. Inventory1603membership/classes/lanes/skips unchanged, only two test hashes relative66145. All66release pins and17UNKNOWN qualification fields unchanged.
+- Required53whole affected paths remain covered by actual focused files, complete current provider graph/post-build logs, full unmodified473unit local baseline and35other local whole contracts. The redundant local53invocation was intentionally interrupted(actualexit1,no credit); full baseline has not run before this compatibility amendment. Original failure/cancellation/declaration-method outputs retained.
+- Final coherent-source checks, new ordinary commit/push/current-headCI on same PR, fresh source-bound package/native/cold, normal merge and literal merged verification remain required. Audit2high9moderate unchanged/open;59named baseline skips never count as executed. Full Atlas/maps/WSE/Pulse/epochs and first Mac remain incomplete; Black Box later.
