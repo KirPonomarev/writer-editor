@@ -1097,6 +1097,10 @@ let atlasJourneyDraft = {
   decisionId: '',
   decisionEvidenceAnchor: null,
   suppressionId: '',
+  suppressionTarget: '',
+  suppressionContext: null,
+  suppressionIntentKey: '',
+  suppressionPending: false,
   reassignmentId: '',
   mergeOperationId: '',
   restoreOperationId: '',
@@ -15994,7 +15998,7 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
     button.setAttribute('aria-label', `${label}. ${options.reason}`);
   }
   button.addEventListener('click', () => {
-    if (commandId === 'atlas.evidence.reattach' && (button.disabled || !button.isConnected)) return;
+    if (['atlas.evidence.reattach', 'atlas.observation.suppress'].includes(commandId) && (button.disabled || !button.isConnected)) return;
     const nextPayload = typeof payload === 'function' ? payload() : payload;
     void runProductJourneyCommand(commandId, nextPayload);
   });
@@ -16168,7 +16172,12 @@ function appendAtlasJourneySelect(parent, config = {}) {
     select.appendChild(element);
   }
   select.value = config.value || '';
+  const suppressionOwner = config.fieldName === 'mentionId' ? getAtlasSuppressionContext() : null;
+  const suppressionPublication = config.fieldName === 'mentionId' ? captureAtlasPublication() : null;
+  const suppressionSurface = config.fieldName === 'mentionId' ? currentAtlasSurface : null;
   select.addEventListener('change', () => {
+    if (suppressionOwner && (!select.isConnected || !isAtlasSuppressionCurrent(suppressionOwner)
+      || !suppressionPublication() || currentAtlasSurface !== suppressionSurface)) return;
     atlasJourneyDraftRevision += 1;
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
@@ -16185,6 +16194,11 @@ function appendAtlasJourneySelect(parent, config = {}) {
       if (mention?.entityId) {
         atlasJourneyDraft.sourceEntityId = mention.entityId;
       }
+      atlasJourneyDraft.suppressionTarget = select.value;
+      atlasJourneyDraft.suppressionContext = getAtlasSuppressionContext();
+      atlasJourneyDraft.suppressionId = '';
+      atlasJourneyDraft.suppressionIntentKey = '';
+      atlasJourneyDraft.suppressionPending = false;
     }
     renderAtlasJourneyState();
   });
@@ -16577,6 +16591,7 @@ async function refreshAtlasProductSurfaces(options = {}) {
 }
 
 async function runProductJourneyCommand(commandId, payload = {}) {
+  if (commandId === 'atlas.observation.suppress') return runAtlasSuppressionCommand();
   if (commandId === 'atlas.evidence.reattach') return runAtlasReattachmentCommand();
   const nextCommandSeq = Math.max(atlasCommandPublicationSequence, Number(atlasJourneyState.commandSeq || 0)) + 1;
   atlasCommandPublicationSequence = nextCommandSeq;
@@ -16648,6 +16663,8 @@ function renderAtlasJourneyState() {
   const sourceEntity = findAtlasJourneyEntity(atlasJourneyDraft.sourceEntityId);
   const targetEntity = findAtlasJourneyEntity(atlasJourneyDraft.targetEntityId);
   const mention = findAtlasJourneyMention(atlasJourneyDraft.mentionId);
+  const suppressionSelected = isAtlasSuppressionCurrent(atlasJourneyDraft.suppressionContext) && Boolean(atlasJourneyDraft.suppressionTarget)
+    && atlasJourneyDraft.suppressionTarget === mention?.mentionId && atlasCurrentSceneState.state === 'ready';
 
   const fields = document.createElement('div');
   fields.className = 'right-rail-atlas-journey-fields';
@@ -16718,14 +16735,10 @@ function renderAtlasJourneyState() {
     evidenceAnchor: mention?.evidenceAnchor || null,
     decisionId: ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'),
   }), { actionId: 'confirm-mention', disabled: !mention, reason: mention ? '' : 'Select an exact mention' }));
-  actionBar.appendChild(makeAtlasCommandButton('Suppress', 'atlas.observation.suppress', () => ({
-    sceneId: mention?.sceneId || atlasCurrentSceneState.sceneId || '',
-    entityId: mention?.entityId || atlasJourneyDraft.sourceEntityId || '',
-    mentionId: mention?.mentionId || '',
-    evidenceAnchor: mention?.evidenceAnchor || null,
-    suppressionId: ensureAtlasJourneyDraftId('suppressionId', 'atlas-suppression'),
-    reason: 'author-reviewed',
-  }), { actionId: 'suppress-observation', disabled: !mention, reason: mention ? '' : 'Select an exact mention' }));
+  actionBar.appendChild(makeAtlasCommandButton('Suppress', 'atlas.observation.suppress', () => ({}), {
+    actionId: 'suppress-observation', disabled: !suppressionSelected || atlasJourneyDraft.suppressionPending === true,
+    reason: suppressionSelected ? '' : 'Choose an exact current saved occurrence',
+  }));
   actionBar.appendChild(makeAtlasCommandButton('Reassign', 'atlas.observation.reassign', () => ({
     sceneId: mention?.sceneId || atlasCurrentSceneState.sceneId || '',
     sourceEntityId: mention?.entityId || atlasJourneyDraft.sourceEntityId || '',
@@ -17171,7 +17184,7 @@ function getAtlasReattachmentSources(state = atlasEntityDossierState) {
 function isAtlasReattachmentSource(source) {
   const anchor = source?.evidenceAnchor;
   if (!source || source.rowKind !== 'sourceRecord' || source.projectId !== currentProjectId || source.entityId !== atlasSelectedEntityId
-    || source.sourceRecordKind !== 'decision'
+    || !['decision', 'suppression'].includes(source.sourceRecordKind)
     || typeof source.sourceRecordId !== 'string' || !source.sourceRecordId
     || typeof source.sourceRecordHash !== 'string' || !/^[a-f0-9]{64}$/u.test(source.sourceRecordHash) || !anchor || anchor.schemaVersion !== 'atlas.evidenceAnchor.v1'
     || typeof anchor.anchorId !== 'string' || !anchor.anchorId || typeof anchor.sceneId !== 'string' || !anchor.sceneId
@@ -17231,7 +17244,8 @@ function renderAtlasReattachmentSources(parent, state) {
       if (button.disabled || !button.isConnected || !isAtlasReattachmentCurrent(context)
         || !getAtlasReattachmentSources()?.some(row => hashCanonicalValue(row) === hashCanonicalValue(source)) || !isAtlasReattachmentSource(source)) return;
       atlasJourneyDraftRevision += 1;
-      atlasJourneyDraft = { ...atlasJourneyDraft, decisionId: source.sourceRecordId, decisionEvidenceAnchor: source.evidenceAnchor,
+      atlasJourneyDraft = { ...atlasJourneyDraft, ...(source.sourceRecordKind === 'decision'
+        ? { decisionId: source.sourceRecordId, decisionEvidenceAnchor: source.evidenceAnchor } : {}),
         reattachmentSource: JSON.parse(JSON.stringify(source)), reattachmentContext: context, reattachmentTarget: '',
         reattachmentId: '', reattachmentIntentKey: '', reattachmentPending: false };
       renderAtlasJourneyState();
@@ -17277,6 +17291,73 @@ async function runAtlasReattachmentCommand() {
   const refreshCurrent = () => context() && tab === currentRightTab && surface === currentAtlasSurface && sequence === atlasCommandPublicationSequence;
   await refreshAtlasCurrentScene({ force: true, isCurrent: refreshCurrent });
   if (refreshCurrent()) void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: refreshCurrent }).catch(error => console.warn('Atlas reattachment refresh failed', error));
+  return result;
+}
+
+function getAtlasSuppressionContext() {
+  return { projectId: currentProjectId, sceneId: currentDocumentId, entityId: atlasJourneyDraft.sourceEntityId || '', selectedEntityId: atlasSelectedEntityId,
+    epoch: atlasPublicationEpoch, publicationId: currentTreeContentPublicationId, generation: localEditGeneration, tab: currentRightTab };
+}
+
+function isAtlasSuppressionCurrent(context) {
+  return context && !localDirty && localEditGeneration === lastAckedGeneration
+    && Object.entries(getAtlasSuppressionContext()).every(([key, value]) => context[key] === value);
+}
+
+function getAtlasSuppressionIntent() {
+  if (!isAtlasSuppressionCurrent(atlasJourneyDraft.suppressionContext) || !atlasJourneyDraft.suppressionTarget
+    || atlasJourneyDraft.suppressionTarget !== atlasJourneyDraft.mentionId || !currentProjectId || !currentDocumentId) return null;
+  const mention = findAtlasJourneyMention(atlasJourneyDraft.suppressionTarget), anchor = mention?.evidenceAnchor;
+  if (atlasCurrentSceneState.state !== 'ready' || atlasCurrentSceneState.projectId !== currentProjectId
+    || atlasCurrentSceneState.sceneId !== currentDocumentId || mention?.entityId !== atlasJourneyDraft.sourceEntityId || mention?.sceneId !== currentDocumentId
+    || !anchor || anchor.schemaVersion !== 'atlas.evidenceAnchor.v1' || !anchor.anchorId
+    || anchor.projectId !== currentProjectId || anchor.entityId !== mention.entityId || anchor.sceneId !== currentDocumentId
+    || !Number.isSafeInteger(anchor.startOffset) || anchor.startOffset < 0 || !Number.isSafeInteger(anchor.endOffset)
+    || anchor.endOffset <= anchor.startOffset || anchor.startOffset !== mention.startOffset || anchor.endOffset !== mention.endOffset) return null;
+  const raw = getPlainText(), canonical = parseDocumentContent(composeDocumentContent()).text;
+  if (typeof raw !== 'string' || typeof canonical !== 'string' || !raw.startsWith(canonical) || !/^\n*$/u.test(raw.slice(canonical.length))
+    || anchor.endOffset > canonical.length || canonical.slice(anchor.startOffset, anchor.endOffset) !== anchor.quote
+    || anchor.quoteHash !== hashCanonicalValue(anchor.quote) || anchor.sceneTextHash !== hashCanonicalValue(canonical)
+    || atlasCurrentSceneState.summary.sceneTextHash !== anchor.sceneTextHash) return null;
+  return { sceneId: currentDocumentId, entityId: mention.entityId, mentionId: mention.mentionId, evidenceAnchor: anchor, reason: 'author-reviewed' };
+}
+
+async function runAtlasSuppressionCommand() {
+  const payload = getAtlasSuppressionIntent();
+  if (!payload || atlasJourneyDraft.suppressionPending) return { ok: false, reason: 'ATLAS_SUPPRESSION_SELECTION_REQUIRED' };
+  const key = hashCanonicalValue({ ...payload, context: atlasJourneyDraft.suppressionContext });
+  if (key !== atlasJourneyDraft.suppressionIntentKey || !atlasJourneyDraft.suppressionId) {
+    if (typeof globalThis.crypto?.randomUUID !== 'function') {
+      updateStatusText('ATLAS_SUPPRESSION_IDENTITY_UNAVAILABLE'); return { ok: false, reason: 'ATLAS_SUPPRESSION_IDENTITY_UNAVAILABLE' };
+    }
+    atlasJourneyDraft.suppressionId = `atlas-suppression-${globalThis.crypto.randomUUID()}`;
+    atlasJourneyDraft.suppressionIntentKey = key;
+  }
+  const id = atlasJourneyDraft.suppressionId, context = captureAtlasPublication(), sequence = ++atlasCommandPublicationSequence;
+  const tab = currentRightTab, surface = currentAtlasSurface;
+  const current = () => context() && tab === currentRightTab && surface === currentAtlasSurface && sequence === atlasCommandPublicationSequence
+    && atlasJourneyDraft.suppressionId === id && hashCanonicalValue({ ...getAtlasSuppressionIntent(), context: atlasJourneyDraft.suppressionContext }) === key;
+  atlasJourneyDraft.suppressionPending = true;
+  atlasJourneyState = { status: 'running', lastCommandId: 'atlas.observation.suppress', lastResult: '', commandSeq: sequence };
+  renderAtlasJourneyState();
+  const result = await dispatchUiCommand('atlas.observation.suppress', { ...payload, projectId: currentProjectId, suppressionId: id }, { isCurrentPresentation: current });
+  if (!current()) return result;
+  const receipt = result?.value?.result?.receipt;
+  const accepted = result?.ok === true && result.value?.performed === true
+    && result.value.commandAuthority === 'CommandKernel' && result.value.commandId === 'atlas.observation.suppress'
+    && result.value.result?.ok === true && receipt?.schemaVersion === 'command-kernel.receipt.v1'
+    && receipt.commandId === 'atlas.observation.suppress' && receipt.status === 'APPLIED'
+    && receipt.capabilityRevalidated === true && receipt.storageWritten === true;
+  atlasJourneyDraft.suppressionPending = false;
+  if (accepted) { atlasJourneyDraft.suppressionId = ''; atlasJourneyDraft.suppressionIntentKey = ''; atlasJourneyDraft.suppressionTarget = ''; }
+  atlasJourneyState = { status: accepted ? 'applied' : 'failed', lastCommandId: 'atlas.observation.suppress',
+    lastResult: accepted ? 'persisted' : result?.error?.reason || result?.reason || 'ATLAS_SUPPRESSION_NOT_APPLIED', commandSeq: sequence };
+  renderAtlasJourneyState();
+  const refreshCurrent = () => context() && tab === currentRightTab && surface === currentAtlasSurface && sequence === atlasCommandPublicationSequence
+    && isAtlasSuppressionCurrent(atlasJourneyDraft.suppressionContext)
+    && hashCanonicalValue(parseDocumentContent(composeDocumentContent()).text) === payload.evidenceAnchor.sceneTextHash;
+  await refreshAtlasCurrentScene({ force: true, isCurrent: refreshCurrent });
+  if (refreshCurrent()) void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: refreshCurrent }).catch(error => console.warn('Atlas suppression refresh failed', error));
   return result;
 }
 

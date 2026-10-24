@@ -3228,6 +3228,18 @@ function applyAtlasObservationSuppress(state, payload) {
   const observationId = trimString(payload?.observationId);
   const mentionId = trimString(payload?.mentionId);
   const reason = trimString(payload?.reason);
+  for (const [key, expected] of Object.entries({ projectId, sceneId, entityId })) {
+    const raw = payload?.evidenceAnchor;
+    if (isPlainObject(raw) && Object.hasOwn(raw, key) && typeof raw[key] !== 'string') {
+      return fail(state, 'E_ATLAS_EVIDENCE_IDENTITY_INVALID', 'atlas.observation.suppress', 'EVIDENCE_IDENTITY_INVALID', { key });
+    }
+    if (raw?.[key] && raw[key] !== expected) {
+      const kind = key === 'sceneId' ? 'SCENE' : key === 'entityId' ? 'ENTITY' : 'IDENTITY';
+      const details = key === 'sceneId' ? { sceneId, evidenceSceneId: raw[key] }
+        : key === 'entityId' ? { entityId, evidenceEntityId: raw[key] } : { projectId, evidenceProjectId: raw[key] };
+      return fail(state, `E_ATLAS_EVIDENCE_${kind}_MISMATCH`, 'atlas.observation.suppress', `EVIDENCE_${kind}_MISMATCH`, details);
+    }
+  }
   const evidenceAnchor = normalizeEvidenceAnchor(payload?.evidenceAnchor);
   const suppressionId = trimString(payload?.suppressionId) || `atlas-suppression:${hashCanonicalValue({
     projectId,

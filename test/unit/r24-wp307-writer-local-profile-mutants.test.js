@@ -326,3 +326,37 @@ test('V6 independent mutation oracles reject reattachment policy overgrant and i
   }
   t.diagnostic(`ATLAS_REATTACHMENT_V6_MUTANTS=${mutants.length}/${mutants.length}`);
 });
+
+test('V7 independent mutation oracles kill suppression overgrant malformed arrays records and query authority', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), original = loadFresh(MODULE_PATH);
+  assert.equal(typeof original.createWriterAtlasExplicitSuppressionProfileProjection, 'function', 'missing V7 is a policy gap, not a mutant kill');
+  const boundary = source.indexOf('// V7 admits only explicit Atlas occurrence suppression.'); assert.ok(boundary > 0);
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'atlas-suppress-v7-mutants-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const active = m => m.createWriterAtlasExplicitSuppressionProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const check = (m, allowed, patch = {}, record = { id: 'atlas.observation.suppress', domain: 'atlas' }, id = 'atlas.observation.suppress') =>
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: { ...active(m), ...patch }, commandId: id, productCommandRecord: record }).allowed, allowed);
+  const mutants = [
+    ['lost suppression', s => s.replace("...WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS, 'atlas.observation.suppress'", "...WRITER_ATLAS_EVIDENCE_REATTACHMENT_COMMAND_IDS, 'atlas.observation.suppress.disabled'"), m => check(m, true)],
+    ['blanket optional', s => s.replace('isActiveWriterAtlasExplicitSuppressionProfile(profile) && (!optional || selected)', 'isActiveWriterAtlasExplicitSuppressionProfile(profile)'),
+      m => check(m, false, {}, { id: 'atlas.entity.merge', domain: 'atlas' }, 'atlas.entity.merge')],
+    ['forged record', s => s.replace('productCommandRecord.id === commandId &&', 'true &&'), m => check(m, false, {}, { id: 'atlas.entity.merge', domain: 'atlas' })],
+    ['wrong domain', s => s.replace("productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap')", 'true'), m => check(m, false, {}, { id: 'atlas.observation.suppress', domain: 'manualMap' })],
+    ['policy', s => s.replace('if (!isWriterAtlasExplicitSuppressionProfileCandidate(profile)) return false;', 'if (!isWriterAtlasExplicitSuppressionProfileCandidate(profile)) return false; return true;'),
+      m => check(m, false, { optionalSystemsEnabled: true })],
+    ['extra key', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'), m => check(m, false, { extra: true })],
+    ['array order', s => s.replace('profile[key][index] === id', 'true'), m => check(m, false, { admittedCommandIds: [...active(m).admittedCommandIds].reverse() })],
+    ['inherited index', s => s.replace('Object.hasOwn(profile[key], index)', 'true'), m => {
+      const values = [...active(m).admittedCommandIds], index = values.length - 1; delete values[index];
+      Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: 'atlas.observation.suppress' })); values.extra = true;
+      check(m, false, { admittedCommandIds: values });
+    }],
+    ['query overgrant', s => s.replace('suppressionProfileAccess(profile, WRITER_EXACT_ATLAS_QUERY_IDS.includes(queryId),', 'suppressionProfileAccess(profile, true,'), m =>
+      assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active(m), queryId: 'query.atlasOverview' }).allowed, false)],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(' ', '-') + '.cjs'); fs.writeFileSync(file, changed);
+    const mutant = loadFresh(file); assert.throws(() => oracle(mutant), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic(`ATLAS_EXPLICIT_SUPPRESSION_V7_MUTANTS=${mutants.length}/${mutants.length}`);
+});
