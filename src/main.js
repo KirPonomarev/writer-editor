@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterAtlasTemporalAuthoringProfileProjection,
+  createWriterAtlasEntityCorrectionsProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -36102,7 +36102,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterAtlasTemporalAuthoringProfileProjection({
+  return createWriterAtlasEntityCorrectionsProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -38398,6 +38398,9 @@ const productCommandTransactionQueues = new Map();
 const ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS = Object.freeze([
   'atlas.calendar.define', 'atlas.sceneTemporalAnchor.set', 'atlas.continuityFact.record', 'atlas.savedQuery.save',
 ]);
+const ATLAS_ENTITY_CORRECTION_COMMAND_IDS = Object.freeze([
+  'atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore',
+]);
 
 const PRODUCT_AUTHOR_DOMAIN_SCHEMAS = Object.freeze({
   atlas: Object.freeze({ manifestKey: 'atlas', schemaVersion: 'atlas.author.v1', collectionKey: 'entities' }),
@@ -38802,7 +38805,9 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
   }
   const guard = record.domain === 'manualMap' ? captureManualMapPreparationGuard(commandId, record)
     : ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
-      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING') : null;
+      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING')
+    : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
+      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION') : null;
   const binding = await buildProductCoreStateForCurrentProject();
   if (guard) await guard(binding);
   const requestedProjectId = typeof payload?.projectId === 'string' ? payload.projectId.trim() : '';
@@ -38868,7 +38873,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         throw error;
       }
       await assertCurrent();
-      if (commandId === 'atlas.continuityFact.record') {
+      if (commandId === 'atlas.continuityFact.record' || commandId === 'atlas.observation.reassign') {
         guard();
         const sceneId = payload.sceneId.trim();
         const scene = binding.coreState.data.projects[binding.projectId].scenes[sceneId];
@@ -38888,6 +38893,9 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         }
         guard();
         if (`sha256:${computeHash(sourceBytes)}` !== scene.sceneRevision) {
+          if (commandId === 'atlas.observation.reassign') {
+            throw makeAtlasProductSceneProjectionError('E_ATLAS_ENTITY_CORRECTION_SOURCE_STALE', 'ATLAS_ENTITY_CORRECTION_SOURCE_STALE', sceneId);
+          }
           throw makeAtlasProductSceneProjectionError('E_ATLAS_TEMPORAL_AUTHORING_SOURCE_STALE', 'ATLAS_TEMPORAL_AUTHORING_SOURCE_STALE', sceneId);
         }
       }
@@ -39171,7 +39179,7 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
     return makeProductCommandBridgeError(commandId, 'E_MANUAL_MAP_MARKDOWN_INTENT_INVALID', 'MANUAL_MAP_MARKDOWN_INTENT_INVALID');
   }
 
-  if (ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId) && Object.hasOwn(payload, 'projectId')
+  if ((ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId) || ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)) && Object.hasOwn(payload, 'projectId')
     && (typeof payload.projectId !== 'string' || !payload.projectId.trim() || payload.projectId.length > 1000)) {
     return makeProductCommandBridgeError(commandId, 'E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'PRODUCT_COMMAND_PROJECT_ID_INVALID');
   }
@@ -39220,7 +39228,9 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
       );
     }
     const queueGuard = ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
-      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING') : null;
+      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING')
+      : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
+        ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION') : null;
     return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, async () => {
       try {
         if (queueGuard) queueGuard();

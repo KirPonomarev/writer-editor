@@ -2337,3 +2337,145 @@ test('V9 pending alias completion cannot clobber a newer source choice or saved-
   assert.deepEqual(h.draft(), before); assert.equal(JSON.stringify(h.c.atlasJourneyState), state);
   assert.equal(h.queries.length, queries); assert.equal(h.statuses.length, statuses); assert.equal(h.commands.length, 1);
 });
+
+const ENTITY_CORRECTION_V10 = 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10';
+function entityCorrectionDom(rows = []) {
+  const h = sourceEntitySelectionDom(ENTITY_CORRECTION_V10), c = h.c;
+  const start = editor.indexOf('let atlasJourneyDraft = '), end = editor.indexOf('\n};', start); assert.ok(start >= 0 && end > start);
+  const defaults = require('node:vm').runInContext('(' + editor.slice(start + 'let atlasJourneyDraft = '.length, end + 2) + ')', c);
+  c.atlasJourneyDraft = { ...defaults, ...c.atlasJourneyDraft };
+  // Load only actual additional Atlas correction/saved-merge functions present in the production source.
+  const names = [...editor.matchAll(/^(?:async )?function (\w*Atlas\w*(?:Correction|SavedMerge)\w*)\(/gm)].map(match => match[1]);
+  if (names.length) h.loadActual(...names);
+  const saved = rows.length ? rows : [{ operationId: 'saved-merge-a', projectId: 'project-a', sourceEntityId: 'mira', targetEntityId: 'beacon',
+    sourceName: 'Мира', targetName: 'Маяк', operationHash: 'a'.repeat(64), sourceEntityHash: 'b'.repeat(64), targetEntityHash: 'c'.repeat(64),
+    createdByCommandSeq: 5, restoredByCommandSeq: 0, restoreState: 'RESTORABLE' }];
+  const dossier = { ...h.dossier(), requestedEntityId: 'beacon', selectedEntityId: 'beacon', entity: { entityId: 'beacon', name: 'Маяк' },
+    savedMergeOperations: { rows: saved, totalCount: saved.length, complete: true } };
+  c.atlasSelectedEntityId = 'beacon'; h.setDossier(dossier);
+  const query = c.queryPort; c.queryPort = request => request.row[2] === 'atlasEntityDossier' ? { ok: true, atlasEntityDossier: structuredClone(dossier) } : query(request);
+  const mergeSelect = () => h.walk(c.atlasEntityDossierHost).find(node => Object.hasOwn(node.dataset, 'atlasSavedMergeSelect'));
+  const selectMerge = async id => { const select = mergeSelect(); assert.ok(select, 'actual dossier must expose native saved merge selection');
+    assert.equal(select.tagName, 'SELECT'); select.value = id; await select.emit('change'); };
+  return { ...h, correctionDossier: dossier, mergeSelect, selectMerge };
+}
+
+test('V10 actual failed merge never enables restore from a generated unsaved operation ID [FINITE_DOM]', async t => {
+  const h = entityCorrectionDom(); assert.equal(h.button('split-restore').disabled, true);
+  h.c.commandPort = () => ({ ok: false, error: { code: 'E_CORE_REFUSED', reason: 'OWNED_FINITE_REFUSAL' } });
+  await h.click('merge-entities'); t.diagnostic(JSON.stringify({ draft: h.draft(), commands: h.commands }));
+  assert.equal(h.commands.length, 1); assert.equal(h.commands[0].id, 'atlas.entity.merge');
+  assert.equal(h.button('split-restore').disabled, true, 'failed merge is not a saved operation selection');
+});
+
+test('V10 actual cold saved merge select supplies the existing restore action with persisted identity [FINITE_DOM]', async () => {
+  const h = entityCorrectionDom(); assert.equal(h.draft().mergeOperationId, '');
+  await h.selectMerge('saved-merge-a'); const sent = await h.click('split-restore');
+  assert.equal(sent.id, 'atlas.entity.splitRestore'); assert.equal(sent.payload.operationId, 'saved-merge-a');
+  assert.match(sent.payload.restoreOperationId, /^atlas-split-restore-[a-f0-9-]{36}$/u);
+  assert.equal(h.working(), SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT);
+});
+
+test('V10 actual correction identities change for distinct warm intents and renderer restarts [FINITE_DOM]', async t => {
+  for (const [action, key, prefix] of [['reassign-observation', 'reassignmentId', 'atlas-reassign-'], ['merge-entities', 'operationId', 'atlas-merge-']])
+    await t.test(action, async () => {
+      const ids = [];
+      for (let cold = 0; cold < 2; cold++) {
+        const h = entityCorrectionDom(); await h.target('mira-25'); const first = await h.click(action);
+        await h.target('mira-68'); const second = await h.click(action);
+        for (const sent of [first, second]) { assert.ok(sent); assert.equal(sent.payload[key].startsWith(prefix), true);
+          assert.match(sent.payload[key].slice(prefix.length), /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
+          assert.equal(ids.includes(sent.payload[key]), false); ids.push(sent.payload[key]); }
+      }
+    });
+});
+
+test('V10 correction doubleclick and retired actual buttons cannot create another pending command [FINITE_DOM]', async t => {
+  for (const action of ['reassign-observation', 'merge-entities', 'split-restore']) await t.test(action, async () => {
+    const h = entityCorrectionDom(), gate = h.deferred(); if (action === 'split-restore') await h.selectMerge('saved-merge-a'); h.c.commandPort = () => gate.promise;
+    const old = h.button(action); await old.emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+    await old.emit('click'); await h.settle(); assert.equal(h.commands.length, 1, 'pending or detached original control cannot redispatch');
+    const draft = h.draft(), queries = h.queries.length; await h.field('aliasValue', 'Новый черновик é 🧭'); const current = h.draft();
+    gate.resolve(h.appliedResponse()); await h.settle(); await h.settle(); assert.deepEqual(h.draft(), current);
+    assert.equal(h.queries.length, queries); assert.equal(current.aliasValue, 'Новый черновик é 🧭'); assert.equal(draft.sourceEntityId, current.sourceEntityId);
+  });
+  const detached = entityCorrectionDom(), button = detached.button('merge-entities'); button.parentElement = null;
+  await button.emit('click'); await detached.settle(); assert.equal(detached.commands.length, 0);
+});
+
+test('V10 unavailable or throwing correction entropy refuses visibly without dispatch or draft loss [FINITE_DOM]', async t => {
+  for (const action of ['reassign-observation', 'merge-entities', 'split-restore']) for (const fault of ['missing', 'throws']) await t.test(action + '-' + fault, async () => {
+    const h = entityCorrectionDom(); await h.field('aliasValue', 'Сохранить é 🧭'); if (action === 'split-restore') { h.render(); await h.selectMerge('saved-merge-a'); }
+    const before = h.draft(); h.c.crypto = fault === 'missing' ? undefined : { randomUUID() { throw new Error('owned entropy unavailable'); } };
+    await assert.doesNotReject(() => h.click(action)); assert.equal(h.commands.length, 0); assert.deepEqual(h.draft(), before);
+    assert.equal(h.statuses.some(row => row.value === 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE'), true);
+    h.c.crypto = { randomUUID: () => require('node:crypto').randomUUID() }; assert.ok(await h.click(action));
+  });
+});
+
+test('V10 failed correction retry retains one intent ID while a changed intent receives a new one [FINITE_DOM]', async () => {
+  const h = entityCorrectionDom(); h.c.commandPort = () => ({ ok: false, error: { reason: 'OWNED_RETRY' } });
+  const first = await h.click('reassign-observation'), retry = await h.click('reassign-observation');
+  assert.equal(retry.payload.reassignmentId, first.payload.reassignmentId);
+  await h.target('mira-68'); const changed = await h.click('reassign-observation'); assert.notEqual(changed.payload.reassignmentId, first.payload.reassignmentId);
+});
+
+test('V10 saved merge select rejects stale restored foreign malformed hidden and retired rows [FINITE_DOM]', async t => {
+  for (const fault of ['STALE', 'RESTORED', 'foreign', 'malformed', 'hidden', 'retired']) await t.test(fault, async () => {
+    const h = entityCorrectionDom(), row = h.correctionDossier.savedMergeOperations.rows[0];
+    if (fault === 'STALE' || fault === 'RESTORED') row.restoreState = fault;
+    if (fault === 'foreign') row.projectId = 'foreign-project'; if (fault === 'malformed') row.operationHash = 'not-a-hash';
+    h.setDossier(h.correctionDossier); const select = h.mergeSelect();
+    if (select) { if (fault === 'retired') { h.render(); select.parentElement = null; }
+      select.value = fault === 'hidden' ? 'unseen-operation' : 'saved-merge-a'; await select.emit('change'); }
+    assert.equal(h.button('split-restore').disabled, true); assert.equal(h.commands.length, 0);
+  });
+});
+
+test('V10 honest partial saved operations allow the visible bound row through actual Entity to Flow routing [FINITE_DOM]', async () => {
+  const h = entityCorrectionDom(), c = h.c;
+  h.correctionDossier.savedMergeOperations.complete = false; h.correctionDossier.savedMergeOperations.totalCount = 8;
+  h.setDossier(h.correctionDossier);
+  Object.assign(c, { rightAtlasPanel: c.document.createElement('aside'), atlasSurfaceButtons: [], atlasSurfaceShells: [],
+    ATLAS_DEFERRED_SURFACE_IDS: ['heatmap', 'temporal', 'continuity'],
+    ATLAS_SURFACE_PROVIDER_BY_ID: { entity: c.ATLAS_ENTITY_DOSSIER_QUERY_ID, journey: c.ATLAS_CURRENT_SCENE_QUERY_ID },
+    atlasReachabilityOpener: null, atlasReachabilityCaption: null, rightRailOverlayOpen: false,
+    getSpatialLayoutViewportWidth: () => 1280, getSpatialLayoutConstraintsForViewport: () => ({ rightRailMode: 'docked' }) });
+  for (const [surface, host] of [['entity', c.atlasEntityDossierHost], ['journey', c.atlasJourneyHost]]) {
+    const shell = c.document.createElement('section'); shell.dataset.atlasSurfaceShell = surface; shell.append(host);
+    c.atlasSurfaceShells.push(shell); c.rightAtlasPanel.append(shell);
+  }
+  c.document.body.append(c.rightAtlasPanel);
+  h.loadActual('setCurrentAtlasSurface', 'syncAtlasSurfaceCompositionState', 'syncAtlasReachabilityOpenerState', 'isAtlasSupportedViewportWidth');
+  c.syncAtlasSurfaceCompositionState(); await h.selectMerge('saved-merge-a'); const text = h.working();
+  c.setCurrentAtlasSurface('journey'); await h.settle();
+  assert.equal(c.atlasEntityDossierHost.parentElement.hidden, true); assert.equal(c.atlasJourneyHost.parentElement.hidden, false);
+  assert.equal(h.button('split-restore').disabled, false); const sent = await h.click('split-restore');
+  assert.equal(sent.id, 'atlas.entity.splitRestore'); assert.equal(sent.payload.operationId, 'saved-merge-a'); assert.equal(h.working(), text);
+});
+
+test('V10 corrections accept only the registered applied receipt envelope [FINITE_RESPONSE_NOT_CORE_PROOF]', async t => {
+  for (const [action, id] of [['reassign-observation', 'atlas.observation.reassign'], ['merge-entities', 'atlas.entity.merge'], ['split-restore', 'atlas.entity.splitRestore']])
+    for (const shape of ['valid', 'shallow', 'APPLIED-without-receipt']) await t.test(action + '-' + shape, async () => {
+      const h = entityCorrectionDom(); if (action === 'split-restore') await h.selectMerge('saved-merge-a');
+      const result = h.appliedResponse(); result.value.commandId = id; result.value.result.receipt.commandId = id;
+      if (shape === 'APPLIED-without-receipt') delete result.value.result.receipt;
+      h.c.commandPort = () => shape === 'shallow' ? { ok: true, value: { status: 'APPLIED' } } : result;
+      await h.click(action); assert.equal(h.commands.length, 1); assert.equal(h.commands[0].id, id);
+      assert.equal(h.c.atlasJourneyState.status, shape === 'valid' ? 'applied' : 'failed');
+      assert.equal(h.c.atlasJourneyState.lastResult === 'persisted', shape === 'valid');
+      if (shape !== 'valid' && action === 'merge-entities') assert.equal(h.button('split-restore').disabled, true);
+    });
+});
+
+test('V10 inherits V9 source ownership UUIDs default confirmation and fact identity [FINITE_DOM]', async () => {
+  const h = entityCorrectionDom(); await h.field('sourceEntityId', 'beacon'); assert.equal(h.draft().sourceEntityId, 'beacon');
+  const alias = await h.click('add-alias'); assert.match(alias.payload.aliasId, /^atlas-alias-[a-f0-9-]{36}$/u);
+  await h.target('mira-25'); const confirmation = await h.click('confirm-mention'); assert.equal(Object.hasOwn(confirmation.payload, 'decisionId'), false);
+  h.loadActual('getAtlasContinuityFactPayload', 'ensureAtlasSurfaceDraftId');
+  h.c.atlasContinuityAuthorDraft = { ledgerKind: 'promise', entityId: 'mira', mentionId: 'mira-25', factLabel: 'Current', factValue: 'Kept', promiseState: 'open' };
+  assert.equal(Object.hasOwn(h.c.getAtlasContinuityFactPayload(), 'factId'), false);
+  const reads = temporalAuthoringSurfaceHarness(); reads.c.window.__PRODUCT_PROFILE = ENTITY_CORRECTION_V10; reads.c.currentAtlasSurface = 'reports';
+  await reads.c.refreshAtlasProductSurfaces({ currentScene: false }); await reads.settle();
+  assert.deepEqual(reads.queries.map(row => row.queryId), ['query.atlasReportsSavedQueries']);
+});

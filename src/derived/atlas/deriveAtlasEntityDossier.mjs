@@ -146,6 +146,7 @@ function unavailable(projectId, entityId, reason, error = null) {
     relationRows: [],
     absenceIntervals: [],
     evidenceLedger: buildEvidenceLedger([], reason),
+    savedMergeOperations: { rows: [], totalCount: 0, complete: false },
     evidence: buildEvidence({ dossierHash: '', sourceHashes: {} }),
     ...(error ? { error } : {}),
   };
@@ -305,6 +306,38 @@ function buildRelationRows(temporal, entityId, limit) {
     .slice(0, limit);
 }
 
+function buildSavedMergeOperations(project, projectId, entityId, limit) {
+  const operations = isPlainObject(project.atlas?.entityOperations) ? project.atlas.entityOperations : {};
+  const related = Object.entries(operations).filter(([id, operation]) => isPlainObject(operation)
+    && operation.id === id && id.length > 0 && operation.operationKind === 'entity.merge' && operation.projectId === projectId
+    && typeof operation.sourceEntityId === 'string' && typeof operation.targetEntityId === 'string'
+    && operation.sourceEntityId.trim() && operation.targetEntityId.trim() && operation.sourceEntityId !== operation.targetEntityId
+    && Number.isSafeInteger(operation.createdByCommandSeq) && operation.createdByCommandSeq > 0
+    && Number.isSafeInteger(operation.restoredByCommandSeq) && operation.restoredByCommandSeq >= 0
+    && [operation.sourceEntityId, operation.targetEntityId].includes(entityId)
+    && [operation.beforeSourceEntity, operation.beforeTargetEntity, operation.afterSourceEntity, operation.afterTargetEntity].every(isPlainObject)
+    && operation.beforeSourceEntity.id === operation.sourceEntityId && operation.afterSourceEntity.id === operation.sourceEntityId
+    && operation.beforeTargetEntity.id === operation.targetEntityId && operation.afterTargetEntity.id === operation.targetEntityId)
+    .sort(([leftId, left], [rightId, right]) => Number(right.createdByCommandSeq || 0) - Number(left.createdByCommandSeq || 0)
+      || leftId.localeCompare(rightId, 'en', { sensitivity: 'variant' }));
+  const rows = related.slice(0, limit).map(([operationId, operation]) => {
+    const source = getEntity(project, operation.sourceEntityId), target = getEntity(project, operation.targetEntityId);
+    const sourceEntityHash = hashCanonicalValue(source), targetEntityHash = hashCanonicalValue(target);
+    const restoredByCommandSeq = Number.isSafeInteger(operation.restoredByCommandSeq) ? operation.restoredByCommandSeq : 0;
+    const restoreState = restoredByCommandSeq > 0 ? 'RESTORED'
+      : source.id === operation.sourceEntityId && target.id === operation.targetEntityId
+        && sourceEntityHash === hashCanonicalValue(operation.afterSourceEntity) && targetEntityHash === hashCanonicalValue(operation.afterTargetEntity)
+        ? 'RESTORABLE' : 'STALE';
+    return { operationId, projectId, sourceEntityId: operation.sourceEntityId, targetEntityId: operation.targetEntityId,
+      sourceName: plainString(operation.beforeSourceEntity.name) || operation.sourceEntityId,
+      targetName: plainString(operation.beforeTargetEntity.name) || operation.targetEntityId,
+      operationHash: hashCanonicalValue(operation), sourceEntityHash, targetEntityHash,
+      createdByCommandSeq: Number.isSafeInteger(operation.createdByCommandSeq) ? operation.createdByCommandSeq : 0,
+      restoredByCommandSeq, restoreState };
+  });
+  return { rows, totalCount: related.length, complete: related.length <= limit };
+}
+
 function buildDossier({ coreState, projectId, requestedEntityId, aggregate, temporal, inbox, limit, meta }) {
   const project = getProject(coreState, projectId);
   if (!project) {
@@ -328,6 +361,7 @@ function buildDossier({ coreState, projectId, requestedEntityId, aggregate, temp
       relationRows: [],
       absenceIntervals: [],
       evidenceLedger: buildEvidenceLedger([]),
+      savedMergeOperations: { rows: [], totalCount: 0, complete: true },
       evidence: buildEvidence({ dossierHash: '', sourceHashes: sourceHashBundle }),
     };
   }
@@ -337,6 +371,7 @@ function buildDossier({ coreState, projectId, requestedEntityId, aggregate, temp
   const observations = (Array.isArray(aggregate?.observations) ? aggregate.observations : [])
     .filter((observation) => observation.entityId === entityId);
   const sourceRows = sourceRecordLedgerRows(inbox, entityId, project);
+  const savedMergeOperations = buildSavedMergeOperations(project, projectId, entityId, limit);
   const relationRows = buildRelationRows(temporal, entityId, limit);
   const absenceIntervals = (Array.isArray(temporal?.absenceIntervals) ? temporal.absenceIntervals : [])
     .filter((interval) => interval.entityId === entityId)
@@ -350,13 +385,14 @@ function buildDossier({ coreState, projectId, requestedEntityId, aggregate, temp
     aliases,
     observations,
     sourceRows,
+    savedMergeOperations,
     relationRows,
     absenceIntervals,
     sourceHashBundle,
   });
   return {
     schemaVersion: ATLAS_ENTITY_DOSSIER_SCHEMA_VERSION,
-    state: observations.length > 0 || sourceRows.length > 0 ? 'ready' : 'empty',
+    state: observations.length > 0 || sourceRows.length > 0 || savedMergeOperations.rows.length > 0 ? 'ready' : 'empty',
     unavailableReason: '',
     surfaceManifest: buildSurfaceManifest(),
     authority: buildAuthority(),
@@ -386,6 +422,7 @@ function buildDossier({ coreState, projectId, requestedEntityId, aggregate, temp
     absenceIntervals,
     evidenceLedger: { ...buildEvidenceLedger(rows), sourceRecords: sourceRows.slice(0, limit),
       sourceRecordCount: sourceRows.length, sourceRecordsComplete: sourceRows.length <= limit },
+    savedMergeOperations,
     evidence: buildEvidence({ dossierHash, sourceHashes: sourceHashBundle }),
   };
 }

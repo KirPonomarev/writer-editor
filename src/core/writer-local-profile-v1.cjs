@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return evaluateTemporalAuthoringCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasReadSurfacesProfileCandidate(profile)) return evaluateReadSurfacesCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasExplicitSuppressionProfileCandidate(profile)) return evaluateSuppressionCommandAccess(profile, commandId, productCommandRecord);
@@ -213,6 +214,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsQueryAccess(profile, queryId);
   if (isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return evaluateTemporalAuthoringQueryAccess(profile, queryId);
   if (isWriterAtlasReadSurfacesProfileCandidate(profile)) return evaluateReadSurfacesQueryAccess(profile, queryId);
   if (isWriterAtlasExplicitSuppressionProfileCandidate(profile)) return evaluateSuppressionQueryAccess(profile, queryId);
@@ -515,7 +517,60 @@ function evaluateTemporalAuthoringQueryAccess(profile, queryId) {
     OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
+// V10 admits only the three existing Atlas entity correction commands.
+const WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v10';
+const WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_ID = 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10';
+const WRITER_ATLAS_ENTITY_CORRECTIONS_COMMAND_IDS = Object.freeze([...WRITER_ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS,
+  'atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore']);
+const WRITER_ATLAS_ENTITY_CORRECTIONS_QUERY_IDS = WRITER_ATLAS_TEMPORAL_AUTHORING_QUERY_IDS;
+function createWriterAtlasEntityCorrectionsProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_SCHEMA_VERSION, profileId: WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_ID,
+    admittedCommandIds: WRITER_ATLAS_ENTITY_CORRECTIONS_COMMAND_IDS, admittedQueryIds: WRITER_ATLAS_ENTITY_CORRECTIONS_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterAtlasEntityCorrectionsProfileCandidate(profile) {
+  return Boolean(profile) && typeof profile === 'object' && (normalizeIdentity(profile.profileId).startsWith(WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_ID)
+    || normalizeIdentity(profile.schemaVersion).startsWith(WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_SCHEMA_VERSION));
+}
+function isActiveWriterAtlasEntityCorrectionsProfile(profile) {
+  if (!isPlainObject(profile)) return false;
+  if (!isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return false;
+  const expected = createWriterAtlasEntityCorrectionsProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const keys = Reflect.ownKeys(expected);
+  return Reflect.ownKeys(profile).length === keys.length && keys.every(key => Object.hasOwn(profile, key) && (Array.isArray(expected[key])
+    ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && Reflect.ownKeys(profile[key]).length === expected[key].length + 1
+      && expected[key].every((id, index) => Object.hasOwn(profile[key], index))
+      && expected[key].every((id, index) => profile[key][index] === id)
+    : profile[key] === expected[key]));
+}
+function entityCorrectionsProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterAtlasEntityCorrectionsProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_ID });
+}
+function evaluateEntityCorrectionsCommandAccess(profile, commandId, productCommandRecord) {
+  const id = normalizeIdentity(commandId);
+  const selected = WRITER_ATLAS_ENTITY_CORRECTIONS_COMMAND_IDS.includes(commandId) && isPlainObject(productCommandRecord)
+    && productCommandRecord.id === commandId && productCommandRecord.domain === (commandId.startsWith('atlas.') ? 'atlas' : 'manualMap');
+  return entityCorrectionsProfileAccess(profile, selected, isOptionalWriterLocalCommand(commandId, productCommandRecord)
+    || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+}
+function evaluateEntityCorrectionsQueryAccess(profile, queryId) {
+  const id = normalizeIdentity(queryId);
+  return entityCorrectionsProfileAccess(profile, WRITER_ATLAS_ENTITY_CORRECTIONS_QUERY_IDS.includes(queryId),
+    OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
+}
+
 module.exports = Object.freeze({
+  WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_SCHEMA_VERSION,
+  WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_ID,
+  WRITER_ATLAS_ENTITY_CORRECTIONS_COMMAND_IDS,
+  WRITER_ATLAS_ENTITY_CORRECTIONS_QUERY_IDS,
+  createWriterAtlasEntityCorrectionsProfileProjection,
+  isActiveWriterAtlasEntityCorrectionsProfile,
   WRITER_ATLAS_TEMPORAL_AUTHORING_PROFILE_SCHEMA_VERSION,
   WRITER_ATLAS_TEMPORAL_AUTHORING_PROFILE_ID,
   WRITER_ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS,
