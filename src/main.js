@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterAtlasReadSurfacesProfileProjection,
+  createWriterAtlasTemporalAuthoringProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -36102,7 +36102,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterAtlasReadSurfacesProfileProjection({
+  return createWriterAtlasTemporalAuthoringProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -38395,6 +38395,9 @@ function readAuthorityCapabilityMatrixDoc() {
 }
 
 const productCommandTransactionQueues = new Map();
+const ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS = Object.freeze([
+  'atlas.calendar.define', 'atlas.sceneTemporalAnchor.set', 'atlas.continuityFact.record', 'atlas.savedQuery.save',
+]);
 
 const PRODUCT_AUTHOR_DOMAIN_SCHEMAS = Object.freeze({
   atlas: Object.freeze({ manifestKey: 'atlas', schemaVersion: 'atlas.author.v1', collectionKey: 'entities' }),
@@ -38446,7 +38449,7 @@ function getProjectAuthorDomainForPersistence(project, manifestKey, createEmpty)
 
 const MANUAL_MAP_LOCAL_FILE_MAX_BYTES = 8 * 1024 * 1024;
 
-function captureManualMapPreparationGuard(commandId, record) {
+function captureManualMapPreparationGuard(commandId, record, errorFamily = 'MANUAL_MAP') {
   const window = mainWindow, owner = activeStage10ApplicationBootstrap, projectName = currentProjectName;
   const root = getProjectRootPath(), session = commentAuthoringSessionId, subject = currentLifecycleSubjectId();
   const file = currentFilePath, generation = lastSignaledEditGeneration;
@@ -38459,13 +38462,13 @@ function captureManualMapPreparationGuard(commandId, record) {
       || subject !== currentLifecycleSubjectId() || file !== currentFilePath || generation !== lastSignaledEditGeneration
       || !capability.ok || !decideCommandEntitlement(commandId, getProductEntitlementTier()).available
       || !evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId, productCommandRecord: record }).allowed) {
-      throw Object.assign(new Error('MANUAL_MAP_PREPARATION_STALE'), { code: 'E_MANUAL_MAP_PREPARATION_STALE' });
+      throw Object.assign(new Error(`${errorFamily}_PREPARATION_STALE`), { code: `E_${errorFamily}_PREPARATION_STALE` });
     }
   };
-  return async (binding, expectedHash) => {
+  const bound = async (binding, expectedHash) => {
     check();
     if (binding.projectRoot !== root || binding.projectId !== owner.getProjectId()) {
-      throw Object.assign(new Error('MANUAL_MAP_PROJECT_STALE'), { code: 'E_MANUAL_MAP_PREPARATION_STALE' });
+      throw Object.assign(new Error(`${errorFamily}_PROJECT_STALE`), { code: `E_${errorFamily}_PREPARATION_STALE` });
     }
     if (expectedHash) {
       const unchanged = await assertProductCommandManifestUnchanged(binding, expectedHash, commandId, record);
@@ -38473,6 +38476,7 @@ function captureManualMapPreparationGuard(commandId, record) {
     }
     check();
   };
+  return (binding, expectedHash) => binding === undefined ? check() : bound(binding, expectedHash);
 }
 
 async function prepareManualMapAttachmentCommand(commandId, payload, binding, assertCurrent) {
@@ -38796,7 +38800,9 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     error.code = 'E_STAGE10_CANONICAL_PROJECT_TRUTH_COMMAND_NOT_SUPPORTED';
     throw error;
   }
-  const guard = record.domain === 'manualMap' ? captureManualMapPreparationGuard(commandId, record) : null;
+  const guard = record.domain === 'manualMap' ? captureManualMapPreparationGuard(commandId, record)
+    : ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
+      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING') : null;
   const binding = await buildProductCoreStateForCurrentProject();
   if (guard) await guard(binding);
   const requestedProjectId = typeof payload?.projectId === 'string' ? payload.projectId.trim() : '';
@@ -38862,6 +38868,29 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         throw error;
       }
       await assertCurrent();
+      if (commandId === 'atlas.continuityFact.record') {
+        guard();
+        const sceneId = payload.sceneId.trim();
+        const scene = binding.coreState.data.projects[binding.projectId].scenes[sceneId];
+        const node = collectAtlasOverviewSceneNodes(binding.roots).find(value => value.nodeId === sceneId);
+        if (!scene || !node) throw makeAtlasProductSceneProjectionError('E_ATLAS_PRODUCT_SCENE_TARGET_INVALID', 'ATLAS_PRODUCT_SCENE_TARGET_INVALID', sceneId);
+        const target = getResolvedTreeDocumentTarget({ ...node, nodePath: typeof node.nodePath === 'string' ? node.nodePath : node.path });
+        const sourceGuard = sanitizePathFieldsWithinRoot({ path: target.filePath }, ['path'], binding.projectRoot,
+          { mode: 'any', resolveSymlinks: true });
+        if (!sourceGuard.ok || !sourceGuard.payload?.path) {
+          throw makeAtlasProductSceneProjectionError('E_PATH_BOUNDARY_VIOLATION', 'ATLAS_PRODUCT_SCENE_PATH_BOUNDARY_VIOLATION', sceneId);
+        }
+        let sourceBytes;
+        try { sourceBytes = await fs.readFile(sourceGuard.payload.path); }
+        catch {
+          guard();
+          throw makeAtlasProductSceneProjectionError('E_ATLAS_PRODUCT_SCENE_DOCUMENT_READ_FAILED', 'ATLAS_PRODUCT_SCENE_DOCUMENT_READ_FAILED', sceneId);
+        }
+        guard();
+        if (`sha256:${computeHash(sourceBytes)}` !== scene.sceneRevision) {
+          throw makeAtlasProductSceneProjectionError('E_ATLAS_TEMPORAL_AUTHORING_SOURCE_STALE', 'ATLAS_TEMPORAL_AUTHORING_SOURCE_STALE', sceneId);
+        }
+      }
       const nextManifest = {
         ...binding.manifest,
         [spec.manifestKey]: getProjectAuthorDomainForPersistence(
@@ -39142,6 +39171,11 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
     return makeProductCommandBridgeError(commandId, 'E_MANUAL_MAP_MARKDOWN_INTENT_INVALID', 'MANUAL_MAP_MARKDOWN_INTENT_INVALID');
   }
 
+  if (ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId) && Object.hasOwn(payload, 'projectId')
+    && (typeof payload.projectId !== 'string' || !payload.projectId.trim() || payload.projectId.length > 1000)) {
+    return makeProductCommandBridgeError(commandId, 'E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'PRODUCT_COMMAND_PROJECT_ID_INVALID');
+  }
+
   const capability = evaluateCommandCapabilityAuthority({
     commandId,
     capabilityId: record.capabilityId,
@@ -39185,8 +39219,11 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
         },
       );
     }
+    const queueGuard = ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
+      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING') : null;
     return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, async () => {
       try {
+        if (queueGuard) queueGuard();
         return await activeStage10ApplicationCommandRoute.dispatch(commandId, payload);
       } catch (error) {
         return makeProductCommandBridgeError(

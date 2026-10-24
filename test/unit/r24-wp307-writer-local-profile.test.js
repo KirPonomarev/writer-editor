@@ -514,3 +514,71 @@ test('V8 refuses malformed policy own keys arrays identities and forged command 
   for (const commandId of ['cmd.project.save', ...m.WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS])
     assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId }).allowed, true, commandId);
 });
+
+const TEMPORAL_AUTHORING_IDS = Object.freeze(['atlas.calendar.define', 'atlas.sceneTemporalAnchor.set',
+  'atlas.continuityFact.record', 'atlas.savedQuery.save']);
+
+test('V9 admits only four existing temporal authoring commands after the complete ordered V8 policy', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs'), registry = require('../../src/shared/productCommandRegistry.cjs');
+  assert.equal(typeof m.createWriterAtlasTemporalAuthoringProfileProjection, 'function', 'missing V9 is an implementation gap');
+  assert.equal(typeof m.isActiveWriterAtlasTemporalAuthoringProfile, 'function');
+  const options = { isPackaged: true, platform: 'darwin' }, old = m.createWriterAtlasReadSurfacesProfileProjection(options);
+  const active = m.createWriterAtlasTemporalAuthoringProfileProjection(options);
+  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'); assert.equal(active.schemaVersion, 'writer-local-profile.v9');
+  assert.deepEqual(active.admittedCommandIds, [...old.admittedCommandIds, ...TEMPORAL_AUTHORING_IDS]);
+  assert.equal(active.admittedCommandIds.length, 26); assert.equal(new Set(active.admittedCommandIds).size, 26);
+  assert.deepEqual(active.admittedQueryIds, old.admittedQueryIds); assert.equal(active.admittedQueryIds.length, 12);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation'])
+    assert.equal(active[key], false, key);
+  for (const value of [active, active.admittedCommandIds, active.admittedQueryIds]) assert.equal(Object.isFrozen(value), true);
+  assert.equal(m.isActiveWriterAtlasTemporalAuthoringProfile(active), true);
+  for (const record of registry.PRODUCT_COMMAND_RECORDS) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active,
+    commandId: record.id, productCommandRecord: record }).allowed, active.admittedCommandIds.includes(record.id), record.id);
+  for (const id of TEMPORAL_AUTHORING_IDS) {
+    const record = registry.getProductCommandRecord(id); assert.ok(record); assert.equal(record.domain, 'atlas');
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: old, commandId: id, productCommandRecord: record }).allowed, false);
+  }
+  for (const queryId of m.OPTIONAL_QUERY_IDS) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed,
+    active.admittedQueryIds.includes(queryId), queryId);
+  for (const options of [{}, { isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' },
+    { isPackaged: true, platform: 'win32' }, { isPackaged: 'true', platform: 'darwin' }])
+    assert.deepEqual(m.createWriterAtlasTemporalAuthoringProfileProjection(options), m.createWriterLocalProfileProjection(options));
+});
+
+test('V9 rejects forged identities complete own-shape holes and exact command or query near matches', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  assert.equal(typeof m.createWriterAtlasTemporalAuthoringProfileProjection, 'function');
+  const active = m.createWriterAtlasTemporalAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const variants = [{ ...active, extra: true }, { ...active, [Symbol('authority')]: true }, { ...active, active: false },
+    { ...active, packaged: false }, { ...active, platform: 'linux' }, { ...active, optionalSystemsEnabled: true },
+    { ...active, cloudAuthority: true }, { ...active, userDataMutation: true }, { ...active, signing: true },
+    { ...active, profileId: active.profileId + '.forged' }, { ...active, schemaVersion: active.schemaVersion + '.extra' },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds, 'atlas.entity.merge'] },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds].reverse() },
+    { ...active, admittedCommandIds: active.admittedCommandIds.slice(1) },
+    { ...active, admittedQueryIds: [...active.admittedQueryIds, 'query.stage10ProductState'] },
+    { ...active, admittedQueryIds: [...active.admittedQueryIds].reverse() },
+    Object.assign([], active), Object.assign(Object.create({ ...active }), { profileId: active.profileId })];
+  for (const field of ['admittedCommandIds', 'admittedQueryIds']) {
+    const values = [...active[field]], index = values.length - 1; delete values[index];
+    Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active[field][index] }));
+    values.extra = true;
+    variants.push({ ...active, [field]: values }, { ...active, [field]: Object.assign([...active[field]], { extra: true }) });
+  }
+  for (const invalid of variants) {
+    assert.equal(m.isActiveWriterAtlasTemporalAuthoringProfile(invalid), false);
+    for (const id of TEMPORAL_AUTHORING_IDS) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: invalid,
+      commandId: id, productCommandRecord: { id, domain: 'atlas' } }).allowed, false);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile: invalid, queryId: 'query.atlasReportsSavedQueries' }).allowed, false);
+  }
+  for (const id of active.admittedCommandIds) {
+    const domain = id.startsWith('atlas.') ? 'atlas' : 'manualMap', record = { id, domain };
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord: record }).allowed, true);
+    for (const near of [' ' + id, id + ' ', id + '.extra']) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active,
+      commandId: near, productCommandRecord: { id: near, domain } }).allowed, false, near);
+    for (const forged of [null, [], { id, domain: 'meaning' }, { id: id + '.extra', domain }, Object.create(record)])
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord: forged }).allowed, false);
+  }
+  for (const id of active.admittedQueryIds) for (const near of [' ' + id, id + ' ', id + '.extra'])
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId: near }).allowed, false, near);
+});

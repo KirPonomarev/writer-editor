@@ -2061,3 +2061,76 @@ test('V8 lawful command completion refreshes current selection without cancellin
   assert.equal(h.commands.length, 1); assert.equal(h.c.atlasJourneyState.status, 'applied');
   assert.equal(h.delivered.at(-1), receipt); assert.equal(h.working(), 'manuscript é 🧭');
 });
+
+function temporalAuthoringSurfaceHarness() {
+  const h = publicationHarness(); h.c.window.__PRODUCT_PROFILE = 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9';
+  return h;
+}
+
+for (const [surface, index] of V8_SURFACE_READERS) {
+  test('V9 command refresh requests only the selected existing ' + surface + ' reader', async () => {
+    const h = temporalAuthoringSurfaceHarness(); h.c.currentAtlasSurface = surface;
+    await h.c.refreshAtlasProductSurfaces(); await h.settle();
+    assert.deepEqual(h.queries.map(row => row.queryId), [h.c[h.leaves[index][1]]]);
+    assert.equal(h.commands.length, 0); assert.equal(h.working(), 'manuscript é 🧭');
+  });
+  test('V9 scene publication requests only the selected existing ' + surface + ' reader', async () => {
+    const h = temporalAuthoringSurfaceHarness(); h.c.currentAtlasSurface = surface;
+    h.incoming({ projectId: 'project-a', documentId: 'scene-a', kind: 'scene', metaEnabled: true, title: 'Current', content: h.working() });
+    await h.settle();
+    assert.deepEqual(h.queries.map(row => row.queryId), [h.c[h.leaves[index][1]]]);
+    assert.equal(h.commands.length, 0); assert.equal(h.working(), 'manuscript é 🧭');
+  });
+  test('V9 selected ' + surface + ' child cannot publish after parent or source currentness changes', async () => {
+    for (const fault of ['parent', 'project', 'document', 'generation', 'epoch', 'tab', 'surface']) {
+      const h = temporalAuthoringSurfaceHarness(), gate = h.deferred(), row = h.leaves[index]; let current = true;
+      h.c.currentAtlasSurface = surface; h.c.queryPort = () => gate.promise;
+      const pending = h.c.refreshActiveAtlasSurface({ isCurrent: () => current });
+      assert.equal(h.queries.length, 1); const state = JSON.stringify(h.c[row[4]]), renders = h.renders.length;
+      if (fault === 'parent') current = false; if (fault === 'project') h.c.currentProjectId = 'foreign';
+      if (fault === 'document') h.c.currentDocumentId = 'foreign'; if (fault === 'generation') h.c.localEditGeneration++;
+      if (fault === 'epoch') h.c.invalidateAtlasPublications(); if (fault === 'tab') h.c.currentRightTab = 'inspector';
+      if (fault === 'surface') h.c.currentAtlasSurface = surface === 'overview' ? 'entity' : 'overview';
+      gate.resolve(h.projection(row, 'project-a', 'stale-v9')); await pending;
+      assert.equal(JSON.stringify(h.c[row[4]]), state, fault); assert.equal(h.renders.length, renders, fault);
+      assert.equal(h.commands.length, 0); assert.equal(h.working(), 'manuscript é 🧭');
+    }
+  });
+}
+
+test('V9 currentScene false skips duplicate scene and Journey work and returns only the selected child', async () => {
+  for (const surface of ['currentScene', 'journey', 'overview', 'temporal', 'continuity', 'reports']) {
+    const h = temporalAuthoringSurfaceHarness(); h.c.currentAtlasSurface = surface;
+    await h.c.refreshAtlasProductSurfaces({ currentScene: false }); await h.settle();
+    const index = V8_SURFACE_READERS.find(row => row[0] === surface)?.[1];
+    assert.deepEqual(h.queries.map(row => row.queryId), ['currentScene', 'journey'].includes(surface) ? [] : [h.c[h.leaves[index][1]]]);
+    assert.equal(h.commands.length, 0);
+  }
+});
+
+test('V9 pending selected refresh awaits its real child and refuses a stale parent before and after await', async () => {
+  const h = temporalAuthoringSurfaceHarness(), gate = h.deferred(); h.c.currentAtlasSurface = 'reports'; h.c.queryPort = () => gate.promise;
+  let current = true, settled = false;
+  const pending = Promise.resolve(h.c.refreshAtlasProductSurfaces({ currentScene: false, isCurrent: () => current })).then(() => { settled = true; });
+  await h.settle(); assert.equal(settled, false); assert.deepEqual(h.queries.map(row => row.queryId), ['query.atlasReportsSavedQueries']);
+  const states = h.leaves.map(row => JSON.stringify(h.c[row[4]])), renders = h.renders.length; current = false;
+  gate.resolve(h.projection(h.leaves[10], 'project-a', 'late')); await pending;
+  assert.deepEqual(h.leaves.map(row => JSON.stringify(h.c[row[4]])), states); assert.equal(h.renders.length, renders);
+  const count = h.queries.length; await h.c.refreshAtlasProductSurfaces({ isCurrent: () => false }); await h.settle();
+  assert.equal(h.queries.length, count); assert.equal(h.commands.length, 0);
+});
+
+for (const [commandId, surface, queryId] of [['atlas.calendar.define', 'temporal', 'query.atlasTemporalLayout'],
+  ['atlas.sceneTemporalAnchor.set', 'temporal', 'query.atlasTemporalLayout'],
+  ['atlas.continuityFact.record', 'continuity', 'query.atlasContinuityLedgerSurface'],
+  ['atlas.savedQuery.save', 'reports', 'query.atlasReportsSavedQueries']]) {
+  test('V9 real command completion for ' + commandId + ' refreshes one selected child without fabricating acceptance', async () => {
+    const h = temporalAuthoringSurfaceHarness(), gate = h.deferred(); h.c.commandPort = () => gate.promise;
+    const pending = h.c.runAtlasSurfaceProductCommand(commandId, { projectId: 'project-a' }); h.c.currentAtlasSurface = surface;
+    const receipt = { ok: true, value: { status: 'APPLIED' } }; gate.resolve(receipt);
+    assert.equal(await pending, receipt); await h.settle();
+    assert.deepEqual(h.queries.map(row => row.queryId), ['query.atlasCurrentScene', queryId]);
+    assert.equal(h.commands.length, 1); assert.equal(h.commands[0].id, commandId);
+    assert.equal(h.delivered.at(-1), receipt); assert.equal(h.working(), 'manuscript é 🧭');
+  });
+}

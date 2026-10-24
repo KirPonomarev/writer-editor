@@ -16318,12 +16318,14 @@ function getAtlasContinuityFactPayload() {
   const ledgerKind = atlasContinuityAuthorDraft.ledgerKind || 'promise';
   return {
     ledgerKind,
-    factId: ensureAtlasSurfaceDraftId(
-      atlasContinuityAuthorDraft,
-      'factId',
-      'atlas-continuity-fact',
-      (next) => { atlasContinuityAuthorDraft = next; },
-    ),
+    ...(window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9' ? {} : {
+      factId: ensureAtlasSurfaceDraftId(
+        atlasContinuityAuthorDraft,
+        'factId',
+        'atlas-continuity-fact',
+        (next) => { atlasContinuityAuthorDraft = next; },
+      ),
+    }),
     sceneId: mention?.sceneId || atlasCurrentSceneState.sceneId || currentDocumentId || '',
     subjectEntityId: atlasContinuityAuthorDraft.entityId || '',
     factLabel: atlasContinuityAuthorDraft.factLabel || 'R3 C02 continuity fact',
@@ -16565,7 +16567,7 @@ function appendAtlasSavedQueryControls(parent) {
 
 async function refreshAtlasProductSurfaces(options = {}) {
   if (options.isCurrent && !options.isCurrent()) return;
-  if (window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8') return refreshActiveAtlasSurface(options);
+  if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'].includes(window.__PRODUCT_PROFILE)) return refreshActiveAtlasSurface(options);
   const refreshes = [
     refreshAtlasOverview(options),
     refreshAtlasEntityDossier(options),
@@ -25373,7 +25375,7 @@ if (window.electronAPI) {
       refreshSceneHistory('');
     }
     if (currentRightTab === 'atlas') {
-      if (window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8') {
+      if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'].includes(window.__PRODUCT_PROFILE)) {
         void refreshActiveAtlasSurface();
       } else {
         renderAtlasJourneyState();
