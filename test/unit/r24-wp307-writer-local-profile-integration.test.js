@@ -2102,3 +2102,215 @@ for (const cold of [false, true]) test('actual V9 fact producer preserves two di
     x.assertOriginal();
   });
 });
+
+
+// Actual initial renderer state, actual Flow producers/listeners and actual renderer/Main command port.
+function authorIdentityMainRenderer(x, projection, profileId) {
+  const vm = require('node:vm'), source = read('src/renderer/editor.js'), tasks = [], packets = [], document = {};
+  class Element {
+    constructor(tag) { this.tagName = tag.toUpperCase(); this.children = []; this.dataset = {}; this.listeners = {}; this.disabled = false; this.value = ''; }
+    get isConnected() { return this === document.body || !!this.parentElement?.isConnected; }
+    set innerHTML(value) { assert.equal(value, ''); this.children.forEach(node => { node.parentElement = null; }); this.children = []; }
+    append(...nodes) { nodes.forEach(node => this.appendChild(node)); }
+    appendChild(node) { node.parentElement = this; this.children.push(node); return node; }
+    setAttribute(name, value) { this[name] = value; }
+    addEventListener(name, callback) { this.listeners[name] = callback; }
+    emit(name) { return this.listeners[name]?.({ target: this }); }
+  }
+  document.createElement = tag => new Element(tag); document.body = new Element('body'); const host = new Element('section'); document.body.append(host);
+  const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: profileId }, crypto,
+    atlasJourneyHost: host, atlasJourneyState: { status: 'idle', commandSeq: 0 }, atlasCurrentSceneState: structuredClone(projection),
+    currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentDocumentTitle: 'Owned author identity scene',
+    currentTreeContentPublicationId: 'actual-main-scene', currentRightTab: 'atlas', currentAtlasSurface: 'journey',
+    localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false, atlasSelectedEntityId: '',
+    atlasPublicationEpoch: 0, atlasCommandPublicationSequence: 0, atlasJourneyDraftRevision: 0,
+    manualMapDraftOwnership: 0, manualMapDraftRevision: 0, applyAtlasResolvedSurfaceBinding() {}, updateStatusText() {},
+    refreshAtlasProductSurfaces: async () => {}, console,
+    dispatchUiCommand: async (id, payload) => { const response = await x.ui(id, payload); packets.push(response); return response.result; },
+    refreshAtlasCurrentScene: async options => { const current = await x.query(); if (!options.isCurrent || options.isCurrent()) c.atlasCurrentSceneState = structuredClone(current); } };
+  const start = source.indexOf('let atlasStableUiIdSeq = 0;'), end = source.indexOf('let atlasTemporalAuthorDraft =', start);
+  assert.ok(start > 0 && end > start);
+  const actual = name => {
+    let a = source.indexOf('async function ' + name + '('); if (a < 0) a = source.indexOf('function ' + name + '(');
+    const b = source.indexOf('\n}\n', a); assert.ok(a >= 0 && b > a, name); return source.slice(a, b + 2);
+  };
+  const names = ['makeAtlasCommandButton', 'getAtlasJourneyEntities', 'getAtlasJourneyMentions', 'findAtlasJourneyEntity',
+    'findAtlasJourneyMention', 'makeStableUiId', 'ensureAtlasJourneyDraftId', 'getAtlasJourneyEntityName', 'getAtlasJourneyAliasValue',
+    'reconcileAtlasJourneyDraft', 'appendAtlasJourneyField', 'appendAtlasJourneySelect', 'formatAtlasJourneyEntityOption',
+    'formatAtlasJourneyMentionOption', 'renderAtlasJourneyState', 'captureAtlasPublication', 'runProductJourneyCommand',
+    'getAtlasSuppressionContext', 'isAtlasSuppressionCurrent'];
+  vm.createContext(c); vm.runInContext(source.slice(start, end) + names.map(actual).join('\n')
+    + '\nconst executeActualJourney = runProductJourneyCommand; runProductJourneyCommand = (...args) => { const p = executeActualJourney(...args); tasks.push(p); return p; };',
+  Object.assign(c, { tasks })); c.renderAtlasJourneyState();
+  const walk = node => [node, ...node.children.flatMap(walk)];
+  const field = async (name, value) => { const node = walk(host).find(row => row.dataset.atlasJourneyField === name); assert.ok(node, name);
+    node.value = value; await node.emit(node.tagName === 'SELECT' ? 'change' : 'input'); };
+  const click = async action => { const button = walk(host).find(node => node.dataset.atlasJourneyAction === action);
+    assert.ok(button); assert.equal(button.disabled, false, 'valid actual producer ' + action); const n = tasks.length;
+    button.emit('click'); assert.equal(tasks.length, n + 1); await tasks[n]; assert.ok(packets.length); return packets.at(-1); };
+  const target = async (entityId, offset) => { const mention = c.atlasCurrentSceneState.mentions.find(row => row.entityId === entityId && row.startOffset === offset);
+    assert.ok(mention, 'real current Main occurrence'); await field('mentionId', mention.mentionId); return structuredClone(mention); };
+  return { c, field, click, target, packets };
+}
+
+function authorIdentitySnapshot(x) {
+  const stage = path.join(x.f.projectRoot, '.stage10-local'), manifestRaw = fs.readFileSync(x.f.manifestPath, 'utf8');
+  const session = JSON.parse(fs.readFileSync(path.join(stage, 'product-session.v2.json')));
+  const authorityStore = JSON.parse(fs.readFileSync(path.join(stage, 'command-receipt-authority-store.v2.json')));
+  const roster = reattachmentWholeFixtureRoster(x.h), anchorNames = ['integrity-anchor.v1.json', 'integrity-anchor.recovery.v1.json', 'fencing-generation.v1.json'];
+  const anchors = Object.fromEntries(roster.filter(([name]) => name.startsWith(path.join('userData', 'stage10-integrity-anchors') + path.sep)
+    && anchorNames.includes(path.basename(name))).map(([name]) => [name, JSON.parse(fs.readFileSync(path.join(x.h.root, name)))]));
+  return { manifest: JSON.parse(manifestRaw), manifestRaw, session, authorityStore, anchors, observedAtMs: Date.now(),
+    scene: fs.readFileSync(x.f.scenePath), roster, events: session.eventLog.events, receipts: authorityStore.receipts };
+}
+
+function assertAuthorIdentityCanonical(actual, expected) {
+  assert.deepEqual(actual, expected);
+  const bytes = value => Buffer.from(JSON.stringify(canonicalTemporalValue(value)));
+  assert.deepEqual(bytes(actual), bytes(expected)); assert.equal(crypto.createHash('sha256').update(bytes(actual)).digest('hex'),
+    crypto.createHash('sha256').update(bytes(expected)).digest('hex'));
+}
+
+function assertAuthorIdentityPreservation(x, before, after, commandId, payload, applied, identityKey) {
+  const count = applied ? 1 : 0, seq = before.manifest.lastCommandId + count;
+  assertAuthorIdentityCanonical(after.events.slice(0, before.events.length), before.events);
+  assertAuthorIdentityCanonical(after.receipts.slice(0, before.receipts.length), before.receipts);
+  assert.equal(after.events.length, before.events.length + count); assert.equal(after.receipts.length, before.receipts.length + count);
+  assert.deepEqual(after.scene, before.scene); assert.equal(after.manifest.lastCommandId, seq); x.assertOriginal();
+  if (!applied) { assert.deepEqual(after.roster, before.roster); assertAuthorIdentityCanonical(after.manifest, before.manifest); return; }
+  assert.equal(after.events.at(-1).commandId, commandId); assert.equal(after.receipts.at(-1).commandId, commandId);
+  assert.equal(after.events.at(-1).domainEventDigest, after.receipts.at(-1).domainEventDigest);
+  const projectPrefix = path.relative(x.h.root, x.f.projectRoot) + path.sep;
+  const anchorPrefix = path.join('userData', 'stage10-integrity-anchors', identityKey) + path.sep;
+  const digest = text => crypto.createHash('sha256').update(text).digest('hex');
+  const previousHash = digest(before.manifestRaw), nextHash = digest(after.manifestRaw);
+  const transitionBase = path.join('userData', 'stage10-integrity-anchors', 'manifest-transitions');
+  const transitionRoot = path.join(transitionBase, digest(x.projectId + '\0' + x.f.manifestPath));
+  const transitionDir = path.join(transitionRoot, previousHash), transitionFile = path.join(transitionDir, nextHash + '.json');
+  const transitionText = JSON.stringify({ schemaVersion: 'yalken.manifest-transition.v1', projectId: x.projectId,
+    targetPath: x.f.manifestPath, previousHash, nextHash });
+  assert.notEqual(previousHash, nextHash); assert.equal(fs.readFileSync(path.join(x.h.root, transitionFile), 'utf8'), transitionText);
+  const prior = new Map(before.roster), currentRoster = new Map(after.roster), additions = new Set();
+  assert.equal(prior.has(transitionFile), false, 'one new command has one new manifest transition');
+  for (const name of [transitionBase, transitionRoot, transitionDir]) {
+    assert.equal(currentRoster.get(name), 'directory'); if (!prior.has(name)) additions.add(name);
+  }
+  assert.equal(currentRoster.get(transitionFile), digest(transitionText)); additions.add(transitionFile);
+  const mutable = new Set([projectPrefix + 'project.craftsman.json',
+    ...['product-session.v2.json', 'command-receipt-authority-store.v2.json', path.join('recovery', 'project-truth.latest.v1.json')]
+      .map(name => projectPrefix + path.join('.stage10-local', name)),
+    ...['integrity-anchor.v1.json', 'integrity-anchor.recovery.v1.json', 'fencing-generation.v1.json'].map(name => anchorPrefix + name)]);
+  const fixed = rows => rows.filter(([name]) => !mutable.has(name) && !additions.has(name));
+  assert.deepEqual(fixed(after.roster), fixed(before.roster), 'all prior transitions, manuscript, foreign projects and unrelated runtime files exact');
+  const previousAnchor = before.anchors[anchorPrefix + 'integrity-anchor.v1.json'], head = after.authorityStore.currentHead;
+  assertAuthorIdentityCanonical(after.anchors[anchorPrefix + 'integrity-anchor.recovery.v1.json'], previousAnchor);
+  const anchorCore = { schemaVersion: 'yalken.stage10.mainIntegrityAnchor.v1', anchorVersion: 1, projectId: x.projectId,
+    authorityGeneration: head.authorityGeneration, receiptCount: head.receiptCount, receiptRootDigest: head.receiptRootDigest,
+    eventLogDigest: head.eventLogDigest, authorityHeadDigest: head.authorityHeadDigest,
+    authorityStoreDigest: x.hash(after.authorityStore), sessionDigest: x.hash(after.session),
+    previousIntegrityAnchorDigest: previousAnchor.integrityAnchorDigest };
+  assert.equal(anchorCore.authorityGeneration, previousAnchor.authorityGeneration + 1);
+  assertAuthorIdentityCanonical(after.anchors[anchorPrefix + 'integrity-anchor.v1.json'], { ...anchorCore, integrityAnchorDigest: x.hash(anchorCore) });
+  const oldFence = before.anchors[anchorPrefix + 'fencing-generation.v1.json'], fence = after.anchors[anchorPrefix + 'fencing-generation.v1.json'];
+  assert.match(fence.ownerTokenDigest, /^[a-f0-9]{64}$/u); assert.notEqual(fence.ownerTokenDigest, oldFence.ownerTokenDigest);
+  assert.ok(fence.issuedAtMs >= before.observedAtMs && fence.issuedAtMs <= after.observedAtMs);
+  assert.ok(Number.isSafeInteger(fence.monotonicIssuedAtMs) && fence.monotonicIssuedAtMs >= oldFence.monotonicIssuedAtMs);
+  assertAuthorIdentityCanonical(fence, { ...oldFence, fencingGeneration: oldFence.fencingGeneration + 1,
+    ownerTokenDigest: fence.ownerTokenDigest, issuedAtMs: fence.issuedAtMs, monotonicIssuedAtMs: fence.monotonicIssuedAtMs });
+  const recovery = JSON.parse(fs.readFileSync(path.join(x.f.projectRoot, '.stage10-local', 'recovery', 'project-truth.latest.v1.json')));
+  assertAuthorIdentityCanonical(recovery, { schemaVersion: 'yalken.stage10.projectTruthRecovery.v1', projectId: x.projectId, reason: commandId,
+    previousIntegrityAnchorDigest: previousAnchor.integrityAnchorDigest, previousHash, intendedNextHash: nextHash, previousText: before.manifestRaw });
+  const old = before.manifest.atlas, current = after.manifest.atlas, expectedEntities = structuredClone(old.entities), expectedDecisions = structuredClone(old.decisions);
+  if (commandId === 'atlas.entity.create') {
+    assert.equal(Object.hasOwn(old.entities, payload.entityId), false);
+    expectedEntities[payload.entityId] = { id: payload.entityId, name: payload.name, entityKind: payload.entityKind, aliases: {},
+      createdByCommandSeq: seq, updatedByCommandSeq: seq };
+  } else {
+    const entity = expectedEntities[payload.entityId]; assert.ok(entity); entity.updatedByCommandSeq = seq;
+    if (commandId === 'atlas.alias.add') {
+      assert.equal(Object.hasOwn(entity.aliases, payload.aliasId), false);
+      entity.aliases[payload.aliasId] = { id: payload.aliasId, value: payload.value, scope: payload.scope, sceneId: payload.sceneId, createdByCommandSeq: seq };
+    } else {
+      const added = Object.keys(current.decisions).filter(id => !Object.hasOwn(old.decisions, id)); assert.equal(added.length, 1);
+      expectedDecisions[added[0]] = { id: added[0], decisionKind: 'mention.confirm', trustState: 'AUTHOR_CONFIRMED',
+        projectId: x.projectId, sceneId: payload.sceneId, entityId: payload.entityId, mentionId: payload.mentionId,
+        evidenceAnchor: payload.evidenceAnchor, createdByCommandSeq: seq };
+    }
+  }
+  assertAuthorIdentityCanonical(current.entities, expectedEntities); assertAuthorIdentityCanonical(current.decisions, expectedDecisions);
+  assertAuthorIdentityCanonical(after.manifest, { ...before.manifest, lastCommandId: seq,
+    atlas: { ...old, entities: expectedEntities, decisions: expectedDecisions } });
+}
+
+test('actual V9 cold producers independently create entity alias and confirmation after historical counter records [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await reattachmentMainFixture(t, true);
+  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
+  assert.equal((await x.h.main.handleProjectLifecycleCreateCommand({ projectName: 'Foreign identity project' })).ok, true);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  const key = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId); assert.equal(key.ok, true);
+  const historical = authorIdentityMainRenderer(x, await x.query(), 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8');
+  await historical.field('entityName', 'Мира'); const created = await historical.click('create-entity'); assertTemporalMainReceipt(created.mainResult, 'atlas.entity.create');
+  const entityId = created.request.payload.entityId; assert.equal(entityId, 'atlas-entity-00001');
+  await historical.target(entityId, 25); await historical.field('aliasValue', 'Старый псевдоним é 🧭');
+  const aliased = await historical.click('add-alias'); assertTemporalMainReceipt(aliased.mainResult, 'atlas.alias.add');
+  assert.equal(aliased.request.payload.aliasId, 'atlas-alias-00002');
+  const confirmed = await historical.click('confirm-mention'); assertTemporalMainReceipt(confirmed.mainResult, 'atlas.mention.confirm');
+  assert.equal(confirmed.request.payload.decisionId, 'atlas-decision-00003'); const preserved = authorIdentitySnapshot(x);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  assertAuthorIdentityCanonical(authorIdentitySnapshot(x).manifest, preserved.manifest);
+  const renderer = authorIdentityMainRenderer(x, await x.query(), 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
+  await renderer.target(entityId, 68); await renderer.field('entityName', 'Лира после перезапуска é 🧭');
+  await renderer.field('aliasValue', 'Другой псевдоним после перезапуска é 🧭');
+  for (const [action, id] of [['create-entity', 'atlas.entity.create'], ['add-alias', 'atlas.alias.add'], ['confirm-mention', 'atlas.mention.confirm']])
+    await t.test(id, async () => {
+      const before = authorIdentitySnapshot(x), response = await renderer.click(action), after = authorIdentitySnapshot(x), payload = response.request.payload;
+      t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_COLD_AUTHOR_PRODUCER', id, payload, response, before: before.manifest.atlas, after: after.manifest.atlas }));
+      const applied = response.mainResult.ok === true;
+      assertAuthorIdentityPreservation(x, before, after, id, payload, applied, key.canonicalKey);
+      if (!applied) assert.match(JSON.stringify(response), /E_ATLAS_(?:ENTITY|ALIAS|DECISION)_ALREADY_EXISTS/u, 'valid producer failure must be the predicted collision');
+      const receipt = assertTemporalMainReceipt(response.mainResult, id);
+      assert.equal(response.result.ok, true); assert.equal(response.result.value.performed, true);
+      assert.deepEqual(response.result.value.result, response.mainResult.value); assert.deepEqual(after.receipts.at(-1), receipt);
+      if (id === 'atlas.entity.create') assert.equal(after.manifest.atlas.entities[payload.entityId].name, payload.name);
+      if (id === 'atlas.alias.add') assert.equal(after.manifest.atlas.entities[entityId].aliases[payload.aliasId].value, payload.value);
+      if (id === 'atlas.mention.confirm') assert.equal(Object.hasOwn(payload, 'decisionId'), false);
+    });
+  await t.test('a different opaque alias ID still refuses an already saved alias value', async () => {
+    await renderer.field('aliasValue', 'Старый псевдоним é 🧭'); const before = authorIdentitySnapshot(x), result = await renderer.click('add-alias'), after = authorIdentitySnapshot(x);
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_ALIAS_VALUE_DUPLICATE', result }));
+    assert.equal(result.mainResult.ok, false); assert.match(JSON.stringify(result), /E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS/u);
+    assert.deepEqual(after.roster, before.roster); assertAuthorIdentityCanonical(after.manifest, before.manifest);
+    assertAuthorIdentityCanonical(after.events, before.events); assertAuthorIdentityCanonical(after.receipts, before.receipts);
+  });
+  const after = authorIdentitySnapshot(x);
+  for (const [id, record] of Object.entries(preserved.manifest.atlas.decisions)) assertAuthorIdentityCanonical(after.manifest.atlas.decisions[id], record);
+  for (const [id, record] of Object.entries(preserved.manifest.atlas.entities[entityId].aliases)) assertAuthorIdentityCanonical(after.manifest.atlas.entities[entityId].aliases[id], record);
+  assertAuthorIdentityCanonical(after.events.slice(0, preserved.events.length), preserved.events);
+  assertAuthorIdentityCanonical(after.receipts.slice(0, preserved.receipts.length), preserved.receipts);
+});
+
+test('actual V9 warm distinct confirmations preserve both canonical records and prior history [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await reattachmentMainFixture(t, true), key = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
+  const renderer = authorIdentityMainRenderer(x, await x.query(), 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
+  await renderer.target(x.entityId, 25); const before = authorIdentitySnapshot(x), first = await renderer.click('confirm-mention'), once = authorIdentitySnapshot(x);
+  assertTemporalMainReceipt(first.mainResult, 'atlas.mention.confirm');
+  assertAuthorIdentityPreservation(x, before, once, 'atlas.mention.confirm', first.request.payload, true, key.canonicalKey);
+  await renderer.target(x.entityId, 68); const second = await renderer.click('confirm-mention'), twice = authorIdentitySnapshot(x);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_WARM_DISTINCT_CONFIRMATIONS', first, second, firstDecisions: once.manifest.atlas.decisions, afterDecisions: twice.manifest.atlas.decisions }));
+  assertAuthorIdentityPreservation(x, once, twice, 'atlas.mention.confirm', second.request.payload, second.mainResult.ok === true, key.canonicalKey);
+  assertTemporalMainReceipt(second.mainResult, 'atlas.mention.confirm');
+  assert.equal(Object.keys(twice.manifest.atlas.decisions).length, Object.keys(before.manifest.atlas.decisions).length + 2);
+});
+
+for (const cold of [false, true]) test('actual V9 identical canonical confirmation retains lawful duplicate refusal ' + (cold ? 'after reopen' : 'while warm'), async t => {
+  const x = await reattachmentMainFixture(t, true); let renderer = authorIdentityMainRenderer(x, await x.query(), 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9');
+  await renderer.target(x.entityId, 68); const first = await renderer.click('confirm-mention'); assertTemporalMainReceipt(first.mainResult, 'atlas.mention.confirm');
+  if (cold) { assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+    renderer = authorIdentityMainRenderer(x, await x.query(), 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'); await renderer.target(x.entityId, 68); }
+  const before = authorIdentitySnapshot(x), result = await renderer.click('confirm-mention'), after = authorIdentitySnapshot(x);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_IDENTICAL_CANONICAL_CONFIRMATION', cold, result }));
+  assert.equal(result.mainResult.ok, false); assert.equal(result.result.ok, false);
+  assert.match(JSON.stringify(result), /E_ATLAS_DECISION_ALREADY_EXISTS/u);
+  assert.deepEqual(after.roster, before.roster); assertAuthorIdentityCanonical(after.manifest, before.manifest);
+  assertAuthorIdentityCanonical(after.events, before.events); assertAuthorIdentityCanonical(after.receipts, before.receipts); x.assertOriginal();
+});

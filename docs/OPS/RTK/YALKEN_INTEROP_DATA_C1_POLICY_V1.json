@@ -794,7 +794,8 @@
     "test/contracts/yalken-atlas-v5-e04-c02-atlas-alias-scope-suppression-boundary.contract.test.js",
     "docs/tasks/2026-10-24--atlas-read-surfaces.md",
     "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
-    "docs/tasks/2026-10-24--atlas-temporal-authoring.md"
+    "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
+    "docs/tasks/2026-10-24--atlas-authoring-identities.md"
   ],
   "protectedFiles": [
     {
@@ -1035,7 +1036,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "60f5ea008f3f21599b124ab8e2d706dac2f0700c5166261cac71890495037df2"
+        "sha256": "1d69486bcb4c877bfc8d0b36f1d27ae723e0439fe7d1d84c7938959fae5a35ba"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1047,7 +1048,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "fe7ca172fc51763b15f3dfec251471932dd6f08aaa4f7062a81658d5841367e1"
+        "sha256": "2469ac9ceca06e333084c033eeceda7ac21b1d61771bac6176ba9e3e59904417"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1199,7 +1200,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "be164af8ed04299072b44e3d0924bf7197a7eda2e9ccd9740dbc8ec9614810d0"
+        "sha256": "63a7845e3914e9c82c9780dbadef648e2852005c24e44204d5e1f208a3300538"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1759,7 +1760,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "059b3a6603645ff7b4960658f539ee42f5ade89bc1a8a6b45960fcc27c35ef75"
+        "sha256": "0f8ec4440e3e1e61ba6183ff13437227271faedcc36c66da29710b43b52e544b"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2715,15 +2716,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "915ff495f5d5346d9f1909d810a451d3ec3e05838794e0bc78c9e3a306fd3210"
+        "sha256": "c22dc08ff1af53150c3b13f0174a00a7996f6f04987483a6a2fa114bff8e9eb1"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "dfd62efb2982ea50cff1c32430e0f5a14c11fdcc6c4ad50dcf1e584139a25a46"
+        "sha256": "5f915e43c80182ef47a2c7bed72afe37ebd85cd5f6f70232d3030e3212ac006f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "12c5b80dbdb00136762f3723818d7f6e163b50dbad13bbd5a1d5f7a9a1c23bee"
+        "sha256": "10f906b58bba9108827df5ada6264bb08e3f6ebd1629b82e948405b33314323c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3263,7 +3264,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "92967755d47b69318335d81161e14253115e33432f5763dea8882e04d6ac7d4d"
+        "sha256": "9a222f8cd261632130a86c435c19a6998c202e3216c27dc8c8a84748878b9219"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3395,11 +3396,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "785c720e772c0c0f671b869da5dd6ab019b83aba81263a6631199660ef515717"
+        "sha256": "c6f025a0a1db7ba5cd3dfbf2d7035b01c4ed916223a2d2604a0059c3d7bb9f1e"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "5ba48f47f51e0842968c040d35e9a58c4cff200aa241481c14ed680df3a845e6"
+        "sha256": "dba491d58d9abaffd54612505e7eb8cb23d3ce8a6cc1d35ef12d1e89695437b7"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3608,6 +3609,10 @@
       {
         "path": "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
         "sha256": "3304d2091a2c7ab5550d7b9fa15837aea763dee4bd853fdf9ae1df7dbf4d8515"
+      },
+      {
+        "path": "docs/tasks/2026-10-24--atlas-authoring-identities.md",
+        "sha256": "9e75686934b521559e4119205e0e268189300b3d2ef2fde69ae51ecce9e9d879"
       }
     ],
     "followupRepair": {

@@ -15990,7 +15990,18 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
   }
   button.addEventListener('click', () => {
     if (['atlas.evidence.reattach', 'atlas.observation.suppress'].includes(commandId) && (button.disabled || !button.isConnected)) return;
-    const nextPayload = typeof payload === 'function' ? payload() : payload;
+    let nextPayload;
+    try {
+      nextPayload = typeof payload === 'function' ? payload() : payload;
+    } catch (error) {
+      if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'
+        && ['atlas.entity.create', 'atlas.alias.add'].includes(commandId)
+        && error?.code === 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE') {
+        updateStatusText(error.code, { visible: true });
+        return;
+      }
+      throw error;
+    }
     void runProductJourneyCommand(commandId, nextPayload);
   });
   return button;
@@ -16055,6 +16066,15 @@ function findAtlasJourneyMention(mentionId = '') {
 }
 
 function makeStableUiId(prefix) {
+  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9'
+    && ['atlas-entity', 'atlas-alias'].includes(prefix)) {
+    try {
+      if (typeof globalThis.crypto?.randomUUID !== 'function') throw new Error('ATLAS_AUTHOR_IDENTITY_UNAVAILABLE');
+      return `${prefix}-${globalThis.crypto.randomUUID()}`;
+    } catch {
+      throw Object.assign(new Error('ATLAS_AUTHOR_IDENTITY_UNAVAILABLE'), { code: 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE' });
+    }
+  }
   atlasStableUiIdSeq += 1;
   return `${prefix}-${atlasStableUiIdSeq.toString(36).padStart(5, '0')}`;
 }
@@ -16603,7 +16623,8 @@ async function runProductJourneyCommand(commandId, payload = {}) {
     projectId: currentProjectId,
   }, { isCurrentPresentation: current });
   if (!current()) return result;
-  if (commandId === 'atlas.mention.confirm' && result && result.ok) {
+  if (commandId === 'atlas.mention.confirm' && result && result.ok
+    && (typeof window === 'undefined' || window.__PRODUCT_PROFILE !== 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9')) {
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
       decisionId: payload?.decisionId || atlasJourneyDraft.decisionId,
@@ -16727,7 +16748,9 @@ function renderAtlasJourneyState() {
     entityId: mention?.entityId || atlasJourneyDraft.sourceEntityId || '',
     mentionId: mention?.mentionId || '',
     evidenceAnchor: mention?.evidenceAnchor || null,
-    decisionId: ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'),
+    ...(typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9' ? {} : {
+      decisionId: ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'),
+    }),
   }), { actionId: 'confirm-mention', disabled: !mention, reason: mention ? '' : 'Select an exact mention' }));
   actionBar.appendChild(makeAtlasCommandButton('Suppress', 'atlas.observation.suppress', () => ({}), {
     actionId: 'suppress-observation', disabled: !suppressionSelected || atlasJourneyDraft.suppressionPending === true,
