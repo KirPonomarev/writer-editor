@@ -454,7 +454,9 @@
       "test/unit/keyboard-shortcuts.test.js",
       "docs/tasks/2026-10-23--mac-atlas-exact-journey.md",
       "docs/tasks/2026-10-23--atlas-source-evidence-continuity.md",
-      "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs"
+      "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs",
+      "docs/tasks/2026-10-24--atlas-evidence-reattachment.md",
+      "src/derived/atlas/deriveAtlasEntityDossier.mjs"
     ]
   },
   "allowPrefixByPhase": {

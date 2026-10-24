@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterExactAtlasProfileProjection,
+  createWriterAtlasEvidenceReattachmentProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -36085,7 +36085,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterExactAtlasProfileProjection({
+  return createWriterAtlasEvidenceReattachmentProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });

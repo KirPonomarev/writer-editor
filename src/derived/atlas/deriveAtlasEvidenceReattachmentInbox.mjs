@@ -80,8 +80,8 @@ function normalizeEvidenceAnchor(value) {
 }
 
 function sourceEntityId(record, sourceRecordKind) {
-  if (sourceRecordKind === 'reassignment') return normalizeString(record.sourceEntityId);
-  return normalizeString(record.entityId);
+  if (sourceRecordKind === 'reassignment') return plainString(record.sourceEntityId);
+  return plainString(record.entityId);
 }
 
 function collectSourceRecords(project) {
@@ -101,8 +101,10 @@ function collectSourceRecords(project) {
         sourceRecordKind,
         sourceRecordId,
         sourceRecordHash: hashCanonicalValue(record),
-        entityId: sourceEntityId(record, sourceRecordKind) || evidenceAnchor.entityId,
-        evidenceAnchor,
+        entityId: sourceEntityId(record, sourceRecordKind),
+        projectId: record.projectId,
+        evidenceAnchor: JSON.parse(JSON.stringify(record.evidenceAnchor)),
+        createdByCommandSeq: record.createdByCommandSeq,
       });
     }
   }
@@ -114,24 +116,44 @@ function collectReattachments(project) {
   const bySource = new Map();
   for (const reattachmentId of Object.keys(reattachments).sort()) {
     const record = isPlainObject(reattachments[reattachmentId]) ? reattachments[reattachmentId] : {};
-    if (record.operationKind !== 'evidence.reattach') continue;
     const sourceRecordKind = normalizeString(record.sourceRecordKind);
     const sourceRecordId = normalizeString(record.sourceRecordId);
-    const staleEvidenceAnchor = normalizeEvidenceAnchor(record.staleEvidenceAnchor);
-    const newEvidenceAnchor = normalizeEvidenceAnchor(record.newEvidenceAnchor);
-    if (!sourceRecordKind || !sourceRecordId || !staleEvidenceAnchor || !newEvidenceAnchor) continue;
-    bySource.set(`${sourceRecordKind}:${sourceRecordId}`, {
-      id: normalizeString(record.id) || reattachmentId,
-      sourceRecordKind,
-      sourceRecordId,
-      sourceRecordHash: normalizeString(record.sourceRecordHash),
-      staleEvidenceAnchor,
-      newEvidenceAnchor,
-      reason: plainString(record.reason),
-      createdByCommandSeq: Number(record.createdByCommandSeq),
-    });
+    if (!sourceRecordKind || !sourceRecordId) continue;
+    const key = `${sourceRecordKind}:${sourceRecordId}`;
+    if (!bySource.has(key)) bySource.set(key, []);
+    bySource.get(key).push({ ...record, id: normalizeString(record.id) || reattachmentId });
   }
   return bySource;
+}
+
+function boundWitness(value, projectId, entityId) {
+  if (!isPlainObject(value) || value.schemaVersion !== ATLAS_EVIDENCE_ANCHOR_SCHEMA_VERSION
+    || !normalizeString(value.sceneId) || !normalizeString(value.anchorId)
+    || !Number.isSafeInteger(value.startOffset) || value.startOffset < 0
+    || !Number.isSafeInteger(value.endOffset) || value.endOffset <= value.startOffset
+    || typeof value.quote !== 'string' || value.quote.length !== value.endOffset - value.startOffset
+    || value.quoteHash !== hashCanonicalValue(value.quote) || !/^[a-f0-9]{64}$/u.test(plainString(value.sceneTextHash))) return null;
+  for (const [key, expected] of Object.entries({ projectId, entityId })) {
+    if (Object.hasOwn(value, key) && typeof value[key] !== 'string') return null;
+    if (plainString(value[key]) && value[key] !== expected) return null;
+  }
+  return { ...value, projectId, entityId };
+}
+
+function latestReattachment(records, source, projectId) {
+  if (!records.length || records.some(record => !Number.isSafeInteger(record.createdByCommandSeq)
+    || record.createdByCommandSeq <= source.createdByCommandSeq)) return null;
+  const sequence = Math.max(...records.map(record => record.createdByCommandSeq));
+  const latest = records.filter(record => record.createdByCommandSeq === sequence);
+  if (latest.length !== 1) return null;
+  const record = latest[0], original = boundWitness(source.evidenceAnchor, projectId, source.entityId);
+  const stale = boundWitness(record.staleEvidenceAnchor, projectId, source.entityId);
+  const anchor = boundWitness(record.newEvidenceAnchor, projectId, source.entityId);
+  if (!original || !stale || !anchor || record.operationKind !== 'evidence.reattach' || record.projectId !== projectId
+    || record.automaticReattachment !== false || record.sourceRecordHash !== source.sourceRecordHash
+    || !['anchorId', 'projectId', 'sceneId', 'entityId', 'startOffset', 'endOffset', 'quote', 'quoteHash', 'sceneTextHash']
+      .every(key => stale[key] === original[key])) return null;
+  return { ...record, newEvidenceAnchor: anchor };
 }
 
 function anchorMatchesCurrentScene(project, anchor, sceneTextHashesByScene) {
@@ -255,15 +277,18 @@ function buildInbox({ coreState, projectId, meta }) {
   const coordinateIndexesByScene = new Map();
   const sceneTextHashesByScene = new Map();
   const items = collectSourceRecords(project).map((source) => {
-    const reattachment = reattachmentsBySource.get(`${source.sourceRecordKind}:${source.sourceRecordId}`) || null;
-    const current = anchorMatchesCurrentScene(project, source.evidenceAnchor, sceneTextHashesByScene);
-    const candidates = current || reattachment ? [] : findReattachmentCandidates({
+    const records = reattachmentsBySource.get(`${source.sourceRecordKind}:${source.sourceRecordId}`) || [];
+    const reattachment = latestReattachment(records, source, projectId);
+    const ownerValid = source.projectId === projectId && isPlainObject(project?.atlas?.entities?.[source.entityId]);
+    const witness = !ownerValid ? null : records.length ? reattachment?.newEvidenceAnchor : boundWitness(source.evidenceAnchor, projectId, source.entityId);
+    const current = Boolean(witness && project?.scenes?.[witness.sceneId]) && anchorMatchesCurrentScene(project, witness, sceneTextHashesByScene);
+    const candidates = current ? [] : findReattachmentCandidates({
       projectId,
       project,
       source,
       coordinateIndexesByScene,
     });
-    const status = reattachment ? 'REATTACHED' : current ? 'CURRENT' : 'REVIEW_REQUIRED';
+    const status = current ? reattachment ? 'REATTACHED' : 'CURRENT' : 'REVIEW_REQUIRED';
     return {
       schemaVersion: ATLAS_EVIDENCE_REATTACHMENT_ITEM_SCHEMA_VERSION,
       itemId: `atlas-reattach-item:${hashCanonicalValue({ sourceRecordKind: source.sourceRecordKind, sourceRecordId: source.sourceRecordId })}`,
@@ -274,8 +299,8 @@ function buildInbox({ coreState, projectId, meta }) {
       entityId: source.entityId,
       status,
       staleEvidenceAnchor: source.evidenceAnchor,
-      currentEvidenceAnchor: reattachment ? reattachment.newEvidenceAnchor : current ? source.evidenceAnchor : null,
-      reattachmentId: reattachment ? reattachment.id : '',
+      currentEvidenceAnchor: current ? witness : null,
+      reattachmentId: current && reattachment ? reattachment.id : '',
       candidates,
       candidateIds: candidates.map((candidate) => candidate.candidateId),
       candidateCount: candidates.length,

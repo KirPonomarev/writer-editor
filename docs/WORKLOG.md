@@ -1,3 +1,62 @@
+## 2026-10-24 — Atlas registered result correction: actual persistence and feedback agree in source test
+
+Task `YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024` continues from clean b6599dd3 admission. Actual Main and whole journey causal RED executed108tests105pass3fail: real saved command falsely failed, shallow unsupported APPLIED falsely succeeded, plus parent; no harness fault. Minimal renderer result guard now checks the existing registered CommandKernel envelope and typed APPLIED/capability/storage receipt. Necessary finite R2 response fixtures use the observed shape; all original semantic predicates and all source/presentation/UUID guards remain. Whole integration/R2/E07/protectedC03 executes429tests428pass1fail,0cancel/skip/todo: the sole unchanged WP307 assertion still sees the deliberately old current-editor companion hash; every actual result/semantic case passes. One coherent bundle/current pin pass and final whole9 proof must close that binding gap before a new clean candidate.
+
+Original decision and the one real prior native reattachment are frozen complete for the next actual unsigned build/native journey;648closed profile members and102Documents reread. No hidden ledger reset. All9970outside source paths, historical certificates/approvals,1603inventory members and17UNKNOWN qualification rows stay protected. Full baseline/affected/officialRTK/currentCI/corrected native/normal delivery/exact merged remain required; audit OPEN_HIGH_NOT_REMEDIATED, no full Mac or release acceptance.
+
+## 2026-10-24 — Atlas reattachment persists; registered result feedback correction pending
+
+Task `YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024`, unaccepted candidateb6599dd3e72503ad0761832fc3d9f7ae250a32dc. Actual native source selection/Flow/68–72 executes and persists one canonical reattachment; original decision preserved, dossier REATTACHED/0review. Journey falsely reports ATLAS_REATTACHMENT_NOT_APPLIED because it misses the actual registered value.result.receipt envelope. Normal Quit0; no retry/second command. Fresh clean same31path RESULT_PREFLIGHT_01 actual0 precedes a maintained actual Main+whole journey result reproducer and minimal result-specific correction. Preserve that real prior record, all source/presentation/UUID guards, unknown-result refusal and9970outside files. Current source1217of1217 and DATA781/source641/cert306/inventory1603 do not close this native failure. Full baseline/RTK/affected/CI/new native/merged remain required; audit OPEN_HIGH_NOT_REMEDIATED and full product/release incomplete.
+
+## 2026-10-24 — Atlas reattachment source correction frozen; final qualification pending
+
+Task `YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024` continues in PR2154. Clean checkpointa9dca477931c099abb4e916898d2f85192f75e48 received fresh31path preflight0 before correction. Actual entity-to-Flow navigation and pending shell-change regressions now pass within wholeR2/E07/protectedC03:321of321,0failure/cancel/skip/todo. Renderer changes only retained surface lifetime and dispatch presentation guards; Core and shared typing/publication/SaveACK stay exact previous candidate. The original cross-entity Unicode input is explicitly refused with full unchanged state, and a valid same-owner actual-factory anchor preserves all Unicode/unknown fields and cold serialization. Final15inputs frozen;9970outside paths protected. E07 is already in1603inventory but was absent from current DATA/source/certificate; append exactly one real member to781/641/306 and update current pins. Final whole-source/affected/baseline/officialRTK/currentCI, corrected native and exact merged verification remain required. Prior candidate native failure, normal Quit0 and642member profile preservation remain immutable; audit OPEN_HIGH_NOT_REMEDIATED remains disclosed. No full Atlas/Mac/release acceptance.
+
+## 2026-10-24 — Atlas evidence reattachment: native composition correction in progress
+
+Task `YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024`, PR2154, candidate11a700ac03cc05f1038c058acd4d44aa533ee82f is unaccepted. Focused1207of1207 and fully read unsigned package passed, but actual native entity-dossier source selection followed by Flow/current68–72 remains disabled: source lifetime incorrectly includes surface identity. Original source selection itself succeeds. Native normal Quit0; no reattachment command issued, prefix88UTF16 saved. Same30path fresh C-bound preflight0 precedes correction; maintained actual navigation RED first, then minimal renderer source/presentation separation and current-source qualification. Earlier green receipts remain historical. Full npm audit now OPEN_HIGH_NOT_REMEDIATED for Electron GHSA-jr5w-w6x2-84p9; production-only audit0 is a narrower graph result. No full product/release acceptance. Original decisions/history,9971protected source files and unrelated owner state remain protected.
+
+## 2026-10-24 — Explicit saved Atlas evidence correction source frozen
+
+TASK_ID: YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_REVIEWED_CURRENT_RELEASE_BINDINGS_PREPARED_ACCEPTANCE_PENDING
+ORIGINAL_DELIVERY_BASE_SHA: 55de17ba5e7f1c0078e964cab84248bb4a3eac6b
+REBOOT_CHECKPOINT_SHA: fb807222a098ecc43577b447c70a77d7b0487645
+
+Root independently reviewed14frozen source/test inputs, actual budgets, preserved V1-V5 implementation and all9971protected files; ROOT_CODE_REVIEW.json SHA6f0a53c1bd3d42aee3695ca06b795b37e53eabdc8dc475f3f8244ffc390c76b2. Core validates raw old/new anchor identities and actual saved-record owner before normalization. Inbox validates unique latest chronological raw-source-bound current witness and returns to review after later source edits. Existing dossier exposes bounded lossless original source references with honest completeness/unavailability; existing journey explicitly chooses a saved confirmation and exact current occurrence, with guarded per-intent UUID/retry/pending/stale result handling. No new schema/query/IPC/storage writer, typing work, dependencies or runtime network.
+
+Actual whole focused330of330 and final strict profile16of16 passed with0cancel/skip/todo. All original test assertions/harness bytes remain, apart from declared current profile literals; appended owner-record/source-kind/tagged-array negatives were causally red before correction. Candidate01 whole7 failures and all method faults remain retained; final full whole8 actual Main/Kernel/Stage10 and current release proof is still required, not replaced by these finite results. Existing successful manifest normalization may reorder JSON members: full original/prior record objects and canonical raw bytes/hashes are protected, and immediate refusal/query/cold physical bytes remain exact.
+
+Normal renderer/native-helper build exited0. Current full-Mac V2 factory/runtime now selects strictly packaged-Darwin V6 with ordered V5twenty plus only atlas.evidence.reattach and identical3queries. Only4participating source pins changed; V1 meaning and all17UNKNOWN qualification/authority fields are retained. Root prepares current inventory/DATA/certificate/governance companions in one pass before the final expensive candidate. Whole focused/affected/baseline/official RTK/current CI, rebuilt native source selection/two explicit corrections/Save/Quit/cold/full archives, normal PR merge and exact merged source/build/native remain required. No native, release or full-product acceptance is claimed here; exact later receipts determine delivery state.
+
+## 2026-10-24 — Atlas saved-evidence task resumed from reboot checkpoint
+
+TASK_ID: YALKEN_ATLAS_EVIDENCE_REATTACHMENT_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CAUSAL_BASELINE_REVIEWED_BOUNDED_CORRECTION_IN_PROGRESS
+ORIGINAL_DELIVERY_BASE_SHA: 55de17ba5e7f1c0078e964cab84248bb4a3eac6b
+REBOOT_CHECKPOINT_SHA: fb807222a098ecc43577b447c70a77d7b0487645
+
+Owner explicitly resumed. Fresh bootstrap and clean30path declaration/preflight exited0 on checkpoint before additional edits; current remote main remains original delivery base. Both storage identities, all9910offline dependency members and all635closed owned synthetic profile members were reread. Owner checkout and existing profile history remain protected. No installation, new native launch or profile retagging.
+
+Unchanged-runtime whole7RED04 exits1 with1144tests1076pass68fail and0cancel/skip/todo. All16Main identity cases reach actual canonical preparation:8invalid new-anchor identities are accepted,8old-anchor variants produce typed Core refusal and preserve complete immediate Documents/integrity rosters. Real stale/capability/owner/project/CAS no-write cases pass. Earlier RED01/02/03 and their observer/preservation-oracle faults remain immutable; none is hidden as causal proof. The earlier native cold missing-picker defect and complete101document/635archive preservation remain closed on original55de17ba, not new acceptance.
+
+Root independently reviews raw logs, frozen7tests, exact10held runtime/current companions and9971protected paths; ROOT_RED_ADMISSION_REVIEW_01.json SHA0e1065d8b3fd9526c3fb22655aa1fbf67ceec62afe91e2eb1ac9af2519c3421f permits only the already declared bounded correction. Actual original record content and canonical raw hashes are unchanged by baseline successful commands, while existing manifest normalization reorders JSON object keys; task explicitly records that distinction. Refused/read-only/cold boundaries still require physical byte preservation, successful commands require full original/prior record object and canonical raw-byte/hash equality without filtering or anchor normalization.
+
+Separate code agent now owns only declared7runtime paths and unchanged frozen assertions under fixed budgets. Root owns current release/factual/mechanical companions, independent review, actual package/native and ordinary Git delivery. No correction, build, push, PR, merge or full-product acceptance is claimed by this entry. All current required source/affected/baseline/RTK/CI/native/cold/exact merged proofs remain pending;17full-Mac qualification rows and release authority remain unchanged. Full first Mac with Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later.
+
+## 2026-10-24 — Owner reboot pause
+
+- Stopped after terminal whole7RED01:1142tests1066pass76fail,0cancel/skip/todo. Seven test source copies and full logs/handoff preserved on verified T777; no runtime correction/build/push/PR/merge.
+- Native app closed normally and all101previousDocuments/635profile archive members preserved. Code agent HOLD and no active task executor. Unaccepted ordinary checkpoint and T777 recovery bundle preserve exact source; first resume step is fresh admission, bounded R2partial clarification and unchanged-runtime whole7RED02.
+
+## 2026-10-24 — Saved Atlas evidence reattachment admission and causal native baseline
+
+- PR2153 delivery closed on55de17ba with independent source/build/native/CI closure; current work continues full Mac product.
+- Fresh clean30path preflight/taskE0 actual0; code agent prepares maintained causal tests before product edits. Current strict source witness/schema/storage/typing/styles and original author history protected.
+- Unchanged actual app cold saved dossier lacks source picker; Flow reattach disabled despite original confirmation; duplicate occurrence labels indistinguishable. Normal Quit0, all101oldDocuments exact and all635archive members independently read; closure32e63f8f43120c33726558eafd074487435fa48b1d7b0786b51eba6e1dc342a7. Expected RED only; no corrected/full-Mac acceptance.
+
 ## 2026-10-23 — Atlas continuity: native proof retained, SaveACK fixture amendment
 
 TASK_ID: YALKEN_ATLAS_SOURCE_EVIDENCE_CONTINUITY_20261023

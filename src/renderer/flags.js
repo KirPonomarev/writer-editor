@@ -4,7 +4,7 @@
   window.__USE_TIPTAP = qs.get('USE_TIPTAP') === '1';
   window.__PRODUCT_PROFILE = qs.get('PRODUCT_PROFILE') === 'WRITER_LOCAL_V1'
     ? 'WRITER_LOCAL_V1'
-    : ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5'].includes(qs.get('PRODUCT_PROFILE')) ? qs.get('PRODUCT_PROFILE') : '';
+    : ['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5', 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6'].includes(qs.get('PRODUCT_PROFILE')) ? qs.get('PRODUCT_PROFILE') : '';
 
   const applyWriterLocalPresentationCut = () => {
     if (window.__PRODUCT_PROFILE !== 'WRITER_LOCAL_V1') return;
@@ -27,7 +27,7 @@
   };
 
   const applyWriterAtlasPresentationCut = () => {
-    if (!['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5'].includes(window.__PRODUCT_PROFILE)) return;
+    if (!['WRITER_LOCAL_ATLAS_V2', 'WRITER_LOCAL_MANUAL_MAP_V3', 'WRITER_LOCAL_MANUAL_MAP_V4', 'WRITER_LOCAL_EXACT_ATLAS_V5', 'WRITER_LOCAL_ATLAS_EVIDENCE_REATTACHMENT_V6'].includes(window.__PRODUCT_PROFILE)) return;
     document.body.dataset.productProfile = window.__PRODUCT_PROFILE;
     const selectors = [
       '[data-mode="plan"]',

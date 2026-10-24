@@ -203,7 +203,8 @@ test('ER C01: Command Kernel preserves Unicode anchor schema fields and unknown 
   const reassignment = reassigned.state.data.projects[projectId].atlas.reassignments['reassignment-dev-rich-anchor'];
   assert.deepEqual(reassignment.evidenceAnchor, richDeveloperAnchor);
 
-  const reattached = runtime.reduceCoreState(reassigned.state, {
+  const beforeCrossEntity = JSON.stringify(reassigned.state);
+  const rejectedCrossEntity = runtime.reduceCoreState(reassigned.state, {
     type: runtime.CORE_COMMAND_IDS.ATLAS_EVIDENCE_REATTACH,
     payload: {
       projectId,
@@ -215,15 +216,40 @@ test('ER C01: Command Kernel preserves Unicode anchor schema fields and unknown 
       reason: 'manual relocation',
     },
   });
+  assert.equal(rejectedCrossEntity.ok, false);
+  assert.equal(rejectedCrossEntity.error.code, 'E_ATLAS_EVIDENCE_IDENTITY_MISMATCH');
+  assert.equal(rejectedCrossEntity.error.reason, 'EVIDENCE_ENTITY_MISMATCH');
+  assert.deepEqual(rejectedCrossEntity.state, reassigned.state);
+  assert.equal(JSON.stringify(reassigned.state), beforeCrossEntity);
+  const relocatedCafeAnchor = {
+    ...derived.buildAtlasTextAnchorPacket({
+      projectId, sceneId, entityId: 'entity-cafe',
+      startOffset: developer.evidenceAnchor.startOffset,
+      endOffset: developer.evidenceAnchor.endOffset,
+      sceneText: text,
+    }).evidenceAnchor,
+    futureRelocationHints: richDeveloperAnchor.futureRelocationHints,
+  };
+  assert.equal(relocatedCafeAnchor.quote, '👩‍💻');
+  assert.notEqual(relocatedCafeAnchor.startOffset, richCafeAnchor.startOffset);
+  const reattached = runtime.reduceCoreState(reassigned.state, {
+    type: runtime.CORE_COMMAND_IDS.ATLAS_EVIDENCE_REATTACH,
+    payload: {
+      projectId, sourceRecordKind: 'decision', sourceRecordId: 'decision-cafe-rich-anchor',
+      staleEvidenceAnchor: richCafeAnchor, newEvidenceAnchor: relocatedCafeAnchor,
+      expectedSourceRecordHash: derived.hashCanonicalValue(decision),
+      reattachmentId: 'reattachment-rich-anchor', reason: 'manual relocation',
+    },
+  });
   assert.equal(reattached.ok, true);
   const ledger = reattached.state.data.projects[projectId].atlas.evidenceReattachments['reattachment-rich-anchor'];
   assert.deepEqual(ledger.staleEvidenceAnchor, richCafeAnchor);
-  assert.deepEqual(ledger.newEvidenceAnchor, richDeveloperAnchor);
+  assert.deepEqual(ledger.newEvidenceAnchor, relocatedCafeAnchor);
 
   const reopened = JSON.parse(JSON.stringify(reattached.state));
   assert.deepEqual(
     reopened.data.projects[projectId].atlas.evidenceReattachments['reattachment-rich-anchor'].newEvidenceAnchor,
-    richDeveloperAnchor,
+    relocatedCafeAnchor,
   );
   assert.equal(reopened.data.projects[projectId].atlas.decisions['decision-cafe-rich-anchor'].evidenceAnchor.normalizationMap.originalUtf16Length, text.length);
 });
