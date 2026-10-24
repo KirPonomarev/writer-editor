@@ -16667,6 +16667,8 @@ async function runAtlasCorrectionCommand(commandId, payload) {
     lastResult: accepted ? 'persisted' : result?.error?.reason || result?.reason || 'ATLAS_CORRECTION_NOT_APPLIED', commandSeq: sequence };
   renderAtlasJourneyState();
   await refreshAtlasCurrentScene({ force: true, isCurrent: presentation });
+  if (!presentation()) return result;
+  renderAtlasJourneyState();
   if (presentation()) void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: presentation }).catch(error => console.warn('Atlas correction refresh failed', error));
   return result;
 }

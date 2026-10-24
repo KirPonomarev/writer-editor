@@ -1,3 +1,20 @@
+## 2026-10-25 — Same PR2160: native-visible correction Flow refresh
+
+TASK_ID: YALKEN_ATLAS_ENTITY_CORRECTIONS_20261024
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CORRECTED_SOURCE_CHECKPOINT_ALL_CURRENT_PROOFS_AND_DELIVERY_PENDING
+ORIGINAL_DELIVERY_BASE_SHA: 70f1b137b1e1dbdfe889e22a9d2e946689ea2524
+SOURCE_CHECKPOINT_SHA: 0d98b0ed5147fa2d8ab71555e85d8d6cd54a7541
+SOURCE_EDITOR_SHA256: 2a685c44379c3e4fb39815230e3fb3da0487eea76dadba1d7ac196298ba3d51e
+
+C1 real packaged reassign/merge and cold selected saved restore persist correctly: normalQuit0,42events/receipts,104Documents/100unaffected byteexact, complete740member coldarchive4c1fe62e8c6ca79cfa98f092a244bc894b7d0f61c0c2b2572d0d2556fdc9bdc8. C1 CI20success,18provider testmerge checkouts e34084c21971f6ede55f9caeed10c2a3d7a9b7fb have entire treef38666a1 equalC1. Official240RTK4416, currentpostcert359, baseline2911pass59unchangednamedskips. Both E05 and R2 are outside officialcatalog; earlier4418 prediction was reader-method fault, retained. These C1 proofs do not accept the corrected source or fullMac.
+
+Actual native AFTER_RESTORE has ready2entity currentScene but visible Flow still1entity; warm merge similarly retains old choices. Hidden dossier refresh on explicit Entity visit is expected on-demand. Fresh C1-bound same28path preflight0/taskE0 and all10007source verification precede correction. Separate executor appends100integration lines; all original238786bytes and assertions remain. RED01 new lexical-access adapter fault and root inverse-reader local-name fault retained with limited credit. Exactly four new reads now access actual VM lexical state; wholeRED02 executes860tests852pass8failure records/0cancel-skip-todo: all848oldcases and4new delayed project/surface/draft/generation cases pass, only6visiblecontrol children+2parents fail. Real packaged Main strictreceipt/fullcanonical persistence and matching freshcached query precede both visible failures. No source semantic injection or fullnative credit from finite DOM/IPC.
+
+Separate executor adds only2lines after existing correction currentScene await: existing presentation guard then Journey render. Entire editor inverse is exactC1; Main/profile/flags/dossier/Core/schema/IPC/storage/typing and hidden-surface scheduling unchanged. Frozenintegratione39dfefbe70d7ce222a67dceaba0d530ea51bf634416b4bc2956ba314a2c0555; other4causal tests exactC1. Root normal renderer build0 changes only generated bundle,9979protected exact. Current bindings refresh hashes only, no membership/class/lane/oldapproval or17UNKNOWN change. This is an unmerged source checkpoint in the same delivery chain; all corrected exact-head GREEN/affected/source/native/fullbaseline/currentCI/normalmerge/literalmerged proof remain required. New native closure also requires immediately visible source/target/mention choices matching the guarded fresh scene before navigation.
+
+No fullAtlas/maps/WSE/Pulse/environment epochs or Mac/release acceptance;17qualificationUNKNOWN/releasecutNOT_READY, fullaudit2high1moderate and59namedskips remain. Existing dated T777 task folders and admitted owned APFS runtime/profile retain original markers and every prior authored record/history prefix. Black Box later. Continue ordinary current PR2160 delivery, then complete firstMac plan.
+
 ## 2026-10-24 — Atlas persisted entity corrections: source frozen, proof pending
 
 TASK_ID: YALKEN_ATLAS_ENTITY_CORRECTIONS_20261024

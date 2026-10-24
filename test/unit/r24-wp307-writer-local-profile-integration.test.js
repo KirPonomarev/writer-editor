@@ -2664,3 +2664,103 @@ test('actual Main keeps restored foreign and stale merge refusals with immediate
     finally { assertCorrectionPersistence(x, before, authorIdentitySnapshot(x), 'atlas.entity.splitRestore', payload, false); }
   });
 });
+
+function flowRefreshControls(renderer) {
+  const walk = node => [node, ...node.children.flatMap(walk)];
+  return Object.fromEntries(['sourceEntityId', 'targetEntityId', 'mentionId'].map(name => {
+    const node = walk(renderer.c.atlasJourneyHost).find(value => value.dataset.atlasJourneyField === name);
+    assert.ok(node, name); assert.equal(node.tagName, 'SELECT');
+    return [name, { value: node.value, options: node.children.filter(value => value.tagName === 'OPTION').map(value => value.value) }];
+  }));
+}
+
+function assertFlowRefreshApplied(x, before, after, response, id) {
+  const receipt = assertTemporalMainReceipt(response.mainResult, id); assert.deepEqual(after.receipts.at(-1), receipt);
+  assert.equal(response.result.ok, true); assert.equal(response.result.value.performed, true);
+  assert.equal(response.result.value.commandAuthority, 'CommandKernel'); assert.equal(response.result.value.commandId, id);
+  assert.deepEqual(response.result.value.result, response.mainResult.value);
+  assertCorrectionPersistence(x, before, after, id, response.request.payload, true);
+}
+
+async function assertFlowRefreshPublished(t, renderer, fresh) {
+  const visible = flowRefreshControls(renderer), ids = fresh.entities.map(row => row.entityId);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_FRESH_QUERY_VS_FLOW', fresh, cached: renderer.c.atlasCurrentSceneState, visible }));
+  assert.deepEqual(renderer.c.atlasCurrentSceneState.entities, fresh.entities);
+  assert.deepEqual(renderer.c.atlasCurrentSceneState.mentions, fresh.mentions);
+  const draftSource = require('node:vm').runInContext('atlasJourneyDraft.sourceEntityId', renderer.c);
+  const source = ids.includes(draftSource) ? draftSource : ids[0] || '';
+  await t.test('visible source choices use refreshed entities', () => assert.deepEqual(visible.sourceEntityId.options, ['', ...ids]));
+  await t.test('visible target choices use refreshed entities', () => assert.deepEqual(visible.targetEntityId.options, ['', ...ids.filter(id => id !== source)]));
+  await t.test('visible exact mentions use refreshed identities', () => assert.deepEqual(visible.mentionId.options, ['', ...fresh.mentions.map(row => row.mentionId)]));
+}
+
+async function flowRefreshColdRenderer(x, operationId) {
+  const before = authorIdentitySnapshot(x), dossier = await x.h.query('query.atlasEntityDossier', { projectId: x.projectId, entityId: x.targetEntityId });
+  assert.equal(dossier.ok, true); assert.deepEqual(authorIdentitySnapshot(x).roster, before.roster);
+  assert.equal(dossier.atlasEntityDossier.savedMergeOperations.rows[0].operationId, operationId);
+  assert.equal(dossier.atlasEntityDossier.savedMergeOperations.rows[0].restoreState, 'RESTORABLE');
+  const renderer = correctionMainRenderer(x, await x.query()), c = renderer.c, source = read('src/renderer/editor.js'), vm = require('node:vm');
+  const start = source.indexOf('const ATLAS_SURFACE_IDS = Object.freeze(['), end = source.indexOf('const ATLAS_DEFERRED_SURFACE_IDS =', start);
+  assert.ok(start >= 0 && end > start); vm.runInContext(source.slice(start, source.indexOf('\n', end)), c);
+  for (const name of ['reviewSurfaceIsPlainObject', 'normalizeAtlasEntityDossier', 'renderAtlasEntityDossierState', 'appendAtlasOverviewRow',
+    'appendAtlasOverviewSection', 'appendAtlasOverviewMetric', 'normalizeAtlasSurface', 'setCurrentAtlasSurface',
+    'syncAtlasSurfaceCompositionState', 'syncAtlasReachabilityOpenerState', 'isAtlasSupportedViewportWidth']) {
+    const a = source.indexOf('function ' + name + '('), b = source.indexOf('\n}\n', a); assert.ok(a >= 0 && b > a); vm.runInContext(source.slice(a, b + 2), c);
+  }
+  Object.assign(c, { atlasEntityDossierHost: c.document.createElement('section'), atlasEntityDossierState: dossier.atlasEntityDossier,
+    atlasSelectedEntityId: x.targetEntityId, rightAtlasPanel: c.document.createElement('aside'), atlasSurfaceButtons: [], atlasSurfaceShells: [],
+    ATLAS_SURFACE_PROVIDER_BY_ID: { entity: 'query.atlasEntityDossier', journey: 'query.atlasCurrentScene' },
+    atlasReachabilityOpener: null, atlasReachabilityCaption: null, rightRailOverlayOpen: false,
+    getSpatialLayoutViewportWidth: () => 1280, getSpatialLayoutConstraintsForViewport: () => ({ rightRailMode: 'docked' }), renderAtlasReattachmentSources() {} });
+  for (const [surface, host] of [['entity', c.atlasEntityDossierHost], ['journey', c.atlasJourneyHost]]) {
+    const shell = c.document.createElement('section'); shell.dataset.atlasSurfaceShell = surface; shell.append(host); c.atlasSurfaceShells.push(shell); c.rightAtlasPanel.append(shell);
+  }
+  c.document.body.append(c.rightAtlasPanel); c.setCurrentAtlasSurface('entity', { refresh: false }); c.renderAtlasEntityDossierState();
+  const walk = node => [node, ...node.children.flatMap(walk)], select = walk(c.atlasEntityDossierHost).find(node => Object.hasOwn(node.dataset, 'atlasSavedMergeSelect'));
+  assert.ok(select); assert.equal(select.tagName, 'SELECT'); select.value = operationId; await select.emit('change');
+  c.setCurrentAtlasSurface('journey', { refresh: false }); assert.equal(c.atlasJourneyHost.parentElement.hidden, false);
+  assert.equal(vm.runInContext('atlasJourneyDraft.savedMergeOperation.operationId', c), operationId); return renderer;
+}
+
+test('actual current V10 merge publishes refreshed visible Flow choices without another input or navigation', async t => {
+  const x = await correctionMainFixture(t, true), renderer = correctionMainRenderer(x, await x.query());
+  await renderer.target(x.entityId, 25); await renderer.field('targetEntityId', x.targetEntityId);
+  const before = authorIdentitySnapshot(x), response = await renderer.click('merge-entities'), after = authorIdentitySnapshot(x);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_MERGE_FLOW_REFRESH', response, before, after }));
+  assertFlowRefreshApplied(x, before, after, response, 'atlas.entity.merge');
+  const fresh = await x.query(); assert.deepEqual(fresh.entities.map(row => row.entityId), [x.targetEntityId]);
+  assert.deepEqual(authorIdentitySnapshot(x).roster, after.roster); await assertFlowRefreshPublished(t, renderer, fresh);
+});
+
+test('actual cold selected merge restore publishes refreshed visible Flow without another input or navigation', async t => {
+  const x = await correctionMainFixture(t, true), merge = await x.payloadFor('atlas.entity.merge', 'flow-cold'); await x.apply('atlas.entity.merge', merge);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  const renderer = await flowRefreshColdRenderer(x, merge.operationId);
+  const before = authorIdentitySnapshot(x), response = await renderer.click('split-restore'), after = authorIdentitySnapshot(x);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_COLD_RESTORE_FLOW_REFRESH', response, before, after }));
+  assertFlowRefreshApplied(x, before, after, response, 'atlas.entity.splitRestore'); assert.equal(response.request.payload.operationId, merge.operationId);
+  const fresh = await x.query(); assert.deepEqual([...fresh.entities.map(row => row.entityId)].sort(), [x.entityId, x.targetEntityId].sort());
+  assert.deepEqual(authorIdentitySnapshot(x).roster, after.roster); await assertFlowRefreshPublished(t, renderer, fresh);
+});
+
+for (const fault of ['project', 'surface', 'author-draft', 'generation']) test('actual delayed correction scene read cannot rebuild newer ' + fault + ' Flow', async t => {
+  const x = await correctionMainFixture(t, true), renderer = correctionMainRenderer(x, await x.query()), c = renderer.c;
+  await renderer.target(x.entityId, 25); await renderer.field('targetEntityId', x.targetEntityId);
+  let enter, release, actual; const entered = new Promise(resolve => { enter = resolve; }), gate = new Promise(resolve => { release = resolve; }); t.after(() => release());
+  c.refreshAtlasCurrentScene = async options => { actual = await x.query(); enter(); await gate; if (!options.isCurrent || options.isCurrent()) c.atlasCurrentSceneState = structuredClone(actual); };
+  const before = authorIdentitySnapshot(x), pending = renderer.click('merge-entities');
+  await Promise.race([entered, pending.then(result => assert.fail('successful actual command must reach the delayed scene read: ' + JSON.stringify(result)))]);
+  const after = authorIdentitySnapshot(x), response = renderer.packets.at(-1); assertFlowRefreshApplied(x, before, after, response, 'atlas.entity.merge');
+  assert.deepEqual(actual.entities.map(row => row.entityId), [x.targetEntityId]);
+  if (fault === 'project') { assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.foreignProjectId })).ok, true); c.currentProjectId = x.foreignProjectId; }
+  if (fault === 'surface') c.currentAtlasSurface = 'reports';
+  if (fault === 'author-draft') await renderer.field('aliasValue', 'New author draft é 🧭');
+  if (fault === 'generation') { c.localEditGeneration += 1; c.localDirty = true; }
+  c.renderAtlasJourneyState(); const header = c.atlasJourneyHost.children[0], visible = flowRefreshControls(renderer);
+  const draft = require('node:vm').runInContext('JSON.stringify(atlasJourneyDraft)', c), cached = JSON.stringify(c.atlasCurrentSceneState), roster = reattachmentWholeFixtureRoster(x.h);
+  release(); assert.equal(await pending, response);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_DELAYED_FLOW_REFRESH_REFUSED', fault, response, actual, visibleAfter: flowRefreshControls(renderer) }));
+  assert.equal(c.atlasJourneyHost.children[0], header); assert.deepEqual(flowRefreshControls(renderer), visible);
+  assert.equal(require('node:vm').runInContext('JSON.stringify(atlasJourneyDraft)', c), draft); assert.equal(JSON.stringify(c.atlasCurrentSceneState), cached);
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), roster); assert.equal(renderer.packets.length, 1); x.assertOriginal();
+});

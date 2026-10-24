@@ -27291,7 +27291,7 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "81f79d793779461999d6a8f7b0b2ae2fd71f87b7bcab967747e49ca0c5ebe8d9"
+      "sha256": "acfcf1fb56d8f04fc198bac5a87667f4d68b9c18826bbc241eb27b35b07d95df"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -27427,7 +27427,7 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "ece58692c4294ce85db481d06da5da95cb1b1c457a6cef31188af64a6cd702f8"
+      "sha256": "2a685c44379c3e4fb39815230e3fb3da0487eea76dadba1d7ac196298ba3d51e"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -27567,15 +27567,15 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "0f398d40c46be12fc6d9a901613e08677981e1dbf1d08a1c74e531084238729d"
+      "sha256": "56d3090827e310fdd61265ec2546e3bcb534289bf27782e586e757ccc0e85da2"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "05ab60f1f6ba3a82b0a1dc922074cdfcbe5907db665063afeac052e9d1019d0b"
+      "sha256": "5df0cf7171174cb27c63337a1d0ba84ca5f8b665d7d82aa50571941ba2efdc54"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "c0247cc24bd88d1c8a67a35498f581f87d6a1cc2c55e79e56a1f1d8370428ee4"
+      "sha256": "295b1403e0b324130632d73dc6f418c775dad05a19abacc81ceabc9af5c9b703"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -27963,7 +27963,7 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "d9c0d94a64c860dbbfb9bc5a1730209e6d0b45096fe7b61117ef86e44d45890b"
+      "sha256": "72ff210be8a16a98fa0fecc0d61f9d8ce421db78fd91337ba96c2b9936af04b1"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -27971,7 +27971,7 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a2aceff7bcaf9a37a92b22103369c588a1282bdf47ff1e84f0fc360bb5fbed04"
+      "sha256": "6a6128b2d991d7e479bbaa45eea4a06550bb916bf510f2cd5cdaf96c44efff99"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -28183,7 +28183,7 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "sha256": "5fe136ad909087e91296e5b84f4f10018ca821f967766adc3f277997f1d0d101"
+      "sha256": "e39dfefbe70d7ce222a67dceaba0d530ea51bf634416b4bc2956ba314a2c0555"
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
@@ -28379,7 +28379,7 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-24--atlas-entity-corrections.md",
-      "sha256": "4411bccdad028e0e7d77d2a0364c260797d786cc0c933fbc4032efa57b756828"
+      "sha256": "3927b185999268eec1b430a9203e6acaae6d01dce247b32b4ffec7c1f865bc34"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-e04-c04-atlas-entity-merge-split-reassign-restore.contract.test.js",
@@ -28389,7 +28389,7 @@ const R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "674947559135be8c58cb10377bda316e95e95379cf2de0de020d0424c6898481"
+      "sha256": "5726f6a97044ce590bb78d8576ccc4b63c9be9dc9067532484e87b7c2cf58284"
     }
   ]
 });
