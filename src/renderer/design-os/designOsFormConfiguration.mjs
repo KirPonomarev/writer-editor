@@ -477,3 +477,139 @@ export class DesignOsFormConfigurationController {
 export function createDesignOsFormConfigurationController(input = {}) {
   return new DesignOsFormConfigurationController(input);
 }
+
+// Saved versions are a separate WP303 contract, not current/last-stable form.
+export const ENVIRONMENT_EPOCH_HISTORY_SCHEMA_VERSION = 'yalken.designOsEnvironmentEpochHistory.v1';
+export const ENVIRONMENT_EPOCH_CONFIGURATION_SCHEMA = 'THEME_WRAP_V1';
+export const ENVIRONMENT_EPOCH_MAX_RECORDS = 128;
+export const ENVIRONMENT_EPOCH_MAX_BYTES = 65536;
+const ENVIRONMENT_EPOCH_HISTORY_KEYS = Object.freeze(['configurationSchema', 'epochs', 'revision', 'schemaVersion']);
+const ENVIRONMENT_EPOCH_RECORD_KEYS = Object.freeze(['epochId', 'platform', 'preferences', 'reason', 'recordedAtUtc', 'revision', 'sourceEpochId']);
+const ENVIRONMENT_EPOCH_APPEND_KEYS = Object.freeze(['epochId', 'expectedRevision', 'platform', 'preferences', 'reason', 'recordedAtUtc', 'sourceEpochId']);
+const ENVIRONMENT_EPOCH_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u;
+
+function environmentEpochRefuse(reason) {
+  throw new DesignOsFormConfigurationError('E_ENVIRONMENT_EPOCH_' + reason);
+}
+
+function environmentEpochPreferences(value) {
+  if (!hasExactKeys(value, ['theme', 'wordWrap']) || !['light', 'dark'].includes(value.theme)
+    || typeof value.wordWrap !== 'boolean') environmentEpochRefuse('PREFERENCES_INVALID');
+  return { theme: value.theme, wordWrap: value.wordWrap };
+}
+
+function environmentEpochHistory(value) {
+  if (!hasExactKeys(value, ENVIRONMENT_EPOCH_HISTORY_KEYS)
+    || value.schemaVersion !== ENVIRONMENT_EPOCH_HISTORY_SCHEMA_VERSION
+    || value.configurationSchema !== ENVIRONMENT_EPOCH_CONFIGURATION_SCHEMA
+    || !Array.isArray(value.epochs) || value.epochs.length > ENVIRONMENT_EPOCH_MAX_RECORDS
+    || !Number.isSafeInteger(value.revision) || value.revision < 0
+    || value.revision !== value.epochs.length) environmentEpochRefuse('HISTORY_INVALID');
+  const prior = new Map();
+  const epochs = value.epochs.map((row, index) => {
+    if (!hasExactKeys(row, ENVIRONMENT_EPOCH_RECORD_KEYS) || row.revision !== index + 1
+      || typeof row.epochId !== 'string' || !ENVIRONMENT_EPOCH_UUID.test(row.epochId) || prior.has(row.epochId)
+      || row.platform !== 'macos' || !['CAPTURE', 'RESTORE'].includes(row.reason)
+      || typeof row.recordedAtUtc !== 'string' || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/u.test(row.recordedAtUtc)
+      || !Number.isFinite(Date.parse(row.recordedAtUtc))
+      || new Date(row.recordedAtUtc).toISOString() !== row.recordedAtUtc) environmentEpochRefuse('RECORD_INVALID');
+    const preferences = environmentEpochPreferences(row.preferences);
+    if (row.reason === 'CAPTURE' ? row.sourceEpochId !== null
+      : typeof row.sourceEpochId !== 'string' || !prior.has(row.sourceEpochId)
+        || JSON.stringify(preferences) !== JSON.stringify(prior.get(row.sourceEpochId).preferences)) environmentEpochRefuse('SOURCE_INVALID');
+    const record = { epochId: row.epochId, revision: row.revision, recordedAtUtc: row.recordedAtUtc,
+      platform: row.platform, reason: row.reason, sourceEpochId: row.sourceEpochId, preferences };
+    prior.set(record.epochId, record); return record;
+  });
+  const history = { schemaVersion: ENVIRONMENT_EPOCH_HISTORY_SCHEMA_VERSION, configurationSchema: ENVIRONMENT_EPOCH_CONFIGURATION_SCHEMA,
+    revision: value.revision, epochs };
+  if (new TextEncoder().encode(JSON.stringify(history)).byteLength > ENVIRONMENT_EPOCH_MAX_BYTES) environmentEpochRefuse('BYTES');
+  return deepFreezeTree(history);
+}
+
+// JSON.parse loses duplicate members. Walk the bounded JSON grammar first and
+// compare decoded keys, including escaped spellings, before constructing state.
+function environmentEpochValidateJson(text) {
+  let cursor = 0, entries = 0;
+  const space = () => { while (/[\t\n\r ]/u.test(text[cursor] || '\0')) cursor += 1; };
+  const string = () => {
+    const start = cursor; if (text[cursor++] !== '"') environmentEpochRefuse('JSON');
+    while (cursor < text.length) {
+      const character = text[cursor++];
+      if (character === '\\') cursor += 1;
+      else if (character === '"') return JSON.parse(text.slice(start, cursor));
+    }
+    environmentEpochRefuse('JSON');
+  };
+  const value = depth => {
+    if (depth > DESIGN_OS_FORM_CONFIGURATION_MAX_DEPTH) environmentEpochRefuse('DEPTH');
+    space(); const character = text[cursor];
+    if (character === '{') {
+      cursor += 1; space(); const keys = new Set();
+      if (text[cursor] === '}') { cursor += 1; return; }
+      while (cursor < text.length) {
+        space(); const key = string();
+        if (keys.has(key) || DANGEROUS_KEYS.includes(key)) environmentEpochRefuse('DUPLICATE_OR_UNSAFE_KEY');
+        keys.add(key); entries += 1; if (entries > DESIGN_OS_FORM_CONFIGURATION_MAX_ENTRIES) environmentEpochRefuse('ENTRIES');
+        space(); if (text[cursor++] !== ':') environmentEpochRefuse('JSON'); value(depth + 1); space();
+        if (text[cursor] === '}') { cursor += 1; return; }
+        if (text[cursor++] !== ',') environmentEpochRefuse('JSON');
+      }
+      environmentEpochRefuse('JSON');
+    }
+    if (character === '[') {
+      cursor += 1; space(); if (text[cursor] === ']') { cursor += 1; return; }
+      while (cursor < text.length) {
+        entries += 1; if (entries > DESIGN_OS_FORM_CONFIGURATION_MAX_ENTRIES) environmentEpochRefuse('ENTRIES');
+        value(depth + 1); space(); if (text[cursor] === ']') { cursor += 1; return; }
+        if (text[cursor++] !== ',') environmentEpochRefuse('JSON');
+      }
+      environmentEpochRefuse('JSON');
+    }
+    if (character === '"') { string(); return; }
+    const start = cursor;
+    while (cursor < text.length && !/[\t\n\r ,\]}]/u.test(text[cursor])) cursor += 1;
+    if (cursor === start) environmentEpochRefuse('JSON'); JSON.parse(text.slice(start, cursor));
+  };
+  value(0); space(); if (cursor !== text.length) environmentEpochRefuse('JSON');
+}
+
+export function createEnvironmentEpochHistory() {
+  return environmentEpochHistory({ schemaVersion: ENVIRONMENT_EPOCH_HISTORY_SCHEMA_VERSION,
+    configurationSchema: ENVIRONMENT_EPOCH_CONFIGURATION_SCHEMA, revision: 0, epochs: [] });
+}
+
+export function decodeEnvironmentEpochHistory(raw) {
+  try {
+    if (typeof raw !== 'string' && !(raw instanceof Uint8Array)) environmentEpochRefuse('RAW_INVALID');
+    if (raw instanceof Uint8Array && raw.byteLength > ENVIRONMENT_EPOCH_MAX_BYTES) environmentEpochRefuse('BYTES');
+    if (raw instanceof Uint8Array && raw[0] === 0xef && raw[1] === 0xbb && raw[2] === 0xbf) environmentEpochRefuse('NONCANONICAL');
+    const text = typeof raw === 'string' ? raw : new TextDecoder('utf-8', { fatal: true }).decode(raw);
+    if (new TextEncoder().encode(text).byteLength > ENVIRONMENT_EPOCH_MAX_BYTES) environmentEpochRefuse('BYTES');
+    assertValidUnicode(text, 'saved-settings'); environmentEpochValidateJson(text);
+    const history = environmentEpochHistory(JSON.parse(text)), canonical = JSON.stringify(history);
+    if (text !== canonical && text !== canonical + '\n') environmentEpochRefuse('NONCANONICAL');
+    return history;
+  } catch (error) {
+    if (typeof error?.code === 'string' && error.code.startsWith('E_ENVIRONMENT_EPOCH_')) throw error;
+    environmentEpochRefuse('DECODE_INVALID');
+  }
+}
+
+export function appendEnvironmentEpoch(history, input) {
+  const current = environmentEpochHistory(history);
+  if (!hasExactKeys(input, ENVIRONMENT_EPOCH_APPEND_KEYS)) environmentEpochRefuse('APPEND_INVALID');
+  if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision !== current.revision) environmentEpochRefuse('STALE_REVISION');
+  if (current.epochs.length >= ENVIRONMENT_EPOCH_MAX_RECORDS) environmentEpochRefuse('CAPACITY_NO_TRIM');
+  return environmentEpochHistory({ ...current, revision: current.revision + 1, epochs: [...current.epochs, {
+    epochId: input.epochId, revision: current.revision + 1, recordedAtUtc: input.recordedAtUtc,
+    platform: input.platform, reason: input.reason, sourceEpochId: input.sourceEpochId, preferences: input.preferences,
+  }] });
+}
+
+export function previewEnvironmentEpoch(history, epochId) {
+  const current = environmentEpochHistory(history);
+  const selected = current.epochs.find(row => row.epochId === epochId);
+  if (!selected) environmentEpochRefuse('SOURCE_UNKNOWN');
+  return selected;
+}

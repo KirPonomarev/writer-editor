@@ -1,4 +1,5 @@
 const WORKSPACE_QUERY_IDS = Object.freeze({
+  SETTINGS_ENVIRONMENT_EPOCHS: 'query.settingsEnvironmentEpochs',
   USER_BOOKMARKS: 'query.project.userBookmarks',
   DOCUMENT_STORIES: 'query.project.documentStories',
   PROJECT_TREE: 'query.projectTree',
@@ -42,6 +43,7 @@ const ATLAS_WORKSPACE_QUERY_IDS = Object.freeze([
 ]);
 
 const WORKSPACE_QUERY_RECORDS = Object.freeze([
+  Object.freeze({ id: WORKSPACE_QUERY_IDS.SETTINGS_ENVIRONMENT_EPOCHS, owner: 'main', projection: 'settings-environment-epochs' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.DOCUMENT_STORIES, owner: 'main', projection: 'document-stories' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.USER_BOOKMARKS, owner: 'main', projection: 'user-bookmarks' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.PROJECT_TREE, owner: 'main', projection: 'project-tree' }),

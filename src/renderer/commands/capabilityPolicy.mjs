@@ -33,6 +33,8 @@ export const CAPABILITY_BINDING = Object.freeze({
   'cmd.project.view.setMenuLocaleEn': 'cap.project.view.menuLocale',
   'cmd.project.view.resetMenuCustomization': 'cap.project.view.menuCustomization',
   'cmd.project.view.openSettings': 'cap.project.view.openSettings',
+  'cmd.project.view.captureEnvironmentEpoch': 'cap.project.view.openSettings',
+  'cmd.project.view.restoreEnvironmentEpoch': 'cap.project.view.openSettings',
   'cmd.project.view.safeReset': 'cap.project.view.safeReset',
   'cmd.project.view.restoreLastStable': 'cap.project.view.restoreLastStable',
   'cmd.project.tools.openDiagnostics': 'cap.project.tools.openDiagnostics',

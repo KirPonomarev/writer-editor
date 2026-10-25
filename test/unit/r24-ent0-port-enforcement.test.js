@@ -26,11 +26,21 @@ test('port adoption: both command dispatch ports consult the one table with the 
   const main = readMain();
   assert.ok(main.includes("require('./core/entitlement-law-v1.cjs')"));
   const pulsePort = mainFunction(main, 'createPulseLocalHistoryPort');
+  const environmentPort = mainFunction(main, 'createEnvironmentEpochPort');
   assert.equal(main.indexOf(pulsePort), main.lastIndexOf(pulsePort), 'the exact Pulse port body is unique');
-  const calls = main.replace(pulsePort, '').match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || [];
+  assert.equal(main.split('function createEnvironmentEpochPort(').length - 1, 1, 'the Environment port is unique');
+  const calls = main.replace(pulsePort, '').replace(environmentPort, '').match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || [];
   assert.equal(calls.length, 3, 'two dispatch decisions and the separate async preparation revalidation');
   assert.equal((pulsePort.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, 'Pulse revalidates the product-owned tier');
-  assert.equal((main.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 4, 'three original decisions plus the separate Pulse port revalidation');
+  assert.equal((environmentPort.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, 'Environment revalidates the product-owned tier');
+  const environmentGuardStart = environmentPort.indexOf('  const guard = () => {');
+  const environmentGuardEnd = environmentPort.indexOf('\n  };', environmentGuardStart);
+  assert.ok(environmentGuardStart >= 0 && environmentGuardEnd > environmentGuardStart);
+  const environmentGuard = environmentPort.slice(environmentGuardStart, environmentGuardEnd + 5);
+  const environmentRefusal = environmentGuard.match(/if \(([\s\S]*?)\) refuse\('E_ENVIRONMENT_EPOCH_CONTEXT_STALE'\);/u)?.[1] || '';
+  assert.equal((environmentRefusal.match(/\|\| !decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)\.available/gu) || []).length, 1);
+  assert.equal((environmentPort.replace(environmentGuard, '').match(/\n  guard\(\);\n  return Object\.freeze\(\{/gu) || []).length, 1, 'the actual Environment guard is invoked before port publication');
+  assert.equal((main.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 5, 'three original decisions plus the separate Pulse and Environment port revalidations');
   for (const name of ['dispatchMenuCommand', 'dispatchProductCommandBridge']) {
     const body = mainFunction(main, name);
     assert.equal((body.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, name);

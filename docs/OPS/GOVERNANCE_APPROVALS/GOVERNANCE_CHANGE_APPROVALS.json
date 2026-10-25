@@ -22451,6 +22451,666 @@
       "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
       "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
       "sha256": "7037e8a3ab6890ca54b770c34fd419560a6fbc8f900d9252e229f73dd639410c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "3239269e965ea9b0941a1e3caeb931e806de1e573a539272beb792f42f7ab5e8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "f980c001c52fdad717bbad0183534d5010913065527e98fe22c7cae063c742f1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "6cb332f95fb94a5a09a93b3a32a043448c6db4bd1e200d293acabf67a249e370"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "5a453fbbf494df1948bacf3ca8843bb61442e702438e2e3d3c3877fca08348ba"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "93e9b932c61cb9ad17290e38360002bdce505cfd64df9f62d723d8a73ae520c3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "93dfc7865413b2fed531fca35ca99df01d0cac6557d270b9d77f4325d5f02c92"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "fd306bbc71ee54b7737d9156af3e3f1158ca7cdec864d30f53603109a148ace1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--environment-epochs.md",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "356400a313fc1bd65163cf503fd0a8b5c278efb46f290814b274776d38d2688a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "f2e73617573f34e5565ae5ddaf96ecb6fedbcf13ae86a52dd91feda4d3e875a8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "85221fa21b014806437f532eb56ec78018e7d79c9c63d028367edd480ca9e228"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "26e2e27f2ba3ace843323ba7117141676b34bdb694ec3b2807ab61ea7d54df1f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "10089207676c812f861ab8ee6881d3f16ee042810c41f2c28c0e6d671d864a7d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/command/commandSurfaceKernel.js",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "2a1b98655d7ff3fb053b2187eea1651f37a9ee16195459b0e9c72ed878507b2a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/core/entitlement-law-v1.cjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "9ee7b13d82082d4196d2ffcf30cac0459cc8675bda55b1168120deddf4a95318"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "6c4eaf4fe681d956b767b7575efa3dd6cbca5da3d5c9820f15260e4afe738d96"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/commands/capabilityPolicy.mjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "7fa40427d120fc661d309b7f3fd1569b1cfac62ef5a412f4ae6a060c346c69bb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/commands/projectCommands.mjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "1f9d6785912339163b2d05ef7da0d6e0cf50562c1594c7217917a7dd59e1b064"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/design-os/designOsFormConfiguration.mjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "774771d53827f04f6262441eb234b451aad244238a8bdaf67ffe4f493b771273"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "1a9e2d080cec12e0526367d28cdfed0637b0aff6fd9113ade55583448ac6da33"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "b38ab484dae39c8b07fcf52045910496eea0fb65fc2fbebbbb97b08a7bf63cd7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/shared/workspaceQueryRegistry.cjs",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "ee2403c1b7ed67546661dee8a3c7d0565d59012f711308164eae484181dc579c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp303-design-os-customization.test.js",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "96cf7c6a1bc18d6949aa72cb9669484ff3603e9b676e5c59a1f35ca0182ffe68"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:11:18.545994+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Same admitted initial Theme+WordWrap shell version task, exact32paths, source-only current companion assembly after genuine whole Main refusal RED and separate executor; preserve historical tuples and all17UNKNOWN. Actual Main/native/full delivery remain pending; no release/owner permit or security clearance.",
+      "sha256": "924262bc8fd6f688b43c08c63d17e634bc6b18485e91481a37c91e713f0562b5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "c836278fe6747f964176fef82a0d1a6b5d5b23b84bb47a9c199095e1c0c6725f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "af854c5b84ac97b6871596a489e494237f5eec8eab2db73c603d0a38cdba17f0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "85ce9402d43b448e9fb49fe36bbac865a0ddf34c89f26591c542ec0141e6064c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "36497e95f1ba817fcf6e55123b97f4ad0f37f897c464a80b5dd7e0e26528249a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "4155b5e4bff62b2b4ad478eaf80d101e18ab87c58352cf80d087e011f56b259c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "46e2ad8b2fc24827a057311f40ef86e91fca375b8740b4b345a13c0a0b2b817c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--environment-epochs.md",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "b9672b01e83a3a2a61bf23c447bcdfcba32d9ba9dbcc809ab392870376ba1253"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "98e8bc3437032eaf5405b521d79ebba1a9e7fae700f5796e3569c5abb3d60108"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "757a0a077c5965daedf45bf1a3ad0f26f60bec4d9016bd4aa56740e91c50bf65"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "22444d3526d36ed8f7207aea062bbadda755b30ab83d76272076526d3d3309d8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-ent0-port-enforcement.test.js",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "42b8c18c92f5ffc4ebd2d2783bd87cbd93087d81b32afc9dcf34f99d2fbc1fa4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp100-wiring-matrix.test.js",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "4da36e321401b14105ed64b9efbcf15aec514a0e84bbd6fefd4d5ee7420d9bf5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:26:51.039634+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Same32path Theme+WordWrap task; actual whole strict command/scanner RED then44of44, exact donor+2inverse and consumed unknown/missing assertions, old Pulse7/foundation5 and new Environment8 preserved; append44line actual late-digest case without changing prior410303byte prefix. Current hashes only, runtime/bundle held; whole Main/native/full delivery still pending.",
+      "sha256": "134c0d36f79814e5f57782be900cccbefea29389f88e93f99a8ec6d1998e37d8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "d1e83a659c9965a185795b4e80788de27b7641a18b385d696343a4576ac81f58"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "2b07e021dbbec05bdab7f3fcf32bc1fb1e46ac6b81bf99d4033a42b40b37d91f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "c823691818154b23d7c8e77306f7a21b06ecd4249045c4923e092fd87ac18cd9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "037fce1dbae49fb296628ff1403477da9bc5d4dc1da6f1bf51609802376a1fef"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "72a607852fcffdee46c1227af274acbd9a87f90b1174a2f4b112fe01382cd595"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "7d31c2a5c03f024d8a315be9ff1ba5d40515d297d42d53246e34c27a232bf3c3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--environment-epochs.md",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "4c6e644b68b3d3df843a368ef35057524ad421ab85a75dad8a960677f8129538"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "314ede3faa9f1b81d4bd31a50c6986af247099f485e2c7eab4d38f4091a4c352"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "641bb0ecd729dfcf0a763ca083ed416f2a8e2144ce2bf8fcb835abc24319db5f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T13:45:30.946426+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
+      "sha256": "54b14120179aaf5dd6762411655f3b38dd0be8f74a6253db2db83674a5138c43"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "0f774b07d4900738b358b3daa5c36eb026edd1b13792293285c447a38e59781f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "0f620270077b511330c031ac652bdde1906d90c3539ff643a134d541f1da8cfd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "3ab2db43926b30ff7cedd275339bc99e23e7b21d4850a0e86f84d5b4c46689ca"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "c7e8f20c27ee53715be82f129d8ecd2823ff453faa6f1ef996ab0ddb7b94c4d7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "17a154b4eded963a9736df2d2df30a4b371c0e4ed6db90d96c26aa8d66d5bfe6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "fc0d4274330c94008d4218c844e2732373da331392779d380e510e1da2239994"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--environment-epochs.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "7876a59b9faf95ea3855e61c03e104e46e26aaa3d4f5a6475fb6861857ea3bab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "de48def502c14e4e027a44504dfe2f30b513097306ce1105036f605998fec868"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "5975135a596e948cdecb9ea005bea0931737072887861ee68b95e91338295895"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "70bb10c1870fb73aa52a3df8f043545271febec278441a92fb9ecf63fb6037b9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "bfcd43f39946f32a79f7cbfafc12f1e6c8f70037d408ccbb9efee1f5d153cdd4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "e9e01cf7a5b8aaa13bfe8706e37779305ac842ce4ccb8bfe04e61bcf71b9ac07"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "caf6a1d14f642218c6e2b52f3eb409aa55ff6df17d1856d7917772d899ca1358"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "98c036e4ae9b4e3c19812393b325cb1061384be580062aecfe1e4846e973369a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "40a9701378c014491fb1c0ee3455f8268ddf8e99e0a6d5bb8968e5f5aa2a1ab6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "9dbc00d0f6b6a935134afb4ae262f67d2090bdf55b7456eb0dfadadcd58544a9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--environment-epochs.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "15da1c4b291383a86dbbfa3a9a3e584bf3b27308e1f56f1459e0b68eb0c659fb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "99864162f29554624abbb8eba3b9e21d1aca6f5980af9c27833c87505b76fbde"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "22e6d0fc57e3d78d63ebfa7f4d9328d821ffea412e4a76b65d05fdc991c63cc6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "8e180387e17650bdc48d496bcbc9f077244f31880063ee83ea85d589abb21337"
     }
   ],
   "evidenceStampIds": [

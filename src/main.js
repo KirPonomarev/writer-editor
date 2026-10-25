@@ -725,6 +725,8 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_SAVE: 'cmd.project.save',
   PULSE_OPT_IN: 'cmd.project.pulse.optIn',
   PULSE_OPT_OUT: 'cmd.project.pulse.optOut',
+  ENVIRONMENT_EPOCH_CAPTURE: 'cmd.project.view.captureEnvironmentEpoch',
+  ENVIRONMENT_EPOCH_RESTORE: 'cmd.project.view.restoreEnvironmentEpoch',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   PROJECT_RECOVER_MISSING_INTEGRITY_ANCHOR: 'cmd.project.recoverMissingIntegrityAnchor',
   PROJECT_EXPORT_CURRENT_SCENE_TXT_V1: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
@@ -16027,6 +16029,8 @@ function getInternalCommandSurfaceKernel() {
     },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_IN]: payload => handlePulsePrivacyCommand('cmd.project.pulse.optIn', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_OUT]: payload => handlePulsePrivacyCommand('cmd.project.pulse.optOut', payload),
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE]: payload => handleEnvironmentEpochCommand('cmd.project.view.captureEnvironmentEpoch', payload),
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE]: payload => handleEnvironmentEpochCommand('cmd.project.view.restoreEnvironmentEpoch', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS]: async () => {
       const savedAs = await handleSaveAs();
       return { ok: savedAs === true };
@@ -16986,6 +16990,191 @@ async function handlePulsePrivacyCommand(commandId, payload) {
     if (payload.projectId !== port.projectId) return fail('E_PULSE_PROJECT_MISMATCH');
     return await queueDiskOperation(() => port.change(payload), 'Pulse consent');
   } catch (error) { return fail(typeof error.code === 'string' ? error.code : 'E_PULSE_UNAVAILABLE'); }
+}
+
+const ENVIRONMENT_EPOCH_COMMAND_IDS = Object.freeze(['cmd.project.view.captureEnvironmentEpoch', 'cmd.project.view.restoreEnvironmentEpoch']);
+const ENVIRONMENT_EPOCH_FILE_NAME = 'design-os-environment-epochs.json';
+let environmentEpochModulePromise = null;
+function loadEnvironmentEpochModule() {
+  if (!environmentEpochModulePromise) environmentEpochModulePromise = import(pathToFileURL(path.join(__dirname,
+    'renderer', 'design-os', 'designOsFormConfiguration.mjs')).href).catch(error => { environmentEpochModulePromise = null; throw error; });
+  return environmentEpochModulePromise;
+}
+
+function environmentEpochExactKeys(value, keys) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)
+    || ![Object.prototype, null].includes(Object.getPrototypeOf(value))) return false;
+  const actual = Reflect.ownKeys(value);
+  return actual.length === keys.length && actual.every(key => typeof key === 'string' && keys.includes(key));
+}
+
+function environmentEpochFailure(commandId, code, details) {
+  return { ok: false, error: { code, op: commandId, reason: code, ...(details ? { details } : {}) } };
+}
+
+// One app-local shell-history port. It never reads or writes manuscript state.
+function createEnvironmentEpochPort(commandId) {
+  const refuse = code => { throw Object.assign(Error(code), { code }); };
+  const directory = app.getPath('userData'), filePath = path.join(directory, ENVIRONMENT_EPOCH_FILE_NAME);
+  const directoryIdentity = () => {
+    const stat = fsSync.lstatSync(directory);
+    if (!stat.isDirectory() || stat.isSymbolicLink()) refuse('E_ENVIRONMENT_EPOCH_DIRECTORY_INVALID');
+    return { dev: stat.dev, ino: stat.ino, real: fsSync.realpathSync(directory) };
+  };
+  const originalDirectory = directoryIdentity(), window = mainWindow, contents = window?.webContents;
+  const owner = activeStage10ApplicationBootstrap, projectId = owner?.getProjectId(), root = getProjectRootPath(), projectName = currentProjectName;
+  const file = currentFilePath, subject = currentLifecycleSubjectId(), sessionId = commentAuthoringSessionId;
+  const generation = lastSignaledEditGeneration, profile = JSON.stringify(getWriterLocalRuntimeProfile());
+  const restoring = commandId === COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE;
+  let source = null, ownBytes = null, publishedIdentity = null, published = false, publicationAttempted = false;
+  const sameDirectory = () => { const actual = directoryIdentity();
+    return actual.dev === originalDirectory.dev && actual.ino === originalDirectory.ino && actual.real === originalDirectory.real; };
+  const sameFile = (left, right) => left === null ? right === null : right !== null && left.dev === right.dev && left.ino === right.ino;
+  const digest = raw => crypto.createHash('sha256').update(raw === null ? 'ABSENT_ENVIRONMENT_EPOCH_V1' : raw).digest('hex');
+  const readBytes = (target = filePath) => {
+    let stat;
+    try { stat = fsSync.lstatSync(target); } catch (error) { if (error.code === 'ENOENT') return { raw: null, identity: null }; throw error; }
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 || stat.size > 65536) refuse('E_ENVIRONMENT_EPOCH_FILE_INVALID');
+    const descriptor = fsSync.openSync(target, fsSync.constants.O_RDONLY | fsSync.constants.O_NOFOLLOW);
+    try {
+      const before = fsSync.fstatSync(descriptor, { bigint: true });
+      if (!before.isFile() || before.nlink !== 1n || before.dev !== BigInt(stat.dev) || before.ino !== BigInt(stat.ino)) refuse('E_ENVIRONMENT_EPOCH_FILE_STALE');
+      const bytes = Buffer.alloc(65537); let size = 0, count;
+      do { count = fsSync.readSync(descriptor, bytes, size, bytes.length - size, null); size += count; } while (count && size < bytes.length);
+      const after = fsSync.fstatSync(descriptor, { bigint: true });
+      if (size > 65536 || before.size !== after.size || before.mtimeNs !== after.mtimeNs || before.ctimeNs !== after.ctimeNs
+        || before.dev !== after.dev || before.ino !== after.ino || size !== Number(after.size)) refuse('E_ENVIRONMENT_EPOCH_FILE_STALE');
+      const named = fsSync.lstatSync(target);
+      if (named.isSymbolicLink() || named.dev !== stat.dev || named.ino !== stat.ino) refuse('E_ENVIRONMENT_EPOCH_FILE_STALE');
+      return { raw: bytes.subarray(0, size), identity: { dev: stat.dev, ino: stat.ino } };
+    } finally { fsSync.closeSync(descriptor); }
+  };
+  const guard = () => {
+    const capability = evaluateCommandCapabilityAuthority({ commandId, capabilityId: 'cap.project.view.openSettings',
+      platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc: readAuthorityCapabilityMatrixDoc() });
+    if (process.platform !== 'darwin' || !window || mainWindow !== window || window.isDestroyed()
+      || window.webContents !== contents || contents.isDestroyed() || owner !== activeStage10ApplicationBootstrap
+      || owner?.getProjectId() !== projectId || root !== getProjectRootPath() || projectName !== currentProjectName || file !== currentFilePath
+      || subject !== currentLifecycleSubjectId() || sessionId !== commentAuthoringSessionId || generation !== lastSignaledEditGeneration
+      || profile !== JSON.stringify(getWriterLocalRuntimeProfile()) || !capability.ok
+      || !decideCommandEntitlement(commandId, getProductEntitlementTier()).available
+      || !evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId, productCommandRecord: getProductCommandRecord(commandId) }).allowed
+      || app.getPath('userData') !== directory || !sameDirectory()) refuse('E_ENVIRONMENT_EPOCH_CONTEXT_STALE');
+    if (restoring && (isDirty || autoSaveInProgress || lastAcknowledgedEditGeneration !== lastSignaledEditGeneration
+      || pendingReviewDocxExports.size > 0)) refuse('E_ENVIRONMENT_EPOCH_SAVE_FIRST');
+    if (source) {
+      const actual = readBytes();
+      if (published && ownBytes && actual.raw?.equals(ownBytes) && sameFile(actual.identity, publishedIdentity)) return;
+      if (digest(actual.raw) !== source.stateDigest || !sameFile(actual.identity, source.identity)) refuse('E_ENVIRONMENT_EPOCH_SOURCE_STALE');
+    }
+  };
+  const snapshot = model => {
+    if (!sameDirectory()) refuse('E_ENVIRONMENT_EPOCH_DIRECTORY_STALE');
+    const actual = readBytes(), history = actual.raw === null ? model.createEnvironmentEpochHistory() : model.decodeEnvironmentEpochHistory(actual.raw);
+    return { ...actual, history, stateDigest: digest(actual.raw) };
+  };
+  const projection = state => {
+    const available = id => decideCommandEntitlement(id, getProductEntitlementTier()).available
+      && evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: id, productCommandRecord: getProductCommandRecord(id) }).allowed;
+    return Object.freeze({ schemaVersion: 'yalken.environmentEpochHistory.v1', configurationSchema: 'THEME_WRAP_V1',
+      revision: state.history.revision, stateDigest: state.stateDigest, epochs: state.history.epochs,
+      availability: Object.freeze({ capture: available(ENVIRONMENT_EPOCH_COMMAND_IDS[0]),
+        restore: available(ENVIRONMENT_EPOCH_COMMAND_IDS[1]) && !isDirty && !autoSaveInProgress
+          && lastAcknowledgedEditGeneration === lastSignaledEditGeneration && pendingReviewDocxExports.size === 0 }) });
+  };
+  guard();
+  return Object.freeze({
+    async read() {
+      guard(); const model = await loadEnvironmentEpochModule(); guard(); const state = snapshot(model); guard();
+      return { ok: true, settingsEnvironmentEpochs: projection(state) };
+    },
+    async change(payload) {
+      let model;
+      try {
+        guard(); model = await loadEnvironmentEpochModule(); guard(); source = snapshot(model); guard();
+        if (payload.expectedRevision !== source.history.revision || payload.expectedStateDigest !== source.stateDigest) refuse('E_ENVIRONMENT_EPOCH_STALE_REVISION');
+        const selected = restoring ? model.previewEnvironmentEpoch(source.history, payload.epochId) : null;
+        const next = model.appendEnvironmentEpoch(source.history, { expectedRevision: source.history.revision, epochId: crypto.randomUUID(),
+          recordedAtUtc: new Date().toISOString(), platform: 'macos', reason: restoring ? 'RESTORE' : 'CAPTURE',
+          sourceEpochId: selected?.epochId || null, preferences: selected ? selected.preferences : payload.preferences });
+        ownBytes = Buffer.from(JSON.stringify(next) + '\n'); guard(); const ownedTemps = new Map();
+        const adapter = {
+          open: async (target, flags) => {
+            if (flags !== 'w' || path.dirname(target) !== directory || !path.basename(target).startsWith(ENVIRONMENT_EPOCH_FILE_NAME + '.p2-')
+              || !target.endsWith('.tmp')) refuse('E_ENVIRONMENT_EPOCH_TEMP_INVALID');
+            guard(); const handle = await fs.open(target, fsSync.constants.O_WRONLY | fsSync.constants.O_CREAT | fsSync.constants.O_EXCL | fsSync.constants.O_NOFOLLOW, 0o600);
+            try { const stat = await handle.stat(); guard();
+              if (!stat.isFile() || stat.nlink !== 1) refuse('E_ENVIRONMENT_EPOCH_TEMP_INVALID');
+              ownedTemps.set(target, { dev: stat.dev, ino: stat.ino });
+            } catch (error) { await handle.close().catch(() => {}); throw error; }
+            return new Proxy(handle, { get(object, key) {
+              const value = object[key]; if (typeof value !== 'function') return value;
+              if (key === 'close') return value.bind(object);
+              return async (...args) => { try { guard(); const result = await value.apply(object, args); guard(); return result; }
+                catch (error) { await object.close().catch(() => {}); throw error; } };
+            } });
+          },
+          rename: async (from, to) => {
+            if (!ownedTemps.has(from) || to !== filePath) refuse('E_ENVIRONMENT_EPOCH_TARGET_INVALID');
+            guard(); const prepared = readBytes(from);
+            if (!sameFile(prepared.identity, ownedTemps.get(from)) || !prepared.raw?.equals(ownBytes)) refuse('E_ENVIRONMENT_EPOCH_TEMP_STALE');
+            guard(); publishedIdentity = prepared.identity; publicationAttempted = true; await fs.rename(from, to); published = true; guard();
+          },
+          syncDirectory: async target => {
+            if (target !== directory) refuse('E_ENVIRONMENT_EPOCH_TARGET_INVALID');
+            guard(); const handle = await fs.open(target, fsSync.constants.O_RDONLY | fsSync.constants.O_NOFOLLOW | fsSync.constants.O_DIRECTORY);
+            try { guard(); const stat = await handle.stat(); guard();
+              if (stat.dev !== originalDirectory.dev || stat.ino !== originalDirectory.ino) refuse('E_ENVIRONMENT_EPOCH_DIRECTORY_STALE');
+              await handle.sync(); guard(); } finally { await handle.close(); }
+          },
+          readFile: async target => {
+            if (target !== filePath) refuse('E_ENVIRONMENT_EPOCH_TARGET_INVALID');
+            guard(); const actual = readBytes(); guard(); return actual.raw;
+          },
+        };
+        const observation = observerId => async identity => { guard(); return createAuthorityObservation({ observerId,
+          requestDigest: identity.identityDigest, route: SAVE_AUTHORITY_ROUTES.ATOMIC_FILE_V1 }); };
+        const receipt = await executeAtomicSingleFileGatewayCutover({ request: { filePath, content: ownBytes,
+          targetRole: ATOMIC_SINGLE_FILE_TARGET_ROLES.SETTINGS_PRIMARY, projectId: null },
+        observeLegacy: observation(SAVE_AUTHORITY_OBSERVER_IDS.LEGACY), observeGateway: observation(SAVE_AUTHORITY_OBSERVER_IDS.GATEWAY),
+        executeGateway: async ({ authorityIdentity }) => { guard(); const result = await durableSaveTransaction({ filePath, content: ownBytes,
+          revision: next.revision, fsAdapter: adapter }); guard();
+          return { ...result, targetRole: authorityIdentity.targetRole, contentDigest: authorityIdentity.contentDigest }; } });
+        guard(); const current = snapshot(model); guard();
+        return { ok: true, performed: true, epoch: current.history.epochs.at(-1), settingsEnvironmentEpochs: projection(current), receipt,
+          ...(restoring ? { preferences: selected.preferences } : {}) };
+      } catch (error) {
+        let current = null, readbackUnavailable = false;
+        if (ownBytes && model) { try { const read = snapshot(model); if (read.raw?.equals(ownBytes)) current = read; } catch { readbackUnavailable = true; } }
+        if (published || current || publicationAttempted && readbackUnavailable) return environmentEpochFailure(commandId, 'E_ENVIRONMENT_EPOCH_PARTIAL', {
+          storageWritten: published || current ? true : null, applyAllowed: false,
+          ...(current ? { settingsEnvironmentEpochs: projection(current) } : {}),
+          causeCode: typeof error?.code === 'string' ? error.code : 'E_ENVIRONMENT_EPOCH_UNAVAILABLE',
+        });
+        return environmentEpochFailure(commandId, typeof error?.code === 'string' ? error.code : 'E_ENVIRONMENT_EPOCH_UNAVAILABLE');
+      }
+    },
+  });
+}
+
+async function handleEnvironmentEpochCommand(commandId, payload) {
+  const restoring = commandId === COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE;
+  if (!ENVIRONMENT_EPOCH_COMMAND_IDS.includes(commandId) || !environmentEpochExactKeys(payload,
+    ['expectedRevision', 'expectedStateDigest', restoring ? 'epochId' : 'preferences'])
+    || !Number.isSafeInteger(payload.expectedRevision) || payload.expectedRevision < 0
+    || typeof payload.expectedStateDigest !== 'string' || !/^[a-f0-9]{64}$/u.test(payload.expectedStateDigest)
+    || (restoring ? typeof payload.epochId !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u.test(payload.epochId)
+      : !environmentEpochExactKeys(payload.preferences, ['theme', 'wordWrap']) || !['light', 'dark'].includes(payload.preferences.theme)
+        || typeof payload.preferences.wordWrap !== 'boolean')) return environmentEpochFailure(commandId, 'E_ENVIRONMENT_EPOCH_PAYLOAD_INVALID');
+  try { const port = createEnvironmentEpochPort(commandId);
+    return await queueDiskOperation(() => port.change(payload), 'saved environment version');
+  } catch (error) { return environmentEpochFailure(commandId, typeof error?.code === 'string' ? error.code : 'E_ENVIRONMENT_EPOCH_UNAVAILABLE'); }
+}
+
+async function handleWorkspaceSettingsEnvironmentEpochsQuery(payload = {}) {
+  if (!environmentEpochExactKeys(payload, [])) return { ok: false, error: 'E_ENVIRONMENT_EPOCH_QUERY_INVALID' };
+  try { return await createEnvironmentEpochPort('cmd.project.view.openSettings').read(); }
+  catch (error) { return { ok: false, error: typeof error?.code === 'string' ? error.code : 'E_ENVIRONMENT_EPOCH_UNAVAILABLE' }; }
 }
 
 let atlasReportsSavedQueriesModulePromise = null;
@@ -34333,6 +34522,7 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
 });
 
 const WORKSPACE_QUERY_BRIDGE_HANDLERS = new Map([
+  [WORKSPACE_QUERY_IDS.SETTINGS_ENVIRONMENT_EPOCHS, handleWorkspaceSettingsEnvironmentEpochsQuery],
   ['query.project.userBookmarks', handleUserBookmarkQuery],
   ['query.project.documentStories', handleDocumentStoriesQuery],
   [PROJECT_TREE_QUERY_ID, handleWorkspaceProjectTreeQuery],
@@ -37395,6 +37585,8 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.save',
   'cmd.project.pulse.optIn',
   'cmd.project.pulse.optOut',
+  'cmd.project.view.captureEnvironmentEpoch',
+  'cmd.project.view.restoreEnvironmentEpoch',
   'cmd.project.saveAs',
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
@@ -37549,6 +37741,8 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.pulse.optIn': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_IN, payload),
   'cmd.project.pulse.optOut': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_OUT, payload),
+  'cmd.project.view.captureEnvironmentEpoch': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, payload),
+  'cmd.project.view.restoreEnvironmentEpoch': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, payload),
   'cmd.project.saveAs': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS, {});
   },
