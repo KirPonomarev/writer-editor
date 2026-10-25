@@ -21929,6 +21929,172 @@ function renderSettingsAggregation() {
   });
 }
 
+const ENVIRONMENT_EPOCH_CAPTURE_COMMAND_ID = 'cmd.project.view.captureEnvironmentEpoch';
+const ENVIRONMENT_EPOCH_RESTORE_COMMAND_ID = 'cmd.project.view.restoreEnvironmentEpoch';
+const ENVIRONMENT_EPOCH_QUERY_ID = 'query.settingsEnvironmentEpochs';
+let savedEnvironmentEpochView = null;
+
+function isSavedEnvironmentEpochCurrent(view, token = null) {
+  if (!view || savedEnvironmentEpochView !== view || !view.host.isConnected || view.modal !== settingsModal
+    || settingsModal.hidden || !settingsModal.contains(view.host)) return false;
+  return !token || view.pending === token && token.projectId === currentProjectId && token.documentId === currentDocumentId
+    && token.publicationId === currentTreeContentPublicationId && token.generation === localEditGeneration
+    && token.profile === window.__PRODUCT_PROFILE && token.selected === view.select.value
+    && token.theme === (document.body.classList.contains('dark-theme') ? 'dark' : 'light') && token.wordWrap === wordWrapEnabled;
+}
+
+function beginSavedEnvironmentEpochRequest(view) {
+  const token = { projectId: currentProjectId, documentId: currentDocumentId, publicationId: currentTreeContentPublicationId,
+    generation: localEditGeneration, profile: window.__PRODUCT_PROFILE, selected: view.select.value,
+    theme: document.body.classList.contains('dark-theme') ? 'dark' : 'light', wordWrap: wordWrapEnabled };
+  view.pending = token; updateSavedEnvironmentEpochControls(view); return token;
+}
+
+function setSavedEnvironmentEpochStatus(view, text) {
+  if (isSavedEnvironmentEpochCurrent(view)) view.status.textContent = text;
+}
+
+function updateSavedEnvironmentEpochControls(view) {
+  const selected = view.projection?.epochs.find(row => row.epochId === view.select.value);
+  view.capture.disabled = Boolean(view.pending) || !view.projection?.availability.capture || view.projection.revision >= 128;
+  view.select.disabled = Boolean(view.pending) || !view.projection?.epochs.length;
+  view.preview.disabled = Boolean(view.pending) || !selected;
+  view.restore.disabled = Boolean(view.pending) || !selected || !view.projection?.availability.restore || view.projection.revision >= 128;
+  view.host.setAttribute('aria-busy', view.pending ? 'true' : 'false');
+}
+
+function ensureSavedEnvironmentEpochControls() {
+  if (!settingsSections?.parentElement || !settingsModal) return null;
+  if (savedEnvironmentEpochView?.host.isConnected && savedEnvironmentEpochView.modal === settingsModal) return savedEnvironmentEpochView;
+  const host = document.createElement('section'); host.className = 'settings-surface__section'; host.dataset.settingsEnvironmentEpochs = '';
+  const heading = document.createElement('h4'); heading.className = 'settings-surface__section-title'; heading.textContent = 'Saved settings';
+  const copy = document.createElement('p'); copy.className = 'settings-surface__row-note'; copy.textContent = 'Save the theme and line wrapping as a version. Other settings are not included.';
+  const label = document.createElement('label'); label.className = 'modal__label'; label.textContent = 'Saved version'; label.setAttribute('for', 'settings-saved-environment-version');
+  const select = document.createElement('select'); select.className = 'modal__input'; select.id = 'settings-saved-environment-version'; select.dataset.environmentEpochSelect = '';
+  select.setAttribute('aria-describedby', 'settings-saved-environment-status');
+  const actions = document.createElement('div'); actions.className = 'modal__actions';
+  const button = (action, text) => { const control = document.createElement('button'); control.type = 'button'; control.className = 'modal__button';
+    control.dataset.environmentEpochAction = action; control.textContent = text; actions.append(control); return control; };
+  const capture = button('capture', 'Save current'), preview = button('preview', 'Preview'), restore = button('restore', 'Restore');
+  const status = document.createElement('p'); status.className = 'settings-surface__row-note'; status.id = 'settings-saved-environment-status';
+  status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+  host.append(heading, copy, label, select, actions, status);
+  const view = { host, modal: settingsModal, select, capture, preview, restore, status, projection: null, pending: null };
+  savedEnvironmentEpochView = view;
+  capture.addEventListener('click', () => { if (isSavedEnvironmentEpochCurrent(view)) void runSavedEnvironmentEpoch('capture'); });
+  preview.addEventListener('click', () => previewSavedEnvironmentEpoch(view));
+  restore.addEventListener('click', () => { if (isSavedEnvironmentEpochCurrent(view)) void runSavedEnvironmentEpoch('restore'); });
+  select.addEventListener('change', () => { if (isSavedEnvironmentEpochCurrent(view) && !view.pending) previewSavedEnvironmentEpoch(view); });
+  // The aggregation replaces only its own children. Keep this view adjacent so
+  // the existing Theme/Wrap aggregation refresh cannot detach focused controls.
+  settingsSections.parentElement.insertBefore(host, settingsSections);
+  updateSavedEnvironmentEpochControls(view); return view;
+}
+
+async function readSavedEnvironmentEpochProjection() {
+  const reply = await invokeWorkspaceQueryBridge(ENVIRONMENT_EPOCH_QUERY_ID, {}), source = reply?.settingsEnvironmentEpochs;
+  if (reply?.ok !== true || source?.schemaVersion !== 'yalken.environmentEpochHistory.v1' || source.configurationSchema !== 'THEME_WRAP_V1'
+    || !Number.isSafeInteger(source.revision) || source.revision < 0 || source.revision > 128 || !Array.isArray(source.epochs)
+    || source.epochs.length !== source.revision || typeof source.stateDigest !== 'string' || !/^[a-f0-9]{64}$/u.test(source.stateDigest)
+    || typeof source.availability?.capture !== 'boolean' || typeof source.availability?.restore !== 'boolean') {
+    throw Object.assign(Error('Saved settings unavailable'), { code: 'E_ENVIRONMENT_EPOCH_UNAVAILABLE' });
+  }
+  const epochs = source.epochs.map(row => {
+    if (!row || typeof row.epochId !== 'string' || !Number.isSafeInteger(row.revision) || typeof row.recordedAtUtc !== 'string' || row.platform !== 'macos'
+      || !['light', 'dark'].includes(row.preferences?.theme) || typeof row.preferences.wordWrap !== 'boolean') throw Error('Invalid saved settings');
+    return Object.freeze({ epochId: row.epochId, revision: row.revision, recordedAtUtc: row.recordedAtUtc,
+      platform: row.platform, reason: row.reason, sourceEpochId: row.sourceEpochId, preferences: Object.freeze({ ...row.preferences }) });
+  });
+  return Object.freeze({ revision: source.revision, stateDigest: source.stateDigest, epochs: Object.freeze(epochs), availability: Object.freeze({ ...source.availability }) });
+}
+
+function publishSavedEnvironmentEpochProjection(view, projection) {
+  const selected = view.select.value;
+  const options = projection.epochs.map(row => { const option = document.createElement('option'); option.value = row.epochId;
+    option.textContent = `Version ${row.revision} · ${new Date(row.recordedAtUtc).toLocaleString()}`; return option; });
+  view.select.replaceChildren(...options);
+  view.select.value = projection.epochs.some(row => row.epochId === selected) ? selected : projection.epochs.at(-1)?.epochId || '';
+  view.projection = projection;
+}
+
+function previewSavedEnvironmentEpoch(view = savedEnvironmentEpochView) {
+  if (!isSavedEnvironmentEpochCurrent(view) || view.pending) return;
+  const selected = view.projection?.epochs.find(row => row.epochId === view.select.value);
+  if (!selected) return;
+  setSavedEnvironmentEpochStatus(view, `Theme: ${selected.preferences.theme === 'dark' ? 'Dark' : 'Light'} · Word Wrap: ${selected.preferences.wordWrap ? 'On' : 'Off'}. Preview only.`);
+  updateSavedEnvironmentEpochControls(view);
+}
+
+async function refreshSavedEnvironmentEpochs() {
+  const view = ensureSavedEnvironmentEpochControls(); if (!isSavedEnvironmentEpochCurrent(view)) return;
+  const token = beginSavedEnvironmentEpochRequest(view); view.projection = null; updateSavedEnvironmentEpochControls(view);
+  setSavedEnvironmentEpochStatus(view, 'Loading saved settings…');
+  try {
+    const projection = await readSavedEnvironmentEpochProjection(); if (!isSavedEnvironmentEpochCurrent(view, token)) return;
+    publishSavedEnvironmentEpochProjection(view, projection);
+    setSavedEnvironmentEpochStatus(view, projection.revision >= 128 ? 'All 128 saved versions are retained. No more can be added.'
+      : !projection.availability.restore && projection.revision ? 'Save your text, then reopen Settings to restore a saved version.'
+        : projection.revision ? `${projection.revision} saved versions. Preview a version before restoring it.` : 'No saved settings yet. Save the current theme and line wrapping.');
+  } catch {
+    if (isSavedEnvironmentEpochCurrent(view, token)) setSavedEnvironmentEpochStatus(view, 'Saved settings are unavailable. Existing versions are kept.');
+  } finally {
+    if (view.pending === token) { view.pending = null; if (isSavedEnvironmentEpochCurrent(view)) updateSavedEnvironmentEpochControls(view); }
+  }
+}
+
+async function runSavedEnvironmentEpoch(action) {
+  const view = savedEnvironmentEpochView;
+  if (!isSavedEnvironmentEpochCurrent(view) || view.pending || !view.projection) return;
+  const restoring = action === 'restore', selected = view.projection.epochs.find(row => row.epochId === view.select.value);
+  if (restoring && (localDirty || localEditGeneration !== lastAckedGeneration)) {
+    setSavedEnvironmentEpochStatus(view, 'Save your text, then reopen Settings to restore a saved version.'); return;
+  }
+  if (restoring ? !selected || !view.projection.availability.restore : !view.projection.availability.capture) return;
+  const expected = view.projection, token = beginSavedEnvironmentEpochRequest(view); let recorded = false, handled = false;
+  setSavedEnvironmentEpochStatus(view, restoring ? 'Restoring saved settings…' : 'Saving current settings…');
+  try {
+    const payload = { expectedRevision: expected.revision, expectedStateDigest: expected.stateDigest,
+      ...(restoring ? { epochId: selected.epochId } : { preferences: { theme: token.theme, wordWrap: token.wordWrap } }) };
+    const result = await dispatchUiCommand(restoring ? ENVIRONMENT_EPOCH_RESTORE_COMMAND_ID : ENVIRONMENT_EPOCH_CAPTURE_COMMAND_ID, payload,
+      { isCurrentPresentation: () => isSavedEnvironmentEpochCurrent(view, token) });
+    if (!isSavedEnvironmentEpochCurrent(view, token)) return;
+    if (!result?.ok) throw result?.error || Error('Saved settings unavailable');
+    const saved = result.value?.result; recorded = true;
+    const projection = await readSavedEnvironmentEpochProjection(); if (!isSavedEnvironmentEpochCurrent(view, token)) return;
+    const last = projection.epochs.at(-1);
+    if (!saved?.epoch || projection.revision !== saved.epoch.revision || last?.epochId !== saved.epoch.epochId
+      || projection.revision !== saved.settingsEnvironmentEpochs?.revision
+      || projection.stateDigest !== saved.settingsEnvironmentEpochs?.stateDigest || JSON.stringify(last) !== JSON.stringify(saved.epoch)
+      || (restoring ? !projection.availability.restore || last.reason !== 'RESTORE' || last.sourceEpochId !== selected.epochId
+        || localDirty || localEditGeneration !== lastAckedGeneration : !projection.availability.capture)) throw Error('Saved settings changed');
+    if (restoring) {
+      if (last.preferences.theme !== selected.preferences.theme || last.preferences.wordWrap !== selected.preferences.wordWrap) throw Error('Saved settings changed');
+      applyTheme(last.preferences.theme); applyWordWrap(last.preferences.wordWrap);
+      if (settingsThemeSelect) settingsThemeSelect.value = last.preferences.theme;
+      if (settingsWrapSelect) settingsWrapSelect.value = last.preferences.wordWrap ? 'on' : 'off';
+      renderSettingsAggregation();
+    }
+    publishSavedEnvironmentEpochProjection(view, projection);
+    setSavedEnvironmentEpochStatus(view, restoring ? `Version ${selected.revision} restored. Saved as version ${projection.revision}.` : `Version ${projection.revision} saved.`);
+    handled = true;
+  } catch (error) {
+    if (isSavedEnvironmentEpochCurrent(view, token)) {
+      view.projection = null;
+      setSavedEnvironmentEpochStatus(view, error?.code === 'E_ENVIRONMENT_EPOCH_PARTIAL' || recorded
+        ? 'The action was partial. A version may have been recorded. Reopen Settings to review saved versions.'
+        : error?.code === 'E_ENVIRONMENT_EPOCH_SAVE_FIRST' ? 'Save your text, then reopen Settings to restore a saved version.'
+          : 'Could not save settings. Existing versions are kept. Reopen Settings and try again.'); handled = true;
+    }
+  } finally {
+    if (view.pending === token) { view.pending = null;
+      if (isSavedEnvironmentEpochCurrent(view)) {
+        if (!handled) { view.projection = null; setSavedEnvironmentEpochStatus(view, 'Settings changed during this action. Reopen Settings to check saved versions before trying again.'); }
+        updateSavedEnvironmentEpochControls(view);
+      }
+    }
+  }
+}
+
 function openSettingsModal() {
   if (settingsThemeSelect) {
     settingsThemeSelect.value = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
@@ -21938,6 +22104,8 @@ function openSettingsModal() {
   }
   renderSettingsAggregation();
   openSimpleModal(settingsModal);
+  ensureSavedEnvironmentEpochControls();
+  void refreshSavedEnvironmentEpochs();
 }
 
 function openRecoveryModal(message = '') {

@@ -473,6 +473,9 @@
       "src/core/pulse-claim-v1.mjs",
       "src/renderer/pulseHistoryPresentationModel.mjs",
       "test/unit/r24-wp806-pulse-claim-integration.test.js",
+      "docs/tasks/2026-10-25--environment-epochs.md",
+      "src/renderer/design-os/designOsFormConfiguration.mjs",
+      "test/unit/r24-wp303-design-os-customization.test.js",
       "docs/tasks/2026-10-25--bug-native-undo-redo.md"
     ]
   },

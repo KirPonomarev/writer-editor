@@ -5,6 +5,8 @@ const ALLOWED_COMMAND_IDS = Object.freeze([
   'cmd.project.save',
   'cmd.project.pulse.optIn',
   'cmd.project.pulse.optOut',
+  'cmd.project.view.captureEnvironmentEpoch',
+  'cmd.project.view.restoreEnvironmentEpoch',
   'cmd.project.saveAs',
   'cmd.project.recoverMissingIntegrityAnchor',
   'cmd.project.exportCurrentSceneTxtV1',

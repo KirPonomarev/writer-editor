@@ -58,6 +58,19 @@ Root owns this task, generated current artifacts, exact current bindings, indepe
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/unit/keyboard-shortcuts.test.js
 
+- docs/tasks/2026-10-25--environment-epochs.md
+- src/command/commandSurfaceKernel.js
+- src/core/entitlement-law-v1.cjs
+- src/renderer/commands/capabilityPolicy.mjs
+- src/renderer/commands/projectCommands.mjs
+- src/renderer/design-os/designOsFormConfiguration.mjs
+- src/shared/workspaceQueryRegistry.cjs
+- test/contracts/donor-port-command-surface-kernel.contract.test.js
+- test/unit/r24-ent0-port-enforcement.test.js
+- test/unit/r24-wp100-wiring-matrix.test.js
+- test/unit/r24-wp303-design-os-customization.test.js
+- test/unit/r24-wp307-writer-local-profile-integration.test.js
+
 ## DENYLIST
 
 Everything else, especially Core/preload/IPC/storage/dependencies, all renderer code outside the exact C1 focus fence, other worktrees and private owner state. No cherry-pick of the old unaccepted draft, blanket rewrite, generic role/normalizer/lock changes, new global key interceptor (C1 only narrows the existing handler), direct webContents Undo patch, added capability, historical snapshot rewrite, assertion deletion, filtered tests, new skip/todo, false acceptance, stage/lease/graph changes, secret, network runtime, reset/stash/clean/rebase/force or unrelated defect repair. Other deferred bugs remain separate.
@@ -130,3 +143,11 @@ C1 O/H: existing document keydown unconditionally prevents native Undo/Redo and 
 C1 source allowlist adds only src/renderer/editor.js and normally generated editor.bundle.js. A separate executor first appends maintained actual-callback causal tests to keyboard-shortcuts.test.js; all prior bytes remain. Whole RED must fail only new native control ownership assertions while Writer positive controls pass. Freeze tests, then allow at most12 added renderer lines for a narrow inline focus fence; root verifies inverse exactness and performs ordinary bundle generation. Other original runtime bytes stay frozen.
 
 C1 proof order: maintained causal RED, surgical fix and whole GREEN, generate/rebuild the actual candidate, then genuine native INPUT/TEXTAREA/Writer history and Save/Quit/cold raw no-loss before spending on broad gates. First verify isolation and that the primary agent is not using native UI. Retain the initial failure, do not claim menu tests prove native behavior. After observed outcome refresh only actual current source/certificate/approval pins, run all mandatory checks and complete the same normal delivery chain. Existing inventory membership, history, qualifications and outside state stay protected.
+
+### Correction C2: explicitly authorized ordinary main merge
+
+Owner reply: «Да, выполни обычный merge и проверки» after the base-drift stop. Merge exact main46a3da4da955d397f499fc36e6f33c7a11718220 into existing b6dc2338b4574b9100aee88f4165a6bb1707cc06 with two-parent ordinary merge, no rebase/force/base transplant. Original delivery base67d574188 stays reachable. Clean41path preflight precedes this amendment. Twelve additional allowlist paths are protected imports from accepted main, never new implementation scope; preserve each byte.
+
+Separate executor resolves only Main's existing expected snapshot literal and the same4line renderer fence on top of exact main. Root normally regenerates the bundle and current OPS witnesses, preserving both parents' historical carriers/rows, active main capabilities and all qualifications. No other runtime edits or Save/comment workaround. Relative to current main, the outcome stays the same native Undo bug with one rollback.
+
+For actual native proof use a new task-owned profile with Documents read from the immutable qualified main46a3da4 closed-profile archive. Never launch/edit the donor profile or borrow a stale absolute path. Validate every copied member, retain donor archive/markers as evidence only, and let ordinary Main create fresh session authority. Open an existing canonical scene; freeze its full source before input, observe real history and explicit Save/normal Quit/cold with independent raw readback. No changes to safety guards or project schema. Current source/affected/required baseline/official RTK/CI and exact merged verification remain mandatory.
