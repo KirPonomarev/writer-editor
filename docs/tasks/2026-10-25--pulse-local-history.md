@@ -1,6 +1,6 @@
 # Explicit local Pulse consent and changed-scene Save history
 
-STATUS: CONNECTED_COMPONENT_PROOF_COMPLETE_REQUIRED_DELIVERY_PENDING
+STATUS: ENT0_CONTRACT_AMENDMENT_ADMITTED_RUNTIME_HELD
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One explicit local consent, actually changed existing canonical scene Save, cold history and opt-out journey. No full Pulse or Mac qualification.
 TASK_ID: YALKEN_PULSE_LOCAL_HISTORY_20261025
@@ -29,7 +29,7 @@ T: Registered renderer intent -> validated Main bridge/Kernel/current entitlemen
 H: Existing Pulse writer, codec and reader are ready but no live commands or producer exist. Two explicit FREE commands, trusted current consent projection and a bounded post-commit effect using the existing actual Save preimage should complete this journey without a new storage engine/profile/registry.
 B: Protect all105Documents, complete62event/receipt prefix, all prior Ideas/Meanings/maps/tags/facts and raw scene history, original profile markers, WP800/801/804 bytes, project transaction/SaveACK semantics, old profiles and unknown fields. One rollback/delivery chain.
 P: Whole maintained causal RED on actual registered Main/renderer then frozen GREEN; actual canonical preimage/readback/SaveACK and no-loss footprints; whole Pulse/Save negative suites and required baseline; source-bound native candidate before long baseline; normal commit/push/PR/currentCI/merge/literal merged proof.
-I: Exact base5023fd23/tree49f6e10d, registered codex branch, declared31paths, actual source/package/ASAR/profile, current window/webContents/userData/root/owner/project/scene/session/lifecycle/generation/privacy revision/digest and durable receipt.
+I: Exact base5023fd23/tree49f6e10d, registered codex branch, declared32paths, actual source/package/ASAR/profile, current window/webContents/userData/root/owner/project/scene/session/lifecycle/generation/privacy revision/digest and durable receipt.
 
 ## ARTIFACT
 
@@ -78,6 +78,7 @@ Existing appendPulseHistory receives a native labeled Enable/Disable intent with
 - `test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `test/unit/r24-ent0-entitlement-law.test.js`
+- `test/unit/r24-ent0-port-enforcement.test.js`
 - `test/unit/r24-wp307-writer-local-profile-integration.test.js`
 - `test/unit/r24-wp806-pulse-claim-integration.test.js`
 - `test/unit/r24-wp806-pulse-claim-mutants.test.js`
@@ -127,3 +128,12 @@ Exactly19 AGENT_FINAL_REPORT_V1 keys in one text block KEY: VALUE, basenames onl
 ## FAIL_PROTOCOL
 
 Retain actual failures/logs/native/archive/fixtures; never disable/filter/skip/todo/weaken tests or relabel source/profile. Exit0 is process evidence only. Actual durable canonical bytes/whole old history and independent Pulse channels/full container readback establish bounded outcome; no self-PASS. After third same signature stop that loop and retain one next hypothesis while continuing independent authorized work.
+
+
+### Same delivery ENT0 contract alignment
+
+Normal unaccepted checkpoint8cf40c64468ba742dd28e6d32008bfe75c94161c preserves the coherent26path Pulse delta and all frozen runtime/bundle bytes. Actual whole two-file644of644 passes, including nine reached queued revocations and both awaited Save/consent-owner boundaries. Whole36affected273of273 executes272passes and one source-contract failure: original Main tier-decision count3 versus actual4. The additional decision is the named PulseLocalHistoryPort current-tier guard, not duplicated authority. Original three dispatch/preparation decisions remain.
+
+Fresh ordered startup, remote main5023fd23 and clean actual-W1 declaration03/preflight admit only the existing ENT0 port test as path32;9978outside original sources remain protected. No new product outcome, runtime edit, UI change, dependency, source registry/matrix, capability, DATA/certificate membership or release pin is authorized. The exact path already belongs to DATA/current certificate/DONE. Original deliverybase5023fd23, branch, single rollback and all required proofs/delivery remain.
+
+Separate code executor first retains actual complete ENT0-file RED. Then within the first conformance case only, extract the actual named Pulse port body; retain the original calls.length===3 against Main with that exact new body removed, require exactly one product-owned tier decision inside the new port and exactly four in whole Main. All original per-function/refusal/security/tier/hostile-payload/menu/bridge/parity assertions and every other test body remain exact. Budget<=+12/-2, full inverse reconstruction required. No runtime count workaround, dropped check, skip, filter or forged packet. All8runtime sources, generated bundle and both causal integration tests remain held. Run same whole ENT0 file and complete36affected unchanged; normal current hash/inventory/governance companions follow. Current-source full GREEN/native cold/baseline/officialCI/normal delivery and literal merged verification remain mandatory; earlier failures never become passes.

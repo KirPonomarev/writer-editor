@@ -25,8 +25,12 @@ function mainFunction(source, name) {
 test('port adoption: both command dispatch ports consult the one table with the product-owned tier', () => {
   const main = readMain();
   assert.ok(main.includes("require('./core/entitlement-law-v1.cjs')"));
-  const calls = main.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || [];
+  const pulsePort = mainFunction(main, 'createPulseLocalHistoryPort');
+  assert.equal(main.indexOf(pulsePort), main.lastIndexOf(pulsePort), 'the exact Pulse port body is unique');
+  const calls = main.replace(pulsePort, '').match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || [];
   assert.equal(calls.length, 3, 'two dispatch decisions and the separate async preparation revalidation');
+  assert.equal((pulsePort.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, 'Pulse revalidates the product-owned tier');
+  assert.equal((main.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 4, 'three original decisions plus the separate Pulse port revalidation');
   for (const name of ['dispatchMenuCommand', 'dispatchProductCommandBridge']) {
     const body = mainFunction(main, name);
     assert.equal((body.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, name);
