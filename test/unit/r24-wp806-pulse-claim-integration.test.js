@@ -80,3 +80,68 @@ test('WP806 read-only readers reject a symlink directory before reading history'
   const { readPulseClaimProjection } = await claimPromise;
   await assert.rejects(() => readPulseClaimProjection(link), error => error.code === 'E_WP806_PRIVACY_DIRECTORY');
 });
+
+test('WP806 actual absent privacy snapshot supplies usable exact consent CAS without creating a directory', async t => {
+  const root = path.join(directory(t), 'absent'), { readPulseClaimProjection } = await claimPromise;
+  const { readPulsePrivacyStateSnapshot } = await import('../../src/core/pulse-privacy-v1.mjs');
+  const actual = readPulsePrivacyStateSnapshot(root), projection = await readPulseClaimProjection(root);
+  assert.equal(fs.existsSync(root), false); assert.equal(actual.revision, 0);
+  assert.match(actual.stateDigest, /^[a-f0-9]{64}$/u);
+  assert.equal(projection.privacy.revision, actual.revision); assert.equal(projection.privacy.stateDigest, actual.stateDigest);
+  assert.equal(Object.isFrozen(projection.privacy), true); assert.equal(projection.authority.storageMutation, false);
+});
+
+test('WP806 actual durable privacy CAS remains exact through cold read and renderer presentation', async t => {
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  const { readPulsePrivacyStateSnapshot } = await import('../../src/core/pulse-privacy-v1.mjs');
+  const actual = readPulsePrivacyStateSnapshot(root), before = directoryBytes(root);
+  const { readPulseClaimProjection } = await claimPromise, { normalizePulseHistoryPresentation } = await presentationPromise;
+  const projection = await readPulseClaimProjection(root), model = normalizePulseHistoryPresentation(projection);
+  assert.equal(projection.privacy.revision, actual.revision); assert.equal(projection.privacy.stateDigest, actual.stateDigest);
+  assert.equal(model.privacyRevision, actual.revision); assert.equal(model.privacyStateDigest, actual.stateDigest);
+  const script = `import {readPulseClaimProjection} from ${JSON.stringify(pathToFileURL(path.resolve('src/core/pulse-claim-v1.mjs')).href)};process.stdout.write(JSON.stringify(await readPulseClaimProjection(process.argv[1])));`;
+  assert.deepEqual(JSON.parse(execFileSync(process.execPath, ['--input-type=module', '--eval', script, root], { encoding: 'utf8' })), projection);
+  assert.deepEqual(directoryBytes(root), before);
+});
+
+test('WP806 status-only legacy builders and malformed tokens never invent actionable revision zero', async t => {
+  const { normalizePulseHistoryPresentation } = await presentationPromise;
+  const sources = [{ state: 'optedOut', privacy: { collectionStatus: 'OPTED_OUT', aggregateOnly: true } },
+    { state: 'unavailable', privacy: { collectionStatus: 'OPTED_OUT', revision: 0, stateDigest: 'f'.repeat(64) } },
+    { state: 'optedOut', privacy: { collectionStatus: 'OPTED_OUT', revision: '0', stateDigest: 'f'.repeat(64) } },
+    { state: 'optedOut', privacy: { collectionStatus: 'OPTED_OUT', revision: 0, stateDigest: '' } }];
+  for (const source of sources) {
+    const model = normalizePulseHistoryPresentation(source);
+    assert.equal(model.privacyRevision, null, 'only an actually validated current snapshot supplies a consent token');
+    assert.equal(model.privacyStateDigest, '');
+  }
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  const { buildPulseClaim } = await claimPromise, { buildPulseDescriptiveHistory } = await import('../../src/core/descriptive-history-v1.mjs');
+  const { readPulseLedgerSnapshot } = await import('../../src/core/pulse-ledger-v1.mjs'), ledgerSnapshot = await readPulseLedgerSnapshot(root);
+  const currentIdentity = { ledgerSequence: ledgerSnapshot.sequence, ledgerHeadDigest: ledgerSnapshot.headDigest, declarationRevisionOrdinal: 0, generation: 22 };
+  const historyProjection = buildPulseDescriptiveHistory({ ledgerSnapshot, currentIdentity, declarationSnapshot: {
+    schemaVersion: 'yalken.r24.pulseHistoryDeclarations.v1', ledgerSequence: ledgerSnapshot.sequence,
+    ledgerHeadDigest: ledgerSnapshot.headDigest, revisionOrdinal: 0, generation: 22, entries: [] } });
+  const legacy = buildPulseClaim({ historyProjection, currentIdentity, privacyState: { collectionStatus: 'OPTED_IN' } });
+  assert.equal(legacy.rows.length, 2); assert.equal(Object.hasOwn(legacy.privacy, 'revision'), false);
+  assert.equal(normalizePulseHistoryPresentation(legacy).privacyRevision, null);
+});
+
+test('WP806 explicit opt-out reads privacy only and leaves malformed history completely unread and unrepaired', async t => {
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  const { openPulsePrivacyController, readPulsePrivacyStateSnapshot, PULSE_PRIVACY_COMMAND_SCHEMA } = await import('../../src/core/pulse-privacy-v1.mjs');
+  const controller = await openPulsePrivacyController(root), prior = readPulsePrivacyStateSnapshot(root);
+  await controller.optOut({ schemaVersion: PULSE_PRIVACY_COMMAND_SCHEMA, type: 'OPT_OUT', requestId: 'owned-optout-read', expectedPrivacyRevision: prior.revision });
+  for (const name of ['pulse-ledger.v1.jsonl', 'pulse-ledger-intents.v1.jsonl', 'pulse-ledger-outbox.v1.jsonl']) fs.writeFileSync(path.join(root, name), '{broken:');
+  const before = directoryBytes(root), { readPulseClaimProjection } = await claimPromise, actual = readPulsePrivacyStateSnapshot(root);
+  const projection = await readPulseClaimProjection(root);
+  assert.deepEqual(directoryBytes(root), before); assert.equal(projection.state, 'optedOut'); assert.deepEqual(projection.rows, []);
+  assert.equal(projection.privacy.revision, actual.revision); assert.equal(projection.privacy.stateDigest, actual.stateDigest);
+});
+
+for (const channel of ['pulse-privacy-state.v1.json', 'pulse-ledger.v1.jsonl', 'pulse-ledger-intents.v1.jsonl', 'pulse-ledger-outbox.v1.jsonl']) test('WP806 actual read-only malformed ' + channel + ' cannot recover or fabricate fresh consent', async t => {
+  const root = directory(t); await seedPulseClaimDirectory(root); fs.appendFileSync(path.join(root, channel), '{broken:');
+  const before = directoryBytes(root), { readPulseClaimProjection } = await claimPromise;
+  await assert.rejects(() => readPulseClaimProjection(root), error => /^E_WP(?:801|804|806)_/u.test(error.code));
+  assert.deepEqual(directoryBytes(root), before, 'no writer/openLedger repair on the read path');
+});

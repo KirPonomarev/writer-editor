@@ -358,6 +358,8 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         invalidateLifecycle() { currentFilePath += '.retired-synthetic-subject'; },
         invalidateProjectRoot() { currentProjectName += ' retired-synthetic-root'; },
         holdProjectQueue(operation) { return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, operation); },
+        holdDiskQueue(operation) { return queueDiskOperation(operation, 'owned Pulse test queue'); },
+        invalidatePulseUserData() { const get = app.getPath; app.getPath = key => key === 'userData' ? get(key) + '.retired' : get(key); },
         afterCoreBinding(callback) { const build = buildProductCoreStateForCurrentProject; let armed = true;
           buildProductCoreStateForCurrentProject = async (...args) => { const result = await build(...args);
             if (armed) { armed = false; await callback(result); } return result; }; },
@@ -3496,4 +3498,514 @@ for (const commandId of SCENE_LANGUAGE_MAIN_IDS) test('actual bound ' + commandI
     try { assert.equal(response.mainResult.ok, false); assert.match(JSON.stringify(response), /E_(?:ATLAS_LANGUAGE_TAG_STALE|SCENE_LANGUAGE[^" ]*STALE)/u); }
     finally { assertSceneLanguagePersistence(x, before, after, commandId, payload, false); }
   });
+});
+
+const PULSE_LIVE_IDS = Object.freeze(['cmd.project.pulse.optIn', 'cmd.project.pulse.optOut']);
+const PULSE_CHANNEL_NAMES = Object.freeze(['pulse-privacy-state.v1.json', 'pulse-ledger.v1.jsonl', 'pulse-ledger-intents.v1.jsonl', 'pulse-ledger-outbox.v1.jsonl', 'pulse-corrections.v1.jsonl']);
+
+async function pulseMainFixture(t) {
+  const x = await reattachmentMainFixture(t, true), privacy = await import('../../src/core/pulse-privacy-v1.mjs');
+  const ledger = await import('../../src/core/pulse-ledger-v1.mjs'), codec = await import('../../src/core/pulse-policy-codec-v1.mjs');
+  x.pulseDirectory = path.join(x.h.userData, 'pulse');
+  x.pulseState = () => privacy.readPulsePrivacyStateSnapshot(x.pulseDirectory);
+  x.pulseLedger = () => ledger.readPulseLedgerSnapshot(x.pulseDirectory);
+  x.pulseFiles = () => fs.existsSync(x.pulseDirectory) ? Object.fromEntries(fs.readdirSync(x.pulseDirectory).sort().map(name => {
+    assert.ok(PULSE_CHANNEL_NAMES.includes(name), 'unadmitted Pulse channel: ' + name);
+    const file = path.join(x.pulseDirectory, name); assert.equal(fs.lstatSync(file).isFile(), true);
+    return [name, fs.readFileSync(file)];
+  })) : {};
+  x.pulsePayload = (patch = {}) => { const state = x.pulseState(); return { projectId: x.projectId,
+    expectedPrivacyRevision: state.revision, expectedPrivacyStateDigest: state.stateDigest, ...patch }; };
+  x.pulseRead = async () => {
+    const before = reattachmentWholeFixtureRoster(x.h), result = await x.h.query('query.atlasContinuityLedgerSurface', {
+      projectId: x.projectId, explicitOpen: true, rowLimit: 16 });
+    assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before, 'actual Main Pulse query never creates, repairs or rewrites anything');
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.ok(result.atlasContinuityLedgerSurface?.pulseClaim);
+    return result.atlasContinuityLedgerSurface;
+  };
+  x.pulseUi = await fullMacRendererCommandPort(x.h, { allowUnregistered: true });
+  x.pulseConsent = async (id, patch = {}) => {
+    const priorState = x.pulseState(), before = pulseSnapshot(x), response = await x.pulseUi(id, x.pulsePayload(patch)), after = pulseSnapshot(x);
+    t.diagnostic(JSON.stringify({ causalReach: 'PULSE_REGISTERED_CONSENT', id, reachedMain: !!response.mainResult, response }));
+    assertPulseConsentFootprint(x, before, after);
+    assert.ok(response.mainResult, 'new registered renderer command must reach actual Main; missing ID is an admission gap');
+    assert.equal(response.mainResult.ok, true, JSON.stringify(response)); assert.equal(response.result.ok, true);
+    assert.equal(response.result.value?.performed, true); const state = x.pulseState();
+    assert.equal(state.collectionStatus, id.endsWith('.optIn') ? 'OPTED_IN' : 'OPTED_OUT');
+    assert.equal(state.revision, priorState.revision + 1);
+    assert.deepEqual(response.mainResult.value.privacyState, state);
+    assert.equal((await x.pulseRead()).pulseClaim.privacy.stateDigest, state.stateDigest); return response;
+  };
+  // This is lawful existing-Core fixture setup, never live Main consent credit.
+  x.seedPulse = async () => {
+    const controller = await privacy.openPulsePrivacyController(x.pulseDirectory);
+    const state = x.pulseState(); await controller.optIn({ schemaVersion: privacy.PULSE_PRIVACY_COMMAND_SCHEMA,
+      type: 'OPT_IN', requestId: 'owned-core-control-' + state.revision, expectedPrivacyRevision: state.revision });
+    assert.equal(x.pulseState().collectionStatus, 'OPTED_IN'); return controller;
+  };
+  x.sceneReceipt = () => JSON.parse(fs.readFileSync(x.f.scenePath + '.wp201-commit.json'));
+  x.receiptCodec = codec;
+  x.originalScene = fs.readFileSync(x.f.scenePath);
+  return x;
+}
+
+function pulseSnapshot(x) {
+  return { ...authorIdentitySnapshot(x), library: JSON.parse(fs.readFileSync(path.join(x.h.userData, 'project-library-index.v1.json'))) };
+}
+
+function assertPulseSaveMetadata(x, before, after) {
+  const libraryName = path.relative(x.h.root, path.join(x.h.userData, 'project-library-index.v1.json'));
+  const boundedTime = value => { const time = Date.parse(value); assert.ok(time >= before.observedAtMs && time <= after.observedAtMs); };
+  const old = before.library.entries.find(row => row.projectId === x.projectId), current = after.library.entries.find(row => row.projectId === x.projectId);
+  assert.ok(old); assert.ok(current); boundedTime(current.lastOpenedAtUtc); boundedTime(after.library.updatedAtUtc);
+  assertAuthorIdentityCanonical(current, { ...old, lastOpenedAtUtc: current.lastOpenedAtUtc, lastSeenAtUtc: current.lastOpenedAtUtc,
+    manifestHash: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.manifest))).digest('hex') });
+  assertAuthorIdentityCanonical(after.library, { ...before.library, updatedAtUtc: after.library.updatedAtUtc,
+    entries: [current, ...before.library.entries.filter(row => row.projectRoot !== old.projectRoot)] });
+  const fenceName = Object.keys(before.anchors).find(name => name.endsWith('fencing-generation.v1.json') && before.anchors[name].projectId === x.projectId);
+  assert.ok(fenceName); const prior = before.anchors[fenceName], next = after.anchors[fenceName];
+  assert.match(next.ownerTokenDigest, /^[a-f0-9]{64}$/u); assert.notEqual(next.ownerTokenDigest, prior.ownerTokenDigest);
+  assert.ok(next.issuedAtMs >= before.observedAtMs && next.issuedAtMs <= after.observedAtMs);
+  assert.ok(Number.isSafeInteger(next.monotonicIssuedAtMs) && next.monotonicIssuedAtMs >= prior.monotonicIssuedAtMs);
+  assertAuthorIdentityCanonical(next, { ...prior, fencingGeneration: prior.fencingGeneration + 1, ownerTokenDigest: next.ownerTokenDigest,
+    issuedAtMs: next.issuedAtMs, monotonicIssuedAtMs: next.monotonicIssuedAtMs });
+  return [libraryName, fenceName];
+}
+
+function assertPulseConsentFootprint(x, before, after) {
+  assertAuthorIdentityCanonical(after.manifest, before.manifest); assert.deepEqual(after.scene, before.scene);
+  assertAuthorIdentityCanonical(after.events, before.events); assertAuthorIdentityCanonical(after.receipts, before.receipts); x.assertOriginal();
+  const pulse = path.relative(x.h.root, x.pulseDirectory), prefix = pulse + path.sep;
+  const unrelated = rows => rows.filter(([name]) => name !== pulse && !name.startsWith(prefix));
+  assert.deepEqual(unrelated(after.roster), unrelated(before.roster), 'consent changes only the fixed app-local Pulse namespace');
+  x.pulseFiles();
+}
+
+async function assertPulseSavedSceneFootprint(x, before, after, text) {
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  assert.equal(envelope.parseObservablePayload(after.scene.toString('utf8')).text, text);
+  assertAuthorIdentityCanonical(after.events, before.events); assertAuthorIdentityCanonical(after.receipts, before.receipts); x.assertOriginal();
+  const changed = !before.scene.equals(after.scene), preservation = await import('../../src/core/proRoundtripPreservation.mjs');
+  const nowIso = after.manifest.proDataInvalidation?.updatedAtUtc;
+  if (changed) { const time = Date.parse(nowIso); assert.ok(time >= before.observedAtMs && time <= after.observedAtMs, 'actual invalidation time belongs to this Save'); }
+  const expected = changed ? preservation.applyFreeEditProDataInvalidation(before.manifest, {
+    changedSceneIds: [path.relative(x.f.projectRoot, x.f.scenePath).split(path.sep).join('/')], deletedSceneIds: [], nowIso }).manifest : before.manifest;
+  assertAuthorIdentityCanonical(after.manifest, expected);
+  const receipt = x.sceneReceipt(); assert.equal(receipt.revision, x.h.editor.generation);
+  assert.equal(receipt.sceneDigest, crypto.createHash('sha256').update(after.scene).digest('hex'));
+  assert.equal(receipt.manifestDigest, crypto.createHash('sha256').update(after.manifestRaw).digest('hex'));
+  const mutable = new Set([x.f.scenePath, x.f.scenePath + '.wp201-commit.json', x.f.manifestPath].map(file => path.relative(x.h.root, file)));
+  for (const name of assertPulseSaveMetadata(x, before, after)) mutable.add(name);
+  const old = new Map(before.roster), next = new Map(after.roster), additions = new Set();
+  const transitionRoot = path.join('userData', 'stage10-integrity-anchors', 'manifest-transitions',
+    crypto.createHash('sha256').update(x.projectId + '\0' + x.f.manifestPath).digest('hex'));
+  if (before.manifestRaw !== after.manifestRaw) {
+    const previousHash = crypto.createHash('sha256').update(before.manifestRaw).digest('hex'), nextHash = crypto.createHash('sha256').update(after.manifestRaw).digest('hex');
+    const dir = path.join(transitionRoot, previousHash), name = path.join(dir, nextHash + '.json');
+    const content = JSON.stringify({ schemaVersion: 'yalken.manifest-transition.v1', projectId: x.projectId, targetPath: x.f.manifestPath, previousHash, nextHash });
+    assert.equal(next.get(name), crypto.createHash('sha256').update(content).digest('hex'));
+    for (const item of [path.join('userData', 'stage10-integrity-anchors', 'manifest-transitions'), transitionRoot, dir, name]) if (!old.has(item)) additions.add(item);
+  }
+  const pulse = path.relative(x.h.root, x.pulseDirectory), prefix = pulse + path.sep;
+  const fixed = rows => rows.filter(([name]) => !mutable.has(name) && !additions.has(name) && name !== pulse && !name.startsWith(prefix));
+  assert.deepEqual(fixed(after.roster), fixed(before.roster), 'every unrelated immediate Documents/userData member and previous transition stays exact');
+  x.pulseFiles(); return receipt;
+}
+
+function assertPulseAggregate(x, entry, receipt, rawScene) {
+  assert.deepEqual(entry.receipt.aggregates, [{ metricId: 'SCENES_EDITED_COUNT', value: 1 }]);
+  assert.equal(entry.receipt.sourceRevisionOrdinal, receipt.revision); assert.equal(entry.receipt.generation, x.h.editor.generation);
+  assert.deepEqual(x.receiptCodec.assertPulseAggregateReceiptCurrent(entry.receipt, {
+    sourceRevisionOrdinal: receipt.revision, generation: x.h.editor.generation }), entry.receipt);
+  const channels = Object.values(x.pulseFiles()).map(bytes => bytes.toString('utf8')).join('\n');
+  for (const value of [rawScene.toString('utf8'), x.projectId, x.sceneId, x.f.scenePath, x.f.manifestPath, x.h.root,
+    receipt.transactionId, receipt.sceneDigest, receipt.manifestDigest,
+    x.hash({ idempotencyKey: receipt.transactionId }), x.hash({ idempotencyKey: 'save:' + receipt.transactionId }),
+    crypto.createHash('sha256').update(receipt.transactionId).digest('hex')]) assert.equal(channels.includes(value), false, 'Pulse stores no manuscript/identity/path or deterministic transaction correlation');
+}
+
+test('Pulse actual existing Core controller and ordinary Main Save are lawful preconditions with no default collection', async t => {
+  const x = await pulseMainFixture(t), before = pulseSnapshot(x);
+  assert.equal(fs.existsSync(x.pulseDirectory), false); const off = await x.pulseRead();
+  assert.equal(off.pulseClaim.state, 'optedOut'); assert.equal(fs.existsSync(x.pulseDirectory), false);
+  const text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Проверяем обычное сохранение.'; await x.save(text);
+  await assertPulseSavedSceneFootprint(x, before, pulseSnapshot(x), text);
+  assert.equal(fs.existsSync(x.pulseDirectory), false);
+  const controller = await x.seedPulse(), state = x.pulseState(), frozen = reattachmentWholeFixtureRoster(x.h);
+  assert.equal((await controller.explain()).privacyState.stateDigest, state.stateDigest);
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), frozen);
+  t.diagnostic(JSON.stringify({ causalReach: 'EXISTING_CORE_AND_CANONICAL_SAVE_CONTROL', actualSaveAck: true, optedInCoreOnly: true, ledgerSequence: (await x.pulseLedger()).sequence }));
+});
+
+test('Pulse changed actual saved preimage produces only one scene-edit observation independently of new command admission', async t => {
+  const x = await pulseMainFixture(t); await x.seedPulse();
+  const before = pulseSnapshot(x), text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Ещё один сохранённый абзац.';
+  await x.save(text); const after = pulseSnapshot(x), receipt = await assertPulseSavedSceneFootprint(x, before, after, text);
+  const ledger = await x.pulseLedger();
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_CANONICAL_SAVE_PULSE_PRODUCER', actualSaveAck: true, actualReceipt: receipt, ledger, rawBeforeHash: crypto.createHash('sha256').update(before.scene).digest('hex'), rawAfterHash: crypto.createHash('sha256').update(after.scene).digest('hex') }));
+  assert.equal(ledger.sequence, 1, 'existing canonical Save currently has no Pulse producer'); assertPulseAggregate(x, ledger.entries[0], receipt, after.scene);
+  const claim = (await x.pulseRead()).pulseClaim, row = claim.rows[0]; assert.equal(row.sceneEdits.value, 1);
+  for (const key of ['added', 'deleted', 'net', 'touched', 'sessions', 'declaredTasks', 'manualPhase']) assert.equal(row[key].status, 'NOT_RECORDED');
+});
+
+test('Pulse actual registered Enable changed Save cold history Disable and later Save preserve all old author state [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await pulseMainFixture(t); await x.pulseConsent(PULSE_LIVE_IDS[0]);
+  const before = pulseSnapshot(x), text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Явное локальное наблюдение.';
+  await x.save(text); const after = pulseSnapshot(x), receipt = await assertPulseSavedSceneFootprint(x, before, after, text);
+  const ledger = await x.pulseLedger(); assert.equal(ledger.sequence, 1); assertPulseAggregate(x, ledger.entries[0], receipt, after.scene);
+  const state = x.pulseState(), { readPulseClaimProjection } = await import('../../src/core/pulse-claim-v1.mjs');
+  const cold = await import('node:child_process').then(({ execFileSync }) => JSON.parse(execFileSync(process.execPath, ['--input-type=module', '--eval',
+    `import {readPulseClaimProjection} from ${JSON.stringify(require('node:url').pathToFileURL(path.join(ROOT, 'src/core/pulse-claim-v1.mjs')).href)};process.stdout.write(JSON.stringify(await readPulseClaimProjection(process.argv[1])));`, x.pulseDirectory], { encoding: 'utf8' })));
+  assert.deepEqual(cold, await readPulseClaimProjection(x.pulseDirectory)); assert.equal(cold.rows[0].sceneEdits.value, 1);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  assert.equal((await x.h.main.handleUiOpenDocumentCommand({ projectId: x.projectId, nodeId: x.sceneId })).ok, true);
+  assert.equal((await x.pulseRead()).pulseClaim.privacy.stateDigest, state.stateDigest);
+  await x.pulseConsent(PULSE_LIVE_IDS[1]); const channels = x.pulseFiles();
+  const beforeOffSave = pulseSnapshot(x), second = text + ' После отключения.'; await x.save(second);
+  await assertPulseSavedSceneFootprint(x, beforeOffSave, pulseSnapshot(x), second);
+  assert.deepEqual(x.pulseFiles(), channels); assert.equal((await x.pulseLedger()).sequence, 1);
+  assert.equal((await x.pulseRead()).pulseClaim.state, 'optedOut');
+});
+
+for (const id of PULSE_LIVE_IDS) test('Pulse actual Main ' + id + ' validates exact raw consent payload without creating authority', async t => {
+  const x = await pulseMainFixture(t); if (id.endsWith('.optOut')) await x.seedPulse();
+  const cases = [{ projectId: 17 }, { projectId: [] }, { projectId: '' }, { projectId: 'foreign-project' }, { expectedPrivacyRevision: '0' },
+    { expectedPrivacyRevision: -1 }, { expectedPrivacyRevision: [] }, { expectedPrivacyRevision: undefined },
+    { expectedPrivacyStateDigest: 17 }, { expectedPrivacyStateDigest: [] }, { expectedPrivacyStateDigest: '' },
+    { expectedPrivacyStateDigest: 'f'.repeat(64) }, { expectedPrivacyStateDigest: undefined },
+    { path: x.f.scenePath }, { content: EXACT_ATLAS_TEXT }, { type: 'OPT_IN' }, { requestId: 'forged' },
+    { aggregates: [{ metricId: 'WORDS_ADDED_COUNT', value: 99 }] }, { receipt: {} }, { tier: 'pro' }];
+  for (const patch of cases) await t.test(JSON.stringify(patch), async () => {
+    const before = pulseSnapshot(x), result = await x.h.command(id, x.pulsePayload(patch));
+    t.diagnostic(JSON.stringify({ causalReach: 'PULSE_RAW_CONSENT_MAIN', id, patch, result }));
+    try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), /(?:PULSE|PAYLOAD|PROJECT).*(?:INVALID|STALE|MISMATCH|REQUIRED)/u); }
+    finally { assert.deepEqual(pulseSnapshot(x).roster, before.roster); }
+  });
+});
+
+test('Pulse actual Main consent rejects a stale valid revision and preserves the complete current state', async t => {
+  const x = await pulseMainFixture(t), old = x.pulsePayload(); await x.seedPulse();
+  const before = pulseSnapshot(x), result = await x.h.command(PULSE_LIVE_IDS[0], old);
+  try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), /PULSE.*STALE/u); }
+  finally { assert.deepEqual(pulseSnapshot(x).roster, before.roster); }
+});
+
+for (const fault of ['owner', 'project', 'session', 'window', 'userData', 'generation', 'entitlement', 'profile', 'lifecycle']) test('Pulse queued consent revalidates actual ' + fault + ' before writes', async t => {
+  const x = await pulseMainFixture(t); await x.seedPulse(); let enter, release;
+  const entered = new Promise(r => { enter = r; }), gate = new Promise(r => { release = r; }); t.after(() => release());
+  const held = x.h.main.__host.holdDiskQueue(async () => { enter(); await gate; }); await entered;
+  let settled = false; const pending = x.h.command(PULSE_LIVE_IDS[1], x.pulsePayload()).finally(() => { settled = true; }); await new Promise(setImmediate);
+  const queued = !settled;
+  if (fault === 'owner') x.h.main.__host.revokeOwner();
+  if (fault === 'project') x.h.main.__host.invalidateProjectRoot();
+  if (fault === 'session') x.h.main.__host.invalidateSession();
+  if (fault === 'window') x.h.window.isDestroyed = () => true;
+  if (fault === 'userData') x.h.main.__host.invalidatePulseUserData();
+  if (fault === 'generation') x.h.main.__host.invalidateGeneration();
+  if (fault === 'entitlement') x.h.main.__host.revokeEntitlement(PULSE_LIVE_IDS[1]);
+  if (fault === 'profile') x.h.main.__host.revokeProfile();
+  if (fault === 'lifecycle') x.h.main.__host.invalidateLifecycle();
+  const before = pulseSnapshot(x); release(); await held; const result = await pending;
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_DISK_QUEUE_PRIVACY_GUARD', fault, queued, result }));
+  try { assert.equal(queued, true, 'actual command must wait at diskQueue before fault injection'); assert.equal(result.ok, false); assert.match(JSON.stringify(result), /(?:PULSE|COMMAND_DISABLED).*?(?:STALE|UNAVAILABLE|ENTITLEMENT|REVOKED)/u); }
+  finally { assert.deepEqual(pulseSnapshot(x).roster, before.roster); }
+});
+
+test('Pulse successful queued opt-out orders before later changed Save without recursion or later collection', async t => {
+  const x = await pulseMainFixture(t); await x.pulseConsent(PULSE_LIVE_IDS[0]);
+  const before = pulseSnapshot(x), text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Очередь после отключения.';
+  const generation = await preparePulseDirtyEdit(x, text);
+  let enter, release; const entered = new Promise(r => { enter = r; }), gate = new Promise(r => { release = r; }); t.after(() => release());
+  const held = x.h.main.__host.holdDiskQueue(async () => { enter(); await gate; }); await entered;
+  const off = x.h.command(PULSE_LIVE_IDS[1], x.pulsePayload()); await new Promise(setImmediate);
+  const changed = x.ui('cmd.project.save', {});
+  release(); await held; assert.equal((await off).ok, true); assert.equal((await changed).mainResult.ok, true);
+  assert.equal(x.h.sent.filter(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED').at(-1)?.[1].ack.savedGeneration, generation);
+  await assertPulseSavedSceneFootprint(x, before, pulseSnapshot(x), text);
+  assert.equal(x.pulseState().collectionStatus, 'OPTED_OUT'); assert.equal((await x.pulseLedger()).sequence, 0);
+});
+
+test('Pulse no-op and actual canonical replay do not count Save clicks or lastAutosaveHash changes', async t => {
+  const x = await pulseMainFixture(t); await x.seedPulse();
+  const before = x.pulseFiles(), same = 'Добавлено. ' + EXACT_ATLAS_TEXT;
+  await x.save(same); assert.deepEqual(x.pulseFiles(), before, 'new generation but identical actual saved bytes is no observation');
+  const text = same + ' Только одно настоящее изменение.'; await x.save(text);
+  const snapshot = await x.pulseLedger(); assert.equal(snapshot.sequence, 1);
+  const frozen = x.pulseFiles(), replay = (await x.ui('cmd.project.save', {})).mainResult; assert.equal(replay.ok, true, JSON.stringify(replay));
+  assert.deepEqual(x.pulseFiles(), frozen); assert.equal((await x.pulseLedger()).sequence, 1);
+});
+
+test('Pulse query leaves malformed opted-in channels byte exact and never repairs a torn ledger', async t => {
+  const x = await pulseMainFixture(t); await x.seedPulse();
+  fs.writeFileSync(path.join(x.pulseDirectory, 'pulse-ledger.v1.jsonl'), '{"broken":');
+  const before = pulseSnapshot(x), result = await x.pulseRead();
+  assert.equal(result.pulseClaim.state, 'unavailable'); assert.deepEqual(pulseSnapshot(x).roster, before.roster);
+});
+
+for (const mode of ['failed-scene', 'auxiliary-before-publish', 'ack-loss-after-publish']) test('Pulse ' + mode + ' retains truthful manuscript SaveACK and explicit history outcome', async t => {
+  const x = await pulseMainFixture(t); await x.seedPulse(); const promises = require('node:fs/promises'), rename = promises.rename;
+  let reached = false;
+  promises.rename = async (from, to) => {
+    const target = mode === 'failed-scene' ? to === x.f.scenePath : to.startsWith(x.pulseDirectory + path.sep);
+    if (!target || reached) return rename(from, to);
+    reached = true; if (mode === 'ack-loss-after-publish') await rename(from, to);
+    throw Object.assign(new Error('OWNED_PULSE_WRITE_FAILURE'), { code: 'E_OWNED_PULSE_WRITE_FAILURE' });
+  };
+  t.after(() => { promises.rename = rename; }); const before = pulseSnapshot(x), pulseBefore = x.pulseFiles(), text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Проверка отказа.';
+  let actualSaveFailure;
+  if (mode === 'failed-scene') { const command = x.h.command; x.h.command = async (...args) => {
+    const result = await command(...args); if (args[0] === 'cmd.project.save') actualSaveFailure = result; return result;
+  }; }
+  let outcome; try { await x.save(text); outcome = { saved: true }; } catch (error) { outcome = { saved: false, message: error.message }; }
+  const after = pulseSnapshot(x); t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_PULSE_SAVE_FAILURE', mode, reached, outcome,
+    savedScene: require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(after.scene.toString('utf8')).text,
+    status: x.h.sent.filter(([channel]) => channel === 'status-update').slice(-4) }));
+  assert.equal(reached, true, 'actual scene/Pulse publish must reach injected port, not an absent-ID refusal');
+  if (mode === 'failed-scene') {
+    assert.equal(outcome.saved, false); assert.deepEqual(x.pulseFiles(), pulseBefore); assert.deepEqual(after.scene, before.scene);
+    const nowIso = after.manifest.proDataInvalidation.updatedAtUtc, time = Date.parse(nowIso);
+    assert.ok(time >= before.observedAtMs && time <= after.observedAtMs);
+    const { applyFreeEditProDataInvalidation } = await import('../../src/core/proRoundtripPreservation.mjs');
+    assertAuthorIdentityCanonical(after.manifest, applyFreeEditProDataInvalidation(before.manifest, {
+      changedSceneIds: [path.relative(x.f.projectRoot, x.f.scenePath).split(path.sep).join('/')], deletedSceneIds: [], nowIso }).manifest);
+    assertAuthorIdentityCanonical(after.manifest.atlas, before.manifest.atlas);
+    assertAuthorIdentityCanonical(after.events, before.events); assertAuthorIdentityCanonical(after.receipts, before.receipts); x.assertOriginal();
+    const transaction = require('../../src/core/project-transaction-v1.cjs'), journalPath = transaction.journalPathFor(x.f.manifestPath);
+    const pending = await transaction.readPendingProjectTransactionBinding({ manifestPath: x.f.manifestPath });
+    assert.equal(pending.pending, true); assert.equal(pending.scenePath, x.f.scenePath); assert.equal(pending.manifestPath, x.f.manifestPath);
+    const journal = JSON.parse(fs.readFileSync(journalPath));
+    assert.deepEqual(journal, { schemaVersion: 'yalken.project-transaction.journal.v1', transactionId: pending.transactionId,
+      revision: x.h.editor.generation, scenePath: x.f.scenePath, manifestPath: x.f.manifestPath,
+      before: { sceneBase64: before.scene.toString('base64'), manifestBase64: Buffer.from(before.manifestRaw).toString('base64') },
+      after: { sceneBase64: Buffer.from(x.h.editor.content).toString('base64'), manifestBase64: Buffer.from(after.manifestRaw).toString('base64') } });
+    const commitName = path.relative(x.h.root, x.f.scenePath + '.wp201-commit.json');
+    assert.equal(new Map(after.roster).get(commitName), new Map(before.roster).get(commitName), 'failed scene never publishes a new commit marker');
+    const lastAck = x.h.sent.filter(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED').at(-1)?.[1].ack;
+    assert.notEqual(lastAck?.savedGeneration, x.h.editor.generation); assert.equal((await x.pulseLedger()).sequence, 0);
+    assert.deepEqual(actualSaveFailure, { ok: false, code: 'PROJECT_TRANSACTION_FAILED', reason: 'PROJECT_TRANSACTION_FAILED',
+      value: { ok: false, error: { code: 'E_PROJECT_SAVE_FAILED', op: 'cmd.project.save', reason: 'PROJECT_TRANSACTION_FAILED',
+        details: { causeCode: 'E_SAVE_ATOMIC_PUBLISH', causePhase: 'ATOMIC_PUBLISH' } } } });
+    const fenceName = Object.keys(before.anchors).find(name => name.endsWith('fencing-generation.v1.json') && before.anchors[name].projectId === x.projectId);
+    const priorFence = before.anchors[fenceName], nextFence = after.anchors[fenceName];
+    assert.match(nextFence.ownerTokenDigest, /^[a-f0-9]{64}$/u); assert.notEqual(nextFence.ownerTokenDigest, priorFence.ownerTokenDigest);
+    assert.ok(nextFence.issuedAtMs >= before.observedAtMs && nextFence.issuedAtMs <= after.observedAtMs);
+    assert.ok(Number.isSafeInteger(nextFence.monotonicIssuedAtMs) && nextFence.monotonicIssuedAtMs >= priorFence.monotonicIssuedAtMs);
+    assertAuthorIdentityCanonical(nextFence, { ...priorFence, fencingGeneration: priorFence.fencingGeneration + 1,
+      ownerTokenDigest: nextFence.ownerTokenDigest, issuedAtMs: nextFence.issuedAtMs, monotonicIssuedAtMs: nextFence.monotonicIssuedAtMs });
+    const current = new Map(after.roster), originals = new Map(before.roster), additions = new Set([path.relative(x.h.root, journalPath)]);
+    const previousHash = crypto.createHash('sha256').update(before.manifestRaw).digest('hex'), nextHash = crypto.createHash('sha256').update(after.manifestRaw).digest('hex');
+    const transitionBase = path.join('userData', 'stage10-integrity-anchors', 'manifest-transitions');
+    const transitionRoot = path.join(transitionBase, crypto.createHash('sha256').update(x.projectId + '\0' + x.f.manifestPath).digest('hex'));
+    const dir = path.join(transitionRoot, previousHash), name = path.join(dir, nextHash + '.json');
+    const content = JSON.stringify({ schemaVersion: 'yalken.manifest-transition.v1', projectId: x.projectId, targetPath: x.f.manifestPath, previousHash, nextHash });
+    assert.equal(current.get(name), crypto.createHash('sha256').update(content).digest('hex'));
+    for (const entry of [transitionBase, transitionRoot, dir]) { assert.equal(current.get(entry), 'directory'); if (!originals.has(entry)) additions.add(entry); }
+    if (!originals.has(name)) additions.add(name);
+    const mutable = new Set([fenceName, path.relative(x.h.root, x.f.manifestPath)]);
+    const fixed = rows => rows.filter(([name]) => !mutable.has(name) && !additions.has(name));
+    assert.deepEqual(fixed(after.roster), fixed(before.roster), 'complete pending-phase roster preserves library/settings/old commit/anchors/foreign/Pulse bytes');
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_WP201_FAILED_SCENE_PENDING', reached, pendingTransaction: pending.transactionId,
+      failedSave: actualSaveFailure, failedNewGenerationAck: true, exactPreparedManifestAndJournal: true, originalSceneHistoryAndPulseExact: true }));
+  }
+  else {
+    assert.equal(outcome.saved, true, 'auxiliary failure must not invalidate durable manuscript SaveACK');
+    await assertPulseSavedSceneFootprint(x, before, after, text);
+    const status = JSON.stringify(x.h.sent.filter(([channel]) => channel === 'status-update').at(-1)); assert.match(status, /(?:Pulse|history|истори).*(?:partial|record|незапис|не запис|не удалось)/iu);
+  }
+});
+
+async function pulseMainRenderer(x) {
+  const h = authorIdentityMainRenderer(x, await x.query(), CORRECTION_V10), c = h.c, source = read('src/renderer/editor.js'), vm = require('node:vm');
+  const walk = node => [node, ...node.children.flatMap(walk)], proto = c.HTMLElement.prototype;
+  proto.contains = function(node) { return this === node || this.children.some(child => child.contains(node)); };
+  proto.remove = function() { if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(row => row !== this); this.parentElement = null; };
+  proto.focus = function() { c.document.activeElement = this; };
+  proto.querySelectorAll = function(selector) {
+    const match = /^\[data-([a-z-]+)(?:="([^"]*)")?\]$/u.exec(selector); assert.ok(match, 'bounded actual selector: ' + selector);
+    const key = match[1].replace(/-([a-z])/gu, (_, letter) => letter.toUpperCase());
+    return walk(this).slice(1).filter(node => Object.hasOwn(node.dataset, key) && (match[2] === undefined || node.dataset[key] === match[2]));
+  };
+  proto.querySelector = function(selector) { return this.querySelectorAll(selector)[0] || null; };
+  c.document.activeElement = c.document.body; c.window.__PRODUCT_PROFILE = SCENE_LANGUAGE_V12;
+  c.atlasContinuityLedgerHost = c.document.createElement('section'); c.document.body.append(c.atlasContinuityLedgerHost);
+  c.currentAtlasSurface = 'continuity'; c.atlasContinuityLedgerExplicitOpen = true; c.atlasContinuityRequestEpoch = 0;
+  c.ATLAS_CONTINUITY_LEDGER_SURFACE_QUERY_ID = 'query.atlasContinuityLedgerSurface';
+  c.atlasContinuityLedgerState = await x.pulseRead();
+  c.invokeWorkspaceQueryBridge = (id, payload) => x.h.query(id, structuredClone(payload));
+  c.normalizePulseHistoryPresentation = (await import('../../src/renderer/pulseHistoryPresentationModel.mjs')).normalizePulseHistoryPresentation;
+  const requests = [], statuses = []; c.updateStatusText = value => statuses.push(value);
+  c.dispatchUiCommand = async (id, payload) => { requests.push({ id, payload: structuredClone(payload) }); const packet = await x.pulseUi(id, payload); h.packets.push(packet); return packet.result; };
+  const actual = name => { const match = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(match, name);
+    const end = source.indexOf('\n}\n', match.index); assert.ok(end > match.index); return source.slice(match.index, end + 2); };
+  const sequence = source.match(/^const atlasQueryPublicationSequences = .*;$/m); assert.ok(sequence); vm.runInContext(sequence[0], c);
+  for (const match of source.matchAll(/^(?:const|let) (\w*(?:[Pp]ulse|PULSE)\w*) = /gm)) {
+    const end = source.indexOf(';\n', match.index); assert.ok(end > match.index && end - match.index < 12000);
+    vm.runInContext(source.slice(match.index, end + 1), c);
+  }
+  const names = ['beginAtlasQueryPublication', 'normalizeAtlasContinuityLedgerSurface', 'refreshAtlasContinuityLedgerSurface', 'reviewSurfaceIsPlainObject',
+    ...[...source.matchAll(/^(?:async )?function (\w*[Pp]ulse\w*)\(/gm)].map(match => match[1])];
+  vm.runInContext([...new Set(names)].map(actual).join('\n'), c);
+  const tasks = []; for (const match of source.matchAll(/^async function (\w*[Pp]ulse\w*)\(/gm)) {
+    const run = c[match[1]]; c[match[1]] = (...args) => { const pending = run(...args); tasks.push(pending); return pending; };
+  }
+  c.renderAtlasContinuityLedgerState = () => { c.atlasContinuityLedgerHost.innerHTML = ''; c.appendPulseHistory(c.atlasContinuityLedgerHost, c.atlasContinuityLedgerState.pulseClaim); };
+  c.renderAtlasContinuityLedgerState();
+  const button = action => walk(c.atlasContinuityLedgerHost).find(node => node.dataset.pulseHistoryAction === action);
+  const text = node => [typeof node.textContent === 'string' ? node.textContent : '', ...node.children.map(text)].join(' ');
+  const settle = async () => { await new Promise(setImmediate); let index = 0;
+    while (index < tasks.length) { const pending = tasks.slice(index); index = tasks.length; await Promise.all(pending); } };
+  const click = async action => { const node = button(action); assert.ok(node, 'actual Pulse ' + action + ' control'); assert.equal(node.disabled, false);
+    await node.emit('click'); await settle(); return h.packets.at(-1); };
+  return { ...h, button, click, settle, requests, statuses, text: () => text(c.atlasContinuityLedgerHost) };
+}
+
+test('Pulse actual native-style control listeners enable Save cold history and disable through registered Main only [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await pulseMainFixture(t); let r = await pulseMainRenderer(x), before = pulseSnapshot(x);
+  const enable = r.button('optIn'); assert.ok(enable, 'read-only Writing history has no explicit opt-in control yet'); enable.focus();
+  let packet = await r.click('optIn'); assert.ok(packet?.mainResult); assert.equal(packet.mainResult.ok, true);
+  assertPulseConsentFootprint(x, before, pulseSnapshot(x)); assert.equal(r.requests.length, 1);
+  assert.deepEqual(r.requests[0], { id: PULSE_LIVE_IDS[0], payload: { projectId: x.projectId, expectedPrivacyRevision: 0, expectedPrivacyStateDigest: (await import('../../src/core/pulse-privacy-v1.mjs')).readPulsePrivacyStateSnapshot(path.join(x.h.userData, 'never-created')).stateDigest } });
+  assert.equal(r.c.document.activeElement?.isConnected, true); assert.equal(r.c.document.activeElement?.dataset.pulseHistoryAction, 'optOut');
+  before = pulseSnapshot(x); const text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' От настоящей кнопки.'; await x.save(text);
+  const saved = pulseSnapshot(x), receipt = await assertPulseSavedSceneFootprint(x, before, saved, text); assertPulseAggregate(x, (await x.pulseLedger()).entries[0], receipt, saved.scene);
+  await r.c.refreshAtlasContinuityLedgerSurface(); assert.match(r.text(), /1 of 1|1.*ревиз/iu);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  assert.equal((await x.h.main.handleUiOpenDocumentCommand({ projectId: x.projectId, nodeId: x.sceneId })).ok, true);
+  r = await pulseMainRenderer(x); assert.match(r.text(), /1 of 1|1.*ревиз/iu);
+  before = pulseSnapshot(x); packet = await r.click('optOut'); assert.equal(packet.mainResult.ok, true); assertPulseConsentFootprint(x, before, pulseSnapshot(x));
+  assert.equal(r.requests.length, 1); assert.equal(r.requests[0].id, PULSE_LIVE_IDS[1]); assert.match(r.text(), /off|отключ/iu);
+  const frozen = x.pulseFiles(); await x.save(text + ' Отключено.'); assert.deepEqual(x.pulseFiles(), frozen);
+});
+
+for (const fault of ['doubleclick', 'detached', 'project', 'surface', 'generation']) test('Pulse actual pending listener protects ' + fault + ' and never grants stale presentation authority', async t => {
+  const x = await pulseMainFixture(t), r = await pulseMainRenderer(x), node = r.button('optIn'); assert.ok(node, 'actual opt-in control');
+  let enter, release; const entered = new Promise(done => { enter = done; }), gate = new Promise(done => { release = done; }); t.after(() => release());
+  const held = x.h.main.__host.holdDiskQueue(async () => { enter(); await gate; }); await entered;
+  node.emit('click'); await new Promise(setImmediate); assert.equal(r.requests.length, 1); assert.equal(node.disabled, true);
+  assert.match(r.text(), /pending|running|выполн|ожидан|сохран/iu, 'disabled pending action has a visible reason');
+  if (fault === 'doubleclick') node.emit('click');
+  if (fault === 'detached') r.c.atlasContinuityLedgerHost.remove();
+  if (fault === 'project') r.c.currentProjectId = 'newer-project';
+  if (fault === 'surface') r.c.currentAtlasSurface = 'journey';
+  if (fault === 'generation') r.c.localEditGeneration += 1;
+  const visible = r.text(), newer = structuredClone(r.c.atlasContinuityLedgerState), statuses = [...r.statuses];
+  release(); await held; await r.settle(); assert.equal(r.requests.length, 1);
+  assert.equal(x.pulseState().collectionStatus, 'OPTED_IN', 'already admitted current Main effect may finish; stale UI is not a cancellation claim');
+  if (fault !== 'doubleclick') { assert.equal(r.text(), visible); assert.deepEqual(r.c.atlasContinuityLedgerState, newer); assert.deepEqual(r.statuses, statuses); }
+  else assert.match(r.text(), /empty|recorded|запис|истори/iu);
+});
+
+test('Pulse stale real consent token refuses visibly and unavailable read cannot dispatch a default token', async t => {
+  const x = await pulseMainFixture(t), r = await pulseMainRenderer(x); assert.ok(r.button('optIn'));
+  await x.seedPulse(); const before = pulseSnapshot(x), packet = await r.click('optIn');
+  assert.equal(packet.mainResult.ok, false); assert.match(JSON.stringify(packet), /PULSE.*STALE/u); assert.deepEqual(pulseSnapshot(x).roster, before.roster);
+  assert.match(r.text() + ' ' + r.statuses.join(' '), /refus|stale|обнов|устар|не удалось/iu);
+  r.c.atlasContinuityLedgerState.pulseClaim = { state: 'unavailable', privacy: { collectionStatus: 'OPTED_OUT' }, rows: [] };
+  r.c.renderAtlasContinuityLedgerState(); const count = r.requests.length, node = r.button('optIn');
+  assert.ok(!node || node.disabled, 'missing CAS never turns into actionable revision0'); if (node) await node.emit('click');
+  await r.settle(); assert.equal(r.requests.length, count);
+});
+
+test('Pulse explicit commands never silently repair malformed committed history or erase it as fresh state', async t => {
+  const x = await pulseMainFixture(t); await x.seedPulse();
+  fs.writeFileSync(path.join(x.pulseDirectory, 'pulse-ledger.v1.jsonl'), '{bad}\n');
+  for (const id of PULSE_LIVE_IDS) {
+    const before = pulseSnapshot(x), result = await x.h.command(id, x.pulsePayload());
+    try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), /E_WP801_|PULSE.*(?:INVALID|UNAVAILABLE)/u); }
+    finally { assert.deepEqual(pulseSnapshot(x).roster, before.roster); }
+  }
+});
+
+async function preparePulseDirtyEdit(x, text) {
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const next = envelope.composeDocumentContentFromBase({ baseContent: x.h.editor.content, nextVisibleText: text }); assert.equal(next.ok, true);
+  const generation = x.h.editor.generation + 1; x.h.editor = { ...x.h.editor, content: next.content, plainText: text, generation };
+  const signal = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', 'signal.localDirty.set', { state: true, generation });
+  assert.equal((await x.h.handlers.get('ui:save-lifecycle-signal-bridge')(x.h.event(), signal)).ok, true);
+  return generation;
+}
+
+async function pulseSaveOnly(x, text) {
+  const generation = await preparePulseDirtyEdit(x, text);
+  const packet = await x.ui('cmd.project.save', {}); assert.equal(packet.mainResult.ok, true, JSON.stringify(packet));
+  const ack = x.h.sent.filter(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED').at(-1)?.[1].ack;
+  assert.equal(ack?.savedGeneration, generation); return packet;
+}
+
+test('Pulse changed actual Save rereads consent after awaited canonical write and does not collect after existing-Core opt-out', async t => {
+  const x = await pulseMainFixture(t), controller = await x.seedPulse(), promises = require('node:fs/promises'), open = promises.open;
+  let enter, release, reached = false; const entered = new Promise(done => { enter = done; }), gate = new Promise(done => { release = done; });
+  promises.open = async (file, ...args) => {
+    const handle = await open(file, ...args);
+    if (!reached && args[0] !== 'r' && file.startsWith(x.f.scenePath + '.')) {
+      const write = handle.writeFile.bind(handle); handle.writeFile = async (...values) => { const result = await write(...values); reached = true; enter(); await gate; return result; };
+    }
+    return handle;
+  };
+  t.after(() => { release(); promises.open = open; }); const before = pulseSnapshot(x), text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Согласие отозвано до публикации.';
+  const pending = pulseSaveOnly(x, text), first = await Promise.race([entered.then(() => 'reached'), pending.then(() => 'finished')]);
+  assert.equal(first, 'reached', 'actual canonical scene write await is reached independently of new Pulse IDs');
+  const state = x.pulseState(); await controller.optOut({ schemaVersion: 'yalken.r24.pulsePrivacyCommand.v1', type: 'OPT_OUT', requestId: 'owned-during-save', expectedPrivacyRevision: state.revision });
+  const offFiles = x.pulseFiles(); release(); await pending; promises.open = open;
+  await assertPulseSavedSceneFootprint(x, before, pulseSnapshot(x), text); assert.equal(reached, true);
+  assert.equal((await x.pulseLedger()).sequence, 0); assert.deepEqual(x.pulseFiles(), offFiles);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SAVE_AWAIT_CONSENT_OFF', reached, durableSaveAck: true, privacyRevision: x.pulseState().revision }));
+});
+
+test('Pulse actual changed Save producer revalidates owner after awaited Pulse temp write while manuscript remains saved', async t => {
+  const x = await pulseMainFixture(t); await x.seedPulse(); const promises = require('node:fs/promises'), open = promises.open;
+  let enter, release, reached = false; const entered = new Promise(done => { enter = done; }), gate = new Promise(done => { release = done; });
+  promises.open = async (file, ...args) => {
+    const handle = await open(file, ...args);
+    if (!reached && args[0] !== 'r' && file.startsWith(x.pulseDirectory + path.sep)) {
+      const write = handle.writeFile.bind(handle); handle.writeFile = async (...values) => { const result = await write(...values); reached = true; enter(); await gate; return result; };
+    }
+    return handle;
+  };
+  t.after(() => { release(); promises.open = open; }); const before = pulseSnapshot(x), channels = x.pulseFiles(), text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Проверка живого владельца.';
+  const pending = pulseSaveOnly(x, text), first = await Promise.race([entered.then(() => 'reached'), pending.then(() => 'finished')]);
+  if (first === 'reached') x.h.main.__host.revokeOwner(); release(); await pending; promises.open = open;
+  const after = pulseSnapshot(x); await assertPulseSavedSceneFootprint(x, before, after, text);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SAVE_PULSE_POST_AWAIT_OWNER', reached, first, durableSaveAck: true }));
+  assert.equal(reached, true, 'current Main has no Pulse producer; absent privacy command IDs are not this oracle');
+  assert.deepEqual(x.pulseFiles(), channels); assert.equal((await x.pulseLedger()).sequence, 0);
+  const last = x.h.sent.filter(([channel]) => channel === 'status-update').at(-1);
+  assert.match(JSON.stringify(last), /(?:Pulse|history|истори).*(?:partial|record|не запис|не удалось)/iu);
+});
+
+async function seedPulseCapacity(x) {
+  const controller = await x.seedPulse(), { canonicalSerialize } = await import('../../src/core/browser-safe-hash.mjs');
+  const receipt = x.receiptCodec.createPulseAggregateReceipt({ sourceRevisionOrdinal: 1, generation: 1, aggregates: [{ metricId: 'SCENES_EDITED_COUNT', value: 1 }] });
+  await controller.appendReceipt({ expectedPrivacyRevision: 1, idempotencyKey: 'owned-capacity-first', expectedSequence: 0, receipt });
+  const parse = name => fs.readFileSync(path.join(x.pulseDirectory, name), 'utf8').trim().split('\n').map(JSON.parse);
+  const first = parse('pulse-ledger.v1.jsonl')[0], admission = parse('pulse-ledger-intents.v1.jsonl')[0], effect = parse('pulse-ledger-outbox.v1.jsonl')[0];
+  const entries = [], intents = [], outbox = []; let previousEntryDigest = '0'.repeat(64);
+  // Owned full-capacity data uses a real Core-produced template; the public
+  // immutable reader and real controller verify every channel before Main runs.
+  for (let index = 0; index < 4096; index += 1) {
+    const transactionDigest = x.hash({ idempotencyKey: 'owned-capacity-' + index });
+    const { entryDigest: ignored, ...payload } = first, entry = { ...payload, sequence: index + 1, previousEntryDigest, transactionDigest };
+    entry.entryDigest = x.hash(entry); entries.push(entry); previousEntryDigest = entry.entryDigest;
+    const intent = { ...admission, transactionDigest, entryDigest: entry.entryDigest, expectedSequence: index, phase: 'ADMITTED', committedSequence: null };
+    intents.push(intent, { ...intent, phase: 'COMMITTED', committedSequence: index + 1 });
+    outbox.push({ ...effect, transactionDigest, entryDigest: entry.entryDigest, phase: 'PENDING' },
+      { ...effect, transactionDigest, entryDigest: entry.entryDigest, phase: 'APPLIED' });
+  }
+  for (const [name, rows] of [['pulse-ledger.v1.jsonl', entries], ['pulse-ledger-intents.v1.jsonl', intents], ['pulse-ledger-outbox.v1.jsonl', outbox]]) {
+    fs.writeFileSync(path.join(x.pulseDirectory, name), rows.map(canonicalSerialize).join('\n') + '\n');
+  }
+  const before = x.pulseFiles(); assert.equal((await x.pulseLedger()).sequence, 4096);
+  assert.equal((await controller.explain()).identity.ledgerSequence, 4096); assert.deepEqual(x.pulseFiles(), before);
+  await assert.rejects(() => controller.appendReceipt({ expectedPrivacyRevision: 1, idempotencyKey: 'owned-over-capacity', expectedSequence: 4096, receipt }),
+    error => error.code === 'E_WP804_RETENTION_CAPACITY_NO_AUTOCLEANUP'); assert.deepEqual(x.pulseFiles(), before);
+  return before;
+}
+
+test('Pulse actual canonical Save at real validated capacity retains all history and visibly records no fabricated observation', async t => {
+  const x = await pulseMainFixture(t), channels = await seedPulseCapacity(x), before = pulseSnapshot(x), text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' История заполнена.';
+  await pulseSaveOnly(x, text); const after = pulseSnapshot(x); await assertPulseSavedSceneFootprint(x, before, after, text);
+  assert.deepEqual(x.pulseFiles(), channels); assert.equal((await x.pulseLedger()).sequence, 4096);
+  const last = x.h.sent.filter(([channel]) => channel === 'status-update').at(-1);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SAVE_FULL_CAPACITY', saved: true, verifiedExistingRows: 4096, last }));
+  assert.match(JSON.stringify(last), /(?:Pulse|history|истори).*(?:capacity|record|заполн|не запис|не удалось)/iu);
 });

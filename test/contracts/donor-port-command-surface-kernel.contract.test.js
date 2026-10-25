@@ -9,6 +9,8 @@ test('donor port command surface kernel: allowlist is fixed to minimal non-ui co
   assert.deepEqual(ALLOWED_COMMAND_IDS, [
     'cmd.project.open',
     'cmd.project.save',
+    'cmd.project.pulse.optIn',
+    'cmd.project.pulse.optOut',
     'cmd.project.saveAs',
     // Main-only startup route; renderer payloads never grant this capability.
     'cmd.project.recoverMissingIntegrityAnchor',

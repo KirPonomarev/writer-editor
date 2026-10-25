@@ -5181,3 +5181,16 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Prior PR2160 independently closed at9aa63a67; current29path task follows fresh preflight/taskE0 and complete protected source/dependency/owned-profile revalidation.
 - Frozen whole causal runs:537cheap cases515pass22fail;441Main cases363pass78fail;0cancel/skip/todo. Genuine lawful three-command persistence and complete footprint precede48wrongly persisted guard cases; old integration top1..156 pass. Root review576cd819 releases only declared runtime5 to the required separate executor.
 - Stable Flow authoring, explicit saved Idea selection and bounded read-only saved details use existing Core/Kernel/atomic ports. No new schema/registry/query/storage/dependency/network/visual tokens. All corrected-source/native/full delivery proof remains pending in dated external receipts; full Mac and release remain incomplete.
+
+
+## 2026-10-25 — Explicit local Pulse consent and Save observation
+
+- Same fullMac continuation, original main5023fd23, normal unaccepted checkpoint9128d942 and true clean31path amendment preflight. Two exact FREE commands, guarded existing privacy/ledger ports and changed canonical Save effect; V12/Core/schema/dependencies unchanged.
+- Whole causal RED644/572/72 retained. New finite DOM IPC boundary clone is one expression; matched raw refusal/clone proof and inverse preserve every assertion. Registered connected journey04 and independent raw14member/hash-chain/SaveACK/source10010/protected9979 review pass as component evidence only.
+- Current coherent bundle/companions, unfiltered whole GREEN, affected/source/fullbaseline, exact committed native process cold, official RTK/CI and normal full delivery remain pending. Full Mac/release not accepted; all17UNKNOWN and named skips/audit limitations retained.
+
+- Pulse reboot resume:644whole and273affected pass at their recorded source identities. Strict ENT0 first-case alignment preserves original3 plus new1tier decisions; only current mechanical hash companions refresh, no runtime/bundle change. Exact native/cold/fullbaseline/CI/normaldelivery remain pending.
+
+- Pulse PR2163: C1 native warm/cold/opt-out raw preservation completed; old WP100 test-local3-consultation scanner caused actual CI failure. Complete strict same-command scanner correction and inverse reviewed; runtime/bundle held. Aborted local baseline remains non-green; current fullbaseline/RTK/CI/normalmerge/literal-main still required.
+
+- Pulse PR2163: strict donor expected command list gains only two already admitted Pulse IDs. Whole13of13 and exact inverse/three consumed strict-refusal mutants independently reviewed; all runtime/bundle/other tests held. C2 RTK two failures and interrupted baseline remain non-green; full current delivery and literal merged proof still required.

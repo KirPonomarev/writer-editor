@@ -5697,3 +5697,90 @@ separately; native history/finite16/fullfeature status remains NOT_READY.
 - Current companions add temporal test only:786DATA646source311certificate; append a successor preserving entire committed310carrier/predicates/history. Inventory1603membership/classes/lanes/skips unchanged, only two test hashes relative66145. All66release pins and17UNKNOWN qualification fields unchanged.
 - Required53whole affected paths remain covered by actual focused files, complete current provider graph/post-build logs, full unmodified473unit local baseline and35other local whole contracts. The redundant local53invocation was intentionally interrupted(actualexit1,no credit); full baseline has not run before this compatibility amendment. Original failure/cancellation/declaration-method outputs retained.
 - Final coherent-source checks, new ordinary commit/push/current-headCI on same PR, fresh source-bound package/native/cold, normal merge and literal merged verification remain required. Audit2high9moderate unchanged/open;59named baseline skips never count as executed. Full Atlas/maps/WSE/Pulse/epochs and first Mac remain incomplete; Black Box later.
+
+
+## 2026-10-25 — Explicit local Pulse history: connected component only
+
+TASK_ID: YALKEN_PULSE_LOCAL_HISTORY_20261025
+STATUS: CONNECTED_COMPONENT_PROOF_COMPLETE_REQUIRED_DELIVERY_PENDING
+BINDING_BASE_SHA: 5023fd23493b24207df162ebf8ddf2aae431c218
+
+Two exact FREE consent intents use the existing renderer/Kernel/Main bridge, current
+privacy CAS and named PulseLocalHistoryPort with unchanged WP804/WP801 durable
+ports. Only an actually changed existing canonical-scene ordinary Save contributes
+one content-free SCENES_EDITED_COUNT observation. No-op, autosave and default-off
+collection do not add rows. Text SaveACK remains truthful if auxiliary history is
+unconfirmed or partially recorded; the visible status names that uncertainty.
+No manuscript text, path, project/scene identity or deterministic source hash enters
+Pulse. V12/profile, schemas, IPC channels, existing Core writers and dependencies
+are unchanged. Both consent controls are disabled while their operation is pending.
+
+Whole causal RED02 retained644tests572pass72failure records, no cancel/skip/todo.
+A normal unaccepted checkpoint9128d942 preserves the implementation; a true clean
+W1 preflight admits only two missing existing-capability bindings within31paths.
+The new finite DOM query helper then required Electron-style structured cloning;
+matched raw foreign-vs-clone packets establish this method correction. One new
+adapter expression changes, inverse-restoring the frozen test; every semantic
+assertion and original test remains. The product validator was not widened.
+
+Actual registered Main/finite DOM journey04 now enables, commits a changed scene,
+shows one row, reopens the project within the same Main, disables, then saves text
+without another row. Root independently reread all14 raw archive members, strict
+privacy/ledger/intent/outbox hash chains, three real SaveACKs and all10010 source
+files;9979 protected members are exact. Scene change is exact and the manifest
+changes only its existing invalidation timestamp. Root review617ec9edd428a65179cf3a78c50516d647577dc0afbfe2c65adea333fa38f1ea.
+
+This is not native process cold or whole corrected-source acceptance. Current
+normal bundle/byte companions precede frozen whole GREEN; affected chain, full
+baseline/source gates, fresh exact committed native warm/cold, official RTK/CI and
+normal commit/push/PR/merge/literal-main verification remain required. All17 Mac
+qualifications remain UNKNOWN;59 named baseline skips and last full audit findings
+remain disclosed, never executed passes. Full Atlas/maps/WSE/Pulse/environment
+epochs and first Mac remain incomplete; Black Box later.
+
+
+Pulse same-delivery update, 2026-10-25: actual complete unchanged Main/claim
+whole644of644 passes, all9queued revocations and both awaited Save/consent-owner
+boundaries reached. Complete36affected initially272of273 retains one old ENT0
+source-count conflict. Clean scope32 admission allows only strict first-case
+separation: original three tier decisions remain required, new named Pulse port
+requires exactly one, whole Main exactly four. Exact inverse preserves every
+other assertion/body; whole ENT0 goes7of8to8of8 and whole36now273of273, zero
+fail/cancel/skip/todo. Root review and raw receipts are preserved on T777.
+Owner reboot save39d8f04f is clean and unaccepted. Current byte companions are
+refreshed with the same326certificate+1guard,799DATA/659pins and1603inventory
+members/classes/lanes/skips; V12 and66release pins/all17UNKNOWN stay unchanged.
+Final exact committed whole/native process cold/fullbaseline/officialRTK/currentCI
+and normal full delivery still required. No full Mac or release acceptance.
+
+
+Pulse same PR2163 WP100 alignment, 2026-10-25: source C1d54d5d78 retains
+exact native warm/new-process cold consent/Save/Disable behavior. Two real warm
+Saves produce two content-free observations; disabled cold Save adds none. All105
+originalDocuments/62author event-receipt pairs and unrelated bytes are preserved;
+all791/793closed-profile archive members independently reread. Original reboot
+recovery has a separately declared new physical identity and earns no cold credit.
+The failed first typing input and old wrong-path reader remain retained.
+
+Actual C1 CI40181643360 WP100 whole10cases5fail exposes its test-local3consultation
+scanner. Local full npm-test is explicitly aborted at690.533s/literal-15; no full
+baseline pass is claimed. All6new runtime files19members are archived/read and
+same-device isolated with original inodes and no deletion. Fresh clean C1
+declaration05/preflight0, scope33/protected9977 and amended taskE00 precede the
+separate one-file scanner edit. Strict legacy3/whole4/uniquePulse1/localguard1
+semantics and all prior foundation predicates/mutants stay; new exact negatives
+reject guard omission/inversion/refusal removal and equal-count relocation.
+Whole current WP100 now executes12of12 with zero failure/cancel/skip/todo; root exact
+source/inverse review is recorded on T777. All product runtime, generated bundle,
+prior behavior tests and existing generation/mutants remain C1 byte-exact.
+
+Only current hash/inventory/governance companions refresh: same326certificate
+plus1guard,799DATA/659source pins,1603inventory members/classes/lanes/skips,
+V12/66release pins and all17UNKNOWN. New committed fullbaseline/officialRTK,
+provider/currentCI and normal same-PR merge/literal-main proof remain required.
+Audit2HIGH8MODERATE/17underlying findings stays OPEN;59named skips never count
+as executed. Full Mac remains incomplete; continue Atlas/maps/WSE/Pulse/epochs
+after bounded closure, Black Box later.
+
+
+Pulse same PR2163 donor alignment, 2026-10-25: C2 0567f2af has current whole644/affected285 and genuine warm/cold histories2to3to3, all62author prefixes and full796/798member archive readback. Exact C2 official RTK4416cases4414pass2fail identifies one strict donor expectation omission; independent stale-green guard correctly catches it. Local baseline explicitly interrupted at330.035961834s/literal1, not a pass;6new files19members preserved without deletion. Fresh clean C2 declaration06/preflight0/taskE0 and scope34/protected9976 precede separate exact+2/-0 fixture correction. Whole identical donor and unchanged stale-green RED13cases11pass2fail then GREEN13of13. Full C2 inverse preserves every other byte; real whole-donor control7of7 and each omitted ID/extra unknown executes7cases and fails the existing strict equality. Root independently reads all18archive members and all10010 source inputs. All runtime/bundle/other tests held C2. Current hash companions only retain326certificate+1guard,799DATA/659pins,1603inventory classes/lanes/skips, V12/66release pins and17UNKNOWN. New committed fullbaseline/officialRTK/provider/currentCI/package/native/normalmerge/literal merged proof still required. Audit2HIGH8MODERATE/17underlying findings OPEN and59named skips explicit. Full Mac Atlas/maps/WSE/Pulse/epochs remains incomplete; Black Box later.
