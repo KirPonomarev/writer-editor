@@ -23011,6 +23011,106 @@
       "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
       "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
       "sha256": "70bb10c1870fb73aa52a3df8f043545271febec278441a92fb9ecf63fb6037b9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "bfcd43f39946f32a79f7cbfafc12f1e6c8f70037d408ccbb9efee1f5d153cdd4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "e9e01cf7a5b8aaa13bfe8706e37779305ac842ce4ccb8bfe04e61bcf71b9ac07"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "caf6a1d14f642218c6e2b52f3eb409aa55ff6df17d1856d7917772d899ca1358"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "98c036e4ae9b4e3c19812393b325cb1061384be580062aecfe1e4846e973369a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "40a9701378c014491fb1c0ee3455f8268ddf8e99e0a6d5bb8968e5f5aa2a1ab6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "9dbc00d0f6b6a935134afb4ae262f67d2090bdf55b7456eb0dfadadcd58544a9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--environment-epochs.md",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "15da1c4b291383a86dbbfa3a9a3e584bf3b27308e1f56f1459e0b68eb0c659fb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "99864162f29554624abbb8eba3b9e21d1aca6f5980af9c27833c87505b76fbde"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "22e6d0fc57e3d78d63ebfa7f4d9328d821ffea412e4a76b65d05fdc991c63cc6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:00:53.440278+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
+      "sha256": "8e180387e17650bdc48d496bcbc9f077244f31880063ee83ea85d589abb21337"
     }
   ],
   "evidenceStampIds": [

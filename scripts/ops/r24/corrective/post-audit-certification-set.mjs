@@ -28503,7 +28503,7 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "c3724e45dd9f3a93f367375cb8b95d6eadc497de73b089d0b838c3bc11839a18"
+      "sha256": "8e180387e17650bdc48d496bcbc9f077244f31880063ee83ea85d589abb21337"
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
@@ -28611,7 +28611,7 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "7eb6d8a8b4d6688481e104e381854d10cd95b6fb5bf1264f76e3c73fa4e47779"
+      "sha256": "24b5c0528fe3e3f776bb053dd91df6167c67652a7b0f8b51b0fe59acb4383911"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -28747,7 +28747,7 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "3e7fae5d7cf842da482c97b1408bbc04ed4eea9daedc32a9fbf33f9850afdbcd"
+      "sha256": "7a7d330d0a089448231ee556be3ae5d89dc27d9fd4689da434f1e0d99bc5a023"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -28887,15 +28887,15 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "0f774b07d4900738b358b3daa5c36eb026edd1b13792293285c447a38e59781f"
+      "sha256": "bfcd43f39946f32a79f7cbfafc12f1e6c8f70037d408ccbb9efee1f5d153cdd4"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "0f620270077b511330c031ac652bdde1906d90c3539ff643a134d541f1da8cfd"
+      "sha256": "e9e01cf7a5b8aaa13bfe8706e37779305ac842ce4ccb8bfe04e61bcf71b9ac07"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "fc0d4274330c94008d4218c844e2732373da331392779d380e510e1da2239994"
+      "sha256": "9dbc00d0f6b6a935134afb4ae262f67d2090bdf55b7456eb0dfadadcd58544a9"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -29283,7 +29283,7 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "5975135a596e948cdecb9ea005bea0931737072887861ee68b95e91338295895"
+      "sha256": "22e6d0fc57e3d78d63ebfa7f4d9328d821ffea412e4a76b65d05fdc991c63cc6"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -29291,7 +29291,7 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c7e8f20c27ee53715be82f129d8ecd2823ff453faa6f1ef996ab0ddb7b94c4d7"
+      "sha256": "98c036e4ae9b4e3c19812393b325cb1061384be580062aecfe1e4846e973369a"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -29747,7 +29747,7 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-25--environment-epochs.md",
-      "sha256": "7876a59b9faf95ea3855e61c03e104e46e26aaa3d4f5a6475fb6861857ea3bab"
+      "sha256": "15da1c4b291383a86dbbfa3a9a3e584bf3b27308e1f56f1459e0b68eb0c659fb"
     },
     {
       "path": "src/renderer/design-os/designOsFormConfiguration.mjs",
@@ -29761,7 +29761,7 @@ const R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "17a154b4eded963a9736df2d2df30a4b371c0e4ed6db90d96c26aa8d66d5bfe6"
+      "sha256": "40a9701378c014491fb1c0ee3455f8268ddf8e99e0a6d5bb8968e5f5aa2a1ab6"
     }
   ]
 });

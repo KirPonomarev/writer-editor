@@ -21968,7 +21968,7 @@ function ensureSavedEnvironmentEpochControls() {
   if (savedEnvironmentEpochView?.host.isConnected && savedEnvironmentEpochView.modal === settingsModal) return savedEnvironmentEpochView;
   const host = document.createElement('section'); host.className = 'settings-surface__section'; host.dataset.settingsEnvironmentEpochs = '';
   const heading = document.createElement('h4'); heading.className = 'settings-surface__section-title'; heading.textContent = 'Saved settings';
-  const copy = document.createElement('p'); copy.className = 'settings-surface__row-note'; copy.textContent = 'Save Theme and Word Wrap as a version. Other settings are not included.';
+  const copy = document.createElement('p'); copy.className = 'settings-surface__row-note'; copy.textContent = 'Save the theme and line wrapping as a version. Other settings are not included.';
   const label = document.createElement('label'); label.className = 'modal__label'; label.textContent = 'Saved version'; label.setAttribute('for', 'settings-saved-environment-version');
   const select = document.createElement('select'); select.className = 'modal__input'; select.id = 'settings-saved-environment-version'; select.dataset.environmentEpochSelect = '';
   select.setAttribute('aria-describedby', 'settings-saved-environment-status');
@@ -22034,7 +22034,7 @@ async function refreshSavedEnvironmentEpochs() {
     publishSavedEnvironmentEpochProjection(view, projection);
     setSavedEnvironmentEpochStatus(view, projection.revision >= 128 ? 'All 128 saved versions are retained. No more can be added.'
       : !projection.availability.restore && projection.revision ? 'Save your text, then reopen Settings to restore a saved version.'
-        : projection.revision ? `${projection.revision} saved versions. Preview a version before restoring it.` : 'No saved settings yet. Save the current Theme and Word Wrap.');
+        : projection.revision ? `${projection.revision} saved versions. Preview a version before restoring it.` : 'No saved settings yet. Save the current theme and line wrapping.');
   } catch {
     if (isSavedEnvironmentEpochCurrent(view, token)) setSavedEnvironmentEpochStatus(view, 'Saved settings are unavailable. Existing versions are kept.');
   } finally {
