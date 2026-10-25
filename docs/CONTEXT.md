@@ -5952,3 +5952,32 @@ refreshed with the same326certificate+1guard,799DATA/659pins and1603inventory
 members/classes/lanes/skips; V12 and66release pins/all17UNKNOWN stay unchanged.
 Final exact committed whole/native process cold/fullbaseline/officialRTK/currentCI
 and normal full delivery still required. No full Mac or release acceptance.
+
+
+Pulse same PR2163 WP100 alignment, 2026-10-25: source C1d54d5d78 retains
+exact native warm/new-process cold consent/Save/Disable behavior. Two real warm
+Saves produce two content-free observations; disabled cold Save adds none. All105
+originalDocuments/62author event-receipt pairs and unrelated bytes are preserved;
+all791/793closed-profile archive members independently reread. Original reboot
+recovery has a separately declared new physical identity and earns no cold credit.
+The failed first typing input and old wrong-path reader remain retained.
+
+Actual C1 CI40181643360 WP100 whole10cases5fail exposes its test-local3consultation
+scanner. Local full npm-test is explicitly aborted at690.533s/literal-15; no full
+baseline pass is claimed. All6new runtime files19members are archived/read and
+same-device isolated with original inodes and no deletion. Fresh clean C1
+declaration05/preflight0, scope33/protected9977 and amended taskE00 precede the
+separate one-file scanner edit. Strict legacy3/whole4/uniquePulse1/localguard1
+semantics and all prior foundation predicates/mutants stay; new exact negatives
+reject guard omission/inversion/refusal removal and equal-count relocation.
+Whole current WP100 now executes12of12 with zero failure/cancel/skip/todo; root exact
+source/inverse review is recorded on T777. All product runtime, generated bundle,
+prior behavior tests and existing generation/mutants remain C1 byte-exact.
+
+Only current hash/inventory/governance companions refresh: same326certificate
+plus1guard,799DATA/659source pins,1603inventory members/classes/lanes/skips,
+V12/66release pins and all17UNKNOWN. New committed fullbaseline/officialRTK,
+provider/currentCI and normal same-PR merge/literal-main proof remain required.
+Audit2HIGH8MODERATE/17underlying findings stays OPEN;59named skips never count
+as executed. Full Mac remains incomplete; continue Atlas/maps/WSE/Pulse/epochs
+after bounded closure, Black Box later.

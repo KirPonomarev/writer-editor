@@ -27567,15 +27567,15 @@ const R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "8cd0aed80a73f5fff6ee8280632479582d3ef447d21ff8be5ad1b0647e6128c6"
+      "sha256": "3c7b125653f553f25ef8de1bc76f72a156f7618cb21f90af6617b5c904e4a356"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "5b1d7a026177613223f282d85716de1b695f691f43adf2d53d96c2062eb8c385"
+      "sha256": "6ebdaf2c28d0633a7e44b2e271cfcef7433bc508208e6fce19cceb629afe424e"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "19bc922065f73c9434d4bdcb5a46e8735ec7e69bd131c8fe338b0ad343ddd3fb"
+      "sha256": "027dd26d3c14fba9b2daf01a35d24baeda451970efd4236cc93df0b17e475274"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -27963,7 +27963,7 @@ const R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "db8fca70f4177b79d247fb86fce520b780884edef687b2470ce5fc713104178d"
+      "sha256": "f3678d1ab69a6215651c866a9ffd31857863633df82cc414d4723f5f04cb5981"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -27971,7 +27971,7 @@ const R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "07b9cb18da54992e5a1ca72b2216579a7b6f96f0a04c596719a8acf138ee4a59"
+      "sha256": "50d80e6bdf5e8733667db2f64deda787e8afbe6dcb75686aa295d63eb05f04ce"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -28203,7 +28203,7 @@ const R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp100-wiring-matrix.test.js",
-      "sha256": "86f37802fd8eb94f5df5731c81b85ab1379dc628ed1c63eeb875133aaf0ae689"
+      "sha256": "e58cdfbc91787a490f4d496fda0f29117785d7763224420359c310f834bd228e"
     },
     {
       "path": "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs",
@@ -28403,7 +28403,7 @@ const R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-25--pulse-local-history.md",
-      "sha256": "58a4592ffbe8bc206118f0d58b71692f8f97fb007b968a465a18bce9c52e754c"
+      "sha256": "4c8a78597dd0d28cdc610f27a3c16b287ef49bc58dc62a2fbde1f8592aeb1bfb"
     },
     {
       "path": "src/core/entitlement-law-v1.cjs",
@@ -28429,7 +28429,7 @@ const R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "2f2ff41199b5b2f30dd17023527a03fafb6b77e83b7b4bb8c11d583ea4081723"
+      "sha256": "18ba8593a6e7d5be7d13be6ed1bcc83305e89ff265ab2b594593a13b0192a158"
     }
   ]
 });

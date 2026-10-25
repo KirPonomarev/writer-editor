@@ -1,6 +1,6 @@
 # Explicit local Pulse consent and changed-scene Save history
 
-STATUS: COMPONENT_PROOFS_COMPLETE_EXACT_NATIVE_AND_DELIVERY_PENDING
+STATUS: WP100_SCANNER_COMPONENT_COMPLETE_FINAL_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One explicit local consent, actually changed existing canonical scene Save, cold history and opt-out journey. No full Pulse or Mac qualification.
 TASK_ID: YALKEN_PULSE_LOCAL_HISTORY_20261025
@@ -29,7 +29,7 @@ T: Registered renderer intent -> validated Main bridge/Kernel/current entitlemen
 H: Existing Pulse writer, codec and reader are ready but no live commands or producer exist. Two explicit FREE commands, trusted current consent projection and a bounded post-commit effect using the existing actual Save preimage should complete this journey without a new storage engine/profile/registry.
 B: Protect all105Documents, complete62event/receipt prefix, all prior Ideas/Meanings/maps/tags/facts and raw scene history, original profile markers, WP800/801/804 bytes, project transaction/SaveACK semantics, old profiles and unknown fields. One rollback/delivery chain.
 P: Whole maintained causal RED on actual registered Main/renderer then frozen GREEN; actual canonical preimage/readback/SaveACK and no-loss footprints; whole Pulse/Save negative suites and required baseline; source-bound native candidate before long baseline; normal commit/push/PR/currentCI/merge/literal merged proof.
-I: Exact base5023fd23/tree49f6e10d, registered codex branch, declared32paths, actual source/package/ASAR/profile, current window/webContents/userData/root/owner/project/scene/session/lifecycle/generation/privacy revision/digest and durable receipt.
+I: Exact base5023fd23/tree49f6e10d, registered codex branch, declared33paths, actual source/package/ASAR/profile, current window/webContents/userData/root/owner/project/scene/session/lifecycle/generation/privacy revision/digest and durable receipt.
 
 ## ARTIFACT
 
@@ -79,6 +79,7 @@ Existing appendPulseHistory receives a native labeled Enable/Disable intent with
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `test/unit/r24-ent0-entitlement-law.test.js`
 - `test/unit/r24-ent0-port-enforcement.test.js`
+- `test/unit/r24-wp100-wiring-matrix.test.js`
 - `test/unit/r24-wp307-writer-local-profile-integration.test.js`
 - `test/unit/r24-wp806-pulse-claim-integration.test.js`
 - `test/unit/r24-wp806-pulse-claim-mutants.test.js`
@@ -137,3 +138,18 @@ Normal unaccepted checkpoint8cf40c64468ba742dd28e6d32008bfe75c94161c preserves t
 Fresh ordered startup, remote main5023fd23 and clean actual-W1 declaration03/preflight admit only the existing ENT0 port test as path32;9978outside original sources remain protected. No new product outcome, runtime edit, UI change, dependency, source registry/matrix, capability, DATA/certificate membership or release pin is authorized. The exact path already belongs to DATA/current certificate/DONE. Original deliverybase5023fd23, branch, single rollback and all required proofs/delivery remain.
 
 Separate code executor first retains actual complete ENT0-file RED. Then within the first conformance case only, extract the actual named Pulse port body; retain the original calls.length===3 against Main with that exact new body removed, require exactly one product-owned tier decision inside the new port and exactly four in whole Main. All original per-function/refusal/security/tier/hostile-payload/menu/bridge/parity assertions and every other test body remain exact. Budget<=+12/-2, full inverse reconstruction required. No runtime count workaround, dropped check, skip, filter or forged packet. All8runtime sources, generated bundle and both causal integration tests remain held. Run same whole ENT0 file and complete36affected unchanged; normal current hash/inventory/governance companions follow. Current-source full GREEN/native cold/baseline/officialCI/normal delivery and literal merged verification remain mandatory; earlier failures never become passes.
+
+
+### Same PR2163: strict WP100 scanner alignment at clean C1
+
+Exact clean C1 d54d5d78cb25110f32e2b5bd3b24312598b17de3 retains the original5023 delivery base and one rollback/PR. Current complete644/644 and36file273/273 component evidence is bound to C1. Fresh packaged native warm and a new process cold preserve105 originalDocuments and62author event/receipt pairs, all unrelated bytes and complete791/793member closed archives. First native typing delivered a different phrase; its failed input and wrong-path reader findings are retained. Explicit native declaration02/preflight03 amends the scenario to one corrective native paste/Save: two actual warm changed Saves produce two rows; cold Disable then third Save preserves both entries and all nonprivacy channel bytes. Reboot full780member recovery had new physical identity and earns no cold credit itself.
+
+Draft PR2163 starts CI in parallel with the unchanged local configured baseline. Actual run40181643360 job121133766975 executes the maintained WP100 whole command:10tests5pass5fail, no cancel/skip/todo. Its test-local scanner still expects3 entitlement consultations despite the legitimate exact fourth named Pulse port guard. The unchanged full local npm-test process is explicitly terminated after this known CI failure (literal exit-15,690.533s); its buffered unit lane is not credited as executed/full green. All6 new synthetic harness files19members were fully archived/read and isolated with original inodes after all owners exited; source returns clean. No product/profile cleanup or reset.
+
+Fresh clean-C1 bootstrap, full normative/scoped factual reading, current source review and fresh origin/main5023 verification precede declaration05/preflight0. This same-task scope33 amendment releases only existing test/unit/r24-wp100-wiring-matrix.test.js to the separate code executor; task E0 precedes its edit. All8 product runtime paths, normal generated bundle, prior three behavioral test changes and the existing WP100 generation/mutants files stay exact C1. No UI design change or new service.
+
+Before editing, retain the complete current npm run test:r24-wp100 causal RED. Preserve all original guarded-channel/envelope/result/allowlist/generation/path/preload checks and the original three named ENT0 consultations/refusals. Require original3 outside the exact unique createPulseLocalHistoryPort, exact whole4, exact port1 and exact local guard1 with current product tier, correctly negated availability and actual E_PULSE_CONTEXT_STALE refusal. Only the two old whole-Main mutation-count expectations align exact+1. Append meaningful Pulse omission, inversion, refusal removal and count-preserving relocation negatives, including moving the call inside the same port but outside its guard. Missing baseline port or a decoy consultation cannot supply a false kill. Do not change product source or weaken any old predicate. Budget for this one path<=+120/-12, precise inverse review required; no new test files, filter, skip, todo or count-only proof.
+
+Then execute the same complete WP100 command, original whole mutant suite and affected Main/Pulse/ENT0/current-source gates. Root changes only current admitted hash/inventory/governance companions while preserving historical tuples, certificate/DATA membership and all17UNKNOWN/59skip/audit findings. New committed exact-head full baseline, officialRTK/provider/currentCI and normal same-PR delivery/literal merged verification remain mandatory. C1 native proof remains C1 evidence; no newer-head execution is fabricated. Full Mac remains incomplete; continue its plan after bounded closure.
+
+WP100 locator clarification: the first corrected whole12case run retains10pass2fail because the original global inversion fixture now hits the newly earlier Pulse guard. Root same-path locator ticket02 scopes the identical negation mutation to existing captureManualMapPreparationGuard; the original named assertion and all predicates remain. Corrected GREEN02 is separate and never relabels that failure.

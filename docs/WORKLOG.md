@@ -5190,3 +5190,5 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Current coherent bundle/companions, unfiltered whole GREEN, affected/source/fullbaseline, exact committed native process cold, official RTK/CI and normal full delivery remain pending. Full Mac/release not accepted; all17UNKNOWN and named skips/audit limitations retained.
 
 - Pulse reboot resume:644whole and273affected pass at their recorded source identities. Strict ENT0 first-case alignment preserves original3 plus new1tier decisions; only current mechanical hash companions refresh, no runtime/bundle change. Exact native/cold/fullbaseline/CI/normaldelivery remain pending.
+
+- Pulse PR2163: C1 native warm/cold/opt-out raw preservation completed; old WP100 test-local3-consultation scanner caused actual CI failure. Complete strict same-command scanner correction and inverse reviewed; runtime/bundle held. Aborted local baseline remains non-green; current fullbaseline/RTK/CI/normalmerge/literal-main still required.

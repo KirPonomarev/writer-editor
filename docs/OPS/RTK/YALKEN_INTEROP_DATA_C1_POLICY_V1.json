@@ -2727,15 +2727,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8cd0aed80a73f5fff6ee8280632479582d3ef447d21ff8be5ad1b0647e6128c6"
+        "sha256": "3c7b125653f553f25ef8de1bc76f72a156f7618cb21f90af6617b5c904e4a356"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5b1d7a026177613223f282d85716de1b695f691f43adf2d53d96c2062eb8c385"
+        "sha256": "6ebdaf2c28d0633a7e44b2e271cfcef7433bc508208e6fce19cceb629afe424e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "19bc922065f73c9434d4bdcb5a46e8735ec7e69bd131c8fe338b0ad343ddd3fb"
+        "sha256": "027dd26d3c14fba9b2daf01a35d24baeda451970efd4236cc93df0b17e475274"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3275,7 +3275,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "07b9cb18da54992e5a1ca72b2216579a7b6f96f0a04c596719a8acf138ee4a59"
+        "sha256": "50d80e6bdf5e8733667db2f64deda787e8afbe6dcb75686aa295d63eb05f04ce"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3459,7 +3459,7 @@
       },
       {
         "path": "test/unit/r24-wp100-wiring-matrix.test.js",
-        "sha256": "86f37802fd8eb94f5df5731c81b85ab1379dc628ed1c63eeb875133aaf0ae689"
+        "sha256": "e58cdfbc91787a490f4d496fda0f29117785d7763224420359c310f834bd228e"
       },
       {
         "path": "scripts/ops/yalken-atlas-v6-production-lifecycle.mjs",
@@ -3655,7 +3655,7 @@
       },
       {
         "path": "docs/tasks/2026-10-25--pulse-local-history.md",
-        "sha256": "58a4592ffbe8bc206118f0d58b71692f8f97fb007b968a465a18bce9c52e754c"
+        "sha256": "4c8a78597dd0d28cdc610f27a3c16b287ef49bc58dc62a2fbde1f8592aeb1bfb"
       },
       {
         "path": "src/core/pulse-claim-v1.mjs",
