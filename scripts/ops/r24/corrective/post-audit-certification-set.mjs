@@ -27291,7 +27291,7 @@ const R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "7389f2e0f8303ca339d41af44e17d50026047f719596a4532ced938b7e5280c8"
+      "sha256": "7bbc939e79f98817d173bc591f625096828ddc37cc39212562276e8d0877cd58"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -27427,7 +27427,7 @@ const R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "47e2343eef45b97eab34084d49cc42a6d912fa775fc28aa00706e9b136808056"
+      "sha256": "d956101ccb0a39dab3bc14dd50a6d2062f4bf738c56322f264351818caeb0014"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -27963,7 +27963,7 @@ const R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "b08494845b871911ace08caa839da9bd2fb3e3bc74a8298204ede2b5d7070746"
+      "sha256": "ce45dbe3e480420cc473ab78cd2ae7f5c7c8b474deab47555bb2c9f7053cc20d"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -27971,7 +27971,7 @@ const R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "0836a9b3729639cc71214b8b5ddf1b6c2f2a60091f79e5e4c6185c220dc2a250"
+      "sha256": "03d622eb40c5e63bd21c2b0d2f6d0648ad70960fafc8b12dc58a95b5f19397fe"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -28127,7 +28127,7 @@ const R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-      "sha256": "6ad954639fa5402b606d3562d9648f2e6bf5ce6f93639e0284ef1579b95b0b39"
+      "sha256": "03f5afeb9e4c1aa5186647b0d98e7403d85c68da602e8c0cae68c3767b098375"
     },
     {
       "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -28401,7 +28401,7 @@ const R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "95191c5aa722e25b81a8e6c39474f3541cb3c2dbb0061a5bb4a50d398cfdba68"
+      "sha256": "1b8e9f0f2b1779aca34348bfda8600636c96fc3fa468746ccd7501724a7ae01f"
     }
   ]
 });

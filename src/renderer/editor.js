@@ -231,6 +231,8 @@ const MANUAL_MAP_LAYOUT_MODES = Object.freeze({
   HIERARCHY: 'hierarchy-derived-presentation',
 });
 
+let ideaMeaningAuthorDrafts = new Map();
+window.addEventListener('beforeunload', guardIdeaMeaningDraftUnload, { capture: true });
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
 if (isTiptapMode) {
@@ -1170,7 +1172,6 @@ let manualMapPortabilityCommandState = {
   importMapId: '',
   lastCommandId: '',
 };
-let ideaMeaningAuthorDrafts = new Map();
 let projectionInspectorState = {
   state: 'empty',
   projectId: '',
@@ -15998,7 +15999,6 @@ function guardIdeaMeaningDraftUnload(event) {
   event.preventDefault(); event.returnValue = false; event.stopImmediatePropagation();
   updateStatusText('Закрытие отменено: сохраните или явно отмените черновики Idea и Meaning во всех проектах.', { visible: true });
 }
-window.addEventListener('beforeunload', guardIdeaMeaningDraftUnload, { capture: true });
 
 function getIdeaMeaningDetail(entry, kind) {
   return entry.provider?.projectId === entry.projectId ? entry.provider.projectionStates.find(row => row.projectionId === kind)?.details : null;

@@ -1201,7 +1201,7 @@ async function liveControlHarness() {
     'derived/mindmap/manualMapLayoutScheduler.mjs', 'derived/mindmap/manualMapListKeyboardParity.mjs', 'core/text-fold-tape-v1.mjs']) {
     Object.assign(c, await import(pathToFileURL(path.join(repoRoot, 'src', name)).href));
   }
-  const start = editor.indexOf('const MANUAL_MAP_SVG_NS ='), end = editor.indexOf('\nconst isTiptapMode =', start);
+  const start = editor.indexOf('const MANUAL_MAP_SVG_NS ='), end = editor.indexOf('\n});', editor.indexOf('const MANUAL_MAP_LAYOUT_MODES =', start)) + '\n});\n'.length;
   require('node:vm').runInContext(editor.slice(start, end), c);
   Object.assign(c, { manualMapLayoutMode: 'manual-fixed-position', manualMapLayoutGeneration: 0,
     manualMapPinnedNodeIds: new Set(), manualMapListState: { activeRowId: 'node:a' },
@@ -2675,4 +2675,76 @@ test('V11 inherits source ownership default confirmation fact IDs and selected-o
   assert.equal(Object.hasOwn(h.c.getAtlasContinuityFactPayload(), 'factId'), false);
   const reads = temporalAuthoringSurfaceHarness(); reads.c.window.__PRODUCT_PROFILE = IDEA_MEANING_PROFILE_V11; reads.c.currentAtlasSurface = 'reports';
   await reads.c.refreshAtlasProductSurfaces({ currentScene: false }); await reads.settle(); assert.deepEqual(reads.queries.map(row => row.queryId), ['query.atlasReportsSavedQueries']);
+});
+
+// Actual source registrations replayed at their startup positions; finite teardown port, not native editor proof.
+function ideaMeaningStartupUnloadDom() {
+  const h = ideaMeaningAuthorDom(), vm = require('node:vm');
+  const tiptap = fs.readFileSync(path.join(repoRoot, 'src', 'renderer', 'tiptap', 'index.js'), 'utf8');
+  const initAt = editor.indexOf('\n  initTiptap(editor, {'), mapSource = 'let ideaMeaningAuthorDrafts = new Map();';
+  const mapAt = editor.indexOf(mapSource), guard = editor.match(/window\.addEventListener\('beforeunload', guardIdeaMeaningDraftUnload, \{ capture: true \}\);/u);
+  const teardown = tiptap.match(/window\.addEventListener\('beforeunload', \(\) => \{\n      destroyCurrentEditor\(\)\n    \}\)/u);
+  const initStart = tiptap.indexOf('export function initTiptap('), initEnd = tiptap.indexOf('\nexport function destroyTiptap(', initStart);
+  assert.ok(initAt > 0 && mapAt > 0 && guard && teardown && initEnd > initStart);
+  assert.equal(editor.indexOf(mapSource, mapAt + 1), -1, 'single actual lexical draft initializer');
+  assert.equal(editor.indexOf('\n  initTiptap(editor, {', initAt + 1), -1, 'single actual initial Tiptap call');
+  assert.ok(teardown.index > initStart && teardown.index < initEnd, 'teardown registration belongs to actual initTiptap');
+  assert.ok(h.initializers.includes('ideaMeaningAuthorDrafts'), 'actual draft initializer was evaluated');
+  const target = new EventTarget(), scene = h.document.createElement('div');
+  scene.textContent = h.working(); h.document.body.append(scene); let destroyed = 0;
+  h.c.destroyCurrentEditor = () => { destroyed++; scene.remove(); };
+  h.c.window.addEventListener = target.addEventListener.bind(target);
+  for (const registration of [{ index: initAt, source: teardown[0] }, { index: guard.index, source: guard[0] }].sort((a, b) => a.index - b.index))
+    vm.runInContext(registration.source + ';', h.c);
+  const fireStartupUnload = () => { const event = new Event('beforeunload', { cancelable: true });
+    return { allowed: target.dispatchEvent(event), event }; };
+  const drafts = () => vm.runInContext('JSON.stringify([...ideaMeaningAuthorDrafts].map(([id, entry]) => [id, { fields: entry.fields, revision: entry.revision, intents: entry.intents, pending: entry.pending }]))', h.c);
+  return { ...h, scene, destroyed: () => destroyed, fireStartupUnload, drafts, initAt, mapAt, guardAt: guard.index };
+}
+
+test('V11 dirty and pending authoring veto actual startup teardown while clean discard permits it [FINITE_EVENT_TARGET]', async t => {
+  for (const mode of ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation', 'pending', 'foreign-project'])
+    await t.test(mode, async () => {
+      const h = ideaMeaningStartupUnloadDom(); let pending;
+      if (mode === 'pending') {
+        await h.input('ideaTitle', 'Pending author é 🧭'); pending = h.deferred(); h.c.commandPort = () => pending.promise;
+        await h.button('idea-create').emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+        await h.input('ideaTitle', '');
+        assert.equal(require('node:vm').runInContext('getIdeaMeaningAuthorDraft().pending.active', h.c), true);
+        assert.equal(require('node:vm').runInContext("Object.values(getIdeaMeaningAuthorDraft().fields).some(Boolean)", h.c), false, 'pending alone blocks unload');
+      } else if (mode === 'foreign-project') {
+        await h.input('ideaTitle', 'Hidden project author é 🧭'); h.c.currentProjectId = 'project-b'; h.render();
+        assert.equal(h.field('ideaTitle').value, '');
+      } else await h.input(mode, 'Unsaved author é 🧭');
+      const title = h.field('ideaTitle'), focus = h.field(mode.endsWith('Title') || mode.endsWith('Summary') || mode.endsWith('Interpretation') ? mode : 'ideaTitle');
+      focus.focus(); focus.setSelectionRange(Math.min(2, focus.value.length), Math.min(6, focus.value.length), 'backward');
+      const before = { title: title.value, value: focus.value, caret: [focus.selectionStart, focus.selectionEnd, focus.selectionDirection],
+        draft: h.drafts(), manuscript: h.working(), scene: h.scene.textContent, commands: h.commands.length, queries: h.queries.length,
+        disconnects: [title.disconnects, focus.disconnects], writes: [title.valueWrites, focus.valueWrites] };
+      try {
+        const result = h.fireStartupUnload();
+        t.diagnostic(JSON.stringify({ mode, destroyed: h.destroyed(), sceneConnected: h.scene.isConnected, allowed: result.allowed,
+          defaultPrevented: result.event.defaultPrevented, title: title.value, draftPreserved: h.drafts() === before.draft }));
+        assert.equal(h.scene.isConnected, true, 'cancelled Quit must not dispose the scene editor'); assert.equal(h.destroyed(), 0);
+        assert.equal(result.allowed, false); assert.equal(result.event.defaultPrevented, true); assert.equal(result.event.returnValue, false);
+        assert.equal(h.field('ideaTitle'), title); assert.equal(title.isConnected, true); assert.equal(focus.isConnected, true);
+        assert.equal(title.value, before.title); assert.equal(focus.value, before.value); assert.equal(h.document.activeElement, focus);
+        assert.deepEqual([focus.selectionStart, focus.selectionEnd, focus.selectionDirection], before.caret);
+        assert.deepEqual([title.disconnects, focus.disconnects], before.disconnects); assert.deepEqual([title.valueWrites, focus.valueWrites], before.writes);
+        assert.equal(h.drafts(), before.draft); assert.equal(h.working(), before.manuscript); assert.equal(h.scene.textContent, before.scene);
+        assert.equal(h.commands.length, before.commands, 'unload sends no command'); assert.equal(h.queries.length, before.queries);
+        assert.match(h.statuses.at(-1).value, /Закрытие отменено/u);
+      } finally { if (pending) { pending.resolve({ ok: false, reason: 'OWNED_TEST_REFUSAL' }); await h.settle(); } }
+    });
+  for (const mode of ['clean', 'explicit-discard']) await t.test(mode, async () => {
+    const h = ideaMeaningStartupUnloadDom();
+    if (mode === 'explicit-discard') { await h.input('ideaTitle', 'Explicitly discarded author prose'); await h.click('idea-discard'); }
+    const before = h.drafts(), manuscript = h.working(), result = h.fireStartupUnload();
+    assert.equal(result.allowed, true); assert.equal(result.event.defaultPrevented, false); assert.equal(h.destroyed(), 1); assert.equal(h.scene.isConnected, false);
+    assert.equal(h.drafts(), before); assert.equal(h.working(), manuscript); assert.equal(h.commands.length, 0);
+  });
+  await t.test('actual initializer and guard precede the initial editor lifecycle registration', () => {
+    const h = ideaMeaningStartupUnloadDom(); h.fireStartupUnload(); assert.equal(h.destroyed(), 1, 'clean control actually reaches original teardown');
+    assert.ok(h.mapAt < h.guardAt && h.guardAt < h.initAt, 'initialize author state and register its veto before initTiptap');
+  });
 });
