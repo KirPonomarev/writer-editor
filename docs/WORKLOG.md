@@ -1,3 +1,12 @@
+## 2026-10-25 — Canonical logo, isolated visual integration
+
+TASK_ID: YALKEN_CANONICAL_LOGO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_AND_ASSET_CHECKED_DELIVERY_PENDING
+BINDING_BASE_SHA: f6601801a9b584cd1caeb60a7f643a59f70adf55
+
+Direct owner request selects the original narrow Y mark, excluding 3270/font experiments. Only the existing 18px titlebar graphic and app icon assets change; system title, authoring, identity activation and all other layout/behavior remain unchanged. Both PNGs and the initial ICNS match the approved pack byte-for-byte. Native sips/iconutil regeneration preserves the decoded1024 master pixels and exact source PNG, without the former contrast/black padding or unavailable app-builder-bin. Whole WP3089 and7authority mutants pass under pinned Node22.12; renderer generation leaves tracked bundles unchanged, OSS policy and agent guardrails pass. Initial package readback detected only a concurrently completed asset README update, so it is not accepted as a full current-source package. Fresh exact package/native appearance, ordinary PR/CI/merge and exact-merged verification remain required. This does not accept other development WIP or Mac release qualifications.
+
 ## 2026-10-25 — Native Undo integration with accepted Settings summary fix
 
 TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025

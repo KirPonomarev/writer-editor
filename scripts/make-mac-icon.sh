@@ -3,9 +3,6 @@ set -euo pipefail
 
 src_path="${1:-src/renderer/assets/logo.png}"
 out_dir="${2:-build}"
-background="000000"
-inner_size=940
-contrast="1.35"
 
 if [[ ! -f "$src_path" ]]; then
   echo "Logo not found: $src_path" >&2
@@ -13,48 +10,47 @@ if [[ ! -f "$src_path" ]]; then
   exit 1
 fi
 
-if ! command -v sips >/dev/null 2>&1; then
-  echo "sips not found (macOS required)." >&2
-  exit 1
-fi
+node - "$src_path" <<'NODE'
+const fs = require('node:fs');
+const source = fs.readFileSync(process.argv[2]);
+if (source.length < 24 || source.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a'
+    || source.readUInt32BE(16) !== 1024 || source.readUInt32BE(20) !== 1024) {
+  throw new Error('Canonical app icon source must be a prepared 1024x1024 PNG.');
+}
+NODE
 
-app_builder=$(node -p "require('app-builder-bin').appBuilderPath" 2>/dev/null || true)
-if [[ -z "$app_builder" || ! -x "$app_builder" ]]; then
-  echo "app-builder not found (install dependencies first)." >&2
-  exit 1
-fi
+for tool in sips iconutil; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    echo "$tool not found (macOS required)." >&2
+    exit 1
+  fi
+done
 
-mkdir -p "$out_dir"
-rm -f "$out_dir/icon.png" "$out_dir/icon.public.png" "$out_dir/icon.icns" >/dev/null 2>&1 || true
-rm -rf "$out_dir/icon.iconset" >/dev/null 2>&1 || true
-temp_icon="$out_dir/icon.source.png"
-contrast_icon="$out_dir/icon.contrast.png"
-rm -f "$temp_icon" >/dev/null 2>&1 || true
-rm -f "$contrast_icon" >/dev/null 2>&1 || true
-
-sips -Z "$inner_size" "$src_path" --out "$temp_icon" >/dev/null
-node scripts/contrast-png.js "$temp_icon" "$contrast_icon" "$contrast"
-sips -p 1024 1024 --padColor "$background" "$contrast_icon" --out "$out_dir/icon.png" >/dev/null
-rm -f "$temp_icon" "$contrast_icon" >/dev/null 2>&1 || true
-
-icon_png="$out_dir/icon.png"
-icns_path="$out_dir/icon.icns"
-
-if [[ ! -f "$icon_png" ]]; then
-  echo "Failed to render $icon_png" >&2
-  exit 1
-fi
-
+# Preserve the approved source pixels, alpha and colors exactly.
 temp_dir=$(mktemp -d)
-cp -f "$icon_png" "$temp_dir/icon.png"
-"$app_builder" icon --input "$temp_dir/icon.png" --format icns --out "$temp_dir" >/dev/null
+trap 'rm -rf "$temp_dir"' EXIT
+cp -f "$src_path" "$temp_dir/icon.png"
+iconset_path="$temp_dir/icon.iconset"
+mkdir "$iconset_path"
+for size in 16 32 128 256 512; do
+  sips --resampleHeightWidth "$size" "$size" "$temp_dir/icon.png" \
+    --out "$iconset_path/icon_${size}x${size}.png" >/dev/null
+  retina_size=$((size * 2))
+  if [[ "$retina_size" -eq 1024 ]]; then
+    cp -f "$temp_dir/icon.png" "$iconset_path/icon_${size}x${size}@2x.png"
+  else
+    sips --resampleHeightWidth "$retina_size" "$retina_size" "$temp_dir/icon.png" \
+      --out "$iconset_path/icon_${size}x${size}@2x.png" >/dev/null
+  fi
+done
+iconutil --convert icns --output "$temp_dir/icon.icns" "$iconset_path"
 if [[ ! -f "$temp_dir/icon.icns" ]]; then
-  rm -rf "$temp_dir"
-  echo "Failed to render $icns_path" >&2
+  echo "Failed to render icon.icns" >&2
   exit 1
 fi
-cp -f "$temp_dir/icon.icns" "$icns_path"
-rm -rf "$temp_dir"
+mkdir -p "$out_dir"
+cp -f "$temp_dir/icon.png" "$out_dir/icon.png"
+cp -f "$temp_dir/icon.icns" "$out_dir/icon.icns"
 
 echo "Wrote $out_dir/icon.png"
 echo "Wrote $out_dir/icon.icns"

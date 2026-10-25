@@ -124,6 +124,7 @@
   --brand-mark-bg: #173b34;
   --brand-mark-ink: #ffffff;
   --brand-mark-accent: #b74636;
+  --brand-canonical-mark-ink: #4c4a45;
   --brand-focus-ring: #005fcc;
 }
 
@@ -184,6 +185,7 @@ body.dark-theme {
   --brand-mark-bg: #d7eee6;
   --brand-mark-ink: #102c26;
   --brand-mark-accent: #ff8b74;
+  --brand-canonical-mark-ink: #f2ede6;
   --brand-focus-ring: #9bc3ff;
 }
 
@@ -281,21 +283,13 @@ body {
   display: block;
   flex: 0 0 var(--brand-mark-size);
   overflow: hidden;
-  border-radius: var(--brand-mark-radius);
-  background: var(--brand-mark-bg);
-  color: var(--brand-mark-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--brand-canonical-mark-ink);
 }
 
-.brand-lockup__page {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.25;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.brand-lockup__accent {
-  fill: var(--brand-mark-accent);
+.brand-lockup__symbol {
+  fill: currentColor;
 }
 
 .brand-lockup__wordmark {
@@ -313,14 +307,9 @@ body {
 
 @media (forced-colors: active) {
   .brand-lockup__mark {
-    border: 1px solid CanvasText;
-    background: CanvasText;
-    color: Canvas;
+    background: transparent;
+    color: CanvasText;
     forced-color-adjust: auto;
-  }
-
-  .brand-lockup__accent {
-    fill: Canvas;
   }
 
   .brand-lockup__wordmark {
