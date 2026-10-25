@@ -2748,3 +2748,195 @@ test('V11 dirty and pending authoring veto actual startup teardown while clean d
     assert.ok(h.mapAt < h.guardAt && h.guardAt < h.initAt, 'initialize author state and register its veto before initTiptap');
   });
 });
+
+const SCENE_LANGUAGE_PROFILE_V12 = 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12';
+function sceneLanguageFiniteRefusal(reason) {
+  return { ok: false, error: { code: 'E_PRODUCT_COMMAND_REFUSED', op: 'atlas.languageTag.set', reason } };
+}
+function sceneLanguageDom(profileId = SCENE_LANGUAGE_PROFILE_V12) {
+  const h = ideaMeaningAuthorDom(), c = h.c, vm = require('node:vm');
+  const initializers = [...editor.matchAll(/^(?:let|const) (\w*(?:[Ss]ceneLanguage|SCENE_LANGUAGE)\w*) = /gm)];
+  for (const match of initializers) {
+    const end = editor.indexOf(';\n', match.index); assert.ok(end > match.index && end - match.index < 12000, match[1]);
+    vm.runInContext(editor.slice(match.index, end + 1), c);
+  }
+  const names = [...editor.matchAll(/^(?:async )?function (\w*[Ss]ceneLanguage\w*)\(/gm)].map(match => match[1]);
+  if (names.length) h.loadActual(...names);
+  if (profileId === undefined) delete c.window.__PRODUCT_PROFILE; else c.window.__PRODUCT_PROFILE = profileId;
+  c.currentAtlasSurface = 'journey';
+  let detail = { state: 'empty', reason: '', matchingCount: 0, manifestRevision: 'sha256:' + 'a'.repeat(64),
+    sceneRevision: 'sha256:' + 'b'.repeat(64), tag: null };
+  const projection = () => ({ ...structuredClone(h.selectionProjection), projectId: c.currentProjectId,
+    sceneId: c.currentDocumentId, sceneLanguageTag: structuredClone(detail) });
+  const basePort = c.queryPort;
+  c.queryPort = request => request.row[2] === 'atlasCurrentScene' ? { ok: true, atlasCurrentScene: projection() } : basePort(request);
+  const publish = value => { if (value) detail = structuredClone(value); c.atlasCurrentSceneState = c.normalizeAtlasCurrentSceneDossier(projection()); c.renderAtlasJourneyState(); };
+  const field = () => h.walk(c.atlasJourneyHost).find(node => node.dataset.sceneLanguageField === 'languageCode');
+  const button = action => h.walk(c.atlasJourneyHost).find(node => node.dataset.sceneLanguageAction === action);
+  const input = async value => { const node = field(); assert.ok(node, 'actual V12 language form is missing'); node.value = value; await node.emit('input'); await h.settle(); return node; };
+  const click = async action => { const node = button(action); assert.ok(node, 'actual V12 language button ' + action);
+    assert.equal(node.disabled, false); const count = h.commands.length; await node.emit('click'); await h.settle(); return h.commands[count]; };
+  const unload = [], registration = editor.match(/window\.addEventListener\(['"]beforeunload['"],\s*(\w*[Ss]ceneLanguage\w*)\s*(?:,\s*\{[^{}]*\})?\s*\)/u);
+  c.window.addEventListener = (type, callback) => { if (type === 'beforeunload') unload.push(callback); };
+  if (registration) { assert.equal(typeof c[registration[1]], 'function'); vm.runInContext(registration[0] + ';', c); }
+  const fireUnload = () => { const event = { defaultPrevented: false, returnValue: undefined, stopped: false,
+    preventDefault() { this.defaultPrevented = true; }, stopImmediatePropagation() { this.stopped = true; } }; unload.forEach(fn => fn(event)); return event; };
+  const draft = () => { assert.equal(typeof c.getSceneLanguageAuthorDraft, 'function', 'actual lexical draft entrypoint required');
+    const entry = vm.runInContext('getSceneLanguageAuthorDraft()', c); assert.ok(entry.fields && typeof entry.fields === 'object', 'actual owned language fields');
+    return vm.runInContext('JSON.stringify({ fields: getSceneLanguageAuthorDraft().fields, revision: getSceneLanguageAuthorDraft().revision })', c); };
+  publish(); return { ...h, field, button, input, click, publish, detail: () => structuredClone(detail), fireUnload, draft,
+    helpers: names, initializers: initializers.map(match => match[1]), registration, projection };
+}
+
+test('V12 actual Flow language controls are labeled and retain connected native input caret with zero typing queries [FINITE_DOM]', async () => {
+  const h = sceneLanguageDom(); assert.ok(h.helpers.includes('getSceneLanguageAuthorForm'), 'missing actual language author form');
+  const node = await h.input('ru-RU');
+  assert.ok(h.walk(h.c.atlasJourneyHost).some(label => label.tagName === 'LABEL' && (label.contains(node) || label.htmlFor === node.id)), 'native language label');
+  assert.match(h.c.atlasJourneyHost.textContent, /Язык сцены/u); assert.equal(h.button('set').disabled, false); assert.equal(h.button('clear').disabled, true);
+  node.focus(); node.setSelectionRange(1, 4, 'backward'); const before = { writes: node.valueWrites, disconnects: node.disconnects, queries: h.queries.length };
+  await node.emit('input'); assert.equal(h.queries.length, before.queries); h.render();
+  await h.c.refreshAtlasCurrentScene({ force: true }); h.render();
+  assert.equal(h.field(), node); assert.equal(node.isConnected, true); assert.equal(node.disconnects, before.disconnects);
+  assert.equal(node.valueWrites, before.writes); assert.equal(h.document.activeElement, node);
+  assert.deepEqual([node.selectionStart, node.selectionEnd, node.selectionDirection], [1, 4, 'backward']);
+  assert.equal(node.value, 'ru-RU'); assert.equal(h.commands.length, 0); assert.equal(h.working(), SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT);
+});
+
+test('V12 language Enter uses explicit bound intent without renderer UUID or authority hints [FINITE_DOM_NO_CORE_CREDIT]', async () => {
+  const h = sceneLanguageDom(); h.c.commandPort = () => sceneLanguageFiniteRefusal('OWNED_KEYBOARD_REFUSAL');
+  const node = await h.input('en-US'); h.c.crypto = undefined;
+  await node.emit('keydown', { key: 'Enter' }); await h.settle(); assert.equal(h.commands.length, 1);
+  assert.equal(h.commands[0].id, 'atlas.languageTag.set'); assert.equal(h.commands[0].payload.languageCode, 'en-US');
+  for (const key of ['tagId', 'tier', 'capabilities', 'profileId', 'path']) assert.equal(Object.hasOwn(h.commands[0].payload, key), false);
+  assert.equal(node.value, 'en-US'); assert.doesNotMatch(h.c.getSceneLanguageAuthorForm().textContent, /sha256:|[a-f0-9]{64}/u);
+});
+
+test('V12 actual producer sends only bound current scene intent and uses exact saved custom ID for replacement and clear [FINITE_DOM_NO_CORE_CREDIT]', async () => {
+  const h = sceneLanguageDom(); h.c.commandPort = () => sceneLanguageFiniteRefusal('OWNED_RETAINED_REFUSAL');
+  await h.input('ru-RU'); const initial = await h.click('set');
+  assert.equal(initial.id, 'atlas.languageTag.set'); assert.equal(initial.payload.scopeKind, 'scene'); assert.equal(initial.payload.projectId, 'project-a');
+  assert.equal(initial.payload.sceneId, 'scene-a'); assert.equal(initial.payload.languageCode, 'ru-RU');
+  assert.equal(initial.payload.expectedManifestRevision, h.detail().manifestRevision); assert.equal(initial.payload.expectedSceneRevision, h.detail().sceneRevision);
+  assert.equal(Object.hasOwn(initial.payload, 'tagId'), false); assert.equal(Object.hasOwn(initial.payload, 'expectedTagHash'), false);
+  assert.equal(h.field().value, 'ru-RU'); assert.equal(h.button('clear').disabled, true, 'failed intent never creates saved tag');
+  const ready = { ...h.detail(), state: 'ready', matchingCount: 1, tag: { id: 'custom-saved-scene-id', languageCode: 'de-DE', recordHash: 'c'.repeat(64) } };
+  h.publish(ready); await h.input('en-US'); const replacement = await h.click('set'), clear = await h.click('clear');
+  for (const request of [replacement, clear]) {
+    assert.equal(request.payload.tagId, ready.tag.id); assert.equal(request.payload.expectedTagHash, ready.tag.recordHash);
+    assert.equal(request.payload.expectedManifestRevision, ready.manifestRevision); assert.equal(request.payload.expectedSceneRevision, ready.sceneRevision);
+    assert.equal(request.payload.sceneId, 'scene-a'); assert.equal(request.payload.scopeKind, 'scene');
+  }
+  assert.equal(clear.id, 'atlas.languageTag.clear'); assert.equal(replacement.payload.languageCode, 'en-US');
+  assert.equal(h.field().value, 'en-US'); assert.match(h.c.atlasJourneyHost.textContent, /de-DE/u, 'saved readback remains distinct from unsaved replacement');
+});
+
+test('V12 unavailable ambiguous stale dirty and detached contexts cannot dispatch language edits [FINITE_DOM]', async t => {
+  for (const mode of ['unavailable', 'ambiguous', 'missing-detail', 'foreign-project', 'foreign-scene', 'dirty', 'unacked']) await t.test(mode, async () => {
+    const h = sceneLanguageDom(); await h.input('ru-RU'); const old = h.button('set');
+    if (['unavailable', 'ambiguous'].includes(mode)) h.publish({ ...h.detail(), state: mode, reason: 'Reload the saved scene', matchingCount: mode === 'ambiguous' ? 2 : 0, tag: null });
+    if (mode === 'missing-detail') { const source = h.projection(); delete source.sceneLanguageTag; h.c.atlasCurrentSceneState = h.c.normalizeAtlasCurrentSceneDossier(source); h.render(); }
+    if (mode === 'foreign-project') h.c.currentProjectId = 'project-b'; if (mode === 'foreign-scene') h.c.currentDocumentId = 'scene-b';
+    if (mode === 'dirty') h.c.localDirty = true; if (mode === 'unacked') h.c.localEditGeneration++;
+    h.render(); await old.emit('click'); await h.settle(); assert.equal(h.commands.length, 0);
+    assert.equal(h.button('set').disabled, true); assert.equal(h.button('clear').disabled, true);
+  });
+});
+
+test('V12 pending doubleclick failure retry and forged receipt never invent saved language state [FINITE_DOM]', async t => {
+  const h = sceneLanguageDom(); await h.input('ru-RU'); const response = h.deferred(); h.c.commandPort = () => response.promise;
+  const node = h.field(), button = h.button('set'); await button.emit('click'); await button.emit('click'); await h.settle();
+  assert.equal(h.commands.length, 1); assert.equal(h.button('set').disabled, true); assert.equal(h.button('clear').disabled, true);
+  assert.equal(h.fireUnload().defaultPrevented, true); response.resolve(sceneLanguageFiniteRefusal('OWNED_LANGUAGE_REFUSAL')); await h.settle();
+  assert.equal(h.field(), node); assert.equal(node.value, 'ru-RU'); assert.equal(h.button('set').disabled, false);
+  h.c.commandPort = () => sceneLanguageFiniteRefusal('OWNED_LANGUAGE_REFUSAL'); const retry = await h.click('set');
+  assert.deepEqual(retry.payload, h.commands[0].payload); assert.equal(h.button('clear').disabled, true);
+  for (const result of [{ ok: true }, { ok: true, value: { performed: true } }, { ok: true, value: { performed: true, commandAuthority: 'CommandKernel',
+    commandId: 'atlas.languageTag.set', result: { ok: true, receipt: { schemaVersion: 'command-kernel.receipt.v1', commandId: 'atlas.languageTag.set',
+      status: 'APPLIED', capabilityRevalidated: true, storageWritten: false } } } }]) await t.test('forged ' + JSON.stringify(result), async () => {
+    const next = sceneLanguageDom(); await next.input('en-US'); next.c.commandPort = () => result; await next.click('set');
+    assert.equal(next.field().value, 'en-US'); assert.equal(next.button('clear').disabled, true); assert.equal(next.fireUnload().defaultPrevented, true);
+  });
+});
+
+for (const fault of ['project', 'scene', 'surface', 'generation', 'draft']) test('V12 delayed language completion preserves newer ' + fault + ' state [FINITE_DOM_NO_CORE_CREDIT]', async () => {
+  const h = sceneLanguageDom(); await h.input('ru-RU'); const response = h.deferred(); h.c.commandPort = () => response.promise;
+  await h.button('set').emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+  if (fault === 'project') h.c.currentProjectId = 'project-b'; if (fault === 'scene') h.c.currentDocumentId = 'scene-b';
+  if (fault === 'surface') h.c.currentAtlasSurface = 'entity'; if (fault === 'generation') h.c.localEditGeneration++;
+  if (fault === 'draft') await h.input('en-US'); h.render();
+  const node = h.field(), value = node.value, draft = h.draft(), queries = h.queries.length;
+  h.statuses.push({ value: 'new language presentation' }); const result = h.appliedResponse();
+  result.value.commandId = 'atlas.languageTag.set'; result.value.result.receipt.commandId = 'atlas.languageTag.set';
+  response.resolve(result); await h.settle(); await h.settle();
+  assert.equal(h.field(), node); assert.equal(node.value, value); assert.equal(h.queries.length, queries);
+  assert.equal(h.draft(), draft); assert.equal(h.statuses.at(-1).value, 'new language presentation'); assert.equal(h.commands.length, 1);
+});
+
+test('V12 stale saved-language query cannot replace a newer draft or scene presentation [FINITE_DOM]', async () => {
+  const h = sceneLanguageDom(); await h.input('ru-RU'); const response = h.deferred(), previous = h.c.queryPort;
+  h.c.queryPort = request => request.row[2] === 'atlasCurrentScene' ? response.promise : previous(request);
+  const pending = h.c.refreshAtlasCurrentScene({ force: true }); await h.input('en-US');
+  const node = h.field(), draft = h.draft(); response.resolve({ ok: true, atlasCurrentScene: h.projection() }); await pending; await h.settle();
+  assert.equal(h.field(), node); assert.equal(node.value, 'en-US'); assert.equal(h.draft(), draft);
+  assert.equal(h.commands.length, 0);
+});
+
+test('V12 per-project and per-scene draft discard owns only its input and preserves hidden dirty work [FINITE_DOM]', async () => {
+  const h = sceneLanguageDom(); await h.input('ru-RU'); const old = h.button('set');
+  h.c.currentDocumentId = 'scene-b'; h.render(); assert.equal(h.field().value, ''); await h.input('en-US');
+  h.c.currentProjectId = 'project-b'; h.render(); assert.equal(h.field().value, ''); await h.input('de-DE');
+  await old.emit('click'); await h.settle(); assert.equal(h.commands.length, 0, 'detached old listener cannot dispatch a newly mounted draft');
+  h.c.currentProjectId = 'project-a'; h.c.currentDocumentId = 'scene-a'; h.render(); assert.equal(h.field().value, 'ru-RU');
+  const manuscript = h.working(); await h.click('discard'); assert.equal(h.field().value, ''); assert.equal(h.fireUnload().defaultPrevented, true);
+  h.c.currentDocumentId = 'scene-b'; h.render(); assert.equal(h.field().value, 'en-US'); await h.click('discard'); assert.equal(h.fireUnload().defaultPrevented, true);
+  h.c.currentProjectId = 'project-b'; h.render(); assert.equal(h.field().value, 'de-DE'); await h.click('discard'); assert.equal(h.fireUnload().defaultPrevented, false);
+  assert.equal(h.working(), manuscript); assert.equal(h.commands.length, 0);
+});
+
+test('V12 language author guard precedes actual Tiptap destruction and preserves clean discard semantics [FINITE_EVENT_TARGET]', async t => {
+  for (const mode of ['dirty', 'pending', 'foreign-project', 'clean', 'discard']) await t.test(mode, async () => {
+    const h = sceneLanguageDom(), vm = require('node:vm'), tiptap = fs.readFileSync(path.join(repoRoot, 'src/renderer/tiptap/index.js'), 'utf8');
+    assert.ok(h.registration, 'actual beforeunload registration required');
+    const initAt = editor.indexOf('\n  initTiptap(editor, {'), teardown = tiptap.match(/window\.addEventListener\('beforeunload', \(\) => \{\n      destroyCurrentEditor\(\)\n    \}\)/u);
+    assert.ok(initAt > 0 && teardown); const target = new EventTarget(), scene = h.document.createElement('div'); h.document.body.append(scene); let destroyed = 0;
+    h.c.destroyCurrentEditor = () => { destroyed++; scene.remove(); }; h.c.window.addEventListener = target.addEventListener.bind(target);
+    for (const row of [{ index: initAt, source: teardown[0] }, { index: h.registration.index, source: h.registration[0] }].sort((a, b) => a.index - b.index)) vm.runInContext(row.source + ';', h.c);
+    let pending;
+    if (mode !== 'clean') await h.input('ru-RU');
+    if (mode === 'pending') { pending = h.deferred(); h.c.commandPort = () => pending.promise; await h.button('set').emit('click'); await h.settle(); await h.input(''); }
+    if (mode === 'foreign-project') { h.c.currentProjectId = 'project-b'; h.render(); }
+    if (mode === 'discard') await h.click('discard');
+    const node = h.field(); node.focus(); node.setSelectionRange(0, node.value.length, 'backward');
+    const before = { value: node.value, draft: h.draft(), queries: h.queries.length, commands: h.commands.length, writes: node.valueWrites, disconnects: node.disconnects };
+    try {
+      const event = new Event('beforeunload', { cancelable: true }), allowed = target.dispatchEvent(event), veto = !['clean', 'discard'].includes(mode);
+      assert.equal(allowed, !veto); assert.equal(event.defaultPrevented, veto); assert.equal(destroyed, veto ? 0 : 1); assert.equal(scene.isConnected, veto);
+      assert.equal(h.draft(), before.draft); assert.equal(h.field(), node); assert.equal(node.value, before.value);
+      assert.equal(h.queries.length, before.queries); assert.equal(h.commands.length, before.commands);
+      if (veto) { assert.equal(h.document.activeElement, node); assert.equal(node.valueWrites, before.writes); assert.equal(node.disconnects, before.disconnects); }
+      assert.ok(h.registration.index < initAt, 'author veto registers before the original destructor');
+    } finally { if (pending) { pending.resolve(sceneLanguageFiniteRefusal('OWNED_TEST_REFUSAL')); await h.settle(); } }
+  });
+});
+
+test('V12 inherits saved source selection canonical confirmation fact identity Idea form and on-demand readers [FINITE_DOM]', async () => {
+  const h = sceneLanguageDom(); await h.pick(); const source = structuredClone(h.c.atlasJourneyDraft);
+  assert.ok(h.walk(h.c.atlasJourneyHost).some(node => node.dataset.ideaMeaningField === 'ideaTitle'), 'V11 author form remains available');
+  const select = h.walk(h.c.atlasJourneyHost).find(node => node.dataset.atlasJourneyField === 'sourceEntityId');
+  select.value = 'beacon'; await select.emit('change'); await h.settle(); assert.equal(h.c.atlasJourneyDraft.sourceEntityId, 'beacon');
+  await h.target('mira-25'); const confirm = h.walk(h.c.atlasJourneyHost).find(node => node.dataset.atlasJourneyAction === 'confirm-mention');
+  await confirm.emit('click'); await h.settle(); assert.equal(Object.hasOwn(h.commands.at(-1).payload, 'decisionId'), false);
+  for (const key of ['decisionId', 'decisionEvidenceAnchor', 'reattachmentSource', 'reattachmentContext']) assert.deepEqual(structuredClone(h.c.atlasJourneyDraft[key]), source[key]);
+  h.loadActual('getAtlasContinuityFactPayload', 'ensureAtlasSurfaceDraftId');
+  h.c.atlasContinuityAuthorDraft = { ledgerKind: 'promise', entityId: 'mira', mentionId: 'mira-25', factLabel: 'V12 retained', factValue: 'Kept', promiseState: 'open' };
+  assert.equal(Object.hasOwn(h.c.getAtlasContinuityFactPayload(), 'factId'), false);
+  const reads = temporalAuthoringSurfaceHarness(); reads.c.window.__PRODUCT_PROFILE = SCENE_LANGUAGE_PROFILE_V12; reads.c.currentAtlasSurface = 'reports';
+  await reads.c.refreshAtlasProductSurfaces({ currentScene: false }); await reads.settle(); assert.deepEqual(reads.queries.map(row => row.queryId), ['query.atlasReportsSavedQueries']);
+});
+
+test('language form stays absent for legacy near absent and windowless hints without changing old entrypoints [FINITE_DOM]', () => {
+  for (const id of ['WRITER_LOCAL_V1', IDEA_MEANING_PROFILE_V11, SCENE_LANGUAGE_PROFILE_V12 + '.extra', ' ' + SCENE_LANGUAGE_PROFILE_V12, '']) {
+    const h = sceneLanguageDom(id); assert.equal(h.field(), undefined); assert.equal(h.button('set'), undefined); assert.equal(h.commands.length, 0);
+  }
+  const h = sceneLanguageDom(''); delete h.c.window; assert.doesNotThrow(() => h.c.renderAtlasJourneyState()); assert.equal(h.field(), undefined);
+});

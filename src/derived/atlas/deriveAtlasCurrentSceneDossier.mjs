@@ -270,6 +270,36 @@ function unavailable(projectId, sceneId, sceneTitle, reason, error = null) {
   };
 }
 
+function sceneLanguageTagDetail(project, projectId, sceneId, readIssue) {
+  const manifestRevision = plainString(project?.manifestRevision), sceneRevision = plainString(project?.scenes?.[sceneId]?.sceneRevision);
+  const detail = { state: 'empty', reason: '', matchingCount: 0, manifestRevision, sceneRevision, tag: null };
+  const blocked = reason => ({ ...detail, state: 'unavailable', reason });
+  if (readIssue || !/^sha256:[a-f0-9]{64}$/u.test(manifestRevision) || !/^sha256:[a-f0-9]{64}$/u.test(sceneRevision)) {
+    return blocked(readIssue || 'SCENE_LANGUAGE_REVISION_UNAVAILABLE');
+  }
+  if (!Object.hasOwn(project || {}, 'atlas')) return detail;
+  const atlas = project.atlas;
+  if (!isPlainObject(atlas) || atlas.schemaVersion !== 'atlas.author.v1' || !isPlainObject(atlas.entities)) return blocked('SCENE_LANGUAGE_ATLAS_UNAVAILABLE');
+  if (!Object.hasOwn(atlas, 'languageTags')) return detail;
+  if (!isPlainObject(atlas.languageTags)) return blocked('SCENE_LANGUAGE_BUCKET_UNAVAILABLE');
+  if (!Object.hasOwn(atlas.languageTags, 'scenes')) return detail;
+  const scenes = atlas.languageTags.scenes;
+  if (!isPlainObject(scenes)) return blocked('SCENE_LANGUAGE_BUCKET_UNAVAILABLE');
+  const matching = [];
+  for (const [id, record] of Object.entries(scenes)) {
+    if (!isPlainObject(record) || record.schemaVersion !== 'atlas.languageTag.v1' || record.id !== id || !id || id !== id.trim() || id.length > 1000
+      || record.projectId !== projectId || record.scopeKind !== 'scene' || typeof record.sceneId !== 'string' || !record.sceneId || record.sceneId !== record.sceneId.trim() || record.sceneId.length > 1000
+      || typeof record.languageCode !== 'string' || !record.languageCode.trim() || record.languageCode.length > 1000
+      || record.source !== 'author' || record.manuscriptMutation !== false) return blocked('SCENE_LANGUAGE_RECORD_UNAVAILABLE');
+    if (record.sceneId === sceneId) matching.push(record);
+  }
+  detail.matchingCount = matching.length;
+  if (matching.length > 1) return { ...detail, state: 'ambiguous', reason: 'SCENE_LANGUAGE_TAG_AMBIGUOUS' };
+  if (!matching.length) return detail;
+  const record = matching[0];
+  return { ...detail, state: 'ready', tag: { id: record.id, languageCode: record.languageCode, recordHash: hashCanonicalValue(record) } };
+}
+
 export function deriveAtlasCurrentSceneDossier(input = {}) {
   const projectId = normalizeString(input?.params?.projectId);
   const sceneId = normalizeString(input?.params?.sceneId);
@@ -306,21 +336,23 @@ export function deriveAtlasCurrentSceneDossier(input = {}) {
     },
     capabilitySnapshot: input.capabilitySnapshot,
     derive: ({ coreState, params, capabilitySnapshot }) => {
+      const sceneLanguageTag = sceneLanguageTagDetail(getProject(coreState, params.projectId), params.projectId, params.sceneId,
+        plainString(params.atlasAuthorReadIssue));
       const indexResult = deriveAtlasMentionIndex({
         coreState,
         params: { projectId: params.projectId },
         capabilitySnapshot,
       });
       if (!indexResult.ok) {
-        return unavailable(params.projectId, params.sceneId, params.sceneTitle, indexResult.error?.reason || 'ATLAS_INDEX_UNAVAILABLE', indexResult.error || null);
+        return { ...unavailable(params.projectId, params.sceneId, params.sceneTitle, indexResult.error?.reason || 'ATLAS_INDEX_UNAVAILABLE', indexResult.error || null), sceneLanguageTag };
       }
-      return buildDossierFromIndex({
+      return { ...buildDossierFromIndex({
         coreState,
         projectId: params.projectId,
         sceneId: params.sceneId,
         sceneTitle: params.sceneTitle,
         indexResult,
-      });
+      }), sceneLanguageTag };
     },
   });
 }

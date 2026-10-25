@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return evaluateTemporalAuthoringCommandAccess(profile, commandId, productCommandRecord);
@@ -215,6 +216,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagQueryAccess(profile, queryId);
   if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringQueryAccess(profile, queryId);
   if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsQueryAccess(profile, queryId);
   if (isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return evaluateTemporalAuthoringQueryAccess(profile, queryId);
@@ -613,7 +615,59 @@ function evaluateIdeaMeaningAuthoringQueryAccess(profile, queryId) {
     OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
+const WRITER_SCENE_LANGUAGE_TAG_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v12';
+const WRITER_SCENE_LANGUAGE_TAG_PROFILE_ID = 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12';
+const WRITER_SCENE_LANGUAGE_TAG_COMMAND_IDS = Object.freeze([...WRITER_IDEA_MEANING_AUTHORING_COMMAND_IDS,
+  'atlas.languageTag.set', 'atlas.languageTag.clear']);
+const WRITER_SCENE_LANGUAGE_TAG_QUERY_IDS = WRITER_IDEA_MEANING_AUTHORING_QUERY_IDS;
+function createWriterSceneLanguageTagProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_SCENE_LANGUAGE_TAG_PROFILE_SCHEMA_VERSION, profileId: WRITER_SCENE_LANGUAGE_TAG_PROFILE_ID,
+    admittedCommandIds: WRITER_SCENE_LANGUAGE_TAG_COMMAND_IDS, admittedQueryIds: WRITER_SCENE_LANGUAGE_TAG_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterSceneLanguageTagProfileCandidate(profile) {
+  return Boolean(profile) && typeof profile === 'object' && (normalizeIdentity(profile.profileId).startsWith(WRITER_SCENE_LANGUAGE_TAG_PROFILE_ID)
+    || normalizeIdentity(profile.schemaVersion).startsWith(WRITER_SCENE_LANGUAGE_TAG_PROFILE_SCHEMA_VERSION));
+}
+function isActiveWriterSceneLanguageTagProfile(profile) {
+  if (!isPlainObject(profile)) return false;
+  if (!isWriterSceneLanguageTagProfileCandidate(profile)) return false;
+  const expected = createWriterSceneLanguageTagProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const keys = Reflect.ownKeys(expected);
+  return Reflect.ownKeys(profile).length === keys.length && keys.every(key => Object.hasOwn(profile, key) && (Array.isArray(expected[key])
+    ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && Reflect.ownKeys(profile[key]).length === expected[key].length + 1
+      && expected[key].every((id, index) => Object.hasOwn(profile[key], index))
+      && expected[key].every((id, index) => profile[key][index] === id)
+    : profile[key] === expected[key]));
+}
+function sceneLanguageTagProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterSceneLanguageTagProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_SCENE_LANGUAGE_TAG_PROFILE_ID });
+}
+function evaluateSceneLanguageTagCommandAccess(profile, commandId, productCommandRecord) {
+  const id = normalizeIdentity(commandId);
+  const selected = WRITER_SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId) && isPlainObject(productCommandRecord)
+    && productCommandRecord.id === commandId && productCommandRecord.domain === commandId.split('.')[0];
+  return sceneLanguageTagProfileAccess(profile, selected, isOptionalWriterLocalCommand(commandId, productCommandRecord)
+    || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+}
+function evaluateSceneLanguageTagQueryAccess(profile, queryId) {
+  const id = normalizeIdentity(queryId);
+  return sceneLanguageTagProfileAccess(profile, WRITER_SCENE_LANGUAGE_TAG_QUERY_IDS.includes(queryId),
+    OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
+}
+
 module.exports = Object.freeze({
+  WRITER_SCENE_LANGUAGE_TAG_PROFILE_SCHEMA_VERSION,
+  WRITER_SCENE_LANGUAGE_TAG_PROFILE_ID,
+  WRITER_SCENE_LANGUAGE_TAG_COMMAND_IDS,
+  WRITER_SCENE_LANGUAGE_TAG_QUERY_IDS,
+  createWriterSceneLanguageTagProfileProjection,
+  isActiveWriterSceneLanguageTagProfile,
   WRITER_IDEA_MEANING_AUTHORING_PROFILE_SCHEMA_VERSION,
   WRITER_IDEA_MEANING_AUTHORING_PROFILE_ID,
   WRITER_IDEA_MEANING_AUTHORING_COMMAND_IDS,

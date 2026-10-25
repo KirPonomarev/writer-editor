@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterIdeaMeaningAuthoringProfileProjection,
+  createWriterSceneLanguageTagProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -18015,6 +18015,7 @@ function makeAtlasCurrentSceneFallback(projectId, sceneId, reason, extra = {}) {
     summary: { entityCount: 0, mentionCount: 0, sceneTextHash: '', indexHash: '', invalidationKey: '' },
     entities: [],
     mentions: [],
+    sceneLanguageTag: { state: 'unavailable', reason: reason || 'SCENE_LANGUAGE_SOURCE_UNAVAILABLE', matchingCount: 0, manifestRevision: '', sceneRevision: '', tag: null },
     ...(extra.error ? { error: extra.error } : {}),
   };
 }
@@ -18801,6 +18802,9 @@ async function buildAtlasCurrentSceneCoreState(resolvedNode, documentTarget) {
   );
   return {
     sceneTitle: context.title,
+    atlasAuthorReadIssue: Object.hasOwn(resolvedNode.manifest, 'atlas') && (!isPlainObjectValue(resolvedNode.manifest.atlas)
+      || resolvedNode.manifest.atlas.schemaVersion !== 'atlas.author.v1' || !isPlainObjectValue(resolvedNode.manifest.atlas.entities))
+      ? 'ATLAS_AUTHOR_SCHEMA_UNSUPPORTED' : '',
     coreState: {
       version: 1,
       data: {
@@ -20136,13 +20140,14 @@ async function handleWorkspaceAtlasCurrentSceneQuery(payload = {}) {
   }
 
   try {
-    const { coreState, sceneTitle } = await buildAtlasCurrentSceneCoreState(resolvedNode, documentTarget);
+    const { coreState, sceneTitle, atlasAuthorReadIssue } = await buildAtlasCurrentSceneCoreState(resolvedNode, documentTarget);
     const dossier = dossierModule.deriveAtlasCurrentSceneDossier({
       coreState,
       params: {
         projectId: resolvedNode.projectId,
         sceneId: resolvedNode.nodeId,
         sceneTitle,
+        atlasAuthorReadIssue,
       },
       capabilitySnapshot: { platformId: 'node', capabilities: { atlasMentionIndex: true } },
     });
@@ -36110,7 +36115,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterIdeaMeaningAuthoringProfileProjection({
+  return createWriterSceneLanguageTagProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -38411,6 +38416,7 @@ const ATLAS_ENTITY_CORRECTION_COMMAND_IDS = Object.freeze([
 ]);
 
 const IDEA_MEANING_AUTHORING_COMMAND_IDS = Object.freeze(['idea.create', 'idea.originLink.add', 'meaning.promote']);
+const SCENE_LANGUAGE_TAG_COMMAND_IDS = Object.freeze(['atlas.languageTag.set', 'atlas.languageTag.clear']);
 
 function isIdeaMeaningAuthoringPayloadValid(commandId, payload) {
   const scalar = (object, key, max = 1000, required = false) => !Object.hasOwn(object, key) ? !required
@@ -38480,6 +38486,76 @@ function getProjectAuthorDomainForPersistence(project, manifestKey, createEmpty)
 }
 
 const MANUAL_MAP_LOCAL_FILE_MAX_BYTES = 8 * 1024 * 1024;
+
+function isSceneLanguagePayloadValid(commandId, payload) {
+  for (const key of ['projectId', 'sceneId', 'scopeKind', 'scope', 'blockId', 'tagId', 'languageCode', 'note', 'expectedTagHash']) {
+    if (Object.hasOwn(payload, key) && (typeof payload[key] !== 'string' || payload[key].length > 1000)) return false;
+  }
+  const scope = payload.scopeKind || payload.scope || 'project';
+  if (typeof scope !== 'string' || !['project', 'scene', 'block', 'range'].includes(scope.trim())) return false;
+  if (commandId === 'atlas.languageTag.set' && typeof payload.languageCode !== 'string') return false;
+  for (const key of ['startOffset', 'endOffset']) if (Object.hasOwn(payload, key) && !Number.isSafeInteger(payload[key])) return false;
+  const bound = Object.hasOwn(payload, 'expectedManifestRevision') || Object.hasOwn(payload, 'expectedSceneRevision')
+    || getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12';
+  return !bound || payload.scopeKind === 'scene' && typeof payload.projectId === 'string' && Boolean(payload.projectId.trim())
+    && typeof payload.sceneId === 'string' && Boolean(payload.sceneId.trim())
+    && typeof payload.expectedManifestRevision === 'string' && typeof payload.expectedSceneRevision === 'string'
+    && /^sha256:[a-f0-9]{64}$/u.test(payload.expectedManifestRevision) && /^sha256:[a-f0-9]{64}$/u.test(payload.expectedSceneRevision)
+    && (!Object.hasOwn(payload, 'expectedTagHash') || /^[a-f0-9]{64}$/u.test(payload.expectedTagHash));
+}
+
+async function prepareSceneLanguageIntent(commandId, payload, binding, previousHash, guard) {
+  const bound = Object.hasOwn(payload, 'expectedManifestRevision') || Object.hasOwn(payload, 'expectedSceneRevision')
+    || getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12';
+  if (!bound) return null;
+  const refuse = code => { throw Object.assign(new Error(code), { code }); };
+  if (!isSceneLanguagePayloadValid(commandId, payload)) refuse('E_PRODUCT_COMMAND_PAYLOAD_INVALID');
+  if (payload.expectedManifestRevision !== `sha256:${previousHash}`) refuse('E_PRODUCT_COMMAND_REVISION_CONFLICT');
+  const project = binding.coreState.data.projects[binding.projectId], scene = project.scenes[payload.sceneId];
+  if (!scene || scene.sceneRevision !== payload.expectedSceneRevision) refuse('E_SCENE_LANGUAGE_TAG_SOURCE_STALE');
+  guard();
+  const node = collectAtlasOverviewSceneNodes(binding.roots).find(value => value.nodeId === payload.sceneId);
+  if (!node) refuse('E_SCENE_LANGUAGE_TAG_TARGET_STALE');
+  const target = getResolvedTreeDocumentTarget({ ...node, nodePath: typeof node.nodePath === 'string' ? node.nodePath : node.path });
+  const paths = sanitizePathFieldsWithinRoot({ target: target.filePath, current: currentFilePath }, ['target', 'current'], binding.projectRoot,
+    { mode: 'any', resolveSymlinks: true });
+  if (!paths.ok || paths.payload?.target !== paths.payload?.current) refuse('E_SCENE_LANGUAGE_TAG_TARGET_STALE');
+  const { hashCanonicalValue: hash } = await import(pathToFileURL(path.join(__dirname, 'core', 'browser-safe-hash.mjs')).href);
+  await guard(binding, previousHash);
+  const atlas = binding.manifest.atlas || {}, tags = Object.hasOwn(atlas, 'languageTags') ? atlas.languageTags : {};
+  if (!isPlainObjectValue(tags) || Object.hasOwn(tags, 'scenes') && !isPlainObjectValue(tags.scenes)) refuse('E_SCENE_LANGUAGE_TAG_UNAVAILABLE');
+  const scenes = tags.scenes || {}, matching = [];
+  for (const [id, record] of Object.entries(scenes)) {
+    if (!isPlainObjectValue(record) || record.schemaVersion !== 'atlas.languageTag.v1' || record.id !== id || !id || id !== id.trim() || id.length > 1000
+      || record.projectId !== binding.projectId || record.scopeKind !== 'scene' || typeof record.sceneId !== 'string'
+      || !record.sceneId || record.sceneId !== record.sceneId.trim() || record.sceneId.length > 1000
+      || typeof record.languageCode !== 'string' || !record.languageCode.trim() || record.languageCode.length > 1000
+      || record.source !== 'author' || record.manuscriptMutation !== false) refuse('E_SCENE_LANGUAGE_TAG_UNAVAILABLE');
+    if (record.sceneId === payload.sceneId) matching.push(record);
+  }
+  if (matching.length > 1) refuse('E_SCENE_LANGUAGE_TAG_AMBIGUOUS');
+  const selected = matching[0];
+  if (selected ? payload.tagId !== selected.id || payload.expectedTagHash !== hash(selected)
+    : commandId !== 'atlas.languageTag.set' || Object.hasOwn(payload, 'tagId') || Object.hasOwn(payload, 'expectedTagHash')) refuse('E_SCENE_LANGUAGE_TAG_STALE');
+  const { expectedManifestRevision, expectedSceneRevision, ...authorPayload } = payload;
+  return { payload: authorPayload, assertNoLoss(nextProject) {
+    const nextAtlas = nextProject.atlas, nextTags = nextAtlas?.languageTags, nextScenes = nextTags?.scenes;
+    const equal = (a, b) => hash(a) === hash(b);
+    const sameKeys = (before, after, excluded) => isPlainObjectValue(after) && Object.keys(before).every(key =>
+      key === excluded || Object.hasOwn(after, key) && equal(before[key], after[key]));
+    if (!sameKeys(atlas, nextAtlas, 'languageTags') || !sameKeys(tags, nextTags, 'scenes')
+      || !sameKeys(scenes, nextScenes, selected?.id)) refuse('E_SCENE_LANGUAGE_TAG_NO_LOSS');
+    const added = Object.keys(nextScenes).filter(id => !Object.hasOwn(scenes, id)), keys = Object.keys(scenes);
+    if (selected) {
+      if (added.length || Object.keys(nextScenes).length !== keys.length - (commandId === 'atlas.languageTag.clear' ? 1 : 0)
+        || (commandId === 'atlas.languageTag.clear' ? Object.hasOwn(nextScenes, selected.id) : !Object.hasOwn(nextScenes, selected.id))) refuse('E_SCENE_LANGUAGE_TAG_NO_LOSS');
+    } else if (added.length !== 1 || Object.keys(nextScenes).length !== keys.length + 1) refuse('E_SCENE_LANGUAGE_TAG_NO_LOSS');
+    const stored = commandId === 'atlas.languageTag.set' ? nextScenes[selected?.id || added[0]] : null;
+    if (commandId === 'atlas.languageTag.set' && (!isPlainObjectValue(stored) || stored.schemaVersion !== 'atlas.languageTag.v1'
+      || stored.id !== (selected?.id || added[0]) || stored.projectId !== binding.projectId || stored.source !== 'author'
+      || stored.manuscriptMutation !== false || stored.sceneId !== payload.sceneId || stored.scopeKind !== 'scene')) refuse('E_SCENE_LANGUAGE_TAG_NO_LOSS');
+  } };
+}
 
 function captureManualMapPreparationGuard(commandId, record, errorFamily = 'MANUAL_MAP') {
   const window = mainWindow, owner = activeStage10ApplicationBootstrap, projectName = currentProjectName;
@@ -38838,7 +38914,9 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
       ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION')
       : IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId)
-        ? captureManualMapPreparationGuard(commandId, record, 'IDEA_MEANING_AUTHORING') : null;
+        ? captureManualMapPreparationGuard(commandId, record, 'IDEA_MEANING_AUTHORING')
+        : SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId)
+          ? captureManualMapPreparationGuard(commandId, record, 'SCENE_LANGUAGE_TAG') : null;
   const binding = await buildProductCoreStateForCurrentProject();
   if (guard) await guard(binding);
   const requestedProjectId = typeof payload?.projectId === 'string' ? payload.projectId.trim() : '';
@@ -38867,6 +38945,8 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     : null;
   if (portability && portability.ok !== true) return portability;
   await assertCurrent();
+  const sceneLanguage = SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId)
+    ? await prepareSceneLanguageIntent(commandId, payload, binding, previousHash, guard) : null;
   const publicResult = portability?.publicResult || (commandId === 'manualMap.create' ? {} : null);
   return {
     schemaVersion: 'yalken.stage10.canonicalProjectTruthCommand.v1',
@@ -38874,7 +38954,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     sourceHash: previousHash,
     sourceRevision: Number(binding.manifest?.lastCommandId || 0),
     coreState: cloneJsonSafe(binding.coreState),
-    payload: portability?.payload || cloneJsonSafe(payload),
+    payload: sceneLanguage?.payload || portability?.payload || cloneJsonSafe(payload),
     publicResult,
     async prepareMutation(result = {}) {
       await assertCurrent();
@@ -38884,6 +38964,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         error.code = 'E_STAGE10_CANONICAL_PROJECT_TRUTH_NEXT_PROJECT_MISSING';
         throw error;
       }
+      if (sceneLanguage) sceneLanguage.assertNoLoss(nextProject);
       if (commandId === 'manualMap.create' || commandId === 'manualMap.import.jsonRepeat') {
         const appliedMap = nextProject.manualMaps?.maps?.[portability?.payload?.mapId || payload.mapId];
         if (!appliedMap?.id) throw new Error('MANUAL_MAP_RESULT_IDENTITY_MISSING');
@@ -38906,7 +38987,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
       await assertCurrent();
       const ideaOrigin = commandId === 'idea.originLink.add' ? payload.originRef
         : commandId === 'meaning.promote' && payload.source?.kind === 'sceneOriginRef' ? payload.source.originRef : null;
-      if (commandId === 'atlas.continuityFact.record' || commandId === 'atlas.observation.reassign' || ideaOrigin) {
+      if (commandId === 'atlas.continuityFact.record' || commandId === 'atlas.observation.reassign' || ideaOrigin || sceneLanguage) {
         guard();
         const sceneId = (ideaOrigin ? ideaOrigin.sceneId : payload.sceneId).trim();
         const scene = binding.coreState.data.projects[binding.projectId].scenes[sceneId];
@@ -38926,6 +39007,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         }
         guard();
         if (`sha256:${computeHash(sourceBytes)}` !== scene.sceneRevision) {
+          if (sceneLanguage) throw Object.assign(new Error('SCENE_LANGUAGE_TAG_SOURCE_STALE'), { code: 'E_SCENE_LANGUAGE_TAG_SOURCE_STALE' });
           if (ideaOrigin) throw Object.assign(new Error('IDEA_MEANING_AUTHORING_SOURCE_STALE'), { code: 'E_IDEA_MEANING_AUTHORING_SOURCE_STALE' });
           if (commandId === 'atlas.observation.reassign') {
             throw makeAtlasProductSceneProjectionError('E_ATLAS_ENTITY_CORRECTION_SOURCE_STALE', 'ATLAS_ENTITY_CORRECTION_SOURCE_STALE', sceneId);
@@ -39213,11 +39295,15 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
     return makeProductCommandBridgeError(commandId, 'E_MANUAL_MAP_MARKDOWN_INTENT_INVALID', 'MANUAL_MAP_MARKDOWN_INTENT_INVALID');
   }
 
+  if (SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId) && !isSceneLanguagePayloadValid(commandId, payload)) {
+    return makeProductCommandBridgeError(commandId, 'E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'SCENE_LANGUAGE_TAG_PAYLOAD_INVALID');
+  }
+
   if (IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId) && !isIdeaMeaningAuthoringPayloadValid(commandId, payload)) {
     return makeProductCommandBridgeError(commandId, 'E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'IDEA_MEANING_AUTHORING_PAYLOAD_INVALID');
   }
 
-  if ((ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId) || ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId) || IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId)) && Object.hasOwn(payload, 'projectId')
+  if ((ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId) || ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId) || IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId) || SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId)) && Object.hasOwn(payload, 'projectId')
     && (typeof payload.projectId !== 'string' || !payload.projectId.trim() || payload.projectId.length > 1000)) {
     return makeProductCommandBridgeError(commandId, 'E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'PRODUCT_COMMAND_PROJECT_ID_INVALID');
   }
@@ -39270,7 +39356,9 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
       : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
         ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION')
       : IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId)
-        ? captureManualMapPreparationGuard(commandId, record, 'IDEA_MEANING_AUTHORING') : null;
+        ? captureManualMapPreparationGuard(commandId, record, 'IDEA_MEANING_AUTHORING')
+        : SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId)
+          ? captureManualMapPreparationGuard(commandId, record, 'SCENE_LANGUAGE_TAG') : null;
     return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, async () => {
       try {
         if (queueGuard) queueGuard();

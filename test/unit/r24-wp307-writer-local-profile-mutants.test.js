@@ -519,3 +519,41 @@ test('V11 independent lawful oracles kill Idea Meaning omission domain overgrant
   }
   t.diagnostic('IDEA_MEANING_V11_MUTANTS=' + mutants.length + '/' + mutants.length);
 });
+
+test('V12 independent original-policy oracles kill tag omission overgrant and forged authority mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), original = loadFresh(MODULE_PATH);
+  assert.equal(typeof original.createWriterSceneLanguageTagProfileProjection, 'function', 'absent constructor gives no kill credit');
+  const marker = source.indexOf("'writer-local-profile.v12'"), boundary = source.lastIndexOf('const ', marker); assert.ok(marker > 0 && boundary > 0);
+  const active = m => m.createWriterSceneLanguageTagProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const access = (m, id, patch = {}, record = { id, domain: 'atlas' }) => m.evaluateWriterLocalCommandAccess({
+    profile: { ...active(m), ...patch }, commandId: id, productCommandRecord: record }).allowed;
+  for (const id of ['atlas.languageTag.set', 'atlas.languageTag.clear']) assert.equal(access(original, id), true);
+  assert.equal(active(original).admittedCommandIds.length, 34); assert.equal(active(original).admittedQueryIds.length, 12);
+  assert.equal(access(original, 'atlas.seriesPortability.apply'), false);
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'scene-language-v12-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mutants = [
+    ...['atlas.languageTag.set', 'atlas.languageTag.clear'].map(id => ['lost-' + id,
+      s => s.replace("'" + id + "'", "'" + id + ".disabled'"), m => assert.equal(access(m, id), true)]),
+    ['optional-overgrant', s => s.replace('&& (!optional || selected)', ''), m => assert.equal(access(m, 'atlas.seriesPortability.apply'), false)],
+    ['forged-record', s => s.replace('productCommandRecord.id === commandId &&', 'true &&'),
+      m => assert.equal(access(m, 'atlas.languageTag.set', {}, { id: 'atlas.languageTag.clear', domain: 'atlas' }), false)],
+    ['wrong-domain', s => s.replace(/productCommandRecord\.domain === [^\n;]+/u, 'true'),
+      m => assert.equal(access(m, 'atlas.languageTag.clear', {}, { id: 'atlas.languageTag.clear', domain: 'idea' }), false)],
+    ['extra-own-key', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'),
+      m => assert.equal(access(m, 'atlas.languageTag.set', { extra: true }), false)],
+    ['ordered-policy', s => s.replace('profile[key][index] === id', 'true'),
+      m => assert.equal(access(m, 'atlas.languageTag.clear', { admittedCommandIds: [...active(m).admittedCommandIds].reverse() }), false)],
+    ['inherited-index', s => s.replace('Object.hasOwn(profile[key], index)', 'true'), m => {
+      const values = [...active(m).admittedCommandIds], last = values.length - 1; delete values[last];
+      Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [last]: active(m).admittedCommandIds[last] })); values.extra = true;
+      assert.equal(access(m, 'atlas.languageTag.set', { admittedCommandIds: values }), false);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    oracle(original); const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(/[^a-z0-9.-]/gi, '-') + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic('SCENE_LANGUAGE_V12_MUTANTS=' + mutants.length + '/' + mutants.length);
+});

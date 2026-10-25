@@ -1,3 +1,19 @@
+## 2026-10-25 — Explicit saved scene-language tag: source frozen
+
+TASK_ID: YALKEN_SCENE_LANGUAGE_TAG_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: RUNTIME_SOURCE_FROZEN_REQUIRED_PROOFS_AND_DELIVERY_PENDING
+CLAIM_BOUNDARY: One manual scene-language Set Read Cold Clear journey. Source and finite Main proof are not packaged native, full Mac or release acceptance.
+BINDING_BASE_SHA: 82b1f21705747b8df29166875524ff911824b785
+
+PR2161 is independently closed on this literal merged SHA, treeaac5ae6f, closure26c133f052d4a2b388c898bd52206ade3c37ec4e243aae0c5ad7e3ec50830e24. Its actual main20CI, official4416RTK, provider359, focused997, affected1358, baseline3013passes59namedskips and fresh literal package/native archive remain bounded predecessor evidence; the older pending checkpoints below are historical.
+
+Fresh27path declaration/preflight0, current bootstrap/taskE0, full normative and scoped factual2B reads precede separate maintained test and runtime execution. Root joined current whole causal RED and three preserved test-method corrections without deleting old assertions or weakening oracles. Five frozen behavior tests and9982outside sources remain exact during runtime. Strict packaged DarwinV12 appends only the existing FREE Set/Clear commands to34commands/same12queries/alloptionalflagsfalse. Actual saved identity, whole raw row hash and raw manifest/scene revisions travel through the existing immutable dossier. Main independently validates raw payload, current opened scene, queued/prepared authority, CAS and post-Core no-loss; Core/schema/registry/IPC/storage/typing remain unchanged. Flow has stable per-scene input, saved readback, explicit Set/Clear/reload/discard and an early unsaved/pending unload veto.
+
+One source-bound packaged-profile Main precheck executes the real three form listeners: Setru-RU, replaceen-US using the discovered savedID/hash, then Clear with its fresh hash. All3actual Kernel APPLIED/capability/storage receipts, full canonical persistence/history/roster oracles and query readbacks pass; scene bytes remain exact. It executes zero registered test bodies and is not native evidence. Root independent diff/inverse reviewafedce38b8809dc246ca34b7a63f9caa3d46cbb94434d5fc95e3527117de39b4 precedes normal renderer generation, which changes only editor.bundle.js among source bytes.
+
+Same frozen whole GREEN, affected/source checks, early exact candidate native/cold/full canonical archives, full configured baseline/officialRTK/currentCI, ordinary commit/push/PR/merge and fresh literal merged verification remain required. Dated2026-10-25--scene-language-tag reports/materials use verifiedT777 and declared owned APFS temporary runtime; original physical profile/markers,105Documents and56old event-receipt pairs stay protected. No language engine, automatic detection, broader stage admission or release authority is added. All17qualificationUNKNOWN, predecessor fullaudit2high1moderate and59named skips remain explicit pending fresh measurements. Full Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later.
+
 ## 2026-10-25 — Explicit Idea and Meaning authoring: causal baseline
 
 TASK_ID: YALKEN_IDEA_MEANING_AUTHORING_20261025

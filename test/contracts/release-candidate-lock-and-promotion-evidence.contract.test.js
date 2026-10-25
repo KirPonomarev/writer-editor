@@ -534,8 +534,8 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
-  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v11');
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v12');
   assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
     'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
     'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
@@ -546,6 +546,7 @@ test('full Mac V2 derives the complete original dependency cut while every quali
     'atlas.calendar.define', 'atlas.sceneTemporalAnchor.set', 'atlas.continuityFact.record', 'atlas.savedQuery.save',
     'atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore',
     'idea.create', 'idea.originLink.add', 'meaning.promote',
+    'atlas.languageTag.set', 'atlas.languageTag.clear',
   ]);
   assert.deepEqual(cut.profiles.runtime.admittedQueryIds, ['query.atlasCurrentScene', 'query.manualMapWorkbench', 'query.atlasEntityDossier',
     'query.atlasOverview', 'query.atlasRelationDossier', 'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout',
