@@ -809,7 +809,8 @@
     "test/unit/r24-wp806-pulse-claim-integration.test.js",
     "docs/tasks/2026-10-25--environment-epochs.md",
     "src/renderer/design-os/designOsFormConfiguration.mjs",
-    "test/unit/r24-wp303-design-os-customization.test.js"
+    "test/unit/r24-wp303-design-os-customization.test.js",
+    "docs/tasks/2026-10-25--settings-theme-summary.md"
   ],
   "protectedFiles": [
     {
@@ -1050,7 +1051,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "24b5c0528fe3e3f776bb053dd91df6167c67652a7b0f8b51b0fe59acb4383911"
+        "sha256": "a85ccecc0dc71bb46844a338f63100e14d4f790a02a111271b549320278bf04a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1062,7 +1063,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "70bb10c1870fb73aa52a3df8f043545271febec278441a92fb9ecf63fb6037b9"
+        "sha256": "49ef2411b594b22d944c59939fb799dfedb454b71401d1fcc6ec871631f98434"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1214,7 +1215,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "7a7d330d0a089448231ee556be3ae5d89dc27d9fd4689da434f1e0d99bc5a023"
+        "sha256": "c1004d0db2788e4d847e1e382c4029a095a4f117c81510dc441c79cea537fade"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1774,7 +1775,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "8e180387e17650bdc48d496bcbc9f077244f31880063ee83ea85d589abb21337"
+        "sha256": "1154738e026af6a8bce8b38b32cc72dc83f88340cfffb25ab8af0e459047cddd"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2730,15 +2731,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "bfcd43f39946f32a79f7cbfafc12f1e6c8f70037d408ccbb9efee1f5d153cdd4"
+        "sha256": "6b54a384a6423d541c8fd63a4df04fd972d5bfd28b746811d0e3104c09eba687"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e9e01cf7a5b8aaa13bfe8706e37779305ac842ce4ccb8bfe04e61bcf71b9ac07"
+        "sha256": "b45333471b4dbbebf7c55c322bfe159897d806112b4219e7e30c4c5f2fe6c175"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "9dbc00d0f6b6a935134afb4ae262f67d2090bdf55b7456eb0dfadadcd58544a9"
+        "sha256": "26f93696e9b2d628225b7aac2f46648070dafea4474441db630d74303ed66d66"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3278,7 +3279,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "98c036e4ae9b4e3c19812393b325cb1061384be580062aecfe1e4846e973369a"
+        "sha256": "d254c3cabba04bf5b20a29434775af155b5a64dc429d1620ffc7db4093b5dbcc"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3410,7 +3411,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "10089207676c812f861ab8ee6881d3f16ee042810c41f2c28c0e6d671d864a7d"
+        "sha256": "5782fd5e6b4842588726a311b94b328c11df6899dd88efdc242b4079c61f6782"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3683,6 +3684,10 @@
       {
         "path": "test/unit/r24-wp303-design-os-customization.test.js",
         "sha256": "96cf7c6a1bc18d6949aa72cb9669484ff3603e9b676e5c59a1f35ca0182ffe68"
+      },
+      {
+        "path": "docs/tasks/2026-10-25--settings-theme-summary.md",
+        "sha256": "82e45979dccc61f092cc4c39b6eff5dc790aec9d48437cb7dfcec0168eab273f"
       }
     ],
     "followupRepair": {
