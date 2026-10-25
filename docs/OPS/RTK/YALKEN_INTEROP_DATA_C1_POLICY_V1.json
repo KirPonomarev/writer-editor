@@ -1048,7 +1048,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "94ca8c0311c0ceab82c292cad13325372e1fa7d0b9f23480626597d04f3b7020"
+        "sha256": "9d5c86029ff85ddf799be296d101ee5e0e879fe14fcebc4a86f9ffdb193d6d98"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1212,7 +1212,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "ac9751f9c34bbe0a5c45733264bb51abca4857e9c46ac044295e960bdfba9b65"
+        "sha256": "9f14642f73d659e77d9cab42997cd61a75a80538eb466988a2bcb5629796e529"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1772,7 +1772,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "970e6721324b23b6a7ccf3670d62d7ad1c34c58e6819623ba75295c50d515d1a"
+        "sha256": "b7a2103952d694166b430f267c94c82c149040ba3eea00541169aa2450d4d45e"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2728,15 +2728,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1acb57ca9684444fffa6685d389ea6dc2d5f3639c9a4a3d793274e59f7cd896d"
+        "sha256": "0a0b0dc5b71b9ade2e2a3ae59887a8c8cbfa82d417bb10a2c24f2db01d7af740"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8cda225a759311b519e5677c9f72dd769d89a4a41123cf204781b35258ec7e8b"
+        "sha256": "e43eab58151724c76fa3845e2a77d39924775e620c17d614fdd7ffa37a74ca49"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "928a9f73567d0602a6ddf8208d99512c82282b80c3323a1a4daba0d63de41756"
+        "sha256": "89b353d9e1f33ff2c7c6021c1ec83ca7d18c000f8b7ca858d2dd38935155feef"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3276,7 +3276,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "bcdd955cdcb9efdbbd536ff202b8e10da5d9ae55d11535603f9c7529352fe2c0"
+        "sha256": "309ffe69fc68bcf43510b5c007005d956146ab67c441a7b004c25110e346444b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3544,7 +3544,7 @@
       },
       {
         "path": "test/unit/keyboard-shortcuts.test.js",
-        "sha256": "41ef850be54d6ca3b63a956f14e0af094b24257c91c4b3831e90a4ea926c7d09"
+        "sha256": "4cc30c9e0d2ed3816aee35451b8882d16e77b341c3a6798de13eebb6be921e09"
       },
       {
         "path": "scripts/ops/menu-config-normalize.mjs",
@@ -3672,7 +3672,7 @@
       },
       {
         "path": "docs/tasks/2026-10-25--bug-native-undo-redo.md",
-        "sha256": "76deaaacd54ac6b0928d463f3d37b6301cfc604dd6895abd58117f28466a7326"
+        "sha256": "0e308ee775d0704daafe5777a3fa21b9627c346dbe2e14756786f0ef19821f55"
       }
     ],
     "followupRepair": {

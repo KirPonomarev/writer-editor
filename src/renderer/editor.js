@@ -25612,6 +25612,10 @@ document.addEventListener('keydown', (event) => {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
       return;
     }
+    if ((key === 'Z' || key === 'z' || ((key === 'Y' || key === 'y') && !event.shiftKey))
+      && event.target instanceof Element && event.target.closest('input, textarea')) {
+      return;
+    }
     if ((key === 'Z' || key === 'z') && !event.shiftKey) {
       event.preventDefault();
       void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);

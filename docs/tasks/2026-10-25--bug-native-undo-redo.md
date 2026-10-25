@@ -18,7 +18,7 @@ STORAGE: New reports and unencrypted compact evidence use the verified T777 date
 O: Cmd+Z and Cmd+Shift+Z restore and redo native INPUT/TEXTAREA edits, with actual Writer Undo/Redo, Save and cold reopen unchanged.
 T: Canonical menu -> existing normalizer -> new snapshot -> governed artifact/lock and packaged mirrors -> existing Main native-role builder -> focused Electron responder. Writer retains its existing transactions and canonical Command Kernel Save route.
 H: The current artifact-first Edit menu omits Undo/Redo although the existing native role allowlist supports them. Two pure role declarations plus the governed snapshot update should restore ordinary control history. Real native execution must confirm this hypothesis; finite Node tests cannot accept OS behavior.
-B: No Core, renderer, preload, IPC, storage, dependencies, product capability, visual design, typing path or global shortcut changes. Preserve Copy/Select All, every historical snapshot and all existing test assertions. One outcome and rollback.
+B: No Core, preload, IPC, storage, dependencies, product capability, visual design or typing path changes. Original menu phase preserves renderer; correction C1 permits only the narrow existing keyboard-handler focus fence and its generated bundle. Preserve Copy/Select All, every historical snapshot and all existing test assertions. One outcome and rollback.
 P: Append maintained causal tests on unchanged runtime, retain whole RED, minimal source correction, generated menu parity, all affected and required gates, native synthetic proof and ordinary complete Git delivery.
 I: Fresh remote main/base67d574188, independent clean branch, source hash baseline10010, exact successor and artifact/profile identities. Primary Pulse PR2163 is the predecessor; no source mutation in its worktree.
 
@@ -49,6 +49,8 @@ Root owns this task, generated current artifacts, exact current bindings, indepe
 - scripts/run-tests.js
 - src/main.js
 - src/menu/menu-config.v2.json
+- src/renderer/editor.js
+- src/renderer/editor.bundle.js
 - src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json
 - src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json
 - test/contracts/promotion-heavy-lane-entrypoint.contract.test.js
@@ -58,7 +60,7 @@ Root owns this task, generated current artifacts, exact current bindings, indepe
 
 ## DENYLIST
 
-Everything else, especially Core/renderer/preload/IPC/storage/dependencies, other worktrees and private owner state. No cherry-pick of the old unaccepted draft, blanket rewrite, generic role/normalizer/lock changes, global key interceptor, direct webContents Undo patch, added capability, historical snapshot rewrite, assertion deletion, filtered tests, new skip/todo, false acceptance, stage/lease/graph changes, secret, network runtime, reset/stash/clean/rebase/force or unrelated defect repair. Other deferred bugs remain separate.
+Everything else, especially Core/preload/IPC/storage/dependencies, all renderer code outside the exact C1 focus fence, other worktrees and private owner state. No cherry-pick of the old unaccepted draft, blanket rewrite, generic role/normalizer/lock changes, new global key interceptor (C1 only narrows the existing handler), direct webContents Undo patch, added capability, historical snapshot rewrite, assertion deletion, filtered tests, new skip/todo, false acceptance, stage/lease/graph changes, secret, network runtime, reset/stash/clean/rebase/force or unrelated defect repair. Other deferred bugs remain separate.
 
 ## CONTRACT / SHAPES
 
@@ -118,3 +120,13 @@ One text block with the19 required AGENT_FINAL_REPORT_V1.schema.json keys; basen
 ## FAIL_PROTOCOL
 
 Keep every raw failure and source/method binding. Missing/stale/different-head evidence remains UNKNOWN or FAIL. Full Mac17 qualification UNKNOWN, pre-existing audit findings and59 named baseline skips remain explicit. Native Undo closure does not accept the whole Mac product, IME, performance, security or distribution. Other deferred bugs are unchanged.
+
+### Correction C1 after actual native failure
+
+Same PR2164 and original delivery base67d574188 remain. Clean correction checkpoint18de20409ecd13c6ccc8b27a458b6cd8f14f7210, no rebase. Fresh29path preflight passes before this amendment; native failure is retained in NATIVE_FAILURE_CANDIDATE_01.json. Menu roles exist, but actual INPUT replacement Cmd+Z leaves the replacement. The old full baseline was interrupted and earns no PASS; its six owned temporary anchors are archived/restored/read back before cleanup.
+
+C1 O/H: existing document keydown unconditionally prevents native Undo/Redo and dispatches Writer commands. Decline only those existing Z/ShiftZ/Y history shortcuts when the event belongs to native INPUT/TEXTAREA, so Chromium owns their local history. Writer command routing and every unrelated key remain exact. No new listener, DOM/value/selection mutation, helper framework, product capability or visual contract.
+
+C1 source allowlist adds only src/renderer/editor.js and normally generated editor.bundle.js. A separate executor first appends maintained actual-callback causal tests to keyboard-shortcuts.test.js; all prior bytes remain. Whole RED must fail only new native control ownership assertions while Writer positive controls pass. Freeze tests, then allow at most12 added renderer lines for a narrow inline focus fence; root verifies inverse exactness and performs ordinary bundle generation. Other original runtime bytes stay frozen.
+
+C1 proof order: maintained causal RED, surgical fix and whole GREEN, generate/rebuild the actual candidate, then genuine native INPUT/TEXTAREA/Writer history and Save/Quit/cold raw no-loss before spending on broad gates. First verify isolation and that the primary agent is not using native UI. Retain the initial failure, do not claim menu tests prove native behavior. After observed outcome refresh only actual current source/certificate/approval pins, run all mandatory checks and complete the same normal delivery chain. Existing inventory membership, history, qualifications and outside state stay protected.

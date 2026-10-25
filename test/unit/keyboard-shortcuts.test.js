@@ -360,3 +360,83 @@ test('native history semantic oracle detects each role omission hidden gate unsu
     }
   }
 });
+
+// Execute the production document capture listener; this finite boundary proves
+// shortcut ownership, not the browser's native edit history or OS responder.
+async function documentHistoryShortcutHarness(platform) {
+  const vm = require('node:vm');
+  const source = await readFile(join(process.cwd(), 'src/renderer/editor.js'), 'utf8');
+  const marker = "\ndocument.addEventListener('keydown', (event) => {";
+  const start = source.indexOf(marker);
+  assert.ok(start >= 0); assert.equal(source.indexOf(marker, start + 1), -1);
+  const endMarker = '\n}, true);', end = source.indexOf(endMarker, start);
+  assert.ok(end > start, 'whole actual capture listener exists');
+  const { COMMAND_IDS, EXTRA_COMMAND_IDS } = await import('../../src/renderer/commands/projectCommands.mjs');
+  const commands = [];
+  let callback, prevented = 0, stopped = 0;
+  class Element {
+    constructor(tagName) {
+      this.tagName = tagName; this.value = 'unchanged Ёж 🦊';
+      this.selectionStart = 2; this.selectionEnd = 8;
+    }
+    closest(selector) {
+      return selector.split(',').some(part => part.trim().toUpperCase() === this.tagName) ? this : null;
+    }
+  }
+  const document = { activeElement: null, addEventListener(type, listener, capture) {
+    assert.equal(type, 'keydown'); assert.equal(capture, true); assert.equal(callback, undefined); callback = listener;
+  } };
+  vm.runInNewContext(source.slice(start + 1, end + endMarker.length), {
+    document, Element, HTMLElement: Element, isMac: platform === 'darwin',
+    isLinkDialogOpen: () => false, configuratorPanel: null,
+    leftRailOverlayOpen: false, rightRailOverlayOpen: false, flowModeState: { active: false },
+    COMMAND_IDS, EXTRA_COMMAND_IDS, dispatchUiCommand(id) { commands.push(id); },
+  });
+  assert.equal(typeof callback, 'function');
+  return { Element, commands, COMMAND_IDS, EXTRA_COMMAND_IDS,
+    get prevented() { return prevented; }, get stopped() { return stopped; },
+    invoke(target, key, overrides = {}) {
+      document.activeElement = target;
+      callback({ target, key, code: 'Key' + key.toUpperCase(),
+        metaKey: platform === 'darwin', ctrlKey: platform !== 'darwin', altKey: false, shiftKey: false,
+        preventDefault() { prevented++; }, stopPropagation() { stopped++; }, ...overrides });
+    } };
+}
+
+const NATIVE_HISTORY_SHORTCUT_CASES = [
+  ['z', false, 'EDIT_UNDO'], ['Z', false, 'EDIT_UNDO'],
+  ['z', true, 'EDIT_REDO'], ['Z', true, 'EDIT_REDO'],
+  ['y', false, 'EDIT_REDO'], ['Y', false, 'EDIT_REDO'],
+];
+for (const platform of ['darwin', 'win32']) {
+  for (const tag of ['INPUT', 'TEXTAREA']) for (const [key, shiftKey] of NATIVE_HISTORY_SHORTCUT_CASES) {
+    test('document history shortcut leaves native ' + tag + ' untouched: ' + platform + ':' + key + ':shift=' + shiftKey, async () => {
+      const h = await documentHistoryShortcutHarness(platform), target = new h.Element(tag);
+      const before = [target.value, target.selectionStart, target.selectionEnd];
+      h.invoke(target, key, { shiftKey });
+      assert.equal(h.prevented, 0, 'native control must retain default history behavior');
+      assert.deepEqual(h.commands, [], 'native control must never dispatch Writer history');
+      assert.equal(h.stopped, 0); assert.deepEqual([target.value, target.selectionStart, target.selectionEnd], before);
+    });
+  }
+  test('document history shortcuts retain canonical Writer and body dispatch: ' + platform, async () => {
+    for (const tag of ['DIV', 'BODY']) for (const [key, shiftKey, id] of NATIVE_HISTORY_SHORTCUT_CASES) {
+      const h = await documentHistoryShortcutHarness(platform), target = new h.Element(tag);
+      h.invoke(target, key, { shiftKey });
+      assert.equal(h.prevented, 1); assert.deepEqual(h.commands, [h.EXTRA_COMMAND_IDS[id]]); assert.equal(h.stopped, 0);
+    }
+  });
+  test('native history fence preserves unrelated shortcuts and primary-modifier refusal: ' + platform, async () => {
+    for (const tag of ['INPUT', 'TEXTAREA', 'DIV']) {
+      for (const overrides of [{ altKey: true }, { metaKey: false, ctrlKey: false }]) {
+        const h = await documentHistoryShortcutHarness(platform); h.invoke(new h.Element(tag), 'z', overrides);
+        assert.equal(h.prevented, 0); assert.deepEqual(h.commands, []); assert.equal(h.stopped, 0);
+      }
+      for (const [key, expected] of [['s', 'PROJECT_SAVE'], ['f', 'EDIT_FIND']]) {
+        const h = await documentHistoryShortcutHarness(platform); h.invoke(new h.Element(tag), key);
+        const id = key === 's' ? h.COMMAND_IDS[expected] : h.EXTRA_COMMAND_IDS[expected];
+        assert.equal(h.prevented, 1); assert.deepEqual(h.commands, [id]); assert.equal(h.stopped, 0);
+      }
+    }
+  });
+}

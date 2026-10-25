@@ -1,3 +1,13 @@
+## 2026-10-25 — Native Undo correction after real packaged failure
+
+TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: C1_SOURCE_PROVEN_REAL_NATIVE_AND_DELIVERY_PENDING
+
+Initial candidate18de20409 menu restoration passes finite tests but actual owned INPUT replacement Cmd+Z leaves the replacement; NATIVE_FAILURE_CANDIDATE_01.json retains the full strings and build binding. Normal Quit ends that owned process. No native/bug acceptance or merge follows. Initial broad baseline was interrupted, earns no PASS and its six owned test anchors were archived, fully restored/read back before scoped cleanup. Same PR2164/original delivery base67d574 retained, no rebase.
+
+Fresh clean29path C1 preflight/taskE0 precede maintained actual document-callback RED41:17pass/24native-ownership failures; all13prior and4new positive groups pass. Separate executor adds only4inline history-key focus-fence lines; whole frozen41GREEN passes, zero skip/cancel/todo. All24498old test bytes, all other renderer bytes by inverse and9982outside source hashes remain exact; ordinary bundle generation changes only editor.bundle.js. Native INPUT/TEXTAREA and Writer history, Save/Quit/cold, current broad gates/CI and complete normal delivery remain required. All17Mac qualification UNKNOWN and unrelated defects/audit findings remain open.
+
 ## 2026-10-25 — Isolated deferred native Undo/Redo repair
 
 TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
