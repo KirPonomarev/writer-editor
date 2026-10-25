@@ -220,3 +220,119 @@ test('E03 C05: inspector provider exports through the derived barrel and adds no
     }
   }
 });
+async function authoredInspectorPageFixture() {
+  const x = await buildProjectFixture({ withIdeaAndMeaning: true }), commands = [];
+  for (let index = 0; index < 29; index++) {
+    const id = 'page-idea-' + String(index).padStart(2, '0');
+    commands.push({ type: 'idea.create', payload: { projectId: x.projectId, ideaId: id, title: 'Idea ' + index + ' é 🧭', summary: 'Saved summary ' + index } },
+      { type: 'meaning.promote', payload: { projectId: x.projectId, meaningId: 'page-meaning-' + index, title: 'Meaning ' + index,
+        interpretation: 'Explicit saved interpretation ' + index, source: { kind: 'idea', ideaId: id } } });
+  }
+  const originRef = x.state.data.projects[x.projectId].ideas.originLinks['link-duty'].originRef;
+  for (let index = 0; index < 29; index++) commands.push({ type: 'idea.originLink.add', payload: {
+    projectId: x.projectId, ideaId: 'idea-duty', linkId: 'extra-origin-' + index, originRef } });
+  const next = x.runtime.applyCoreSequence(x.state, commands); assert.equal(next.ok, true, JSON.stringify(next.error)); x.state = next.state;
+  x.query = (params = {}, capabilitySnapshot = { capabilities: { plotProjection: true, ideaProjection: true, meaningProjection: true } }) =>
+    x.derived.deriveProjectionInspectorProvider({ coreState: x.state, params: { projectId: x.projectId, ...params }, capabilitySnapshot });
+  return x;
+}
+
+test('E03 C05 authored details expose actual saved scalars origins and explicit promotions without inspector authority', async () => {
+  const x = await buildProjectFixture({ withIdeaAndMeaning: true }), before = structuredClone(x.state);
+  const r = x.derived.deriveProjectionInspectorProvider({ coreState: x.state, params: { projectId: x.projectId,
+    idea: { offset: 0, search: '', selectedId: 'idea-duty' }, meaning: { offset: 0, search: '', selectedId: 'meaning-duty' } }, capabilitySnapshot: {} });
+  assert.equal(r.ok, true, JSON.stringify(r));
+  const idea = r.value.projectionStates.find(row => row.projectionId === 'idea'), meaning = r.value.projectionStates.find(row => row.projectionId === 'meaning');
+  assert.ok(idea.details, 'declared Idea detail slots must publish actual saved records'); assert.ok(meaning.details);
+  const row = idea.details.rows.find(row => row.id === 'idea-duty'); assert.ok(row); assert.equal(row.title, 'Duty over crown');
+  assert.equal(row.originLinkCount, 1); assert.equal(Object.hasOwn(row, 'originLinkIds'), false, 'no unbounded nested ID list');
+  assert.deepEqual(idea.details.selected, row); assert.equal(idea.details.selectedState, 'ready');
+  assert.equal(idea.details.total, 1); assert.equal(idea.details.complete, true); assert.equal(idea.details.hasMore, false);
+  assert.deepEqual(idea.details.originLinks[0].originRef, x.state.data.projects[x.projectId].ideas.originLinks['link-duty'].originRef);
+  assert.equal(idea.details.originLinks[0].ideaId, 'idea-duty'); assert.equal(idea.details.occurrenceEvidence[0].ideaId, 'idea-duty');
+  assert.equal(meaning.details.rows[0].interpretation, 'The passage explicitly frames duty as a choice.');
+  assert.deepEqual(meaning.details.selected.source, { kind: 'idea', ideaId: 'idea-duty' });
+  assert.equal(meaning.details.promotionEvidence[0].meaningId, 'meaning-duty'); assert.equal(meaning.details.selectedState, 'ready');
+  assert.equal(r.value.authority.commandAuthority, 'none'); assert.equal(r.value.authority.readOnlyProvider, true);
+  for (const manifest of r.value.manifests) { assert.equal(manifest.readOnly, true); assert.equal(manifest.commandAuthority, 'none'); assert.deepEqual(manifest.allowedActions, []); }
+  assert.deepEqual(x.state, before, 'projection cannot mutate author truth or manuscript');
+});
+
+test('E03 C05 pages search and selected retrieval remain deterministic bounded and source-hash bound beyond twenty-four', async () => {
+  const x = await authoredInspectorPageFixture(), before = structuredClone(x.state), first = x.query(); assert.equal(first.ok, true);
+  const state = (r, id) => r.value.projectionStates.find(row => row.projectionId === id), idea = state(first, 'idea');
+  assert.ok(idea.details, 'bounded saved details are required'); assert.equal(idea.details.rows.length, 24);
+  assert.equal(idea.details.total, 30); assert.equal(idea.details.offset, 0); assert.equal(idea.details.hasMore, true); assert.equal(idea.details.complete, false);
+  const ordered = Object.values(x.state.data.projects[x.projectId].ideas.ideas).sort((a, b) => b.createdByCommandSeq - a.createdByCommandSeq || a.id.localeCompare(b.id));
+  assert.deepEqual(idea.details.rows.map(row => row.id), ordered.slice(0, 24).map(row => row.id));
+  const next = x.query({ idea: { offset: 24, search: '', selectedId: 'idea-duty' }, meaning: { offset: 24, search: '', selectedId: 'meaning-duty' } });
+  assert.equal(next.ok, true); const page = state(next, 'idea').details;
+  assert.deepEqual(page.rows.map(row => row.id), ordered.slice(24).map(row => row.id)); assert.equal(page.hasMore, false);
+  assert.equal(page.selected.id, 'idea-duty'); assert.equal(page.selectedState, 'ready');
+  const outside = x.query({ idea: { offset: 0, search: '', selectedId: 'idea-duty' }, meaning: { offset: 0, search: '', selectedId: 'meaning-duty' } });
+  assert.equal(outside.ok, true); assert.equal(state(outside, 'idea').details.rows.some(row => row.id === 'idea-duty'), false);
+  assert.equal(state(outside, 'idea').details.selected.id, 'idea-duty'); assert.equal(state(outside, 'meaning').details.selected.id, 'meaning-duty');
+  const bounded = state(outside, 'idea').details;
+  assert.equal(bounded.originLinks.length, 24); assert.equal(bounded.originLinkCount, 30); assert.equal(bounded.originLinksComplete, false);
+  assert.equal(bounded.occurrenceEvidence.length, 24); assert.equal(bounded.occurrenceEvidenceCount, 30); assert.equal(bounded.occurrenceEvidenceComplete, false);
+  const search = x.query({ idea: { offset: 0, search: 'Saved summary 28', selectedId: 'idea-duty' } }); assert.equal(search.ok, true);
+  assert.deepEqual(state(search, 'idea').details.rows.map(row => row.id), ['page-idea-28']);
+  assert.equal(state(search, 'idea').details.total, 1); assert.equal(state(search, 'idea').details.complete, true);
+  for (const r of [next, outside, search]) {
+    assert.equal(state(r, 'idea').projectionHash, idea.projectionHash, 'canonical full projection hash never becomes a page hash');
+    assert.notEqual(r.value.meta.providerHash, first.value.meta.providerHash, 'actual view parameters and selected packet invalidate provider');
+  }
+  assert.deepEqual(x.query({ idea: { offset: 0, search: '', selectedId: 'idea-duty' }, meaning: { offset: 0, search: '', selectedId: 'meaning-duty' } }), outside);
+  assert.deepEqual(x.state, before);
+});
+
+test('E03 C05 missing foreign unavailable and malformed page requests cannot invent a selected author record', async t => {
+  const x = await authoredInspectorPageFixture();
+  for (const id of ['not-saved', 'foreign-project:idea-duty']) await t.test('missing selection ' + id, () => {
+    const r = x.query({ idea: { selectedId: id }, meaning: { selectedId: id } }); assert.equal(r.ok, true);
+    for (const key of ['idea', 'meaning']) { const detail = r.value.projectionStates.find(row => row.projectionId === key).details;
+      assert.ok(detail); assert.equal(detail.selected, null); assert.equal(detail.selectedState, 'missing'); }
+  });
+  const disabled = x.query({ idea: { selectedId: 'idea-duty' } }, { capabilities: { ideaProjection: false } }); assert.equal(disabled.ok, true);
+  const unavailable = disabled.value.projectionStates.find(row => row.projectionId === 'idea'); assert.equal(unavailable.state, 'unavailable');
+  assert.ok(unavailable.details); assert.deepEqual(unavailable.details.rows, []); assert.equal(unavailable.details.selected, null);
+  assert.equal(unavailable.details.selectedState, 'unavailable');
+  for (const value of [{ offset: -1 }, { offset: 0.5 }, { offset: '24' }, { search: [] }, { search: 'x'.repeat(100000) }, { selectedId: 17 }]) await t.test('raw option ' + JSON.stringify(value).slice(0, 70), () => {
+    const before = JSON.stringify(x.state), r = x.query({ idea: value }); assert.equal(r.ok, false);
+    assert.match(r.error.code, /^E_PROJECTION_INSPECTOR_/u); assert.equal(JSON.stringify(x.state), before);
+  });
+});
+
+
+test('E03 C05 oversized legal old author records retain full truth and canonical hashes with explicitly clipped scalar previews', async () => {
+  const x = await buildProjectFixture({ withIdeaAndMeaning: true }), original = JSON.stringify(x.state);
+  const title = 'Длинная идея é 🧭 '.repeat(100).trim(), summary = 'Сохранённая авторская мысль é 🧭 '.repeat(400).trim();
+  const interpretation = 'Полное явное толкование é 🧭 '.repeat(400).trim();
+  assert.ok(title.length > 1000 && summary.length > 8000 && interpretation.length > 8000);
+  const result = x.runtime.applyCoreSequence(x.state, [
+    { type: 'idea.create', payload: { projectId: x.projectId, ideaId: 'old-long-idea', title, summary } },
+    { type: 'meaning.promote', payload: { projectId: x.projectId, meaningId: 'old-long-meaning', title,
+      interpretation, source: { kind: 'idea', ideaId: 'old-long-idea' } } },
+  ]);
+  assert.equal(result.ok, true, JSON.stringify(result.error)); assert.equal(JSON.stringify(x.state), original, 'legal old commands preserve prior input state');
+  const coreState = result.state, before = JSON.stringify(coreState), sourceHash = x.derived.hashCanonicalValue(coreState);
+  const provider = x.derived.deriveProjectionInspectorProvider({ coreState, params: { projectId: x.projectId,
+    idea: { selectedId: 'old-long-idea' }, meaning: { selectedId: 'old-long-meaning' } }, capabilitySnapshot: {} });
+  assert.equal(provider.ok, true, JSON.stringify(provider));
+  for (const [projectionId, id, fullProse, field, derive] of [
+    ['idea', 'old-long-idea', summary, 'summary', x.derived.deriveIdeaProjection],
+    ['meaning', 'old-long-meaning', interpretation, 'interpretation', x.derived.deriveMeaningProjection],
+  ]) {
+    const state = provider.value.projectionStates.find(row => row.projectionId === projectionId); assert.ok(state.details);
+    const row = state.details.rows.find(row => row.id === id); assert.ok(row);
+    assert.equal(row.title, title.slice(0, 1000)); assert.ok(row.title.length <= 1000, 'UTF16 title limit');
+    assert.equal(row[field], fullProse.slice(0, 8000)); assert.ok(row[field].length <= 8000, 'UTF16 prose limit');
+    assert.equal(row.contentTruncated, true); assert.deepEqual(state.details.selected, row);
+    const short = state.details.rows.find(row => row.id !== id); assert.ok(short); assert.notEqual(short.contentTruncated, true, 'short author content is not marked truncated');
+    const canonical = derive({ coreState, params: { projectId: x.projectId }, capabilitySnapshot: {} }); assert.equal(canonical.ok, true);
+    assert.equal(state.projectionHash, canonical.value.meta.projectionHash, 'preview clipping cannot replace the full canonical source hash');
+  }
+  assert.equal(coreState.data.projects[x.projectId].ideas.ideas['old-long-idea'].summary, summary);
+  assert.equal(coreState.data.projects[x.projectId].meanings.meanings['old-long-meaning'].interpretation, interpretation);
+  assert.equal(JSON.stringify(coreState), before); assert.equal(x.derived.hashCanonicalValue(coreState), sourceHash);
+});

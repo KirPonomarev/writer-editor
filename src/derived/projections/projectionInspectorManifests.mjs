@@ -143,8 +143,43 @@ function itemCountFor(projectionId, value) {
   return 0;
 }
 
-function stateFromResult(manifest, result) {
+function validateInspectorViewOptions(value) {
+  return value === undefined || isPlainObject(value) && Object.keys(value).every(key => ['offset', 'search', 'selectedId'].includes(key))
+    && (value.offset === undefined || Number.isSafeInteger(value.offset) && value.offset >= 0 && value.offset <= 1000000)
+    && ['search', 'selectedId'].every(key => value[key] === undefined || typeof value[key] === 'string' && value[key].length <= 1000);
+}
+
+function authoredInspectorDetails(projectionId, result, options = {}) {
+  const available = result?.ok === true, value = result?.value || {}, isIdea = projectionId === 'idea';
+  const full = available ? (isIdea ? value.ideas : value.meanings) || [] : [];
+  const search = (options.search || '').trim().toLowerCase(), offset = options.offset || 0, selectedId = options.selectedId || '';
+  const ordered = [...full].sort((a, b) => b.createdByCommandSeq - a.createdByCommandSeq || a.id.localeCompare(b.id));
+  const filtered = ordered.filter(row => !search || [row.title, row.summary, row.interpretation].some(text => typeof text === 'string' && text.toLowerCase().includes(search)));
+  const preview = row => {
+    const title = row.title.slice(0, 1000), prose = (isIdea ? row.summary : row.interpretation).slice(0, 8000);
+    const clipped = title !== row.title || prose !== (isIdea ? row.summary : row.interpretation);
+    return { id: row.id, title, ...(isIdea ? { summary: prose, originLinkCount: row.originLinkIds.length }
+      : { interpretation: prose, source: row.source, promotionKind: row.promotionKind }),
+      createdByCommandSeq: row.createdByCommandSeq, updatedByCommandSeq: row.updatedByCommandSeq,
+      ...(clipped ? { contentTruncated: true } : {}) };
+  };
+  const rows = filtered.slice(offset, offset + 24).map(preview), selectedSource = ordered.find(row => row.id === selectedId);
+  const selected = selectedSource ? preview(selectedSource) : null;
+  const ids = new Set(selected ? [selected.id] : rows.map(row => row.id));
+  const detail = { rows, total: filtered.length, offset, hasMore: offset + rows.length < filtered.length,
+    complete: available && rows.length === filtered.length, selected, selectedState: !available ? 'unavailable' : !selectedId ? 'none' : selected ? 'ready' : 'missing' };
+  if (isIdea) {
+    const links = (value.originLinks || []).filter(row => ids.has(row.ideaId)), evidence = (value.occurrenceEvidence || []).filter(row => ids.has(row.ideaId));
+    return { ...detail, originLinks: links.slice(0, 24), originLinkCount: links.length, originLinksComplete: available && links.length <= 24,
+      occurrenceEvidence: evidence.slice(0, 24), occurrenceEvidenceCount: evidence.length, occurrenceEvidenceComplete: available && evidence.length <= 24 };
+  }
+  const evidence = (value.promotionEvidence || []).filter(row => ids.has(row.meaningId));
+  return { ...detail, promotionEvidence: evidence.slice(0, 24), promotionEvidenceCount: evidence.length, promotionEvidenceComplete: available && evidence.length <= 24 };
+}
+
+function stateFromResult(manifest, result, options = {}) {
   const manifestHash = hashCanonicalValue(manifest);
+  const details = ['idea', 'meaning'].includes(manifest.projectionId) ? { details: authoredInspectorDetails(manifest.projectionId, result, options) } : {};
   if (!result?.ok) {
     return {
       schemaVersion: PROJECTION_INSPECTOR_FALLBACK_SCHEMA_VERSION,
@@ -156,6 +191,7 @@ function stateFromResult(manifest, result) {
       itemCount: 0,
       manifestHash,
       projectionHash: '',
+      ...details,
     };
   }
   const empty = isProjectionEmpty(manifest.projectionId, result.value);
@@ -169,10 +205,11 @@ function stateFromResult(manifest, result) {
     itemCount: itemCountFor(manifest.projectionId, result.value),
     manifestHash,
     projectionHash: normalizeString(result.value?.meta?.projectionHash),
+    ...details,
   };
 }
 
-function buildProvider(coreState, projectId, capabilitySnapshot, meta) {
+function buildProvider(coreState, projectId, capabilitySnapshot, meta, params) {
   const manifests = createProjectionInspectorManifests();
   const byProjection = new Map(manifests.map((manifest) => [manifest.projectionId, manifest]));
   const plot = derivePlotProjection({ coreState, params: { projectId }, capabilitySnapshot });
@@ -180,8 +217,8 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta) {
   const meaning = deriveMeaningProjection({ coreState, params: { projectId }, capabilitySnapshot });
   const projectionStates = sortProjectionInspectorStates([
     stateFromResult(byProjection.get('plot'), plot),
-    stateFromResult(byProjection.get('idea'), idea),
-    stateFromResult(byProjection.get('meaning'), meaning),
+    stateFromResult(byProjection.get('idea'), idea, params.idea),
+    stateFromResult(byProjection.get('meaning'), meaning, params.meaning),
   ]);
   const summary = {
     manifestCount: manifests.length,
@@ -193,6 +230,7 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta) {
     manifests,
     projectionStates,
     summary,
+    idea: params.idea || {}, meaning: params.meaning || {},
   });
   return {
     schemaVersion: PROJECTION_INSPECTOR_PROVIDER_SCHEMA_VERSION,
@@ -217,6 +255,9 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta) {
 }
 
 export function deriveProjectionInspectorProvider(input = {}) {
+  if (!validateInspectorViewOptions(input?.params?.idea) || !validateInspectorViewOptions(input?.params?.meaning)) {
+    return { ok: false, error: { code: 'E_PROJECTION_INSPECTOR_OPTIONS_INVALID', op: VIEW_OP, reason: 'OPTIONS_INVALID' } };
+  }
   const projectId = normalizeString(input?.params?.projectId);
   if (!projectId) {
     return {
@@ -246,7 +287,7 @@ export function deriveProjectionInspectorProvider(input = {}) {
           { projectId: params.projectId },
         );
       }
-      return buildProvider(coreState, params.projectId, capabilitySnapshot, meta);
+      return buildProvider(coreState, params.projectId, capabilitySnapshot, meta, params);
     },
   });
 }

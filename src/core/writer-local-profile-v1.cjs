@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return evaluateTemporalAuthoringCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasReadSurfacesProfileCandidate(profile)) return evaluateReadSurfacesCommandAccess(profile, commandId, productCommandRecord);
@@ -214,6 +215,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringQueryAccess(profile, queryId);
   if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsQueryAccess(profile, queryId);
   if (isWriterAtlasTemporalAuthoringProfileCandidate(profile)) return evaluateTemporalAuthoringQueryAccess(profile, queryId);
   if (isWriterAtlasReadSurfacesProfileCandidate(profile)) return evaluateReadSurfacesQueryAccess(profile, queryId);
@@ -564,7 +566,60 @@ function evaluateEntityCorrectionsQueryAccess(profile, queryId) {
     OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
+// V11 adds only explicit Idea and Meaning authoring through the existing Kernel.
+const WRITER_IDEA_MEANING_AUTHORING_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v11';
+const WRITER_IDEA_MEANING_AUTHORING_PROFILE_ID = 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11';
+const WRITER_IDEA_MEANING_AUTHORING_COMMAND_IDS = Object.freeze([...WRITER_ATLAS_ENTITY_CORRECTIONS_COMMAND_IDS,
+  'idea.create', 'idea.originLink.add', 'meaning.promote']);
+const WRITER_IDEA_MEANING_AUTHORING_QUERY_IDS = WRITER_ATLAS_ENTITY_CORRECTIONS_QUERY_IDS;
+function createWriterIdeaMeaningAuthoringProfileProjection(options = {}) {
+  const legacy = createWriterLocalProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy,
+    schemaVersion: WRITER_IDEA_MEANING_AUTHORING_PROFILE_SCHEMA_VERSION, profileId: WRITER_IDEA_MEANING_AUTHORING_PROFILE_ID,
+    admittedCommandIds: WRITER_IDEA_MEANING_AUTHORING_COMMAND_IDS, admittedQueryIds: WRITER_IDEA_MEANING_AUTHORING_QUERY_IDS,
+  }) : legacy;
+}
+function isWriterIdeaMeaningAuthoringProfileCandidate(profile) {
+  return Boolean(profile) && typeof profile === 'object' && (normalizeIdentity(profile.profileId).startsWith(WRITER_IDEA_MEANING_AUTHORING_PROFILE_ID)
+    || normalizeIdentity(profile.schemaVersion).startsWith(WRITER_IDEA_MEANING_AUTHORING_PROFILE_SCHEMA_VERSION));
+}
+function isActiveWriterIdeaMeaningAuthoringProfile(profile) {
+  if (!isPlainObject(profile)) return false;
+  if (!isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return false;
+  const expected = createWriterIdeaMeaningAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const keys = Reflect.ownKeys(expected);
+  return Reflect.ownKeys(profile).length === keys.length && keys.every(key => Object.hasOwn(profile, key) && (Array.isArray(expected[key])
+    ? Array.isArray(profile[key]) && profile[key].length === expected[key].length
+      && Reflect.ownKeys(profile[key]).length === expected[key].length + 1
+      && expected[key].every((id, index) => Object.hasOwn(profile[key], index))
+      && expected[key].every((id, index) => profile[key][index] === id)
+    : profile[key] === expected[key]));
+}
+function ideaMeaningAuthoringProfileAccess(profile, selected, optional) {
+  const allowed = isActiveWriterIdeaMeaningAuthoringProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_IDEA_MEANING_AUTHORING_PROFILE_ID });
+}
+function evaluateIdeaMeaningAuthoringCommandAccess(profile, commandId, productCommandRecord) {
+  const id = normalizeIdentity(commandId);
+  const selected = WRITER_IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId) && isPlainObject(productCommandRecord)
+    && productCommandRecord.id === commandId && productCommandRecord.domain === commandId.split('.')[0];
+  return ideaMeaningAuthoringProfileAccess(profile, selected, isOptionalWriterLocalCommand(commandId, productCommandRecord)
+    || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.')));
+}
+function evaluateIdeaMeaningAuthoringQueryAccess(profile, queryId) {
+  const id = normalizeIdentity(queryId);
+  return ideaMeaningAuthoringProfileAccess(profile, WRITER_IDEA_MEANING_AUTHORING_QUERY_IDS.includes(queryId),
+    OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
+}
+
 module.exports = Object.freeze({
+  WRITER_IDEA_MEANING_AUTHORING_PROFILE_SCHEMA_VERSION,
+  WRITER_IDEA_MEANING_AUTHORING_PROFILE_ID,
+  WRITER_IDEA_MEANING_AUTHORING_COMMAND_IDS,
+  WRITER_IDEA_MEANING_AUTHORING_QUERY_IDS,
+  createWriterIdeaMeaningAuthoringProfileProjection,
+  isActiveWriterIdeaMeaningAuthoringProfile,
   WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_SCHEMA_VERSION,
   WRITER_ATLAS_ENTITY_CORRECTIONS_PROFILE_ID,
   WRITER_ATLAS_ENTITY_CORRECTIONS_COMMAND_IDS,

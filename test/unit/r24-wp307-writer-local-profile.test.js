@@ -639,3 +639,56 @@ test('V10 refuses malformed complete policy forged records and command or query 
   for (const queryId of active.admittedQueryIds.flatMap(id => [' ' + id, id + ' ', id + '.extra']))
     assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, false);
 });
+// V11 is a successor; the V1–V10 policy assertions above remain historical contracts.
+test('V11 admits only the three registered Idea Meaning commands with actual domains after strict V10', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs'), registry = require('../../src/shared/productCommandRegistry.cjs');
+  assert.equal(typeof m.createWriterIdeaMeaningAuthoringProfileProjection, 'function', 'missing V11 is an implementation gap');
+  assert.equal(typeof m.isActiveWriterIdeaMeaningAuthoringProfile, 'function');
+  const options = { isPackaged: true, platform: 'darwin' }, old = m.createWriterAtlasEntityCorrectionsProfileProjection(options);
+  const preserved = JSON.stringify(old), active = m.createWriterIdeaMeaningAuthoringProfileProjection(options);
+  const extra = ['idea.create', 'idea.originLink.add', 'meaning.promote'];
+  assert.equal(active.profileId, 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'); assert.equal(active.schemaVersion, 'writer-local-profile.v11');
+  assert.equal(m.isActiveWriterIdeaMeaningAuthoringProfile(active), true);
+  assert.deepEqual(active.admittedCommandIds, [...old.admittedCommandIds, ...extra]); assert.equal(active.admittedCommandIds.length, 32);
+  assert.deepEqual(active.admittedQueryIds, old.admittedQueryIds); assert.equal(active.admittedQueryIds.length, 12);
+  for (const item of [active, active.admittedCommandIds, active.admittedQueryIds]) assert.equal(Object.isFrozen(item), true);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation']) assert.equal(active[key], false);
+  for (const record of registry.PRODUCT_COMMAND_RECORDS) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active,
+    commandId: record.id, productCommandRecord: record }).allowed, active.admittedCommandIds.includes(record.id), record.id);
+  for (const id of extra) {
+    const record = registry.getProductCommandRecord(id); assert.equal(record.domain, id.split('.')[0]);
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: old, commandId: id, productCommandRecord: record }).allowed, false);
+    for (const domain of ['atlas', 'manualMap', id.startsWith('idea.') ? 'meaning' : 'idea']) assert.equal(m.evaluateWriterLocalCommandAccess({
+      profile: active, commandId: id, productCommandRecord: { id, domain } }).allowed, false, id + '/' + domain);
+  }
+  for (const id of m.OPTIONAL_QUERY_IDS) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId: id }).allowed, active.admittedQueryIds.includes(id), id);
+  assert.equal(JSON.stringify(old), preserved);
+  for (const options of [{}, { isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' }, { isPackaged: 'true', platform: 'darwin' }])
+    assert.deepEqual(m.createWriterIdeaMeaningAuthoringProfileProjection(options), m.createWriterLocalProfileProjection(options));
+});
+
+test('V11 refuses malformed own policy shape near identities and forged domain or record authority', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs'); assert.equal(typeof m.createWriterIdeaMeaningAuthoringProfileProjection, 'function');
+  const active = m.createWriterIdeaMeaningAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const variants = [{ ...active, extra: true }, { ...active, [Symbol('authority')]: true }, { ...active, cloudAuthority: true },
+    { ...active, optionalSystemsEnabled: true }, { ...active, platform: 'linux' }, { ...active, packaged: false },
+    { ...active, profileId: active.profileId + '.extra' }, { ...active, schemaVersion: active.schemaVersion + '.extra' },
+    { ...active, admittedCommandIds: active.admittedCommandIds.slice(1) }, { ...active, admittedCommandIds: [...active.admittedCommandIds].reverse() },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds, 'idea.delete'] }, { ...active, admittedQueryIds: [...active.admittedQueryIds].reverse() }];
+  for (const key of Reflect.ownKeys(active)) { const copy = { ...active }; delete copy[key]; variants.push(copy); }
+  for (const field of ['admittedCommandIds', 'admittedQueryIds']) {
+    const values = [...active[field]], last = values.length - 1; delete values[last];
+    Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [last]: active[field][last] }));
+    variants.push({ ...active, [field]: values }, { ...active, [field]: Object.assign([...active[field]], { extra: true }) });
+  }
+  for (const invalid of variants) {
+    assert.equal(m.isActiveWriterIdeaMeaningAuthoringProfile(invalid), false);
+    for (const id of ['idea.create', 'idea.originLink.add', 'meaning.promote']) assert.equal(m.evaluateWriterLocalCommandAccess({
+      profile: invalid, commandId: id, productCommandRecord: { id, domain: id.split('.')[0] } }).allowed, false);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile: invalid, queryId: 'query.projectionInspector' }).allowed, false);
+  }
+  for (const id of active.admittedCommandIds) for (const near of [' ' + id, id + ' ', id + '.extra']) assert.equal(m.evaluateWriterLocalCommandAccess({
+    profile: active, commandId: near, productCommandRecord: { id: near, domain: id.split('.')[0] } }).allowed, false);
+  for (const id of ['idea.create', 'idea.originLink.add', 'meaning.promote']) for (const record of [null, [], Object.create({ id, domain: id.split('.')[0] }), { id: id + '.extra', domain: id.split('.')[0] }])
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord: record }).allowed, false);
+});

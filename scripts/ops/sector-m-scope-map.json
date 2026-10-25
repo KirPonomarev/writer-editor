@@ -463,7 +463,9 @@
       "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
       "docs/tasks/2026-10-24--atlas-authoring-identities.md",
       "docs/tasks/2026-10-24--atlas-source-entity-selection.md",
-      "docs/tasks/2026-10-24--atlas-entity-corrections.md"
+      "docs/tasks/2026-10-24--atlas-entity-corrections.md",
+      "docs/tasks/2026-10-25--idea-meaning-authoring.md",
+      "src/derived/projections/projectionInspectorManifests.mjs"
     ]
   },
   "allowPrefixByPhase": {
