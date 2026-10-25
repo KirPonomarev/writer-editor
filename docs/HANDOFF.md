@@ -1,3 +1,41 @@
+## 2026-10-25 — Native Undo integration with accepted Settings summary fix
+
+TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: C3_INTEGRATION_CANDIDATE_PENDING_EXACT_PROOFS_AND_DELIVERY
+
+Owner-authorized normal integration of accepted main58596e2 into clean3d78deb3 preserves the theme-summary fix and the same native Undo repair. Main differs from accepted main only by the existing snapshot literal; renderer differs only by the same4line history focus fence. Incoming theme task and complete WP307 tests remain byte-exact; both parents historical carriers and approvals remain. Historical3d78 packaged native INPUT/TEXTAREA/Writer history, Copy/SelectAll, canonical Save/Undo Save/normal Quit/cold and independent raw no-loss review passed on a Main-created synthetic scene. The Documents-only relocation refusal remains excluded. Historical officialCI4416passed; additional local4412pass/4ambient scope failures were retained, with all4whole files43passed after losslessly archived own test-output cleanup. Those are historical source-bound proofs, not C3 acceptance. Current proofs and normal delivery/exact merged verification remain required. No other bug, persistence or security policy change; all17Mac qualifications remain UNKNOWN.
+
+## 2026-10-25 — Native Undo explicit integration with current main
+
+TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: C2_MERGE_SOURCE_PROOF_PENDING_NATIVE_AND_DELIVERY
+
+Owner explicitly approved ordinary merge46a3da4 into b6dc2338 after the base-drift stop; original67d574 delivery ancestry remains. Fresh clean41path preflight/taskE0 precedes merge. All12additional accepted-main imports remain byte-exact; actual Main differs only by the existing menu snapshot literal and renderer only by the same4line native history focus fence. Whole maintained41keyboard cases pass with zero skip/cancel/todo. Both parents historical evidence is preserved; normal bundle/current byte witnesses are refreshed. Prior C1 native INPUT/TEXTAREA/Writer history and note Save/cold passed, but unbound Writer Save refused and was not accepted. New owned qualified Documents fixture, positive canonical Save/no-loss, current broad gates/officialRTK/CI and normal delivery/exact merged verification remain required. No Save/comment policy change, unrelated fix or Mac release authority.
+
+## 2026-10-25 — Native Undo correction after real packaged failure
+
+TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: C1_SOURCE_PROVEN_REAL_NATIVE_AND_DELIVERY_PENDING
+
+Initial candidate18de20409 menu restoration passes finite tests but actual owned INPUT replacement Cmd+Z leaves the replacement; NATIVE_FAILURE_CANDIDATE_01.json retains the full strings and build binding. Normal Quit ends that owned process. No native/bug acceptance or merge follows. Initial broad baseline was interrupted, earns no PASS and its six owned test anchors were archived, fully restored/read back before scoped cleanup. Same PR2164/original delivery base67d574 retained, no rebase.
+
+Fresh clean29path C1 preflight/taskE0 precede maintained actual document-callback RED41:17pass/24native-ownership failures; all13prior and4new positive groups pass. Separate executor adds only4inline history-key focus-fence lines; whole frozen41GREEN passes, zero skip/cancel/todo. All24498old test bytes, all other renderer bytes by inverse and9982outside source hashes remain exact; ordinary bundle generation changes only editor.bundle.js. Native INPUT/TEXTAREA and Writer history, Save/Quit/cold, current broad gates/CI and complete normal delivery remain required. All17Mac qualification UNKNOWN and unrelated defects/audit findings remain open.
+
+## 2026-10-25 — Isolated deferred native Undo/Redo repair
+
+TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_PROOF_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 67d574188a405bbdcf289f48828cd3123744f4ef
+CLAIM_BOUNDARY: Standard native menu history only; finite projection proof is not OS responder or Mac release acceptance.
+
+Direct owner25Oct bug-repair authority selects NATIVE-FIELD-UNDO-01 in an independent branch after Pulse PR2163. The primary worktree and old unaccepted3396dc1c draft remain protected. Whole maintained RED13 executes9old pass/4new missing-role failures. Minimal two pure native roles and current snapshot literals plus generated artifact/lock/mirrors pass24whole focused cases and13related cases, zero skip/cancel/todo. All old snapshot rows and menu semantics except Undo/Redo are preserved; Core/renderer/preload/IPC/storage/typing remain unchanged. A root artifact-output method fault and its failed whole result are retained, then corrected through the existing explicit canonical CLI.
+
+Actual owned native INPUT/TEXTAREA/Writer Undo+Redo, Save/Quit/cold no-loss, current source/affected/full baseline/official RTK/current CI and normal commit/push/PR/merge/exact merged proof remain required. The defect stays OPEN until those proofs close. All17Mac qualification UNKNOWN, prior audit findings/59named baseline skips and other deferred defects remain. New logs/materials use verified T777 without additional encryption and compact lossless evidence; owned temporary APFS runtime is declared in the task. No full Mac, security, signing or distribution authority follows.
+
 ## 2026-10-25 — Explicit saved scene-language tag: source frozen
 
 TASK_ID: YALKEN_SCENE_LANGUAGE_TAG_20261025

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "snapshotId": "menu-default-desktop-minimal-select-all-20261023",
-  "normalizedHashSha256": "50aa09a87b32a7989fc908ee86c172e317fe22954bafe4c338a1dfd04ec5c541",
-  "generatedAt": "2026-10-23T11:52:30.354Z",
-  "generatedFromCommit": "30d691d468842c257c9970b53a81e22e644354c9",
+  "snapshotId": "menu-default-desktop-minimal-undo-redo-20261025",
+  "normalizedHashSha256": "346b5b8f42e8f412bc0d07bf6130a9d07f7ff8728ed1b625737b8afa1f9edeb1",
+  "generatedAt": "2026-10-25T11:33:41.944Z",
+  "generatedFromCommit": "67d574188a405bbdcf289f48828cd3123744f4ef",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -812,6 +812,66 @@
       "enabledWhenAst": null,
       "id": "edit",
       "items": [
+        {
+          "canonicalCmdId": null,
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "edit-undo",
+          "mode": [
+            "offline",
+            "web_subset"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "role": "undo",
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": null,
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "edit-redo",
+          "mode": [
+            "offline",
+            "web_subset"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "role": "redo",
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
         {
           "canonicalCmdId": null,
           "disabledReasonCode": null,

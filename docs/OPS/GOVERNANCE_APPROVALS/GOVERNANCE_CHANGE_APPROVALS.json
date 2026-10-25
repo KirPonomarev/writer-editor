@@ -23311,6 +23311,676 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
       "sha256": "1154738e026af6a8bce8b38b32cc72dc83f88340cfffb25ab8af0e459047cddd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "1acb57ca9684444fffa6685d389ea6dc2d5f3639c9a4a3d793274e59f7cd896d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "8cda225a759311b519e5677c9f72dd769d89a4a41123cf204781b35258ec7e8b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "123429e24a88f02708f89f9563a18fbe84781df593f3dbc19b8ace25b505d375"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "b7bd96691e56e8831ba774c51d694d534a8a07db61d6aba1f9f0dc8ad4f7e847"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "bcdd955cdcb9efdbbd536ff202b8e10da5d9ae55d11535603f9c7529352fe2c0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "44b7c46306becb352a524ae201c2675a8c73ba34780715ab8f7fc6c36895bf65"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "b9f4edd1e296495b0cf83a85b0c55f9472af44b1a695ab50b4a314a8150b83ea"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "5b6a4c5f5bf178517ddccfb2d041144e53f5e54ac5244109a54c65de6eed3272"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "928a9f73567d0602a6ddf8208d99512c82282b80c3323a1a4daba0d63de41756"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "76deaaacd54ac6b0928d463f3d37b6301cfc604dd6895abd58117f28466a7326"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/menu-config-normalize.mjs",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "6f29e916e8561c7ad96af5418129e5d13e3dd781e02719bbe404c76bb452b34a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "461fcf186f6c926cd03175a3cbfa03f1fd0f2c34651c344a73d1ab21223b4d7e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "b0e6d0b2d616fc6a0cbebbe6abdf1428bd514802adb3b1ef211ffa1fb752de63"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "a619935cc5f70b74fbc88e629700496babdeb3516308e3ad9ebd85308ebf6f01"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "463f18616738dcc392f2f4948dac8dc122d07b21e6dd39ac191105834f47dd86"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/run-tests.js",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "e1491f196baf958e9acbac20781c54271d95622ebdea9ce578bf75a15e6259d7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "1ed0587ed82f642571608fa1c254d94b5074300923ad8ae07b5a870ad91220d2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/menu/menu-config.v2.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "96da4dd2e76e572804a50673a07dee3883d9ae771f766ea3ffe4c6cb9fba48cc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "123429e24a88f02708f89f9563a18fbe84781df593f3dbc19b8ace25b505d375"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "2a94a207c5533d2d0fbe67d4b3e8c136bda789a8f6874bda24184769665a577f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "7200dc6e51cc8752a6541c902ae49c1ce17eb87f3b40089f99bcd36bb4e45eb1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "970e6721324b23b6a7ccf3670d62d7ad1c34c58e6819623ba75295c50d515d1a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T11:36:31.974047+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/keyboard-shortcuts.test.js",
+      "rationale": "Direct owner25Oct authorization for small independent deferred bug repairs and verified normal PR merge. Fresh isolated exact main67d574188, clean27path architecture preflight/taskE0, preserved whole causal RED and independent root review. Only two native menu roles/current IDs plus generated exact artifacts and mechanical current byte bindings; Core/renderer/preload/IPC/storage/dependencies and primary-agent worktree remain protected. Historical tuples/predicates and inventory classes/lanes/skips/all17UNKNOWN preserved. This witness is not native acceptance; full current proofs and ordinary delivery remain required.",
+      "sha256": "41ef850be54d6ca3b63a956f14e0af094b24257c91c4b3831e90a4ea926c7d09"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "0a0b0dc5b71b9ade2e2a3ae59887a8c8cbfa82d417bb10a2c24f2db01d7af740"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "e43eab58151724c76fa3845e2a77d39924775e620c17d614fdd7ffa37a74ca49"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "fe20265c8b454ce1bc80bfb88e3e8c4e1182d0163a55bff7e0030428ef845c45"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "309ffe69fc68bcf43510b5c007005d956146ab67c441a7b004c25110e346444b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "6792904f7579f0a89d56da71b4f8d8a0f60e13a2d90a3ec947415923af7f6cb1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "89b353d9e1f33ff2c7c6021c1ec83ca7d18c000f8b7ca858d2dd38935155feef"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "0e308ee775d0704daafe5777a3fa21b9627c346dbe2e14756786f0ef19821f55"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "400cd62f77c83559acd02fc238bfb7f12412a6017fd6ff4ef00fe6de249983a0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "c4a2409105bede1e37edf8793aa66687ab9b70cdb018fd94f446e5f107bbc247"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "9d5c86029ff85ddf799be296d101ee5e0e879fe14fcebc4a86f9ffdb193d6d98"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "9f14642f73d659e77d9cab42997cd61a75a80538eb466988a2bcb5629796e529"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "b7a2103952d694166b430f267c94c82c149040ba3eea00541169aa2450d4d45e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T15:19:46.282121+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C1",
+      "authority": "DIRECT_OWNER_SMALL_BUG_REPAIR_AND_NORMAL_PR_DELIVERY_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/keyboard-shortcuts.test.js",
+      "rationale": "Same owner-authorized PR2164 correction C1 after retained actual native failure. Clean checkpoint18de20409 and29path preflight/taskE0 precede maintained actual-callback causal tests and the narrow existing global-history native-control focus fence. Only renderer source/bundle, test and factual/current byte bindings change. Core/preload/IPC/storage/dependencies, historical tuples, inventory membership/lanes/skips, all17UNKNOWN and primary-agent state remain protected. Byte witness is not native acceptance or release authority.",
+      "sha256": "4cc30c9e0d2ed3816aee35451b8882d16e77b341c3a6798de13eebb6be921e09"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "68bbe95ceb74279d6959c56b0e8db3bc82f68c36a664cfced4b9346f4d3cd3ee"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "5e072a4bb7fc609c426367212b462dfd9910d1f121d1b9b228863f45a263f01a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "0203275dfb51546c3b8d66874422a5d0b69aef0b04706b239b4816c3d2964366"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "bd0041b5891d7b37c6a193d586cd311585c4d64836a815eff4f3365d999d7ebc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "cf174f17ad67c1d5edbdb92236276617babb02ee85d00830236cea741fd56c43"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "29883424c593835094f14a75776918ada09234b241daa959ee248920096f94f2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "510999865e113b8e67eefd025636d0e3998ee83109a2c30702447a0933303d6a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "c74c469bacd6708c3c891a7efbb39681fc0b72ac23bcb873f8f3273ddcf9449d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "f903494f43556cc79052e49323d9839d25aed07ad21f0e020e6e5de38ab15939"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "50422d0fc2429801c1491cd8efc8b86156c7d45ad8fe87f5c8c1b9ca1ed1a6ae"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "c1472808473273931e8b8b0c0ae9ee6c85f3d77033599c5e429e86b6bbf24c55"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "f8251555bfbbbca102c4bae735a06521759dd13f3e3ed30b45ef53216717acdf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "c59a70dcb983475bd376b7677aa7e9f74f4fb6b5715861bbc6eafddd7a66cf95"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "24e772a7a5d0d29892ab4793e0c01c7c6a3a5ae419ad6abe7c0cbd11287c7473"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "c6e57a5bb14f615434df723f4a0958145fea563743abd45ff9d9168b49a7bad0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
+      "sha256": "e190e771a2d146d4046a63a2f9a9adeac9906d9ef20af60fd4e2d3973f3d1b03"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "5fc0ea7b1b4e4c921293fa65ed9973869137a87a5d381a8cd6bda4bb79beea87"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "7a5dfa5bdb275e888c440294bc86be08b8e1ededb6aa3710832bcedd7bb2a275"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "055a2bc6adac7544d2e599f377e23b0c11f5ed4d1570a9b2b4cd8077ad99c869"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "c7ac875ed1a413e338bc3e4bc5209df40bffb6d7c20a1f30e3cd83d41ddf478b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "b9e783a54a8465ea06c234414e5fb60fa166609a9ccd3493b3fa3f9fe354e614"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "f2a6fa2e8d4df128ec387dc03f77bd817dc5f94fa4e6373e65da5b2096544640"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "3154bdb5c52cbba1a676082a77ebc6fbf54087a4ac2e222d29bb901ee42accfa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "231db6a8cd915b84f0dccd57ef7d1e3180418a10481f4ba4a71fcb04f1935f35"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "d8752a989f61e7f119edb155819c0b99c023dfcb45b843e57ad0d7d951b43b97"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "7eed963c8687d019152929a51596ddee1fb97894705d3f49c6cca25c6e9d2ffc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "d812eb6d41af2645348bf2f692e506bb5ef3a994503979d418bc0239c2f1ace6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "fc91bacfa390e097e3b43043866f7dcb36ae5a9aad4c50f5e24fca6de89bff2a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T19:42:21.560888+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C3",
+      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
+      "sha256": "ddd17679cf2fe70582487ef726837c701ee21051037b5cbc9628a79288f65ca1"
     }
   ],
   "evidenceStampIds": [
