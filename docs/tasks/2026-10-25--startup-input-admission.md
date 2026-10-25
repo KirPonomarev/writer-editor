@@ -1,6 +1,6 @@
 # Initial authoring input admission
 
-STATUS: CAUSAL_RED_REVIEWED_RUNTIME_IMPLEMENTATION_ADMITTED
+STATUS: WHOLE_FINITE_GREEN_BROWSER_NATIVE_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing editor startup safety only; no full Mac, WSE or release acceptance.
 TASK_ID: YALKEN_STARTUP_INPUT_ADMISSION_20261025
@@ -133,4 +133,9 @@ Runtime01 whole25passes and48total46pass2old-fixture failures remain actual resu
 
 A separate TEST_FIXTURE_ONLY ticket may now adapt exactly two old WP302 expectations: case12 must continue to require awaited selection-range persistence and additionally require the real existing beforeWrite stale-window guard; case21 must execute the actual production owner declarations with its detached callback, using faithful finite window liveness/session ports. Keep all old behavioral, ordering, refusal and persistence assertions, and every byte of the151new appended lines. No runtime workaround, always-true predicate, skip, test-name filter or broader helper rewrite. The original41658byte WP302 prefix was exact during causal proof; its final byte equality will have this explicitly measured fixture exception. Every other old byte remains protected.
 
-Current mechanical assurance must preserve both parents' historical carriers. Their bindings differ: accepted Theme330 and native Undo327 have a331path union. A complete new startup successor adds only its new task to that union, refreshes actual current hashes and retains the existing policy guard. Never choose the smaller carrier and silently drop the other parent's four bindings. Current inventory memberships/lanes/skips, release source-set membership and17UNKNOWN remain unchanged.
+Current mechanical assurance starts from the active accepted native C3 carrier, which already has331bindings including the full Theme predecessor. Historical native327 and Theme330 are not the current carrier. New startup successor adds only its new task to that complete331path set, giving332bindings, refreshes actual current hashes and retains the existing policy guard. Every historical constant remains byte-exact. Inventory memberships/lanes/skips, fixed release source-set membership and17UNKNOWN remain unchanged.
+
+
+### Current source assembly after whole finite GREEN
+
+Same task ordinary fixture checkpoint dcbf9f208 preserves all10014source bytes of the actual73of73 finite GREEN at92c1dcdc; all65oldcases pass and8new witnesses execute, zero skip/cancel/todo. WP302 has four independently reviewed fixture replacements totaling11added/deleted lines; every other original assertion and all151initial appended lines remain. Original RED remains at58596. Runtime110manual lines, bounded initial parse/error status and native INPUT/TEXTAREA Undo fence retained. Ordinary bundle generation changes only editor.bundle.js bytes. Current declaration04/clean preflight06 applies to assembly; original fixture03 preflight was clean before writes. Redundant04 missing relative declaration and05 expected own-dirty refusal are preserved and have no acceptance credit. Root source review setup attempts also remain; only completed source join earns assembly eligibility. Current full browser proof, complete source/strict gates, native before push and full ordinary delivery are still required. No current native/fullMac acceptance.

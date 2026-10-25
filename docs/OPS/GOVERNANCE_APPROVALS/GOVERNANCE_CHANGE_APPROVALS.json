@@ -23981,6 +23981,266 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
       "sha256": "ddd17679cf2fe70582487ef726837c701ee21051037b5cbc9628a79288f65ca1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "bcdce61f95acddb751594f881d6d37c84517193ddb168adaf5c7b3f7adcd1f52"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "52bc521c50584d2a23828e26904a462f35af1d521fc44209efb4b1a01a2afd1a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "31d4ba5d638884bf64eb6e31e9b655624430e79c5161ee128d132382278a82c8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "9a0414130bc98467a59ceda9f56a2fff2d236b15d4198611ef02de87bba420c4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "bb72a9fd114c86393442a4c34473a2ddefff0826a1768411a9a45306841cffa4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "1c7d99667b33c52f8b4ddedac962125b5e09a81e9f2dc193e52a1fca4912f7a5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "5daf95ec8ea7b96c4f4ac71f6e5972cfcb55bc71efbde4b5781ec67e1ec3a562"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--startup-input-admission.md",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "7a16157c8ea6c142471abb643a22317730ab0a9fddb06894f6164770c902054c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "b23a63a3cb503af1dc280e6f5a5e4df9f2fe3ef96737edefc83061d2fb670e6f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "5b6e4c12e6477936132b3aa3f3a9abed0a825bf61cbee3a937b1a36c0ff9ff99"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "d28222b3771d57485b56ec58e2050099a7bbf2a9882b1a1b30e68d142cfbc935"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "01a5b8dbd94fc30ee3ff7bc12d27cd32d5fd5c04cb9778ea6886d6979662bc47"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "5cf67a6d12b9b3b06324437f562041e6007e162c36db8723257b9e1829722175"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "28787b8c344b86e805c67c4192e6f9a671293c42bbd85b3b838a6f1388b61ea6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "cf58c2f966adedcb116ce51e744f2ffae25d6ee74cf8a56d652e49a6cc80c547"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/index.html",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "a549c6138b3545d16346b829aee94d8658adac261bcca3f3a582a536438f7ec1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/tiptap/index.js",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "4d623a4f06d7d6a0a6fb4f29a28669fb406b180465fbfd46e383b70f394de7fb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp302-session-continuity.test.mjs",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "23509d40959d6b331961e332df3bb2996a8fb9bbb6d02bee91fcc5782bfe1b34"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:22:22.860215+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+      "rationale": "Existing startup authoring safety repair after independently reached causal input loss: root whole73of73 finite review, initial unavailable editor/checked first adoption/current window guards and faithful11line old fixture adaptation. One exact task admission and complete active331-to332successor; every old carrier, strict corruption guard, inventory membership and17MacUNKNOWN preserved. Source assembly only; actual browser/native/current full CI/normal delivery pending.",
+      "sha256": "154841e5155a09dd732999bc799059dfae7ff8befb40e1e13205132d96b36df7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:24:45.628874+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same bounded startup admission task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "a9c0f3567cdeaad17a71f370506515bc1a608aca9001fe0df42c1c9ac8d4f174"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:24:45.628874+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded startup admission task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "59778482d7695c134d2a657aaf77061aca4b09c9de8c685ba4faf32137fbb5a4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:24:45.628874+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded startup admission task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "f13779c9b703822efce94d45e4cef272559e10be345649a7d99734198ec4fef8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:24:45.628874+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--startup-input-admission.md",
+      "rationale": "Same bounded startup admission task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "7a16157c8ea6c142471abb643a22317730ab0a9fddb06894f6164770c902054c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:24:45.628874+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded startup admission task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "d76871552b166f4834a52dc1ee7b59d9c34cbcdca4daa6efe755b5322bcbc863"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:24:45.628874+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded startup admission task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "40519d26c68384f03f0e97fa02c1500e80789db3aca36dc4a9d89da5aa6795a6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T21:24:45.628874+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same bounded startup admission task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "9bf7b13d5ec16d5b6ccfa80f08d90f2f835602533aefed9ae0b4cbaa781a9d97"
     }
   ],
   "evidenceStampIds": [
