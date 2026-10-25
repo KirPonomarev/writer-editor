@@ -1,6 +1,6 @@
 # Initial authoring input admission
 
-STATUS: SOURCE_CHECKER_COMPAT_FINAL_PROOFS_NATIVE_DELIVERY_PENDING
+STATUS: SOURCE_C1_NATIVE_SCENE_PROVEN_CI_FIXTURE_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing editor startup safety only; no full Mac, WSE or release acceptance.
 TASK_ID: YALKEN_STARTUP_INPUT_ADMISSION_20261025
@@ -60,6 +60,7 @@ After root independent causal review and test freeze, permit one bounded correct
 - test/unit/sector-m-tiptap-runtime-bridge.test.js
 - test/unit/r24-wp302-session-continuity.test.mjs
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
+- test/unit/security-privacy-writing-path-smoke.mjs
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js
 
@@ -154,3 +155,11 @@ All current332startup and older accepted carriers remain byte-exact. Append a333
 ### Source checker C1 binding
 
 Current source assurance appends C1 with333bindings and one policy guard,806DATAadmitted/666sourcepins. The earlier332startup carrier and every accepted predecessor remain byte-exact. This C1 owns only the measured legacy read-only source recognizer correction and current-only task/source hash alignment; production110lines, normal generated bundle and73causal test sources remain exact. The unchanged retired-checker3case suite is the focused checker proof, not current native autosave or IME authority. The earlier82case failure and deliberate whole-profile interruption remain exact; full final-source697 and source gates/native/full delivery remain open. All17MacqualificationUNKNOWN, and the two priorIME contract failures remain reported asFAIL/UNKNOWN, not green.
+
+### Required privacy fixture admission ordering
+
+Clean C1 at5222d446 completed whole73, whole697, strict19, release785, stale6, E0172 and current source gates. Actual isolated native Unicode/selection/UndoRedo/ordinary scene Save and normal Quit executed; after cold same-profile launch, the saved canonical scene was explicitly opened and its exact446bytes independently read. Original115project/Pulsefiles plus separate2152byte nineepoch journal remain exact. Canonical OS bundle identity, automatic saved-scene title restoration and fullMac remain unqualified. Standalone external cold recovery fails on a source path byte-exact across C1 and both accepted bases; blank-autosave lifecycle refusal, unsuccessful blank Save and recovered-document SaveAs remain separate failures. The wrong-process native stage is excluded, with unknown residual effects retained honestly.
+
+PR2168 official current-head privacy-negative executes10cases,9pass1fail: all network counts zero, but its synthetic writing probe runs at did-finish-load while the corrected actual editor is still readonly; all three required input markers are absent. Preserve that causal CI failure. Same-contour declaration07/preflight explicitly admits the existing privacy fixture as the26th path, protecting9988other sources. Before actor edits, root records this task-only checkpoint. A separate TEST_FIXTURE_ONLY actor may add only a bounded wait for a connected, currently editable real TipTap after network interception is installed and before the original focus/execCommand probe. No timer-only success, readonly override, manufactured document, disabled test, platform skip, workflow/dependency change or removed network/privacy/edit/local-IPC/dialog assertion. Missing admission must fail truthfully.
+
+Append a current C2 source successor including that existing fixture, retain every earlier constant byte-exact, and refresh current-only inventory/source/approval pins. Fixed memberships, lanes, retirement guards and17UNKNOWN remain. Run the whole privacy gate and preserved73/697/source/strict baselines on final committed source, unchanged runtime/bundle proof and corresponding owned native qualification, then current officialCI and ordinary merge with literal merged verification. This fixture repair neither fixes the discovered unrelated startup recovery defects nor grants full application/security acceptance.
