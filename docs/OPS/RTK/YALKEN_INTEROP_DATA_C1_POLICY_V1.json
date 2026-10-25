@@ -811,7 +811,14 @@
     "src/renderer/design-os/designOsFormConfiguration.mjs",
     "test/unit/r24-wp303-design-os-customization.test.js",
     "docs/tasks/2026-10-25--settings-theme-summary.md",
-    "docs/tasks/2026-10-25--bug-native-undo-redo.md"
+    "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+    "src/renderer/assets/logo.png",
+    "src/renderer/assets/README.md",
+    "build/icon.png",
+    "build/icon.icns",
+    "scripts/make-mac-icon.sh",
+    "test/unit/r24-wp308-brand-baseline.test.mjs",
+    "docs/tasks/2026-10-25--canonical-logo.md"
   ],
   "protectedFiles": [
     {
@@ -1140,7 +1147,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "743d9166eacbd6d05d06960b87cc9a830cf8e5abed401b00ec57459f46a3e17a"
+        "sha256": "6c5e9845320ab548e6edc5a894fbb62c113873b92107f2f402fd4c79c93d0ede"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -1528,7 +1535,7 @@
       },
       {
         "path": "src/renderer/index.html",
-        "sha256": "2b2d08a6ec5a33b545a4963a3e10978b6662353bc87fa555943d11a37429f60f"
+        "sha256": "c898b0b26e245dd6a841548a6c75fcda5be2a7289167e1f7d15110990d8268ff"
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
@@ -2740,7 +2747,7 @@
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f2a6fa2e8d4df128ec387dc03f77bd817dc5f94fa4e6373e65da5b2096544640"
+        "sha256": "7a7772a207f4819886349b7046fbf8ba085fc9b253a1b69a2eaaa675fa9ef482"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3280,7 +3287,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c7ac875ed1a413e338bc3e4bc5209df40bffb6d7c20a1f30e3cd83d41ddf478b"
+        "sha256": "a1e5e795e16c9a3be6d4c9af208bc5c7da51c57aef604b3d5e899b939360081a"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3412,7 +3419,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "7eed963c8687d019152929a51596ddee1fb97894705d3f49c6cca25c6e9d2ffc"
+        "sha256": "115f4891a817ec046f71dbf781d591a7d2196b33430fc132c6415f140898d317"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3919,6 +3926,13 @@
         "predecessorPolicySha256": "43a25ac29753bb5e11f6dea076d72cc650ec098c8cb6e97e4136d974be172106",
         "scope": "S38 existing test-port preparation and repaired B2C10 executable green classification only; every original preservation assertion, child execution and checker predicate retained."
       }
+    },
+    "canonicalLogoIntegration": {
+      "taskId": "YALKEN_CANONICAL_LOGO_20261025",
+      "bindingBaseSha": "f6601801a9b584cd1caeb60a7f643a59f70adf55",
+      "productCommitSha": "eebd96d98a72884786e6d117763da7e02b285867",
+      "predecessorPolicySha256": "b9e783a54a8465ea06c234414e5fb60fa166609a9ccd3493b3fa3f9fe354e614",
+      "scope": "Owner-selected canonical logo in existing titlebar/icon slots only; exact current-byte companions for this PR. Preserve all historical evidence, native acceptance predicates, denominators and product behavior. No cell or release credit."
     }
   },
   "wordTextOrderBatch": {

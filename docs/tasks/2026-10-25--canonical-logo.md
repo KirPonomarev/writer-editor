@@ -31,8 +31,18 @@ The existing 18px titlebar mark displays the owner's precise 328:595 Y path, neu
 - test/unit/r24-wp308-brand-baseline.test.mjs
 - docs/tasks/2026-10-25--canonical-logo.md
 - docs/WORKLOG.md
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- scripts/ops/sector-m-scope-map.json
 
 Text diff budget: 220 added/removed lines plus this specification and one factual WORKLOG entry. Binary files are exact owner asset copies. Local existing locked build dependencies, temporary build output and fresh synthetic UI inspection profile are allowed operational inputs, not new product dependencies.
+
+CI continuation at clean eebd96d98a72884786e6d117763da7e02b285867: the eight listed OPS companions are a mechanical delivery exception to the text budget. Refresh the existing test digest without changing its 1603-file membership/classification; bind only the actual logo/task/log bytes in current DATA policy, append one exact successor, retain historical sets and every verification predicate, refresh current approval witnesses and admit only this task's paths. No additional product source edit. Fresh continuation declaration/preflight passed at eebd96; original PR base remains f6601801.
 
 ## DENYLIST
 
@@ -70,6 +80,7 @@ DESIGN_TOOL_DEVIATIONS: no new direction research is needed. Higher-priority own
 3. Copy the approved source/build PNG and ICNS byte-for-byte. Make icons:mac retain source pixels instead of applying the obsolete spiral contrast/black-padding treatment; use installed macOS sips/iconutil because app-builder-bin is absent from the current locked builder. Document the source and correct obsolete mask instructions.
 4. Update the maintained brand test's selected-shape expectations while preserving all nine tests, authority/identity/accessibility negatives and seven mutants. Check actual mark contrast and owner icon identity.
 5. Execute focused/source/build/native proof, review the whole diff, one factual log entry and complete ordinary commit/PR/CI/merge/exact-head verification.
+6. Preserve first PR2167 CI failure at eebd96: stale WP308 inventory digest and DATA_RUNTIME_REPAIR_PIN for index.html, styles.css and WORKLOG. Refresh only required current-byte companions, execute their actual gates on the successor commit, then resume the same PR delivery without bypass. The already inspected package remains bound to eebd96; unchanged packaged inputs must be verified before claiming equivalence to a companion-only successor.
 
 ## CHECKS
 
