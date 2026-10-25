@@ -23981,6 +23981,386 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Explicit owner normal-merge authority for this same Undo PR, current accepted main58596e2, preserving both parents. Clean42path declaration/preflight/taskE0; exact incoming Main snapshot literal and4line renderer history fence;13protected imported paths. Current witnesses bind actual bytes only and reuse existing same-byte valid witnesses. Historical3d78 native canonical Save/cold proof remains exact-bound; current C3 proof/delivery required. All17Mac qualifications and authority gates stay unchanged.",
       "sha256": "ddd17679cf2fe70582487ef726837c701ee21051037b5cbc9628a79288f65ca1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/index.html",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "c898b0b26e245dd6a841548a6c75fcda5be2a7289167e1f7d15110990d8268ff"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/styles.css",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "6c5e9845320ab548e6edc5a894fbb62c113873b92107f2f402fd4c79c93d0ede"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/logo.png",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "ef424c96caa2beef9cb388d78149c478259089dfd689e77771363269f6f8edc2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/README.md",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "efe60c3b1a8a105e0e7482a9dee115537eccbdfeb7f9e2ca4aa6c9b9e511bc0d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "build/icon.png",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "ef424c96caa2beef9cb388d78149c478259089dfd689e77771363269f6f8edc2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "build/icon.icns",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "620b06c16550a3e59b0302a5afdaa00d645bff80e1705970bf1ba8a9c40d276b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/make-mac-icon.sh",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "81ef7b13e5a4c37e5e6194b468713e490479f810793c3c85845896fe8f3a31e4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp308-brand-baseline.test.mjs",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "b4e4e615153320f0bfb9b6b239e66f30f81e2fa97442a60eda41878c8d2fac4d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--canonical-logo.md",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "2f8c4b9f38a1e1b22320e01e856f88a0be0cb08c43ccebcb6800d6bd8c46b01e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "7a7772a207f4819886349b7046fbf8ba085fc9b253a1b69a2eaaa675fa9ef482"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "d9fcca1da957413cae6fe4e6d3b3dd0d3baee0713ab8d2d5cf8de02bfb6c1fe2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "c95fe14c5d3fad4f853c78d3c8e9d477d74e381131e1d098eb1854d063b7aeb6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "3d49930999026a9e53041fa6322765874198d8cded3d097bcf13cd7ebac78ee1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "e82160e208e4367f2462a079262a201a4d8beecfb4f0bde0f072df1e31b11dc9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "a1e5e795e16c9a3be6d4c9af208bc5c7da51c57aef604b3d5e899b939360081a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:10:45.277701+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
+      "sha256": "115f4891a817ec046f71dbf781d591a7d2196b33430fc132c6415f140898d317"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/logo.png",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/README.md",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "ec9dd271c7dba2cbf74790c40d57df6ff2d68db132de403dab8b23838df81d7c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "build/icon.png",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "build/icon.icns",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "7760f07f392af5d8611564778231c36a357b1efd9cbf204a103b9b5013aa030a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp308-brand-baseline.test.mjs",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "156e026f9f55a9e85547d161d337e8219261d4657d46863d2b702a216184b440"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--canonical-logo.md",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "c2cbbcbcff2b10de5230ea560d741fa420b541aaf468c5af289155758c43489c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "f3abc1998f34f2fbc10e62a2419d39e93cdc7515caf3f7f18ac3eb7237a07c09"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "9e3f31b7223bef7954236bde56242a6ec00f54b975b918c04b99241196d5b2f3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "6cead1061a465320268f0fe3dc97d683b155c27b11a3c7477f43e0943e753fb8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "31d15b36e0cec9bd938e4d5f7b1c35b373305c550f4dd2b3342fe509f10d9185"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "11d107a08b6a13f79bbb866e2911d9a70e3d7f82126c0587b805c676925a1dda"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "b7a6cb04531dac129c3873a5b05cfe0b92e2983d68c7754de071f510bdece6bf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "c92052e2dccfabf078d37909b4bbcf83be6951b07cb7a3dd5c3ba2265a3deae6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/app-icon.svg",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "2ed7a0905fa87a7138baceea4518cfa336a1ebf30e50bf5300e45f966ff60bdc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--canonical-logo.md",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "e162442d96ef0984d4345bb540f4f650a6830b00d92bde54418fddcc87365052"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "2bb666bcf42b7cc4c54f9f86c386f973d7f97f7109f98d731c1a88e967d0f56b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "500c1d5e27e40ff17f3f84fd2f8b0d5c167ec6eae0e235db78a6496509d0fe22"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "95d6599807a0d21a1e50a50d7eaa3cd2ad2d2752fc0ff16589f5f02e68b27371"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "5c64bfda8654d5c4f68f9ec3b508926ed5d3aa4000ec9e22559176cbbf8f0cc4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "58e904cde529ecec575114e52e06ea4ff54da5c9849551a58d76e404eaa4ec82"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "7a47a073108af3813106e038542d303036c62f5d6ea58a3b1c90e1664b3151df"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "7a853172128544a7dc21fb7e8d4af1792092e77460f38592820a70ebffed3beb"
     }
   ],
   "evidenceStampIds": [

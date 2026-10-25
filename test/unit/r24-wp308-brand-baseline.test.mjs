@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -157,9 +158,10 @@ test('WP308 visible lockup is tokenized, stable, accessible and asset-independen
     'data-brand-mark',
     'aria-hidden="true"',
     'focusable="false"',
-    'viewBox="0 0 18 18"',
-    'brand-lockup__page',
-    'brand-lockup__accent',
+    'viewBox="0 0 328 595"',
+    'preserveAspectRatio="xMidYMid meet"',
+    'brand-lockup__symbol',
+    'd="M0 0L116 210L158 595L156 189Z M328 0L212 210L170 595L172 189Z"',
     'data-brand-wordmark aria-hidden="true"',
   ]) assert.equal(lockup.includes(token), true, token);
   assert.doesNotMatch(lockup, /(?:href|src)=/u);
@@ -171,12 +173,47 @@ test('WP308 visible lockup is tokenized, stable, accessible and asset-independen
     '--brand-titlebar-surface: #f8f5ef;',
     '--brand-wordmark-ink: #173b34;',
     '--brand-mark-accent: #b74636;',
+    '--brand-canonical-mark-ink: #4c4a45;',
+    '--brand-canonical-mark-ink: #f2ede6;',
     '@media (forced-colors: active)',
   ]) assert.equal(css.includes(token), true, token);
   assert.match(html, /<script type="module" src="\.\/brandIdentitySurface\.mjs"><\/script>/u);
   assert.match(brandStyles, /\.brand-lockup\[data-brand-contract="fallback"\]\s*\{\s*visibility: hidden;/u);
   assert.doesNotMatch(lockup, /<img|\.png|\.svg|style=/u);
   assert.doesNotMatch(brandStyles, /url\(|logo\.png|animation:|transition:/u);
+  assert.doesNotMatch(lockup, /brand-lockup__page|brand-lockup__accent|<circle/u);
+  assert.match(brandStyles, /\.brand-lockup__symbol\s*\{\s*fill: currentColor;/u);
+  assert.match(brandStyles, /background: transparent;\s*color: var\(--brand-canonical-mark-ink\);/u);
+  assert.match(brandStyles, /background: transparent;\s*color: CanvasText;/u);
+  assert.doesNotMatch(brandStyles, /stroke:|stroke-width:|stroke-linecap:|stroke-linejoin:/u);
+  const core = loadCore();
+  const actualInk = [...css.matchAll(/--brand-canonical-mark-ink: (#[0-9a-f]{6});/gu)].map((match) => match[1]);
+  for (const [index, mode] of ['light', 'dark'].entries()) {
+    assert.ok(core.contrastRatio(actualInk[index], core.BRAND_IDENTITY_V1.tokens[mode].titlebarSurface)
+      >= core.BRAND_IDENTITY_V1.accessibility.minimumNonTextContrastRatio);
+  }
+  const editableIcon = read('src/renderer/assets/app-icon.svg');
+  assert.match(editableIcon, /viewBox="0 0 1024 1024"/u);
+  assert.match(editableIcon, /<rect x="56" y="56" width="912" height="912" rx="210" fill="#FBF8F3" stroke="#E9E2D9" stroke-width="2" filter="url\(#shadow\)"\/>/u);
+  assert.match(editableIcon, /<path fill="#4C4A45" transform="translate\(295\.905882353 120\) scale\(1\.317647058824\)" d="M0 0L116 210L158 595L156 189Z M328 0L212 210L170 595L172 189Z"\/>/u);
+  assert.doesNotMatch(editableIcon, /<script|<image|<text|(?:href|src)=/u);
+  const transform = editableIcon.match(/transform="translate\(([\d.]+) ([\d.]+)\) scale\(([\d.]+)\)"/u);
+  const [x, y, scale] = transform.slice(1).map(Number);
+  assert.ok(Math.abs((595 * scale) - 784) < 0.000001);
+  assert.ok(Math.abs(x + (328 * scale / 2) - 512) < 0.000001);
+  assert.ok(Math.abs(y - 56 - 64) < 0.000001);
+  assert.ok(Math.abs(56 + 912 - (y + 595 * scale) - 64) < 0.000001);
+  const iconSha = '49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7';
+  for (const relativePath of ['src/renderer/assets/logo.png', 'build/icon.png']) {
+    const png = fs.readFileSync(path.join(ROOT, relativePath));
+    assert.equal(createHash('sha256').update(png).digest('hex'), iconSha, relativePath);
+    assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+    assert.equal(png.readUInt32BE(16), 1024);
+    assert.equal(png.readUInt32BE(20), 1024);
+  }
+  const icns = fs.readFileSync(path.join(ROOT, 'build/icon.icns'));
+  assert.equal(icns.subarray(0, 4).toString('ascii'), 'icns');
+  assert.equal(icns.readUInt32BE(4), icns.length);
 });
 
 test('WP308 brand surface adds no input, persistence, network, timer or mutation authority', () => {

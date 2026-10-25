@@ -1,0 +1,112 @@
+# Canonical Yalken logo in current Electron
+
+TASK_ID: YALKEN_CANONICAL_LOGO_20261025
+TYPE: UI
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+ACTIVE_EXECUTION_CANON: v3.13a-final
+BINDING_BASE_SHA: f6601801a9b584cd1caeb60a7f643a59f70adf55
+COMMIT_REQUIRED: true
+PUSH_REQUIRED: true
+PR_REQUIRED: true
+MERGE_REQUIRED: true
+
+## MICRO_GOAL
+
+Install only the owner's already selected canonical narrow Y mark and macOS icon in the latest accepted Electron source. Keep experimental 3270, typography alternatives and every unrelated interface/authoring behavior out of this change. Current developer startup-input WIP is protected in its separate worktree.
+
+## ARTIFACT
+
+The existing 18px titlebar mark displays the owner's precise 328:595 Y path, neutral in light/dark/forced-colors. Dock uses an enlarged variant of the validated YALKEN_CANONICAL_BRAND_DESIGN_PACK_2026-07-19 Light icon, following the owner's direct size correction. Exact path, fill, rounded tile and shadow definition are retained; only the mark's uniform transform changes. The editable SVG produces the source/build PNG and native ICNS. The former spiral icon and green book geometry are superseded only in their existing slots. The system title keeps its existing typography; it is not a shrunken primary logo lockup.
+
+## ALLOWLIST
+
+- src/renderer/index.html
+- src/renderer/styles.css
+- src/renderer/assets/logo.png
+- src/renderer/assets/README.md
+- src/renderer/assets/app-icon.svg
+- build/icon.png
+- build/icon.icns
+- scripts/make-mac-icon.sh
+- test/unit/r24-wp308-brand-baseline.test.mjs
+- docs/tasks/2026-10-25--canonical-logo.md
+- docs/WORKLOG.md
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- scripts/ops/sector-m-scope-map.json
+- test/contracts/rtk-word-comment-return-apply.contract.test.js
+
+Text diff budget: 220 added/removed lines plus this specification and one factual WORKLOG entry. Binary files derive from the exact owner vector with the explicitly requested larger mark; no pack original is overwritten. Local existing locked build dependencies, bundled external SVG rasterizer, temporary build output and fresh synthetic UI inspection profile are allowed operational inputs, not new product dependencies.
+
+CI continuation at clean eebd96d98a72884786e6d117763da7e02b285867: the eight listed OPS companions are a mechanical delivery exception to the text budget. Refresh the existing test digest without changing its 1603-file membership/classification; bind only the actual logo/task/log bytes in current DATA policy, append one exact successor, retain historical sets and every verification predicate, refresh current approval witnesses and admit only this task's paths. No additional product source edit. Fresh continuation declaration/preflight passed at eebd96; original PR base remains f6601801.
+
+Owner scale correction continuation at clean cf76811fe5ef32ea8f03952962255f6a66c8179d: fresh19path preflight passed before edits. Add only editable app-icon.svg and change PNG/ICNS, their README and maintained WP308 asset expectations. App icon mark height784px in the912px tile,64px top/bottom inner clearance; transform translate(295.905882353 120) scale(1.317647058824). The titlebar stays unchanged. Earlier prepared-icon native proof is historical; rerun native package/readback for the enlarged variant and append its current-byte successor without rewriting earlier sets.
+
+CI expectation continuation at clean5e6f1e5622d3d38c10a3b9c26e79e82b449996a0: fresh20path preflight passed. Run40239726270 has16successful jobs and one underlying RTK test failure: the existing all-binding Word Apply corruption test still selects the previous331binding Undo carrier. Refresh only its four literal expectation lines to the current342binding logo carrier, including its actual committed test digest, while retaining every corruption injection, mixed-predecessor rejection, ancestry check and all runtime tests. Append the named CI expectation successor atomically; all source/assets remain identical to the inspected5e6f1e562 package. The eight listed mechanical companions remain the only budget exception.
+
+## DENYLIST
+
+All other repository source paths, including Core identity/projection, Main, preload, editor and generated bundles, package/lockfiles, command/capability/persistence/schema/security/authority files. No font file adoption or wordmark redesign; no new surface or runtime handler; no signing/distribution. No Lazyweb discovery/contact, foreign profile or process mutation, manuscript write, stash/reset/clean/rebase/amend/force-push or direct protected-branch push. No edit in owner canonical checkout or the active coder's worktree.
+
+## CONTRACT / SHAPES
+
+GROUP: EXISTING_SEAM_GROUP_01_VISUAL_ASSETS_ONLY
+FEATURE_INTEGRATION_MANIFEST_V1: EXISTING_NONINTERACTIVE_DECORATIVE_MARK; existing identity projection/slot/state model remain unchanged, no new feature manifest.
+SURFACE_MANIFEST_V1: EXISTING_TITLEBAR_SLOT_UNCHANGED; no new surface manifest.
+PRODUCT_AUTHORITY: unchanged Core brand identity and authoring truth.
+COMMAND_AUTHORITY: unchanged; this decoration initiates no command or effect.
+READ_PATH: existing Main immutable YALKEN_ORIGINAL_V1 projection -> unchanged brandIdentitySurface -> existing titlebar brand slot.
+STATE_CLASSES: transient presentation only; no persistence.
+PRODUCT_PORTS: none added; no product or authoring effect.
+DESIGN_OS_PORTS: existing immutable projection only.
+CANONICAL_PATH: M0 0L116 210L158 595L156 189Z M328 0L212 210L170 595L172 189Z
+SLOT_METRICS: unchanged 18px square, viewBox 0 0 328 595 with natural aspect ratio; unchanged 28px titlebar and title label.
+MARK_INK: light #4c4a45; dark #f2ede6; forced-colors CanvasText.
+APP_ICON_MARK: same canonical d and #4C4A45 fill; uniform height784px, width432.188235294px, inside original912px rounded tile,64px top/bottom clearance. No stretching, crop, new palette or tile geometry.
+FALLBACK: existing identity mismatch hides the brand; aria/name and no-interaction invariants unchanged.
+HOT_PATH: no code/listener/timer/network added; only one inline SVG path.
+ROLLBACK: normal revert of this one bounded change; preserve all external assets and prior receipts.
+
+DESIGN_TOOL_ROUTER: APPLIED
+DESIGN_SOURCE_OF_TRUTH: direct owner request and local approved vector/PNG/ICNS pack; screenshots and font experiments are not source geometry.
+DESIGN_SELECTED_DIRECTION: canonical first-party Y, mark-only in a small slot, prepared app icon in Dock.
+DESIGN_RESEARCH_SOURCES: local brand geometry/implementation/matrix, existing WP308 code/test, Design OS guide, brain:refs.
+DESIGN_AUDIT_TOOLS: UI Craft review, exact geometry/asset comparison and actual Electron rendering.
+DESIGN_TOOL_DEVIATIONS: no new direction research is needed. Higher-priority owner policy forbids Lazyweb for this task; legacy preflight enum APPLICABLE_LAZYWEB_FIRST is metadata only and does not denote tool use. No optional service is loaded. No Lab experiment or new design system is introduced.
+
+## IMPLEMENTATION_STEPS
+
+1. Validate owner pack checksum entries and exact preflight/base. Preserve all existing WIP.
+2. Replace only the book paths/circle with the exact canonical path and neutral fill. Keep slot geometry, system-title font, accessible name and unchanged identity module.
+3. Preserve the exact approved icon geometry and background, enlarge only the mark per owner's correction, retain editable SVG and generate1024 PNGs. Make icons:mac retain source pixels instead of applying the obsolete spiral contrast/black-padding treatment; use installed macOS sips/iconutil because app-builder-bin is absent from the current locked builder. Document the source, explicit variant and correct obsolete mask instructions.
+4. Update the maintained brand test's selected-shape expectations while preserving all nine tests, authority/identity/accessibility negatives and seven mutants. Check actual mark contrast and owner icon identity.
+5. Execute focused/source/build/native proof, review the whole diff, one factual log entry and complete ordinary commit/PR/CI/merge/exact-head verification.
+6. Preserve first PR2167 CI failure at eebd96: stale WP308 inventory digest and DATA_RUNTIME_REPAIR_PIN for index.html, styles.css and WORKLOG. Refresh only required current-byte companions, execute their actual gates on the successor commit, then resume the same PR delivery without bypass. The already inspected package remains bound to eebd96; unchanged packaged inputs must be verified before claiming equivalence to a companion-only successor.
+
+## CHECKS
+
+CHECK_01_PRE_IDENTITY_AND_AUTHORITY: completed before any repository edit: registered clean f6601801 branch, verified encrypted/unlocked writable T7-Secure UUID, T777 UUID, fresh origin/main, bootstrap and architecture preflight actual0; existing WP308 whole9 passed before edit. CHECK_01 is not rerun after edits.
+CHECK_02_POST_TASK_E0: node scripts/ops-gate.mjs --task docs/tasks/2026-10-25--canonical-logo.md
+CHECK_03_POST_BRAND: node --test test/unit/r24-wp308-brand-baseline.test.mjs; preserve nine tests, all identity/authority negatives and seven mutants; verify actual neutral mark contrast, exact editable geometry/uniform transform, enlarged current PNG copies and native ICNS decoded master.
+CHECK_04_POST_BUILD: npm run build:renderer; all generated tracked artifacts remain byte-exact because no compiler input changed. icons:mac runs into task-owned temporary output; PNG remains identical to source.
+CHECK_05_POST_NATIVE: fresh exact-source local Electron build, own synthetic profile, actual titlebar light/dark screenshot and native icon asset inspection. No user manuscript or active coder profile used; screenshot is visual evidence, not product acceptance.
+CHECK_06_POST_SCOPE: npm run agent:guardrails; diff/name/status match allowlist; accessibility/fallback source unchanged; normal commit/push/PR/required CI/merge followed by fresh merged-source focused checks and icon verification.
+CHECK_07_POST_CURRENT_CARRIER: node --test test/contracts/rtk-word-comment-return-apply.contract.test.js after the exact successor is committed; execute the entire maintained file, all342source plus1guard corruptions, mixed predecessor and ancestry rejection. Preserve immutable input-blob reuse only; no cached verdict, mutation, skipped assertion or weakened predicate. Rerun required CI after this expectation-only correction.
+
+## STOP_CONDITION
+
+Stop before expanding scope, modifying another writer's work, claiming an unverified build, accepting a font experiment, changing protected source, bypassing failed required checks, or following a base drift that makes this PR unmergeable. Old passing receipts never stand in for current proof.
+
+## REPORT_FORMAT
+
+One text block with TASK_ID, RESULT, HEAD_SHA_BEFORE, HEAD_SHA_AFTER, COMMIT_SHA, CHANGED_BASENAMES, STAGED_SCOPE_MATCH, TESTS, COMMIT_OUTCOME, PUSH_RESULT, PR_RESULT, CI_RESULT, MERGE_RESULT, EXACT_HEAD_VERIFICATION, LIMITATIONS and NEXT_STEP. Basenames only, no URL/path in this formal block. Do not claim release acceptance.
+
+## FAIL_PROTOCOL
+
+Preserve actual failures and exact source/build/profile identities, report the affected gate and one next hypothesis. No weakened assertions, synthetic success, foreign process stop or silent branch transfer. After three identical failures stop the loop.

@@ -811,7 +811,15 @@
     "src/renderer/design-os/designOsFormConfiguration.mjs",
     "test/unit/r24-wp303-design-os-customization.test.js",
     "docs/tasks/2026-10-25--settings-theme-summary.md",
-    "docs/tasks/2026-10-25--bug-native-undo-redo.md"
+    "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+    "src/renderer/assets/logo.png",
+    "src/renderer/assets/README.md",
+    "build/icon.png",
+    "build/icon.icns",
+    "scripts/make-mac-icon.sh",
+    "test/unit/r24-wp308-brand-baseline.test.mjs",
+    "docs/tasks/2026-10-25--canonical-logo.md",
+    "src/renderer/assets/app-icon.svg"
   ],
   "protectedFiles": [
     {
@@ -1140,7 +1148,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "743d9166eacbd6d05d06960b87cc9a830cf8e5abed401b00ec57459f46a3e17a"
+        "sha256": "6c5e9845320ab548e6edc5a894fbb62c113873b92107f2f402fd4c79c93d0ede"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -1528,7 +1536,7 @@
       },
       {
         "path": "src/renderer/index.html",
-        "sha256": "2b2d08a6ec5a33b545a4963a3e10978b6662353bc87fa555943d11a37429f60f"
+        "sha256": "c898b0b26e245dd6a841548a6c75fcda5be2a7289167e1f7d15110990d8268ff"
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
@@ -1776,7 +1784,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "ddd17679cf2fe70582487ef726837c701ee21051037b5cbc9628a79288f65ca1"
+        "sha256": "7a853172128544a7dc21fb7e8d4af1792092e77460f38592820a70ebffed3beb"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2740,7 +2748,7 @@
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f2a6fa2e8d4df128ec387dc03f77bd817dc5f94fa4e6373e65da5b2096544640"
+        "sha256": "2bb666bcf42b7cc4c54f9f86c386f973d7f97f7109f98d731c1a88e967d0f56b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3280,7 +3288,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c7ac875ed1a413e338bc3e4bc5209df40bffb6d7c20a1f30e3cd83d41ddf478b"
+        "sha256": "7a47a073108af3813106e038542d303036c62f5d6ea58a3b1c90e1664b3151df"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3412,7 +3420,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "7eed963c8687d019152929a51596ddee1fb97894705d3f49c6cca25c6e9d2ffc"
+        "sha256": "c92052e2dccfabf078d37909b4bbcf83be6951b07cb7a3dd5c3ba2265a3deae6"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3919,6 +3927,28 @@
         "predecessorPolicySha256": "43a25ac29753bb5e11f6dea076d72cc650ec098c8cb6e97e4136d974be172106",
         "scope": "S38 existing test-port preparation and repaired B2C10 executable green classification only; every original preservation assertion, child execution and checker predicate retained."
       }
+    },
+    "canonicalLogoIntegration": {
+      "taskId": "YALKEN_CANONICAL_LOGO_20261025",
+      "bindingBaseSha": "f6601801a9b584cd1caeb60a7f643a59f70adf55",
+      "productCommitSha": "eebd96d98a72884786e6d117763da7e02b285867",
+      "predecessorPolicySha256": "b9e783a54a8465ea06c234414e5fb60fa166609a9ccd3493b3fa3f9fe354e614",
+      "scope": "Owner-selected canonical logo in existing titlebar/icon slots only; exact current-byte companions for this PR. Preserve all historical evidence, native acceptance predicates, denominators and product behavior. No cell or release credit."
+    },
+    "canonicalLogoIconScale": {
+      "taskId": "YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "bindingBaseSha": "cf76811fe5ef32ea8f03952962255f6a66c8179d",
+      "predecessorPolicySha256": "c95fe14c5d3fad4f853c78d3c8e9d477d74e381131e1d098eb1854d063b7aeb6",
+      "masterSvgSha256": "2ed7a0905fa87a7138baceea4518cfa336a1ebf30e50bf5300e45f966ff60bdc",
+      "pngSha256": "49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7",
+      "scope": "Direct human correction of icon mark size only: uniform784px mark inside original912px tile,64px inner top/bottom clearance; unchanged canonical path and background. No titlebar, font, other product behavior, native cell or release acceptance."
+    },
+    "canonicalLogoCiExpectation": {
+      "taskId": "YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "bindingBaseSha": "5e6f1e5622d3d38c10a3b9c26e79e82b449996a0",
+      "predecessorPolicySha256": "6cead1061a465320268f0fe3dc97d683b155c27b11a3c7477f43e0943e753fb8",
+      "testSha256": "7a853172128544a7dc21fb7e8d4af1792092e77460f38592820a70ebffed3beb",
+      "scope": "Mechanical current carrier expectation for maintained Word Apply test only:342source plus1guard corruption checks, mixed predecessor and ancestry rejection unchanged. Product and icon inputs remain identical to5e6f1e562; no native or release acceptance."
     }
   },
   "wordTextOrderBatch": {

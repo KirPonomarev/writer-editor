@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Yalken — app icon Light_Master</title>
+  <desc id="desc">Канонический знак Yalken на спокойной скруглённой подложке.</desc>
+  <defs><filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#221F1C" flood-opacity=".22"/></filter></defs>
+  <rect x="56" y="56" width="912" height="912" rx="210" fill="#FBF8F3" stroke="#E9E2D9" stroke-width="2" filter="url(#shadow)"/>
+  <path fill="#4C4A45" transform="translate(295.905882353 120) scale(1.317647058824)" d="M0 0L116 210L158 595L156 189Z M328 0L212 210L170 595L172 189Z"/>
+</svg>
