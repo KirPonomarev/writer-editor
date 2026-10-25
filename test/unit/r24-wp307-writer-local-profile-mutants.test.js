@@ -483,3 +483,39 @@ test('V10 independent oracles kill entity correction omission overgrant and forg
   }
   t.diagnostic('ATLAS_ENTITY_CORRECTIONS_V10_MUTANTS=' + mutants.length + '/' + mutants.length);
 });
+test('V11 independent lawful oracles kill Idea Meaning omission domain overgrant and complete-policy mutants', t => {
+  const source = fs.readFileSync(MODULE_PATH, 'utf8'), original = loadFresh(MODULE_PATH);
+  assert.equal(typeof original.createWriterIdeaMeaningAuthoringProfileProjection, 'function', 'absent constructor earns no mutation credit');
+  const marker = source.indexOf("'writer-local-profile.v11'"), boundary = source.lastIndexOf('const ', marker); assert.ok(marker > 0 && boundary > 0);
+  const active = m => m.createWriterIdeaMeaningAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const access = (m, id, patch = {}, record = { id, domain: id.split('.')[0] }) => m.evaluateWriterLocalCommandAccess({
+    profile: { ...active(m), ...patch }, commandId: id, productCommandRecord: record }).allowed;
+  const ids = ['idea.create', 'idea.originLink.add', 'meaning.promote'];
+  for (const id of ids) assert.equal(access(original, id), true, 'independent lawful ' + id);
+  assert.equal(access(original, 'idea.erase'), false); assert.equal(active(original).admittedCommandIds.length, 32);
+  const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'idea-meaning-v11-mutants-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mutants = [
+    ...ids.map(id => ['lost-' + id, s => s.replace("'" + id + "'", "'" + id + ".disabled'"), m => assert.equal(access(m, id), true)]),
+    ['optional-overgrant', s => s.replace('&& (!optional || selected)', ''), m => assert.equal(access(m, 'idea.erase'), false)],
+    ['forged-record', s => s.replace('productCommandRecord.id === commandId &&', 'true &&'),
+      m => assert.equal(access(m, ids[0], {}, { id: ids[1], domain: 'idea' }), false)],
+    ['wrong-domain', s => s.replace(/productCommandRecord\.domain === [^\n;]+/u, 'true'),
+      m => assert.equal(access(m, ids[2], {}, { id: ids[2], domain: 'idea' }), false)],
+    ['extra-own', s => s.replace('Reflect.ownKeys(profile).length === keys.length', 'true'),
+      m => assert.equal(access(m, ids[0], { extra: true }), false)],
+    ['ordered-policy', s => s.replace('profile[key][index] === id', 'true'),
+      m => assert.equal(access(m, ids[1], { admittedCommandIds: [...active(m).admittedCommandIds].reverse() }), false)],
+    ['inherited-index', s => s.replace('Object.hasOwn(profile[key], index)', 'true'), m => {
+      const values = [...active(m).admittedCommandIds], last = values.length - 1; delete values[last];
+      Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [last]: active(m).admittedCommandIds[last] })); values.extra = true;
+      assert.equal(access(m, ids[0], { admittedCommandIds: values }), false);
+    }],
+  ];
+  for (const [name, transform, oracle] of mutants) {
+    oracle(original); const changed = source.slice(0, boundary) + transform(source.slice(boundary)); assert.notEqual(changed, source, name);
+    const file = path.join(root, name.replaceAll(/[^a-z0-9.-]/gi, '-') + '.cjs'); fs.writeFileSync(file, changed);
+    assert.throws(() => oracle(loadFresh(file)), { name: 'AssertionError' }, name);
+  }
+  t.diagnostic('IDEA_MEANING_V11_MUTANTS=' + mutants.length + '/' + mutants.length);
+});

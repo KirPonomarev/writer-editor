@@ -1201,7 +1201,7 @@ async function liveControlHarness() {
     'derived/mindmap/manualMapLayoutScheduler.mjs', 'derived/mindmap/manualMapListKeyboardParity.mjs', 'core/text-fold-tape-v1.mjs']) {
     Object.assign(c, await import(pathToFileURL(path.join(repoRoot, 'src', name)).href));
   }
-  const start = editor.indexOf('const MANUAL_MAP_SVG_NS ='), end = editor.indexOf('\nconst isTiptapMode =', start);
+  const start = editor.indexOf('const MANUAL_MAP_SVG_NS ='), end = editor.indexOf('\n});', editor.indexOf('const MANUAL_MAP_LAYOUT_MODES =', start)) + '\n});\n'.length;
   require('node:vm').runInContext(editor.slice(start, end), c);
   Object.assign(c, { manualMapLayoutMode: 'manual-fixed-position', manualMapLayoutGeneration: 0,
     manualMapPinnedNodeIds: new Set(), manualMapListState: { activeRowId: 'node:a' },
@@ -2478,4 +2478,273 @@ test('V10 inherits V9 source ownership UUIDs default confirmation and fact ident
   const reads = temporalAuthoringSurfaceHarness(); reads.c.window.__PRODUCT_PROFILE = ENTITY_CORRECTION_V10; reads.c.currentAtlasSurface = 'reports';
   await reads.c.refreshAtlasProductSurfaces({ currentScene: false }); await reads.settle();
   assert.deepEqual(reads.queries.map(row => row.queryId), ['query.atlasReportsSavedQueries']);
+});
+const IDEA_MEANING_PROFILE_V11 = 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11';
+
+// Actual production initializers/listeners with finite typed ports, NOT Main/Core/native proof.
+function ideaMeaningAuthorDom(profileId = IDEA_MEANING_PROFILE_V11) {
+  const h = sourceEntitySelectionDom(ENTITY_CORRECTION_V10), c = h.c, vm = require('node:vm');
+  const start = editor.indexOf('let atlasJourneyDraft = '), end = editor.indexOf('\n};', start); assert.ok(start > 0 && end > start);
+  c.atlasJourneyDraft = { ...vm.runInContext('(' + editor.slice(start + 'let atlasJourneyDraft = '.length, end + 2) + ')', c), ...c.atlasJourneyDraft };
+  const initializers = [...editor.matchAll(/^(?:let|const) (\w*[Ii]deaMeaning\w*) = /gm)];
+  for (const match of initializers) {
+    const stop = editor.indexOf(';\n', match.index); assert.ok(stop > match.index && stop - match.index < 12000, match[1]);
+    vm.runInContext(editor.slice(match.index, stop + 1), c);
+  }
+  const names = [...editor.matchAll(/^(?:async )?function (\w*[Ii]deaMeaning\w*)\(/gm)].map(match => match[1]);
+  if (names.length) h.loadActual(...names);
+  c.window.__PRODUCT_PROFILE = profileId; c.currentAtlasSurface = 'journey';
+  c.projectionInspectorHost = h.document.createElement('section'); h.document.body.append(c.projectionInspectorHost);
+  h.loadActual('renderProjectionInspectorState', 'appendAtlasReportsRow');
+  let provider = { state: 'ready', projectId: c.currentProjectId, schemaVersion: 'derived.projection.inspectorProvider.v1',
+    manifests: [], summary: { manifestCount: 3, readyCount: 2, emptyCount: 1, unavailableCount: 0 },
+    meta: { providerHash: 'a'.repeat(64) }, authority: { readOnlyProvider: true, commandAuthority: 'none' },
+    projectionStates: ['idea', 'meaning'].map(projectionId => ({ projectionId, state: projectionId === 'idea' ? 'ready' : 'empty',
+      projectionHash: (projectionId === 'idea' ? 'b' : 'c').repeat(64), details: { rows: projectionId === 'idea' ? [
+        { id: 'saved-idea-a', title: 'Saved explicit idea A', summary: 'Stored author summary', originLinkCount: 0, createdByCommandSeq: 7, updatedByCommandSeq: 7 },
+        { id: 'saved-idea-b', title: 'Saved explicit idea B', summary: 'Other stored summary', originLinkCount: 0, createdByCommandSeq: 6, updatedByCommandSeq: 6 }] : [],
+      total: projectionId === 'idea' ? 2 : 0, offset: 0, hasMore: false, complete: true, selected: null, selectedState: 'none',
+      originLinks: [], originLinkCount: 0, originLinksComplete: true, occurrenceEvidence: [], occurrenceEvidenceCount: 0, occurrenceEvidenceComplete: true,
+      promotionEvidence: [], promotionEvidenceCount: 0, promotionEvidenceComplete: true } })) };
+  const previousPort = c.queryPort;
+  c.queryPort = request => {
+    if (request.row[2] !== 'projectionInspector') return previousPort(request);
+    const value = structuredClone(provider); value.projectId = request.payload.projectId;
+    for (const state of value.projectionStates) {
+      const options = request.payload[state.projectionId] || {}, detail = state.details;
+      detail.selected = detail.rows.find(row => row.id === options.selectedId) || null;
+      detail.selectedState = options.selectedId ? detail.selected ? 'ready' : 'missing' : 'none';
+    }
+    return { ok: true, projectionInspector: value };
+  };
+  const unload = [], registration = editor.match(/window\.addEventListener\(['"]beforeunload['"],\s*(\w*[Ii]deaMeaning\w*)\s*(?:,\s*\{[^{}]*\})?\s*\)/u);
+  c.window.addEventListener = (type, callback) => { if (type === 'beforeunload') unload.push(callback); };
+  if (registration) { assert.equal(typeof c[registration[1]], 'function'); vm.runInContext(registration[0] + ';', c); }
+  const field = name => h.walk(c.atlasJourneyHost).find(node => (node.dataset.ideaMeaningField || node.dataset.atlasJourneyField) === name);
+  const button = action => h.walk(c.atlasJourneyHost).find(node => (node.dataset.ideaMeaningAction || node.dataset.atlasJourneyAction) === action);
+  const input = async (name, value) => { const node = field(name); assert.ok(node, 'actual explicit author field ' + name);
+    node.value = value; await node.emit(node.tagName === 'SELECT' ? 'change' : 'input'); await h.settle(); return node; };
+  const click = async action => { const node = button(action); assert.ok(node, 'actual explicit author action ' + action);
+    assert.equal(node.disabled, false, action); const count = h.commands.length; await node.emit('click'); await h.settle(); return h.commands[count]; };
+  const load = async () => { await click('idea-load'); assert.ok(h.queries.some(q => q.row[2] === 'projectionInspector'), 'actual listener reaches existing query'); };
+  const fireUnload = () => { const event = { defaultPrevented: false, returnValue: undefined, stopped: false,
+    preventDefault() { this.defaultPrevented = true; }, stopImmediatePropagation() { this.stopped = true; } }; unload.forEach(fn => fn(event)); return event; };
+  c.commandPort = id => { const r = h.appliedResponse(); r.value.commandId = id; r.value.result.receipt.commandId = id; return r; };
+  h.render();
+  return { ...h, field, button, input, click, load, fireUnload, initializers: initializers.map(m => m[1]), actualHelpers: names,
+    provider: () => provider, setProvider: next => { provider = structuredClone(next); } };
+}
+
+test('V11 actual Flow author entrypoint exposes labeled persisted selection and no author buttons in the read-only inspector [FINITE_DOM]', async () => {
+  const h = ideaMeaningAuthorDom();
+  for (const name of ['ideaTitle', 'ideaSummary', 'selectedIdeaId', 'meaningTitle', 'meaningInterpretation', 'ideaSearch']) {
+    const node = h.field(name); assert.ok(node, 'actual form field ' + name);
+    assert.ok(h.walk(h.c.atlasJourneyHost).some(label => label.tagName === 'LABEL' && (label.contains(node) || label.htmlFor && label.htmlFor === node.id)), 'native label ' + name);
+  }
+  assert.equal(h.button('meaning-promote').disabled, true); assert.equal(h.commands.length, 0);
+  await h.load(); assert.deepEqual(h.field('selectedIdeaId').children.filter(row => row.value).map(row => row.value), ['saved-idea-a', 'saved-idea-b']);
+  await h.input('selectedIdeaId', 'saved-idea-b'); await h.input('meaningTitle', 'Chosen title'); await h.input('meaningInterpretation', 'Explicit interpretation é 🧭');
+  const sent = await h.click('meaning-promote'); assert.equal(sent.id, 'meaning.promote');
+  assert.deepEqual(sent.payload.source, { kind: 'idea', ideaId: 'saved-idea-b' }); assert.equal(sent.payload.interpretation, 'Explicit interpretation é 🧭');
+  h.c.renderProjectionInspectorState();
+  assert.equal(h.walk(h.c.projectionInspectorHost).some(node => node.dataset.productCommandId || node.dataset.ideaMeaningAction), false);
+  assert.equal(h.working(), SOURCE_CONTINUITY_PREFIX + SOURCE_CONTINUITY_TEXT);
+});
+
+test('V11 author input nodes remain connected with exact caret and zero value writes or queries across refresh [FINITE_DOM]', async () => {
+  const h = ideaMeaningAuthorDom(); await h.input('ideaTitle', 'Новая идея é 🧭'); await h.input('ideaSummary', 'Авторский черновик');
+  const title = h.field('ideaTitle'), summary = h.field('ideaSummary'); title.focus(); title.setSelectionRange(2, 6, 'backward');
+  const writes = [title.valueWrites, summary.valueWrites], disconnects = [title.disconnects, summary.disconnects], queries = h.queries.length;
+  await title.emit('input'); assert.equal(h.queries.length, queries, 'typing triggers no provider work');
+  h.render(); await h.c.refreshProjectionInspector(); h.render();
+  assert.equal(h.field('ideaTitle'), title); assert.equal(h.field('ideaSummary'), summary); assert.equal(title.isConnected, true);
+  assert.deepEqual([title.disconnects, summary.disconnects], disconnects, 'detaching then restoring focus is not preservation');
+  assert.deepEqual([title.valueWrites, summary.valueWrites], writes); assert.equal(h.document.activeElement, title);
+  assert.deepEqual([title.selectionStart, title.selectionEnd, title.selectionDirection], [2, 6, 'backward']);
+  assert.equal(title.value, 'Новая идея é 🧭'); assert.equal(summary.value, 'Авторский черновик'); assert.equal(h.commands.length, 0);
+});
+
+test('V11 failed create retry retains the same intent ID while changed and cold intents receive fresh UUIDs [FINITE_DOM]', async () => {
+  const ids = [];
+  for (let cold = 0; cold < 2; cold++) {
+    const h = ideaMeaningAuthorDom(); h.c.commandPort = () => ({ ok: false, reason: 'OWNED_REFUSAL' });
+    await h.input('ideaTitle', 'Retry title'); await h.input('ideaSummary', 'Retained é 🧭');
+    const first = await h.click('idea-create'), retry = await h.click('idea-create');
+    assert.equal(first.id, 'idea.create'); assert.equal(first.payload.ideaId, retry.payload.ideaId);
+    assert.match(first.payload.ideaId, /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
+    assert.equal(h.field('ideaTitle').value, 'Retry title'); assert.equal(h.field('ideaSummary').value, 'Retained é 🧭');
+    assert.equal(h.field('selectedIdeaId').value, '', 'failed UUID is never a saved Idea selection');
+    await h.input('ideaTitle', 'Different intent'); const next = await h.click('idea-create'); assert.notEqual(next.payload.ideaId, first.payload.ideaId);
+    ids.push(first.payload.ideaId, next.payload.ideaId);
+  }
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test('V11 pending doubleclick detached and shallow success cannot promote an unsaved Idea [FINITE_DOM]', async t => {
+  const h = ideaMeaningAuthorDom(); await h.input('ideaTitle', 'Pending author idea'); const response = h.deferred(); h.c.commandPort = () => response.promise;
+  const button = h.button('idea-create'); await button.emit('click'); await button.emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+  assert.equal(h.field('selectedIdeaId').value, ''); assert.equal(h.button('meaning-promote').disabled, true);
+  assert.equal(h.fireUnload().defaultPrevented, true, 'pending product intent blocks unload');
+  response.resolve({ ok: false, reason: 'OWNED_REFUSAL' }); await h.settle();
+  h.c.currentProjectId = 'project-b'; h.render(); await button.emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+  for (const result of [{ ok: true }, { ok: true, value: { performed: true } }, { ok: true, value: { performed: true, commandAuthority: 'CommandKernel',
+    commandId: 'idea.create', result: { ok: true, receipt: { schemaVersion: 'command-kernel.receipt.v1', commandId: 'idea.create', status: 'APPLIED', capabilityRevalidated: true, storageWritten: false } } } }]) await t.test('forged receipt ' + JSON.stringify(result), async () => {
+    const next = ideaMeaningAuthorDom(); await next.input('ideaTitle', 'No optimistic truth'); next.c.commandPort = () => result;
+    await next.click('idea-create'); assert.equal(next.field('selectedIdeaId').value, ''); assert.equal(next.button('meaning-promote').disabled, true);
+    assert.equal(next.field('ideaTitle').value, 'No optimistic truth');
+  });
+});
+
+test('V11 missing or throwing entropy refuses visibly without dispatch draft loss or listener exception [FINITE_DOM]', async () => {
+  for (const entropy of [undefined, { randomUUID() { throw new Error('owned entropy fault'); } }]) {
+    const h = ideaMeaningAuthorDom(); await h.input('ideaTitle', 'Preserve exact author prose'); h.c.crypto = entropy;
+    await h.click('idea-create'); assert.equal(h.commands.length, 0); assert.equal(h.field('ideaTitle').value, 'Preserve exact author prose');
+    assert.ok(h.statuses.some(row => /IDENTITY_UNAVAILABLE/u.test(row.value)), 'typed visible entropy refusal');
+  }
+});
+
+test('V11 saved selection is explicit on partial pages and stale query cannot replace a newer selection [FINITE_DOM]', async () => {
+  const h = ideaMeaningAuthorDom(), p = structuredClone(h.provider()); p.projectionStates[0].details.total = 30; p.projectionStates[0].details.complete = false;
+  p.projectionStates[0].details.hasMore = true; h.setProvider(p); await h.load(); await h.input('selectedIdeaId', 'saved-idea-b');
+  await h.input('meaningTitle', 'Partial is usable'); await h.input('meaningInterpretation', 'Explicit selected visible record');
+  const sent = await h.click('meaning-promote'); assert.equal(sent.payload.source.ideaId, 'saved-idea-b');
+  await h.input('selectedIdeaId', 'not-visible-or-saved'); assert.equal(h.button('meaning-promote').disabled, true);
+  await h.input('selectedIdeaId', 'saved-idea-a'); const delayed = h.deferred(), port = h.c.queryPort;
+  h.c.queryPort = request => request.row[2] === 'projectionInspector' ? delayed.promise : port(request);
+  const pending = h.c.refreshProjectionInspector(); await h.input('selectedIdeaId', 'saved-idea-b'); const current = h.field('selectedIdeaId');
+  delayed.resolve({ ok: true, projectionInspector: { ...p, meta: { providerHash: 'f'.repeat(64) } } }); await pending; await h.settle();
+  assert.equal(h.field('selectedIdeaId'), current); assert.equal(current.value, 'saved-idea-b');
+});
+
+test('V11 per-project prose survives surface/project changes and explicit discard clears only this author draft [FINITE_DOM]', async () => {
+  const h = ideaMeaningAuthorDom(); await h.input('ideaTitle', 'Project A author prose'); await h.input('meaningInterpretation', 'A interpretation');
+  const stale = h.button('idea-create'); h.c.currentAtlasSurface = 'entity'; await stale.emit('click'); await h.settle(); assert.equal(h.commands.length, 0);
+  h.c.currentAtlasSurface = 'journey'; h.c.currentProjectId = 'project-b'; h.render(); assert.equal(h.field('ideaTitle').value, '');
+  await h.input('ideaTitle', 'Project B prose'); h.c.currentProjectId = 'project-a'; h.render();
+  assert.equal(h.field('ideaTitle').value, 'Project A author prose'); assert.equal(h.field('meaningInterpretation').value, 'A interpretation');
+  const unload = h.fireUnload(); assert.equal(unload.defaultPrevented, true); assert.equal(unload.returnValue, false); assert.equal(unload.stopped, true);
+  const manuscript = h.working(); await h.click('idea-discard'); assert.equal(h.field('ideaTitle').value, ''); assert.equal(h.field('meaningInterpretation').value, '');
+  assert.equal(h.fireUnload().defaultPrevented, true, 'hidden Project B prose still blocks unload while cleared Project A is active');
+  h.c.currentProjectId = 'project-b'; h.render(); assert.equal(h.field('ideaTitle').value, 'Project B prose'); assert.equal(h.working(), manuscript);
+  await h.click('idea-discard'); const cleared = h.fireUnload();
+  assert.equal(cleared.defaultPrevented, false); assert.equal(cleared.returnValue, undefined); assert.equal(cleared.stopped, false);
+  assert.equal(h.commands.length, 0);
+});
+
+test('Idea Meaning form remains absent for legacy near absent and windowless profile hints [FINITE_DOM]', () => {
+  for (const id of [ENTITY_CORRECTION_V10, 'WRITER_LOCAL_V1', '', IDEA_MEANING_PROFILE_V11 + '.extra', ' ' + IDEA_MEANING_PROFILE_V11]) {
+    const h = ideaMeaningAuthorDom(id); assert.equal(h.field('ideaTitle'), undefined); assert.equal(h.button('idea-create'), undefined); assert.equal(h.commands.length, 0);
+  }
+  const h = ideaMeaningAuthorDom(''); delete h.c.window; assert.doesNotThrow(() => h.c.renderAtlasJourneyState()); assert.equal(h.field('ideaTitle'), undefined);
+});
+for (const fault of ['project', 'surface', 'generation', 'author-draft']) test('V11 delayed author completion preserves newer ' + fault + ' presentation and prose [FINITE_DOM]', async () => {
+  const h = ideaMeaningAuthorDom(); await h.load(); await h.input('selectedIdeaId', 'saved-idea-b');
+  await h.input('meaningTitle', 'Old meaning'); await h.input('meaningInterpretation', 'Old explicit prose');
+  const response = h.deferred(); h.c.commandPort = () => response.promise;
+  await h.button('meaning-promote').emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+  if (fault === 'project') h.c.currentProjectId = 'project-b'; if (fault === 'surface') h.c.currentAtlasSurface = 'entity';
+  if (fault === 'generation') h.c.localEditGeneration++;
+  if (fault === 'author-draft') await h.input('meaningInterpretation', 'Newer author prose é 🧭');
+  h.render(); const title = h.field('meaningTitle'), interpretation = h.field('meaningInterpretation'), selected = h.field('selectedIdeaId');
+  const values = [title.value, interpretation.value, selected.value], queries = h.queries.length; h.statuses.push({ value: 'new presentation marker' });
+  const applied = h.appliedResponse(); applied.value.commandId = 'meaning.promote'; applied.value.result.receipt.commandId = 'meaning.promote';
+  response.resolve(applied); await h.settle(); await h.settle();
+  assert.equal(h.field('meaningTitle'), title); assert.equal(h.field('meaningInterpretation'), interpretation); assert.equal(h.field('selectedIdeaId'), selected);
+  assert.deepEqual([title.value, interpretation.value, selected.value], values); assert.equal(h.queries.length, queries, 'stale completion cannot start another read');
+  assert.equal(h.statuses.at(-1).value, 'new presentation marker'); assert.equal(h.commands.length, 1);
+});
+
+test('V11 explicit paging sends bounded view intent and search typing performs no query [FINITE_DOM]', async () => {
+  const h = ideaMeaningAuthorDom(), provider = structuredClone(h.provider()); provider.projectionStates[0].details.total = 30;
+  provider.projectionStates[0].details.complete = false; provider.projectionStates[0].details.hasMore = true; h.setProvider(provider);
+  await h.load(); await h.input('selectedIdeaId', 'saved-idea-b'); await h.click('idea-next');
+  assert.equal(h.queries.at(-1).payload.idea.offset, 24); assert.equal(h.queries.at(-1).payload.idea.selectedId, 'saved-idea-b');
+  const count = h.queries.length; await h.input('ideaSearch', 'An older saved Idea'); assert.equal(h.queries.length, count);
+  await h.click('idea-load'); assert.equal(h.queries.at(-1).payload.idea.search, 'An older saved Idea'); assert.equal(h.queries.at(-1).payload.idea.offset, 0);
+  assert.equal(h.commands.length, 0);
+});
+
+test('V11 inherits source ownership default confirmation fact IDs and selected-only reads while author form preserves saved evidence [FINITE_DOM]', async () => {
+  const h = ideaMeaningAuthorDom(); await h.pick(); const source = h.draft();
+  await h.input('sourceEntityId', 'beacon'); assert.equal(h.draft().sourceEntityId, 'beacon');
+  const alias = await h.click('add-alias'); assert.match(alias.payload.aliasId, /^atlas-alias-[a-f0-9-]{36}$/u);
+  await h.target('mira-25'); const confirmation = await h.click('confirm-mention'); assert.equal(Object.hasOwn(confirmation.payload, 'decisionId'), false);
+  for (const key of ['decisionId', 'decisionEvidenceAnchor', 'reattachmentSource', 'reattachmentContext']) assert.deepEqual(h.draft()[key], source[key]);
+  h.loadActual('getAtlasContinuityFactPayload', 'ensureAtlasSurfaceDraftId');
+  h.c.atlasContinuityAuthorDraft = { ledgerKind: 'promise', entityId: 'mira', mentionId: 'mira-25', factLabel: 'V11 current', factValue: 'Kept', promiseState: 'open' };
+  assert.equal(Object.hasOwn(h.c.getAtlasContinuityFactPayload(), 'factId'), false);
+  const reads = temporalAuthoringSurfaceHarness(); reads.c.window.__PRODUCT_PROFILE = IDEA_MEANING_PROFILE_V11; reads.c.currentAtlasSurface = 'reports';
+  await reads.c.refreshAtlasProductSurfaces({ currentScene: false }); await reads.settle(); assert.deepEqual(reads.queries.map(row => row.queryId), ['query.atlasReportsSavedQueries']);
+});
+
+// Actual source registrations replayed at their startup positions; finite teardown port, not native editor proof.
+function ideaMeaningStartupUnloadDom() {
+  const h = ideaMeaningAuthorDom(), vm = require('node:vm');
+  const tiptap = fs.readFileSync(path.join(repoRoot, 'src', 'renderer', 'tiptap', 'index.js'), 'utf8');
+  const initAt = editor.indexOf('\n  initTiptap(editor, {'), mapSource = 'let ideaMeaningAuthorDrafts = new Map();';
+  const mapAt = editor.indexOf(mapSource), guard = editor.match(/window\.addEventListener\('beforeunload', guardIdeaMeaningDraftUnload, \{ capture: true \}\);/u);
+  const teardown = tiptap.match(/window\.addEventListener\('beforeunload', \(\) => \{\n      destroyCurrentEditor\(\)\n    \}\)/u);
+  const initStart = tiptap.indexOf('export function initTiptap('), initEnd = tiptap.indexOf('\nexport function destroyTiptap(', initStart);
+  assert.ok(initAt > 0 && mapAt > 0 && guard && teardown && initEnd > initStart);
+  assert.equal(editor.indexOf(mapSource, mapAt + 1), -1, 'single actual lexical draft initializer');
+  assert.equal(editor.indexOf('\n  initTiptap(editor, {', initAt + 1), -1, 'single actual initial Tiptap call');
+  assert.ok(teardown.index > initStart && teardown.index < initEnd, 'teardown registration belongs to actual initTiptap');
+  assert.ok(h.initializers.includes('ideaMeaningAuthorDrafts'), 'actual draft initializer was evaluated');
+  const target = new EventTarget(), scene = h.document.createElement('div');
+  scene.textContent = h.working(); h.document.body.append(scene); let destroyed = 0;
+  h.c.destroyCurrentEditor = () => { destroyed++; scene.remove(); };
+  h.c.window.addEventListener = target.addEventListener.bind(target);
+  for (const registration of [{ index: initAt, source: teardown[0] }, { index: guard.index, source: guard[0] }].sort((a, b) => a.index - b.index))
+    vm.runInContext(registration.source + ';', h.c);
+  const fireStartupUnload = () => { const event = new Event('beforeunload', { cancelable: true });
+    return { allowed: target.dispatchEvent(event), event }; };
+  const drafts = () => vm.runInContext('JSON.stringify([...ideaMeaningAuthorDrafts].map(([id, entry]) => [id, { fields: entry.fields, revision: entry.revision, intents: entry.intents, pending: entry.pending }]))', h.c);
+  return { ...h, scene, destroyed: () => destroyed, fireStartupUnload, drafts, initAt, mapAt, guardAt: guard.index };
+}
+
+test('V11 dirty and pending authoring veto actual startup teardown while clean discard permits it [FINITE_EVENT_TARGET]', async t => {
+  for (const mode of ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation', 'pending', 'foreign-project'])
+    await t.test(mode, async () => {
+      const h = ideaMeaningStartupUnloadDom(); let pending;
+      if (mode === 'pending') {
+        await h.input('ideaTitle', 'Pending author é 🧭'); pending = h.deferred(); h.c.commandPort = () => pending.promise;
+        await h.button('idea-create').emit('click'); await h.settle(); assert.equal(h.commands.length, 1);
+        await h.input('ideaTitle', '');
+        assert.equal(require('node:vm').runInContext('getIdeaMeaningAuthorDraft().pending.active', h.c), true);
+        assert.equal(require('node:vm').runInContext("Object.values(getIdeaMeaningAuthorDraft().fields).some(Boolean)", h.c), false, 'pending alone blocks unload');
+      } else if (mode === 'foreign-project') {
+        await h.input('ideaTitle', 'Hidden project author é 🧭'); h.c.currentProjectId = 'project-b'; h.render();
+        assert.equal(h.field('ideaTitle').value, '');
+      } else await h.input(mode, 'Unsaved author é 🧭');
+      const title = h.field('ideaTitle'), focus = h.field(mode.endsWith('Title') || mode.endsWith('Summary') || mode.endsWith('Interpretation') ? mode : 'ideaTitle');
+      focus.focus(); focus.setSelectionRange(Math.min(2, focus.value.length), Math.min(6, focus.value.length), 'backward');
+      const before = { title: title.value, value: focus.value, caret: [focus.selectionStart, focus.selectionEnd, focus.selectionDirection],
+        draft: h.drafts(), manuscript: h.working(), scene: h.scene.textContent, commands: h.commands.length, queries: h.queries.length,
+        disconnects: [title.disconnects, focus.disconnects], writes: [title.valueWrites, focus.valueWrites] };
+      try {
+        const result = h.fireStartupUnload();
+        t.diagnostic(JSON.stringify({ mode, destroyed: h.destroyed(), sceneConnected: h.scene.isConnected, allowed: result.allowed,
+          defaultPrevented: result.event.defaultPrevented, title: title.value, draftPreserved: h.drafts() === before.draft }));
+        assert.equal(h.scene.isConnected, true, 'cancelled Quit must not dispose the scene editor'); assert.equal(h.destroyed(), 0);
+        assert.equal(result.allowed, false); assert.equal(result.event.defaultPrevented, true); assert.equal(result.event.returnValue, false);
+        assert.equal(h.field('ideaTitle'), title); assert.equal(title.isConnected, true); assert.equal(focus.isConnected, true);
+        assert.equal(title.value, before.title); assert.equal(focus.value, before.value); assert.equal(h.document.activeElement, focus);
+        assert.deepEqual([focus.selectionStart, focus.selectionEnd, focus.selectionDirection], before.caret);
+        assert.deepEqual([title.disconnects, focus.disconnects], before.disconnects); assert.deepEqual([title.valueWrites, focus.valueWrites], before.writes);
+        assert.equal(h.drafts(), before.draft); assert.equal(h.working(), before.manuscript); assert.equal(h.scene.textContent, before.scene);
+        assert.equal(h.commands.length, before.commands, 'unload sends no command'); assert.equal(h.queries.length, before.queries);
+        assert.match(h.statuses.at(-1).value, /Закрытие отменено/u);
+      } finally { if (pending) { pending.resolve({ ok: false, reason: 'OWNED_TEST_REFUSAL' }); await h.settle(); } }
+    });
+  for (const mode of ['clean', 'explicit-discard']) await t.test(mode, async () => {
+    const h = ideaMeaningStartupUnloadDom();
+    if (mode === 'explicit-discard') { await h.input('ideaTitle', 'Explicitly discarded author prose'); await h.click('idea-discard'); }
+    const before = h.drafts(), manuscript = h.working(), result = h.fireStartupUnload();
+    assert.equal(result.allowed, true); assert.equal(result.event.defaultPrevented, false); assert.equal(h.destroyed(), 1); assert.equal(h.scene.isConnected, false);
+    assert.equal(h.drafts(), before); assert.equal(h.working(), manuscript); assert.equal(h.commands.length, 0);
+  });
+  await t.test('actual initializer and guard precede the initial editor lifecycle registration', () => {
+    const h = ideaMeaningStartupUnloadDom(); h.fireStartupUnload(); assert.equal(h.destroyed(), 1, 'clean control actually reaches original teardown');
+    assert.ok(h.mapAt < h.guardAt && h.guardAt < h.initAt, 'initialize author state and register its veto before initTiptap');
+  });
 });

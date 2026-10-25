@@ -231,6 +231,8 @@ const MANUAL_MAP_LAYOUT_MODES = Object.freeze({
   HIERARCHY: 'hierarchy-derived-presentation',
 });
 
+let ideaMeaningAuthorDrafts = new Map();
+window.addEventListener('beforeunload', guardIdeaMeaningDraftUnload, { capture: true });
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
 if (isTiptapMode) {
@@ -15976,7 +15978,218 @@ function normalizeProjectionInspector(result = {}) {
       unavailableCount: Number.isInteger(summary.unavailableCount) ? Math.max(0, summary.unavailableCount) : 0,
     },
     authority: source.authority && typeof source.authority === 'object' && !Array.isArray(source.authority) ? source.authority : {},
+    meta: source.meta && typeof source.meta === 'object' ? { providerHash: source.meta.providerHash || '', invalidationKey: source.meta.invalidationKey || '' } : {},
   };
+}
+
+function getIdeaMeaningAuthorDraft(projectId = currentProjectId) {
+  let entry = ideaMeaningAuthorDrafts.get(projectId);
+  if (!entry) {
+    entry = { projectId, revision: 0, pending: null, intents: {}, provider: null, status: '', optionsDirty: true, form: null,
+      fields: { ideaTitle: '', ideaSummary: '', selectedIdeaId: '', meaningTitle: '', meaningInterpretation: '', ideaSearch: '', meaningSearch: '', selectedMeaningId: '' },
+      views: { idea: { offset: 0, search: '' }, meaning: { offset: 0, search: '' } }, controls: {}, actions: {} };
+    ideaMeaningAuthorDrafts.set(projectId, entry);
+  }
+  return entry;
+}
+
+function guardIdeaMeaningDraftUnload(event) {
+  if (![...ideaMeaningAuthorDrafts.values()].some(entry => entry.pending?.active
+    || ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation'].some(key => Boolean(entry.fields[key])))) return;
+  event.preventDefault(); event.returnValue = false; event.stopImmediatePropagation();
+  updateStatusText('Закрытие отменено: сохраните или явно отмените черновики Idea и Meaning во всех проектах.', { visible: true });
+}
+
+function getIdeaMeaningDetail(entry, kind) {
+  return entry.provider?.projectId === entry.projectId ? entry.provider.projectionStates.find(row => row.projectionId === kind)?.details : null;
+}
+
+function getIdeaMeaningSelectedIdea(entry) {
+  const state = entry.provider?.projectionStates?.find(row => row.projectionId === 'idea'), details = getIdeaMeaningDetail(entry, 'idea');
+  const id = entry.fields.selectedIdeaId;
+  if (!id || !details || state?.state !== 'ready' || !/^[a-f0-9]{64}$/.test(state.projectionHash || '')
+    || !/^[a-f0-9]{64}$/.test(entry.provider?.meta?.providerHash || '')) return null;
+  const row = details.rows?.find(row => row.id === id) || (details.selectedState === 'ready' && details.selected?.id === id ? details.selected : null);
+  return row && typeof row.id === 'string' && row.id.length <= 1000 && typeof row.title === 'string' ? row : null;
+}
+
+function getIdeaMeaningSavedOrigin(entry) {
+  const mention = findAtlasJourneyMention(atlasJourneyDraft.mentionId), scene = atlasCurrentSceneState;
+  if (!getIdeaMeaningSelectedIdea(entry) || scene.state !== 'ready' || scene.projectId !== entry.projectId || scene.sceneId !== currentDocumentId
+    || localDirty || localEditGeneration !== lastAckedGeneration || !mention || !Number.isSafeInteger(mention.startOffset) || mention.startOffset < 0
+    || !Number.isSafeInteger(mention.endOffset) || mention.endOffset <= mention.startOffset || !/^[a-f0-9]{64}$/.test(scene.summary?.sceneTextHash || '')
+    || mention.evidenceAnchor?.sceneTextHash !== scene.summary.sceneTextHash) return null;
+  return { schemaVersion: 'idea.originRef.v1', kind: 'sceneTextRange', sceneId: scene.sceneId,
+    startOffset: mention.startOffset, endOffset: mention.endOffset, sourceHash: scene.summary.sceneTextHash, targetId: entry.fields.selectedIdeaId };
+}
+
+function syncIdeaMeaningAuthorForm(entry) {
+  if (!entry.form) return;
+  const selected = getIdeaMeaningSelectedIdea(entry), active = currentProjectId === entry.projectId && currentRightTab === 'atlas' && currentAtlasSurface === 'journey';
+  for (const [key, control] of Object.entries(entry.controls)) if (control.value !== entry.fields[key]) control.value = entry.fields[key];
+  if (entry.optionsDirty) {
+    let deferred = false;
+    for (const [kind, key] of [['idea', 'selectedIdeaId'], ['meaning', 'selectedMeaningId']]) {
+      const select = entry.controls[key];
+      if (document.activeElement === select) { deferred = true; continue; }
+      const detail = getIdeaMeaningDetail(entry, kind), rows = [...(detail?.rows || [])];
+      if (detail?.selected && !rows.some(row => row.id === detail.selected.id)) rows.push(detail.selected);
+      select.innerHTML = '';
+      const empty = document.createElement('option'); empty.value = ''; empty.textContent = kind === 'idea' ? 'Choose a saved Idea' : 'Choose a saved Meaning'; select.append(empty);
+      for (const row of rows) {
+        const option = document.createElement('option'); option.value = row.id; option.textContent = row.title + (row.contentTruncated ? ' · truncated preview' : ''); select.append(option);
+      }
+      select.value = entry.fields[key];
+    }
+    entry.optionsDirty = deferred;
+  }
+  const blocked = !active || !entry.projectId || entry.pending?.active === true;
+  entry.actions['idea-create'].disabled = blocked || !entry.fields.ideaTitle.trim();
+  entry.actions['idea-origin-link'].disabled = blocked || !getIdeaMeaningSavedOrigin(entry);
+  entry.actions['meaning-promote'].disabled = blocked || !selected || !entry.fields.meaningTitle.trim() || !entry.fields.meaningInterpretation.trim();
+  for (const kind of ['idea', 'meaning']) {
+    const detail = getIdeaMeaningDetail(entry, kind);
+    entry.actions[kind + '-load'].disabled = !active || !entry.projectId || entry.pending?.active === true;
+    entry.actions[kind + '-previous'].disabled = !active || entry.pending?.active === true || entry.views[kind].offset < 24;
+    entry.actions[kind + '-next'].disabled = !active || entry.pending?.active === true || detail?.hasMore !== true;
+  }
+  entry.actions['idea-discard'].disabled = !active || entry.pending?.active === true;
+  entry.notice.textContent = entry.pending?.active ? 'Saving explicit author intent…' : entry.status || 'Explicit author truth. Select saved records before linking or promotion.';
+}
+
+function getIdeaMeaningAuthorForm() {
+  const entry = getIdeaMeaningAuthorDraft();
+  if (entry.form) { syncIdeaMeaningAuthorForm(entry); return entry.form; }
+  const form = document.createElement('form'); form.className = 'right-rail-atlas-journey-fields'; entry.form = form;
+  form.addEventListener('submit', event => event.preventDefault());
+  const title = document.createElement('strong'); title.textContent = 'Idea and Meaning · explicit authoring'; form.append(title);
+  const configs = [['ideaTitle', 'Idea title', 'input', 1000], ['ideaSummary', 'Idea summary', 'textarea', 8000],
+    ['ideaSearch', 'Find saved Ideas', 'input', 1000], ['selectedIdeaId', 'Saved Idea for link or promotion', 'select'],
+    ['meaningTitle', 'Meaning title', 'input', 1000], ['meaningInterpretation', 'Meaning interpretation', 'textarea', 8000],
+    ['meaningSearch', 'Find saved Meanings', 'input', 1000], ['selectedMeaningId', 'Saved Meaning · read only', 'select']];
+  for (const [key, caption, tag, max] of configs) {
+    const label = document.createElement('label'); label.className = 'right-rail-atlas-journey-field';
+    const text = document.createElement('span'); text.className = 'right-rail-atlas-journey-field__label'; text.textContent = caption;
+    const input = document.createElement(tag); input.className = 'right-rail-atlas-journey-field__control'; input.dataset.ideaMeaningField = key;
+    input.id = 'idea-meaning-' + key; label.htmlFor = input.id; if (tag === 'input') input.type = 'text'; if (max) input.maxLength = max;
+    input.value = entry.fields[key]; entry.controls[key] = input;
+    input.addEventListener(tag === 'select' ? 'change' : 'input', () => {
+      if (!input.isConnected || currentProjectId !== entry.projectId || currentAtlasSurface !== 'journey' || currentRightTab !== 'atlas') return;
+      entry.fields[key] = input.value; entry.revision++;
+      if (entry.pending?.active) entry.status = 'Author draft changed; reload saved records after the pending request.';
+      syncIdeaMeaningAuthorForm(entry);
+    });
+    if (tag === 'select') input.addEventListener('blur', () => { if (input.isConnected && currentProjectId === entry.projectId) syncIdeaMeaningAuthorForm(entry); });
+    label.append(text, input); form.append(label);
+  }
+  const actions = [['idea-create', 'Create Idea', 'idea.create'], ['idea-origin-link', 'Link selected saved fragment', 'idea.originLink.add'],
+    ['meaning-promote', 'Promote selected Idea to Meaning', 'meaning.promote'], ['idea-load', 'Load saved Ideas'], ['idea-previous', 'Previous Ideas'],
+    ['idea-next', 'Next Ideas'], ['meaning-load', 'Load saved Meanings'], ['meaning-previous', 'Previous Meanings'], ['meaning-next', 'Next Meanings'], ['idea-discard', 'Discard this author draft']];
+  for (const [action, label, commandId] of actions) {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action'; button.textContent = label;
+    button.dataset.ideaMeaningAction = action; if (commandId) button.dataset.productCommandId = commandId; entry.actions[action] = button;
+    button.addEventListener('click', () => {
+      if (button.disabled || !button.isConnected || entry.pending?.active || entry.projectId !== currentProjectId || currentRightTab !== 'atlas' || currentAtlasSurface !== 'journey') return;
+      if (commandId) { void runProductJourneyCommand(commandId); return; }
+      if (action === 'idea-discard') {
+        for (const key of ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation']) entry.fields[key] = '';
+        entry.intents = {}; entry.revision++; entry.status = 'This author draft was discarded.'; syncIdeaMeaningAuthorForm(entry); return;
+      }
+      const kind = action.startsWith('meaning-') ? 'meaning' : 'idea', view = entry.views[kind], search = entry.fields[kind + 'Search'];
+      view.offset = action.endsWith('-load') || search !== view.search ? 0 : Math.max(0, view.offset + (action.endsWith('-next') ? 24 : -24));
+      view.search = search; entry.revision++;
+      void refreshIdeaMeaningAuthoring();
+    });
+    form.append(button);
+  }
+  entry.notice = document.createElement('div'); entry.notice.className = 'right-rail-atlas-state'; entry.notice.setAttribute('role', 'status'); form.append(entry.notice);
+  syncIdeaMeaningAuthorForm(entry); return form;
+}
+
+async function refreshIdeaMeaningAuthoring(options = {}) {
+  const entry = getIdeaMeaningAuthorDraft(), revision = entry.revision;
+  const current = () => entry.projectId === currentProjectId && entry.revision === revision && currentAtlasSurface === 'journey' && (!options.isCurrent || options.isCurrent());
+  if (!current()) return;
+  await refreshProjectionInspector({ isCurrent: current });
+}
+
+async function runIdeaMeaningAuthoringCommand(commandId) {
+  const entry = getIdeaMeaningAuthorDraft();
+  if (!entry.projectId || currentRightTab !== 'atlas' || currentAtlasSurface !== 'journey' || entry.pending?.active || !entry.form?.isConnected) return { ok: false, reason: 'IDEA_MEANING_INTENT_UNAVAILABLE' };
+  const selected = getIdeaMeaningSelectedIdea(entry), fields = entry.fields;
+  let payload;
+  if (commandId === 'idea.create' && fields.ideaTitle.trim()) payload = { title: fields.ideaTitle, summary: fields.ideaSummary };
+  if (commandId === 'idea.originLink.add' && selected) { const originRef = getIdeaMeaningSavedOrigin(entry); if (originRef) payload = { ideaId: selected.id, originRef }; }
+  if (commandId === 'meaning.promote' && selected && fields.meaningTitle.trim() && fields.meaningInterpretation.trim()) payload = {
+    title: fields.meaningTitle, interpretation: fields.meaningInterpretation, source: { kind: 'idea', ideaId: selected.id } };
+  if (!payload) return { ok: false, reason: 'IDEA_MEANING_SAVED_SELECTION_REQUIRED' };
+  if (commandId !== 'idea.originLink.add') {
+    const key = JSON.stringify(payload), previous = entry.intents[commandId];
+    if (!previous || previous.key !== key) {
+      let id;
+      try { if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') id = crypto.randomUUID(); } catch {}
+      if (typeof id !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)) {
+        entry.status = 'E_IDEA_MEANING_IDENTITY_UNAVAILABLE'; updateStatusText(entry.status, { visible: true }); syncIdeaMeaningAuthorForm(entry);
+        return { ok: false, reason: entry.status };
+      }
+      entry.intents[commandId] = { key, id: (commandId === 'idea.create' ? 'idea-' : 'meaning-') + id };
+    }
+    payload[commandId === 'idea.create' ? 'ideaId' : 'meaningId'] = entry.intents[commandId].id;
+  }
+  const context = captureAtlasPublication(), revision = entry.revision, provider = entry.provider, sequence = ++atlasCommandPublicationSequence;
+  const token = { active: true }; entry.pending = token;
+  const presentation = () => context() && entry.projectId === currentProjectId && entry.revision === revision
+    && currentAtlasSurface === 'journey' && currentRightTab === 'atlas' && entry.pending === token && sequence === atlasCommandPublicationSequence;
+  const current = () => presentation() && entry.provider === provider;
+  syncIdeaMeaningAuthorForm(entry);
+  let result;
+  try {
+    result = await dispatchUiCommand(commandId, { ...payload, projectId: entry.projectId }, { isCurrentPresentation: current });
+    if (!current()) return result;
+    const receipt = result?.value?.result?.receipt;
+    const accepted = result?.ok === true && result.value?.performed === true && result.value.commandAuthority === 'CommandKernel'
+      && result.value.commandId === commandId && result.value.result?.ok === true && receipt?.schemaVersion === 'command-kernel.receipt.v1'
+      && receipt.commandId === commandId && receipt.status === 'APPLIED' && receipt.capabilityRevalidated === true && receipt.storageWritten === true;
+    entry.status = accepted ? 'Saved through CommandKernel.' : result?.error?.reason || result?.reason || 'E_IDEA_MEANING_RESULT_INVALID';
+    updateStatusText(entry.status, { visible: true });
+    if (accepted) {
+      const savedFields = commandId === 'idea.create' ? [['ideaTitle', 'title'], ['ideaSummary', 'summary']]
+        : commandId === 'meaning.promote' ? [['meaningTitle', 'title'], ['meaningInterpretation', 'interpretation']] : [];
+      for (const [field, key] of savedFields) if (entry.fields[field] === payload[key]) entry.fields[field] = '';
+      delete entry.intents[commandId]; await refreshIdeaMeaningAuthoring({ isCurrent: presentation });
+    }
+    return result;
+  } catch (error) {
+    result = { ok: false, reason: 'E_IDEA_MEANING_DISPATCH_FAILED', error: { code: 'E_IDEA_MEANING_DISPATCH_FAILED',
+      reason: error?.code || error?.reason || error?.message || 'DISPATCH_REJECTED' } };
+    if (current()) { entry.status = result.reason; updateStatusText(result.reason, { visible: true }); }
+    return result;
+  } finally {
+    token.active = false; if (entry.pending === token) entry.pending = null;
+    // Clear this request's busy controls without publishing its stale result or rebuilding inputs.
+    if (entry.projectId === currentProjectId && entry.form?.isConnected && currentAtlasSurface === 'journey') syncIdeaMeaningAuthorForm(entry);
+  }
+}
+
+function renderIdeaMeaningInspector(parent, state) {
+  if (state.state !== 'ready' || state.projectId !== currentProjectId) {
+    appendAtlasReportsRow(parent, 'Saved author details unavailable', state.projectId !== currentProjectId ? 'Load saved records for the current project.' : state.unavailableReason || state.state); return;
+  }
+  for (const kind of ['idea', 'meaning']) {
+    const projection = state.projectionStates.find(row => row.projectionId === kind), detail = projection?.details;
+    const section = appendAtlasOverviewSection(parent, kind === 'idea' ? 'Saved Ideas · read only' : 'Saved Meanings · read only', { open: true });
+    if (!detail || projection.state === 'unavailable') { appendAtlasReportsRow(section, 'Unavailable saved projection', projection?.unavailableReason || 'Load saved records in Flow'); continue; }
+    appendAtlasReportsRow(section, `${detail.rows.length} of ${detail.total} · offset ${detail.offset}`, detail.complete ? 'Complete view' : 'Partial view · use Flow search and paging');
+    const rows = [...detail.rows]; if (detail.selected && !rows.some(row => row.id === detail.selected.id)) {
+      appendAtlasReportsRow(section, 'Selected saved record outside this page', detail.selected.title); rows.push(detail.selected);
+    }
+    for (const row of rows) appendAtlasReportsRow(section, row.title,
+      `${kind === 'idea' ? row.summary : row.interpretation} · ${kind === 'idea' ? row.originLinkCount + ' linked origins' : 'Explicit promotion from ' + (row.source?.ideaId || row.source?.originRef?.sceneId || '')}${row.contentTruncated ? ' · Truncated preview; full author text remains saved.' : ''}`);
+    for (const origin of detail.originLinks || []) appendAtlasReportsRow(section, 'Saved origin', `${origin.originRef.sceneId}:${origin.originRef.startOffset}–${origin.originRef.endOffset} · ${origin.originRef.sourceHash}`);
+    for (const evidence of detail.occurrenceEvidence || []) appendAtlasReportsRow(section, 'Explicit origin evidence', `${evidence.ideaId} · ${evidence.linkId}`);
+    if (detail.originLinkCount) appendAtlasReportsRow(section, `${detail.originLinks.length} of ${detail.originLinkCount} selected/view origins`, detail.originLinksComplete ? 'Complete' : 'Partial source list');
+    for (const evidence of detail.promotionEvidence || []) appendAtlasReportsRow(section, 'Explicit promotion', `${evidence.meaningId} · ${evidence.source?.ideaId || evidence.source?.originRef?.sceneId || ''}`);
+  }
 }
 
 function makeAtlasCommandButton(label, commandId, payload, options = {}) {
@@ -15992,7 +16205,7 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
     button.setAttribute('aria-label', `${label}. ${options.reason}`);
   }
   button.addEventListener('click', () => {
-    const correction = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+    const correction = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)
       && ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'].includes(commandId);
     if ((correction || ['atlas.evidence.reattach', 'atlas.observation.suppress'].includes(commandId)) && (button.disabled || !button.isConnected)) return;
     if (correction && atlasJourneyState.correctionPending?.active) return;
@@ -16003,7 +16216,7 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
     } catch (error) {
       if (correction && ['E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE', 'E_ATLAS_CORRECTION_SELECTION_REQUIRED'].includes(error?.code)
         || typeof window !== 'undefined'
-        && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)
+        && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)
         && ['atlas.entity.create', 'atlas.alias.add'].includes(commandId) && error?.code === 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE') {
         updateStatusText(error.code, { visible: true });
         return;
@@ -16074,8 +16287,8 @@ function findAtlasJourneyMention(mentionId = '') {
 }
 
 function makeStableUiId(prefix) {
-  if (typeof window !== 'undefined' && (['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)
-    && ['atlas-entity', 'atlas-alias'].includes(prefix) || window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+  if (typeof window !== 'undefined' && (['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)
+    && ['atlas-entity', 'atlas-alias'].includes(prefix) || ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)
       && ['atlas-reassign', 'atlas-merge', 'atlas-split-restore'].includes(prefix))) {
     try {
       if (typeof globalThis.crypto?.randomUUID !== 'function') throw new Error('ATLAS_AUTHOR_IDENTITY_UNAVAILABLE');
@@ -16123,7 +16336,7 @@ function reconcileAtlasJourneyDraft() {
   if (!targetEntityId || targetEntityId === sourceEntityId) {
     targetEntityId = entities.find((entity) => entity.entityId !== sourceEntityId)?.entityId || '';
   }
-  const preserveSource = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)
+  const preserveSource = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)
     && entityIds.has(atlasJourneyDraft.sourceEntityId);
   const mentions = getAtlasJourneyMentions();
   const mentionIds = new Set(mentions.map((mention) => mention.mentionId));
@@ -16350,7 +16563,7 @@ function getAtlasContinuityFactPayload() {
   const ledgerKind = atlasContinuityAuthorDraft.ledgerKind || 'promise';
   return {
     ledgerKind,
-    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE) ? {} : {
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE) ? {} : {
       factId: ensureAtlasSurfaceDraftId(
         atlasContinuityAuthorDraft,
         'factId',
@@ -16599,7 +16812,7 @@ function appendAtlasSavedQueryControls(parent) {
 
 async function refreshAtlasProductSurfaces(options = {}) {
   if (options.isCurrent && !options.isCurrent()) return;
-  if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)) return refreshActiveAtlasSurface(options);
+  if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)) return refreshActiveAtlasSurface(options);
   const refreshes = [
     refreshAtlasOverview(options),
     refreshAtlasEntityDossier(options),
@@ -16674,7 +16887,9 @@ async function runAtlasCorrectionCommand(commandId, payload) {
 }
 
 async function runProductJourneyCommand(commandId, payload = {}) {
-  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'
+    && ['idea.create', 'idea.originLink.add', 'meaning.promote'].includes(commandId)) return runIdeaMeaningAuthoringCommand(commandId);
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)
     && ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'].includes(commandId)) return runAtlasCorrectionCommand(commandId, payload);
   if (commandId === 'atlas.observation.suppress') return runAtlasSuppressionCommand();
   if (commandId === 'atlas.evidence.reattach') return runAtlasReattachmentCommand();
@@ -16695,7 +16910,7 @@ async function runProductJourneyCommand(commandId, payload = {}) {
   }, { isCurrentPresentation: current });
   if (!current()) return result;
   if (commandId === 'atlas.mention.confirm' && result && result.ok
-    && (typeof window === 'undefined' || !['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE))) {
+    && (typeof window === 'undefined' || !['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE))) {
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
       decisionId: payload?.decisionId || atlasJourneyDraft.decisionId,
@@ -16721,7 +16936,9 @@ async function runProductJourneyCommand(commandId, payload = {}) {
 function renderAtlasJourneyState() {
   if (!(atlasJourneyHost instanceof HTMLElement)) return;
   reconcileAtlasJourneyDraft();
-  atlasJourneyHost.innerHTML = '';
+  const authorForm = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11' ? getIdeaMeaningAuthorForm() : null;
+  if (authorForm) { for (const child of [...atlasJourneyHost.children]) if (child !== authorForm) child.remove(); }
+  else atlasJourneyHost.innerHTML = '';
   applyAtlasResolvedSurfaceBinding('journey', atlasJourneyHost, 'atlasJourneyProvider');
   atlasJourneyHost.dataset.atlasJourneyStatus = atlasJourneyState.status;
   atlasJourneyHost.dataset.atlasJourneyLastCommandId = atlasJourneyState.lastCommandId || '';
@@ -16742,14 +16959,16 @@ function renderAtlasJourneyState() {
   status.className = 'right-rail-atlas-overview-hash';
   status.textContent = atlasJourneyState.lastResult || atlasJourneyState.status;
   header.append(label, title, status);
-  atlasJourneyHost.appendChild(header);
+  if (authorForm?.parentElement === atlasJourneyHost) atlasJourneyHost.insertBefore(header, authorForm);
+  else atlasJourneyHost.appendChild(header);
+  if (authorForm && authorForm.parentElement !== atlasJourneyHost) atlasJourneyHost.appendChild(authorForm);
 
   const entities = getAtlasJourneyEntities();
   const mentions = getAtlasJourneyMentions();
   const sourceEntity = findAtlasJourneyEntity(atlasJourneyDraft.sourceEntityId);
   const targetEntity = findAtlasJourneyEntity(atlasJourneyDraft.targetEntityId);
   const mention = findAtlasJourneyMention(atlasJourneyDraft.mentionId);
-  const corrections = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10';
+  const corrections = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE);
   const savedMerge = corrections && atlasJourneyDraft.savedMergeOperation ? getAtlasSavedMergeSelection() : null;
   const correctionPending = corrections && atlasJourneyState.correctionPending?.active === true;
   const suppressionSelected = isAtlasSuppressionCurrent(atlasJourneyDraft.suppressionContext) && Boolean(atlasJourneyDraft.suppressionTarget)
@@ -16822,7 +17041,7 @@ function renderAtlasJourneyState() {
     entityId: mention?.entityId || atlasJourneyDraft.sourceEntityId || '',
     mentionId: mention?.mentionId || '',
     evidenceAnchor: mention?.evidenceAnchor || null,
-    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE) ? {} : {
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE) ? {} : {
       decisionId: ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'),
     }),
   }), { actionId: 'confirm-mention', disabled: !mention, reason: mention ? '' : 'Select an exact mention' }));
@@ -17131,10 +17350,13 @@ function renderProjectionInspectorState() {
   appendAtlasReportsRow(boundary, 'Plot', 'Read projection from scenes and confirmed mentions', 'current');
   appendAtlasReportsRow(boundary, 'Idea', 'Author truth: idea.create and idea.originLink.add', 'current');
   appendAtlasReportsRow(boundary, 'Meaning', 'Promotion only through meaning.promote via CommandKernel only', 'current');
+  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11') renderIdeaMeaningInspector(projectionInspectorHost, state);
 }
 
 async function refreshProjectionInspector(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const authorEntry = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11' ? getIdeaMeaningAuthorDraft() : null;
+  const authorRevision = authorEntry?.revision;
   const current = beginAtlasQueryPublication('projectionInspector', options), requestProject = currentProjectId;
   if (!current) return;
   projectionInspectorState = {
@@ -17145,12 +17367,22 @@ async function refreshProjectionInspector(options = {}) {
   renderProjectionInspectorState();
   const result = await invokeWorkspaceQueryBridge(PROJECTION_INSPECTOR_QUERY_ID, {
     projectId: currentProjectId,
+    ...(authorEntry ? { idea: { ...authorEntry.views.idea, selectedId: authorEntry.fields.selectedIdeaId },
+      meaning: { ...authorEntry.views.meaning, selectedId: authorEntry.fields.selectedMeaningId } } : {}),
   });
   if (!current()) return;
+  if (authorEntry && authorEntry.revision !== authorRevision) {
+    projectionInspectorState = { ...projectionInspectorState, state: 'unavailable', unavailableReason: 'IDEA_MEANING_RELOAD_REQUIRED', projectionStates: [] };
+    renderProjectionInspectorState(); return;
+  }
   const nextState = readAtlasQueryProjection(result, 'projectionInspector', requestProject)
     || { state: 'unavailable', unavailableReason: 'PROJECTION_INSPECTOR_QUERY_FAILED', projectId: requestProject };
   projectionInspectorState = normalizeProjectionInspector(nextState);
   renderProjectionInspectorState();
+  if (authorEntry && authorEntry.projectId === currentProjectId) {
+    authorEntry.provider = projectionInspectorState; authorEntry.optionsDirty = true;
+    if (authorEntry.form?.isConnected) syncIdeaMeaningAuthorForm(authorEntry);
+  }
 }
 
 function renderAtlasOverviewState() {
@@ -17614,7 +17846,7 @@ function renderAtlasEntityDossierState() {
   appendAtlasOverviewMetric(metrics, 'evidence', state.summary.evidenceRowCount, state.summary.evidenceHealth);
   appendAtlasOverviewMetric(metrics, 'review', state.summary.reviewRequiredEvidenceCount, state.summary.reviewRequiredEvidenceCount > 0 ? 'reviewRequired' : 'current');
   atlasEntityDossierHost.appendChild(metrics);
-  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)
     && state.savedMergeOperations) renderAtlasSavedMergeSelection(atlasEntityDossierHost, state);
 
   if (state.aliases.length > 0) {
@@ -25540,7 +25772,7 @@ if (window.electronAPI) {
       refreshSceneHistory('');
     }
     if (currentRightTab === 'atlas') {
-      if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10'].includes(window.__PRODUCT_PROFILE)) {
+      if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11'].includes(window.__PRODUCT_PROFILE)) {
         void refreshActiveAtlasSurface();
       } else {
         renderAtlasJourneyState();

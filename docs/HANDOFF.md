@@ -1,3 +1,20 @@
+## 2026-10-25 — Explicit Idea and Meaning authoring: causal baseline
+
+TASK_ID: YALKEN_IDEA_MEANING_AUTHORING_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CAUSAL_RED_REVIEWED_IMPLEMENTATION_AND_DELIVERY_PENDING
+CLAIM_BOUNDARY: Existing three-command journey only; source checkpoint is not feature, native, full Mac or release acceptance. Exact later outcomes belong to dated execution receipts and final delivery closure.
+OBSERVED_AT_UTC: 2026-10-25T00:19:46.860169+00:00
+BINDING_BASE_SHA: 9aa63a671185349bc4babde0f5e79cb18468707e
+
+PR2160 is independently closed on this literal merged SHA/tree d20e12ba; closure0115e459527f9904dd83129f4019358703d6b5915341c066041d43ab39c7a1e7 supersedes the earlier pending correction checkpoints below. Full Mac work continues.
+
+Fresh clean29path preflight/bootstrap/taskE0, full normative and scoped factual reads precede the separate code executor. All10007tracked/9979protected sources,9910offline dependency members and751closed owned profile members were independently revalidated. Whole frozen cheap6 RED:537tests515pass22fail; whole literal Main integration RED:441tests363pass78fail; zero cancelled/skipped/todo. All old integration top1..156 pass. Lawful unpackaged create/link/promote persists with an independent full manifest/event/receipt/anchor/fence/recovery and complete file-roster oracle. Forty-eight injected cases wrongly persist after queued/prepared authority changes, invalid raw payloads, late scene edits or real project switches. All24prepared,2late-source and3project-switch hooks reach; the existing three manifest-CAS refusals pass. Parent failures are not separate defect counts. Full logs/frozen inputs and root review576cd8194a4e80ddda09b0aab5481e2d9dac46763b7a47aa4971e65a48b44c68 are retained in the dated task reports.
+
+Bounded implementation reuses idea.create, idea.originLink.add and meaning.promote, unchanged Core/atomic persistence and existing query.projectionInspector. Proposed strict V11 adds only3commands to32/same12queries/allfalse optional authority. Existing Flow receives stable labeled author controls and explicit saved selection; inspector stays read-only with bounded saved details. Frozen tests remain protected during runtime work. Current source checks, early actual packaged/native/cold proof, full baseline/RTK/CI and ordinary commit/push/PR/merge/literal merged verification remain required; no corrected-source acceptance is claimed here.
+
+New reports/materials use dated2026-10-25--idea-meaning-authoring on verified T777, with declared owned APFS runtime and compact addressed evidence. Original profiles/markers, manuscript and all history remain protected. All17qualificationUNKNOWN/releasecutNOT_READY, fullaudit2high1moderate and59named baseline skips remain explicit. Full Atlas/maps/WSE/Pulse/environment epochs continues; Black Box later.
+
 ## 2026-10-25 — Same PR2160: native-visible correction Flow refresh
 
 TASK_ID: YALKEN_ATLAS_ENTITY_CORRECTIONS_20261024

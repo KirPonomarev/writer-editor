@@ -249,7 +249,7 @@ test('WP307 profile contract carries no persistence, network or external authori
 // Actual Main under an inert Electron host: no app/renderer/native launch.
 // Only the host platform is explicit so the packaged-Darwin policy is also
 // exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
-async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false } = {}) {
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false, historicalV10Constructor = false } = {}) {
   const os = require('node:os'), Module = require('node:module');
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
   const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
@@ -306,18 +306,26 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         t.diagnostic('HISTORICAL_V7_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
         return { ...loaded, createWriterAtlasReadSurfacesProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
           createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
-          createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
+          createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
+          createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV8Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor, false);
         t.diagnostic('HISTORICAL_V8_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
         return { ...loaded, createWriterAtlasTemporalAuthoringProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
-          createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
+          createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
+          createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV9Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor || historicalV8Constructor, false);
         t.diagnostic('HISTORICAL_V9_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
-        return { ...loaded, createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection };
+        return { ...loaded, createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection,
+          createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection };
+      }
+      if (request === './core/writer-local-profile-v1.cjs' && historicalV10Constructor) {
+        assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor, false);
+        t.diagnostic('HISTORICAL_V10_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
+        return { ...loaded, createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection };
       }
       if (request !== './main/projectArchiveDarwinPublication.cjs') return loaded;
       return { ...loaded, createDarwinExclusiveFilePublisher: options => {
@@ -1145,8 +1153,8 @@ function reattachmentWholeFixtureRoster(h) {
   } }; visit(h.root); return rows;
 }
 
-async function reattachmentMainFixture(t, packaged = false, beforeProject, { historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false } = {}) {
-  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true, historicalV7Constructor, historicalV8Constructor, historicalV9Constructor }), ui = await fullMacRendererCommandPort(h);
+async function reattachmentMainFixture(t, packaged = false, beforeProject, { historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false, historicalV10Constructor = false } = {}) {
+  const h = await fullMacMainFixture(t, { packaged, rendererLoaded: true, historicalV7Constructor, historicalV8Constructor, historicalV9Constructor, historicalV10Constructor }), ui = await fullMacRendererCommandPort(h);
   if (beforeProject) beforeProject(h); // Actual lifecycle bootstrap captures the observer before constructing its prepare port.
   const f = await exactAtlasScene(h, 'Explicit saved reattachment'), { projectId, sceneId } = f;
   const entityId = 'saved-mira', decisionId = 'saved-confirmation';
@@ -2487,8 +2495,8 @@ async function correctionMainFixture(t, packaged = false, beforeProject, histori
   return x;
 }
 
-test('current literal Main selects strict V10 and only twenty-nine commands with the same twelve queries', async t => {
-  const h = await fullMacMainFixture(t), active = h.main.__profile();
+test('historical V10 constructor selection preserves twenty-nine commands and twelve queries independently of current Main', async t => {
+  const h = await fullMacMainFixture(t, { historicalV10Constructor: true }), active = h.main.__profile();
   assert.equal(active.profileId, CORRECTION_V10); assert.equal(active.schemaVersion, 'writer-local-profile.v10');
   assert.deepEqual(active.admittedCommandIds, [...profile.createWriterAtlasTemporalAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' }).admittedCommandIds, ...CORRECTION_MAIN_IDS]);
   assert.equal(active.admittedCommandIds.length, 29); assert.deepEqual(active.admittedQueryIds, READ_SURFACE_QUERY_IDS);
@@ -2763,4 +2771,324 @@ for (const fault of ['project', 'surface', 'author-draft', 'generation']) test('
   assert.equal(c.atlasJourneyHost.children[0], header); assert.deepEqual(flowRefreshControls(renderer), visible);
   assert.equal(require('node:vm').runInContext('JSON.stringify(atlasJourneyDraft)', c), draft); assert.equal(JSON.stringify(c.atlasCurrentSceneState), cached);
   assert.deepEqual(reattachmentWholeFixtureRoster(x.h), roster); assert.equal(renderer.packets.length, 1); x.assertOriginal();
+});
+
+
+const IDEA_MEANING_V11 = 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11';
+const IDEA_MEANING_MAIN_IDS = ['idea.create', 'idea.originLink.add', 'meaning.promote'];
+
+function assertIdeaMeaningPersistence(x, before, after, commandId, payload, applied) {
+  assertAuthorIdentityCanonical(after.events.slice(0, before.events.length), before.events);
+  assertAuthorIdentityCanonical(after.receipts.slice(0, before.receipts.length), before.receipts);
+  assert.deepEqual(after.scene, before.scene); x.assertOriginal();
+  if (!applied) { assert.deepEqual(after.roster, before.roster); assertAuthorIdentityCanonical(after.manifest, before.manifest); return; }
+  const seq = before.manifest.lastCommandId + 1, expected = structuredClone(before.manifest); expected.lastCommandId = seq;
+  if (commandId.startsWith('idea.')) {
+    const domain = expected.ideas || { schemaVersion: 'idea.author.v1', ideas: {}, originLinks: {} }; expected.ideas = domain;
+    if (commandId === 'idea.create') {
+      assert.equal(Object.hasOwn(domain.ideas, payload.ideaId), false);
+      domain.ideas[payload.ideaId] = { id: payload.ideaId, title: payload.title.trim(), summary: (payload.summary || '').trim(),
+        originLinkIds: [], createdByCommandSeq: seq, updatedByCommandSeq: seq };
+    } else {
+      const originRef = { schemaVersion: 'idea.originRef.v1', kind: 'sceneTextRange', ...payload.originRef, targetId: payload.originRef.targetId || '' };
+      const linkId = payload.linkId || 'idea-origin-link:' + x.hash({ projectId: x.projectId, ideaId: payload.ideaId, originRef });
+      assert.equal(Object.hasOwn(domain.originLinks, linkId), false); assert.ok(domain.ideas[payload.ideaId]);
+      domain.originLinks[linkId] = { id: linkId, ideaId: payload.ideaId, originRef, createdByCommandSeq: seq };
+      domain.ideas[payload.ideaId].originLinkIds.push(linkId); domain.ideas[payload.ideaId].updatedByCommandSeq = seq;
+    }
+  } else {
+    assert.equal(commandId, 'meaning.promote'); expected.meanings ||= { schemaVersion: 'meaning.author.v1', meanings: {} };
+    assert.equal(Object.hasOwn(expected.meanings.meanings, payload.meaningId), false);
+    expected.meanings.meanings[payload.meaningId] = { id: payload.meaningId, title: payload.title.trim(), interpretation: payload.interpretation.trim(),
+      source: payload.source.kind === 'idea' ? { kind: 'idea', ideaId: payload.source.ideaId || payload.source.sourceId }
+        : { kind: 'sceneOriginRef', originRef: { schemaVersion: 'idea.originRef.v1', kind: 'sceneTextRange', ...payload.source.originRef, targetId: payload.source.originRef.targetId || '' } },
+      promotionKind: 'explicitAuthorPromotion', createdByCommandSeq: seq, updatedByCommandSeq: seq };
+  }
+  assertAuthorIdentityCanonical(after.manifest, expected);
+  assert.equal(after.events.length, before.events.length + 1); assert.equal(after.receipts.length, before.receipts.length + 1);
+  assert.equal(after.events.at(-1).commandId, commandId); assert.equal(after.receipts.at(-1).commandId, commandId);
+  assert.equal(after.events.at(-1).domainEventDigest, after.receipts.at(-1).domainEventDigest);
+  const projectPrefix = path.relative(x.h.root, x.f.projectRoot) + path.sep;
+  const anchorPrefix = path.join('userData', 'stage10-integrity-anchors', x.identityKey) + path.sep;
+  const digest = value => crypto.createHash('sha256').update(value).digest('hex');
+  const previousHash = digest(before.manifestRaw), nextHash = digest(after.manifestRaw);
+  const base = path.join('userData', 'stage10-integrity-anchors', 'manifest-transitions');
+  const transitionRoot = path.join(base, digest(x.projectId + '\0' + x.f.manifestPath)), transitionDir = path.join(transitionRoot, previousHash);
+  const transitionFile = path.join(transitionDir, nextHash + '.json');
+  const transition = JSON.stringify({ schemaVersion: 'yalken.manifest-transition.v1', projectId: x.projectId,
+    targetPath: x.f.manifestPath, previousHash, nextHash });
+  assert.equal(fs.readFileSync(path.join(x.h.root, transitionFile), 'utf8'), transition);
+  const oldRoster = new Map(before.roster), newRoster = new Map(after.roster), added = new Set([transitionFile]);
+  assert.equal(oldRoster.has(transitionFile), false); assert.equal(newRoster.get(transitionFile), digest(transition));
+  for (const name of [base, transitionRoot, transitionDir]) { assert.equal(newRoster.get(name), 'directory'); if (!oldRoster.has(name)) added.add(name); }
+  const mutable = new Set([projectPrefix + 'project.craftsman.json',
+    ...['product-session.v2.json', 'command-receipt-authority-store.v2.json', path.join('recovery', 'project-truth.latest.v1.json')]
+      .map(name => projectPrefix + path.join('.stage10-local', name)),
+    ...['integrity-anchor.v1.json', 'integrity-anchor.recovery.v1.json', 'fencing-generation.v1.json'].map(name => anchorPrefix + name)]);
+  const fixed = rows => rows.filter(([name]) => !mutable.has(name) && !added.has(name));
+  assert.deepEqual(fixed(after.roster), fixed(before.roster), 'complete foreign state manuscript and prior transition records stay exact');
+  const previousAnchor = before.anchors[anchorPrefix + 'integrity-anchor.v1.json'], head = after.authorityStore.currentHead;
+  assertAuthorIdentityCanonical(after.anchors[anchorPrefix + 'integrity-anchor.recovery.v1.json'], previousAnchor);
+  const anchorCore = { schemaVersion: 'yalken.stage10.mainIntegrityAnchor.v1', anchorVersion: 1, projectId: x.projectId,
+    authorityGeneration: head.authorityGeneration, receiptCount: head.receiptCount, receiptRootDigest: head.receiptRootDigest,
+    eventLogDigest: head.eventLogDigest, authorityHeadDigest: head.authorityHeadDigest, authorityStoreDigest: x.hash(after.authorityStore),
+    sessionDigest: x.hash(after.session), previousIntegrityAnchorDigest: previousAnchor.integrityAnchorDigest };
+  assert.equal(anchorCore.authorityGeneration, previousAnchor.authorityGeneration + 1);
+  assertAuthorIdentityCanonical(after.anchors[anchorPrefix + 'integrity-anchor.v1.json'], { ...anchorCore, integrityAnchorDigest: x.hash(anchorCore) });
+  const fence = after.anchors[anchorPrefix + 'fencing-generation.v1.json'], oldFence = before.anchors[anchorPrefix + 'fencing-generation.v1.json'];
+  assert.match(fence.ownerTokenDigest, /^[a-f0-9]{64}$/u); assert.notEqual(fence.ownerTokenDigest, oldFence.ownerTokenDigest);
+  assert.ok(fence.issuedAtMs >= before.observedAtMs && fence.issuedAtMs <= after.observedAtMs);
+  assert.ok(Number.isSafeInteger(fence.monotonicIssuedAtMs) && fence.monotonicIssuedAtMs >= oldFence.monotonicIssuedAtMs);
+  assertAuthorIdentityCanonical(fence, { ...oldFence, fencingGeneration: oldFence.fencingGeneration + 1,
+    ownerTokenDigest: fence.ownerTokenDigest, issuedAtMs: fence.issuedAtMs, monotonicIssuedAtMs: fence.monotonicIssuedAtMs });
+  const recovery = JSON.parse(fs.readFileSync(path.join(x.f.projectRoot, '.stage10-local', 'recovery', 'project-truth.latest.v1.json')));
+  assertAuthorIdentityCanonical(recovery, { schemaVersion: 'yalken.stage10.projectTruthRecovery.v1', projectId: x.projectId,
+    reason: commandId, previousIntegrityAnchorDigest: previousAnchor.integrityAnchorDigest, previousHash, intendedNextHash: nextHash, previousText: before.manifestRaw });
+}
+
+async function ideaMeaningMainFixture(t, packaged = false, beforeProject) {
+  const x = await reattachmentMainFixture(t, packaged, beforeProject);
+  const foreign = await x.h.main.handleProjectLifecycleCreateCommand({ projectName: 'Foreign Idea Meaning project' }); assert.equal(foreign.ok, true);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true); x.foreignProjectId = foreign.projectId;
+  const identity = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
+  assert.equal(identity.ok, true); x.identityKey = identity.canonicalKey; x.ideaId = 'saved-explicit-idea';
+  x.origin = async () => {
+    const current = await x.query(), mention = current.mentions.find(row => row.startOffset === 68); assert.ok(mention);
+    return { schemaVersion: 'idea.originRef.v1', kind: 'sceneTextRange', sceneId: x.sceneId,
+      startOffset: mention.startOffset, endOffset: mention.endOffset, sourceHash: current.summary.sceneTextHash, targetId: x.ideaId };
+  };
+  x.payloadFor = async (id, tag) => id === 'idea.create' ? { projectId: x.projectId, ideaId: 'idea-' + tag,
+    title: 'Explicit idea é 🧭 ' + tag, summary: 'Saved author summary ' + tag }
+    : id === 'idea.originLink.add' ? { projectId: x.projectId, ideaId: x.ideaId, linkId: 'origin-' + tag, originRef: await x.origin() }
+    : { projectId: x.projectId, meaningId: 'meaning-' + tag, title: 'Explicit meaning é 🧭 ' + tag,
+      interpretation: 'Chosen interpretation ' + tag, source: { kind: 'idea', ideaId: x.ideaId } };
+  x.apply = async (id, payload) => {
+    const before = authorIdentitySnapshot(x), response = await x.ui(id, payload), after = authorIdentitySnapshot(x);
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_IDEA_MEANING_PERSISTENCE', id, response, beforeManifest: before.manifest, afterManifest: after.manifest,
+      beforeEvents: before.events.length, afterEvents: after.events.length, beforeRoster: before.roster, afterRoster: after.roster }));
+    assertIdeaMeaningPersistence(x, before, after, id, payload, response.mainResult.ok === true);
+    const receipt = assertTemporalMainReceipt(response.mainResult, id); assert.deepEqual(after.receipts.at(-1), receipt);
+    assert.equal(response.result.ok, true); assert.equal(response.result.value.performed, true);
+    assert.equal(response.result.value.commandAuthority, 'CommandKernel'); assert.equal(response.result.value.commandId, id);
+    assert.deepEqual(response.result.value.result, response.mainResult.value); return { before, after, response };
+  };
+  x.control = async () => {
+    await x.apply('idea.create', { ...(await x.payloadFor('idea.create', 'control')), ideaId: x.ideaId });
+    await x.apply('idea.originLink.add', await x.payloadFor('idea.originLink.add', 'control'));
+    await x.apply('meaning.promote', await x.payloadFor('meaning.promote', 'control'));
+  };
+  return x;
+}
+
+test('current literal Main selects strict V11 and exact thirty-two commands with twelve read-only queries', async t => {
+  const h = await fullMacMainFixture(t), active = h.main.__profile();
+  assert.equal(active.profileId, IDEA_MEANING_V11); assert.equal(active.schemaVersion, 'writer-local-profile.v11');
+  assert.deepEqual(active.admittedCommandIds, [...profile.createWriterAtlasEntityCorrectionsProfileProjection({ isPackaged: true, platform: 'darwin' }).admittedCommandIds, ...IDEA_MEANING_MAIN_IDS]);
+  assert.equal(active.admittedCommandIds.length, 32); assert.deepEqual(active.admittedQueryIds, READ_SURFACE_QUERY_IDS);
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), IDEA_MEANING_V11);
+  for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation']) assert.equal(active[key], false);
+});
+
+for (const packaged of [false, true]) test('actual ' + (packaged ? 'packaged' : 'unpackaged lawful control') + ' Main persists connected Idea origin Meaning chain without manuscript changes', async t => {
+  const x = await ideaMeaningMainFixture(t, packaged), initial = authorIdentitySnapshot(x); await x.control();
+  const saved = authorIdentitySnapshot(x); assert.deepEqual(saved.scene, initial.scene); assert.equal(saved.events.length, initial.events.length + 3);
+  assert.equal(saved.manifest.ideas.originLinks['origin-control'].ideaId, x.ideaId);
+  assert.deepEqual(saved.manifest.meanings.meanings['meaning-control'].source, { kind: 'idea', ideaId: x.ideaId });
+});
+
+for (const id of IDEA_MEANING_MAIN_IDS) test('actual ' + id + ' refuses capability revoked while queued after a lawful full chain', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control(); const payload = await x.payloadFor(id, 'queued');
+  let entered, release, settled = false; const ready = new Promise(r => { entered = r; }), gate = new Promise(r => { release = r; }); t.after(() => release());
+  const held = x.h.main.__host.holdProjectQueue(async () => { entered(); await gate; }); await ready;
+  const pending = x.h.command(id, payload).then(result => { settled = true; return result; }); await new Promise(setImmediate); assert.equal(settled, false);
+  x.h.main.__host.denyCapability(productRegistry.getProductCommandRecord(id).capabilityId); const before = authorIdentitySnapshot(x); release(); await held;
+  const result = await pending; t.diagnostic(JSON.stringify({ causalReach: 'IDEA_MEANING_QUEUE_REVOKE', id, result }));
+  try { assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assertIdeaMeaningPersistence(x, before, authorIdentitySnapshot(x), id, payload, false); }
+});
+
+for (const id of IDEA_MEANING_MAIN_IDS) for (const fault of ['capability', 'owner', 'session', 'lifecycle', 'generation', 'root', 'manifest-cas', 'binding-manifest'])
+  test('actual ' + id + ' refuses prepared ' + fault + ' drift independently of the packaged profile', async t => {
+    let armed = () => {}; const x = await ideaMeaningMainFixture(t, false, h => h.main.__host.afterTruth(() => armed())); await x.control();
+    const payload = await x.payloadFor(id, 'prepared'); let reached = false, expected;
+    const mutate = () => {
+      reached = true;
+      if (fault === 'capability') x.h.main.__host.denyCapability(productRegistry.getProductCommandRecord(id).capabilityId);
+      if (fault === 'owner') x.h.main.__host.revokeOwner(); if (fault === 'session') x.h.main.__host.invalidateSession();
+      if (fault === 'lifecycle') x.h.main.__host.invalidateLifecycle(); if (fault === 'generation') x.h.main.__host.invalidateGeneration();
+      if (fault === 'root') x.h.main.__host.invalidateProjectRoot();
+      if (fault.includes('manifest')) { const raw = JSON.parse(fs.readFileSync(x.f.manifestPath)); raw.concurrentIdeaMeaning = 'preserve é 🧭'; raw.lastCommandId += 13; fs.writeFileSync(x.f.manifestPath, JSON.stringify(raw)); }
+      expected = reattachmentWholeFixtureRoster(x.h);
+    };
+    if (fault === 'binding-manifest') x.h.main.__host.afterCoreBinding(mutate); else armed = mutate;
+    const result = await x.h.command(id, payload); t.diagnostic(JSON.stringify({ causalReach: 'IDEA_MEANING_AFTER_PREPARATION', id, fault, reached, result }));
+    try { assert.equal(reached, true); assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+    finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+  });
+
+for (const id of IDEA_MEANING_MAIN_IDS) test('actual ' + id + ' validates raw project identity before application stamping', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control();
+  for (const projectId of [17, [], 'x'.repeat(4097)]) await t.test('raw project ' + JSON.stringify(projectId).slice(0, 50), async () => {
+    const payload = { ...(await x.payloadFor(id, 'raw-project-' + typeof projectId)), projectId }, before = authorIdentitySnapshot(x);
+    const result = await x.h.command(id, { ...payload, profileId: IDEA_MEANING_V11, tier: 'pro', capabilities: { [id]: true } });
+    t.diagnostic(JSON.stringify({ causalReach: 'IDEA_MEANING_RAW_PROJECT', id, projectId, result }));
+    try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), /E_PRODUCT_COMMAND_PAYLOAD_INVALID/u); }
+    finally { assertIdeaMeaningPersistence(x, before, authorIdentitySnapshot(x), id, payload, false); }
+  });
+});
+
+for (const id of ['idea.originLink.add', 'meaning.promote']) test('actual ' + id + ' rejects raw origin coercion and unsupported identities before Core normalization', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control();
+  for (const [index, patch] of [{ startOffset: '68' }, { startOffset: -1 }, { endOffset: '72' }, { schemaVersion: 'idea.originRef.v1.extra' },
+    { kind: 'automaticInference' }, { sceneId: 17 }, { sourceHash: 'x'.repeat(64) }].entries()) await t.test(JSON.stringify(patch), async () => {
+    const base = await x.payloadFor(id, 'raw-origin-' + index), originRef = { ...(await x.origin()), ...patch };
+    const payload = id === 'idea.originLink.add' ? { ...base, originRef } : { ...base, source: { kind: 'sceneOriginRef', originRef } };
+    const before = authorIdentitySnapshot(x), result = await x.h.command(id, payload);
+    t.diagnostic(JSON.stringify({ causalReach: 'IDEA_MEANING_RAW_ORIGIN', id, patch, result }));
+    try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), /E_PRODUCT_COMMAND_PAYLOAD_INVALID/u); }
+    finally { assertIdeaMeaningPersistence(x, before, authorIdentitySnapshot(x), id, payload, false); }
+  });
+});
+
+for (const id of ['idea.originLink.add', 'meaning.promote']) test('actual ' + id + ' rejects late saved scene source change after preparation', async t => {
+  let armed = () => {}; const x = await ideaMeaningMainFixture(t, false, h => h.main.__host.afterTruth(() => armed())); await x.control();
+  const base = await x.payloadFor(id, 'late-origin'), payload = id === 'idea.originLink.add' ? base : { ...base, source: { kind: 'sceneOriginRef', originRef: await x.origin() } };
+  let reached = false, expected; armed = () => { reached = true; fs.writeFileSync(x.f.scenePath, fs.readFileSync(x.f.scenePath, 'utf8').replaceAll('Мира', 'Лира')); expected = reattachmentWholeFixtureRoster(x.h); };
+  const result = await x.h.command(id, payload); t.diagnostic(JSON.stringify({ causalReach: 'IDEA_MEANING_LATE_SOURCE', id, reached, result }));
+  try { assert.equal(reached, true); assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+});
+
+for (const id of IDEA_MEANING_MAIN_IDS) test('actual ' + id + ' cannot persist after a real Main project switch during preparation', async t => {
+  let armed = () => {}; const x = await ideaMeaningMainFixture(t, false, h => h.main.__host.afterTruth(() => armed())); await x.control();
+  const payload = await x.payloadFor(id, 'project-switch'); let reached = false, expected;
+  armed = async () => { reached = true; assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.foreignProjectId })).ok, true); expected = reattachmentWholeFixtureRoster(x.h); };
+  const result = await x.h.command(id, payload); t.diagnostic(JSON.stringify({ causalReach: 'IDEA_MEANING_PROJECT_SWITCH', id, reached, result }));
+  try { assert.equal(reached, true); assert.equal(result.ok, false); assert.notEqual(result.reason, 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED'); }
+  finally { assert.deepEqual(reattachmentWholeFixtureRoster(x.h), expected); x.assertOriginal(); }
+});
+
+test('actual cold Main inspector retrieves exact saved Idea Meaning and origin through the existing query without writing', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control(); const saved = authorIdentitySnapshot(x);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  const before = authorIdentitySnapshot(x), result = await x.h.query('query.projectionInspector', { projectId: x.projectId,
+    idea: { offset: 0, search: 'Explicit idea', selectedId: x.ideaId }, meaning: { offset: 0, search: 'Explicit meaning', selectedId: 'meaning-control' } });
+  assert.deepEqual(authorIdentitySnapshot(x).roster, before.roster); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.projectionInspector.authority.commandAuthority, 'none');
+  const idea = result.projectionInspector.projectionStates.find(row => row.projectionId === 'idea'), meaning = result.projectionInspector.projectionStates.find(row => row.projectionId === 'meaning');
+  assert.ok(idea.details, 'Main must forward bounded view options and saved rows'); assert.ok(meaning.details);
+  assert.equal(idea.details.selected.id, x.ideaId); assert.equal(idea.details.selected.title, saved.manifest.ideas.ideas[x.ideaId].title);
+  assert.deepEqual(idea.details.originLinks[0].originRef, saved.manifest.ideas.originLinks['origin-control'].originRef);
+  assert.deepEqual(meaning.details.selected, saved.manifest.meanings.meanings['meaning-control']);
+  for (const projection of [idea, meaning]) { assert.match(projection.projectionHash, /^[a-f0-9]{64}$/u); assert.equal(projection.details.complete, true); }
+});
+
+
+test('actual Main retains legal origin defaults optional IDs Meaning sourceId alias and sceneOriginRef promotion', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control();
+  const { schemaVersion, kind, targetId, ...originRef } = await x.origin();
+  await x.apply('idea.originLink.add', { projectId: x.projectId, ideaId: x.ideaId, originRef });
+  await x.apply('meaning.promote', { ...(await x.payloadFor('meaning.promote', 'source-alias')), source: { kind: 'idea', sourceId: x.ideaId } });
+  await x.apply('meaning.promote', { ...(await x.payloadFor('meaning.promote', 'scene-origin')), source: { kind: 'sceneOriginRef', originRef } });
+});
+
+test('actual Main retains lawful exact duplicate refusals and all previous Idea Meaning author history', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control();
+  const duplicate = [ { ...(await x.payloadFor('idea.create', 'control')), ideaId: x.ideaId },
+    await x.payloadFor('idea.originLink.add', 'control'), await x.payloadFor('meaning.promote', 'control') ];
+  for (const [index, payload] of duplicate.entries()) await t.test(IDEA_MEANING_MAIN_IDS[index], async () => {
+    const id = IDEA_MEANING_MAIN_IDS[index], before = authorIdentitySnapshot(x), result = await x.h.command(id, payload);
+    assert.equal(result.ok, false); assert.match(JSON.stringify(result), new RegExp(['E_IDEA_ALREADY_EXISTS', 'E_IDEA_ORIGIN_LINK_ALREADY_EXISTS', 'E_MEANING_ALREADY_EXISTS'][index]));
+    assertIdeaMeaningPersistence(x, before, authorIdentitySnapshot(x), id, payload, false);
+  });
+});
+// The old renderer fixture first boots under real V10. Load actual new declarations
+// before its first V11 render, so a missing control is an oracle failure, not a late dependency fault.
+function ideaMeaningMainRenderer(x, current) {
+  const h = authorIdentityMainRenderer(x, current, CORRECTION_V10), c = h.c, vm = require('node:vm'), source = read('src/renderer/editor.js');
+  const actual = name => { const match = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(match, name);
+    const end = source.indexOf('\n}\n', match.index); assert.ok(end > match.index); return source.slice(match.index, end + 2); };
+  const walk = node => [node, ...node.children.flatMap(walk)], proto = c.HTMLElement.prototype;
+  proto.contains = function(node) { return this === node || this.children.some(child => child.contains(node)); };
+  proto.remove = function() { if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(node => node !== this); this.parentElement = null; };
+  proto.insertBefore = function(node, anchor) { node.remove(); node.parentElement = this;
+    this.children.splice(anchor ? this.children.indexOf(anchor) : this.children.length, 0, node); return node; };
+  proto.focus = function() { c.document.activeElement = this; }; proto.setSelectionRange = function(a, b, direction) { this.selectionStart = a; this.selectionEnd = b; this.selectionDirection = direction; };
+  proto.setAttribute = function(name, value) { (this.attributes ||= {})[name] = String(value); this[name] = value; };
+  proto.getAttribute = function(name) { return this.attributes?.[name] || null; };
+  proto.querySelectorAll = function(selector) { const match = /^\[data-([a-z-]+)\]$/.exec(selector); assert.ok(match, selector);
+    const key = match[1].replace(/-([a-z])/g, (_, c) => c.toUpperCase()); return walk(this).slice(1).filter(node => Object.hasOwn(node.dataset, key)); };
+  proto.querySelector = function(selector) { return this.querySelectorAll(selector)[0] || null; };
+  c.document.activeElement = c.document.body; c.window.addEventListener = () => {};
+  c.projectionInspectorHost = c.document.createElement('section'); c.document.body.append(c.projectionInspectorHost);
+  c.projectionInspectorState = { state: 'empty', projectId: x.projectId, manifests: [], projectionStates: [], summary: {} };
+  c.PROJECTION_INSPECTOR_QUERY_ID = 'query.projectionInspector'; c.invokeWorkspaceQueryBridge = (id, payload) => x.h.query(id, payload);
+  const hash = read('src/core/browser-safe-hash.mjs').replace(/^export /gm, ''); vm.runInContext(hash, c);
+  const sequence = source.match(/^const atlasQueryPublicationSequences = .*;$/m); assert.ok(sequence); vm.runInContext(sequence[0], c);
+  for (const match of source.matchAll(/^(?:let|const) (\w*[Ii]deaMeaning\w*) = /gm)) {
+    const end = source.indexOf(';\n', match.index); assert.ok(end > match.index && end - match.index < 12000); vm.runInContext(source.slice(match.index, end + 1), c);
+  }
+  const names = ['beginAtlasQueryPublication', 'readAtlasQueryProjection', 'normalizeProjectionInspector', 'refreshProjectionInspector',
+    'renderProjectionInspectorState', 'reviewSurfaceIsPlainObject', 'appendAtlasReportsRow', 'appendAtlasOverviewSection', 'appendAtlasOverviewMetric'];
+  for (const match of source.matchAll(/^(?:async )?function (\w*[Ii]deaMeaning\w*)\(/gm)) names.push(match[1]);
+  vm.runInContext([...new Set(names)].map(actual).join('\n'), c);
+  const work = c.tasks, asyncNames = [...source.matchAll(/^async function (\w*[Ii]deaMeaning\w*)\(/gm)].map(m => m[1]);
+  for (const name of asyncNames) { const run = c[name]; c[name] = (...args) => { const p = run(...args); work.push(p); return p; }; }
+  c.window.__PRODUCT_PROFILE = IDEA_MEANING_V11; c.renderAtlasJourneyState();
+  const field = name => walk(c.atlasJourneyHost).find(node => (node.dataset.ideaMeaningField || node.dataset.atlasJourneyField) === name);
+  const button = action => walk(c.atlasJourneyHost).find(node => (node.dataset.ideaMeaningAction || node.dataset.atlasJourneyAction) === action);
+  const input = async (name, value) => { const node = field(name); assert.ok(node, 'actual author field ' + name); node.value = value;
+    await node.emit(node.tagName === 'SELECT' ? 'change' : 'input'); };
+  const click = async action => { const node = button(action); assert.ok(node, 'actual author action ' + action); assert.equal(node.disabled, false);
+    let index = work.length; const packets = h.packets.length; await node.emit('click'); await new Promise(setImmediate);
+    while (index < work.length) { const next = work.slice(index); index = work.length; await Promise.all(next); }
+    return h.packets.length > packets ? h.packets.at(-1) : null; };
+  return { ...h, field, input, button, click, walk };
+}
+
+test('actual Flow creates links promotes and immediately publishes saved authored rows then cold-selects the same Idea [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control(); let h = ideaMeaningMainRenderer(x, await x.query());
+  await h.click('idea-load'); await h.input('ideaTitle', 'Actual Flow idea é 🧭'); await h.input('ideaSummary', 'Actual persisted author summary');
+  const createBefore = authorIdentitySnapshot(x), created = await h.click('idea-create'), createAfter = authorIdentitySnapshot(x);
+  assert.ok(created, 'actual listener reaches real registered Main'); assertTemporalMainReceipt(created.mainResult, 'idea.create');
+  assertIdeaMeaningPersistence(x, createBefore, createAfter, 'idea.create', created.request.payload, true);
+  const ideaId = created.request.payload.ideaId; assert.equal(createAfter.manifest.ideas.ideas[ideaId].title, 'Actual Flow idea é 🧭');
+  assert.ok(h.field('selectedIdeaId').children.some(row => row.value === ideaId), 'post-command saved read updates visible options without navigation');
+  await h.input('selectedIdeaId', ideaId); await h.target(x.entityId, 68);
+  const linkBefore = authorIdentitySnapshot(x), linked = await h.click('idea-origin-link'), linkAfter = authorIdentitySnapshot(x);
+  assert.ok(linked); assertTemporalMainReceipt(linked.mainResult, 'idea.originLink.add'); assertIdeaMeaningPersistence(x, linkBefore, linkAfter, 'idea.originLink.add', linked.request.payload, true);
+  assert.equal(linked.request.payload.ideaId, ideaId); assert.equal(linked.request.payload.originRef.startOffset, 68);
+  await h.input('meaningTitle', 'Actual Flow meaning'); await h.input('meaningInterpretation', 'Explicitly chosen interpretation é 🧭');
+  const meaningBefore = authorIdentitySnapshot(x), promoted = await h.click('meaning-promote'), meaningAfter = authorIdentitySnapshot(x);
+  assert.ok(promoted); assertTemporalMainReceipt(promoted.mainResult, 'meaning.promote'); assertIdeaMeaningPersistence(x, meaningBefore, meaningAfter, 'meaning.promote', promoted.request.payload, true);
+  assert.deepEqual(structuredClone(promoted.request.payload.source), { kind: 'idea', ideaId });
+  assert.ok(h.c.projectionInspectorHost.textContent?.includes('Actual Flow meaning') || h.walk(h.c.projectionInspectorHost).some(node => node.textContent === 'Actual Flow meaning'), 'actual read-only inspector exposes saved Meaning');
+  const preserved = authorIdentitySnapshot(x); assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  h = ideaMeaningMainRenderer(x, await x.query()); await h.click('idea-load');
+  assert.ok(h.field('selectedIdeaId').children.some(row => row.value === ideaId), 'fresh VM selects saved Core identity after actual Main reopen');
+  await h.input('selectedIdeaId', ideaId); await h.input('meaningTitle', 'Cold distinct meaning'); await h.input('meaningInterpretation', 'Second explicit interpretation');
+  const coldBefore = authorIdentitySnapshot(x), cold = await h.click('meaning-promote'), coldAfter = authorIdentitySnapshot(x);
+  assertTemporalMainReceipt(cold.mainResult, 'meaning.promote'); assertIdeaMeaningPersistence(x, coldBefore, coldAfter, 'meaning.promote', cold.request.payload, true);
+  assert.notEqual(cold.request.payload.meaningId, promoted.request.payload.meaningId);
+  assertAuthorIdentityCanonical(coldAfter.manifest.meanings.meanings[promoted.request.payload.meaningId], preserved.manifest.meanings.meanings[promoted.request.payload.meaningId]);
+});
+for (const id of IDEA_MEANING_MAIN_IDS) test('actual ' + id + ' refuses malformed present scalar fields without normalization or writes', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control();
+  const patches = id === 'idea.create' ? [{ ideaId: 17 }, { title: [] }, { summary: 17 }]
+    : id === 'idea.originLink.add' ? [{ ideaId: [] }, { linkId: 17 }, { linkId: 'x'.repeat(4097) }]
+    : [{ meaningId: [] }, { title: 17 }, { interpretation: [] }];
+  for (const [index, patch] of patches.entries()) await t.test(Object.keys(patch)[0], async () => {
+    const payload = { ...(await x.payloadFor(id, 'bad-scalar-' + index)), ...patch }, before = authorIdentitySnapshot(x);
+    const result = await x.h.command(id, payload); t.diagnostic(JSON.stringify({ causalReach: 'IDEA_MEANING_RAW_SCALAR', id, field: Object.keys(patch)[0], result }));
+    try { assert.equal(result.ok, false); assert.match(JSON.stringify(result), /E_PRODUCT_COMMAND_PAYLOAD_INVALID/u); }
+    finally { assertIdeaMeaningPersistence(x, before, authorIdentitySnapshot(x), id, payload, false); }
+  });
+});
+
+test('actual existing inspector query rejects malformed view options without writes or authority', async t => {
+  const x = await ideaMeaningMainFixture(t); await x.control();
+  for (const options of [{ offset: '24' }, { offset: -1 }, { search: [] }, { selectedId: 17 }]) await t.test(JSON.stringify(options), async () => {
+    const before = authorIdentitySnapshot(x), result = await x.h.query('query.projectionInspector', { projectId: x.projectId, idea: options });
+    assert.deepEqual(authorIdentitySnapshot(x).roster, before.roster); assert.equal(result.ok, false, JSON.stringify(result));
+  });
 });

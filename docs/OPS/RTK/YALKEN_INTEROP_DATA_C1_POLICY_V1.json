@@ -798,7 +798,10 @@
     "docs/tasks/2026-10-24--atlas-authoring-identities.md",
     "docs/tasks/2026-10-24--atlas-source-entity-selection.md",
     "docs/tasks/2026-10-24--atlas-entity-corrections.md",
-    "test/contracts/yalken-atlas-v5-e04-c04-atlas-entity-merge-split-reassign-restore.contract.test.js"
+    "test/contracts/yalken-atlas-v5-e04-c04-atlas-entity-merge-split-reassign-restore.contract.test.js",
+    "docs/tasks/2026-10-25--idea-meaning-authoring.md",
+    "src/derived/projections/projectionInspectorManifests.mjs",
+    "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1027,7 +1030,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f4cbd33501d071d60f273552343a094d02b27f9b8da613df4cf758f496fd144b"
+        "sha256": "8c98f3b3986674dd341384c00edffea293f742b9c0a702b10b34a0d3f3a45a64"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1039,7 +1042,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "acfcf1fb56d8f04fc198bac5a87667f4d68b9c18826bbc241eb27b35b07d95df"
+        "sha256": "7bbc939e79f98817d173bc591f625096828ddc37cc39212562276e8d0877cd58"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1051,7 +1054,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "e39dfefbe70d7ce222a67dceaba0d530ea51bf634416b4bc2956ba314a2c0555"
+        "sha256": "dd4ad3e015b33695132da15bcebc05329205ef76c9d3e7ebc0b3a817a3f45d42"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1203,7 +1206,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "2a685c44379c3e4fb39815230e3fb3da0487eea76dadba1d7ac196298ba3d51e"
+        "sha256": "d956101ccb0a39dab3bc14dd50a6d2062f4bf738c56322f264351818caeb0014"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1267,15 +1270,15 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "30a4b95334ec781d1274bd2298cd0a22f3b28aeb907ef6d634d766f05d1f3647"
+        "sha256": "36e10671bdaee323b78de6f2ef0300e97059d98cbe11e5e72ba5ec87ffb3744f"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "0dcb6f90300b2f8c834e6d379dd81e4b2c02f05b4a1cf61c1559a445d811e7e7"
+        "sha256": "40f8c86bc42e87f1c669d5a72579be55c61084de9e1900c15f63015e9f62beb9"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
-        "sha256": "c62f647ad8f5ed9990cfac1f8a3afa4bf51d57b1cce278d5cf7df10aea507779"
+        "sha256": "fe9505d153302fca34c496a04f621225fa0a593c24ffb3c33a2481ea14342a56"
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -1763,7 +1766,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "54a5cc5e75c5d15b2a7c6bce6ab9033767696f73be84664fa75ce95661baffae"
+        "sha256": "deb2ca5cb4a7b87fd5f7cbae4025847c1a4d1fc01c372001e2782a17dd9511ea"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2719,15 +2722,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "56d3090827e310fdd61265ec2546e3bcb534289bf27782e586e757ccc0e85da2"
+        "sha256": "1c2a7cb1990a2ac217a0f91cae8eddcfe33b2c31dea80c8932af414da2eb42c7"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5df0cf7171174cb27c63337a1d0ba84ca5f8b665d7d82aa50571941ba2efdc54"
+        "sha256": "fd5acfeb867708a31640518f934980ef5ee1160ad713565a487f61a69afccaa4"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "295b1403e0b324130632d73dc6f418c775dad05a19abacc81ceabc9af5c9b703"
+        "sha256": "fb971856b895f88e780a0645b29c92c56f8fc06c8f813cd4f705d2c8241891eb"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3267,7 +3270,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "6a6128b2d991d7e479bbaa45eea4a06550bb916bf510f2cd5cdaf96c44efff99"
+        "sha256": "03d622eb40c5e63bd21c2b0d2f6d0648ad70960fafc8b12dc58a95b5f19397fe"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3291,11 +3294,11 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "ab15766ace805a9f47e42e202ef71f0b1b0de45222baf538d0c8b63c9dd558a4"
+        "sha256": "a713adf86c2b14bbc63fcc61a30826542e32b6dbe5a2e9f874b78cc0a6169b77"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "da2792f72e6c1f6c34d4ac2d35e250606249245bbf4fd961afb6d0b763cc83af"
+        "sha256": "47fcc01f2b922cdaa0cf392793d4e0e33b335852c788e64874e35addc6551301"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
@@ -3383,11 +3386,11 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "0dbde2bc75c78dd55b67bee9f763ced85f3cdd96a4e0d2a65c5fcaef7dd2413f"
+        "sha256": "55c101e5ed805c92304c339ab5916429a7a5bc0d6b377d4867d5005d3636ae16"
       },
       {
         "path": "src/renderer/flags.js",
-        "sha256": "1d16345ea968e930ebf68da7556918a420b5cbf15ed1d9608e798fc369b36acb"
+        "sha256": "36227691e2272818fdd1c13556fa669c2e833673420f72c02db00320eaeb04b9"
       },
       {
         "path": "docs/tasks/2026-10-22--full-mac-atlas-map.md",
@@ -3399,11 +3402,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "6c8f9228323bbc0b6b8138bc4d3c504645a7a842b2e6593c2987d2ffe3e03f97"
+        "sha256": "bce187640c6d632847adbacde17da7d499b356b4eadbb832fee9afa9abfc785d"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "16f3b8c1637d117be56f453a1a3a7aaa4d358faa1590f7d5528ac4b0cb9372be"
+        "sha256": "03f5afeb9e4c1aa5186647b0d98e7403d85c68da602e8c0cae68c3767b098375"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3628,6 +3631,18 @@
       {
         "path": "test/contracts/yalken-atlas-v5-e04-c04-atlas-entity-merge-split-reassign-restore.contract.test.js",
         "sha256": "d7b30957ea701028c8b5d85ac1962d8e0cb2c89516447c4072c2040dd3d5ec4b"
+      },
+      {
+        "path": "docs/tasks/2026-10-25--idea-meaning-authoring.md",
+        "sha256": "0a4fb9694d03073557f19ce2adfdd05a00bd8d2ea898c823ed892016d2659601"
+      },
+      {
+        "path": "src/derived/projections/projectionInspectorManifests.mjs",
+        "sha256": "fae5522aba259ba8e76617f6381b327a32b797d2cc03802b1671092bd0e6fd7e"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js",
+        "sha256": "fee3148c97fe76a32300672bbb714731c4dec393d3c12d8c91e0b5bc0db3a666"
       }
     ],
     "followupRepair": {

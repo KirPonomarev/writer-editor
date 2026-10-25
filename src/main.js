@@ -281,7 +281,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterAtlasEntityCorrectionsProfileProjection,
+  createWriterIdeaMeaningAuthoringProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -19295,9 +19295,16 @@ function makeManualMapWorkbenchFallback(projectId, reason, extra = {}) {
 
 function normalizeProjectionInspectorPayload(payload = {}) {
   const source = isPlainObjectValue(payload) ? payload : {};
-  return {
-    projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '',
-  };
+  const normalized = { projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '' };
+  for (const key of ['idea', 'meaning']) {
+    if (!Object.hasOwn(source, key)) continue;
+    const value = source[key];
+    if (!isPlainObjectValue(value) || Object.keys(value).some(key => !['offset', 'search', 'selectedId'].includes(key))
+      || value.offset !== undefined && (!Number.isSafeInteger(value.offset) || value.offset < 0 || value.offset > 1000000)
+      || ['search', 'selectedId'].some(field => value[field] !== undefined && (typeof value[field] !== 'string' || value[field].length > 1000))) return { ...normalized, invalid: true };
+    normalized[key] = { offset: value.offset || 0, search: value.search || '', selectedId: value.selectedId || '' };
+  }
+  return normalized;
 }
 
 function makeProjectionInspectorFallback(projectId, reason, extra = {}) {
@@ -19481,6 +19488,7 @@ async function handleWorkspaceManualMapWorkbenchQuery(payload = {}) {
 
 async function handleWorkspaceProjectionInspectorQuery(payload = {}) {
   const safePayload = normalizeProjectionInspectorPayload(payload);
+  if (safePayload.invalid) return { ok: false, error: { code: 'E_PROJECTION_INSPECTOR_OPTIONS_INVALID', reason: 'PROJECTION_INSPECTOR_OPTIONS_INVALID' } };
   try {
     const inspectorModule = await loadProjectionInspectorModule();
     const { projectId, coreState } = await buildProductCoreStateForCurrentProject();
@@ -19492,7 +19500,7 @@ async function handleWorkspaceProjectionInspectorQuery(payload = {}) {
     }
     const result = inspectorModule.deriveProjectionInspectorProvider({
       coreState,
-      params: { projectId },
+      params: { ...safePayload, projectId },
       capabilitySnapshot: {
         platformId: 'node',
         capabilities: {
@@ -36102,7 +36110,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterAtlasEntityCorrectionsProfileProjection({
+  return createWriterIdeaMeaningAuthoringProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -38402,6 +38410,27 @@ const ATLAS_ENTITY_CORRECTION_COMMAND_IDS = Object.freeze([
   'atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore',
 ]);
 
+const IDEA_MEANING_AUTHORING_COMMAND_IDS = Object.freeze(['idea.create', 'idea.originLink.add', 'meaning.promote']);
+
+function isIdeaMeaningAuthoringPayloadValid(commandId, payload) {
+  const scalar = (object, key, max = 1000, required = false) => !Object.hasOwn(object, key) ? !required
+    : typeof object[key] === 'string' && object[key].length <= max && (!required || Boolean(object[key].trim()));
+  const origin = value => isPlainObjectValue(value) && scalar(value, 'sceneId', 1000, true)
+    && scalar(value, 'schemaVersion') && (!value.schemaVersion?.trim() || value.schemaVersion.trim() === 'idea.originRef.v1')
+    && scalar(value, 'kind') && (!value.kind?.trim() || value.kind.trim() === 'sceneTextRange') && scalar(value, 'targetId')
+    && Number.isSafeInteger(value.startOffset) && value.startOffset >= 0 && Number.isSafeInteger(value.endOffset) && value.endOffset > value.startOffset
+    && typeof value.sourceHash === 'string' && /^[a-f0-9]{64}$/.test(value.sourceHash);
+  if (!scalar(payload, 'projectId')) return false;
+  if (commandId === 'idea.create') return scalar(payload, 'ideaId', 1000, true)
+    && scalar(payload, 'title', 1000, true) && scalar(payload, 'summary', 8000);
+  if (commandId === 'idea.originLink.add') return scalar(payload, 'ideaId', 1000, true) && scalar(payload, 'linkId') && origin(payload.originRef);
+  const source = payload.source;
+  return scalar(payload, 'meaningId', 1000, true) && scalar(payload, 'title', 1000, true) && scalar(payload, 'interpretation', 8000, true)
+    && isPlainObjectValue(source) && (source.kind === 'idea' ? scalar(source, 'ideaId') && scalar(source, 'sourceId')
+      && typeof (source.ideaId || source.sourceId) === 'string' && Boolean((source.ideaId || source.sourceId).trim())
+      : source.kind === 'sceneOriginRef' && origin(source.originRef));
+}
+
 const PRODUCT_AUTHOR_DOMAIN_SCHEMAS = Object.freeze({
   atlas: Object.freeze({ manifestKey: 'atlas', schemaVersion: 'atlas.author.v1', collectionKey: 'entities' }),
   manualMap: Object.freeze({ manifestKey: 'manualMaps', schemaVersion: 'manualMap.author.v1', collectionKey: 'maps' }),
@@ -38807,7 +38836,9 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     : ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
       ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING')
     : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
-      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION') : null;
+      ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION')
+      : IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId)
+        ? captureManualMapPreparationGuard(commandId, record, 'IDEA_MEANING_AUTHORING') : null;
   const binding = await buildProductCoreStateForCurrentProject();
   if (guard) await guard(binding);
   const requestedProjectId = typeof payload?.projectId === 'string' ? payload.projectId.trim() : '';
@@ -38873,9 +38904,11 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         throw error;
       }
       await assertCurrent();
-      if (commandId === 'atlas.continuityFact.record' || commandId === 'atlas.observation.reassign') {
+      const ideaOrigin = commandId === 'idea.originLink.add' ? payload.originRef
+        : commandId === 'meaning.promote' && payload.source?.kind === 'sceneOriginRef' ? payload.source.originRef : null;
+      if (commandId === 'atlas.continuityFact.record' || commandId === 'atlas.observation.reassign' || ideaOrigin) {
         guard();
-        const sceneId = payload.sceneId.trim();
+        const sceneId = (ideaOrigin ? ideaOrigin.sceneId : payload.sceneId).trim();
         const scene = binding.coreState.data.projects[binding.projectId].scenes[sceneId];
         const node = collectAtlasOverviewSceneNodes(binding.roots).find(value => value.nodeId === sceneId);
         if (!scene || !node) throw makeAtlasProductSceneProjectionError('E_ATLAS_PRODUCT_SCENE_TARGET_INVALID', 'ATLAS_PRODUCT_SCENE_TARGET_INVALID', sceneId);
@@ -38893,6 +38926,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
         }
         guard();
         if (`sha256:${computeHash(sourceBytes)}` !== scene.sceneRevision) {
+          if (ideaOrigin) throw Object.assign(new Error('IDEA_MEANING_AUTHORING_SOURCE_STALE'), { code: 'E_IDEA_MEANING_AUTHORING_SOURCE_STALE' });
           if (commandId === 'atlas.observation.reassign') {
             throw makeAtlasProductSceneProjectionError('E_ATLAS_ENTITY_CORRECTION_SOURCE_STALE', 'ATLAS_ENTITY_CORRECTION_SOURCE_STALE', sceneId);
           }
@@ -39179,7 +39213,11 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
     return makeProductCommandBridgeError(commandId, 'E_MANUAL_MAP_MARKDOWN_INTENT_INVALID', 'MANUAL_MAP_MARKDOWN_INTENT_INVALID');
   }
 
-  if ((ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId) || ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)) && Object.hasOwn(payload, 'projectId')
+  if (IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId) && !isIdeaMeaningAuthoringPayloadValid(commandId, payload)) {
+    return makeProductCommandBridgeError(commandId, 'E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'IDEA_MEANING_AUTHORING_PAYLOAD_INVALID');
+  }
+
+  if ((ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId) || ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId) || IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId)) && Object.hasOwn(payload, 'projectId')
     && (typeof payload.projectId !== 'string' || !payload.projectId.trim() || payload.projectId.length > 1000)) {
     return makeProductCommandBridgeError(commandId, 'E_PRODUCT_COMMAND_PAYLOAD_INVALID', 'PRODUCT_COMMAND_PROJECT_ID_INVALID');
   }
@@ -39230,7 +39268,9 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
     const queueGuard = ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
       ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING')
       : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
-        ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION') : null;
+        ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION')
+      : IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId)
+        ? captureManualMapPreparationGuard(commandId, record, 'IDEA_MEANING_AUTHORING') : null;
     return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, async () => {
       try {
         if (queueGuard) queueGuard();
