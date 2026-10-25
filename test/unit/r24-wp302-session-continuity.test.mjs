@@ -415,7 +415,7 @@ test('WP302 active document path rebind preserves selection without adding UI or
   const mainSource = fs.readFileSync(path.join(ROOT, 'src', 'main.js'), 'utf8');
   const contractSource = fs.readFileSync(path.join(ROOT, 'src', 'core', 'session-continuity-v1.cjs'), 'utf8');
   assert.match(mainSource, /const continuity = readSessionContinuityV1\(settings\);[\s\S]*openLastFile/u);
-  assert.match(mainSource, /await saveLastFile\(\{ selectionRange \}\);/u);
+  assert.match(mainSource, /await saveLastFile\(\{ selectionRange, beforeWrite: \(\) => \{\s*if \(!isCurrent\(\)\) throw Error\('E_EDITOR_STARTUP_WINDOW_STALE'\);\s*\} \}\);/u);
   assert.match(mainSource, /metaEnabled: context\.metaEnabled,[\s\S]*selectionRange,/u);
   assert.match(mainSource, /preserveSelectionOnPathRebind: true/u);
   assert.equal(contractSource.includes('src/renderer'), false);
@@ -544,6 +544,10 @@ test('actual window startup continuation preserves autosave precedence after pro
   const vm = await import('node:vm');
   const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
   const windowStart = source.indexOf('function createWindow()');
+  const ownerStart = source.indexOf('  const startupWindow = mainWindow, startupSession = commentAuthoringSessionId;', windowStart);
+  const ownerEnd = source.indexOf('\n  editorStartupReadyPromise = ', ownerStart);
+  assert.ok(ownerStart > windowStart && ownerEnd > ownerStart);
+  const ownerPrelude = source.slice(ownerStart, ownerEnd);
   const continuationStart = source.indexOf('}).then(async () => {', windowStart) + '}).then(async () => {'.length;
   const continuationEnd = source.indexOf('}).catch((error)', continuationStart);
   const continuation = 'async function loadedWindow() {' + source.slice(continuationStart, continuationEnd) + '}';
@@ -560,10 +564,11 @@ test('actual window startup continuation preserves autosave precedence after pro
       ensureProjectStructure: async () => calls.push('structure'), buildProjectTreeRootsWithIdentities: async () => calls.push('tree'),
       bootstrapStage10ApplicationAtStartup: async () => calls.push('stage10'),
       reconcileReviewFormattingReturnAtStartup: async () => {}, reconcileReviewStructuralReturnAtStartup: async () => {}, reconcileReviewExactTextApplyJournalsAtStartup: async () => {},
-      mainWindow: { webContents: { setZoomFactor: () => {} } }, logPerfStage: () => {}, loadSavedFontSize: async () => {},
+      commentAuthoringSessionId: 'owned-startup-session',
+      mainWindow: { destroyed: false, isDestroyed() { return this.destroyed; }, webContents: { setZoomFactor: () => {} } }, logPerfStage: () => {}, loadSavedFontSize: async () => {},
       restoreAutosaveIfExists: async () => { calls.push('autosave'); return autosave; }, openLastFile: async () => { calls.push('last-file'); return 'loaded'; }, updateStatus: () => {},
     };
-    vm.runInNewContext(source.slice(initializeStart, initializeEnd) + '}\n' + continuation, c);
+    vm.runInNewContext(source.slice(initializeStart, initializeEnd) + '}\n' + ownerPrelude + '\n' + continuation, c);
     const startup = async () => { await c.initializeApp(); await c.loadedWindow(); };
     if (refuses) {
       await assert.rejects(startup(), error => error.code === 'E_STAGE10_RECOVERY_CANCELLED');
