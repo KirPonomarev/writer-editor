@@ -5248,3 +5248,5 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Startup input admission: separate actor causal RED and bounded110line fix, root whole73of73 finite review; old65cases/151appendedlines retained with explicit11line faithful WP302 fixture exception. Ordinary generated bundle/current-only332binding successor and source assurance are not native/fullMac acceptance. Exact-source browser/native/current CI/normal delivery remain required; native before push.
 
 - Same startup source qualification: preserve actual82case/3failure and incomplete559case run; twoIME failures pre-exist both accepted bases. Correct only two read-only retired autosave recognizers without runtime or assertion changes; append C1 source carrier333/oneguard, prior332retained, finalwhole/native/delivery still pending.
+
+- Same startup PR2168: retain privacy CI9of10 failure; adapt only actual readiness ordering and three current strict literals, preserve every edit/network oracle and runtime bytes. Append current C2 334/oneguard,807DATA/667pins, all prior carriers exact; final current proofs/delivery still pending.

@@ -479,7 +479,8 @@
       "docs/tasks/2026-10-25--settings-theme-summary.md",
       "docs/tasks/2026-10-25--bug-native-undo-redo.md",
       "docs/tasks/2026-10-25--startup-input-admission.md",
-      "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs"
+      "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
+      "test/unit/security-privacy-writing-path-smoke.mjs"
     ]
   },
   "allowPrefixByPhase": {

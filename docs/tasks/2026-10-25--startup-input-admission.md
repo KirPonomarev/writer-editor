@@ -1,6 +1,6 @@
 # Initial authoring input admission
 
-STATUS: SOURCE_C1_NATIVE_SCENE_PROVEN_CI_FIXTURE_PENDING
+STATUS: SOURCE_C2_PRIVACY_FIXTURE_FINAL_PROOFS_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing editor startup safety only; no full Mac, WSE or release acceptance.
 TASK_ID: YALKEN_STARTUP_INPUT_ADMISSION_20261025
@@ -163,3 +163,8 @@ Clean C1 at5222d446 completed whole73, whole697, strict19, release785, stale6, E
 PR2168 official current-head privacy-negative executes10cases,9pass1fail: all network counts zero, but its synthetic writing probe runs at did-finish-load while the corrected actual editor is still readonly; all three required input markers are absent. Preserve that causal CI failure. Same-contour declaration07/preflight explicitly admits the existing privacy fixture as the26th path, protecting9988other sources. Before actor edits, root records this task-only checkpoint. A separate TEST_FIXTURE_ONLY actor may add only a bounded wait for a connected, currently editable real TipTap after network interception is installed and before the original focus/execCommand probe. No timer-only success, readonly override, manufactured document, disabled test, platform skip, workflow/dependency change or removed network/privacy/edit/local-IPC/dialog assertion. Missing admission must fail truthfully.
 
 Append a current C2 source successor including that existing fixture, retain every earlier constant byte-exact, and refresh current-only inventory/source/approval pins. Fixed memberships, lanes, retirement guards and17UNKNOWN remain. Run the whole privacy gate and preserved73/697/source/strict baselines on final committed source, unchanged runtime/bundle proof and corresponding owned native qualification, then current officialCI and ordinary merge with literal merged verification. This fixture repair neither fixes the discovered unrelated startup recovery defects nor grants full application/security acceptance.
+
+
+### Privacy fixture C2 binding
+
+The separately executed privacy fixture now waits for actual connected editable TipTap before its unchanged real edit and network/privacy oracles. Its original current-C1 GitHub failure remains evidence; a bounded timeout is a failure, never synthetic readiness. Root independently verifies the exact fixture delta and three current Word selector/id/count literals only. Append C2 with334bindings and one unchanged policy guard,807DATAadmitted/667pins; every old carrier including333C1 stays byte-exact. Fixed1603inventory membership,66release pins and17UNKNOWN remain. Runtime110lines, generated bundle and the73causal test sources stay exact to5222. Final current-source whole privacy,697, strict/source gates, corresponding native/runtime qualification and fresh officialCI/full delivery remain required. Earlier native and pre-existing IME/recovery failures retain their exact scope and do not become new-head evidence.

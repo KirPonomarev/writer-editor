@@ -813,7 +813,8 @@
     "docs/tasks/2026-10-25--settings-theme-summary.md",
     "docs/tasks/2026-10-25--bug-native-undo-redo.md",
     "docs/tasks/2026-10-25--startup-input-admission.md",
-    "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs"
+    "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
+    "test/unit/security-privacy-writing-path-smoke.mjs"
   ],
   "protectedFiles": [
     {
@@ -1778,7 +1779,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "bdde07bff70900bd7be837a17140bf463d90462c77a55a2fe4c9123564c124e8"
+        "sha256": "33ebaae915e491141b7ae6dea298be7a160bdda15c583f07856bfd3a5d7b7776"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2734,15 +2735,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f0a6606d1a221ffe9f0d9596c88431ead7acac9ea0acc6dd11b3e61127fde73c"
+        "sha256": "0a0043d5d8e06d8b7bf3fa27fe97a7e4e9cfdcea7e93a1fd00923807610a0e4d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "1a708ed8e3f29c537533777c4f242c20b7156495fadf603a35b1356f14c2f0ec"
+        "sha256": "c983311988ceba5f2b8da05d15cc6fe95560818e824eeea582552f63a45e7b62"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "49ea6466f2b07abcfd0cc2b97b318b094e94287176a4fdbaba7d58908a757118"
+        "sha256": "0563cfa3c09a58f57187f58312a0761b5ee68156fb3fe4545303615bdb97a8a5"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3282,7 +3283,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "8af8eea9d1d82e906eae16c523fc16cce6f49d5ef0649ac22db3ff122d96281d"
+        "sha256": "ac1c0708e5fbec0e06b0eee9d0d187e14d7b7acb97e96c6986d431c69b399c41"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3414,7 +3415,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "7a1280c0d31ae6a96e4cc6ae8a4c8dd698dbb50bd7f6ae82750937a021d59241"
+        "sha256": "454e65f3a0561552fb3763f6de859c0cf323f40a35b76da8d0cf5f864d20c276"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3698,11 +3699,15 @@
       },
       {
         "path": "docs/tasks/2026-10-25--startup-input-admission.md",
-        "sha256": "fc1972bf0ba247e59c07874555d7050969a0eace177d967be49e21e3ace7fa89"
+        "sha256": "af09a0d128cd7e71441fda681424f9f0a6b09ff8a52931d1a6a9c70f80ce1134"
       },
       {
         "path": "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
         "sha256": "6ad33b0390d016a28cc73985e0a41470a90c345cae0bf8a00f20e4e7485ea3c5"
+      },
+      {
+        "path": "test/unit/security-privacy-writing-path-smoke.mjs",
+        "sha256": "17f039830d975f21acc617ab0ffc099c1b14725f6021111edc209aed43dd26f1"
       }
     ],
     "followupRepair": {
