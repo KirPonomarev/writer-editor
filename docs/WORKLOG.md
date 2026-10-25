@@ -5265,3 +5265,5 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Same startup source qualification: preserve actual82case/3failure and incomplete559case run; twoIME failures pre-exist both accepted bases. Correct only two read-only retired autosave recognizers without runtime or assertion changes; append C1 source carrier333/oneguard, prior332retained, finalwhole/native/delivery still pending.
 
 - Same startup PR2168: retain privacy CI9of10 failure; adapt only actual readiness ordering and three current strict literals, preserve every edit/network oracle and runtime bytes. Append current C2 334/oneguard,807DATA/667pins, all prior carriers exact; final current proofs/delivery still pending.
+
+- Owner-approved mainc139 logo integration preserved via clean two-parent checkpointcc117. Both source histories and all68carriers exact; current-only C3 adds345bindings and mechanical Word literals. DATA815/667, fixed1603/66/17UNKNOWN; fresh combined proofs and same PR2168 delivery remain open.

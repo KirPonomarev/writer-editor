@@ -25091,6 +25091,106 @@
       "filePath": "src/renderer/index.html",
       "rationale": "Owner explicitly approved normal integration of accepted canonical logo mainc139 with startup PR2168. Preserve both source histories, immutable carriers and all predicates; retain both parent carriers, preserve owned Word literal unchanged for a clean checkpoint, and refresh current-only hashes; current C3 follows only after a fresh clean admission. No new behavior, native/release/security acceptance or lost-data claim.",
       "sha256": "23bd5af699ce1784375dcd83543bc18544dc84812e53cd9167eadb72c726fc44"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "662b17ea0abe34a6f8beda9d8ca819651b2c030ab4fa073a017eabfb5b8e639d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "3bc9f59d18d7e3541be7a18507d9f7155465ae2f090725387fa2020a991b53e6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "fe729ff45e30018428c8c29a001691cdcd1926d07785ab6b56015866bec73ce3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "8b93a4e23a2ea46bf62aa87809cbae355c0dc6d75598f6655cb34f1e8412d48e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "5e2d2d31dd5ece54adee747114da3360ddc7157acc6efb06f63f728065bf4df9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "41d096dd329f80b5645b787cfe483e26c98aae2d4230d40c46bfb9bf393a9577"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--startup-input-admission.md",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "2c5eb501cfe7e00d053b2c3e6d302df8eb844db141a78d0a3f775e8899d7f8fb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "7eceb03ff635d8214518f9c7d18254f7d18ae6ab8aeaf859e112cd87be173d3c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "8a769a84595a30443d9b00165c5ba7d1f2552c7a157fe8ef59939009315d3a26"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T23:42:35.925132+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "a90b40b22232e22227c10dacdce3bbaddeaa160d006bf9f49eaf517666f11959"
     }
   ],
   "evidenceStampIds": [

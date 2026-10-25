@@ -178,3 +178,8 @@ Preserve accepted logo/assets/styles/helper/WP308 exactly; preserve startup Main
 
 
 Phase12 clean-admission boundary: an executor attempted an additional PRE after the admitted normal merge had already started; actual preflight refused dirty worktree. Retain that failure, no validator change or dirty-PRE bypass. Root resolves only mechanical parent composition, preserving the Word test exact8626 bytes, into a reachable ordinary two-parent checkpoint without current C3 or behavioral acceptance. Final current C3 and literal-only actor correction begin only from that clean checkpoint with a fresh declaration/preflight. This is the same delivery chain, no new product contour and no intermediate success claim.
+
+
+### Combined C3 candidate
+
+The owner-approved normal integration checkpointcc117 retains both parents and all68historical source successors. A fresh clean15path phase13 admission passes; the previous dirty-PRE refusal remains preserved. Separate executor changes only the maintained current Word selector/id/count/description literals, retaining every corruption/mixed-source/ancestry predicate. Current C3 binds the345path union and one policy guard; DATA815admitted/667pins, fixed1603inventory membership and66release pins/17UNKNOWN remain. Accepted logo/assets/styles/helper/WP308 and startup Main/editor/TipTap/bundle/privacy/WP302 bytes are protected exact tocc117. Final current-source73/697/privacy/brand/strict/source/mutants and build/native/officialCI/normalmerge/literalmerged verification remain pending, with every previously reported external/stale-autosave/blank/IME/audit/wrong-profile limitation retained. No full application, release or security acceptance.
