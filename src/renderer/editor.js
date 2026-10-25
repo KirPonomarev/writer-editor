@@ -22072,6 +22072,7 @@ async function runSavedEnvironmentEpoch(action) {
       applyTheme(last.preferences.theme); applyWordWrap(last.preferences.wordWrap);
       if (settingsThemeSelect) settingsThemeSelect.value = last.preferences.theme;
       if (settingsWrapSelect) settingsWrapSelect.value = last.preferences.wordWrap ? 'on' : 'off';
+      renderSettingsAggregation();
     }
     publishSavedEnvironmentEpochProjection(view, projection);
     setSavedEnvironmentEpochStatus(view, restoring ? `Version ${selected.revision} restored. Saved as version ${projection.revision}.` : `Version ${projection.revision} saved.`);

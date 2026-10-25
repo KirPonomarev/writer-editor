@@ -22911,6 +22911,106 @@
       "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
       "rationale": "Same32path Theme+WordWrap task; retain actual normal749with11new-fixture failures and blocked inverse686with11failures without credit. Apply exact reviewed ENV-only fixture and clock/fixed-journal snapshot preparation patch; original368427byte prefix, cases/predicates and8runtime/bundle held. Construction diagnostic0 executes no maintained callbacks. Current hashes only; full normal/inverse/native/delivery pending.",
       "sha256": "54b14120179aaf5dd6762411655f3b38dd0be8f74a6253db2db83674a5138c43"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "0f774b07d4900738b358b3daa5c36eb026edd1b13792293285c447a38e59781f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "0f620270077b511330c031ac652bdde1906d90c3539ff643a134d541f1da8cfd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "3ab2db43926b30ff7cedd275339bc99e23e7b21d4850a0e86f84d5b4c46689ca"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "c7e8f20c27ee53715be82f129d8ecd2823ff453faa6f1ef996ab0ddb7b94c4d7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "17a154b4eded963a9736df2d2df30a4b371c0e4ed6db90d96c26aa8d66d5bfe6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "fc0d4274330c94008d4218c844e2732373da331392779d380e510e1da2239994"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--environment-epochs.md",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "7876a59b9faf95ea3855e61c03e104e46e26aaa3d4f5a6475fb6861857ea3bab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "de48def502c14e4e027a44504dfe2f30b513097306ce1105036f605998fec868"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "5975135a596e948cdecb9ea005bea0931737072887861ee68b95e91338295895"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T14:45:09.531787+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ENVIRONMENT_EPOCHS_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Same unfinished32path PR2165: actual native stale read-only summary corrected by one existing guarded refresh and3appended real Main aggregation cases. Preserve all prior predicates/data/frozen tuples/memberships; cheap actual RED and GREEN retained. No current whole/native/full baseline or release acceptance inferred; current exact hashes only.",
+      "sha256": "70bb10c1870fb73aa52a3df8f043545271febec278441a92fb9ecf63fb6037b9"
     }
   ],
   "evidenceStampIds": [

@@ -4348,7 +4348,20 @@ test('ENV epoch real validated full128 Main refuses capture and restore without 
   }
 });
 
-async function environmentEpochSettingsRenderer(x) {
+async function installEnvironmentEpochSettingsAggregation(c) {
+  const aggregation = await import('../../src/renderer/settings/settingsAggregator.mjs');
+  const book = await import('../../src/core/bookProfile.mjs');
+  Object.assign(c, aggregation, { normalizeBookProfile: book.normalizeBookProfile, DEFAULT_ACTIVE_BOOK_PROFILE: book.createDefaultBookProfile(),
+    activeBookProfileState: book.createDefaultBookProfile(), configuratorBucketState: { activeToolbarProfile: 'minimal' },
+    fontSelect: null, weightSelect: null, lineHeightSelect: null, styleSelect: null, currentFontSizePx: 12, editorZoom: 1, settingsSummary: null });
+  const source = read('src/renderer/editor.js'), vm = require('node:vm');
+  const actual = name => { const match = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(match, name);
+    const end = source.indexOf('\n}\n', match.index); assert.ok(end > match.index); return source.slice(match.index, end + 2); };
+  const names = ['getActiveBookProfile', 'normalizeToolbarConfiguratorProfileName', 'getToolbarConfiguratorActiveProfile', 'buildSettingsAggregationSnapshot', 'renderSettingsAggregation'];
+  vm.runInContext(names.map(actual).join('\n'), c);
+}
+
+async function environmentEpochSettingsRenderer(x, { actualAggregation = false } = {}) {
   const vm = require('node:vm'), source = read('src/renderer/editor.js'), tasks = [], requests = [], statuses = [], packets = [], document = {};
   class Element {
     constructor(tag) { this.tagName = tag.toUpperCase(); this.children = []; this.dataset = {}; this.listeners = {}; this.disabled = false; this.value = ''; }
@@ -4416,6 +4429,7 @@ async function environmentEpochSettingsRenderer(x) {
   }
   const settle = async () => { await new Promise(setImmediate); let cursor = 0;
     while (cursor < tasks.length) { const pending = tasks.slice(cursor); cursor = tasks.length; await Promise.all(pending); } };
+  if (actualAggregation) await installEnvironmentEpochSettingsAggregation(c);
   c.openSettingsModal(); await settle();
   const block = () => walk(c.settingsModal).find(node => Object.hasOwn(node.dataset, 'settingsEnvironmentEpochs'));
   assert.ok(block(), 'existing Settings must expose one saved-versions block');
@@ -4556,4 +4570,48 @@ test('ENV epoch actual saved restore refuses a late valid prior-record digest ch
   t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_RESTORE_COMMITTED_THEN_VALID_PRIOR_CAPTURE_BYTES_CHANGED_BEFORE_FRESH_QUERY',
     revision: current.revision, latestEpochId: saved.epoch.epochId, committedDigest: environmentEpochDigest(committedBytes),
     freshDigest: current.stateDigest, completeLatestRecordEqual: true, preferenceHelperCalls: applied.length, finiteDomNotNative: true }));
+});
+
+for (const outcome of ['restore', 'stale', 'partial']) test('ENV epoch actual production aggregation rows follow guarded restore only and retain saved controls ' + outcome + ' [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await environmentEpochFixture(t), r = await environmentEpochSettingsRenderer(x, { actualAggregation: true }), c = r.c;
+  const walk = node => [node, ...node.children.flatMap(walk)];
+  const rows = () => Object.fromEntries([['theme', 'appearance.theme'], ['wordWrap', 'editor.wordWrap']].map(([key, id]) => {
+    const row = walk(c.settingsSections).find(node => node.dataset.settingsId === id); assert.ok(row, id);
+    const value = walk(row).find(node => node.className === 'settings-surface__row-value'); assert.ok(value, id); return [key, value.textContent];
+  }));
+  const model = () => { const snapshot = c.buildSettingsAggregationSnapshot(); assert.equal(snapshot.createsStore, false);
+    return Object.fromEntries([['theme', 'appearance.theme'], ['wordWrap', 'editor.wordWrap']].map(([key, id]) => [key, snapshot.settings.find(row => row.id === id).value])); };
+  assert.deepEqual(rows(), { theme: 'Light', wordWrap: 'On' });
+  const before = environmentEpochWholeRoster(x.h), author = environmentEpochProtectedAuthorSnapshot(x), pulse = x.pulseFiles();
+  const host = r.block(), select = r.select(); await r.click('capture'); const a = x.epochRaw();
+  c.applyTheme('dark'); c.applyWordWrap(false); c.settingsThemeSelect.value = 'dark'; c.settingsWrapSelect.value = 'off'; c.renderSettingsAggregation();
+  assert.equal(r.block(), host); assert.equal(r.select(), select); assert.deepEqual(rows(), { theme: 'Dark', wordWrap: 'Off' });
+  await r.click('capture'); const b = x.epochRaw(); await r.choose(a.epochs[0].epochId);
+  const previewBefore = environmentEpochWholeRoster(x.h), requests = r.requests.length; await r.click('preview');
+  assert.deepEqual(environmentEpochWholeRoster(x.h), previewBefore); assert.equal(r.requests.length, requests);
+  let refreshes = 0, faultReached = outcome === 'restore'; const render = c.renderSettingsAggregation;
+  c.renderSettingsAggregation = (...args) => { refreshes++; return render(...args); };
+  const promises = require('node:fs/promises'), rename = promises.rename;
+  if (outcome === 'stale') { const dispatch = c.dispatchUiCommand;
+    c.dispatchUiCommand = async (...args) => { const result = await dispatch(...args); faultReached = true; c.currentDocumentId = 'owned-other-scene'; return result; }; }
+  if (outcome === 'partial') promises.rename = async (from, to, ...args) => { const result = await rename(from, to, ...args);
+    if (String(to) === x.epochPath) { faultReached = true; x.h.main.__host.invalidateGeneration(); } return result; };
+  try { await r.click('restore'); } finally { promises.rename = rename; }
+  assert.equal(faultReached, true); const history = x.epochRaw();
+  assert.equal(history.revision, 3); assert.deepEqual(history.epochs.slice(0, 2), b.epochs);
+  assert.equal(history.epochs.at(-1).sourceEpochId, a.epochs[0].epochId); assert.deepEqual(history.epochs.at(-1).preferences, ENVIRONMENT_EPOCH_A);
+  const packet = r.packets.at(-1); assert.ok(packet.mainResult); assert.equal(packet.mainResult.ok, outcome !== 'partial');
+  if (outcome === 'partial') assert.match(JSON.stringify(packet), /E_ENVIRONMENT_EPOCH_PARTIAL/u);
+  assert.equal(r.block(), host); assert.equal(r.select(), select); assert.equal(c.document.activeElement, select);
+  assert.equal(c.editor, r.protectedIdentity.editor); assert.equal(c.editor.textContent, r.protectedIdentity.text);
+  assert.equal(c.tiptapEditor.state.doc, r.protectedIdentity.doc); assert.equal(c.tiptapEditor.state.selection, r.protectedIdentity.selection);
+  assert.deepEqual(environmentEpochProtectedAuthorSnapshot(x), author); assert.deepEqual(x.pulseFiles(), pulse);
+  assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h));
+  const expected = outcome === 'restore' ? { theme: 'Light', wordWrap: 'On' } : { theme: 'Dark', wordWrap: 'Off' };
+  assert.deepEqual(model(), expected); assert.equal(c.settingsThemeSelect.value, outcome === 'restore' ? 'light' : 'dark');
+  assert.equal(c.settingsWrapSelect.value, outcome === 'restore' ? 'on' : 'off');
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_RESTORE_AND_PRODUCTION_SETTINGS_READ_MODEL_DOM', outcome, historyRevision: history.revision,
+    readModel: model(), domRows: rows(), refreshes, savedHostSelectEditorPreserved: true, finiteDomNotNative: true }));
+  assert.deepEqual(rows(), expected, 'actual rendered settings rows must follow the current guarded apply');
+  assert.equal(refreshes, outcome === 'restore' ? 1 : 0, 'stale and partial completions cannot refresh or apply the historic preferences');
 });
