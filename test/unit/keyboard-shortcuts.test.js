@@ -96,7 +96,7 @@ test('native Mac Cut edits only a live focused authoring target once; other keys
 
 // Actual production functions and real artifact reads at a finite Electron boundary;
 // these tests do not execute an OS responder or prove native Cmd+A selection.
-const SELECT_ALL_SNAPSHOT = 'menu-default-desktop-minimal-select-all-20261023';
+const SELECT_ALL_SNAPSHOT = 'menu-default-desktop-minimal-undo-redo-20261025';
 async function nativeMenuRoleHarness() {
   const fs = require('node:fs'), vm = require('node:vm');
   const source = await readFile(join(process.cwd(), 'src/main.js'), 'utf8');
@@ -280,3 +280,163 @@ test('actual menu CLI implicit promotion default matches the successor while the
     fs.rmSync(directory, { recursive: true, force: true });
   }
 });
+
+// Finite projection of actual production menu functions. Native INPUT, TEXTAREA
+// and Writer Undo/Redo still require independent OS responder execution.
+function assertNativeHistoryProjection(h, config) {
+  h.nativeItem(config);
+  const edit = config.menus.find(menu => menu.id === 'edit');
+  assert.ok(edit, 'actual Edit menu must be present');
+  const built = h.context.buildMenuItemFromConfig(edit, config, 'menus.edit');
+  assert.deepEqual(Array.from(built.submenu, item => item.id),
+    ['edit-undo', 'edit-redo', 'edit-copy', 'edit-select-all']);
+  for (const role of ['undo', 'redo']) {
+    const item = built.submenu.find(node => node.id === 'edit-' + role);
+    assert.ok(item, 'actual Main builder must expose native ' + role);
+    assert.equal(item.role, role); assert.equal(item.enabled, true); assert.equal(item.visible, true);
+    for (const key of ['command', 'actionId', 'click', 'label', 'accelerator']) {
+      assert.equal(item[key], undefined, role + ': native responder defaults only');
+    }
+    assert.equal(edit.items.find(node => node.id === 'edit-' + role).canonicalCmdId, null,
+      role + ': native history must not acquire product command authority');
+  }
+  return built;
+}
+
+for (const role of ['undo', 'redo']) {
+  test('native ' + role + ' reaches the actual default packaged artifact and Main builder', async () => {
+    const h = await nativeMenuRoleHarness();
+    const runtime = h.context.resolveRuntimeMenuBuildConfig('release');
+    h.nativeItem(runtime);
+    const edit = runtime.menus.find(menu => menu.id === 'edit'); assert.ok(edit);
+    const built = h.context.buildMenuItemFromConfig(edit, runtime, 'menus.edit');
+    const item = built.submenu.find(node => node.id === 'edit-' + role);
+    assert.ok(item, 'actual packaged Edit menu is missing native ' + role);
+    assert.equal(item.role, role); assert.equal(item.enabled, true); assert.equal(item.visible, true);
+    for (const key of ['command', 'actionId', 'click', 'label', 'accelerator']) assert.equal(item[key], undefined, key);
+    assert.equal(edit.items.find(node => node.id === 'edit-' + role).canonicalCmdId, null);
+    const artifact = h.readJson('docs/OPS/ARTIFACTS/menu/menu.normalized.json');
+    assert.equal(artifact.snapshotId, SELECT_ALL_SNAPSHOT);
+    assert.deepEqual(h.readJson('src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json'), artifact);
+    assert.deepEqual(JSON.parse(JSON.stringify(runtime.menus)), artifact.menus);
+    assert.deepEqual(h.normalize().menus, artifact.menus);
+  });
+}
+
+test('canonical native Undo and Redo remain unconditional across all admitted child-control contexts', async () => {
+  const h = await nativeMenuRoleHarness(), edit = h.config.menus.find(menu => menu.id === 'edit');
+  assert.ok(edit);
+  assert.deepEqual(edit.items.map(item => item.id), ['edit-undo', 'edit-redo', 'edit-copy', 'edit-select-all']);
+  for (const role of ['undo', 'redo']) {
+    const raw = edit.items.find(node => node.id === 'edit-' + role); assert.ok(raw, role);
+    assert.deepEqual(Object.keys(raw).sort(), ['enabledWhen', 'id', 'mode', 'profile', 'role', 'stage']);
+    assert.equal(raw.role, role); assert.deepEqual(raw.enabledWhen, { op: 'all', args: [] });
+    assert.deepEqual(raw.mode, ['offline', 'web_subset']); assert.deepEqual(raw.profile, ['minimal', 'pro', 'guru']);
+    assert.deepEqual(raw.stage, ['X1', 'X2', 'X3', 'X4']);
+  }
+  for (const profile of ['minimal', 'pro', 'guru']) for (const stage of ['X1', 'X2', 'X3', 'X4']) {
+    for (const mode of ['offline', 'web_subset']) for (const hasDocument of [false, true]) for (const selectionExists of [false, true]) {
+      assertNativeHistoryProjection(h, h.normalize(h.config, { profile, stage, mode, hasDocument, selectionExists }));
+    }
+  }
+});
+
+test('native history semantic oracle detects each role omission hidden gate unsupported role and command bypass', async () => {
+  const h = await nativeMenuRoleHarness();
+  assertNativeHistoryProjection(h, h.normalize());
+  for (const role of ['undo', 'redo']) {
+    for (const mutation of ['omit', 'hidden', 'mode-gated', 'profile-gated', 'stage-gated', 'unsupported', 'command-bypass']) {
+      const config = JSON.parse(JSON.stringify(h.config)), edit = config.menus.find(node => node.id === 'edit');
+      const item = edit.items.find(node => node.id === 'edit-' + role); assert.ok(item, 'lawful mutation source ' + role);
+      if (mutation === 'omit') edit.items = edit.items.filter(node => node !== item);
+      if (mutation === 'hidden') item.visible = false;
+      if (mutation === 'mode-gated') item.mode = ['web_subset'];
+      if (mutation === 'profile-gated') item.profile = ['guru'];
+      if (mutation === 'stage-gated') item.stage = ['X4'];
+      if (mutation === 'unsupported') item.role = 'appMenu';
+      if (mutation === 'command-bypass') item.command = 'cmd.project.save';
+      assert.throws(() => assertNativeHistoryProjection(h, h.normalize(config)), error => error.code === 'ERR_ASSERTION'
+        || mutation === 'unsupported' && error.message.includes('Unsupported menu role'), role + ': ' + mutation);
+    }
+  }
+});
+
+// Execute the production document capture listener; this finite boundary proves
+// shortcut ownership, not the browser's native edit history or OS responder.
+async function documentHistoryShortcutHarness(platform) {
+  const vm = require('node:vm');
+  const source = await readFile(join(process.cwd(), 'src/renderer/editor.js'), 'utf8');
+  const marker = "\ndocument.addEventListener('keydown', (event) => {";
+  const start = source.indexOf(marker);
+  assert.ok(start >= 0); assert.equal(source.indexOf(marker, start + 1), -1);
+  const endMarker = '\n}, true);', end = source.indexOf(endMarker, start);
+  assert.ok(end > start, 'whole actual capture listener exists');
+  const { COMMAND_IDS, EXTRA_COMMAND_IDS } = await import('../../src/renderer/commands/projectCommands.mjs');
+  const commands = [];
+  let callback, prevented = 0, stopped = 0;
+  class Element {
+    constructor(tagName) {
+      this.tagName = tagName; this.value = 'unchanged Ёж 🦊';
+      this.selectionStart = 2; this.selectionEnd = 8;
+    }
+    closest(selector) {
+      return selector.split(',').some(part => part.trim().toUpperCase() === this.tagName) ? this : null;
+    }
+  }
+  const document = { activeElement: null, addEventListener(type, listener, capture) {
+    assert.equal(type, 'keydown'); assert.equal(capture, true); assert.equal(callback, undefined); callback = listener;
+  } };
+  vm.runInNewContext(source.slice(start + 1, end + endMarker.length), {
+    document, Element, HTMLElement: Element, isMac: platform === 'darwin',
+    isLinkDialogOpen: () => false, configuratorPanel: null,
+    leftRailOverlayOpen: false, rightRailOverlayOpen: false, flowModeState: { active: false },
+    COMMAND_IDS, EXTRA_COMMAND_IDS, dispatchUiCommand(id) { commands.push(id); },
+  });
+  assert.equal(typeof callback, 'function');
+  return { Element, commands, COMMAND_IDS, EXTRA_COMMAND_IDS,
+    get prevented() { return prevented; }, get stopped() { return stopped; },
+    invoke(target, key, overrides = {}) {
+      document.activeElement = target;
+      callback({ target, key, code: 'Key' + key.toUpperCase(),
+        metaKey: platform === 'darwin', ctrlKey: platform !== 'darwin', altKey: false, shiftKey: false,
+        preventDefault() { prevented++; }, stopPropagation() { stopped++; }, ...overrides });
+    } };
+}
+
+const NATIVE_HISTORY_SHORTCUT_CASES = [
+  ['z', false, 'EDIT_UNDO'], ['Z', false, 'EDIT_UNDO'],
+  ['z', true, 'EDIT_REDO'], ['Z', true, 'EDIT_REDO'],
+  ['y', false, 'EDIT_REDO'], ['Y', false, 'EDIT_REDO'],
+];
+for (const platform of ['darwin', 'win32']) {
+  for (const tag of ['INPUT', 'TEXTAREA']) for (const [key, shiftKey] of NATIVE_HISTORY_SHORTCUT_CASES) {
+    test('document history shortcut leaves native ' + tag + ' untouched: ' + platform + ':' + key + ':shift=' + shiftKey, async () => {
+      const h = await documentHistoryShortcutHarness(platform), target = new h.Element(tag);
+      const before = [target.value, target.selectionStart, target.selectionEnd];
+      h.invoke(target, key, { shiftKey });
+      assert.equal(h.prevented, 0, 'native control must retain default history behavior');
+      assert.deepEqual(h.commands, [], 'native control must never dispatch Writer history');
+      assert.equal(h.stopped, 0); assert.deepEqual([target.value, target.selectionStart, target.selectionEnd], before);
+    });
+  }
+  test('document history shortcuts retain canonical Writer and body dispatch: ' + platform, async () => {
+    for (const tag of ['DIV', 'BODY']) for (const [key, shiftKey, id] of NATIVE_HISTORY_SHORTCUT_CASES) {
+      const h = await documentHistoryShortcutHarness(platform), target = new h.Element(tag);
+      h.invoke(target, key, { shiftKey });
+      assert.equal(h.prevented, 1); assert.deepEqual(h.commands, [h.EXTRA_COMMAND_IDS[id]]); assert.equal(h.stopped, 0);
+    }
+  });
+  test('native history fence preserves unrelated shortcuts and primary-modifier refusal: ' + platform, async () => {
+    for (const tag of ['INPUT', 'TEXTAREA', 'DIV']) {
+      for (const overrides of [{ altKey: true }, { metaKey: false, ctrlKey: false }]) {
+        const h = await documentHistoryShortcutHarness(platform); h.invoke(new h.Element(tag), 'z', overrides);
+        assert.equal(h.prevented, 0); assert.deepEqual(h.commands, []); assert.equal(h.stopped, 0);
+      }
+      for (const [key, expected] of [['s', 'PROJECT_SAVE'], ['f', 'EDIT_FIND']]) {
+        const h = await documentHistoryShortcutHarness(platform); h.invoke(new h.Element(tag), key);
+        const id = key === 's' ? h.COMMAND_IDS[expected] : h.EXTRA_COMMAND_IDS[expected];
+        assert.equal(h.prevented, 1); assert.deepEqual(h.commands, [id]); assert.equal(h.stopped, 0);
+      }
+    }
+  });
+}

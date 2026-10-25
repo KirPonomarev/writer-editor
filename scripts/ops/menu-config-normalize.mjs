@@ -32,7 +32,7 @@ const FAIL_SIGNAL_RUNTIME_ARTIFACT_DIVERGENCE = 'E_MENU_RUNTIME_ARTIFACT_DIVERGE
 const DEFAULT_IN_PATH = 'src/menu/menu-config.v2.json';
 const DEFAULT_CONTEXT_PATH = 'test/fixtures/menu/context.default.json';
 const DEFAULT_SNAPSHOT_REGISTRY_PATH = 'docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json';
-const DEFAULT_SNAPSHOT_ID = 'menu-default-desktop-minimal-select-all-20261023';
+const DEFAULT_SNAPSHOT_ID = 'menu-default-desktop-minimal-undo-redo-20261025';
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';

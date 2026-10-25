@@ -110,7 +110,7 @@ test('current normalized artifact and historical Phase 05 status remain explicit
   const fileMenu = artifact.menus.find((menu) => menu.id === 'file');
   const reviewMenu = artifact.menus.find((menu) => menu.id === 'review');
 
-  assert.equal(artifact.normalizedHashSha256, '50aa09a87b32a7989fc908ee86c172e317fe22954bafe4c338a1dfd04ec5c541');
+  assert.equal(artifact.normalizedHashSha256, '346b5b8f42e8f412bc0d07bf6130a9d07f7ff8728ed1b625737b8afa1f9edeb1');
   assert.ok(fileMenu.items.some(
     (item) => item.id === 'file-import-docx-content' && item.visibilityPolicy === 'visible_enabled',
   ));
