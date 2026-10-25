@@ -392,3 +392,75 @@ test('AF1 AF5 equally valid original confirmations retain deterministic last dec
   assert.equal(projected.value.mentions[0].trustState, 'AUTHOR_CONFIRMED'); assert.equal(projected.value.mentions[0].decisionId, decisionId);
   assert.equal(JSON.stringify(confirmed.state), before);
 });
+
+async function sceneLanguageDossierFixture() {
+  const x = await buildCurrentSceneFixture(), runtime = await loadModule('src/core/runtime.mjs');
+  const { hashCanonicalValue: hash } = await loadModule('src/core/browser-safe-hash.mjs');
+  const provider = await loadModule('src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs');
+  x.state.data.projects[x.projectId].manifestRevision = 'sha256:' + 'a'.repeat(64);
+  x.state.data.projects[x.projectId].scenes[x.sceneAId].sceneRevision = 'sha256:' + 'b'.repeat(64);
+  const apply = payload => { const result = runtime.applyCoreSequence(x.state, [{ type: runtime.CORE_COMMAND_IDS.ATLAS_LANGUAGE_TAG_SET,
+    payload: { projectId: x.projectId, scopeKind: 'scene', sceneId: x.sceneAId, ...payload } }]);
+    assert.equal(result.ok, true, JSON.stringify(result)); x.state = result.state; return result; };
+  const read = (state = x.state, params = {}) => provider.deriveAtlasCurrentSceneDossier({ coreState: state,
+    params: { projectId: x.projectId, sceneId: x.sceneAId, ...params },
+    capabilitySnapshot: { platformId: 'node', capabilities: { atlasMentionIndex: true } } });
+  return Object.assign(x, { runtime, hash, apply, read, project: () => x.state.data.projects[x.projectId] });
+}
+
+test('scene-language detail reads exact custom saved ID whole unknown-field hash and actual revisions without mutation', async () => {
+  const x = await sceneLanguageDossierFixture(); x.apply({ tagId: 'custom-author-scene-tag', languageCode: 'en-US', note: 'Explicit author choice' });
+  const raw = x.project().atlas.languageTags.scenes['custom-author-scene-tag']; raw.retainedUnknown = { author: 'é 🧭', policy: [1, 2] };
+  const before = JSON.stringify(x.state), result = x.read(); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.ok(result.value.sceneLanguageTag, 'existing dossier lacks the bounded saved-language detail');
+  assert.deepEqual(result.value.sceneLanguageTag, { state: 'ready', reason: '', matchingCount: 1,
+    manifestRevision: x.project().manifestRevision, sceneRevision: x.project().scenes[x.sceneAId].sceneRevision,
+    tag: { id: raw.id, languageCode: raw.languageCode, recordHash: x.hash(raw) } });
+  assert.notEqual(result.value.sceneLanguageTag.tag.recordHash, raw.sourceHash);
+  assert.equal(result.value.surfaceManifest.commandAuthority, 'none'); assert.equal(result.value.surfaceManifest.storageAuthority, false);
+  assert.equal(JSON.stringify(x.state), before); assert.notEqual(result.value.sceneLanguageTag, x.read().value.sceneLanguageTag);
+  const changed = structuredClone(x.state); changed.data.projects[x.projectId].atlas.languageTags.scenes[raw.id].retainedUnknown.author += '!';
+  const next = x.read(changed); assert.equal(next.ok, true); assert.notEqual(next.meta.invalidationKey, result.meta.invalidationKey);
+  assert.notEqual(next.value.sceneLanguageTag.tag.recordHash, result.value.sceneLanguageTag.tag.recordHash);
+});
+
+test('scene-language detail is independent of mentions and reports two lawful same-scene IDs honestly', async t => {
+  const x = await sceneLanguageDossierFixture(); x.apply({ tagId: 'first-custom', languageCode: 'ru' });
+  const one = structuredClone(x.state); one.data.projects[x.projectId].atlas.entities = {};
+  const single = x.read(one); assert.equal(single.ok, true); assert.equal(single.value.state, 'empty');
+  await t.test('saved tag on a no-mention scene remains available', () => {
+    assert.equal(single.value.sceneLanguageTag?.state, 'ready'); assert.equal(single.value.sceneLanguageTag?.tag?.id, 'first-custom');
+  });
+  x.apply({ tagId: 'second-custom', languageCode: 'de' }); const before = JSON.stringify(x.state), result = x.read();
+  assert.equal(result.ok, true); assert.equal(result.value.sceneLanguageTag?.state, 'ambiguous');
+  assert.equal(result.value.sceneLanguageTag.matchingCount, 2); assert.equal(result.value.sceneLanguageTag.tag, null);
+  assert.equal(JSON.stringify(x.state), before);
+});
+
+test('scene-language detail distinguishes verified legacy absence from malformed or future author data', async t => {
+  const x = await sceneLanguageDossierFixture();
+  for (const missing of ['atlas', 'languageTags', 'scenes']) await t.test('lawful absent ' + missing, () => {
+    const state = structuredClone(x.state), p = state.data.projects[x.projectId];
+    if (missing === 'atlas') delete p.atlas; else if (missing === 'languageTags') delete p.atlas.languageTags; else delete p.atlas.languageTags.scenes;
+    const before = JSON.stringify(state), result = x.read(state); assert.equal(result.ok, true);
+    assert.equal(result.value.sceneLanguageTag?.state, 'empty'); assert.equal(result.value.sceneLanguageTag.matchingCount, 0);
+    assert.equal(result.value.sceneLanguageTag.tag, null); assert.equal(JSON.stringify(state), before);
+  });
+  x.apply({ tagId: 'raw-custom', languageCode: 'ru' });
+  const mutations = [p => { p.atlas = { schemaVersion: 'atlas.author.v99', entities: {} }; }, p => { p.atlas = []; },
+    p => { p.atlas.languageTags = []; }, p => { p.atlas.languageTags.scenes = []; },
+    p => { p.atlas.languageTags.scenes['raw-custom'] = null; }, p => { p.atlas.languageTags.scenes['raw-custom'].sceneId = 17; },
+    p => { p.atlas.languageTags.scenes['raw-custom'].projectId = 'foreign'; }, p => { p.atlas.languageTags.scenes['raw-custom'].id = 'other-key'; },
+    p => { p.atlas.languageTags.scenes['raw-custom'].languageCode = 'x'.repeat(1001); }, p => { delete p.manifestRevision; }];
+  for (const [index, mutate] of mutations.entries()) await t.test('unavailable malformed saved source ' + index, () => {
+    const state = structuredClone(x.state); mutate(state.data.projects[x.projectId]); const before = JSON.stringify(state), result = x.read(state);
+    assert.equal(result.ok, true); assert.equal(result.value.sceneLanguageTag?.state, 'unavailable');
+    assert.equal(result.value.sceneLanguageTag.tag, null); assert.ok(result.value.sceneLanguageTag.reason); assert.equal(JSON.stringify(state), before);
+  });
+  await t.test('trusted Main issue preserves the old empty mention fallback but refuses new absence inference', () => {
+    const state = structuredClone(x.state); state.data.projects[x.projectId].atlas = { schemaVersion: 'atlas.author.v1', entities: {}, decisions: {}, savedQueries: {} };
+    const before = JSON.stringify(state), result = x.read(state, { atlasAuthorReadIssue: 'ATLAS_AUTHOR_SCHEMA_UNSUPPORTED' });
+    assert.equal(result.ok, true); assert.equal(result.value.state, 'empty'); assert.equal(result.value.sceneLanguageTag?.state, 'unavailable');
+    assert.equal(JSON.stringify(state), before);
+  });
+});

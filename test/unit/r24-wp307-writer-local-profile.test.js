@@ -692,3 +692,52 @@ test('V11 refuses malformed own policy shape near identities and forged domain o
   for (const id of ['idea.create', 'idea.originLink.add', 'meaning.promote']) for (const record of [null, [], Object.create({ id, domain: id.split('.')[0] }), { id: id + '.extra', domain: id.split('.')[0] }])
     assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord: record }).allowed, false);
 });
+
+test('V12 admits exactly two manual scene language commands after all V11 identities without engine authority', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  assert.equal(typeof m.createWriterSceneLanguageTagProfileProjection, 'function', 'missing successor is a profile gap');
+  assert.equal(typeof m.isActiveWriterSceneLanguageTagProfile, 'function');
+  const active = m.createWriterSceneLanguageTagProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const old = m.createWriterIdeaMeaningAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' });
+  assert.equal(active.profileId, 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'); assert.equal(active.schemaVersion, 'writer-local-profile.v12');
+  assert.equal(m.isActiveWriterSceneLanguageTagProfile(active), true); assert.equal(Object.isFrozen(active), true);
+  assert.deepEqual(active.admittedCommandIds, [...old.admittedCommandIds, 'atlas.languageTag.set', 'atlas.languageTag.clear']);
+  assert.equal(active.admittedCommandIds.length, 34); assert.deepEqual(active.admittedQueryIds, old.admittedQueryIds);
+  assert.equal(active.admittedQueryIds.length, 12);
+  for (const key of Object.keys(old).filter(key => typeof old[key] === 'boolean')) assert.equal(active[key], old[key], key);
+  for (const id of active.admittedCommandIds) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id,
+    productCommandRecord: { id, domain: id.split('.')[0] } }).allowed, true, id);
+  for (const queryId of active.admittedQueryIds) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, true, queryId);
+  for (const id of ['atlas.seriesPortability.apply', 'atlas.seriesPortability.rollback', 'atlas.languageTag.set.extra', 'idea.erase'])
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord: { id, domain: id.split('.')[0] } }).allowed, false);
+  for (const id of ['atlas.languageTag.set', 'atlas.languageTag.clear']) assert.equal(m.evaluateWriterLocalCommandAccess({
+    profile: old, commandId: id, productCommandRecord: { id, domain: 'atlas' } }).allowed, false, 'historical V11 stays denied');
+  for (const options of [{}, { isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' }, { isPackaged: 1, platform: 'darwin' }])
+    assert.deepEqual(m.createWriterSceneLanguageTagProfileProjection(options), m.createWriterLocalProfileProjection(options));
+});
+
+test('V12 exact policy shape rejects forged arrays records domains and near identities', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs'); assert.equal(typeof m.createWriterSceneLanguageTagProfileProjection, 'function');
+  const active = m.createWriterSceneLanguageTagProfileProjection({ isPackaged: true, platform: 'darwin' });
+  const variants = [{ ...active, extra: true }, { ...active, active: false }, { ...active, optionalSystemsEnabled: true },
+    { ...active, profileId: active.profileId + '.extra' }, { ...active, schemaVersion: active.schemaVersion + '.extra' },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds].reverse() }, { ...active, admittedQueryIds: active.admittedQueryIds.slice(1) }];
+  for (const key of Reflect.ownKeys(active)) { const value = { ...active }; delete value[key]; variants.push(value); }
+  for (const field of ['admittedCommandIds', 'admittedQueryIds']) {
+    const values = [...active[field]], index = values.length - 1; delete values[index];
+    Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active[field][index] }));
+    variants.push({ ...active, [field]: values }, { ...active, [field]: Object.assign([...active[field]], { extra: true }) });
+  }
+  for (const invalid of variants) {
+    assert.equal(m.isActiveWriterSceneLanguageTagProfile(invalid), false);
+    for (const id of ['atlas.languageTag.set', 'atlas.languageTag.clear']) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: invalid,
+      commandId: id, productCommandRecord: { id, domain: 'atlas' } }).allowed, false);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile: invalid, queryId: 'query.atlasCurrentScene' }).allowed, false);
+  }
+  for (const id of ['atlas.languageTag.set', 'atlas.languageTag.clear']) {
+    for (const commandId of [' ' + id, id + ' ', id + '.extra']) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active,
+      commandId, productCommandRecord: { id: commandId, domain: 'atlas' } }).allowed, false);
+    for (const record of [null, [], Object.create({ id, domain: 'atlas' }), { id: id + '.extra', domain: 'atlas' }, { id, domain: 'idea' }])
+      assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId: id, productCommandRecord: record }).allowed, false);
+  }
+});
