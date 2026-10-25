@@ -476,6 +476,7 @@
       "docs/tasks/2026-10-25--environment-epochs.md",
       "src/renderer/design-os/designOsFormConfiguration.mjs",
       "test/unit/r24-wp303-design-os-customization.test.js",
+      "docs/tasks/2026-10-25--settings-theme-summary.md",
       "docs/tasks/2026-10-25--bug-native-undo-redo.md"
     ]
   },

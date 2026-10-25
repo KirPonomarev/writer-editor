@@ -71,6 +71,8 @@ Root owns this task, generated current artifacts, exact current bindings, indepe
 - test/unit/r24-wp303-design-os-customization.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
 
+- docs/tasks/2026-10-25--settings-theme-summary.md
+
 ## DENYLIST
 
 Everything else, especially Core/preload/IPC/storage/dependencies, all renderer code outside the exact C1 focus fence, other worktrees and private owner state. No cherry-pick of the old unaccepted draft, blanket rewrite, generic role/normalizer/lock changes, new global key interceptor (C1 only narrows the existing handler), direct webContents Undo patch, added capability, historical snapshot rewrite, assertion deletion, filtered tests, new skip/todo, false acceptance, stage/lease/graph changes, secret, network runtime, reset/stash/clean/rebase/force or unrelated defect repair. Other deferred bugs remain separate.
@@ -151,3 +153,11 @@ Owner reply: «Да, выполни обычный merge и проверки» a
 Separate executor resolves only Main's existing expected snapshot literal and the same4line renderer fence on top of exact main. Root normally regenerates the bundle and current OPS witnesses, preserving both parents' historical carriers/rows, active main capabilities and all qualifications. No other runtime edits or Save/comment workaround. Relative to current main, the outcome stays the same native Undo bug with one rollback.
 
 For actual native proof use a new task-owned profile with Documents read from the immutable qualified main46a3da4 closed-profile archive. Never launch/edit the donor profile or borrow a stale absolute path. Validate every copied member, retain donor archive/markers as evidence only, and let ordinary Main create fresh session authority. Open an existing canonical scene; freeze its full source before input, observe real history and explicit Save/normal Quit/cold with independent raw readback. No changes to safety guards or project schema. Current source/affected/required baseline/official RTK/CI and exact merged verification remain mandatory.
+
+### Correction C3: accepted main Settings summary integration
+
+After the concrete pending proposal to integrate main58596e2596ce6c8f24b6c938149e54feaa917213, the owner resumed: «погнали дальше работать». Continue that exact ordinary two-parent merge into clean3d78deb3ed167150a990b6d3e248f3cda7758445; no blanket authority for unknown future changes, rebase or force. Fresh clean42path declaration/preflight precedes this amendment. Thirteen accepted-main imports remain byte-exact, including the complete incoming WP307 test file and theme task. Preserve both the accepted theme callback and existing native history fence. Coordination goes only through «Изучи репозиторий Yalken»; no messages to the developer.
+
+C2 proof at3d78 is historical: actual Main Library Create produced a correctly bound synthetic canonical scene, native INPUT/TEXTAREA/Writer complete Unicode Undo/Redo and Copy/SelectAll passed, explicit Save/Undo Save restored the entire rich scene byte-exact, and normal Quit/cold retained it. All14baseline and68closed-profile files were independently reread. Earlier Documents-only relocation refused authority and is excluded. Intermediate suffix-only preparation autosave is retained honestly in backups. Official CI RTK4416passed; extra local4412pass/4owned-output scope failures remain FAIL, followed by all4whole affected files43passed after lossless six-file cleanup. No separate duplicate full local RTK is inferred; current official full RTK/CI and the configured baseline remain mandatory.
+
+The previous temporary runtime is unavailable after resume. Current owned APFS build/profile runtime is /private/tmp/yalken-undo-c3-36nen2xp; immutable T777 evidence remains. Create a new empty profile and a canonical scene through ordinary Main Project Library Create, never relocate session authority or borrow an active profile. Current candidate and exact merged source/build/native proofs remain pending, not inherited from3d78. New materials remain compact and unencrypted. No persistence, security policy, dependency or additional bug changes.

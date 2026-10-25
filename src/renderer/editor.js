@@ -23744,6 +23744,10 @@ function loadSavedTheme() {
 if (window.electronAPI) {
   window.electronAPI.onThemeChanged((theme) => {
     applyTheme(theme);
+    if (settingsModal?.isConnected && !settingsModal.hidden
+      && settingsSections?.isConnected && settingsModal.contains(settingsSections)) {
+      renderSettingsAggregation();
+    }
   });
 }
 
