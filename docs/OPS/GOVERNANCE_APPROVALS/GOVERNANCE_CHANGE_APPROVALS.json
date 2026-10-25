@@ -23518,26 +23518,6 @@
       "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
       "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
       "evidenceStampIds": [],
-      "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
-      "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "123429e24a88f02708f89f9563a18fbe84781df593f3dbc19b8ace25b505d375"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
       "sha256": "0203275dfb51546c3b8d66874422a5d0b69aef0b04706b239b4816c3d2964366"
@@ -23578,16 +23558,6 @@
       "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
       "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
       "evidenceStampIds": [],
-      "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "5b6a4c5f5bf178517ddccfb2d041144e53f5e54ac5244109a54c65de6eed3272"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
       "filePath": "docs/WORKLOG.md",
       "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
       "sha256": "510999865e113b8e67eefd025636d0e3998ee83109a2c30702447a0933303d6a"
@@ -23601,16 +23571,6 @@
       "filePath": "docs/tasks/2026-10-25--bug-native-undo-redo.md",
       "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
       "sha256": "c74c469bacd6708c3c891a7efbb39681fc0b72ac23bcb873f8f3273ddcf9449d"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
-      "filePath": "scripts/ops/menu-config-normalize.mjs",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "6f29e916e8561c7ad96af5418129e5d13e3dd781e02719bbe404c76bb452b34a"
     },
     {
       "approved": true,
@@ -23658,29 +23618,9 @@
       "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
       "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
       "evidenceStampIds": [],
-      "filePath": "scripts/run-tests.js",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "e1491f196baf958e9acbac20781c54271d95622ebdea9ce578bf75a15e6259d7"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
       "filePath": "src/main.js",
       "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
       "sha256": "c59a70dcb983475bd376b7677aa7e9f74f4fb6b5715861bbc6eafddd7a66cf95"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
-      "filePath": "src/menu/menu-config.v2.json",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "96da4dd2e76e572804a50673a07dee3883d9ae771f766ea3ffe4c6cb9fba48cc"
     },
     {
       "approved": true,
@@ -23708,59 +23648,9 @@
       "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
       "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
       "evidenceStampIds": [],
-      "filePath": "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
-      "filePath": "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "123429e24a88f02708f89f9563a18fbe84781df593f3dbc19b8ace25b505d375"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
-      "filePath": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "2a94a207c5533d2d0fbe67d4b3e8c136bda789a8f6874bda24184769665a577f"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
-      "filePath": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "7200dc6e51cc8752a6541c902ae49c1ce17eb87f3b40089f99bcd36bb4e45eb1"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
       "sha256": "e190e771a2d146d4046a63a2f9a9adeac9906d9ef20af60fd4e2d3973f3d1b03"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-10-25T17:01:41.206062+00:00",
-      "approvedBy": "owner-delegated-codex:YALKEN_BUG_NATIVE_UNDO_REDO_20261025_C2",
-      "authority": "DIRECT_HUMAN_EXPLICIT_NORMAL_MERGE_AND_CHECKS_20261025",
-      "evidenceStampIds": [],
-      "filePath": "test/unit/keyboard-shortcuts.test.js",
-      "rationale": "Explicit human approval to merge current main46a3da4 into the same Undo PR, preserving both parents. Clean41path declaration/preflight/taskE0, independently exact Main snapshot literal/4line renderer fence,12byte-exact accepted-main imports and41whole keyboard pass. Current witnesses bind actual bytes only. All17Mac qualifications and authority gates stay unchanged. Native canonical Save and full delivery remain required.",
-      "sha256": "4cc30c9e0d2ed3816aee35451b8882d16e77b341c3a6798de13eebb6be921e09"
     }
   ],
   "evidenceStampIds": [
