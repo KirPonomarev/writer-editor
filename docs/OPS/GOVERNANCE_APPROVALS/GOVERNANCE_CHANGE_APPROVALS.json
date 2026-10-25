@@ -22351,6 +22351,106 @@
       "filePath": "test/unit/r24-wp100-wiring-matrix.test.js",
       "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C1 declaration05/preflight0/taskE0 and separate strict WP100 scanner alignment. Existing original3 plus uniquePulse1/whole4 and exact localguard retained; removal/inversion/refusal/equal-count relocation negatives. Runtime/bundle/previous tests and historical tuples unchanged. Current hash/inventory companions only; no membership/dependency/network/release change. Final fullbaseline/RTK/currentCI/normalmerge/literal merged gates still required.",
       "sha256": "e58cdfbc91787a490f4d496fda0f29117785d7763224420359c310f834bd228e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "0f29ceac3a872f807fc3c0d7efcdfd8bd662b7352de48a38c3a3daae8a52d802"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "6c6b5f528c9135a06e6c6f98d83ab4e3b158d115e2be470acdd41c63d7024e1b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "b2c57ae000c9df512cdbc5d3d3b77aca06c773fca18b2e098165260d0ec6d573"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "f56157dcb9ef06db81ee5713204917e63bc8cebd26d62665d9e353c3478352e2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "36f0b61dffe2215eb6bf44973ffbaf2489079d3780cd591b8042396b36c98ca6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "95fa4a2e151ae9b3ee8a732783372ac351392fc7f71dbf2d2330873f6b5cc6d9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--pulse-local-history.md",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "92f6ec0f1ee0d425b7505ef1a58105b59ff0215f9b1a42a5eab047521cc4b89b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "2e2fe9ddf73850cfa71cdb688dfc72c63c566ee985c1818ff3850e6242cf70d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "397a242d28b78b1fb612e70856b70fc9980fad46767ba6cd14a5dcaee0e2d966"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T10:39:08.889019+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_LOCAL_HISTORY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "rationale": "Same unfinished Pulse PR2163 original5023 base, clean C2 declaration06/preflight0/taskE0 and separate exact two-literal donor expectation correction. Strict deepEqual and every original assertion/body remain; unchanged stale-green guard passes. Each missing Pulse ID and extra unknown entry causes actual original strict-equality refusal. Runtime/bundle/all other tests and historical tuples unchanged. Current hashes only; no membership/dependency/network/release change. Full current proofs/normal merge/literal verification remain required.",
+      "sha256": "7037e8a3ab6890ca54b770c34fd419560a6fbc8f900d9252e229f73dd639410c"
     }
   ],
   "evidenceStampIds": [

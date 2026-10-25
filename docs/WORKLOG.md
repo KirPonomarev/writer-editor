@@ -5192,3 +5192,5 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Pulse reboot resume:644whole and273affected pass at their recorded source identities. Strict ENT0 first-case alignment preserves original3 plus new1tier decisions; only current mechanical hash companions refresh, no runtime/bundle change. Exact native/cold/fullbaseline/CI/normaldelivery remain pending.
 
 - Pulse PR2163: C1 native warm/cold/opt-out raw preservation completed; old WP100 test-local3-consultation scanner caused actual CI failure. Complete strict same-command scanner correction and inverse reviewed; runtime/bundle held. Aborted local baseline remains non-green; current fullbaseline/RTK/CI/normalmerge/literal-main still required.
+
+- Pulse PR2163: strict donor expected command list gains only two already admitted Pulse IDs. Whole13of13 and exact inverse/three consumed strict-refusal mutants independently reviewed; all runtime/bundle/other tests held. C2 RTK two failures and interrupted baseline remain non-green; full current delivery and literal merged proof still required.

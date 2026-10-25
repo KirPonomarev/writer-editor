@@ -1,6 +1,6 @@
 # Explicit local Pulse consent and changed-scene Save history
 
-STATUS: WP100_SCANNER_COMPONENT_COMPLETE_FINAL_DELIVERY_PENDING
+STATUS: RTK_DONOR_EXPECTATION_COMPONENT_COMPLETE_FINAL_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One explicit local consent, actually changed existing canonical scene Save, cold history and opt-out journey. No full Pulse or Mac qualification.
 TASK_ID: YALKEN_PULSE_LOCAL_HISTORY_20261025
@@ -29,7 +29,7 @@ T: Registered renderer intent -> validated Main bridge/Kernel/current entitlemen
 H: Existing Pulse writer, codec and reader are ready but no live commands or producer exist. Two explicit FREE commands, trusted current consent projection and a bounded post-commit effect using the existing actual Save preimage should complete this journey without a new storage engine/profile/registry.
 B: Protect all105Documents, complete62event/receipt prefix, all prior Ideas/Meanings/maps/tags/facts and raw scene history, original profile markers, WP800/801/804 bytes, project transaction/SaveACK semantics, old profiles and unknown fields. One rollback/delivery chain.
 P: Whole maintained causal RED on actual registered Main/renderer then frozen GREEN; actual canonical preimage/readback/SaveACK and no-loss footprints; whole Pulse/Save negative suites and required baseline; source-bound native candidate before long baseline; normal commit/push/PR/currentCI/merge/literal merged proof.
-I: Exact base5023fd23/tree49f6e10d, registered codex branch, declared33paths, actual source/package/ASAR/profile, current window/webContents/userData/root/owner/project/scene/session/lifecycle/generation/privacy revision/digest and durable receipt.
+I: Exact base5023fd23/tree49f6e10d, registered codex branch, declared34paths, actual source/package/ASAR/profile, current window/webContents/userData/root/owner/project/scene/session/lifecycle/generation/privacy revision/digest and durable receipt.
 
 ## ARTIFACT
 
@@ -75,6 +75,7 @@ Existing appendPulseHistory receives a native labeled Enable/Disable intent with
 - `src/renderer/editor.js`
 - `src/renderer/pulseHistoryPresentationModel.mjs`
 - `test/contracts/b2c09-command-surface-kernel.contract.test.js`
+- `test/contracts/donor-port-command-surface-kernel.contract.test.js`
 - `test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `test/unit/r24-ent0-entitlement-law.test.js`
@@ -153,3 +154,14 @@ Before editing, retain the complete current npm run test:r24-wp100 causal RED. P
 Then execute the same complete WP100 command, original whole mutant suite and affected Main/Pulse/ENT0/current-source gates. Root changes only current admitted hash/inventory/governance companions while preserving historical tuples, certificate/DATA membership and all17UNKNOWN/59skip/audit findings. New committed exact-head full baseline, officialRTK/provider/currentCI and normal same-PR delivery/literal merged verification remain mandatory. C1 native proof remains C1 evidence; no newer-head execution is fabricated. Full Mac remains incomplete; continue its plan after bounded closure.
 
 WP100 locator clarification: the first corrected whole12case run retains10pass2fail because the original global inversion fixture now hits the newly earlier Pulse guard. Root same-path locator ticket02 scopes the identical negation mutation to existing captureManualMapPreparationGuard; the original named assertion and all predicates remain. Corrected GREEN02 is separate and never relabels that failure.
+
+
+### Same PR2163 exact donor expectation correction
+
+Fresh clean C2 0567f2aff5a0ee6b9840e81c1cd860615a43cf6c retains the original5023 delivery base. Actual current whole644 and39affected285 pass; fresh C2 native Enable/Save adds one observation to the existing two, then normalQuit/new-process cold Disable/Save preserves all three. All62author event/receipt pairs, unrelated Documents and whole796/798member closed archives are independently read. This is bounded C2 evidence, never full Mac acceptance or a later-head execution.
+
+Actual complete C2 official RTK240files4416cases has4414pass2fail with no cancel/skip/todo. Both failures share one omission: donor-port-command-surface-kernel.contract.test.js has a strict ordered expected list without the two Pulse IDs already admitted by this same task. The unchanged stale-green reconciliation guard correctly reports that same missing entry. All other completed workflow jobs succeed; dependent required gates refuse. Local full npm-test is explicitly aborted after330.035961834s with literal exit1, never a complete baseline pass. Its6new files19members are fully archived/read and same-device isolated with original inodes, no deletion; source is clean.
+
+Fresh C2 bootstrap, full normative/scoped factual reads, source/failure review and fetched origin/main5023 precede declaration06/preflight0. Cumulative scope34 releases only existing donor-port-command-surface-kernel.contract.test.js to the separate code executor after this amended task E0. Budget exactly+2/-0: insert quoted cmd.project.pulse.optIn then cmd.project.pulse.optOut immediately after cmd.project.save in the first expected array. Retain strict deepEqual, every original assertion/body/helper/comment, all other tests including the entire stale-green guard, every product runtime and generated bundle byte-exact C2. Exact inverse must restore the full C2 donor file. No new command admission, product change, filter, skip, todo, known-red ledger entry or timeout change.
+
+Execute both existing maintained donor and stale-green files whole RED before edit and the same whole command GREEN after. Root independently checks the exact inverse and consumes omission of each new ID plus insertion of an unknown ID against unchanged strict equality; do not add a new test file. Current DATA/source/certificate/inventory/append-only governance hash companions only, preserving exact membership, all historical tuples/predicates, classes/lanes/skips, V12/66release pins and all17UNKNOWN. New committed exact-head full baseline, officialRTK/provider/currentCI, package/native, normal same-PR merge and literal merged verification remain required. C2 native proof remains C2; interrupted or failed runs are never relabelled. Audit2HIGH8MODERATE/17underlying findings and59named skips remain explicit. Close this bounded delivery then continue full Mac Atlas/maps/WSE/Pulse/environment epochs; Black Box later.
