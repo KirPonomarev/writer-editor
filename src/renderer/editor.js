@@ -16113,7 +16113,7 @@ async function runSceneLanguageCommand(commandId) {
     const accepted = result?.ok === true && result.value?.performed === true && result.value.commandAuthority === 'CommandKernel'
       && result.value.commandId === commandId && result.value.result?.ok === true && receipt?.schemaVersion === 'command-kernel.receipt.v1'
       && receipt.commandId === commandId && receipt.status === 'APPLIED' && receipt.capabilityRevalidated === true && receipt.storageWritten === true;
-    entry.status = accepted ? 'Метка языка сохранена.' : 'Метка не сохранена. Ввод сохранён; проверьте язык или обновите данные.';
+    entry.status = accepted ? (commandId === 'atlas.languageTag.clear' ? 'Метка языка удалена.' : 'Метка языка сохранена.') : 'Метка не сохранена. Ввод сохранён; проверьте язык или обновите данные.';
     updateStatusText(entry.status, { visible: true });
     if (accepted) {
       if (commandId === 'atlas.languageTag.set' && entry.fields.languageCode === payload.languageCode) entry.fields.languageCode = '';

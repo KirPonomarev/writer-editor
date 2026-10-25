@@ -1043,7 +1043,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "a774d779ce425acc296be4eefc250020336695d284c44472ac5ffb6df5286713"
+        "sha256": "c653619796d16fac54e60605e4bc1a8eece1a503da022cb446a500c69e3e9834"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1207,7 +1207,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "25f3e7305094e378a551d5a30a454185f5e6f6ff462f85b342ff2cc3daf43325"
+        "sha256": "5ae8b4b93afcba927ce9debaac301d6d65bb9eea97f0f475484056c3688fb297"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -3271,7 +3271,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "9e93702382cb46f7a32068ec8a8f978b5cf5b1bbcbe59f584b3a57db9c7549df"
+        "sha256": "c90f7d0bb18f1291e886e96c8c680eb7db042c2a998fccf8b83afb01eb01f586"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3407,7 +3407,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "ddce5c858a5de4c73cbde1f0a98fe4d55ed1db237e12990d5ea894d5042da577"
+        "sha256": "df3ffe9c117b86a7482ef2ab654b36494d6b79f4f091b35bc3a444e32cc41650"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",

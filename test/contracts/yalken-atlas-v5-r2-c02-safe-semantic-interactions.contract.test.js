@@ -2940,3 +2940,25 @@ test('language form stays absent for legacy near absent and windowless hints wit
   }
   const h = sceneLanguageDom(''); delete h.c.window; assert.doesNotThrow(() => h.c.renderAtlasJourneyState()); assert.equal(h.field(), undefined);
 });
+
+
+test('V12 accepted language copy distinguishes Set from Clear and rejects non-storage receipts [FINITE_TYPED_RESPONSE_NO_CORE_CREDIT]', async t => {
+  for (const action of ['set', 'clear']) for (const storageWritten of [true, false]) await t.test(action + (storageWritten ? ' accepted' : ' refused'), async () => {
+    const h = sceneLanguageDom(), commandId = 'atlas.languageTag.' + action;
+    if (action === 'clear') h.publish({ ...h.detail(), state: 'ready', matchingCount: 1,
+      tag: { id: 'saved-copy-check', languageCode: 'ru-RU', recordHash: 'c'.repeat(64) } });
+    else await h.input('ru-RU');
+    const response = h.appliedResponse(); response.value.commandId = commandId;
+    response.value.result.receipt.commandId = commandId; response.value.result.receipt.storageWritten = storageWritten;
+    h.c.commandPort = () => response; await h.click(action);
+    assert.equal(h.commands.length, 1); assert.equal(h.commands[0].id, commandId);
+    const notice = h.c.getSceneLanguageAuthorDraft().notice.textContent, footer = h.statuses.at(-1).value;
+    if (storageWritten) {
+      const expected = action === 'clear' ? 'Метка языка удалена.' : 'Метка языка сохранена.';
+      assert.equal(notice, expected); assert.equal(footer, expected);
+    } else {
+      assert.doesNotMatch(notice, /Метка языка (?:сохранена|удалена)\./u);
+      assert.doesNotMatch(footer, /Метка языка (?:сохранена|удалена)\./u);
+    }
+  });
+});

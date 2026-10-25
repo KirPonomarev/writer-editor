@@ -27291,7 +27291,7 @@ const R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "a774d779ce425acc296be4eefc250020336695d284c44472ac5ffb6df5286713"
+      "sha256": "c653619796d16fac54e60605e4bc1a8eece1a503da022cb446a500c69e3e9834"
     },
     {
       "path": "src/export/docx/docxPendingRevisions.js",
@@ -27427,7 +27427,7 @@ const R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "25f3e7305094e378a551d5a30a454185f5e6f6ff462f85b342ff2cc3daf43325"
+      "sha256": "5ae8b4b93afcba927ce9debaac301d6d65bb9eea97f0f475484056c3688fb297"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -27963,7 +27963,7 @@ const R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "d0524eb4b4f89fdab570ac6696534f68fd3e4a093a85335dcf282eb631bb488e"
+      "sha256": "b4b52f487730bedfe35bea0af40b8bcc1fc39dee238b617a794711d1f75c409e"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -27971,7 +27971,7 @@ const R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "9e93702382cb46f7a32068ec8a8f978b5cf5b1bbcbe59f584b3a57db9c7549df"
+      "sha256": "c90f7d0bb18f1291e886e96c8c680eb7db042c2a998fccf8b83afb01eb01f586"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -28127,7 +28127,7 @@ const R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-      "sha256": "ddce5c858a5de4c73cbde1f0a98fe4d55ed1db237e12990d5ea894d5042da577"
+      "sha256": "df3ffe9c117b86a7482ef2ab654b36494d6b79f4f091b35bc3a444e32cc41650"
     },
     {
       "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -28405,7 +28405,7 @@ const R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b5cdaf442e9333cf2d8514f1380761aef54f2f4ca5e6efa789e17c13582820bc"
+      "sha256": "07bf313fc3db2cb9b9ced9a1b19e8633891deaf6fa344b392992201f461b861a"
     }
   ]
 });
