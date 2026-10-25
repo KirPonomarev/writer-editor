@@ -128,9 +128,14 @@ export function buildPulseClaim({ historyProjection, currentIdentity, privacySta
 export async function readPulseClaimProjection(directory, { rowLimit = 32 } = {}) {
   boundedRowLimit(rowLimit);
   const privacyState = readPulsePrivacyStateSnapshot(directory);
+  const currentPrivacy = projection => {
+    const payload = { ...projection, privacy: { ...projection.privacy, revision: privacyState.revision, stateDigest: privacyState.stateDigest } };
+    delete payload.projectionDigest;
+    return freeze({ ...payload, projectionDigest: hashCanonicalValue(payload) });
+  };
   if (privacyStatus(privacyState) === 'OPTED_OUT') {
     const payload = baseProjection('OPTED_OUT');
-    return freeze({ ...payload, projectionDigest: hashCanonicalValue(payload) });
+    return currentPrivacy(payload);
   }
   const ledgerSnapshot = await readPulseLedgerSnapshot(directory);
   const generation = ledgerSnapshot.entries.at(-1)?.receipt?.generation ?? 0;
@@ -152,5 +157,7 @@ export async function readPulseClaimProjection(directory, { rowLimit = 32 } = {}
     },
     currentIdentity,
   });
-  return buildPulseClaim({ historyProjection, currentIdentity, privacyState }, { rowLimit });
+  const latestPrivacy = readPulsePrivacyStateSnapshot(directory);
+  if (latestPrivacy.revision !== privacyState.revision || latestPrivacy.stateDigest !== privacyState.stateDigest) fail('E_WP806_PRIVACY_STALE');
+  return currentPrivacy(buildPulseClaim({ historyProjection, currentIdentity, privacyState }, { rowLimit }));
 }

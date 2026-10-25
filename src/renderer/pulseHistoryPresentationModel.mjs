@@ -43,6 +43,10 @@ export function normalizePulseHistoryPresentation(source = {}) {
   });
   const state = ['ready', 'degraded', 'empty', 'optedOut', 'unavailable', 'loading'].includes(projection.state)
     ? projection.state : 'unavailable';
+  const currentPrivacy = !['unavailable', 'loading'].includes(state)
+    && ['OPTED_IN', 'OPTED_OUT'].includes(privacy.collectionStatus)
+    && Number.isSafeInteger(privacy.revision) && privacy.revision >= 0
+    && typeof privacy.stateDigest === 'string' && /^[a-f0-9]{64}$/u.test(privacy.stateDigest);
   const totalRows = count(summary.totalRows);
   const visibleRows = Math.min(count(summary.visibleRows), rows.length);
   const omittedRows = count(summary.omittedRows);
@@ -60,6 +64,8 @@ export function normalizePulseHistoryPresentation(source = {}) {
     state,
     statusText,
     privacyStatus: privacy.collectionStatus === 'OPTED_IN' ? 'OPTED_IN' : 'OPTED_OUT',
+    privacyRevision: currentPrivacy ? privacy.revision : null,
+    privacyStateDigest: currentPrivacy ? privacy.stateDigest : '',
     aggregateOnly: privacy.aggregateOnly === true,
     totalRows,
     visibleRows,

@@ -19797,6 +19797,62 @@ function appendAtlasWseClaims(parent, source) {
   parent.appendChild(section);
 }
 
+let pulseHistoryPending = null;
+
+async function runPulseHistoryCommand(action, button, parent, status, presentation) {
+  if (!button.isConnected || button.disabled || pulseHistoryPending || !currentProjectId) return;
+  if (action !== 'reload' && presentation.privacyRevision === null) return;
+  const publication = captureAtlasPublication(), projectId = currentProjectId, surface = currentAtlasSurface;
+  const epoch = atlasContinuityRequestEpoch, restoreFocus = document.activeElement === button;
+  const buttons = [...parent.querySelectorAll('[data-pulse-history-action]')].map(node => ({ node, disabled: node.disabled }));
+  const ticket = { projectId }; let refreshing = false, completed = false;
+  const current = () => publication() && pulseHistoryPending === ticket && parent.isConnected
+    && currentProjectId === projectId && currentRightTab === 'atlas' && currentAtlasSurface === surface
+    && atlasContinuityLedgerExplicitOpen === true && (refreshing || button.isConnected)
+    && (atlasContinuityRequestEpoch === epoch || refreshing && atlasContinuityRequestEpoch === epoch + 1);
+  pulseHistoryPending = ticket; buttons.forEach(({ node }) => { node.disabled = true; });
+  status.textContent = 'Выполняется изменение локальной истории…'; status.setAttribute('aria-busy', 'true');
+  let result = null;
+  try {
+    if (action !== 'reload') {
+      const commandId = action === 'optIn' ? 'cmd.project.pulse.optIn' : 'cmd.project.pulse.optOut';
+      result = await dispatchUiCommand(commandId, { projectId, expectedPrivacyRevision: presentation.privacyRevision,
+        expectedPrivacyStateDigest: presentation.privacyStateDigest }, { isCurrentPresentation: current });
+      if (!current()) return result;
+      const applied = result?.value?.result, privacy = applied?.privacyState;
+      if (result?.ok !== true || result.value?.performed !== true || applied?.ok !== true
+        || privacy?.schemaVersion !== 'yalken.r24.pulsePrivacyState.v1'
+        || privacy.collectionStatus !== (action === 'optIn' ? 'OPTED_IN' : 'OPTED_OUT')
+        || privacy.revision !== presentation.privacyRevision + 1
+        || typeof privacy.stateDigest !== 'string' || !/^[a-f0-9]{64}$/u.test(privacy.stateDigest)) {
+        status.textContent = 'Изменение истории отклонено. Обновите сведения о согласии и повторите действие.';
+        return result;
+      }
+    }
+    if (!current()) return result;
+    refreshing = true;
+    await refreshAtlasContinuityLedgerSurface({ force: true, isCurrent: current });
+    completed = current(); return result;
+  } catch (error) {
+    if (current()) status.textContent = 'Не удалось обновить локальную историю. Обновите сведения и повторите действие.';
+    return result;
+  } finally {
+    const ownsPresentation = current();
+    if (pulseHistoryPending === ticket) pulseHistoryPending = null;
+    if (ownsPresentation) {
+      const focusStillOwned = restoreFocus && (document.activeElement === button || document.activeElement === document.body);
+      if (completed) {
+        renderAtlasContinuityLedgerState();
+        const next = action === 'reload' ? 'reload' : action === 'optIn' ? 'optOut' : 'optIn';
+        if (focusStillOwned) parent.querySelector('[data-pulse-history-action="' + next + '"]')?.focus();
+      } else {
+        buttons.forEach(({ node, disabled }) => { node.disabled = disabled; }); status.setAttribute('aria-busy', 'false');
+        if (focusStillOwned) button.focus();
+      }
+    }
+  }
+}
+
 function appendPulseHistory(parent, source) {
   const presentation = normalizePulseHistoryPresentation(source);
   const heading = document.createElement('div');
@@ -19811,8 +19867,23 @@ function appendPulseHistory(parent, source) {
   section.dataset.pulseHistoryState = presentation.state;
   const status = document.createElement('div');
   status.className = 'right-rail-atlas-wse-status';
-  status.textContent = presentation.statusText;
+  const pending = pulseHistoryPending?.projectId === currentProjectId;
+  status.textContent = pending ? 'Выполняется изменение локальной истории…' : presentation.statusText;
+  status.setAttribute('aria-live', 'polite'); status.setAttribute('aria-busy', pending ? 'true' : 'false');
   section.appendChild(status);
+
+  const explanation = document.createElement('p');
+  explanation.textContent = 'Локальная история считает сохранения сцен, в которых изменились байты, включая оформление. Это не число разных сцен, слов или усилий. При сбое между сохранением текста и записью истории наблюдение может отсутствовать.';
+  section.appendChild(explanation);
+  const action = presentation.privacyStatus === 'OPTED_IN' ? 'optOut' : 'optIn';
+  for (const [id, label] of [[action, action === 'optIn' ? 'Включить локальную историю' : 'Отключить сбор истории'], ['reload', 'Обновить историю']]) {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.textContent = label; button.dataset.pulseHistoryAction = id;
+    button.disabled = pending || !currentProjectId || id !== 'reload' && presentation.privacyRevision === null;
+    if (button.disabled && !pending) button.title = 'Сначала обновите сведения о локальной истории.';
+    button.addEventListener('click', () => runPulseHistoryCommand(id, button, parent, status, presentation));
+    section.appendChild(button);
+  }
 
   if (presentation.rows.length > 0) {
     const list = document.createElement('div');

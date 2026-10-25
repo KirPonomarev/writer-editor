@@ -52,6 +52,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_EXPORT_SELECTED_SCENES_TXT: 'cmd.project.exportSelectedScenesTxtV1',
   PROJECT_EXPORT_ALL_SCENES_TXT: 'cmd.project.exportAllScenesTxtV1',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  PULSE_OPT_IN: 'cmd.project.pulse.optIn',
+  PULSE_OPT_OUT: 'cmd.project.pulse.optOut',
   PROJECT_VIEW_SET_MENU_PRESENTATION_CLASSIC: 'cmd.project.view.setMenuPresentationClassic',
   PROJECT_VIEW_SET_MENU_PRESENTATION_COMPACT: 'cmd.project.view.setMenuPresentationCompact',
   PROJECT_VIEW_SET_MENU_LOCALE_BASE: 'cmd.project.view.setMenuLocaleBase',
@@ -1125,6 +1127,11 @@ function registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, meta
       }
       let response;
       try {
+        if ([EXTRA_COMMAND_IDS.PULSE_OPT_IN, EXTRA_COMMAND_IDS.PULSE_OPT_OUT].includes(commandId)
+          && ['tiptap', 'legacy'].includes(input.editorMode)) {
+          const { editorMode, ...intent } = input;
+          input = intent;
+        }
         response = await invokeBridgeOnlyCommand(electronAPI, commandId, input);
       } catch (error) {
         return fail(
@@ -1217,6 +1224,10 @@ export function registerProjectCommands(registry, options = {}) {
   const domainEventPort = options.domainEventPort && typeof options.domainEventPort === 'object'
     ? options.domainEventPort
     : null;
+
+  for (const [id, label] of [[EXTRA_COMMAND_IDS.PULSE_OPT_IN, 'Включить локальную историю'], [EXTRA_COMMAND_IDS.PULSE_OPT_OUT, 'Отключить сбор истории']]) {
+    registerBridgeOnlyProjectCommand(registry, electronAPI, id, { label, surface: ['internal'] });
+  }
 
   registerBridgeOnlyProjectCommand(registry, electronAPI, EXTRA_COMMAND_IDS.LOCAL_IMAGE_INSERT, {
     label: 'Вставить изображение…', group: 'insert', surface: ['palette', 'toolbar'],

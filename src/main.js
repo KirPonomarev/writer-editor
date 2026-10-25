@@ -723,6 +723,8 @@ const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
 const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_OPEN: 'cmd.project.open',
   PROJECT_SAVE: 'cmd.project.save',
+  PULSE_OPT_IN: 'cmd.project.pulse.optIn',
+  PULSE_OPT_OUT: 'cmd.project.pulse.optOut',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   PROJECT_RECOVER_MISSING_INTEGRITY_ANCHOR: 'cmd.project.recoverMissingIntegrityAnchor',
   PROJECT_EXPORT_CURRENT_SCENE_TXT_V1: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
@@ -16023,6 +16025,8 @@ function getInternalCommandSurfaceKernel() {
       const saved = await handleSave();
       return saved === true ? { ok: true } : saved;
     },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_IN]: payload => handlePulsePrivacyCommand('cmd.project.pulse.optIn', payload),
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_OUT]: payload => handlePulsePrivacyCommand('cmd.project.pulse.optOut', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS]: async () => {
       const savedAs = await handleSaveAs();
       return { ok: savedAs === true };
@@ -16847,6 +16851,141 @@ function loadPulseClaimModule() {
     });
   }
   return pulseClaimModulePromise;
+}
+
+async function readPulseContinuityClaim() {
+  try {
+    const pulseClaimModule = await loadPulseClaimModule();
+    return await pulseClaimModule.readPulseClaimProjection(path.join(app.getPath('userData'), 'pulse'));
+  } catch (error) {
+    logDevError('query.pulseClaim', error);
+    return makePulseClaimFallback(error && typeof error.code === 'string' ? error.code : 'PULSE_CLAIM_READ_FAILED');
+  }
+}
+
+const PULSE_LOCAL_HISTORY_COMMAND_IDS = Object.freeze(['cmd.project.pulse.optIn', 'cmd.project.pulse.optOut']);
+let pulseLocalHistoryModulesPromise = null;
+function loadPulseLocalHistoryModules() {
+  if (!pulseLocalHistoryModulesPromise) pulseLocalHistoryModulesPromise = Promise.all(
+    ['pulse-privacy-v1.mjs', 'pulse-ledger-v1.mjs', 'pulse-policy-codec-v1.mjs'].map(name => import(pathToFileURL(path.join(__dirname, 'core', name)).href)),
+  ).then(([privacy, ledger, codec]) => ({ privacy, ledger, codec })).catch(error => { pulseLocalHistoryModulesPromise = null; throw error; });
+  return pulseLocalHistoryModulesPromise;
+}
+
+// Consent enters diskQueue once; a Save already inside it calls this port inline.
+// WP804 retains its directory queue and WP801 retains durable intent/outbox.
+function createPulseLocalHistoryPort(commandId) {
+  const window = mainWindow, contents = window?.webContents, owner = activeStage10ApplicationBootstrap;
+  const projectId = owner?.getProjectId(), root = getProjectRootPath(), projectName = currentProjectName;
+  const session = commentAuthoringSessionId, subject = currentLifecycleSubjectId(), file = currentFilePath;
+  const generation = lastSignaledEditGeneration, profile = JSON.stringify(getWriterLocalRuntimeProfile());
+  const userData = app.getPath('userData'), directory = path.join(userData, 'pulse');
+  const identity = target => { try { const stat = fsSync.lstatSync(target);
+    if (!stat.isDirectory() || stat.isSymbolicLink()) throw Object.assign(Error('PULSE_DIRECTORY_INVALID'), { code: 'E_PULSE_DIRECTORY_INVALID' });
+    return { dev: stat.dev, ino: stat.ino, real: fsSync.realpathSync(target) }; } catch (error) { if (error.code === 'ENOENT') return null; throw error; } };
+  const userIdentity = identity(userData); let directoryIdentity = identity(directory), policyCheck = () => {};
+  const refuse = code => { throw Object.assign(Error(code), { code }); };
+  const same = (a, b) => a && b && a.dev === b.dev && a.ino === b.ino && a.real === b.real;
+  const guard = () => {
+    // Existing persistence safety is additional to exact ID/ENT0/consent admission.
+    const capability = evaluateCommandCapabilityAuthority({ commandId, capabilityId: 'cap.project.save',
+      platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc: readAuthorityCapabilityMatrixDoc() });
+    if (!window || mainWindow !== window || window.isDestroyed() || window.webContents !== contents || contents.isDestroyed()
+      || !owner || owner !== activeStage10ApplicationBootstrap || owner.getProjectId() !== projectId
+      || root !== getProjectRootPath() || projectName !== currentProjectName || file !== currentFilePath
+      || subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId || generation !== lastSignaledEditGeneration
+      || profile !== JSON.stringify(getWriterLocalRuntimeProfile()) || !capability.ok
+      || !decideCommandEntitlement(commandId, getProductEntitlementTier()).available
+      || !evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId, productCommandRecord: getProductCommandRecord(commandId) }).allowed
+      || app.getPath('userData') !== userData || !same(identity(userData), userIdentity)) refuse('E_PULSE_CONTEXT_STALE');
+    const actual = identity(directory);
+    if (directoryIdentity ? !same(actual, directoryIdentity) : actual !== null) refuse('E_PULSE_DIRECTORY_STALE');
+    policyCheck();
+  };
+  const controllerFor = async (expected, collectionStatus = null) => {
+    guard(); const { privacy, ledger } = await loadPulseLocalHistoryModules(); guard();
+    let ownTransition = null;
+    policyCheck = () => {
+      const state = privacy.readPulsePrivacyStateSnapshot(directory);
+      if (state.revision === expected.revision && state.stateDigest === expected.stateDigest) return;
+      if (ownTransition && state.revision === expected.revision + 1 && state.collectionStatus === collectionStatus
+        && fsSync.readFileSync(path.join(directory, 'pulse-privacy-state.v1.json'), 'utf8') === ownTransition) return;
+      refuse('E_PULSE_PRIVACY_STALE');
+    };
+    guard();
+    // Malformed history cannot be repaired or reinterpreted as empty here.
+    // Valid admitted WP801 intents retain their existing command-path recovery.
+    await ledger.readPulseLedgerSnapshot(directory); guard();
+    const saveTransaction = async request => {
+      guard();
+      const allowed = ['pulse-privacy-state.v1.json', 'pulse-ledger.v1.jsonl', 'pulse-ledger-intents.v1.jsonl', 'pulse-ledger-outbox.v1.jsonl', 'pulse-corrections.v1.jsonl'];
+      if (!allowed.some(name => request.filePath === path.join(directory, name))) refuse('E_PULSE_WRITE_TARGET_INVALID');
+      if (request.filePath === path.join(directory, 'pulse-privacy-state.v1.json')) {
+        const next = JSON.parse(request.content);
+        if (!collectionStatus || next.revision !== expected.revision + 1 || next.collectionStatus !== collectionStatus) refuse('E_PULSE_TRANSITION_INVALID');
+        ownTransition = request.content;
+      }
+      const adapter = {
+        open: async (...args) => {
+          guard(); const handle = await fs.open(...args);
+          const checked = async operation => { try { guard(); const result = await operation(); guard(); return result; }
+            catch (error) { await handle.close().catch(() => {}); throw error; } };
+          try { guard(); } catch (error) { await handle.close().catch(() => {}); throw error; }
+          return new Proxy(handle, { get(target, key) {
+            const value = target[key]; if (typeof value !== 'function') return value;
+            return key === 'close' ? value.bind(target) : (...values) => checked(() => value.apply(target, values));
+          } });
+        },
+        rename: async (...args) => { guard(); const result = await fs.rename(...args); guard(); return result; },
+        readFile: async (...args) => { guard(); const result = await fs.readFile(...args); guard(); return result; },
+      };
+      const result = await durableSaveTransaction({ ...request, fsAdapter: adapter }); guard(); return result;
+    };
+    guard(); const opening = privacy.openPulsePrivacyController(directory, { saveTransaction });
+    if (!directoryIdentity) { directoryIdentity = identity(directory);
+      if (!directoryIdentity || directoryIdentity.real !== path.join(userIdentity.real, 'pulse')) refuse('E_PULSE_DIRECTORY_STALE'); }
+    const controller = await opening; guard(); return controller;
+  };
+  guard();
+  return Object.freeze({
+    projectId,
+    async change(payload) {
+      guard(); const { privacy } = await loadPulseLocalHistoryModules(); guard();
+      const expected = { revision: payload.expectedPrivacyRevision, stateDigest: payload.expectedPrivacyStateDigest };
+      const collectionStatus = commandId === 'cmd.project.pulse.optIn' ? 'OPTED_IN' : 'OPTED_OUT';
+      const controller = await controllerFor(expected, collectionStatus); guard();
+      const command = { schemaVersion: privacy.PULSE_PRIVACY_COMMAND_SCHEMA, type: collectionStatus === 'OPTED_IN' ? 'OPT_IN' : 'OPT_OUT',
+        requestId: crypto.randomUUID(), expectedPrivacyRevision: expected.revision };
+      const result = collectionStatus === 'OPTED_IN' ? await controller.optIn(command) : await controller.optOut(command);
+      guard(); return { ok: true, ...result };
+    },
+    async observe(receipt, savedGeneration) {
+      guard(); const { privacy, codec } = await loadPulseLocalHistoryModules(); guard();
+      const expected = privacy.readPulsePrivacyStateSnapshot(directory);
+      if (expected.collectionStatus !== 'OPTED_IN') return { state: 'off' };
+      const operationId = crypto.randomUUID(), controller = await controllerFor(expected); guard();
+      const current = await controller.explain(); guard();
+      const aggregate = codec.createPulseAggregateReceipt({ sourceRevisionOrdinal: receipt.revision, generation: savedGeneration,
+        aggregates: [{ metricId: 'SCENES_EDITED_COUNT', value: 1 }] });
+      await controller.appendReceipt({ expectedPrivacyRevision: expected.revision, idempotencyKey: operationId,
+        expectedSequence: current.identity.ledgerSequence, receipt: aggregate });
+      guard(); return { state: 'recorded' };
+    },
+  });
+}
+
+async function handlePulsePrivacyCommand(commandId, payload) {
+  const fail = code => ({ ok: false, error: { code, op: commandId, reason: code } });
+  if (!PULSE_LOCAL_HISTORY_COMMAND_IDS.includes(commandId) || !isPlainObjectValue(payload)
+    || Object.keys(payload).sort().join(',') !== 'expectedPrivacyRevision,expectedPrivacyStateDigest,projectId'
+    || typeof payload.projectId !== 'string' || !payload.projectId || payload.projectId !== payload.projectId.trim() || payload.projectId.length > 1000
+    || !Number.isSafeInteger(payload.expectedPrivacyRevision) || payload.expectedPrivacyRevision < 0
+    || typeof payload.expectedPrivacyStateDigest !== 'string' || !/^[a-f0-9]{64}$/u.test(payload.expectedPrivacyStateDigest)) return fail('E_PULSE_PAYLOAD_INVALID');
+  try {
+    const port = createPulseLocalHistoryPort(commandId);
+    if (payload.projectId !== port.projectId) return fail('E_PULSE_PROJECT_MISMATCH');
+    return await queueDiskOperation(() => port.change(payload), 'Pulse consent');
+  } catch (error) { return fail(typeof error.code === 'string' ? error.code : 'E_PULSE_UNAVAILABLE'); }
 }
 
 let atlasReportsSavedQueriesModulePromise = null;
@@ -19082,10 +19221,15 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
   }
   const synchronized = atlasAnalyticsScheduler.synchronizeSource(source);
   if (!synchronized.ok) return synchronized;
+  const pulseContext = queryId === ATLAS_CONTINUITY_LEDGER_SURFACE_QUERY_ID && payload?.explicitOpen === true
+    ? [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(), app.getPath('userData')] : null;
+  const pulseSnapshot = pulseContext ? await readPulseContinuityClaim() : null;
+  const pulseHash = pulseSnapshot ? computeHash(JSON.stringify(pulseSnapshot)) : '';
   const diagnosticsPolicy = queryId === ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_ID ? readAtlasDiagnosticsPolicySnapshot() : null;
   const diagnosticsPolicyHash = diagnosticsPolicy ? computeHash(JSON.stringify(diagnosticsPolicy)) : '';
   const requestKey = computeHash(JSON.stringify(canonicalizeComparableValue({ queryId, payload,
     ...(diagnosticsPolicy ? { diagnosticsPolicyHash } : {}),
+    ...(pulseSnapshot ? { pulseHash } : {}),
   })));
   const dependencyKeys = Object.keys(source.dependencyRevisions).sort();
   const scheduled = await atlasAnalyticsScheduler.schedule({
@@ -19096,7 +19240,7 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     dependencyKeys,
     run: async ({ signal }) => {
       if (signal.aborted) throw Object.assign(new Error('ATLAS_ANALYTICS_JOB_CANCELLED'), { code: 'E_ATLAS_ANALYTICS_JOB_CANCELLED' });
-      const result = await (diagnosticsPolicy ? handler(payload, diagnosticsPolicy) : handler(payload));
+      const result = await (diagnosticsPolicy ? handler(payload, diagnosticsPolicy) : pulseSnapshot ? handler(payload, pulseSnapshot) : handler(payload));
       if (signal.aborted) throw Object.assign(new Error('ATLAS_ANALYTICS_JOB_CANCELLED'), { code: 'E_ATLAS_ANALYTICS_JOB_CANCELLED' });
       return result;
     },
@@ -19119,6 +19263,10 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
       error: { code: 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED', op: 'atlas.analyticsScheduler', reason: 'DIAGNOSTICS_POLICY_CHANGED' },
       analyticsScheduler: { schemaVersion: atlasAnalyticsScheduler.schemaVersion, staleResultDiscarded: true },
     };
+  }
+  if (pulseSnapshot && (pulseHash !== computeHash(JSON.stringify(await readPulseContinuityClaim()))
+    || pulseContext.some((value, index) => value !== [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(), app.getPath('userData')][index]))) {
+    return { ok: false, error: { code: 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED', reason: 'PULSE_SNAPSHOT_CHANGED' } };
   }
   return {
     ...scheduled.value,
@@ -19909,7 +20057,7 @@ async function handleWorkspaceAtlasTemporalLayoutQuery(payload = {}) {
   }
 }
 
-async function handleWorkspaceAtlasContinuityLedgerSurfaceQuery(payload = {}) {
+async function handleWorkspaceAtlasContinuityLedgerSurfaceQuery(payload = {}, pulseSnapshot = null) {
   const safePayload = normalizeAtlasContinuityLedgerSurfacePayload(payload);
   if (safePayload.explicitOpen !== true) {
     return {
@@ -19951,14 +20099,7 @@ async function handleWorkspaceAtlasContinuityLedgerSurfaceQuery(payload = {}) {
         ),
       };
     }
-    let pulseClaim;
-    try {
-      const pulseClaimModule = await loadPulseClaimModule();
-      pulseClaim = await pulseClaimModule.readPulseClaimProjection(path.join(app.getPath('userData'), 'pulse'));
-    } catch (error) {
-      logDevError('query.pulseClaim', error);
-      pulseClaim = makePulseClaimFallback(error && typeof error.code === 'string' ? error.code : 'PULSE_CLAIM_READ_FAILED');
-    }
+    const pulseClaim = pulseSnapshot || await readPulseContinuityClaim();
     return {
       ok: true,
       atlasContinuityLedgerSurface: { ...continuityLedger.value, pulseClaim },
@@ -24692,6 +24833,8 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           if(receipt.success===true && admittedCommentLedger) commitWriterProjectSnapshot.commentEditContinuation={
             filePath,sessionId:commentAuthoringSessionId,subjectId:currentLifecycleSubjectId(),savedContent:content,ledger:admittedCommentLedger};
           return Object.freeze({ ...receipt, projectTransaction: true,
+            ...(options.pulseObservation === true ? { pulseChangedScene: expectedSceneContent !== null && expectedSceneContent !== content
+              && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind) } : {}),
             ...(receipt.success===true && admittedCommentLedger ? {commentEditIntentsSha256:computeHash(JSON.stringify(admittedCommentLedger))}:{}),
             ...(receipt.success === true && mediaReturnPublication ? { mediaReturnPublication } : {}),
             ...(receipt.success === true && userBookmarkHistorySnapshot ? { userBookmarkHistorySnapshot } : {}),
@@ -36685,17 +36828,27 @@ async function handleSave() {
     }
     const contentHash = computeHash(content);
     const textChanged = contentHash !== lastAutosaveHash;
+    let pulsePort = null, pulseCaptureError = null;
+    try { pulsePort = createPulseLocalHistoryPort('cmd.project.save'); } catch (error) { pulseCaptureError = error; }
     const saveResult = await queueDiskOperation(
       async () => {
         if (!isCurrentSaveTarget()) return staleSaveReceipt();
-        return commitWriterProjectSnapshot(
+        const saved = await commitWriterProjectSnapshot(
         saveTargetPath,
         content,
         snapshot.generation,
         snapshot.bookProfile,
         'save existing project transaction',
-        { beforeScenePublish: guardSaveTarget, commentEditIntentsJson: snapshot.commentEditIntentsJson },
-      ); },
+        { beforeScenePublish: guardSaveTarget, commentEditIntentsJson: snapshot.commentEditIntentsJson, pulseObservation: true },
+      );
+        if (saved.success !== true || saved.pulseChangedScene !== true || saved.idempotent === true) return saved;
+        let pulseHistoryOutcome;
+        try {
+          if (!pulsePort) throw pulseCaptureError || Error('PULSE_CONTEXT_UNAVAILABLE');
+          pulseHistoryOutcome = await pulsePort.observe({ revision: saved.revision }, snapshot.generation);
+        } catch (error) { pulseHistoryOutcome = { state: 'unconfirmed', code: error.code || error.message || 'E_PULSE_UNAVAILABLE' }; }
+        return { ...saved, pulseHistoryOutcome };
+      },
       'save existing project transaction'
     );
     if (saveResult.success) {
@@ -36716,7 +36869,8 @@ async function handleSave() {
       lastAutosaveHash = contentHash;
       await saveLastFile({ selectionRange: snapshot.selectionRange });
       const saveAck = await acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
-      if (saveAck.kind === SAVE_ACK_KINDS.SAVED) updateStatus('Сохранено');
+      if (saveAck.kind === SAVE_ACK_KINDS.SAVED) updateStatus(saveResult.pulseHistoryOutcome?.state === 'unconfirmed'
+        ? `Сохранено. История Pulse: не удалось подтвердить запись; возможна частичная запись (${saveResult.pulseHistoryOutcome.code}).` : 'Сохранено');
       return saveAck.kind === SAVE_ACK_KINDS.SAVED
         ? true
         : projectSaveFailure('SAVE_ACK_NOT_DURABLE');
@@ -37239,6 +37393,8 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   PROJECT_LIFECYCLE_INTEGRITY_COMMAND_ID,
   PROJECT_LIFECYCLE_PERMANENT_DELETE_COMMAND_ID,
   'cmd.project.save',
+  'cmd.project.pulse.optIn',
+  'cmd.project.pulse.optOut',
   'cmd.project.saveAs',
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
@@ -37391,6 +37547,8 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.save': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
   },
+  'cmd.project.pulse.optIn': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_IN, payload),
+  'cmd.project.pulse.optOut': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_OUT, payload),
   'cmd.project.saveAs': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS, {});
   },
