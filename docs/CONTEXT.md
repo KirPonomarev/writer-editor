@@ -5937,3 +5937,18 @@ normal commit/push/PR/merge/literal-main verification remain required. All17 Mac
 qualifications remain UNKNOWN;59 named baseline skips and last full audit findings
 remain disclosed, never executed passes. Full Atlas/maps/WSE/Pulse/environment
 epochs and first Mac remain incomplete; Black Box later.
+
+
+Pulse same-delivery update, 2026-10-25: actual complete unchanged Main/claim
+whole644of644 passes, all9queued revocations and both awaited Save/consent-owner
+boundaries reached. Complete36affected initially272of273 retains one old ENT0
+source-count conflict. Clean scope32 admission allows only strict first-case
+separation: original three tier decisions remain required, new named Pulse port
+requires exactly one, whole Main exactly four. Exact inverse preserves every
+other assertion/body; whole ENT0 goes7of8to8of8 and whole36now273of273, zero
+fail/cancel/skip/todo. Root review and raw receipts are preserved on T777.
+Owner reboot save39d8f04f is clean and unaccepted. Current byte companions are
+refreshed with the same326certificate+1guard,799DATA/659pins and1603inventory
+members/classes/lanes/skips; V12 and66release pins/all17UNKNOWN stay unchanged.
+Final exact committed whole/native process cold/fullbaseline/officialRTK/currentCI
+and normal full delivery still required. No full Mac or release acceptance.
