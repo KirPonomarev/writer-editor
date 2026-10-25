@@ -1,3 +1,15 @@
+## 2026-10-25 — Isolated deferred native Undo/Redo repair
+
+TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_PROOF_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 67d574188a405bbdcf289f48828cd3123744f4ef
+CLAIM_BOUNDARY: Standard native menu history only; finite projection proof is not OS responder or Mac release acceptance.
+
+Direct owner25Oct bug-repair authority selects NATIVE-FIELD-UNDO-01 in an independent branch after Pulse PR2163. The primary worktree and old unaccepted3396dc1c draft remain protected. Whole maintained RED13 executes9old pass/4new missing-role failures. Minimal two pure native roles and current snapshot literals plus generated artifact/lock/mirrors pass24whole focused cases and13related cases, zero skip/cancel/todo. All old snapshot rows and menu semantics except Undo/Redo are preserved; Core/renderer/preload/IPC/storage/typing remain unchanged. A root artifact-output method fault and its failed whole result are retained, then corrected through the existing explicit canonical CLI.
+
+Actual owned native INPUT/TEXTAREA/Writer Undo+Redo, Save/Quit/cold no-loss, current source/affected/full baseline/official RTK/current CI and normal commit/push/PR/merge/exact merged proof remain required. The defect stays OPEN until those proofs close. All17Mac qualification UNKNOWN, prior audit findings/59named baseline skips and other deferred defects remain. New logs/materials use verified T777 without additional encryption and compact lossless evidence; owned temporary APFS runtime is declared in the task. No full Mac, security, signing or distribution authority follows.
+
 ## 2026-10-25 — Scene-language tag source checkpoint
 
 TaskYALKEN_SCENE_LANGUAGE_TAG_20261025 starts from literal82b1f217 after independently closedPR2161. Fresh27path preflight/taskE0 and maintained whole causal RED/root method review precede separate five-file runtime. StrictV12 adds only existinglanguageTagSet/Clear to34commands/same12queries, immutable savedID/whole-rowhash/rawrevisions, Main currentscene/queued/prepared/CAS/no-loss guards and stable Flow author input/unload veto; Core/schema/registry/IPC/storage/typing unchanged. Frozen5tests/9982protected exact. Actual bound Main form listeners Setru-RU→replaceen-US→Clear pass all3strict Kernel receipts/full persistence/history/roster oracles; no whole/native credit. Normalbundle0/onlyeditor.bundle.js. Current companions and all whole/affected/source/native/fullbaseline/CI/ordinarydelivery/literalmerged proofs pending. FullMac17UNKNOWN/auditOPEN/namedbaseline skips retained; no product or release acceptance.

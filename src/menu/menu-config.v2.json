@@ -217,6 +217,28 @@
       "labelKey": "menu.edit",
       "items": [
         {
+          "id": "edit-undo",
+          "role": "undo",
+          "mode": ["offline", "web_subset"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "all",
+            "args": []
+          }
+        },
+        {
+          "id": "edit-redo",
+          "role": "redo",
+          "mode": ["offline", "web_subset"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "all",
+            "args": []
+          }
+        },
+        {
           "id": "edit-copy",
           "role": "copy",
           "mode": ["offline", "web_subset"],

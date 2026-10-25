@@ -57,7 +57,7 @@ test('serial full runner retains every unit file and the complete downstream gua
     'check-command-namespace-static.mjs:--mode=release', 'check-enabledwhen-dsl.mjs:--mode=release',
     'menu-config-normalize.mjs:--in', 'check-menu-overlay-stack.mjs:--mode=release',
     'menu-config-normalize.mjs:--snapshot-check', 'menu-config-normalize.mjs:--export-artifact',
-    'check-menu-artifact-lock.mjs:--snapshot-id=menu-default-desktop-minimal-select-all-20261023',
+    'check-menu-artifact-lock.mjs:--snapshot-id=menu-default-desktop-minimal-undo-redo-20261025',
     'menu-config-normalize.mjs:--runtime-equivalent-check', 'check-law-path-canon.mjs:--mode=release',
     'check-execution-sequence.mjs:--mode=release', 'release-candidate.mjs:--verify',
   ]);

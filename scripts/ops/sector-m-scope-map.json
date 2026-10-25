@@ -472,7 +472,8 @@
       "src/core/entitlement-law-v1.cjs",
       "src/core/pulse-claim-v1.mjs",
       "src/renderer/pulseHistoryPresentationModel.mjs",
-      "test/unit/r24-wp806-pulse-claim-integration.test.js"
+      "test/unit/r24-wp806-pulse-claim-integration.test.js",
+      "docs/tasks/2026-10-25--bug-native-undo-redo.md"
     ]
   },
   "allowPrefixByPhase": {

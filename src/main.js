@@ -38162,7 +38162,7 @@ function verifyMenuArtifactLockAtRuntime() {
   const mode = resolveRuntimeMenuArtifactMode();
   const state = evaluateMenuArtifactLockState({
     mode,
-    expectedSnapshotId: 'menu-default-desktop-minimal-select-all-20261023',
+    expectedSnapshotId: 'menu-default-desktop-minimal-undo-redo-20261025',
   });
 
   if (state.result === MENU_ARTIFACT_RESULT_FAIL) {

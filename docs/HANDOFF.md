@@ -1,3 +1,15 @@
+## 2026-10-25 — Isolated deferred native Undo/Redo repair
+
+TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: BOUNDED_SOURCE_PROOF_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 67d574188a405bbdcf289f48828cd3123744f4ef
+CLAIM_BOUNDARY: Standard native menu history only; finite projection proof is not OS responder or Mac release acceptance.
+
+Direct owner25Oct bug-repair authority selects NATIVE-FIELD-UNDO-01 in an independent branch after Pulse PR2163. The primary worktree and old unaccepted3396dc1c draft remain protected. Whole maintained RED13 executes9old pass/4new missing-role failures. Minimal two pure native roles and current snapshot literals plus generated artifact/lock/mirrors pass24whole focused cases and13related cases, zero skip/cancel/todo. All old snapshot rows and menu semantics except Undo/Redo are preserved; Core/renderer/preload/IPC/storage/typing remain unchanged. A root artifact-output method fault and its failed whole result are retained, then corrected through the existing explicit canonical CLI.
+
+Actual owned native INPUT/TEXTAREA/Writer Undo+Redo, Save/Quit/cold no-loss, current source/affected/full baseline/official RTK/current CI and normal commit/push/PR/merge/exact merged proof remain required. The defect stays OPEN until those proofs close. All17Mac qualification UNKNOWN, prior audit findings/59named baseline skips and other deferred defects remain. New logs/materials use verified T777 without additional encryption and compact lossless evidence; owned temporary APFS runtime is declared in the task. No full Mac, security, signing or distribution authority follows.
+
 ## 2026-10-25 — Explicit saved scene-language tag: source frozen
 
 TASK_ID: YALKEN_SCENE_LANGUAGE_TAG_20261025

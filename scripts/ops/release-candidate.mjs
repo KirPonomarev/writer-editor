@@ -989,7 +989,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
   "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
   "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
-  "src/main.js": "4686ef53959260f4f0a8ffa63cc21500ecb59773a68975d2c6638becf2e458ff",
+  "src/main.js": "1ed0587ed82f642571608fa1c254d94b5074300923ad8ae07b5a870ad91220d2",
   "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
   "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
   "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
