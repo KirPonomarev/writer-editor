@@ -17,7 +17,7 @@ Install only the owner's already selected canonical narrow Y mark and macOS icon
 
 ## ARTIFACT
 
-The existing 18px titlebar mark displays the owner's precise 328:595 Y path, neutral in light/dark/forced-colors. Dock uses the approved Light app icon. Source PNG, packaged PNG and ICNS come from the validated YALKEN_CANONICAL_BRAND_DESIGN_PACK_2026-07-19. The former spiral icon and green book geometry are superseded only in their existing slots. The system title keeps its existing typography; it is not a shrunken primary logo lockup.
+The existing 18px titlebar mark displays the owner's precise 328:595 Y path, neutral in light/dark/forced-colors. Dock uses an enlarged variant of the validated YALKEN_CANONICAL_BRAND_DESIGN_PACK_2026-07-19 Light icon, following the owner's direct size correction. Exact path, fill, rounded tile and shadow definition are retained; only the mark's uniform transform changes. The editable SVG produces the source/build PNG and native ICNS. The former spiral icon and green book geometry are superseded only in their existing slots. The system title keeps its existing typography; it is not a shrunken primary logo lockup.
 
 ## ALLOWLIST
 
@@ -25,6 +25,7 @@ The existing 18px titlebar mark displays the owner's precise 328:595 Y path, neu
 - src/renderer/styles.css
 - src/renderer/assets/logo.png
 - src/renderer/assets/README.md
+- src/renderer/assets/app-icon.svg
 - build/icon.png
 - build/icon.icns
 - scripts/make-mac-icon.sh
@@ -40,9 +41,11 @@ The existing 18px titlebar mark displays the owner's precise 328:595 Y path, neu
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - scripts/ops/sector-m-scope-map.json
 
-Text diff budget: 220 added/removed lines plus this specification and one factual WORKLOG entry. Binary files are exact owner asset copies. Local existing locked build dependencies, temporary build output and fresh synthetic UI inspection profile are allowed operational inputs, not new product dependencies.
+Text diff budget: 220 added/removed lines plus this specification and one factual WORKLOG entry. Binary files derive from the exact owner vector with the explicitly requested larger mark; no pack original is overwritten. Local existing locked build dependencies, bundled external SVG rasterizer, temporary build output and fresh synthetic UI inspection profile are allowed operational inputs, not new product dependencies.
 
 CI continuation at clean eebd96d98a72884786e6d117763da7e02b285867: the eight listed OPS companions are a mechanical delivery exception to the text budget. Refresh the existing test digest without changing its 1603-file membership/classification; bind only the actual logo/task/log bytes in current DATA policy, append one exact successor, retain historical sets and every verification predicate, refresh current approval witnesses and admit only this task's paths. No additional product source edit. Fresh continuation declaration/preflight passed at eebd96; original PR base remains f6601801.
+
+Owner scale correction continuation at clean cf76811fe5ef32ea8f03952962255f6a66c8179d: fresh19path preflight passed before edits. Add only editable app-icon.svg and change PNG/ICNS, their README and maintained WP308 asset expectations. App icon mark height784px in the912px tile,64px top/bottom inner clearance; transform translate(295.905882353 120) scale(1.317647058824). The titlebar stays unchanged. Earlier prepared-icon native proof is historical; rerun native package/readback for the enlarged variant and append its current-byte successor without rewriting earlier sets.
 
 ## DENYLIST
 
@@ -62,6 +65,7 @@ DESIGN_OS_PORTS: existing immutable projection only.
 CANONICAL_PATH: M0 0L116 210L158 595L156 189Z M328 0L212 210L170 595L172 189Z
 SLOT_METRICS: unchanged 18px square, viewBox 0 0 328 595 with natural aspect ratio; unchanged 28px titlebar and title label.
 MARK_INK: light #4c4a45; dark #f2ede6; forced-colors CanvasText.
+APP_ICON_MARK: same canonical d and #4C4A45 fill; uniform height784px, width432.188235294px, inside original912px rounded tile,64px top/bottom clearance. No stretching, crop, new palette or tile geometry.
 FALLBACK: existing identity mismatch hides the brand; aria/name and no-interaction invariants unchanged.
 HOT_PATH: no code/listener/timer/network added; only one inline SVG path.
 ROLLBACK: normal revert of this one bounded change; preserve all external assets and prior receipts.
@@ -77,7 +81,7 @@ DESIGN_TOOL_DEVIATIONS: no new direction research is needed. Higher-priority own
 
 1. Validate owner pack checksum entries and exact preflight/base. Preserve all existing WIP.
 2. Replace only the book paths/circle with the exact canonical path and neutral fill. Keep slot geometry, system-title font, accessible name and unchanged identity module.
-3. Copy the approved source/build PNG and ICNS byte-for-byte. Make icons:mac retain source pixels instead of applying the obsolete spiral contrast/black-padding treatment; use installed macOS sips/iconutil because app-builder-bin is absent from the current locked builder. Document the source and correct obsolete mask instructions.
+3. Preserve the exact approved icon geometry and background, enlarge only the mark per owner's correction, retain editable SVG and generate1024 PNGs. Make icons:mac retain source pixels instead of applying the obsolete spiral contrast/black-padding treatment; use installed macOS sips/iconutil because app-builder-bin is absent from the current locked builder. Document the source, explicit variant and correct obsolete mask instructions.
 4. Update the maintained brand test's selected-shape expectations while preserving all nine tests, authority/identity/accessibility negatives and seven mutants. Check actual mark contrast and owner icon identity.
 5. Execute focused/source/build/native proof, review the whole diff, one factual log entry and complete ordinary commit/PR/CI/merge/exact-head verification.
 6. Preserve first PR2167 CI failure at eebd96: stale WP308 inventory digest and DATA_RUNTIME_REPAIR_PIN for index.html, styles.css and WORKLOG. Refresh only required current-byte companions, execute their actual gates on the successor commit, then resume the same PR delivery without bypass. The already inspected package remains bound to eebd96; unchanged packaged inputs must be verified before claiming equivalence to a companion-only successor.
@@ -86,7 +90,7 @@ DESIGN_TOOL_DEVIATIONS: no new direction research is needed. Higher-priority own
 
 CHECK_01_PRE_IDENTITY_AND_AUTHORITY: completed before any repository edit: registered clean f6601801 branch, verified encrypted/unlocked writable T7-Secure UUID, T777 UUID, fresh origin/main, bootstrap and architecture preflight actual0; existing WP308 whole9 passed before edit. CHECK_01 is not rerun after edits.
 CHECK_02_POST_TASK_E0: node scripts/ops-gate.mjs --task docs/tasks/2026-10-25--canonical-logo.md
-CHECK_03_POST_BRAND: node --test test/unit/r24-wp308-brand-baseline.test.mjs; preserve nine tests, all identity/authority negatives and seven mutants; verify actual neutral mark contrast and exact owner PNGs/ICNS.
+CHECK_03_POST_BRAND: node --test test/unit/r24-wp308-brand-baseline.test.mjs; preserve nine tests, all identity/authority negatives and seven mutants; verify actual neutral mark contrast, exact editable geometry/uniform transform, enlarged current PNG copies and native ICNS decoded master.
 CHECK_04_POST_BUILD: npm run build:renderer; all generated tracked artifacts remain byte-exact because no compiler input changed. icons:mac runs into task-owned temporary output; PNG remains identical to source.
 CHECK_05_POST_NATIVE: fresh exact-source local Electron build, own synthetic profile, actual titlebar light/dark screenshot and native icon asset inspection. No user manuscript or active coder profile used; screenshot is visual evidence, not product acceptance.
 CHECK_06_POST_SCOPE: npm run agent:guardrails; diff/name/status match allowlist; accessibility/fallback source unchanged; normal commit/push/PR/required CI/merge followed by fresh merged-source focused checks and icon verification.

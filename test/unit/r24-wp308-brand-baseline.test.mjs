@@ -192,7 +192,18 @@ test('WP308 visible lockup is tokenized, stable, accessible and asset-independen
     assert.ok(core.contrastRatio(actualInk[index], core.BRAND_IDENTITY_V1.tokens[mode].titlebarSurface)
       >= core.BRAND_IDENTITY_V1.accessibility.minimumNonTextContrastRatio);
   }
-  const iconSha = 'ef424c96caa2beef9cb388d78149c478259089dfd689e77771363269f6f8edc2';
+  const editableIcon = read('src/renderer/assets/app-icon.svg');
+  assert.match(editableIcon, /viewBox="0 0 1024 1024"/u);
+  assert.match(editableIcon, /<rect x="56" y="56" width="912" height="912" rx="210" fill="#FBF8F3" stroke="#E9E2D9" stroke-width="2" filter="url\(#shadow\)"\/>/u);
+  assert.match(editableIcon, /<path fill="#4C4A45" transform="translate\(295\.905882353 120\) scale\(1\.317647058824\)" d="M0 0L116 210L158 595L156 189Z M328 0L212 210L170 595L172 189Z"\/>/u);
+  assert.doesNotMatch(editableIcon, /<script|<image|<text|(?:href|src)=/u);
+  const transform = editableIcon.match(/transform="translate\(([\d.]+) ([\d.]+)\) scale\(([\d.]+)\)"/u);
+  const [x, y, scale] = transform.slice(1).map(Number);
+  assert.ok(Math.abs((595 * scale) - 784) < 0.000001);
+  assert.ok(Math.abs(x + (328 * scale / 2) - 512) < 0.000001);
+  assert.ok(Math.abs(y - 56 - 64) < 0.000001);
+  assert.ok(Math.abs(56 + 912 - (y + 595 * scale) - 64) < 0.000001);
+  const iconSha = '49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7';
   for (const relativePath of ['src/renderer/assets/logo.png', 'build/icon.png']) {
     const png = fs.readFileSync(path.join(ROOT, relativePath));
     assert.equal(createHash('sha256').update(png).digest('hex'), iconSha, relativePath);

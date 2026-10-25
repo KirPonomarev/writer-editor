@@ -24141,6 +24141,146 @@
       "filePath": "scripts/ops/sector-m-scope-map.json",
       "rationale": "Direct owner request to integrate only the canonical Yalken logo. Existing titlebar and app icon only; no other product source change. Mechanical current-byte inventory/policy/append-only binding companions preserve all historic sets, predicates and1603file denominator. These delegated witnesses bind bytes only; actual CI and normal merge still required. No Word/native cell or Mac release acceptance.",
       "sha256": "115f4891a817ec046f71dbf781d591a7d2196b33430fc132c6415f140898d317"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/logo.png",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/README.md",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "ec9dd271c7dba2cbf74790c40d57df6ff2d68db132de403dab8b23838df81d7c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "build/icon.png",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "build/icon.icns",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "7760f07f392af5d8611564778231c36a357b1efd9cbf204a103b9b5013aa030a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp308-brand-baseline.test.mjs",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "156e026f9f55a9e85547d161d337e8219261d4657d46863d2b702a216184b440"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--canonical-logo.md",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "c2cbbcbcff2b10de5230ea560d741fa420b541aaf468c5af289155758c43489c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "f3abc1998f34f2fbc10e62a2419d39e93cdc7515caf3f7f18ac3eb7237a07c09"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "9e3f31b7223bef7954236bde56242a6ec00f54b975b918c04b99241196d5b2f3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "6cead1061a465320268f0fe3dc97d683b155c27b11a3c7477f43e0943e753fb8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "31d15b36e0cec9bd938e4d5f7b1c35b373305c550f4dd2b3342fe509f10d9185"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "11d107a08b6a13f79bbb866e2911d9a70e3d7f82126c0587b805c676925a1dda"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "b7a6cb04531dac129c3873a5b05cfe0b92e2983d68c7754de071f510bdece6bf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "c92052e2dccfabf078d37909b4bbcf83be6951b07cb7a3dd5c3ba2265a3deae6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:19:42.823297+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_ICON_SCALE_20261026",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/assets/app-icon.svg",
+      "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
+      "sha256": "2ed7a0905fa87a7138baceea4518cfa336a1ebf30e50bf5300e45f966ff60bdc"
     }
   ],
   "evidenceStampIds": [

@@ -818,7 +818,8 @@
     "build/icon.icns",
     "scripts/make-mac-icon.sh",
     "test/unit/r24-wp308-brand-baseline.test.mjs",
-    "docs/tasks/2026-10-25--canonical-logo.md"
+    "docs/tasks/2026-10-25--canonical-logo.md",
+    "src/renderer/assets/app-icon.svg"
   ],
   "protectedFiles": [
     {
@@ -2747,7 +2748,7 @@
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "7a7772a207f4819886349b7046fbf8ba085fc9b253a1b69a2eaaa675fa9ef482"
+        "sha256": "f3abc1998f34f2fbc10e62a2419d39e93cdc7515caf3f7f18ac3eb7237a07c09"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3287,7 +3288,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a1e5e795e16c9a3be6d4c9af208bc5c7da51c57aef604b3d5e899b939360081a"
+        "sha256": "b7a6cb04531dac129c3873a5b05cfe0b92e2983d68c7754de071f510bdece6bf"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3419,7 +3420,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "115f4891a817ec046f71dbf781d591a7d2196b33430fc132c6415f140898d317"
+        "sha256": "c92052e2dccfabf078d37909b4bbcf83be6951b07cb7a3dd5c3ba2265a3deae6"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3933,6 +3934,14 @@
       "productCommitSha": "eebd96d98a72884786e6d117763da7e02b285867",
       "predecessorPolicySha256": "b9e783a54a8465ea06c234414e5fb60fa166609a9ccd3493b3fa3f9fe354e614",
       "scope": "Owner-selected canonical logo in existing titlebar/icon slots only; exact current-byte companions for this PR. Preserve all historical evidence, native acceptance predicates, denominators and product behavior. No cell or release credit."
+    },
+    "canonicalLogoIconScale": {
+      "taskId": "YALKEN_CANONICAL_LOGO_20261025_LARGE_ICON",
+      "bindingBaseSha": "cf76811fe5ef32ea8f03952962255f6a66c8179d",
+      "predecessorPolicySha256": "c95fe14c5d3fad4f853c78d3c8e9d477d74e381131e1d098eb1854d063b7aeb6",
+      "masterSvgSha256": "2ed7a0905fa87a7138baceea4518cfa336a1ebf30e50bf5300e45f966ff60bdc",
+      "pngSha256": "49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7",
+      "scope": "Direct human correction of icon mark size only: uniform784px mark inside original912px tile,64px inner top/bottom clearance; unchanged canonical path and background. No titlebar, font, other product behavior, native cell or release acceptance."
     }
   },
   "wordTextOrderBatch": {
