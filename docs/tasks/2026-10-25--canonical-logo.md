@@ -40,12 +40,15 @@ The existing 18px titlebar mark displays the owner's precise 328:595 Y path, neu
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - scripts/ops/sector-m-scope-map.json
+- test/contracts/rtk-word-comment-return-apply.contract.test.js
 
 Text diff budget: 220 added/removed lines plus this specification and one factual WORKLOG entry. Binary files derive from the exact owner vector with the explicitly requested larger mark; no pack original is overwritten. Local existing locked build dependencies, bundled external SVG rasterizer, temporary build output and fresh synthetic UI inspection profile are allowed operational inputs, not new product dependencies.
 
 CI continuation at clean eebd96d98a72884786e6d117763da7e02b285867: the eight listed OPS companions are a mechanical delivery exception to the text budget. Refresh the existing test digest without changing its 1603-file membership/classification; bind only the actual logo/task/log bytes in current DATA policy, append one exact successor, retain historical sets and every verification predicate, refresh current approval witnesses and admit only this task's paths. No additional product source edit. Fresh continuation declaration/preflight passed at eebd96; original PR base remains f6601801.
 
 Owner scale correction continuation at clean cf76811fe5ef32ea8f03952962255f6a66c8179d: fresh19path preflight passed before edits. Add only editable app-icon.svg and change PNG/ICNS, their README and maintained WP308 asset expectations. App icon mark height784px in the912px tile,64px top/bottom inner clearance; transform translate(295.905882353 120) scale(1.317647058824). The titlebar stays unchanged. Earlier prepared-icon native proof is historical; rerun native package/readback for the enlarged variant and append its current-byte successor without rewriting earlier sets.
+
+CI expectation continuation at clean5e6f1e5622d3d38c10a3b9c26e79e82b449996a0: fresh20path preflight passed. Run40239726270 has16successful jobs and one underlying RTK test failure: the existing all-binding Word Apply corruption test still selects the previous331binding Undo carrier. Refresh only its four literal expectation lines to the current342binding logo carrier, including its actual committed test digest, while retaining every corruption injection, mixed-predecessor rejection, ancestry check and all runtime tests. Append the named CI expectation successor atomically; all source/assets remain identical to the inspected5e6f1e562 package. The eight listed mechanical companions remain the only budget exception.
 
 ## DENYLIST
 
@@ -94,6 +97,7 @@ CHECK_03_POST_BRAND: node --test test/unit/r24-wp308-brand-baseline.test.mjs; pr
 CHECK_04_POST_BUILD: npm run build:renderer; all generated tracked artifacts remain byte-exact because no compiler input changed. icons:mac runs into task-owned temporary output; PNG remains identical to source.
 CHECK_05_POST_NATIVE: fresh exact-source local Electron build, own synthetic profile, actual titlebar light/dark screenshot and native icon asset inspection. No user manuscript or active coder profile used; screenshot is visual evidence, not product acceptance.
 CHECK_06_POST_SCOPE: npm run agent:guardrails; diff/name/status match allowlist; accessibility/fallback source unchanged; normal commit/push/PR/required CI/merge followed by fresh merged-source focused checks and icon verification.
+CHECK_07_POST_CURRENT_CARRIER: node --test test/contracts/rtk-word-comment-return-apply.contract.test.js after the exact successor is committed; execute the entire maintained file, all342source plus1guard corruptions, mixed predecessor and ancestry rejection. Preserve immutable input-blob reuse only; no cached verdict, mutation, skipped assertion or weakened predicate. Rerun required CI after this expectation-only correction.
 
 ## STOP_CONDITION
 

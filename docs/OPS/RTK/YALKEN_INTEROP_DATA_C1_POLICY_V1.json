@@ -1784,7 +1784,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "ddd17679cf2fe70582487ef726837c701ee21051037b5cbc9628a79288f65ca1"
+        "sha256": "7a853172128544a7dc21fb7e8d4af1792092e77460f38592820a70ebffed3beb"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2748,7 +2748,7 @@
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f3abc1998f34f2fbc10e62a2419d39e93cdc7515caf3f7f18ac3eb7237a07c09"
+        "sha256": "2bb666bcf42b7cc4c54f9f86c386f973d7f97f7109f98d731c1a88e967d0f56b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3288,7 +3288,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "b7a6cb04531dac129c3873a5b05cfe0b92e2983d68c7754de071f510bdece6bf"
+        "sha256": "7a47a073108af3813106e038542d303036c62f5d6ea58a3b1c90e1664b3151df"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3942,6 +3942,13 @@
       "masterSvgSha256": "2ed7a0905fa87a7138baceea4518cfa336a1ebf30e50bf5300e45f966ff60bdc",
       "pngSha256": "49a07604f7400f410093a69f03f7ca637b1db3edded60c448a8bfc58598f5ae7",
       "scope": "Direct human correction of icon mark size only: uniform784px mark inside original912px tile,64px inner top/bottom clearance; unchanged canonical path and background. No titlebar, font, other product behavior, native cell or release acceptance."
+    },
+    "canonicalLogoCiExpectation": {
+      "taskId": "YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "bindingBaseSha": "5e6f1e5622d3d38c10a3b9c26e79e82b449996a0",
+      "predecessorPolicySha256": "6cead1061a465320268f0fe3dc97d683b155c27b11a3c7477f43e0943e753fb8",
+      "testSha256": "7a853172128544a7dc21fb7e8d4af1792092e77460f38592820a70ebffed3beb",
+      "scope": "Mechanical current carrier expectation for maintained Word Apply test only:342source plus1guard corruption checks, mixed predecessor and ancestry rejection unchanged. Product and icon inputs remain identical to5e6f1e562; no native or release acceptance."
     }
   },
   "wordTextOrderBatch": {

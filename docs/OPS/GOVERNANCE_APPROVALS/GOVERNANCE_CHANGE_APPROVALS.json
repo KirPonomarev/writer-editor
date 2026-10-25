@@ -24281,6 +24281,86 @@
       "filePath": "src/renderer/assets/app-icon.svg",
       "rationale": "Direct human correction: make the canonical sign much larger inside the app icon, retaining a margin. Exact canonical path/tile/palette preserved, uniform784px mark and64px inner margins. Only icon assets/source and maintained WP308 asset expectations changed after prior logo integration. Mechanical current-byte witnesses preserve historical sets, all assertions and1603file denominator. These are delegated byte witnesses, not independent test or release/native cell acceptance; fresh package/CI/normal merge remain required.",
       "sha256": "2ed7a0905fa87a7138baceea4518cfa336a1ebf30e50bf5300e45f966ff60bdc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--canonical-logo.md",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "e162442d96ef0984d4345bb540f4f650a6830b00d92bde54418fddcc87365052"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "2bb666bcf42b7cc4c54f9f86c386f973d7f97f7109f98d731c1a88e967d0f56b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "500c1d5e27e40ff17f3f84fd2f8b0d5c167ec6eae0e235db78a6496509d0fe22"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "95d6599807a0d21a1e50a50d7eaa3cd2ad2d2752fc0ff16589f5f02e68b27371"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "5c64bfda8654d5c4f68f9ec3b508926ed5d3aa4000ec9e22559176cbbf8f0cc4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "58e904cde529ecec575114e52e06ea4ff54da5c9849551a58d76e404eaa4ec82"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "7a47a073108af3813106e038542d303036c62f5d6ea58a3b1c90e1664b3151df"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T22:56:26.470572+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CANONICAL_LOGO_20261025_CI_EXPECTATION",
+      "authority": "DIRECT_HUMAN_CANONICAL_LOGO_INTEGRATION_20261025",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same owner-authorized canonical-logo PR delivery only. The existing Word Apply contract expected old331Undo bindings while verifier correctly selected342logo bindings. Exactly four expectation literals advanced; all343corruptions, mixed predecessor/ancestry checks and every runtime test retained. Current inventory membership/classification1603 and all historical sets unchanged. No product/asset change after inspected5e6f1e562, no test verdict cache or bypass, no native/release credit; fresh whole-file and CI required.",
+      "sha256": "7a853172128544a7dc21fb7e8d4af1792092e77460f38592820a70ebffed3beb"
     }
   ],
   "evidenceStampIds": [
