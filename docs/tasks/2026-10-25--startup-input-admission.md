@@ -1,6 +1,6 @@
 # Initial authoring input admission
 
-STATUS: WHOLE_FINITE_GREEN_BROWSER_NATIVE_DELIVERY_PENDING
+STATUS: SOURCE_CHECKER_COMPAT_FINAL_PROOFS_NATIVE_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing editor startup safety only; no full Mac, WSE or release acceptance.
 TASK_ID: YALKEN_STARTUP_INPUT_ADMISSION_20261025
@@ -51,6 +51,7 @@ After root independent causal review and test freeze, permit one bounded correct
 - scripts/ops/release-candidate.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/sector-m-scope-map.json
+- scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs
 - src/main.js
 - src/renderer/editor.js
 - src/renderer/editor.bundle.js
@@ -139,3 +140,17 @@ Current mechanical assurance starts from the active accepted native C3 carrier, 
 ### Current source assembly after whole finite GREEN
 
 Same task ordinary fixture checkpoint dcbf9f208 preserves all10014source bytes of the actual73of73 finite GREEN at92c1dcdc; all65oldcases pass and8new witnesses execute, zero skip/cancel/todo. WP302 has four independently reviewed fixture replacements totaling11added/deleted lines; every other original assertion and all151initial appended lines remain. Original RED remains at58596. Runtime110manual lines, bounded initial parse/error status and native INPUT/TEXTAREA Undo fence retained. Ordinary bundle generation changes only editor.bundle.js bytes. Current declaration04/clean preflight06 applies to assembly; original fixture03 preflight was clean before writes. Redundant04 missing relative declaration and05 expected own-dirty refusal are preserved and have no acceptance credit. Root source review setup attempts also remain; only completed source join earns assembly eligibility. Current full browser proof, complete source/strict gates, native before push and full ordinary delivery are still required. No current native/fullMac acceptance.
+
+
+### Required retired source recognizer compatibility
+
+The complete affected candidate run at8d1f40a9 actually executes82cases/79passes/3failures. One new failure is the historical retired-save proofhook matching only the old zero-argument restoreAutosaveIfExists declaration/call after the now guarded owner/currentness arguments. Actual full Main autosave behavior already passes. A same-contour25path declaration06/clean preflight explicitly admits only this additional existing read-only OPS checker; its prior protected SHA239dcb6f is retained and the new protected denominator is9989. A separate actor may recognize the exact old OR exact new guarded declaration and awaited owner-bound call only; every other checker byte and all unchanged historical retirement/admissionfalse/token0/forced-negative assertions stay. No production workaround or runtime/bundle edit.
+
+The other two IME failures reproduce identically on both clean58596 and acceptedf660. Existing VM module loading fails on an import; no real current IME acceptance follows from this task, and these prior failures remain explicit rather than skipped or turned intoPASS. They are not a new startup runtime regression. Whole writer-profile candidate01 was deliberately interrupted for this repair after558passes and a process-signal failure (559total reported); it is incomplete, not697GREEN. Preserve its exact raw output and interruption record, and run the final whole on the final clean head.
+
+All current332startup and older accepted carriers remain byte-exact. Append a333binding C1 successor for the existing newly admitted checker path, with806DATAadmitted/666qualifiedpins and the same fixed release/retirement semantics. Existing WordApply contract changes only current selector/id/count literals; every corruption/mixed/ancestry/product predicate remains. Refresh current-only hashes, final committed source qualification, unchanged affected/save controls, historical priorIME gap, whole697, required gates, native before push and ordinary delivery remain mandatory. This explicit scope correction creates no new product authority, test skip, dependency, runtime network, profile action or second outcome.
+
+
+### Source checker C1 binding
+
+Current source assurance appends C1 with333bindings and one policy guard,806DATAadmitted/666sourcepins. The earlier332startup carrier and every accepted predecessor remain byte-exact. This C1 owns only the measured legacy read-only source recognizer correction and current-only task/source hash alignment; production110lines, normal generated bundle and73causal test sources remain exact. The unchanged retired-checker3case suite is the focused checker proof, not current native autosave or IME authority. The earlier82case failure and deliberate whole-profile interruption remain exact; full final-source697 and source gates/native/full delivery remain open. All17MacqualificationUNKNOWN, and the two priorIME contract failures remain reported asFAIL/UNKNOWN, not green.

@@ -183,13 +183,15 @@ function evaluateLivePathChecks(rootDir) {
       && editorBundle.text.includes('onEditorTextRequest')
       && editorBundle.text.includes('sendEditorTextResponse'),
     autosaveRestoreFunction: main.ok
-      && main.text.includes('async function restoreAutosaveIfExists()'),
+      && (main.text.includes('async function restoreAutosaveIfExists()')
+        || main.text.includes('async function restoreAutosaveIfExists(ownerWindow = mainWindow, isCurrent = () => Boolean(ownerWindow && mainWindow === ownerWindow && !ownerWindow.isDestroyed())) {')),
     autosaveRestoreRead: main.ok
       && main.text.includes("const content = await fs.readFile(autosavePath, 'utf-8');"),
     autosaveRestoreSendsEditorText: main.ok
       && main.text.includes('sendEditorText(await attachProjectIdToEditorPayload({ content'),
     autosaveRestoreCalledOnReopen: main.ok
-      && main.text.includes('const restored = await restoreAutosaveIfExists();'),
+      && (main.text.includes('const restored = await restoreAutosaveIfExists();')
+        || main.text.includes('const restored = await restoreAutosaveIfExists(startupWindow, isCurrentStartup);')),
     autosaveRecoveryChannelSend: main.ok
       && main.text.includes("mainWindow.webContents.send('ui:recovery-restored', {"),
     autosaveRecoveryMessage: main.ok

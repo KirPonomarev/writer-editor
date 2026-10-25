@@ -812,7 +812,8 @@
     "test/unit/r24-wp303-design-os-customization.test.js",
     "docs/tasks/2026-10-25--settings-theme-summary.md",
     "docs/tasks/2026-10-25--bug-native-undo-redo.md",
-    "docs/tasks/2026-10-25--startup-input-admission.md"
+    "docs/tasks/2026-10-25--startup-input-admission.md",
+    "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs"
   ],
   "protectedFiles": [
     {
@@ -1777,7 +1778,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "9bf7b13d5ec16d5b6ccfa80f08d90f2f835602533aefed9ae0b4cbaa781a9d97"
+        "sha256": "bdde07bff70900bd7be837a17140bf463d90462c77a55a2fe4c9123564c124e8"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2733,15 +2734,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "bcdce61f95acddb751594f881d6d37c84517193ddb168adaf5c7b3f7adcd1f52"
+        "sha256": "f0a6606d1a221ffe9f0d9596c88431ead7acac9ea0acc6dd11b3e61127fde73c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "52bc521c50584d2a23828e26904a462f35af1d521fc44209efb4b1a01a2afd1a"
+        "sha256": "1a708ed8e3f29c537533777c4f242c20b7156495fadf603a35b1356f14c2f0ec"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5daf95ec8ea7b96c4f4ac71f6e5972cfcb55bc71efbde4b5781ec67e1ec3a562"
+        "sha256": "49ea6466f2b07abcfd0cc2b97b318b094e94287176a4fdbaba7d58908a757118"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3281,7 +3282,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "59778482d7695c134d2a657aaf77061aca4b09c9de8c685ba4faf32137fbb5a4"
+        "sha256": "8af8eea9d1d82e906eae16c523fc16cce6f49d5ef0649ac22db3ff122d96281d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3413,7 +3414,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "01a5b8dbd94fc30ee3ff7bc12d27cd32d5fd5c04cb9778ea6886d6979662bc47"
+        "sha256": "7a1280c0d31ae6a96e4cc6ae8a4c8dd698dbb50bd7f6ae82750937a021d59241"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3697,7 +3698,11 @@
       },
       {
         "path": "docs/tasks/2026-10-25--startup-input-admission.md",
-        "sha256": "7a16157c8ea6c142471abb643a22317730ab0a9fddb06894f6164770c902054c"
+        "sha256": "fc1972bf0ba247e59c07874555d7050969a0eace177d967be49e21e3ace7fa89"
+      },
+      {
+        "path": "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
+        "sha256": "6ad33b0390d016a28cc73985e0a41470a90c345cae0bf8a00f20e4e7485ea3c5"
       }
     ],
     "followupRepair": {
