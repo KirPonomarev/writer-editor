@@ -34027,26 +34027,32 @@ async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex) {
 }
 
 // Автоматическое открытие последнего файла
-async function openLastFile() {
-  if (!mainWindow) return 'noFile';
+async function openLastFile(ownerWindow = mainWindow, isCurrent = () => Boolean(ownerWindow && mainWindow === ownerWindow && !ownerWindow.isDestroyed())) {
+  if (!isCurrent()) return 'stale';
 
   const settings = await loadSettings();
+  if (!isCurrent()) return 'stale';
   const continuity = readSessionContinuityV1(settings);
   const lastFilePath = await resolveLastOpenedFilePath(settings);
+  if (!isCurrent()) return 'stale';
   if (!lastFilePath) return 'noFile';
   if (!isAllowedFilePath(lastFilePath)) return 'noFile';
   
   const exists = await fileExists(lastFilePath);
+  if (!isCurrent()) return 'stale';
   if (!exists) return 'noFile';
   
   try {
     await recoverWriterProjectTransactionForFile(lastFilePath);
   } catch (error) {
     logDevError('openLastFile:projectTransactionRecovery', error);
+    if (!isCurrent()) return 'stale';
     updateStatus('Ошибка');
     return 'error';
   }
+  if (!isCurrent()) return 'stale';
   const fileResult = await fileManager.readFile(lastFilePath);
+  if (!isCurrent()) return 'stale';
     if (fileResult.success) {
       const previousFilePath = currentFilePath;
       currentFilePath = lastFilePath;
@@ -34054,7 +34060,10 @@ async function openLastFile() {
         continuity.ok ? continuity.record?.selectionRange || null : null,
         fileResult.content,
       );
-      const continuityCommit = await saveLastFile({ selectionRange });
+      const continuityCommit = await saveLastFile({ selectionRange, beforeWrite: () => {
+        if (!isCurrent()) throw Error('E_EDITOR_STARTUP_WINDOW_STALE');
+      } });
+      if (!isCurrent()) return 'stale';
       if (!continuityCommit.ok) {
         currentFilePath = previousFilePath;
         updateStatus('Ошибка');
@@ -34062,14 +34071,17 @@ async function openLastFile() {
       }
       const context = getDocumentContextFromPath(lastFilePath);
       const documentIdentity = await getProjectDocumentIdentityPayload(lastFilePath);
-      sendEditorText(await attachProjectIdToEditorPayload({
+      if (!isCurrent()) return 'stale';
+      const publication = await attachProjectIdToEditorPayload({
         content: fileResult.content,
         title: context.title,
         ...documentIdentity,
         kind: context.kind,
         metaEnabled: context.metaEnabled,
         selectionRange,
-      }, lastFilePath));
+      }, lastFilePath);
+      if (!isCurrent()) return 'stale';
+      sendEditorText(publication);
       setDirtyState(false);
       const contentHash = computeHash(fileResult.content);
       lastAutosaveHash = contentHash;
@@ -34083,7 +34095,7 @@ async function openLastFile() {
 }
 
 // Применение сохранённого размера шрифта
-async function loadSavedFontSize() {
+async function loadSavedFontSize(ownerWindow = mainWindow) {
   if (!mainWindow) return;
   
   try {
@@ -34095,27 +34107,31 @@ async function loadSavedFontSize() {
     // Тихая обработка ошибок
   }
 
-  sendEditorFontSize(currentFontSize);
+  if (mainWindow === ownerWindow && !ownerWindow.isDestroyed()) sendEditorFontSize(currentFontSize);
 }
 
-async function restoreAutosaveIfExists() {
-  if (!mainWindow) return false;
+async function restoreAutosaveIfExists(ownerWindow = mainWindow, isCurrent = () => Boolean(ownerWindow && mainWindow === ownerWindow && !ownerWindow.isDestroyed())) {
+  if (!isCurrent()) return false;
   await ensureAutosaveDirectory();
+  if (!isCurrent()) return false;
 
   const autosavePath = getAutosavePath();
   try {
     const content = await fs.readFile(autosavePath, 'utf-8');
+    if (!isCurrent()) return false;
     if (!content) {
       return false;
     }
 
-    sendEditorText(await attachProjectIdToEditorPayload({
+    const publication = await attachProjectIdToEditorPayload({
       content,
       title: 'Автосохранение',
       documentId: 'autosave-document',
       kind: 'autosave',
       metaEnabled: false,
-    }));
+    });
+    if (!isCurrent()) return false;
+    sendEditorText(publication);
 
     setDirtyState(true); // восстановленный черновик считается несохранённым
     const autosaveHash = computeHash(content);
@@ -36486,16 +36502,27 @@ function createWindow() {
   logPerfStage('create-window');
 
   const shellQuery = getIpcShellQuery();
-  editorStartupReadyPromise = mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'), {
+  const startupWindow = mainWindow, startupSession = commentAuthoringSessionId;
+  const isCurrentStartup = () => mainWindow === startupWindow && !startupWindow.isDestroyed()
+    && commentAuthoringSessionId === startupSession;
+  editorStartupReadyPromise = startupWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'), {
     query: shellQuery,
   }).then(async () => {
-    mainWindow.webContents.setZoomFactor(1);
+    if (!isCurrentStartup()) return;
+    startupWindow.webContents.setZoomFactor(1);
     logPerfStage('did-finish-load');
-    await loadSavedFontSize();
-    const restored = await restoreAutosaveIfExists();
+    await loadSavedFontSize(startupWindow);
+    if (!isCurrentStartup()) return;
+    const restored = await restoreAutosaveIfExists(startupWindow, isCurrentStartup);
+    if (!isCurrentStartup()) return;
     if (!restored) {
-      const openResult = await openLastFile();
+      const openResult = await openLastFile(startupWindow, isCurrentStartup);
+      if (!isCurrentStartup()) return;
       if (openResult !== 'loaded' && openResult !== 'error') {
+        currentFilePath = null;
+        sendEditorText({ content: '', title: '', documentId: '', projectId: '', kind: 'empty', metaEnabled: false });
+        setDirtyState(false);
+        lastAutosaveHash = null;
         updateStatus('Готово');
       }
     }

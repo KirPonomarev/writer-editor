@@ -237,13 +237,11 @@ let ideaMeaningAuthorDrafts = new Map();
 window.addEventListener('beforeunload', guardIdeaMeaningDraftUnload, { capture: true });
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
-if (isTiptapMode) {
-  initTiptap(editor, {
+const primaryTiptapEditor = isTiptapMode ? initTiptap(editor, {
     attachIpc: false,
     onContentParseIssue: handleDocumentContentParseIssue,
     onDocumentUpdate: handleTiptapDocumentUpdate,
-  });
-}
+  }) : null;
 
 function isEditorPasteTargetFocused() {
   const activeElement = document.activeElement;
@@ -293,6 +291,8 @@ if (window.electronAPI && typeof window.electronAPI.notifyEditorPasteFocusState 
 }
 const statusElement = document.getElementById('status');
 let heldCommandStatusMessage = false;
+let initialDocumentAdopted = false;
+let initialDocumentFailureStatus = null;
 const saveStateElement = document.querySelector('[data-save-state]');
 const warningStateElement = document.querySelector('[data-warning-state]');
 const perfHintElement = document.querySelector('[data-perf-hint]');
@@ -11987,6 +11987,7 @@ document.addEventListener('scroll', () => {
 
 function updateStatusText(text, { visible = false, clear = false } = {}) {
   if (!statusElement) return;
+  if (visible || clear) initialDocumentFailureStatus = null;
   if (clear) {
     heldCommandStatusMessage = false;
     statusElement.style.visibility = '';
@@ -11999,6 +12000,13 @@ function updateStatusText(text, { visible = false, clear = false } = {}) {
     // developer save/warning/performance siblings remain hidden.
     statusElement.style.visibility = 'visible';
   }
+}
+
+function holdInitialDocumentFailure(text) {
+  const previous = initialDocumentFailureStatus ? initialDocumentFailureStatus.previous
+    : heldCommandStatusMessage ? statusElement?.textContent || '' : '';
+  updateStatusText(text, { visible: true });
+  initialDocumentFailureStatus = { text, previous };
 }
 
 function updateSaveStateText(text) {
@@ -25969,6 +25977,7 @@ function applyTreeContextPublication(payload) {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    if (isTiptapMode && (!primaryTiptapEditor || primaryTiptapEditor.isDestroyed || !editor.isConnected)) return;
     if (payload?.recordingPublicationRequestId) {
       const before = composeEditorSnapshot();
       const parsed = typeof payload.content === 'string' ? parseDocumentContent(payload.content) : null;
@@ -26037,6 +26046,10 @@ if (window.electronAPI) {
       if (payload.expectedGeneration === localEditGeneration) applyTiptapUserBookmarkPublication(payload, composeDocumentContent());
       return;
     }
+    if (isTiptapMode && !initialDocumentAdopted
+      && (!payload || typeof payload !== 'object' || typeof payload.content !== 'string'
+        || typeof payload.documentId !== 'string' || typeof payload.projectId !== 'string'
+        || typeof payload.kind !== 'string' || !payload.kind)) return;
     treeDetachedOrigin = null;
     cancelLinkDialog();
     const content = typeof payload === 'string' ? payload : payload?.content || '';
@@ -26066,6 +26079,11 @@ if (window.electronAPI) {
     // Publish before committing the active identity. Failed loads retain the
     // previous manuscript, its metadata, and its Undo history.
     const parsed = treeContentParsed || parseDocumentContent(content);
+    if (isTiptapMode && !initialDocumentAdopted && parsed.issue) {
+      handleDocumentContentParseIssue(parsed.issue);
+      holdInitialDocumentFailure('Сцена не открыта. Предыдущий документ сохранён в редакторе.');
+      return;
+    }
     const useLargePayloadFastPath = !parsed.doc && shouldUseCentralSheetLargePayloadFastPath(parsed.text || '');
     if (useLargePayloadFastPath) parsed.doc = buildLargeSingleParagraphPresentationDoc(parsed.text || '');
     const nextDocumentId = hasDocumentId ? documentId || null : hasKind || hasProjectId ? null : currentDocumentId;
@@ -26076,7 +26094,9 @@ if (window.electronAPI) {
       text: parsed.text || '',
       resetHistory: nextDocumentId !== currentDocumentId || nextProjectId !== currentProjectId,
     })) {
-      updateStatusText('Сцена не открыта. Предыдущий документ сохранён в редакторе.', { visible: true });
+      const message = 'Сцена не открыта. Предыдущий документ сохранён в редакторе.';
+      if (!initialDocumentAdopted) holdInitialDocumentFailure(message);
+      else updateStatusText(message, { visible: true });
       return;
     }
 
@@ -26189,6 +26209,19 @@ if (window.electronAPI) {
     }
     applyPendingProjectSearchJump(currentDocumentId || '');
     if (previousProjectId !== currentProjectId) refreshTreeForProjectPublication(previousProjectId);
+    if (!initialDocumentAdopted) {
+      initialDocumentAdopted = true;
+      const failure = initialDocumentFailureStatus;
+      if (failure && heldCommandStatusMessage && statusElement?.textContent === failure.text) {
+        updateStatusText(failure.previous || 'Готово', { clear: true, visible: Boolean(failure.previous) });
+      }
+      initialDocumentFailureStatus = null;
+      if (!Object.prototype.hasOwnProperty.call(editor.dataset, 'reviewFormattingPreviousEditable')) {
+        if (isTiptapMode) primaryTiptapEditor.setEditable(true);
+        else editor.setAttribute('contenteditable', 'true');
+        editor.removeAttribute('aria-readonly');
+      }
+    }
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
