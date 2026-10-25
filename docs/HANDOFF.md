@@ -5697,3 +5697,43 @@ separately; native history/finite16/fullfeature status remains NOT_READY.
 - Current companions add temporal test only:786DATA646source311certificate; append a successor preserving entire committed310carrier/predicates/history. Inventory1603membership/classes/lanes/skips unchanged, only two test hashes relative66145. All66release pins and17UNKNOWN qualification fields unchanged.
 - Required53whole affected paths remain covered by actual focused files, complete current provider graph/post-build logs, full unmodified473unit local baseline and35other local whole contracts. The redundant local53invocation was intentionally interrupted(actualexit1,no credit); full baseline has not run before this compatibility amendment. Original failure/cancellation/declaration-method outputs retained.
 - Final coherent-source checks, new ordinary commit/push/current-headCI on same PR, fresh source-bound package/native/cold, normal merge and literal merged verification remain required. Audit2high9moderate unchanged/open;59named baseline skips never count as executed. Full Atlas/maps/WSE/Pulse/epochs and first Mac remain incomplete; Black Box later.
+
+
+## 2026-10-25 — Explicit local Pulse history: connected component only
+
+TASK_ID: YALKEN_PULSE_LOCAL_HISTORY_20261025
+STATUS: CONNECTED_COMPONENT_PROOF_COMPLETE_REQUIRED_DELIVERY_PENDING
+BINDING_BASE_SHA: 5023fd23493b24207df162ebf8ddf2aae431c218
+
+Two exact FREE consent intents use the existing renderer/Kernel/Main bridge, current
+privacy CAS and named PulseLocalHistoryPort with unchanged WP804/WP801 durable
+ports. Only an actually changed existing canonical-scene ordinary Save contributes
+one content-free SCENES_EDITED_COUNT observation. No-op, autosave and default-off
+collection do not add rows. Text SaveACK remains truthful if auxiliary history is
+unconfirmed or partially recorded; the visible status names that uncertainty.
+No manuscript text, path, project/scene identity or deterministic source hash enters
+Pulse. V12/profile, schemas, IPC channels, existing Core writers and dependencies
+are unchanged. Both consent controls are disabled while their operation is pending.
+
+Whole causal RED02 retained644tests572pass72failure records, no cancel/skip/todo.
+A normal unaccepted checkpoint9128d942 preserves the implementation; a true clean
+W1 preflight admits only two missing existing-capability bindings within31paths.
+The new finite DOM query helper then required Electron-style structured cloning;
+matched raw foreign-vs-clone packets establish this method correction. One new
+adapter expression changes, inverse-restoring the frozen test; every semantic
+assertion and original test remains. The product validator was not widened.
+
+Actual registered Main/finite DOM journey04 now enables, commits a changed scene,
+shows one row, reopens the project within the same Main, disables, then saves text
+without another row. Root independently reread all14 raw archive members, strict
+privacy/ledger/intent/outbox hash chains, three real SaveACKs and all10010 source
+files;9979 protected members are exact. Scene change is exact and the manifest
+changes only its existing invalidation timestamp. Root review617ec9edd428a65179cf3a78c50516d647577dc0afbfe2c65adea333fa38f1ea.
+
+This is not native process cold or whole corrected-source acceptance. Current
+normal bundle/byte companions precede frozen whole GREEN; affected chain, full
+baseline/source gates, fresh exact committed native warm/cold, official RTK/CI and
+normal commit/push/PR/merge/literal-main verification remain required. All17 Mac
+qualifications remain UNKNOWN;59 named baseline skips and last full audit findings
+remain disclosed, never executed passes. Full Atlas/maps/WSE/Pulse/environment
+epochs and first Mac remain incomplete; Black Box later.

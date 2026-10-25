@@ -802,7 +802,11 @@
     "docs/tasks/2026-10-25--idea-meaning-authoring.md",
     "src/derived/projections/projectionInspectorManifests.mjs",
     "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js",
-    "docs/tasks/2026-10-25--scene-language-tag.md"
+    "docs/tasks/2026-10-25--scene-language-tag.md",
+    "docs/tasks/2026-10-25--pulse-local-history.md",
+    "src/core/pulse-claim-v1.mjs",
+    "src/renderer/pulseHistoryPresentationModel.mjs",
+    "test/unit/r24-wp806-pulse-claim-integration.test.js"
   ],
   "protectedFiles": [
     {
@@ -1031,7 +1035,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "4fe9e8426478b355619780ef3d988de6287cb474ca3cb783bfe0edbe94675096"
+        "sha256": "4686ef53959260f4f0a8ffa63cc21500ecb59773a68975d2c6638becf2e458ff"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1039,11 +1043,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "f08b362a966a452b1463423bd14f4d74a319cd9dd036dfe20c7b4a0e70ed62e7"
+        "sha256": "40f5135f8db109fe5d619fe05e71b6a703d0263a94cf69732f59f1f80c42f52b"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "c653619796d16fac54e60605e4bc1a8eece1a503da022cb446a500c69e3e9834"
+        "sha256": "94ca8c0311c0ceab82c292cad13325372e1fa7d0b9f23480626597d04f3b7020"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1055,7 +1059,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "15ffe7fae366f975301715098261a87899ef80fd19e7ac5662bf0d0c0bece091"
+        "sha256": "bbc260f762063564bc927be7d4720bfdba2728285dfb9812fa49c6ff09b34992"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1207,7 +1211,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "5ae8b4b93afcba927ce9debaac301d6d65bb9eea97f0f475484056c3688fb297"
+        "sha256": "ac9751f9c34bbe0a5c45733264bb51abca4857e9c46ac044295e960bdfba9b65"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1703,11 +1707,11 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "7652d20be2aacefa9e2b94797656fd02ae7e3cd104bc70c39f50ce494c8208d3"
+        "sha256": "e9535d8350b6e0eaa66bc12bd985cc4fc246582a18dc4fd5a8d984246b81db70"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
-        "sha256": "01c51a8129147e6567ab6d67bae42b79e7eda17b6b01ba8936f6ae3da1c42f43"
+        "sha256": "ee7f761a24a7fc9792a12aca069e136230e8d23eed2646f0917ce615b39a9a87"
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
@@ -1767,7 +1771,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "a65ec16a934ffdf6c6a05e72aa4e0a6c84369e9de58966e00e8020ef7192ac41"
+        "sha256": "c3724e45dd9f3a93f367375cb8b95d6eadc497de73b089d0b838c3bc11839a18"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2491,7 +2495,7 @@
       },
       {
         "path": "src/renderer/commands/capabilityPolicy.mjs",
-        "sha256": "8582f552d4c5a29b319b7b12d76f2069736029b27e55c0722f50a898221bb225"
+        "sha256": "026ce8833cff8d23b187e3b65e820d469dceed1e95b51c3f599ea9d25294a413"
       },
       {
         "path": "src/shared/workspaceQueryRegistry.cjs",
@@ -2723,15 +2727,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f92438714705847f50b9c7975e8a337d860b653243bea40eb2dd46aa47e28c3a"
+        "sha256": "1f58199a6c975031e3e4060c6c14f0b26e6caddd19bf3382c33831ce3b8941fd"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d4f7350ef9418cfa3f8f33d6558c3f4b55052cedc29f6068989e1e665756775f"
+        "sha256": "0f7dac48b84fe66809226aa9cea4e07653ae53963a6a8a952244bec6fcb9a44a"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "ea65fdb61b1280a5b6e65bf9a625ef629cf3b1429632b675a5ff566d66047d86"
+        "sha256": "e34e39fb580c601f9bd80eec3e19720a2150d22b7bf3ba14e5ed173a24a86052"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3271,7 +3275,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c90f7d0bb18f1291e886e96c8c680eb7db042c2a998fccf8b83afb01eb01f586"
+        "sha256": "ec9f207eb46ce4b6d8931bb903bad219537ca1e7cc67e83e98961dfb121e8234"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3295,7 +3299,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "09916dfd1942f8f3e39dec218c0ca4bdc28b339b8f844e77f81893acc25e0919"
+        "sha256": "7401e580b6f0d1ee980065e46b08425d2d44efac43781a3e2836996a3de3190d"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3387,7 +3391,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "876b34aee5ce90ed48d2f4d3637a276470fc1ae407b0305d080fb2aceee2c526"
+        "sha256": "65bf3f6479c6d8435bf5b2166f54679b3e0631a7e91a5c5250a148d23754a338"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3403,7 +3407,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "1d8c176be4f83d5f43e3f98975d7db971be22144c641f92de337997bb7ebd7ba"
+        "sha256": "a6a3634a967fbf2913211684bc6c88a6f6d3b5f3b94f82d4521e68306fc6dce8"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3648,6 +3652,22 @@
       {
         "path": "docs/tasks/2026-10-25--scene-language-tag.md",
         "sha256": "57e708601327ad0642360b9f9274c78d107f585eea3e95fe4906e753ea29053c"
+      },
+      {
+        "path": "docs/tasks/2026-10-25--pulse-local-history.md",
+        "sha256": "2986eaef0007152b69c16fb485d3123884c6fca34a055bed88ee0f93e98cf8f7"
+      },
+      {
+        "path": "src/core/pulse-claim-v1.mjs",
+        "sha256": "538d87ba9fd6e3349e5d35aa621bdb66a58d55ea26d60187dde0b041993c3a2e"
+      },
+      {
+        "path": "src/renderer/pulseHistoryPresentationModel.mjs",
+        "sha256": "5f1aa24e4ec90bf6580788d4ba3b62eae10127bf5b9cd0627b0f855cdb4b1bc1"
+      },
+      {
+        "path": "test/unit/r24-wp806-pulse-claim-integration.test.js",
+        "sha256": "4bf06fddd8966f1ccfaa9ee8048c5256380173ba873d6072d1978a83fb849f67"
       }
     ],
     "followupRepair": {

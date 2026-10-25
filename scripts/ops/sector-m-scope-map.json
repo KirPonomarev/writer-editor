@@ -466,7 +466,13 @@
       "docs/tasks/2026-10-24--atlas-entity-corrections.md",
       "docs/tasks/2026-10-25--idea-meaning-authoring.md",
       "src/derived/projections/projectionInspectorManifests.mjs",
-      "docs/tasks/2026-10-25--scene-language-tag.md"
+      "docs/tasks/2026-10-25--scene-language-tag.md",
+      "docs/tasks/2026-10-25--pulse-local-history.md",
+      "src/command/commandSurfaceKernel.js",
+      "src/core/entitlement-law-v1.cjs",
+      "src/core/pulse-claim-v1.mjs",
+      "src/renderer/pulseHistoryPresentationModel.mjs",
+      "test/unit/r24-wp806-pulse-claim-integration.test.js"
     ]
   },
   "allowPrefixByPhase": {

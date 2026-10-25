@@ -3831,7 +3831,7 @@ async function pulseMainRenderer(x) {
   c.currentAtlasSurface = 'continuity'; c.atlasContinuityLedgerExplicitOpen = true; c.atlasContinuityRequestEpoch = 0;
   c.ATLAS_CONTINUITY_LEDGER_SURFACE_QUERY_ID = 'query.atlasContinuityLedgerSurface';
   c.atlasContinuityLedgerState = await x.pulseRead();
-  c.invokeWorkspaceQueryBridge = (id, payload) => x.h.query(id, payload);
+  c.invokeWorkspaceQueryBridge = (id, payload) => x.h.query(id, structuredClone(payload));
   c.normalizePulseHistoryPresentation = (await import('../../src/renderer/pulseHistoryPresentationModel.mjs')).normalizePulseHistoryPresentation;
   const requests = [], statuses = []; c.updateStatusText = value => statuses.push(value);
   c.dispatchUiCommand = async (id, payload) => { requests.push({ id, payload: structuredClone(payload) }); const packet = await x.pulseUi(id, payload); h.packets.push(packet); return packet.result; };
