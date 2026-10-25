@@ -442,3 +442,160 @@ test('WP303 implementation mutants are killed by independent behavioral oracles'
   assert.equal(killed, mutants.length);
   console.log(`R24_WP303_IMPLEMENTATION_MUTANTS=${killed}/${mutants.length}`);
 });
+
+// ENV-EPOCH-01 THEME_WRAP_V1 is a separately versioned, pure history model.
+// Every original WP303 controller, snapshot and mutant body above is retained.
+const ENV_EPOCH_A = Object.freeze({ theme: 'light', wordWrap: true });
+const ENV_EPOCH_B = Object.freeze({ theme: 'dark', wordWrap: false });
+const envEpochUuid = n => '00000000-0000-4000-8000-' + String(n).padStart(12, '0');
+const envEpochMetadata = (revision, preferences = ENV_EPOCH_A, overrides = {}) => ({
+  expectedRevision: revision,
+  epochId: envEpochUuid(revision + 1),
+  recordedAtUtc: '2026-10-25T12:30:00.000Z',
+  platform: 'macos',
+  reason: 'CAPTURE',
+  sourceEpochId: null,
+  preferences: { ...preferences },
+  ...overrides,
+});
+const envEpochCode = error => typeof error?.code === 'string' && /^E_ENVIRONMENT_EPOCH_/u.test(error.code);
+const envEpochCopy = value => JSON.parse(JSON.stringify(value));
+
+function requireEnvironmentEpochApi(module) {
+  for (const name of ['createEnvironmentEpochHistory', 'decodeEnvironmentEpochHistory', 'appendEnvironmentEpoch', 'previewEnvironmentEpoch']) {
+    assert.equal(typeof module[name], 'function', 'actual pure WP303 export: ' + name);
+  }
+  return module;
+}
+
+test('ENV epoch model preserves distinct immutable A B and restore-A records with consecutive revisions', async () => {
+  const m = requireEnvironmentEpochApi(await importModule());
+  const empty = m.createEnvironmentEpochHistory();
+  assert.deepEqual(empty, { schemaVersion: 'yalken.designOsEnvironmentEpochHistory.v1', configurationSchema: 'THEME_WRAP_V1', revision: 0, epochs: [] });
+  const a = m.appendEnvironmentEpoch(empty, envEpochMetadata(0));
+  const beforeA = JSON.stringify(a);
+  const b = m.appendEnvironmentEpoch(a, envEpochMetadata(1, ENV_EPOCH_B));
+  const beforeB = JSON.stringify(b);
+  const restored = m.appendEnvironmentEpoch(b, envEpochMetadata(2, ENV_EPOCH_A, { reason: 'RESTORE', sourceEpochId: envEpochUuid(1) }));
+  assert.equal(JSON.stringify(a), beforeA); assert.equal(JSON.stringify(b), beforeB);
+  assert.deepEqual(restored.epochs.slice(0, 2), b.epochs);
+  assert.deepEqual(restored.epochs.map(row => row.revision), [1, 2, 3]);
+  assert.deepEqual(restored.epochs.map(row => row.preferences), [ENV_EPOCH_A, ENV_EPOCH_B, ENV_EPOCH_A]);
+  assert.equal(restored.epochs[2].sourceEpochId, restored.epochs[0].epochId);
+  assert.equal(restored.epochs[2].reason, 'RESTORE'); assert.equal(restored.revision, 3);
+  assert.equal(empty.revision, 0); assert.equal(empty.epochs.length, 0);
+  for (const value of [empty, a, b, restored]) {
+    assert.equal(Object.isFrozen(value), true); assert.equal(Object.isFrozen(value.epochs), true);
+    for (const row of value.epochs) { assert.equal(Object.isFrozen(row), true); assert.equal(Object.isFrozen(row.preferences), true); }
+  }
+  assert.throws(() => { restored.epochs[0].preferences.theme = 'dark'; }, TypeError);
+  const selected = m.previewEnvironmentEpoch(restored, envEpochUuid(1));
+  assert.deepEqual(selected, a.epochs[0]); assert.equal(Object.isFrozen(selected.preferences), true);
+  assert.equal(JSON.stringify(b), beforeB, 'preview has no mutation authority');
+  assert.deepEqual(m.decodeEnvironmentEpochHistory(JSON.stringify(restored)), restored);
+  assert.deepEqual(m.decodeEnvironmentEpochHistory(new TextEncoder().encode(JSON.stringify(restored))), restored);
+});
+
+test('ENV epoch revision CAS and source references refuse without changing any accepted historical record', async t => {
+  const m = requireEnvironmentEpochApi(await importModule());
+  const a = m.appendEnvironmentEpoch(m.createEnvironmentEpochHistory(), envEpochMetadata(0));
+  const before = JSON.stringify(a);
+  const bad = [
+    ['stale-zero', envEpochMetadata(0, ENV_EPOCH_B)],
+    ['future-revision', envEpochMetadata(9, ENV_EPOCH_B)],
+    ['string-revision', envEpochMetadata('1', ENV_EPOCH_B)],
+    ['duplicate-id', envEpochMetadata(1, ENV_EPOCH_B, { epochId: envEpochUuid(1) })],
+    ['missing-restore-source', envEpochMetadata(1, ENV_EPOCH_A, { reason: 'RESTORE', sourceEpochId: envEpochUuid(99) })],
+    ['restore-without-source', envEpochMetadata(1, ENV_EPOCH_A, { reason: 'RESTORE', sourceEpochId: null })],
+    ['restore-forged-preferences', envEpochMetadata(1, ENV_EPOCH_B, { reason: 'RESTORE', sourceEpochId: envEpochUuid(1) })],
+    ['capture-with-source', envEpochMetadata(1, ENV_EPOCH_A, { sourceEpochId: envEpochUuid(1) })],
+    ['unknown-reason', envEpochMetadata(1, ENV_EPOCH_A, { reason: 'RESTORE_CAPABILITIES' })],
+    ['renderer-platform', envEpochMetadata(1, ENV_EPOCH_A, { platform: 'darwin' })],
+  ];
+  for (const [id, metadata] of bad) await t.test(id, () => {
+    assert.throws(() => m.appendEnvironmentEpoch(a, metadata), envEpochCode);
+    assert.equal(JSON.stringify(a), before);
+  });
+  assert.throws(() => m.previewEnvironmentEpoch(a, envEpochUuid(99)), envEpochCode);
+  assert.equal(JSON.stringify(a), before);
+});
+
+test('ENV epoch capture validation rejects coercion metadata spoofing unknown keys and unsafe values', async t => {
+  const m = requireEnvironmentEpochApi(await importModule()), empty = m.createEnvironmentEpochHistory();
+  const valid = envEpochMetadata(0), candidates = [
+    ['theme-coercion', { ...valid, preferences: { theme: 'DARK', wordWrap: true } }],
+    ['theme-null', { ...valid, preferences: { theme: null, wordWrap: true } }],
+    ['wrap-string', { ...valid, preferences: { theme: 'light', wordWrap: 'true' } }],
+    ['wrap-number', { ...valid, preferences: { theme: 'light', wordWrap: 1 } }],
+    ['preferences-array', { ...valid, preferences: ['light', true] }],
+    ['unknown-preference', { ...valid, preferences: { ...ENV_EPOCH_A, text: 'manuscript' } }],
+    ['historical-permit', { ...valid, capability: true }],
+    ['historical-layout', { ...valid, layout: { editor_root: 'floating' } }],
+    ['path', { ...valid, path: '/untrusted/epoch.json' }],
+    ['empty-id', { ...valid, epochId: '' }],
+    ['non-uuid-id', { ...valid, epochId: 'epoch-one' }],
+    ['malformed-time', { ...valid, recordedAtUtc: 'not-a-date' }],
+    ['impossible-date', { ...valid, recordedAtUtc: '2026-02-31T12:30:00.000Z' }],
+    ['non-utc-time', { ...valid, recordedAtUtc: '2026-10-25T14:30:00.000+02:00' }],
+    ['invalid-unicode', { ...valid, epochId: '\uD800' }],
+    ['oversized-id', { ...valid, epochId: 'x'.repeat(65536) }],
+    ['non-object', null],
+  ];
+  const unsafe = JSON.parse(JSON.stringify(valid)); Object.defineProperty(unsafe.preferences, '__proto__', { enumerable: true, value: { theme: 'dark' } });
+  candidates.push(['prototype-key', unsafe]);
+  for (const [id, metadata] of candidates) await t.test(id, () => {
+    assert.throws(() => m.appendEnvironmentEpoch(empty, metadata), envEpochCode);
+    assert.equal(empty.revision, 0); assert.deepEqual(empty.epochs, []);
+  });
+});
+
+test('ENV epoch persisted history refuses reordered duplicate unknown broken and noncanonical metadata without repair', async t => {
+  const m = requireEnvironmentEpochApi(await importModule());
+  let history = m.appendEnvironmentEpoch(m.createEnvironmentEpochHistory(), envEpochMetadata(0));
+  history = m.appendEnvironmentEpoch(history, envEpochMetadata(1, ENV_EPOCH_B));
+  const variants = [
+    ['unknown-history-version', value => { value.schemaVersion = 'yalken.designOsEnvironmentEpochHistory.v2'; }],
+    ['unknown-configuration', value => { value.configurationSchema = 'LAYOUT_CAPABILITIES_V2'; }],
+    ['unknown-root-key', value => { value.productTruth = { text: 'never' }; }],
+    ['missing-root-key', value => { delete value.revision; }],
+    ['wrong-revision', value => { value.revision += 1; }],
+    ['negative-revision', value => { value.revision = -1; }],
+    ['unsafe-revision', value => { value.revision = Number.MAX_SAFE_INTEGER + 1; }],
+    ['string-revision', value => { value.revision = '2'; }],
+    ['reordered', value => { value.epochs.reverse(); }],
+    ['duplicate-revision', value => { value.epochs[1].revision = 1; }],
+    ['duplicate-epoch', value => { value.epochs[1].epochId = value.epochs[0].epochId; }],
+    ['unknown-record-key', value => { value.epochs[0].manuscript = 'never'; }],
+    ['missing-preference', value => { delete value.epochs[0].preferences.wordWrap; }],
+    ['future-source', value => { value.epochs[0].reason = 'RESTORE'; value.epochs[0].sourceEpochId = value.epochs[1].epochId; }],
+    ['self-source', value => { value.epochs[0].reason = 'RESTORE'; value.epochs[0].sourceEpochId = value.epochs[0].epochId; }],
+    ['noncanonical-platform', value => { value.epochs[0].platform = 'macOS'; }],
+    ['time-invalid', value => { value.epochs[0].recordedAtUtc = '2026-13-01T00:00:00.000Z'; }],
+  ];
+  for (const [id, mutate] of variants) await t.test(id, () => {
+    const value = envEpochCopy(history); mutate(value); const bytes = JSON.stringify(value);
+    assert.throws(() => m.decodeEnvironmentEpochHistory(bytes), envEpochCode);
+    assert.equal(JSON.stringify(value), bytes, 'decoder does not rewrite its caller input');
+  });
+  for (const [id, bytes] of [
+    ['duplicate-root-key', '{"schemaVersion":"yalken.designOsEnvironmentEpochHistory.v1","configurationSchema":"THEME_WRAP_V1","revision":0,"revision":0,"epochs":[]}'],
+    ['escaped-duplicate-key', '{"schemaVersion":"yalken.designOsEnvironmentEpochHistory.v1","configurationSchema":"THEME_WRAP_V1","revision":0,"\\u0072evision":0,"epochs":[]}'],
+    ['duplicate-nested-key', JSON.stringify(history).replace('"theme":"light"', '"theme":"light","theme":"light"')],
+    ['torn-json', JSON.stringify(history).slice(0, -1)],
+    ['invalid-utf8', new Uint8Array([0x7b, 0xff, 0x7d])],
+    ['serialized-byte-bound', JSON.stringify(m.createEnvironmentEpochHistory()) + ' '.repeat(65536)],
+  ]) await t.test(id, () => assert.throws(() => m.decodeEnvironmentEpochHistory(bytes), envEpochCode));
+});
+
+test('ENV epoch capacity128 refuses capture and restore without truncating the oldest saved version', async () => {
+  const m = requireEnvironmentEpochApi(await importModule()); let history = m.createEnvironmentEpochHistory();
+  for (let n = 0; n < 128; n += 1) history = m.appendEnvironmentEpoch(history, envEpochMetadata(n, n % 2 ? ENV_EPOCH_B : ENV_EPOCH_A));
+  const original = JSON.stringify(history);
+  assert.equal(history.revision, 128); assert.equal(history.epochs.length, 128); assert.equal(history.epochs[0].epochId, envEpochUuid(1));
+  for (const metadata of [envEpochMetadata(128), envEpochMetadata(128, ENV_EPOCH_A, { reason: 'RESTORE', sourceEpochId: envEpochUuid(1) })]) {
+    assert.throws(() => m.appendEnvironmentEpoch(history, metadata), envEpochCode);
+    assert.equal(JSON.stringify(history), original);
+  }
+  assert.deepEqual(m.decodeEnvironmentEpochHistory(original), history);
+  assert.deepEqual(m.previewEnvironmentEpoch(history, envEpochUuid(1)).preferences, ENV_EPOCH_A);
+});

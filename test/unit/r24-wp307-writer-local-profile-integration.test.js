@@ -4009,3 +4009,551 @@ test('Pulse actual canonical Save at real validated capacity retains all history
   t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SAVE_FULL_CAPACITY', saved: true, verifiedExistingRows: 4096, last }));
   assert.match(JSON.stringify(last), /(?:Pulse|history|истори).*(?:capacity|record|заполн|не запис|не удалось)/iu);
 });
+
+// ENV-EPOCH-01: whole actual Main/Kernel/owned filesystem and finite UI proof.
+// These tests append to the maintained host; none of its existing bodies change.
+const ENVIRONMENT_EPOCH_CAPTURE = 'cmd.project.view.captureEnvironmentEpoch';
+const ENVIRONMENT_EPOCH_RESTORE = 'cmd.project.view.restoreEnvironmentEpoch';
+const ENVIRONMENT_EPOCH_QUERY = 'query.settingsEnvironmentEpochs';
+const ENVIRONMENT_EPOCH_FILE = 'design-os-environment-epochs.json';
+const ENVIRONMENT_EPOCH_A = Object.freeze({ theme: 'light', wordWrap: true });
+const ENVIRONMENT_EPOCH_B = Object.freeze({ theme: 'dark', wordWrap: false });
+const environmentEpochDigest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+
+async function environmentEpochWait(pending, label) {
+  let timer;
+  try { return await Promise.race([pending, new Promise((_, reject) => {
+    timer = setTimeout(() => reject(Error('owned finite epoch wait timed out: ' + label)), 10000);
+  })]); } finally { clearTimeout(timer); }
+}
+
+function environmentEpochWholeRoster(h) {
+  const rows = [];
+  function visit(directory) {
+    for (const name of fs.readdirSync(directory).sort()) {
+      const file = path.join(directory, name), stat = fs.lstatSync(file), relative = path.relative(h.root, file);
+      if (stat.isSymbolicLink()) rows.push([relative, 'symlink:' + fs.readlinkSync(file)]);
+      else if (stat.isDirectory()) { rows.push([relative, 'directory']); visit(file); }
+      else { assert.equal(stat.isFile(), true); rows.push([relative, environmentEpochDigest(fs.readFileSync(file))]); }
+    }
+  }
+  visit(h.root); return rows;
+}
+
+function assertEnvironmentEpochOnlyFile(x, before, after) {
+  const relative = path.join('userData', ENVIRONMENT_EPOCH_FILE);
+  assert.deepEqual(after.filter(([name]) => name !== relative), before.filter(([name]) => name !== relative),
+    'only the fixed shell-epoch container may differ; manuscript history Pulse settings and owner files remain exact');
+}
+
+function environmentEpochProtectedAuthorSnapshot(x) {
+  const { observedAtMs, roster, ...canonical } = authorIdentitySnapshot(x);
+  return { ...canonical, roster: roster.filter(([name]) => name !== path.join('userData', ENVIRONMENT_EPOCH_FILE)) };
+}
+
+async function environmentEpochFixture(t) {
+  const x = await pulseMainFixture(t);
+  x.epochPath = path.join(x.h.userData, ENVIRONMENT_EPOCH_FILE);
+  x.epochUi = await fullMacRendererCommandPort(x.h, { allowUnregistered: true });
+  x.epochRaw = () => JSON.parse(fs.readFileSync(x.epochPath, 'utf8'));
+  x.epochToken = projection => ({ expectedRevision: projection.revision, expectedStateDigest: projection.stateDigest });
+  x.epochRead = async (payload = {}) => {
+    const before = environmentEpochWholeRoster(x.h), result = await x.h.query(ENVIRONMENT_EPOCH_QUERY, payload);
+    assert.deepEqual(environmentEpochWholeRoster(x.h), before, 'the actual query cannot create repair migrate or rewrite a container');
+    assert.equal(result.ok, true, JSON.stringify(result));
+    const projection = result.settingsEnvironmentEpochs;
+    assert.ok(projection, 'actual immutable Main shell-history projection');
+    assert.equal(projection.schemaVersion, 'yalken.environmentEpochHistory.v1');
+    assert.equal(Number.isSafeInteger(projection.revision), true); assert.match(projection.stateDigest, /^[a-f0-9]{64}$/u);
+    assert.equal(projection.epochs.length, projection.revision); assert.ok(projection.epochs.length <= 128);
+    assert.equal(Object.hasOwn(projection, 'activeEpochId'), false, 'latest saved is not live preference truth');
+    return projection;
+  };
+  x.epochCapture = async preferences => {
+    const current = await x.epochRead(), before = environmentEpochWholeRoster(x.h), startedAt = Date.now();
+    const response = await x.epochUi(ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(current), preferences: { ...preferences } });
+    assert.ok(response.mainResult, 'actual registered renderer capture must reach Main');
+    assert.equal(response.mainResult.ok, true, JSON.stringify(response)); assert.equal(response.result.ok, true);
+    const history = x.epochRaw(), last = history.epochs.at(-1);
+    assert.equal(history.revision, current.revision + 1); assert.equal(history.configurationSchema, 'THEME_WRAP_V1');
+    assert.deepEqual(history.epochs.slice(0, -1), current.epochs); assert.deepEqual(last.preferences, preferences);
+    assert.match(last.epochId, /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
+    assert.equal(last.reason, 'CAPTURE'); assert.equal(last.sourceEpochId, null); assert.equal(last.platform, 'macos');
+    assert.ok(Date.parse(last.recordedAtUtc) >= startedAt && Date.parse(last.recordedAtUtc) <= Date.now());
+    assert.equal(new Date(last.recordedAtUtc).toISOString(), last.recordedAtUtc);
+    assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h));
+    assert.deepEqual((await x.epochRead()).epochs, history.epochs); return { response, history, epoch: last };
+  };
+  x.epochRestore = async epochId => {
+    const current = await x.epochRead(), selected = current.epochs.find(row => row.epochId === epochId); assert.ok(selected);
+    const before = environmentEpochWholeRoster(x.h);
+    const response = await x.epochUi(ENVIRONMENT_EPOCH_RESTORE, { ...x.epochToken(current), epochId });
+    assert.ok(response.mainResult, 'actual registered renderer restore must reach Main');
+    assert.equal(response.mainResult.ok, true, JSON.stringify(response)); assert.equal(response.result.ok, true);
+    const history = x.epochRaw(), last = history.epochs.at(-1);
+    assert.equal(history.revision, current.revision + 1); assert.deepEqual(history.epochs.slice(0, -1), current.epochs);
+    assert.equal(last.reason, 'RESTORE'); assert.equal(last.sourceEpochId, epochId); assert.deepEqual(last.preferences, selected.preferences);
+    assert.notEqual(last.epochId, epochId); assert.equal(last.platform, 'macos');
+    assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h)); return { response, history, epoch: last };
+  };
+  return x;
+}
+
+test('ENV epoch actual unchanged guarded Main refuses capture and restore before any filesystem effects; desired A B cold restore requires admission', async t => {
+  const x = await environmentEpochFixture(t), before = environmentEpochWholeRoster(x.h);
+  const result = await x.h.query(ENVIRONMENT_EPOCH_QUERY, {});
+  if (result.ok !== true) {
+    // Deliberately invalid CAS probes can never create a successful path when a
+    // query is unavailable. They only expose the unchanged actual command fence.
+    const capture = await x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { expectedRevision: null, expectedStateDigest: null, preferences: ENVIRONMENT_EPOCH_A });
+    const restore = await x.h.command(ENVIRONMENT_EPOCH_RESTORE, { expectedRevision: null, expectedStateDigest: null, epochId: 'unavailable-read-negative-probe' });
+    assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+    assert.equal(fs.existsSync(x.epochPath), false);
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_EPOCH_BRIDGE_REFUSAL_BEFORE_EFFECTS', query: result, capture, restore,
+      protectedRosterSha256: environmentEpochDigest(JSON.stringify(before)), fullRosterUnchanged: true }));
+    assert.equal(capture.ok, true, 'desired persisted versionA is refused by actual Main: ' + JSON.stringify(capture));
+    assert.fail('an unavailable query and negative probes cannot supply successful persistence evidence');
+  }
+  const a = await x.epochCapture(ENVIRONMENT_EPOCH_A), b = await x.epochCapture(ENVIRONMENT_EPOCH_B);
+  const coldReadScript = `import fs from 'node:fs';import {decodeEnvironmentEpochHistory} from ${JSON.stringify(require('node:url').pathToFileURL(path.join(ROOT, 'src/renderer/design-os/designOsFormConfiguration.mjs')).href)};const before=fs.readFileSync(process.argv[1]);process.stdout.write(JSON.stringify({pid:process.pid,history:decodeEnvironmentEpochHistory(before),unchanged:before.equals(fs.readFileSync(process.argv[1]))}));`;
+  const coldBefore = environmentEpochWholeRoster(x.h), cold = JSON.parse(require('node:child_process').execFileSync(process.execPath,
+    ['--input-type=module', '--eval', coldReadScript, x.epochPath], { encoding: 'utf8' }));
+  assert.notEqual(cold.pid, process.pid); assert.equal(cold.unchanged, true); assert.deepEqual(cold.history, b.history);
+  assert.deepEqual(environmentEpochWholeRoster(x.h), coldBefore);
+  const { previewEnvironmentEpoch } = await import('../../src/renderer/design-os/designOsFormConfiguration.mjs');
+  assert.deepEqual(previewEnvironmentEpoch(cold.history, a.epoch.epochId).preferences, ENVIRONMENT_EPOCH_A);
+  assert.deepEqual(environmentEpochWholeRoster(x.h), coldBefore);
+  const restored = await x.epochRestore(a.epoch.epochId);
+  assert.deepEqual(restored.history.epochs.slice(0, 2), b.history.epochs);
+  assert.deepEqual(restored.history.epochs.map(row => row.preferences), [ENVIRONMENT_EPOCH_A, ENVIRONMENT_EPOCH_B, ENVIRONMENT_EPOCH_A]);
+  assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h));
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_EPOCH_CAPTURE2_FRESH_PROCESS_READ_AND_RESTORE', revisions: [1, 2, 3], coldPid: cold.pid,
+    actualEpochIds: restored.history.epochs.map(row => row.epochId), priorRecordsUnchanged: true, protectedRosterUnchanged: true, nativeAcceptance: false }));
+});
+
+test('ENV epoch query absence is genuine read-only empty0 and both commands remain FREE under unchanged strict V12', async t => {
+  const x = await environmentEpochFixture(t), before = environmentEpochWholeRoster(x.h), current = await x.epochRead();
+  assert.equal(current.revision, 0); assert.deepEqual(current.epochs, []); assert.equal(fs.existsSync(x.epochPath), false);
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  const active = x.h.main.__profile(); assert.equal(active.profileId, SCENE_LANGUAGE_V12);
+  assert.equal(active.admittedCommandIds.length, 34); assert.equal(active.admittedQueryIds.length, 12);
+  const entitlement = require('../../src/core/entitlement-law-v1.cjs');
+  for (const id of [ENVIRONMENT_EPOCH_CAPTURE, ENVIRONMENT_EPOCH_RESTORE]) {
+    assert.equal(entitlement.decideCommandEntitlement(id, entitlement.getProductEntitlementTier()).available, true);
+    assert.equal(profile.evaluateWriterLocalCommandAccess({ profile: active, commandId: id }).allowed, true);
+  }
+  assert.equal(profile.evaluateWriterLocalQueryAccess({ profile: active, queryId: ENVIRONMENT_EPOCH_QUERY }).allowed, true);
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+});
+
+test('ENV epoch Main accepts two genuine caller values while keeping all pre-existing manuscript author history Pulse and settings bytes', async t => {
+  const x = await environmentEpochFixture(t);
+  await x.pulseConsent(PULSE_LIVE_IDS[0]); await pulseSaveOnly(x, 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Retain Pulse observation.'); await x.pulseConsent(PULSE_LIVE_IDS[1]);
+  const settingsPath = path.join(x.h.userData, 'settings.json'), settings = JSON.parse(fs.readFileSync(settingsPath));
+  settings.retainedUnknownEpochTaskField = { value: 'e\u0301 🧭', doNotMigrate: true }; fs.writeFileSync(settingsPath, JSON.stringify(settings));
+  const before = environmentEpochWholeRoster(x.h), pulseBefore = x.pulseFiles(), authorBefore = environmentEpochProtectedAuthorSnapshot(x);
+  const a = await x.epochCapture(ENVIRONMENT_EPOCH_A), b = await x.epochCapture(ENVIRONMENT_EPOCH_B);
+  await x.epochRestore(a.epoch.epochId);
+  assert.deepEqual(environmentEpochProtectedAuthorSnapshot(x), authorBefore); assert.deepEqual(x.pulseFiles(), pulseBefore);
+  assert.equal((await x.pulseLedger()).sequence, 1); assert.equal(x.pulseState().collectionStatus, 'OPTED_OUT');
+  assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h));
+  assert.deepEqual(x.epochRaw().epochs.slice(0, 2), b.history.epochs);
+});
+
+test('ENV epoch actual Main exact raw capture payload rejects path metadata authority and type coercion before effects', async t => {
+  const x = await environmentEpochFixture(t), current = await x.epochRead(), valid = { ...x.epochToken(current), preferences: ENVIRONMENT_EPOCH_A };
+  const invalid = [null, [], { ...valid, path: x.epochPath }, { ...valid, schemaVersion: 'forged' }, { ...valid, history: [] },
+    { ...valid, epochId: crypto.randomUUID() }, { ...valid, recordedAtUtc: new Date().toISOString() }, { ...valid, platform: 'macos' },
+    { ...valid, reason: 'CAPTURE' }, { ...valid, projectId: x.projectId }, { ...valid, capability: true }, { ...valid, entitlement: 'pro' },
+    { ...valid, preferences: { theme: 'DARK', wordWrap: true } }, { ...valid, preferences: { theme: 'light', wordWrap: 'true' } },
+    { ...valid, preferences: { ...ENVIRONMENT_EPOCH_A, content: 'not-a-preference' } },
+    { ...valid, expectedRevision: '0' }, { ...valid, expectedStateDigest: '' }, { ...valid, editorMode: 'tiptap' }];
+  for (const [i, payload] of invalid.entries()) await t.test('raw-payload-' + i, async () => {
+    const before = environmentEpochWholeRoster(x.h), result = await x.h.command(ENVIRONMENT_EPOCH_CAPTURE, payload);
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+    assert.equal(fs.existsSync(x.epochPath), false);
+  });
+});
+
+test('ENV epoch actual Main CAS rejects replay stale revision same-revision byte edits and unknown target without a historical rewrite', async t => {
+  const x = await environmentEpochFixture(t), empty = await x.epochRead(), a = await x.epochCapture(ENVIRONMENT_EPOCH_A);
+  for (const [id, payload] of [
+    [ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(empty), preferences: ENVIRONMENT_EPOCH_B }],
+    [ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(await x.epochRead()), expectedStateDigest: 'f'.repeat(64), preferences: ENVIRONMENT_EPOCH_B }],
+    [ENVIRONMENT_EPOCH_RESTORE, { ...x.epochToken(await x.epochRead()), epochId: crypto.randomUUID() }],
+    [ENVIRONMENT_EPOCH_RESTORE, { ...x.epochToken(await x.epochRead()), epochId: a.epoch.epochId, preferences: ENVIRONMENT_EPOCH_B }],
+  ]) {
+    const before = environmentEpochWholeRoster(x.h), result = await x.h.command(id, payload);
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  }
+  const stale = await x.epochRead(), changed = x.epochRaw(); changed.epochs[0].preferences = { ...ENVIRONMENT_EPOCH_B };
+  fs.writeFileSync(x.epochPath, JSON.stringify(changed)); const changedBefore = environmentEpochWholeRoster(x.h);
+  const refused = await x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(stale), preferences: ENVIRONMENT_EPOCH_A });
+  assert.equal(refused.ok, false); assert.deepEqual(environmentEpochWholeRoster(x.h), changedBefore);
+  assert.notEqual((await x.epochRead()).stateDigest, stale.stateDigest);
+});
+
+for (const fault of ['malformed', 'duplicate-root-key', 'unknown-schema', 'invalid-utf8', 'oversized', 'symlink-file', 'directory']) test('ENV epoch Main readonly and command-path preserve actual ' + fault + ' bytes without repair', async t => {
+  const x = await environmentEpochFixture(t), token = await x.epochRead();
+  const valid = { schemaVersion: 'yalken.designOsEnvironmentEpochHistory.v1', configurationSchema: 'THEME_WRAP_V1', revision: 0, epochs: [] };
+  if (fault === 'directory') fs.mkdirSync(x.epochPath);
+  else if (fault === 'symlink-file') {
+    const outside = path.join(x.h.root, 'retained-foreign-target.json'); fs.writeFileSync(outside, JSON.stringify(valid)); fs.symlinkSync(outside, x.epochPath);
+  } else fs.writeFileSync(x.epochPath, fault === 'malformed' ? '{torn:'
+    : fault === 'duplicate-root-key' ? JSON.stringify(valid).replace('"revision":0', '"revision":0,"revision":0')
+      : fault === 'unknown-schema' ? JSON.stringify({ ...valid, configurationSchema: 'UNRECOGNIZED' })
+        : fault === 'invalid-utf8' ? Buffer.from([0x7b, 0xff, 0x7d]) : Buffer.alloc(65537, 32));
+  const before = environmentEpochWholeRoster(x.h), query = await x.h.query(ENVIRONMENT_EPOCH_QUERY, {});
+  assert.equal(query.ok, false, JSON.stringify(query));
+  assert.equal(query.settingsEnvironmentEpochs?.stateDigest, undefined, 'unavailable malformed state cannot supply actionable empty0 CAS');
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  for (const [id, payload] of [[ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(token), preferences: ENVIRONMENT_EPOCH_A }],
+    [ENVIRONMENT_EPOCH_RESTORE, { ...x.epochToken(token), epochId: crypto.randomUUID() }]]) {
+    const result = await x.h.command(id, payload); assert.equal(result.ok, false, JSON.stringify(result));
+    assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  }
+});
+
+test('ENV epoch Main query accepts no renderer path identity target or repair request', async t => {
+  const x = await environmentEpochFixture(t); await x.epochCapture(ENVIRONMENT_EPOCH_A);
+  for (const payload of [{ path: x.epochPath }, { repair: true }, { history: [] }, { projectId: x.projectId }, { expectedRevision: 0 }, { epochId: crypto.randomUUID() }]) {
+    const before = environmentEpochWholeRoster(x.h), reply = await x.h.query(ENVIRONMENT_EPOCH_QUERY, payload);
+    assert.equal(reply.ok, false, JSON.stringify(reply)); assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  }
+});
+
+test('ENV epoch actual Main dirty barrier ignores renderer false and only a genuine current Save ACK permits restore', async t => {
+  const x = await environmentEpochFixture(t), a = await x.epochCapture(ENVIRONMENT_EPOCH_A); await x.epochCapture(ENVIRONMENT_EPOCH_B);
+  const text = 'Добавлено. ' + EXACT_ATLAS_TEXT + ' Unsaved protected authoring e\u0301 🧭.';
+  const generation = await preparePulseDirtyEdit(x, text), current = await x.epochRead(), payload = { ...x.epochToken(current), epochId: a.epoch.epochId };
+  const before = environmentEpochWholeRoster(x.h), refused = await x.h.command(ENVIRONMENT_EPOCH_RESTORE, payload);
+  assert.equal(refused.ok, false); assert.match(JSON.stringify(refused), /(?:DIRTY|AUTHORING|UNSAVED|SAVE_FIRST|GENERATION)/u);
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  const falseSignal = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', 'signal.localDirty.set', { state: false, generation });
+  assert.equal((await x.h.handlers.get('ui:save-lifecycle-signal-bridge')(x.h.event(), falseSignal)).ignored, true);
+  assert.equal((await x.h.command(ENVIRONMENT_EPOCH_RESTORE, payload)).ok, false);
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  const save = await x.ui('cmd.project.save', {}); assert.equal(save.mainResult.ok, true, JSON.stringify(save));
+  const ack = x.h.sent.filter(([channel, value]) => channel === 'set-dirty' && value.ack?.kind === 'SAVED').at(-1)?.[1].ack;
+  assert.equal(ack.savedGeneration, generation); const savedScene = fs.readFileSync(x.f.scenePath);
+  await x.epochRestore(a.epoch.epochId); assert.deepEqual(fs.readFileSync(x.f.scenePath), savedScene);
+  assert.equal(x.epochRaw().epochs.length, 3);
+});
+
+for (const fault of ['capability', 'entitlement', 'session', 'generation', 'lifecycle', 'project-root', 'owner', 'userData']) test('ENV epoch actual awaited temp write revalidates ' + fault + ' before atomic publication', async t => {
+  const x = await environmentEpochFixture(t); await x.epochCapture(ENVIRONMENT_EPOCH_A); const current = await x.epochRead();
+  const before = environmentEpochWholeRoster(x.h), promises = require('node:fs/promises'), open = promises.open; let reached = false;
+  promises.open = async (file, ...args) => {
+    const handle = await open(file, ...args);
+    if (!String(file).startsWith(x.epochPath + '.p2-')) return handle;
+    return new Proxy(handle, { get(target, key) {
+      const value = target[key]; if (typeof value !== 'function') return value;
+      if (key !== 'writeFile') return value.bind(target);
+      return async (...values) => {
+        const result = await value.apply(target, values); reached = true;
+        if (fault === 'capability') x.h.main.__host.denyCapability('cap.project.view.openSettings');
+        else if (fault === 'entitlement') x.h.main.__host.revokeEntitlement(ENVIRONMENT_EPOCH_CAPTURE);
+        else if (fault === 'session') x.h.main.__host.invalidateSession();
+        else if (fault === 'generation') x.h.main.__host.invalidateGeneration();
+        else if (fault === 'lifecycle') x.h.main.__host.invalidateLifecycle();
+        else if (fault === 'project-root') x.h.main.__host.invalidateProjectRoot();
+        else if (fault === 'owner') x.h.main.__host.revokeOwner();
+        else x.h.main.__host.invalidatePulseUserData();
+        return result;
+      };
+    } });
+  };
+  let result; try { result = await x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(current), preferences: ENVIRONMENT_EPOCH_B }); }
+  finally { promises.open = open; }
+  assert.equal(reached, true, 'real unchanged durable transaction must await the owned temp write');
+  assert.equal(result.ok, false, JSON.stringify(result)); assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  assert.equal(x.epochRaw().revision, 1); assert.deepEqual(x.epochRaw().epochs, current.epochs);
+});
+
+test('ENV epoch actual queued CAS is captured before waiting and rejects a concurrent command without recursion', async t => {
+  const x = await environmentEpochFixture(t), current = await x.epochRead(); let enter, release;
+  const entered = new Promise(done => { enter = done; }), gate = new Promise(done => { release = done; });
+  const held = x.h.main.__host.holdDiskQueue(async () => { enter(); await gate; }); await environmentEpochWait(entered, 'actual disk queue');
+  const payload = { ...x.epochToken(current), preferences: ENVIRONMENT_EPOCH_A };
+  const first = x.h.command(ENVIRONMENT_EPOCH_CAPTURE, payload), second = x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { ...payload, preferences: ENVIRONMENT_EPOCH_B });
+  await new Promise(setImmediate); assert.equal(fs.existsSync(x.epochPath), false); release();
+  const [one, two] = await Promise.all([first, second]); await held;
+  assert.equal(one.ok, true, JSON.stringify(one)); assert.equal(two.ok, false, JSON.stringify(two));
+  assert.equal(x.epochRaw().revision, 1); assert.deepEqual(x.epochRaw().epochs[0].preferences, ENVIRONMENT_EPOCH_A);
+});
+
+test('ENV epoch real commit CAS rereads actual valid prior bytes after awaited temp write before rename', async t => {
+  const x = await environmentEpochFixture(t); await x.epochCapture(ENVIRONMENT_EPOCH_A); const current = await x.epochRead();
+  const promises = require('node:fs/promises'), open = promises.open; let reached = false, concurrentBytes;
+  promises.open = async (file, ...args) => {
+    const handle = await open(file, ...args); if (!String(file).startsWith(x.epochPath + '.p2-')) return handle;
+    return new Proxy(handle, { get(target, key) {
+      const value = target[key]; if (typeof value !== 'function') return value;
+      if (key !== 'writeFile') return value.bind(target);
+      return async (...values) => { const result = await value.apply(target, values); reached = true;
+        const concurrent = x.epochRaw(); concurrent.epochs[0].preferences = { ...ENVIRONMENT_EPOCH_B };
+        concurrentBytes = JSON.stringify(concurrent); fs.writeFileSync(x.epochPath, concurrentBytes); return result; };
+    } });
+  };
+  let result; try { result = await x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(current), preferences: ENVIRONMENT_EPOCH_B }); }
+  finally { promises.open = open; }
+  assert.equal(reached, true); assert.equal(result.ok, false, JSON.stringify(result));
+  assert.equal(fs.readFileSync(x.epochPath, 'utf8'), concurrentBytes, 'stale caller cannot overwrite a legitimate concurrent state');
+  assert.equal(x.epochRaw().revision, 1); assert.equal(fs.readdirSync(x.h.userData).some(name => name.startsWith(ENVIRONMENT_EPOCH_FILE + '.p2-')), false);
+});
+
+test('ENV epoch actual post-rename context failure retains published history and reports partial rather than claiming no writes', async t => {
+  const x = await environmentEpochFixture(t); await x.epochCapture(ENVIRONMENT_EPOCH_A); const current = await x.epochRead();
+  const before = environmentEpochWholeRoster(x.h), promises = require('node:fs/promises'), rename = promises.rename; let reached = false;
+  promises.rename = async (from, to, ...args) => {
+    const result = await rename(from, to, ...args);
+    if (String(to) === x.epochPath) { reached = true; x.h.main.__host.invalidateGeneration(); }
+    return result;
+  };
+  let result; try { result = await x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(current), preferences: ENVIRONMENT_EPOCH_B }); }
+  finally { promises.rename = rename; }
+  assert.equal(reached, true); assert.equal(result.ok, false, JSON.stringify(result));
+  assert.match(JSON.stringify(result), /(?:PARTIAL|partial)/u); assert.match(JSON.stringify(result), /"storageWritten":true/u);
+  const actual = x.epochRaw(); assert.equal(actual.revision, 2); assert.deepEqual(actual.epochs.slice(0, 1), current.epochs);
+  assert.deepEqual(actual.epochs[1].preferences, ENVIRONMENT_EPOCH_B);
+  assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h));
+  assert.equal(x.h.sent.filter(([channel]) => channel === 'theme-changed').length, 0, 'partial capture cannot emit a UI apply');
+});
+
+test('ENV epoch actual failed temp open retains every prior record and all protected files', async t => {
+  const x = await environmentEpochFixture(t); await x.epochCapture(ENVIRONMENT_EPOCH_A); const current = await x.epochRead();
+  const before = environmentEpochWholeRoster(x.h), promises = require('node:fs/promises'), open = promises.open; let reached = false;
+  promises.open = async (file, ...args) => {
+    if (String(file).startsWith(x.epochPath + '.p2-')) { reached = true; throw Object.assign(Error('owned temp access refusal'), { code: 'EACCES' }); }
+    return open(file, ...args);
+  };
+  let result; try { result = await x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(current), preferences: ENVIRONMENT_EPOCH_B }); }
+  finally { promises.open = open; }
+  assert.equal(reached, true); assert.equal(result.ok, false); assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  assert.deepEqual(x.epochRaw().epochs, current.epochs);
+});
+
+test('ENV epoch real validated full128 Main refuses capture and restore without trim or oldest-record rewrite', async t => {
+  const x = await environmentEpochFixture(t), model = await import('../../src/renderer/design-os/designOsFormConfiguration.mjs');
+  assert.equal(typeof model.createEnvironmentEpochHistory, 'function'); let history = model.createEnvironmentEpochHistory();
+  for (let n = 0; n < 128; n += 1) history = model.appendEnvironmentEpoch(history, { expectedRevision: n, epochId: crypto.randomUUID(),
+    recordedAtUtc: '2026-10-25T12:30:00.000Z', platform: 'macos', reason: 'CAPTURE', sourceEpochId: null,
+    preferences: n % 2 ? ENVIRONMENT_EPOCH_B : ENVIRONMENT_EPOCH_A });
+  fs.writeFileSync(x.epochPath, JSON.stringify(history)); const current = await x.epochRead(), before = environmentEpochWholeRoster(x.h);
+  assert.equal(current.epochs.length, 128);
+  for (const [id, payload] of [[ENVIRONMENT_EPOCH_CAPTURE, { ...x.epochToken(current), preferences: ENVIRONMENT_EPOCH_B }],
+    [ENVIRONMENT_EPOCH_RESTORE, { ...x.epochToken(current), epochId: history.epochs[0].epochId }]]) {
+    const result = await x.h.command(id, payload); assert.equal(result.ok, false, JSON.stringify(result));
+    assert.match(JSON.stringify(result), /(?:CAPACITY|RETENTION)/u); assert.deepEqual(environmentEpochWholeRoster(x.h), before);
+  }
+});
+
+async function environmentEpochSettingsRenderer(x) {
+  const vm = require('node:vm'), source = read('src/renderer/editor.js'), tasks = [], requests = [], statuses = [], packets = [], document = {};
+  class Element {
+    constructor(tag) { this.tagName = tag.toUpperCase(); this.children = []; this.dataset = {}; this.listeners = {}; this.disabled = false; this.value = ''; }
+    get isConnected() { return this === document.body || !!this.parentElement?.isConnected; }
+    set innerHTML(value) { assert.equal(value, ''); this.children.forEach(node => { node.parentElement = null; }); this.children = []; }
+    append(...nodes) { nodes.forEach(node => this.appendChild(node)); }
+    appendChild(node) { node.parentElement = this; this.children.push(node); return node; }
+    setAttribute(name, value) { this[name] = value; }
+    addEventListener(name, callback) { this.listeners[name] = callback; }
+    emit(name) { return this.listeners[name]?.({ target: this }); }
+  }
+  document.createElement = tag => new Element(tag); document.body = new Element('body');
+  assert.equal(x.h.main.__profile().profileId, SCENE_LANGUAGE_V12);
+  const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: SCENE_LANGUAGE_V12 }, console,
+    currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentTreeContentPublicationId: 'actual-main-scene',
+    localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false };
+  vm.createContext(c); const renderer = { c, packets };
+  const walk = node => [node, ...node.children.flatMap(walk)], proto = c.HTMLElement.prototype;
+  proto.replaceChildren = function(...nodes) { this.children.forEach(node => { node.parentElement = null; }); this.children = []; this.append(...nodes); };
+  proto.contains = function(node) { return this === node || this.children.some(child => child.contains(node)); };
+  proto.remove = function() { if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(node => node !== this); this.parentElement = null; };
+  proto.insertBefore = function(node, next) { const index = this.children.indexOf(next); assert.ok(index >= 0); node.parentElement = this; this.children.splice(index, 0, node); return node; };
+  proto.focus = function() { c.document.activeElement = this; };
+  proto.querySelectorAll = function(selector) {
+    const match = /^\[data-([a-z-]+)(?:="([^"]*)")?\]$/u.exec(selector); assert.ok(match, 'bounded production Settings selector ' + selector);
+    const key = match[1].replace(/-([a-z])/gu, (_, letter) => letter.toUpperCase());
+    return walk(this).slice(1).filter(node => Object.hasOwn(node.dataset, key) && (match[2] === undefined || node.dataset[key] === match[2]));
+  };
+  proto.querySelector = function(selector) { return this.querySelectorAll(selector)[0] || null; };
+  Object.defineProperty(proto, 'classList', { configurable: true, get() {
+    if (!this.__classes) this.__classes = new Set(); const classes = this.__classes;
+    return { add: value => classes.add(value), remove: value => classes.delete(value), contains: value => classes.has(value),
+      toggle: (value, force) => { const add = force === undefined ? !classes.has(value) : force; if (add) classes.add(value); else classes.delete(value); return add; } };
+  } });
+  c.document.querySelector = selector => c.document.body.querySelector(selector);
+  c.document.activeElement = c.document.body;
+  c.settingsModal = c.document.createElement('div'); c.settingsModal.hidden = true; c.document.body.append(c.settingsModal);
+  c.settingsSections = c.document.createElement('div'); c.settingsModal.append(c.settingsSections);
+  const originalAggregationRow = c.document.createElement('div'); originalAggregationRow.textContent = 'Original settings owner row'; c.settingsSections.append(originalAggregationRow);
+  c.settingsThemeSelect = c.document.createElement('select'); c.settingsThemeSelect.value = 'light'; c.settingsModal.append(c.settingsThemeSelect);
+  c.settingsWrapSelect = c.document.createElement('select'); c.settingsWrapSelect.value = 'on'; c.settingsModal.append(c.settingsWrapSelect);
+  c.editor = c.document.createElement('div'); c.editor.style = {}; c.editor.textContent = 'Protected editor e\u0301 🧭'; c.document.body.append(c.editor);
+  const editorModel = { doc: { type: 'doc', content: [{ text: c.editor.textContent }] } }, selection = { from: 2, to: 9 };
+  c.tiptapEditor = { state: { doc: editorModel.doc, selection } }; c.wordWrapEnabled = true; c.wrapToggleButton = null;
+  const storage = new Map(); c.localStorage = { setItem: (key, value) => storage.set(key, String(value)), getItem: key => storage.get(key) || null };
+  c.updateThemeSwatches = () => {}; c.updateInspectorSnapshot = () => {}; c.renderSettingsAggregation = () => {};
+  c.openSimpleModal = modal => { modal.hidden = false; }; c.closeSimpleModal = modal => { modal.hidden = true; };
+  c.updateStatusText = value => statuses.push(String(value)); c.updateWarningStateText = () => {};
+  for (const forbidden of ['renderStyledView', 'setTiptapPlainText', 'setTiptapDocumentSnapshot', 'saveCurrentDocument', 'markAsModified', 'clearProjectWorkspaceStorage']) {
+    c[forbidden] = () => { assert.fail('shell preference apply called protected writer ' + forbidden); };
+  }
+  c.invokeWorkspaceQueryBridge = (id, payload = {}) => x.h.query(id, structuredClone(payload));
+  c.dispatchUiCommand = async (id, payload) => { requests.push({ id, payload: structuredClone(payload) }); const response = await x.epochUi(id, payload); renderer.packets.push(response); return response.result; };
+  const actual = name => { const match = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(match, name);
+    const end = source.indexOf('\n}\n', match.index); assert.ok(end > match.index); return source.slice(match.index, end + 2); };
+  for (const match of source.matchAll(/^(?:const|let) (\w*(?:[Ee]nvironment[Ee]poch|ENVIRONMENT_EPOCH)\w*) = /gm)) {
+    const end = source.indexOf(';\n', match.index); assert.ok(end > match.index && end - match.index < 12000); vm.runInContext(source.slice(match.index, end + 1), c);
+  }
+  const names = [...source.matchAll(/^(?:async )?function (\w*[Ee]nvironment[Ee]poch\w*)\(/gm)].map(match => match[1]);
+  assert.ok(names.length > 0, 'actual saved Settings functions do not exist before this contour');
+  vm.runInContext(['applyTheme', 'applyWordWrap', 'openSettingsModal', ...names].map(actual).join('\n'), c);
+  for (const name of names) {
+    const match = new RegExp('^async function ' + name + '\\(', 'm').exec(source); if (!match) continue;
+    const run = c[name]; c[name] = (...args) => { const pending = run(...args); tasks.push(pending); return pending; };
+  }
+  const settle = async () => { await new Promise(setImmediate); let cursor = 0;
+    while (cursor < tasks.length) { const pending = tasks.slice(cursor); cursor = tasks.length; await Promise.all(pending); } };
+  c.openSettingsModal(); await settle();
+  const block = () => walk(c.settingsModal).find(node => Object.hasOwn(node.dataset, 'settingsEnvironmentEpochs'));
+  assert.ok(block(), 'existing Settings must expose one saved-versions block');
+  const button = action => walk(block()).find(node => node.dataset.environmentEpochAction === action);
+  const select = () => walk(block()).find(node => Object.hasOwn(node.dataset, 'environmentEpochSelect'));
+  const text = node => [typeof node.textContent === 'string' ? node.textContent : '', ...node.children.map(text)].join(' ');
+  const click = async action => { const node = button(action); assert.ok(node, 'actual saved Settings ' + action + ' control'); assert.equal(node.disabled, false);
+    await node.emit('click'); await settle(); return renderer.packets.at(-1); };
+  const choose = async epochId => { const field = select(); assert.ok(field); field.value = epochId; field.focus(); await field.emit('change'); await settle(); };
+  return { ...renderer, requests, statuses, tasks, settle, button, select, choose, click, block, text: () => text(block()), storage,
+    protectedIdentity: { editor: c.editor, doc: editorModel.doc, selection, text: c.editor.textContent, aggregationRow: originalAggregationRow } };
+}
+
+function assertEnvironmentEpochRendererIdentity(renderer) {
+  const { c, protectedIdentity: before } = renderer;
+  assert.equal(c.editor, before.editor); assert.equal(c.editor.textContent, before.text);
+  assert.equal(c.tiptapEditor.state.doc, before.doc); assert.equal(c.tiptapEditor.state.selection, before.selection);
+  assert.equal(c.settingsSections.children.includes(before.aggregationRow), true);
+  assert.equal(before.aggregationRow.textContent, 'Original settings owner row');
+}
+
+test('ENV epoch actual Settings listeners save A and B preview without writes restore A and preserve focused controls editor model selection and history [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await environmentEpochFixture(t), r = await environmentEpochSettingsRenderer(x), c = r.c;
+  const before = environmentEpochWholeRoster(x.h); await r.click('capture'); const a = x.epochRaw();
+  c.applyTheme('dark'); c.applyWordWrap(false); c.settingsThemeSelect.value = 'dark'; c.settingsWrapSelect.value = 'off';
+  await r.click('capture'); const b = x.epochRaw(); assert.equal(b.revision, 2);
+  const field = r.select(); await r.choose(a.epochs[0].epochId); const selectedBefore = field.value;
+  const previewBefore = environmentEpochWholeRoster(x.h), requests = r.requests.length; await r.click('preview');
+  assert.deepEqual(environmentEpochWholeRoster(x.h), previewBefore); assert.equal(r.requests.length, requests);
+  assert.equal(c.document.body.classList.contains('dark-theme'), true); assert.equal(c.wordWrapEnabled, false);
+  assert.equal(r.select(), field); assert.equal(field.value, selectedBefore); assert.equal(c.document.activeElement, field);
+  assert.match(r.text(), /(?:light|Light|светл)/iu); assert.match(r.text(), /(?:wrap|Wrap|перенос)/iu);
+  const status = walkEnvironmentEpoch(r.block()).find(node => node['aria-live'] === 'polite' || node.role === 'status'); assert.ok(status, 'polite native saved-version status');
+  await r.click('restore'); const restored = x.epochRaw();
+  assert.equal(restored.revision, 3); assert.deepEqual(restored.epochs.slice(0, 2), b.epochs); assert.equal(restored.epochs[2].sourceEpochId, a.epochs[0].epochId);
+  assert.equal(c.document.body.classList.contains('dark-theme'), false); assert.equal(c.wordWrapEnabled, true);
+  assert.equal(r.storage.get('editorTheme'), 'light'); assert.equal(r.storage.get('editorWordWrap'), 'on');
+  assert.deepEqual(r.requests.map(row => row.id), [ENVIRONMENT_EPOCH_CAPTURE, ENVIRONMENT_EPOCH_CAPTURE, ENVIRONMENT_EPOCH_RESTORE]);
+  assertEnvironmentEpochRendererIdentity(r); assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h));
+});
+
+const walkEnvironmentEpoch = node => [node, ...node.children.flatMap(walkEnvironmentEpoch)];
+
+for (const stale of ['scene', 'project', 'publication', 'generation', 'modal', 'selection', 'detached']) test('ENV epoch actual pending restore cannot apply a late ' + stale + ' result [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await environmentEpochFixture(t), r = await environmentEpochSettingsRenderer(x), c = r.c;
+  await r.click('capture'); const first = x.epochRaw().epochs[0]; c.applyTheme('dark'); c.applyWordWrap(false); await r.click('capture');
+  await r.choose(first.epochId);
+  const dispatch = c.dispatchUiCommand; let enter, release;
+  const entered = new Promise(done => { enter = done; }), gate = new Promise(done => { release = done; });
+  c.dispatchUiCommand = async (...args) => { const response = await dispatch(...args); enter(); await gate; return response; };
+  const oldCount = r.requests.length, control = r.button('restore'), nativeInput = control.emit('click');
+  try { await environmentEpochWait(entered, 'actual committed restore transport'); } catch (error) { release(); throw error; }
+  assert.equal(control.disabled, true, 'pending restore excludes duplicate native input'); const duplicateInput = control.emit('click');
+  assert.equal(r.requests.length, oldCount + 1);
+  if (stale === 'scene') c.currentDocumentId = 'foreign-scene';
+  else if (stale === 'project') c.currentProjectId = 'foreign-project';
+  else if (stale === 'publication') c.currentTreeContentPublicationId = 'new-publication';
+  else if (stale === 'generation') { c.localEditGeneration += 1; c.localDirty = true; }
+  else if (stale === 'modal') c.settingsModal.hidden = true;
+  else if (stale === 'selection') r.select().value = x.epochRaw().epochs[1].epochId;
+  else r.block().remove();
+  release(); await nativeInput; await duplicateInput; await r.settle();
+  assert.equal(c.document.body.classList.contains('dark-theme'), true); assert.equal(c.wordWrapEnabled, false);
+  assert.equal(x.epochRaw().revision, 3, 'already published history remains readable and retained after a stale UI completion');
+  assertEnvironmentEpochRendererIdentity(r);
+});
+
+test('ENV epoch actual partial restore is shown inline without applying historical preferences or deleting the published record [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await environmentEpochFixture(t), r = await environmentEpochSettingsRenderer(x), c = r.c;
+  await r.click('capture'); const first = x.epochRaw().epochs[0]; c.applyTheme('dark'); c.applyWordWrap(false); await r.click('capture'); await r.choose(first.epochId);
+  const promises = require('node:fs/promises'), rename = promises.rename; let reached = false;
+  promises.rename = async (from, to, ...args) => { const result = await rename(from, to, ...args);
+    if (String(to) === x.epochPath) { reached = true; x.h.main.__host.invalidateGeneration(); } return result; };
+  try { await r.click('restore'); } finally { promises.rename = rename; }
+  assert.equal(reached, true); assert.equal(x.epochRaw().revision, 3);
+  assert.equal(c.document.body.classList.contains('dark-theme'), true); assert.equal(c.wordWrapEnabled, false);
+  assert.match(r.text() + ' ' + r.statuses.join(' '), /(?:PARTIAL|partial|частич)/u); assertEnvironmentEpochRendererIdentity(r);
+});
+
+test('ENV epoch restore rechecks actual Main dirty risk after awaited temp write even without a newer generation', async t => {
+  const x = await environmentEpochFixture(t), a = await x.epochCapture(ENVIRONMENT_EPOCH_A); await x.epochCapture(ENVIRONMENT_EPOCH_B);
+  const current = await x.epochRead(), before = environmentEpochWholeRoster(x.h), promises = require('node:fs/promises'), open = promises.open; let reached = false;
+  promises.open = async (file, ...args) => {
+    const handle = await open(file, ...args); if (!String(file).startsWith(x.epochPath + '.p2-')) return handle;
+    return new Proxy(handle, { get(target, key) {
+      const value = target[key]; if (typeof value !== 'function') return value;
+      if (key !== 'writeFile') return value.bind(target);
+      return async (...values) => { const result = await value.apply(target, values); reached = true;
+        const signal = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', 'signal.localDirty.set', { state: true, generation: 0 });
+        assert.equal((await x.h.handlers.get('ui:save-lifecycle-signal-bridge')(x.h.event(), signal)).ok, true); return result; };
+    } });
+  };
+  let result; try { result = await x.h.command(ENVIRONMENT_EPOCH_RESTORE, { ...x.epochToken(current), epochId: a.epoch.epochId }); }
+  finally { promises.open = open; }
+  assert.equal(reached, true); assert.equal(result.ok, false, JSON.stringify(result));
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before); assert.equal(x.epochRaw().revision, 2);
+});
+
+test('ENV epoch actual saved restore refuses a late valid prior-record digest change while retaining committed history and editor identity [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await environmentEpochFixture(t), r = await environmentEpochSettingsRenderer(x), c = r.c;
+  await r.click('capture'); const first = x.epochRaw().epochs[0];
+  c.applyTheme('dark'); c.applyWordWrap(false); await r.click('capture'); await r.choose(first.epochId);
+  const before = environmentEpochWholeRoster(x.h), original = x.epochRaw(), applied = [];
+  const theme = c.applyTheme, wrap = c.applyWordWrap;
+  c.applyTheme = (...args) => { applied.push(['theme', ...args]); return theme(...args); };
+  c.applyWordWrap = (...args) => { applied.push(['wrap', ...args]); return wrap(...args); };
+  const dispatch = c.dispatchUiCommand, query = c.invokeWorkspaceQueryBridge;
+  let committed, committedBytes, changedBytes, saved, fresh;
+  c.dispatchUiCommand = async (...args) => {
+    const response = await dispatch(...args); assert.equal(args[0], ENVIRONMENT_EPOCH_RESTORE);
+    assert.equal(response.ok, true, JSON.stringify(response)); assert.equal(r.packets.at(-1).mainResult.ok, true);
+    saved = response.value.result; committedBytes = fs.readFileSync(x.epochPath); committed = JSON.parse(committedBytes);
+    assert.equal(committed.revision, 3); assert.deepEqual(committed.epochs.slice(0, 2), original.epochs);
+    assert.deepEqual(committed.epochs.at(-1), saved.epoch); assert.equal(saved.epoch.sourceEpochId, first.epochId);
+    assert.equal(environmentEpochDigest(committedBytes), saved.settingsEnvironmentEpochs.stateDigest);
+    const changed = structuredClone(committed);
+    assert.equal(changed.epochs[1].reason, 'CAPTURE'); assert.notEqual(changed.epochs[1].epochId, first.epochId);
+    changed.epochs[1].preferences.wordWrap = true;
+    changedBytes = Buffer.from(JSON.stringify(changed) + '\n');
+    fs.writeFileSync(x.epochPath, changedBytes); // Owned test actor, after real Main commit and before the fresh query.
+    return response;
+  };
+  c.invokeWorkspaceQueryBridge = async (...args) => { fresh = await query(...args); return fresh; };
+  await r.click('restore');
+  assert.ok(committed && saved && fresh); assert.equal(fresh.ok, true, JSON.stringify(fresh));
+  const current = fresh.settingsEnvironmentEpochs, history = x.epochRaw();
+  assert.equal(current.revision, saved.settingsEnvironmentEpochs.revision); assert.equal(current.revision, 3);
+  assert.deepEqual(current.epochs.at(-1), saved.epoch, 'the entire latest committed record remains equal');
+  assert.notEqual(current.stateDigest, saved.settingsEnvironmentEpochs.stateDigest, 'only a fresh actual digest detects the other valid prior-record edit');
+  assert.equal(current.stateDigest, environmentEpochDigest(changedBytes));
+  assert.deepEqual(fs.readFileSync(x.epochPath), changedBytes, 'UI refusal cannot roll back or delete the actual commit or the owned external edit');
+  assert.deepEqual(history.epochs[0], original.epochs[0]); assert.deepEqual(history.epochs.at(-1), committed.epochs.at(-1));
+  assert.deepEqual(applied, [], 'neither preference helper may run after the digest changed');
+  assert.equal(c.document.body.classList.contains('dark-theme'), true); assert.equal(c.wordWrapEnabled, false);
+  assert.equal(r.storage.get('editorTheme'), 'dark'); assert.equal(r.storage.get('editorWordWrap'), 'off');
+  assert.match(r.text(), /(?:partial|recorded|Reopen Settings)/u);
+  assertEnvironmentEpochRendererIdentity(r); assertEnvironmentEpochOnlyFile(x, before, environmentEpochWholeRoster(x.h));
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_RESTORE_COMMITTED_THEN_VALID_PRIOR_CAPTURE_BYTES_CHANGED_BEFORE_FRESH_QUERY',
+    revision: current.revision, latestEpochId: saved.epoch.epochId, committedDigest: environmentEpochDigest(committedBytes),
+    freshDigest: current.stateDigest, completeLatestRecordEqual: true, preferenceHelperCalls: applied.length, finiteDomNotNative: true }));
+});

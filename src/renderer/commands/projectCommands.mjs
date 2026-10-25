@@ -54,6 +54,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   PULSE_OPT_IN: 'cmd.project.pulse.optIn',
   PULSE_OPT_OUT: 'cmd.project.pulse.optOut',
+  ENVIRONMENT_EPOCH_CAPTURE: 'cmd.project.view.captureEnvironmentEpoch',
+  ENVIRONMENT_EPOCH_RESTORE: 'cmd.project.view.restoreEnvironmentEpoch',
   PROJECT_VIEW_SET_MENU_PRESENTATION_CLASSIC: 'cmd.project.view.setMenuPresentationClassic',
   PROJECT_VIEW_SET_MENU_PRESENTATION_COMPACT: 'cmd.project.view.setMenuPresentationCompact',
   PROJECT_VIEW_SET_MENU_LOCALE_BASE: 'cmd.project.view.setMenuLocaleBase',
@@ -1127,7 +1129,7 @@ function registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, meta
       }
       let response;
       try {
-        if ([EXTRA_COMMAND_IDS.PULSE_OPT_IN, EXTRA_COMMAND_IDS.PULSE_OPT_OUT].includes(commandId)
+        if ([EXTRA_COMMAND_IDS.PULSE_OPT_IN, EXTRA_COMMAND_IDS.PULSE_OPT_OUT, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE].includes(commandId)
           && ['tiptap', 'legacy'].includes(input.editorMode)) {
           const { editorMode, ...intent } = input;
           input = intent;
@@ -1142,6 +1144,11 @@ function registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, meta
         );
       }
       const bridged = unwrapBridgeResponseValue(response);
+      if ([EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE].includes(commandId)
+        && bridged?.ok === false && bridged.error) {
+        return fail(bridged.error.code || 'E_ENVIRONMENT_EPOCH_UNAVAILABLE', commandId,
+          bridged.error.reason || 'E_ENVIRONMENT_EPOCH_UNAVAILABLE', bridged.error.details);
+      }
       if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({
           performed: true,
@@ -1227,6 +1234,9 @@ export function registerProjectCommands(registry, options = {}) {
 
   for (const [id, label] of [[EXTRA_COMMAND_IDS.PULSE_OPT_IN, 'Включить локальную историю'], [EXTRA_COMMAND_IDS.PULSE_OPT_OUT, 'Отключить сбор истории']]) {
     registerBridgeOnlyProjectCommand(registry, electronAPI, id, { label, surface: ['internal'] });
+  }
+  for (const [id, label] of [[EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, 'Save current settings'], [EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, 'Restore saved settings']]) {
+    registerBridgeOnlyProjectCommand(registry, electronAPI, id, { label, group: 'view', surface: ['internal'] });
   }
 
   registerBridgeOnlyProjectCommand(registry, electronAPI, EXTRA_COMMAND_IDS.LOCAL_IMAGE_INSERT, {

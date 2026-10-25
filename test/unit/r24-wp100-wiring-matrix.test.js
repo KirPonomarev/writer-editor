@@ -88,11 +88,12 @@ function scanWiringLaws(mainSource, preloadSource) {
   // ENT0: both dispatch ports consult the one entitlement table with the
   // product-owned tier, and both refusal gates are live.
   const pulsePort = sliceMainFunction(mainSource, 'createPulseLocalHistoryPort');
-  const legacyMain = mainSource.replace(pulsePort, '');
+  const environmentPort = sliceMainFunction(mainSource, 'createEnvironmentEpochPort');
+  const legacyMain = mainSource.replace(pulsePort, '').replace(environmentPort, '');
   const decideCalls = (legacyMain.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/gu) || []).length;
   if (decideCalls !== 3) violations.push({ law: 'ENT0_ENTITLEMENT', detail: `table consultations: ${decideCalls}` });
   const wholeCalls = (mainSource.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/gu) || []).length;
-  if (wholeCalls !== 4) violations.push({ law: 'ENT0_ENTITLEMENT', detail: `whole table consultations: ${wholeCalls}` });
+  if (wholeCalls !== 5) violations.push({ law: 'ENT0_ENTITLEMENT', detail: `whole table consultations: ${wholeCalls}` });
   const pulseCalls = (pulsePort.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/gu) || []).length;
   const guardStart = pulsePort.indexOf('  const guard = () => {');
   const guardEnd = pulsePort.indexOf('\n  };', guardStart);
@@ -101,6 +102,16 @@ function scanWiringLaws(mainSource, preloadSource) {
   const guardDecisions = (refusalCondition.match(/\|\| !decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)\.available/gu) || []).length;
   if (mainSource.split('function createPulseLocalHistoryPort(').length - 1 !== 1 || pulseCalls !== 1 || guardDecisions !== 1) {
     violations.push({ law: 'ENT0_ENTITLEMENT', detail: `createPulseLocalHistoryPort: calls=${pulseCalls} current-tier refusals=${guardDecisions}` });
+  }
+  const environmentCalls = (environmentPort.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/gu) || []).length;
+  const environmentGuardStart = environmentPort.indexOf('  const guard = () => {');
+  const environmentGuardEnd = environmentPort.indexOf('\n  };', environmentGuardStart);
+  const environmentGuard = environmentGuardStart >= 0 && environmentGuardEnd > environmentGuardStart ? environmentPort.slice(environmentGuardStart, environmentGuardEnd + 5) : '';
+  const environmentRefusal = environmentGuard.match(/if \(([\s\S]*?)\) refuse\('E_ENVIRONMENT_EPOCH_CONTEXT_STALE'\);/u)?.[1] || '';
+  const environmentGuardDecisions = (environmentRefusal.match(/\|\| !decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)\.available/gu) || []).length;
+  const environmentInvocations = (environmentPort.replace(environmentGuard, '').match(/\n  guard\(\);\n  return Object\.freeze\(\{/gu) || []).length;
+  if (mainSource.split('function createEnvironmentEpochPort(').length - 1 !== 1 || environmentCalls !== 1 || environmentGuardDecisions !== 1 || environmentInvocations !== 1) {
+    violations.push({ law: 'ENT0_ENTITLEMENT', detail: `createEnvironmentEpochPort: calls=${environmentCalls} current-tier refusals=${environmentGuardDecisions} invoked=${environmentInvocations}` });
   }
   const refusalGates = (mainSource.match(/if \(!entitlement\.available\) \{/gu) || []).length;
   if (refusalGates !== 2) violations.push({ law: 'ENT0_ENTITLEMENT', detail: `refusal gates: ${refusalGates}` });
@@ -162,13 +173,13 @@ test('WP-100 ENT0 scanner rejects omission or count-preserving relocation of eve
       const mutated = main.replace(body, body.replace(call, '({ available: true })'))
         + (relocate ? `\nfunction misplacedEntitlement(commandId) { return ${call}; }\n` : '');
       assert.notEqual(mutated, main);
-      assert.equal(mutated.split(call).length - 1, relocate ? 4 : 3);
+      assert.equal(mutated.split(call).length - 1, relocate ? 5 : 4);
       assert.equal(scanWiringLaws(mutated, preload).violations.some(row => row.law === 'ENT0_ENTITLEMENT' && row.detail.includes(name)), true, name);
     }
   }
   const preparation = sliceMainFunction(main, 'captureManualMapPreparationGuard');
   const inverted = main.replace(preparation, preparation.replace(`!${call}.available`, `${call}.available`));
-  assert.notEqual(inverted, main); assert.equal(inverted.split(call).length - 1, 4);
+  assert.notEqual(inverted, main); assert.equal(inverted.split(call).length - 1, 5);
   assert.equal(scanWiringLaws(inverted, preload).violations.some(row => row.detail.includes('captureManualMapPreparationGuard')), true);
 });
 
@@ -184,13 +195,13 @@ test('WP-100 Pulse scanner binds the current-tier refusal to the unique local gu
   assert.deepEqual(scanWiringLaws(main, preload).violations, [], 'actual baseline must be clean before each Pulse mutant');
   const withoutDecision = pulsePort.replace(call, '({ available: true })');
   const cases = [
-    ['missing-port', main.replace(pulsePort, ''), 3],
-    ['removed-decision', main.replace(pulsePort, withoutDecision), 3],
-    ['inverted-decision', main.replace(pulsePort, pulsePort.replace(negated, `|| ${call}.available`)), 4],
-    ['removed-refusal', main.replace(pulsePort, pulsePort.replace(refusal, "void('E_PULSE_CONTEXT_STALE');")), 4],
-    ['external-relocation', main.replace(pulsePort, withoutDecision) + `\nfunction misplacedPulseEntitlement(commandId) { return ${call}; }\n`, 4],
-    ['in-port-relocation', main.replace(pulsePort, withoutDecision.replace('  const guard = () => {', `  const misplacedPulseEntitlement = () => ${call};\n  const guard = () => {`)), 4],
-    ['duplicate-port', main + '\n' + pulsePort + '\n', 5],
+    ['missing-port', main.replace(pulsePort, ''), 4],
+    ['removed-decision', main.replace(pulsePort, withoutDecision), 4],
+    ['inverted-decision', main.replace(pulsePort, pulsePort.replace(negated, `|| ${call}.available`)), 5],
+    ['removed-refusal', main.replace(pulsePort, pulsePort.replace(refusal, "void('E_PULSE_CONTEXT_STALE');")), 5],
+    ['external-relocation', main.replace(pulsePort, withoutDecision) + `\nfunction misplacedPulseEntitlement(commandId) { return ${call}; }\n`, 5],
+    ['in-port-relocation', main.replace(pulsePort, withoutDecision.replace('  const guard = () => {', `  const misplacedPulseEntitlement = () => ${call};\n  const guard = () => {`)), 5],
+    ['duplicate-port', main + '\n' + pulsePort + '\n', 6],
   ];
   const results = [];
   for (const [id, mutated, expectedWholeCalls] of cases) {
@@ -203,6 +214,37 @@ test('WP-100 Pulse scanner binds the current-tier refusal to the unique local gu
   }
   assert.equal(results.length, 7, 'all admitted Pulse scanner mutants executed');
   console.log(`R24_WP100_PULSE_SCANNER_MUTANTS=${JSON.stringify(results)}`);
+});
+
+test('WP-100 Environment scanner requires its unique invoked current-tier refusal and kills relocations', () => {
+  const main = fs.readFileSync(path.join(ROOT, 'src', 'main.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(ROOT, 'src', 'preload.js'), 'utf8');
+  const environmentPort = sliceMainFunction(main, 'createEnvironmentEpochPort');
+  const call = 'decideCommandEntitlement(commandId, getProductEntitlementTier())';
+  const negated = `|| !${call}.available`, refusal = "refuse('E_ENVIRONMENT_EPOCH_CONTEXT_STALE');";
+  assert.ok(environmentPort.includes(negated) && environmentPort.includes(refusal));
+  assert.deepEqual(scanWiringLaws(main, preload).violations, [], 'actual baseline clean before each Environment mutant');
+  const withoutDecision = environmentPort.replace(call, '({ available: true })');
+  const cases = [
+    ['missing-port', main.replace(environmentPort, ''), 4],
+    ['removed-decision', main.replace(environmentPort, withoutDecision), 4],
+    ['inverted-decision', main.replace(environmentPort, environmentPort.replace(negated, `|| ${call}.available`)), 5],
+    ['removed-refusal', main.replace(environmentPort, environmentPort.replace(refusal, "void('E_ENVIRONMENT_EPOCH_CONTEXT_STALE');")), 5],
+    ['external-relocation', main.replace(environmentPort, withoutDecision) + `\nfunction misplacedEnvironmentEntitlement(commandId) { return ${call}; }\n`, 5],
+    ['in-port-relocation', main.replace(environmentPort, withoutDecision.replace('  const guard = () => {', `  const misplacedEnvironmentEntitlement = () => ${call};\n  const guard = () => {`)), 5],
+    ['duplicate-port', main + '\n' + environmentPort + '\n', 6],
+    ['uninvoked-guard', main.replace(environmentPort, environmentPort.replace('\n  guard();\n  return Object.freeze({', '\n  return Object.freeze({')), 5],
+  ];
+  const results = [];
+  for (const [id, mutated, expectedWholeCalls] of cases) {
+    assert.notEqual(mutated, main, id); assert.equal(mutated.split(call).length - 1, expectedWholeCalls, id);
+    const violations = scanWiringLaws(mutated, preload).violations;
+    const flagged = violations.some(row => row.law === 'ENT0_ENTITLEMENT' && row.detail.includes('createEnvironmentEpochPort'));
+    assert.equal(flagged, true, `Environment-specific refusal required: ${id}`);
+    results.push({ id, wholeCalls: expectedWholeCalls, environmentViolation: flagged, violations });
+  }
+  assert.equal(results.length, 8, 'all Environment scanner counterexamples executed');
+  console.log(`R24_WP100_ENVIRONMENT_SCANNER_MUTANTS=${JSON.stringify(results)}`);
 });
 
 module.exports = { scanWiringLaws, GUARDED_CHANNELS, PROTOCOL_BRIDGES };
