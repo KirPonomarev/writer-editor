@@ -4615,3 +4615,224 @@ for (const outcome of ['restore', 'stale', 'partial']) test('ENV epoch actual pr
   assert.deepEqual(rows(), expected, 'actual rendered settings rows must follow the current guarded apply');
   assert.equal(refreshes, outcome === 'restore' ? 1 : 0, 'stale and partial completions cannot refresh or apply the historic preferences');
 });
+
+// THEME-SUMMARY: append-only actual command/effect timing and no-loss proof.
+const THEME_SUMMARY_COMMAND_ID = 'cmd.ui.theme.set';
+
+function themeSummaryDeferred() {
+  let release, done = false;
+  const promise = new Promise(resolve => { release = resolve; });
+  return { promise, release: () => { if (!done) { done = true; release(); } } };
+}
+
+function themeSummaryActual(source, name) {
+  const match = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(match, name);
+  const end = source.indexOf('\n}\n', match.index); assert.ok(end > match.index); return source.slice(match.index, end + 2);
+}
+
+function themeSummaryRegistration(source, marker) {
+  const start = source.indexOf(marker), end = source.indexOf('\n}\n', start);
+  assert.ok(start >= 0 && end > start, marker); assert.equal(source.indexOf(marker, start + 1), -1);
+  return source.slice(start, end + 2);
+}
+
+async function themeSummaryFixture(t, { unsaved = false } = {}) {
+  const commands = [], arrivals = [], replies = [], packets = [];
+  let mainGate = null, holdDelivery = false, actualCallback = null, originalSend = null, x, r, c;
+  const releaseMain = () => mainGate?.release.release();
+  const deliver = () => {
+    holdDelivery = false;
+    for (const packet of packets) if (!packet.delivered) {
+      assert.equal(typeof actualCallback, 'function'); packet.delivered = true;
+      assert.deepEqual(x.h.sent[packet.sentIndex], [packet.channel, packet.payload], 'deliver only the packet emitted by actual Main');
+      actualCallback(packet.payload);
+      packet.appliedBody = c.document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+    }
+  };
+  t.after(async () => {
+    releaseMain();
+    try { await Promise.allSettled(commands.map(row => row.promise)); deliver(); }
+    finally { if (originalSend) x.h.window.webContents.send = originalSend; }
+  });
+  x = await environmentEpochFixture(t);
+  await x.pulseConsent(PULSE_LIVE_IDS[1]);
+  await x.epochCapture(ENVIRONMENT_EPOCH_A); // Genuine existing manual capture; the Theme effect must not append another.
+  r = await environmentEpochSettingsRenderer(x, { actualAggregation: true }); c = r.c;
+  const source = read('src/renderer/editor.js'), vm = require('node:vm');
+  const registryModule = await import('../../src/renderer/commands/registry.mjs');
+  const projectModule = await import('../../src/renderer/commands/projectCommands.mjs');
+  const runnerModule = await import('../../src/renderer/commands/runCommand.mjs');
+  const busModule = await import('../../src/renderer/commands/commandBusGuard.mjs');
+  c.UI_COMMAND_IDS = projectModule.UI_COMMAND_IDS; c.isTiptapMode = true; c.COMMAND_BUS_ROUTE = busModule.COMMAND_BUS_ROUTE;
+  c.runCommandThroughBus = busModule.runCommandThroughBus;
+  c.uiErrorMap = { index: new Map(), defaultUserMessage: 'Command unavailable' }; c.UI_ERROR_FALLBACK_SEVERITY = 'INFO';
+  c.window.electronAPI = {
+    onThemeChanged: callback => { assert.equal(actualCallback, null); actualCallback = callback; },
+    invokeUiCommandBridge: async request => {
+      assert.equal(request.commandId, THEME_SUMMARY_COMMAND_ID);
+      const arrival = { request: structuredClone(request), reachedMain: false }; arrivals.push(arrival);
+      const gate = mainGate;
+      if (gate) { gate.entered.release(); await gate.release.promise; }
+      else await Promise.resolve(); // Real IPC is asynchronous; never permit a synchronous fake application.
+      arrival.reachedMain = true;
+      const result = await x.h.command(request.commandId, structuredClone(request.payload));
+      replies.push({ request: structuredClone(request), result }); return result;
+    },
+  };
+  const registry = registryModule.createCommandRegistry();
+  projectModule.registerProjectCommands(registry, { electronAPI: c.window.electronAPI,
+    uiActions: { setTheme: input => c.handleUiSetThemeCommand(input) } });
+  c.runCommand = runnerModule.createCommandRunner(registry, { capability: { platformId: 'node', editorMode: 'tiptap' } });
+  const functions = ['withEditorModeCommandPayload', 'dispatchUiCommand', 'invokePreloadUiCommandBridge', 'handleUiSetThemeCommand', 'mapCommandErrorToUi'];
+  vm.runInContext(functions.map(name => themeSummaryActual(source, name)).join('\n'), c);
+  const dispatch = c.dispatchUiCommand;
+  c.dispatchUiCommand = (...args) => { const promise = dispatch(...args); commands.push({ id: args[0], promise }); return promise; };
+  originalSend = x.h.window.webContents.send;
+  x.h.window.webContents.send = function(channel, payload) {
+    const result = originalSend.call(this, channel, payload);
+    if (channel === 'theme-changed') {
+      packets.push({ channel, payload, sentIndex: x.h.sent.length - 1, delivered: false });
+      if (!holdDelivery) deliver();
+    }
+    return result;
+  };
+  vm.runInContext(themeSummaryRegistration(source, 'if (window.electronAPI) {\n  window.electronAPI.onThemeChanged('), c);
+  vm.runInContext(themeSummaryRegistration(source, "if (settingsThemeSelect) {\n  settingsThemeSelect.addEventListener('change'"), c);
+  const child = c.document.createElement('span'); child.textContent = 'Retained child e\u0301 🧭'; c.editor.append(child);
+  if (unsaved) {
+    const text = 'Unsaved author text e\u0301 🧭 must remain'; c.editor.textContent = text; child.textContent = text;
+    c.tiptapEditor.state.doc.content[0].text = text; c.localDirty = true; c.localEditGeneration = 7; c.lastAckedGeneration = 0;
+    x.h.editor = { content: text, generation: 7 };
+    const signal = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', 'signal.localDirty.set', { state: true, generation: 7 });
+    assert.equal((await x.h.handlers.get('ui:save-lifecycle-signal-bridge')(x.h.event(), signal)).ok, true);
+  }
+  c.settingsThemeSelect.focus();
+  const themeRow = () => {
+    const row = walkEnvironmentEpoch(c.settingsSections).find(node => node.dataset.settingsId === 'appearance.theme'); assert.ok(row);
+    const value = walkEnvironmentEpoch(row).find(node => node.className === 'settings-surface__row-value'); assert.ok(value);
+    return { row, value: value.textContent };
+  };
+  return { x, r, c, commands, arrivals, replies, packets, themeRow,
+    body: () => c.document.body.classList.contains('dark-theme') ? 'dark' : 'light',
+    gateMain: () => { assert.equal(mainGate, null); mainGate = { entered: themeSummaryDeferred(), release: themeSummaryDeferred() };
+      return { entered: mainGate.entered.promise, release: releaseMain }; },
+    holdDelivery: () => { holdDelivery = true; }, deliver,
+    change: value => { c.settingsThemeSelect.value = value; const count = commands.length; c.settingsThemeSelect.emit('change');
+      assert.equal(commands.length, count + 1, 'actual native listener must dispatch'); return commands.at(-1).promise; },
+  };
+}
+
+function themeSummaryRemember(f) {
+  const { x, r, c } = f;
+  assert.ok(c.editor.children.length > 0, 'a nonempty editor child identity oracle');
+  assert.ok(Object.keys(x.pulseFiles()).length > 0, 'actual pre-existing Pulse bytes');
+  return { roster: environmentEpochWholeRoster(x.h), author: environmentEpochProtectedAuthorSnapshot(x), pulse: x.pulseFiles(),
+    journal: fs.readFileSync(x.epochPath), epochs: x.epochRaw().epochs, editor: c.editor, doc: c.tiptapEditor.state.doc,
+    docJson: JSON.stringify(c.tiptapEditor.state.doc), selection: c.tiptapEditor.state.selection, text: c.editor.textContent,
+    children: [...c.editor.children], childText: c.editor.children.map(node => node.textContent), host: r.block(), select: r.select(),
+    selected: r.select().value, focus: c.document.activeElement, dirty: c.localDirty, generation: c.localEditGeneration,
+    mainEditor: structuredClone(x.h.editor) };
+}
+
+function assertThemeSummaryNoLoss(f, before) {
+  const { x, r, c } = f;
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before.roster, 'ordinary Theme cannot Save, capture epochs or alter any owned filesystem member');
+  assert.deepEqual(environmentEpochProtectedAuthorSnapshot(x), before.author); assert.deepEqual(x.pulseFiles(), before.pulse);
+  assert.deepEqual(fs.readFileSync(x.epochPath), before.journal); assert.deepEqual(x.epochRaw().epochs, before.epochs);
+  assert.equal(c.editor, before.editor); assert.equal(c.tiptapEditor.state.doc, before.doc); assert.equal(JSON.stringify(c.tiptapEditor.state.doc), before.docJson);
+  assert.equal(c.tiptapEditor.state.selection, before.selection); assert.equal(c.editor.textContent, before.text);
+  assert.equal(c.editor.children.length, before.children.length);
+  c.editor.children.forEach((child, index) => { assert.equal(child, before.children[index]); assert.equal(child.textContent, before.childText[index]); });
+  assert.equal(r.block(), before.host); assert.equal(r.select(), before.select); assert.equal(r.select().value, before.selected);
+  assert.equal(c.document.activeElement, before.focus); assert.equal(c.localDirty, before.dirty); assert.equal(c.localEditGeneration, before.generation);
+  assert.deepEqual(x.h.editor, before.mainEditor);
+  assert.ok(f.commands.every(row => row.id === THEME_SUMMARY_COMMAND_ID));
+}
+
+function assertThemeSummaryApplied(f, t, label) {
+  assert.equal(f.replies.length, 1); assert.equal(f.replies[0].result.ok, true, JSON.stringify(f.replies));
+  assert.deepEqual(f.replies[0].result.value, { ok: true }, 'actual Main bridge result is not an applied-state receipt');
+  assert.equal(f.packets.length, 1); assert.equal(f.packets[0].delivered, true); assert.equal(f.packets[0].payload, 'dark');
+  assert.equal(f.packets[0].appliedBody, 'dark'); assert.equal(f.body(), 'dark');
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_THEME_COMMAND_REPLY_TRUE_MAIN_PACKET_APPLIED', label,
+    mainResult: f.replies[0].result, packet: f.packets[0], actualBody: f.body(), actualThemeRow: f.themeRow().value,
+    finiteDomNotNative: true, durableThemeReceiptClaim: false }));
+}
+
+test('THEME summary delayed actual Main invocation refreshes the applied Theme row and retains unsaved authoring', async t => {
+  const f = await themeSummaryFixture(t, { unsaved: true }), before = themeSummaryRemember(f), gate = f.gateMain();
+  const pending = f.change('dark');
+  try {
+    await environmentEpochWait(gate.entered, 'actual Theme adapter before Main');
+    assert.equal(f.arrivals[0].reachedMain, false); assert.equal(f.replies.length, 0); assert.equal(f.packets.length, 0);
+    assert.equal(f.body(), 'light'); assert.equal(f.themeRow().value, 'Light'); assertThemeSummaryNoLoss(f, before);
+    gate.release(); await pending;
+    assertThemeSummaryApplied(f, t, 'DELAYED_ACTUAL_MAIN_INVOCATION'); assertThemeSummaryNoLoss(f, before);
+    assert.equal(f.themeRow().value, 'Dark', 'desired Theme row must follow the real applied Main event without a Wrap input');
+  } finally { gate.release(); await pending; }
+});
+
+test('THEME summary true Main reply before held genuine push cannot substitute for actual application', async t => {
+  const f = await themeSummaryFixture(t, { unsaved: true }), before = themeSummaryRemember(f); f.holdDelivery();
+  try {
+    const result = await f.change('dark'); assert.equal(result.ok, true); assert.equal(f.replies[0].result.ok, true);
+    assert.equal(f.packets.length, 1); assert.equal(f.packets[0].delivered, false);
+    assert.equal(f.body(), 'light'); assert.equal(f.themeRow().value, 'Light'); assertThemeSummaryNoLoss(f, before);
+    f.deliver(); assertThemeSummaryApplied(f, t, 'REAL_REPLY_BEFORE_HELD_TRUE_PUSH'); assertThemeSummaryNoLoss(f, before);
+    assert.equal(f.themeRow().value, 'Dark', 'an await-only listener fix cannot replace refresh after the actual Theme application');
+  } finally { f.deliver(); }
+});
+
+test('THEME summary controlled actual Main ENT0 denial emits no Theme and preserves state despite outer ui-action ok', async t => {
+  const f = await themeSummaryFixture(t, { unsaved: true }), before = themeSummaryRemember(f);
+  assert.equal(require('../../src/core/entitlement-law-v1.cjs').decideCommandEntitlement(THEME_SUMMARY_COMMAND_ID).available, true, 'real FREE policy permits Theme');
+  f.x.h.main.__host.revokeEntitlement(THEME_SUMMARY_COMMAND_ID); const result = await f.change('dark');
+  assert.equal(f.replies.length, 1); const reply = f.replies[0].result;
+  assert.equal(reply.ok, false); assert.equal(reply.value.code, 'E_COMMAND_DISABLED_FOR_ENTITLEMENT');
+  assert.equal(reply.value.reason, 'SYNTHETIC_SELECTED_ENTITLEMENT_REVOKED'); assert.equal(f.packets.length, 0);
+  assert.equal(result.ok, true); assert.equal(result.value.result.performed, false, 'outer ui-action ok is not apply evidence');
+  assert.equal(f.body(), 'light'); assert.equal(f.themeRow().value, 'Light'); assertThemeSummaryNoLoss(f, before);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_CONTROLLED_ENT0_REFUSAL_NO_PUSH', reply, outerResult: result, controlledPortRevocationNotRealFreeTierDenial: true }));
+});
+
+test('THEME summary valid historical V1 profile remains an actual allowed Theme policy control', async t => {
+  const f = await themeSummaryFixture(t), before = themeSummaryRemember(f); f.x.h.main.__host.revokeProfile();
+  const active = f.x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_V1');
+  assert.equal(profile.evaluateWriterLocalCommandAccess({ profile: active, commandId: THEME_SUMMARY_COMMAND_ID }).allowed, true);
+  // Match the existing valid V1 Main projection with its expected caller identity; stale V12 is a different negative.
+  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), SCENE_LANGUAGE_V12);
+  frame.searchParams.set('PRODUCT_PROFILE', active.profileId); f.x.h.shellUrl = frame.href;
+  f.c.window.__PRODUCT_PROFILE = active.profileId;
+  await f.change('dark'); assertThemeSummaryApplied(f, t, 'ACTUAL_VALID_V1_POLICY_CONTROL'); assertThemeSummaryNoLoss(f, before);
+  t.diagnostic('INVALID_V12_MAIN_REFUSAL_UNKNOWN_NOT_ADMITTED_NO_SYNTHETIC_PROFILE_SETTER');
+});
+
+for (const lifecycle of ['hidden', 'detached', 'foreign']) test('THEME summary held true event preserves an unavailable aggregation host ' + lifecycle, async t => {
+  const f = await themeSummaryFixture(t, { unsaved: true }), before = themeSummaryRemember(f); f.holdDelivery();
+  try {
+    await f.change('dark'); assert.equal(f.packets.length, 1); assert.equal(f.packets[0].delivered, false);
+    let foreign;
+    if (lifecycle === 'hidden') f.c.settingsModal.hidden = true;
+    else { f.c.settingsSections.remove(); if (lifecycle === 'foreign') {
+      foreign = f.c.document.createElement('section'); f.c.document.body.append(foreign); foreign.append(f.c.settingsSections);
+    } }
+    const oldRow = f.themeRow().row, render = f.c.renderSettingsAggregation; let refreshes = 0;
+    f.c.renderSettingsAggregation = (...args) => { refreshes++; return render(...args); };
+    f.deliver(); assertThemeSummaryApplied(f, t, lifecycle.toUpperCase()); assertThemeSummaryNoLoss(f, before);
+    assert.equal(refreshes, 0, 'hidden, disconnected or foreign aggregation cannot refresh');
+    assert.equal(f.themeRow().row, oldRow); assert.equal(f.themeRow().value, 'Light');
+    if (lifecycle !== 'hidden') { f.c.settingsSections.remove(); f.c.settingsModal.append(f.c.settingsSections); if (foreign) foreign.remove(); }
+    f.c.openSettingsModal(); await f.r.settle();
+    assert.equal(f.themeRow().value, 'Dark', 'actual reopen reads current applied body'); assertThemeSummaryNoLoss(f, before);
+  } finally { f.deliver(); }
+});
+
+test('THEME summary reopened current Settings receives the real held event without stale view publication', async t => {
+  const f = await themeSummaryFixture(t, { unsaved: true }), before = themeSummaryRemember(f); f.holdDelivery();
+  try {
+    await f.change('dark'); f.c.settingsModal.hidden = true; f.c.openSettingsModal(); await f.r.settle();
+    assert.equal(f.body(), 'light'); assert.equal(f.themeRow().value, 'Light'); assertThemeSummaryNoLoss(f, before);
+    f.deliver(); assertThemeSummaryApplied(f, t, 'REOPENED_CURRENT_VIEW'); assertThemeSummaryNoLoss(f, before);
+    assert.equal(f.themeRow().value, 'Dark', 'the current reopened view reads the actual global Theme at its application boundary');
+  } finally { f.deliver(); }
+});

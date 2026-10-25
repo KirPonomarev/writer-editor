@@ -23111,6 +23111,206 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Same32path PR2165 current-CI alignment: exact committed ENV329 expectation preserves every330binding/guard corruption and ancestry/mixed check; two new descriptions accurately name line wrapping. Whole unchanged RELEASE01 actual61cases54pass7stale-current-qualification failures retained; current source pins must refresh before required whole GREEN. Separate real Main aggregation diagnostic0. No registry/scanner/old-predicate weakening or membership drift; current hashes only, final-source whole/native/baseline/CI pending.",
       "sha256": "8e180387e17650bdc48d496bcbc9f077244f31880063ee83ea85d589abb21337"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "6b54a384a6423d541c8fd63a4df04fd972d5bfd28b746811d0e3104c09eba687"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "b45333471b4dbbebf7c55c322bfe159897d806112b4219e7e30c4c5f2fe6c175"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "aaaa427985aa80a2064d97493919c110e2a9e174a45bab6a2f5b11e079a97825"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "0bfa98360d8c2aa56cf69e0261b44e7377be5a04414c81c50d50f8c8b48536d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "71c44a13d79a154bf79adc583b7ce5add644ea80c126effbbf33e75c1c5f38d4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "26f93696e9b2d628225b7aac2f46648070dafea4474441db630d74303ed66d66"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--settings-theme-summary.md",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "3a839bc526ad027184126fd4d38af58037df0ad3c6968483ca6affea8a23b423"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "21f0e8c04c0b6a57b2347712482e0b5f41a17a22265041af860e2106224c364f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "f4dd9e77c243e5fc1c604aca41535774f41a86f9dc9ebeafdf3603cfe3240974"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "5782fd5e6b4842588726a311b94b328c11df6899dd88efdc242b4079c61f6782"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "a85ccecc0dc71bb46844a338f63100e14d4f790a02a111271b549320278bf04a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "c1004d0db2788e4d847e1e382c4029a095a4f117c81510dc441c79cea537fade"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:43:58.374091+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Existing Theme derived-summary correctness after actual applied notification: reviewed actual whole causal RED and eight fixed Theme outcomes, one retained current-source-pin failure and only bounded callback; one exact task admission, historical ENV/Pulse tuples and every strict guard preserved. Source assembly only; native/current full CI/normal delivery pending, all17MacUNKNOWN.",
+      "sha256": "49ef2411b594b22d944c59939fb799dfedb454b71401d1fcc6ec871631f98434"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:46:54.661743+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "26d2343b5e148ec78c7f38f7d29ffead0739121e4e2523f7189c7f4e45507268"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:46:54.661743+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "d254c3cabba04bf5b20a29434775af155b5a64dc429d1620ffc7db4093b5dbcc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:46:54.661743+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "e4988f5dce78bcfb0e085b0a9556b5e52010a3e9eb5d7bb46d5af100b64d674c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:46:54.661743+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--settings-theme-summary.md",
+      "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "82e45979dccc61f092cc4c39b6eff5dc790aec9d48437cb7dfcec0168eab273f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:46:54.661743+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "39e31ba47433ae80fa47255112c96a10db81e91690aca4dfe8104d229906c2db"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:46:54.661743+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "4eb5839ec120fbfaed3a026858e2455ae39caf0df4f5095e8f2c18accfbb9406"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-25T17:46:54.661743+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SETTINGS_THEME_SUMMARY_20261025",
+      "authority": "DIRECT_OWNER_CONTINUING_COMPLETE_MAC_PRODUCT_DELIVERY",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same bounded Theme summary task: exact three current successor selector/id/count literals corrected by separate executor after root assembly; every other strict test byte, corruption, mixed and ancestry predicate held. Refresh only current source hashes; all historical tuples/memberships/guards unchanged. Native/current CI/normal delivery pending.",
+      "sha256": "1154738e026af6a8bce8b38b32cc72dc83f88340cfffb25ab8af0e459047cddd"
     }
   ],
   "evidenceStampIds": [
