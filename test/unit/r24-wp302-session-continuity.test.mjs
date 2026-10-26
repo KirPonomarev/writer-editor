@@ -415,7 +415,7 @@ test('WP302 active document path rebind preserves selection without adding UI or
   const mainSource = fs.readFileSync(path.join(ROOT, 'src', 'main.js'), 'utf8');
   const contractSource = fs.readFileSync(path.join(ROOT, 'src', 'core', 'session-continuity-v1.cjs'), 'utf8');
   assert.match(mainSource, /const continuity = readSessionContinuityV1\(settings\);[\s\S]*openLastFile/u);
-  assert.match(mainSource, /await saveLastFile\(\{ selectionRange, beforeWrite: \(\) => \{\s*if \(!isCurrent\(\)\) throw Error\('E_EDITOR_STARTUP_WINDOW_STALE'\);\s*\} \}\);/u);
+  assert.match(mainSource, /await saveLastFile\(\{ filePath: lastFilePath, selectionRange, beforeWrite: \(\) => \{\s*if \(!isCurrent\(\)\) throw Error\('E_EDITOR_STARTUP_WINDOW_STALE'\);\s*\}, onCommittedSettings: text => \{\s*effectGuard\(\); if \(!windowCurrent\(\)\) throw recoveryFailure\(\);\s*sources\.filter\(item => item !== settingsSource\)\.forEach\(assertRecoverySnapshot\);\s*const physical = recoveryPhysicalIdentity\(settingsSource\.filePath\), raw = fsSync\.readFileSync\(settingsSource\.filePath\);\s*if \(!raw\.equals\(Buffer\.from\(text, 'utf8'\)\)\) throw recoveryFailure\('E_RECOVERY_SETTINGS_CHANGED'\);\s*Object\.assign\(settingsSource, \{ identity: physical\.key, leaf: physical\.leaf, parent: physical\.parent, raw \}\); assertRecoverySnapshot\(settingsSource\);\s*\} \}\);/u);
   assert.match(mainSource, /metaEnabled: context\.metaEnabled,[\s\S]*selectionRange,/u);
   assert.match(mainSource, /preserveSelectionOnPathRebind: true/u);
   assert.equal(contractSource.includes('src/renderer'), false);
@@ -1044,4 +1044,222 @@ test('external applicability actual whole initializer honors nondefault selected
   assert.equal(fs.readFileSync(h.external, 'utf8'), h.externalText);
   t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_NONDEFAULT_SELECTED_WHOLE_INITIALIZER_AND_PUBLICATION', publication: publications[0],
     selectedFileBytes: selectedBefore.length, originalDefaultSceneReadObservationsOnly: h.actualReads.length }));
+});
+
+// Owner-approved startup ambiguity. Full, unmodified Main; these finite native
+// and IPC transports are not Electron/native acceptance. Keep owned roots for
+// the external complete-I/O evidence consumer rather than deleting failed data.
+const SOURCE_CHOICE_LABELS = ['Открыть сохранённую сцену', 'Восстановить автокопию отдельно', 'Отмена'];
+const sourceChoiceDigest = bytes => cryptoForStartup.createHash('sha256').update(bytes).digest('hex');
+async function sourceChoiceMain(t, { saved = true, autosave = true, response = { response: 2 }, rawAutosave } = {}) {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-source-choice-')));
+  const marker = cryptoForStartup.randomUUID(), markerPath = path.join(root, '.owner');
+  fs.writeFileSync(markerPath, marker, { flag: 'wx' }); const rootIdentity = fs.lstatSync(root);
+  const documents = path.join(root, 'Documents'), userData = path.join(root, 'userData');
+  const base = path.join(documents, 'craftsman'), projectRoot = path.join(base, 'Роман');
+  const scene = path.join(projectRoot, 'roman', 'Imported', '01 choice.txt');
+  const globalAutosave = path.join(base, '.autosave', 'autosave.txt'), settingsPath = path.join(userData, 'settings.json');
+  fs.mkdirSync(path.dirname(scene), { recursive: true }); fs.mkdirSync(path.dirname(globalAutosave)); fs.mkdirSync(userData);
+  const savedText = 'Saved choice e\u0301 🧭\nsecond line', recoveredText = 'Separate recovery e\u0301 🧭\nother words';
+  fs.writeFileSync(scene, savedText);
+  fs.writeFileSync(path.join(projectRoot, PROJECT_MANIFEST_FILENAME), JSON.stringify({ schemaVersion: 1,
+    projectId: 'project-source-choice', projectName: 'Роман', createdAtUtc: '2026-10-26T00:00:00.000Z' }));
+  const settings = saved ? { sessionContinuityV1: makeRecord({ projectId: 'project-source-choice',
+    documentRelativePath: 'roman/Imported/01 choice.txt', selectionRange: { start: 2, end: 7 } }),
+    preservedChoiceSetting: { language: 'ru', value: 'untouched' } } : { preservedChoiceSetting: { value: 'untouched' } };
+  fs.writeFileSync(settingsPath, JSON.stringify(settings));
+  if (autosave) fs.writeFileSync(globalAutosave, rawAutosave ?? Buffer.from(recoveredText));
+  const h = { root, base, projectRoot, scene, globalAutosave, settingsPath, savedText, recoveredText,
+    windows: [], handlers: new Map(), listeners: new Map(), choices: [], saveDialogs: [], releases: [],
+    paths: { documents, userData }, response, choose: null };
+  function contents(window) {
+    return { id: 2200 + window.id, session: {}, isDestroyed: () => window.destroyed,
+      on() {}, setWindowOpenHandler() {}, setZoomFactor() {}, getURL: () => window.url || '',
+      send(channel, payload) {
+        window.sent.push([channel, structuredClone(payload)]);
+        if (channel === 'editor:set-text') window.editor = { ...structuredClone(payload), generation: 0 };
+        if (channel === 'editor:snapshot-request') queueMicrotask(() => h.listeners.get('editor:snapshot-response')(
+          h.event(window), { requestId: payload.requestId, snapshot: structuredClone(window.editor) }));
+      } };
+  }
+  class Window {
+    constructor() { this.id = h.windows.length + 1; h.windows.push(this); h.window = this;
+      this.destroyed = false; this.sent = []; this.handlers = new Map(); this.editor = { content: '', generation: 0 };
+      this.load = startupDeferred(); this.webContents = contents(this); }
+    isDestroyed() { return this.destroyed; } on(name, callback) { this.handlers.set(name, callback); }
+    isFullScreen() { return false; } getBounds() { return { width: 1000, height: 700 }; }
+    loadFile(file, { query }) {
+      const url = new URL('file://' + file); Object.entries(query).forEach(([key, value]) => url.searchParams.set(key, value)); this.url = url.href;
+      const pending = this.load.promise, then = pending.then.bind(pending);
+      pending.then = (...args) => { const actual = then(...args); this.actualContinuation = actual; return actual; }; return pending;
+    }
+  }
+  Window.getAllWindows = () => h.windows.filter(window => !window.destroyed); Window.getFocusedWindow = () => h.window;
+  const electron = { app: { isPackaged: true, getPath: name => h.paths[name] || root,
+    setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true },
+    BrowserWindow: Window, screen: { getPrimaryDisplay: () => ({ workAreaSize: { width: 1000, height: 700 } }) },
+    Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
+    dialog: { async showMessageBox(...args) { const call = { owner: args.length > 1 ? args[0] : null, options: args.at(-1) };
+      h.choices.push(call); return h.choose ? h.choose(call) : structuredClone(h.response); },
+      async showSaveDialog(owner, options) { h.saveDialogs.push({ owner, options }); return { canceled: true }; },
+      showOpenDialog: async () => ({ canceled: true }) },
+    ipcMain: { handle: (name, fn) => h.handlers.set(name, fn), on: (name, fn) => h.listeners.set(name, fn) },
+    session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
+  const cachePaths = ['src/main.js', 'src/utils/fileManager.js', 'src/utils/backupManager.js'].map(name => path.join(ROOT, name));
+  const cacheBefore = cachePaths.map(name => require.cache[name]), originalLoad = Module._load;
+  cachePaths.forEach(name => { delete require.cache[name]; });
+  try { Module._load = function(request, ...args) { return request === 'electron' ? electron : originalLoad.call(this, request, ...args); };
+    h.main = require(cachePaths[0]);
+  } finally { Module._load = originalLoad; }
+  h.event = (window = h.window) => ({ sender: window.webContents, senderFrame: { url: window.url } });
+  const envelope = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope;
+  h.command = (id, payload = {}) => h.handlers.get('ui:command-bridge')(h.event(), envelope('ui:command-bridge', id, payload));
+  h.signal = (id, payload = {}) => h.handlers.get('ui:save-lifecycle-signal-bridge')(h.event(), envelope('ui:save-lifecycle-signal-bridge', id, payload));
+  h.create = () => { const load = Module._load; try {
+    Module._load = function(request, ...args) { return request === 'electron' ? electron : load.call(this, request, ...args); };
+    h.main.createWindow(); return h.window;
+  } finally { Module._load = load; } };
+  h.finish = async (window = h.window) => { window.load.release(); await startupWithin(window.actualContinuation); await new Promise(setImmediate); };
+  h.publications = (window = h.window) => window.sent.filter(([channel]) => channel === 'editor:set-text').map(([, payload]) => payload);
+  h.raw = () => Object.fromEntries([scene, globalAutosave, settingsPath].map(name => [name,
+    fs.existsSync(name) ? fs.readFileSync(name).toString('base64') : null]));
+  h.snapshot = () => ({ raw: h.raw(), publications: h.windows.map(window => h.publications(window)),
+    dirty: h.windows.map(window => window.sent.filter(([channel]) => channel === 'set-dirty')) });
+  h.holdChoice = () => {
+    const entered = startupDeferred(), gate = startupDeferred(); h.releases.push(gate.release);
+    h.choose = async () => { entered.release(); await gate.promise; return structuredClone(h.response); };
+    return { release: gate.release, async reached(window = h.window) {
+      const actual = await startupWithin(Promise.race([entered.promise.then(() => true), window.actualContinuation.then(() => false)]));
+      assert.equal(actual, true, 'actual Main must reach the owned native ambiguity effect before this stale-input control');
+    } };
+  };
+  h.replaceContents = () => { h.window.webContents = contents(h.window); };
+  h.app = electron.app;
+  t.after(async () => {
+    h.releases.forEach(release => release()); h.windows.forEach(window => window.load.release());
+    await Promise.allSettled(h.windows.map(window => window.actualContinuation).filter(Boolean));
+    cachePaths.forEach((name, index) => { delete require.cache[name]; if (cacheBefore[index]) require.cache[name] = cacheBefore[index]; });
+    const current = fs.lstatSync(root); assert.equal(current.dev, rootIdentity.dev); assert.equal(current.ino, rootIdentity.ino);
+    assert.equal(fs.readFileSync(markerPath, 'utf8'), marker);
+    t.diagnostic(JSON.stringify({ retainedOwnedSourceChoiceRoot: root, ownerMarker: marker, nativeAcceptance: false }));
+  });
+  return h;
+}
+function assertSourceChoiceDialog(h, window) {
+  assert.equal(h.choices.length, 1, 'both eligible sources require one actual native choice');
+  assert.equal(h.choices[0].owner, window); assert.deepEqual(h.choices[0].options.buttons, SOURCE_CHOICE_LABELS);
+  assert.equal(h.choices[0].options.defaultId, 2); assert.equal(h.choices[0].options.cancelId, 2);
+}
+for (const response of [0, 1, 2]) test('startup source choice actual full Main selects enum ' + response + ' [FINITE_NATIVE_ADAPTER]', async t => {
+  const h = await sourceChoiceMain(t, { response: { response } }), before = h.raw(), window = h.create();
+  await h.finish(window); assertSourceChoiceDialog(h, window);
+  const publications = h.publications(window); assert.equal(publications.length, 1);
+  assert.equal(publications[0].content, response === 0 ? h.savedText : response === 1 ? h.recoveredText : '');
+  assert.equal(publications[0].kind, response === 0 ? 'scene' : response === 1 ? 'autosave' : 'empty');
+  if (response === 0) assert.deepEqual(publications[0].selectionRange, { start: 2, end: 7 });
+  if (response === 1) {
+    assert.equal(window.sent.some(([channel, payload]) => channel === 'set-dirty' && payload.state === true), true);
+    const saved = await h.command('cmd.project.save'); assert.equal(saved.ok, false);
+    assert.equal(h.saveDialogs.length, 1, 'separate recovery must request an untitled native target instead of writing the remembered scene');
+  }
+  const after = h.raw(); assert.equal(after[h.scene], before[h.scene]); assert.equal(after[h.globalAutosave], before[h.globalAutosave]);
+  if (response !== 0) assert.equal(after[h.settingsPath], before[h.settingsPath], 'Cancel/recovery cannot replace remembered scene continuity');
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_UNMODIFIED_MAIN_SOURCE_ENUM', response, kind: publications[0].kind,
+    savedSha256: sourceChoiceDigest(fs.readFileSync(h.scene)), autosaveSha256: sourceChoiceDigest(fs.readFileSync(h.globalAutosave)) }));
+});
+for (const specimen of [
+  { name: 'saved-only', saved: true, autosave: false, expected: 'scene' },
+  { name: 'autosave-only', saved: false, autosave: true, expected: 'autosave' },
+  { name: 'neither', saved: false, autosave: false, expected: 'empty' },
+  { name: 'zero-byte-autosave', saved: true, autosave: true, rawAutosave: Buffer.alloc(0), expected: 'scene' },
+]) test('startup source choice actual legitimate ' + specimen.name + ' has no ambiguity modal', async t => {
+  const h = await sourceChoiceMain(t, specimen), before = h.raw(), window = h.create(); await h.finish(window);
+  assert.equal(h.choices.length, 0); assert.equal(h.publications(window).length, 1); assert.equal(h.publications(window)[0].kind, specimen.expected);
+  assert.equal(h.raw()[h.scene], before[h.scene]); assert.equal(h.raw()[h.globalAutosave], before[h.globalAutosave]);
+});
+for (const [name, response] of [['null', null], ['array', []], ['missing', {}], ['string', { response: '1' }],
+  ['negative', { response: -1 }], ['outside-enum', { response: 3 }], ['fraction', { response: 1.5 }]]) {
+  test('startup source choice actual malformed ' + name + ' is handled without fallback', async t => {
+    const h = await sourceChoiceMain(t, { response }), before = h.raw(), window = h.create(); await h.finish(window);
+    assertSourceChoiceDialog(h, window); assert.deepEqual(h.publications(window), []); assert.deepEqual(h.raw(), before);
+    assert.equal(window.sent.some(([channel, value]) => channel === 'status-update' && /ошиб|не удалось|недоступ/iu.test(value)), true);
+    assert.equal(window.sent.some(([channel]) => channel === 'ui:recovery-restored'), false);
+  });
+}
+for (const failure of ['rejected', 'absent']) test('startup source choice actual ' + failure + ' native effect retains both inputs and has no successful empty fallback', async t => {
+  const h = await sourceChoiceMain(t); h.choose = async () => { if (failure === 'rejected') throw Error('owned native choice unavailable'); return undefined; };
+  const before = h.raw(), window = h.create(); await h.finish(window); assertSourceChoiceDialog(h, window);
+  assert.deepEqual(h.publications(window), []); assert.deepEqual(h.raw(), before);
+  assert.equal(window.sent.some(([channel, value]) => channel === 'status-update' && /ошиб|не удалось|недоступ/iu.test(value)), true);
+});
+for (const variant of ['saved-raw', 'autosave-raw', 'autosave-inode', 'saved-alias', 'autosave-alias', 'autosave-parent-alias', 'settings-pointer', 'window', 'contents',
+  'session', 'generation', 'profile', 'documents-root', 'userData-root']) {
+  test('startup source choice actual held decision rejects changed ' + variant, async t => {
+    const h = await sourceChoiceMain(t, { response: { response: variant.startsWith('saved') ? 0 : 1 } });
+    const hold = h.holdChoice(), window = h.create(), pending = h.finish(window); await hold.reached(window);
+    if (variant === 'saved-raw') fs.appendFileSync(h.scene, '\nnewer saved source');
+    if (variant === 'autosave-raw') fs.appendFileSync(h.globalAutosave, '\nnewer recovery source');
+    if (variant === 'autosave-inode') { const raw = fs.readFileSync(h.globalAutosave); fs.renameSync(h.globalAutosave, h.globalAutosave + '.retained-source'); fs.writeFileSync(h.globalAutosave, raw); }
+    if (variant === 'saved-alias' || variant === 'autosave-alias') { const original = variant === 'saved-alias' ? h.scene : h.globalAutosave;
+      fs.renameSync(original, original + '.kept-physical-source'); fs.symlinkSync(original + '.kept-physical-source', original); }
+    if (variant === 'autosave-parent-alias') { const directory = path.dirname(h.globalAutosave);
+      fs.renameSync(directory, directory + '-kept-physical-source'); fs.symlinkSync(directory + '-kept-physical-source', directory, 'dir'); }
+    if (variant === 'settings-pointer') { const other = path.join(path.dirname(h.scene), '02 other.txt'); fs.writeFileSync(other, 'Other remembered scene');
+      fs.writeFileSync(h.settingsPath, JSON.stringify({ lastExternalFilePath: other })); }
+    if (variant === 'window') { window.destroyed = true; h.create(); }
+    if (variant === 'contents') h.replaceContents();
+    if (variant === 'session') assert.equal((await h.command('cmd.project.new')).ok, true);
+    if (variant === 'generation') assert.equal((await h.signal('signal.localDirty.set', { state: true, generation: 1 })).ok, true);
+    if (variant === 'profile') { h.app.isPackaged = false; t.diagnostic('FINITE_APP_METADATA_PROFILE_CHANGE_NOT_REAL_ENTITLEMENT_DENIAL'); }
+    if (variant === 'documents-root' || variant === 'userData-root') { const key = variant === 'documents-root' ? 'documents' : 'userData';
+      h.paths[key] = path.join(h.root, key + '-replacement'); fs.mkdirSync(h.paths[key]); }
+    const current = h.snapshot(); hold.release(); await pending;
+    assert.deepEqual(h.snapshot(), current, 'a late response cannot bind, publish, clear dirty or rewrite either source/settings after this change');
+  });
+}
+test('startup source choice warm recreated window recovers separately without the previously bound scene target', async t => {
+  const h = await sourceChoiceMain(t, { autosave: false, response: { response: 1 } }), first = h.create(); await h.finish(first);
+  assert.equal(h.publications(first)[0].content, h.savedText); const savedRaw = fs.readFileSync(h.scene);
+  fs.writeFileSync(h.globalAutosave, h.recoveredText); first.destroyed = true; first.handlers.get('closed')();
+  const before = h.raw(), second = h.create(); await h.finish(second); assertSourceChoiceDialog(h, second);
+  assert.equal(h.publications(second).length, 1); assert.equal(h.publications(second)[0].content, h.recoveredText);
+  const result = await h.command('cmd.project.save'); assert.equal(result.ok, false); assert.equal(h.saveDialogs.length, 1);
+  assert.deepEqual(fs.readFileSync(h.scene), savedRaw); assert.deepEqual(h.raw(), before);
+});
+for (const specimen of ['unreadable', 'invalid-utf8', 'unreadable-saved']) test('startup source choice actual ' + specimen + ' source does not publish replacement text or ready fallback', async t => {
+  const h = await sourceChoiceMain(t, { saved: specimen === 'unreadable-saved', rawAutosave: specimen === 'invalid-utf8' ? Buffer.from([0x61, 0xff, 0x62]) : undefined });
+  const before = h.raw(), readFile = fsPromises.readFile; let reached = false;
+  if (specimen !== 'invalid-utf8') fsPromises.readFile = async function(file, ...args) { if (String(file) === (specimen === 'unreadable-saved' ? h.scene : h.globalAutosave)) {
+    reached = true; throw Object.assign(Error('owned input read denied'), { code: 'EACCES' }); } return readFile.call(this, file, ...args); };
+  try { const window = h.create(); await h.finish(window); if (specimen !== 'invalid-utf8') assert.equal(reached, true);
+    assert.deepEqual(h.publications(window), []); assert.deepEqual(h.raw(), before);
+    assert.equal(window.sent.some(([channel, value]) => channel === 'status-update' && /ошиб|не удалось|недоступ/iu.test(value)), true);
+  } finally { fsPromises.readFile = readFile; }
+});
+
+for (const stage of ['autosave-read', 'saved-read']) test('startup source choice checks source/context after the actual held ' + stage, async t => {
+  const h = await sourceChoiceMain(t, { response: { response: 0 } }), readFile = fsPromises.readFile;
+  const entered = startupDeferred(), gate = startupDeferred(); h.releases.push(gate.release); let held = false;
+  const selectedPath = stage === 'autosave-read' ? h.globalAutosave : h.scene;
+  fsPromises.readFile = async function(file, ...args) {
+    const raw = await readFile.call(this, file, ...args);
+    if (!held && String(file) === selectedPath) { held = true; entered.release(); await gate.promise; }
+    return raw;
+  };
+  const window = h.create(), pending = h.finish(window);
+  try {
+    const reached = await startupWithin(Promise.race([entered.promise.then(() => true), window.actualContinuation.then(() => false)]));
+    assert.equal(reached, true, 'the actual selected read, not a replacement loader, must reach the held boundary');
+    fs.appendFileSync(selectedPath, '\nchanged after the completed read');
+    assert.equal((await h.signal('signal.localDirty.set', { state: true, generation: 1 })).ok, true);
+    const current = h.snapshot(); gate.release(); await pending;
+    assert.equal(held, true); assert.deepEqual(h.snapshot(), current, 'stale read bytes cannot become a source decision or editor baseline');
+  } finally { gate.release(); fsPromises.readFile = readFile; await pending; }
+});
+
+test('startup source choice actual corrupt remembered settings cannot silently turn ambiguity into automatic recovery', async t => {
+  const h = await sourceChoiceMain(t); fs.writeFileSync(h.settingsPath, '{"sessionContinuityV1":');
+  const before = h.raw(), window = h.create(); await h.finish(window);
+  assert.deepEqual(h.publications(window), []); assert.deepEqual(h.raw(), before);
+  assert.equal(window.sent.some(([channel, value]) => channel === 'status-update' && /ошиб|не удалось|недоступ/iu.test(value)), true);
 });

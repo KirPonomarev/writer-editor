@@ -1,0 +1,244 @@
+# Startup saved scene versus separate autosave choice
+
+STATUS: SOURCE_FROZEN_REQUIRED_GATES_NATIVE_AND_DELIVERY_PENDING
+ROLE: BOUNDED_TASK_SPECIFICATION
+CLAIM_BOUNDARY: Explicit native startup source choice and downstream no-loss only; full first Mac remains open.
+TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026
+TASK_SPEC_REVISION: 4
+SUPERSEDED_TASK_SHA256: 8e7978a629ec2c9fc0b9f491552e57e307e944a7938f9a07929926a071c71dc9
+TYPE: CORE
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+ACTIVE_EXECUTION_CANON: v3.13a-final
+BINDING_BASE_SHA: efdf18c18ec63883090b256379c2fa422951dec7
+HEAD_SHA_AT_START: efdf18c18ec63883090b256379c2fa422951dec7
+AMENDMENT_CHECKPOINT_SHA: 7aeacc29e9a12b64b8d33ab3244097d9c5a84777
+TARGET_BRANCH: main
+PUSH_BRANCH: codex/startup-source-choice-20261026
+GROUP_ID: GROUP_04_STORAGE_AND_WRITE
+DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
+OWNER_AUTHORITY: Direct human26October2026 approval "Да, показывать такой выбор" selected saved scene versus separate unbound autosave versus Cancel after completion of the native system-path Save delivery. Standing complete first Mac development and transparent synthetic native-testing authority continues. Existing standard Darwin alias exception stays exact; no new security, dependency, platform, signing, secret or public-release authority.
+PREDECESSOR: PR2170 fully closed at literal efdf18c18ec63883090b256379c2fa422951dec7; candidate f593941 and merged main each20successful CI checks. Actual merged whole724Writer/548MainCallers/69path controls, other mandatory gates, fresh1476leaf/530member package,4native sessions/6exact raw readbacks/all4normal exits, clean source/protected/final guardrails and T777 closure independently verified. FINAL_REPORT.json, DELIVERY_CLOSURE.json and ROOT_NATIVE_OUTCOME_REVIEW.json in dated native-save-system-path reports are exact evidence; earlier pending source narrative remains historical.
+STORAGE: Final new materials and reports in dated2026-10-26--startup-source-choice task folders on T777 UUID F2FA9AE0-0081-3FC3-BF56-CC4280D16513; verified mount/writable before writes. New registered clean technical worktree on encrypted/unlocked/writable T7-Secure UUID D1F2E2C1-3210-4A39-A4E0-0AA0AD5110E2; owner canonical6de and prior proof worktrees remain preserved. Temporary owned APFS fixtures, active process IO, package and unique synthetic QA profiles are explicitly allowed under actual canonical OS temporary root, without TMPDIR spoofing. Closed useful data, logs, available metadata and compact full-readback containers go to T777; no cleanup/reseed/deletion.
+
+## MICRO_GOAL
+
+O: With a remembered eligible saved scene and a distinct nonempty global autosave, actual native startup presents exactly the approved three choices. Saved selection opens the saved bytes/cursor; separate recovery opens an unbound dirty copy; Cancel opens neither. Both originals remain recoverable through later New/autosave/Save/SaveAs/Quit/cold. The existing coordinator also preserves an occupied generated temporary it never acquired; a failure cannot create a successful receipt.
+T: Existing Main-owned startup QUERY/EFFECT -> validate settings and both sources -> native enum -> current-context and source revalidation -> existing source-specific editor projection. Later Kernel Save/SaveAs and governed autosave -> existing serialized queue and durable coordinator -> optional exact foreign-recovery retention -> unchanged persistence/ACK/lifecycle.
+H: At delivery baseM, restoreAutosaveIfExists always publishes global bytes before openLastFile and can retain a prior currentFilePath on window recreation. Later writeAutosaveFile and untitled ACK cleanup overwrite/delete that global without provenance; the existing coordinator can also truncate or remove an occupied generated temp before acquisition. Guarded source adoption, lazy durable retention, current-session cleanup ownership and exclusive actually-acquired Core temps predict correct source choice, unchanged foreign raw and refusal without false receipt on collision/staleness/failure.
+B: Protect saved scene/raw global until a verified retained copy exists, original continuity/cursor on Cancel/recovery, all9989outside-source bytes, original complete tests, accepted icons, all earlier source/evidence/profiles including closed mergedSave profiles and115old raw files/9epoch journal. Only the revision4first-adoption renderer argument and generated bundle are additionally admitted; no Core format, project/history migration, broad startup rewrite, generic recovery registry or new platform. One normal PR revert.
+P: Same actual whole-Main causal tests RED on unchanged M, root review/frozen tests, surgical Main correction plus necessary existing-Core temporary ownership repair, identical GREEN and no-loss/stale/fault controls. Then relevant whole affected/source gates/full npm/current CI, early fresh candidate real native three-choice cases/Save/UndoRedo/Quit/cold/raw readback before push, normal merge and literal merged revalidation.
+I: Exact M tree d007558c4af0a09c6616507547460c168ae78b4a;30declared paths/10018initialsource members plus the new task;9989original protected; exact source/raw/continuity/window/session/root/generation/profile/owner and artifact/ASAR/PID/profile identities. No cache, old stage/lease or release transition.
+
+## ARTIFACT
+
+One bounded Writer recovery outcome through existing Main and atomic Core seams. The initial separate executor phase appends real behavior controls to the existing WP302/WP307 suites. Preserve the original64693WP302 bytes after reversing the sole revision3strict expected-call line exception, and every459981WP307 byte; all61WP302+724Writer original cases, callbacks/assertions and names remain. The675appended behavior-test lines stay byteexact. The complete runtime-bridge suite retains its entire782line prefix and25original cases, with revision4append-only controls: the previously measured startup bundle86 is61WP302+25bridge, and the required complete bundle preserves810original cases. Main remains exactly9e16bdd505c52119cf0192c45f759feba562683103a4bc810f02e217d87f6960 during RED. No runtime export, test hook, private writer or fabricated raw/native evidence.
+
+Root causal review froze both suites, and Main-only checkpoint9b6b6ebe5d96bab05ef886de4cd4fd273a320b9c now preserves269added/deleted lines, source-pinned syntax0 and every10018other source byte. It is unaccepted runtime, with no corrected whole or native proof. A genuine exclusive-open EEXIST then exposed an inherited Core cleanup defect: the existing coordinator unconditionally removes the occupied generated temporary before acquiring it. This blocks the same no-loss delivery and requires the narrow amendment below. Main cumulative delta remains at most320from M; the existing Core coordinator at most60added/deleted lines. Total appended runtime-behavior tests remain at most1400lines across WP302/WP307/WP200 and the revision4runtime-bridge append; current549WP302/WP307 lines are frozen; revision3admits only the one exact old WP302 source-expectation line described below. The original p0 autosave suite remains an unused allowance for a measured transparent finite-input compatibility case only, with no weakened assertion and explicit Root review before any edit. No formatting/refactor/module extraction or new writer. Root owns current assurance; all historical carrier bodies/verifier predicates/skip policy and17MacUNKNOWN remain.
+
+### Necessary existing-Core temporary ownership amendment
+
+The human already authorized complete first Mac development and this recoverable source-choice outcome. The earlier Main-only boundary was Root-authored implementation planning, not a new human prohibition. Evidence establishes the concrete need; it creates no authority. This remains one GROUP04 Writer recovery vertical slice, original M base, branch/PR/full delivery and one rollback. There is no new product feature, format, platform, dependency, network, security capability, public command/IPC or persistence writer.
+
+Root actual public-component receipt CORE_TEMP_CLEANUP_LIMIT_ACTUAL_FS_02.json SHAae609f078a5d83bde77028374551b51be6036af8f5cfb69c1631081f054ffdc4 uses the unchanged Core5201bytes SHAcfd4693f0d343f226eb25774db17473004e0e3859974f80064a608c2ad2bced0. An actual occupied physical temp and real O_CREAT|O_EXCL|O_NOFOLLOW open return EEXIST; Core reports TEMP_WRITE failure yet removes that unowned name. The global stays byte-exact. This is component proof, not current corrected Main or native acceptance. Original finite-error probe remains separately labelled.
+
+Core may only create its generated temporary exclusively, acquire cleanup authority after successful creation, close any acquired handle on TEMP_WRITE failure and remove only its own temporary. Keep the public API, receipt/ACK shape, phase sequence, target/durability/readback, classifySaveArtifacts and existing readable temp names unchanged. This is active-canon TierB Core logic without format/migration change; affected roundtrip/recovery/negative checks are mandatory. No global FS shim, source loader replacement, synthetic result or new writer may mask failure. Wider pathname-replacement/power-loss immunity is not claimed by these controls.
+
+The separate actor first appends exactly three actual-Core cases to the existing WP200 after all4063original bytes SHAd528cbd996802da82e36898a275a0bb79ce4ca3da9e361878dad51e2a2950148, at most200newlines. Preserve all10old cases/6nested and every old assertion. Cases: delegated incoming Core flags on an occupied physical temp; genuine exclusive/no-follow EEXIST without unowned cleanup; an acquired real FileHandle with a short write and controlled ENOSPC, actual close before only-owned cleanup and exact incumbent/no receipt. Record observed raw/physical/receipt/close data before assertions; early RED earns no downstream credit. The predicted whole13case denominator is not proof before actual execution.
+
+Whole existing Physics on9b executed3cases:2data/recovery passes and1strict source-literal failure because its exact Core call omits the new fsAdapter argument. CHOICE_ADAPTER_PHYSICS_RED_01.PACKET_INDEX.json SHAce3d881362211b8b22aafa0db709e772b23bdd986577b48b8eb0c886cbd90d6b retains actual output and unchanged10019source identity. Only this one expected exact argument literal may include fsAdapter; preserve every other byte, ACK-call set, negative assertion and24real Unicode writes. Do not add a permissive optional pattern or dead runtime branch for a scanner.
+
+After Root full causal Core RED review and test freeze/checkpoint, a new fresh Core phase may change the coordinator and exactly the two Main openRecoveryFile flag-acceptance/mapping lines needed to accept wx with the identical exclusive/no-follow flags. Every other Main byte stays9b unless an actual new failure supports a separately bounded ticket. No Core/test/Main permission comes from an uncommitted draft or this receipt alone: exact clean phase bootstrap/declaration/preflight/ticket remains mandatory before edits.
+
+Current source assurance adds this task, coordinator and WP200 to DATA: predicted820admitted/672sourcepins. The new current carrier additionally binds those three plus already-DATA-bound Physics and R5 lifecycle physics: predicted352bindings+1guard. All74old carrier bodies and entire verifier remain exact, inventory1603/release66/all17UNKNOWN fixed. Execute normal producers/checkers and all corruption controls; counts are predictions until observed. Root records the cause, scope, limits and same rollback in the final factual/ARCH_DIFF pass.
+
+### Actual adapter and observer compatibility amendment
+
+All six identical complete frozen-source executions at clean d7140d34a3b3836aaf57c0081d5ba509e5b998b1 are retained. Actual startup123=122pass1failure; path72=71pass1failure; Coreaffected258=257pass1failure; Core13+Physics3=16pass; Writer749=710pass39failure; otherMaincallers548=543pass5failure. Every run has0cancel/skip/todo, exact source before/after and closed fully reread streams. These47failures are not accepted green. The65new source-choice/Core ownership cases actually pass. Root independent review ROOT_SEMANTIC_REVIEW_01.json SHA2dc7883c536012285ed679be547166a4a7bf9c2e31ee524223aa80a05e61fb02 joins all10019physical source bytes and65owned fixture roots/772members, full compact35006byte archive readback and available native metadata0errors; originals remain.
+
+The39old Writer failures are26typed E_SAVE_TEMP_WRITE and13independent reads of missing actual Environment history output in existing ENV/Theme setup/dependencies. This is a real Main adapter incompatibility: createEnvironmentEpochPort still requires flagw before its native exclusive/no-follow open while the repaired Core requestswx. The only additional runtime delta is that unique expected flag literal w→wx. Preserve the same target/name/root constraints, O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW0600, fstat/nlink/ownedTemps, all current capability/session/generation/dirty/CAS checks, rename, parentfsync and readback. No fallback or other runtime change. Current Main269lines predicts271within320, Core13within60. The internal TEMP_INVALID cause follows directly from current source; the public raw result is only TEMP_WRITE, not a captured hidden message.
+
+Three old source-observer assertions require the exact current call: WP201 and R5 lifecycle physics add the actual fsAdapter argument to the same awaited/returned Core delegation. WP302 keeps the same selectionRange and mandatory isCurrent→E_EDITOR_STARTUP_WINDOW_STALE guard while requiring captured filePath:lastFilePath and the entire actual onCommittedSettings callback, including current effect/window, all other source snapshots and exact committed settings bytes. Exactly one existing line in each file changes; inverse restores every other byte. No optional branch, permissive wildcard, runtime workaround or behavior-assertion removal.
+
+Five existing Word export lifecycle checks fail in wordExportQuitFixture, including actual ReferenceError recoveryContext is not defined; four later lifecycle observations also fail. Only that partial VM setup may consume the actual Main recoveryContext function and minimal faithful existing window/profile/documents/userData/owner/roots prerequisites. Do not replace it by a constant or unconditional success; all export/activation/readback/overlap/cancel/stale-close callbacks and assertions remain byteexact. No Word/native workflow is started.
+
+This is the same owner-authorized outcome, original M base, one PR/revert and unchanged recovery design. Root completes fresh exact clean d714 normative/scoped factual/source reads and27path preflight before this revision3edit; all9992original outside-source bytes remain protected. Previous26path preflight had no repository write. Task E0 and clean task-only checkpoint precede one separate actor fresh admission limited to the one Main literal, three expected-call lines and the Word helper setup. Main/Core/other tests remain frozen outside those exact exceptions. Root independently reviews all inverses and then executes identical whole suites, current source/baseline/native/CI/full delivery and literal merged verification. Source observations do not create authority or waive any gate.
+
+### Necessary first-adoption false-dirty correction
+
+The same unfinished source-choice delivery remains bound to original M, one branch/PR/revert and the human-approved no-loss outcome. Root-authored no-renderer planning is amended before edit; evidence establishes necessity, never authority. No interaction design, new feature, command/API/IPC, persistence format, dependency or storage writer is added.
+
+Clean F1 7aeacc29e9a12b64b8d33ab3244097d9c5a84777 independently completed all26source commands:25exit0 and known fullauditexit1. Full canonical npm exited0 with groups3of3,3544unit cases3485pass59named skips,20of20; source remains exact. Its fresh unsigned1476leaf/530member package was verified and archived. These receipts retain F1 identity and do not prove a future corrected head.
+
+Actual first native Saved choice showed the correct Unicode text and remembered selection0..5, but strict raw readback failed: the plain82B saved file SHA6ee1b3b768d082f9ca43b622c5a0c9a4c5d73cc880a62be1bc104c3a280bf198 became682B SHA24afd90583fbae2fa388476a94b015d9818fa994735313c8fc208fa6cabfbb84 before any author input. The separate82B global remained exact. Normal native Quit and actual process exit0 were observed; no completed warm/cold case or native acceptance follows. Immutable failed-profile archive ef16e862615eca684addb80333b0a423935d10d9dae83ccb99fd22fe98766633 contains120members independently reread. After interruption, old temporary IO/profile/build roots are absent for an unknown reason and original native control JSON is unavailable. RESUME_STORAGE_OBSERVATION_01.json records that limitation; never recreate raw originals, reseed a historical profile or retag identity.
+
+Root component INITIAL_ADOPTION_DIRTY_COMPONENT_01.json SHAec7e7d702f7b86b006af4433d302ead2e8a335423c8a7ceea1f4c5024ca6430e executes the actual installed Editor.prototype.setEditable: its default emitUpdate=true emits update even for docChanged=false; explicitfalse enables without an update. Actual production first-adoption callback calls setEditable(true) after checked payload publication. The actual index onUpdate forwards it to handleTiptapDocumentUpdate, markAsModified, localDirty lifecycle and deferred autosave. This explains the native raw failure but is finite component proof, not a corrected native PASS.
+
+Before runtime edit the separate actor appends a maintained regression after every original byte of sector-m-tiptap-runtime-bridge.test.js (782lines/25cases, SHA recorded in SCOPE4_PRE_WRITE_IDENTITY_01). Reuse its existing actual installed Editor/PM startup host; wire actual initTiptap/onUpdate to the complete real onEditorSetText callback and actual handleTiptapDocumentUpdate/markAsModified/scheduleAutoSave. Consume real parser/checked-document adapters. Finite presentation/lifecycle/timer observation ports are explicitly labelled; no fake emitter, synthetic SaveACK, real private writer or source-only positive matcher. First valid authoritative payload must enable editing with unchanged generation, false localDirty, no dirty lifecycle and no autosave timer/request. Real Unicode PM insertion and actual Undo/Redo must still emit dirty/generation/autosave observations. Invalid first parse/schema and existing review readonly lock remain refusals. Existing25cases/all assertions and all675earlier added behavior-test lines stay byteexact; combined new behavior lines remain <=1400.
+
+Root reviews complete unfiltered causal RED on unchanged F1 runtime, freezes test bytes/checkpoint, then issues a fresh narrow runtime ticket. Only the first-adoption primaryTiptapEditor.setEditable(true) becomes setEditable(true,false), at most2added/deleted renderer source lines. Existing npm run build:renderer regenerates editor.bundle.js; every other tracked generated output must stay exact. No blanket update suppression, Main/Core change, format migration, fixture switch to doc-v2, raw-oracle relaxation or unrelated refactor.
+
+Fresh exact clean F1 bootstrap, full ordered normative/scoped factual2B reads,30path declaration05/preflight0, complete10019source identity and literal fetched origin/main=M precede revision4. Original outside protected denominator is9989. TaskE0/clean task checkpoint precedes the separate actor's own fresh test-only preflight; Root review precedes runtime admission. All previous Main/Core behavior remains frozen. Current-only assurance must preserve75historical carrier bodies and every verifier predicate, fixed1603inventory/66release pins/17UNKNOWN. Final current whole/source/affected/canonical baseline/package/native/currentCI/normalmerge/literal merged proof remain mandatory. Native retries require fresh owned APFS profile/control/build identities, the same plain82B fixture and exact raw-byte oracle, with all available old archives protected. No existing failure or missing raw control is relabelled green.
+
+### Native choice and publication contract
+
+Keep restoreAutosaveIfExists boolean compatibility: false means genuine absence/empty autosave so existing saved/empty continuation may run; true means source selection was handled. With both admitted sources use the existing native message box and these exact labels in order:
+1. Открыть сохранённую сцену
+2. Восстановить автокопию отдельно
+3. Отмена
+
+Use defaultId=2 and cancelId=2. Validate raw response as a plain object and exact safe integer0/1/2 before interpretation. A thrown, absent, malformed or unavailable result is handled visible failure, never automatic saved/autosave fallback. Explicit response2/Escape chooses neither source and publishes only the existing typed empty initial baseline, without saveLastFile or source writes.
+
+Saved selection consumes the existing openLastFile route with an exact captured source/continuity guard, preserving legitimate saved cursor and transaction recovery. It must not re-resolve a changed settings pointer into a different file after the native decision. Separate recovery explicitly sets currentFilePath=null, establishes a fresh authoring baseline/session then dirty state, and publishes only validated autosave bytes with existing autosave identity. It does not replace remembered saved-scene continuity or gain that scene's write target. A warm recreated window is covered as well as process startup. Only-saved, only-valid-autosave and neither retain their legitimate existing terminal behavior; no modal is invented where there is no ambiguity.
+
+Capture actual window/webContents, lifecycle/session/subject/file, generation, root/documents/userData, active bootstrap/owner, profile and current allowed roots before awaits. Bind eligible source path, physical regular/no-follow identity, complete raw bytes/digest and authoritative continuity fields. Revalidate after reads/dialog/preparation and immediately before bind/publication/settings effect. A self-owned terminal session reset is synchronous and bounded; it cannot make a previously retired effect current. Unreadable/corrupt/stale sources retain raw data and produce failure, without silent fallback or fabricated ready/ACK.
+
+### Autosave provenance and retention contract
+
+The named retention target is the existing owned autosave directory plus fixed internal basename retained-<lowercase64hexSHA256>.txt, where SHA is over the complete incumbent raw Buffer. It is not selected by renderer or external payload. This is a readable content-addressed recovery copy, not a new automatic recovery catalog or browsing UI. Never prune it automatically.
+
+A process-startup incumbent is foreign. RAM write ownership may be acquired only from a real still-current successful global coordinator write/readback, bound to physical path/root/session and exact raw bytes/identity. Same text, same hash, visibility, a startup restore or historical ACK does not grant ownership. Session reset retires it; a late completion cannot renew it.
+
+Before replacing a foreign incumbent, preserve its entire raw Buffer through the existing durableSaveTransaction coordinator with a narrowly delegating fsAdapter, temp and parent fsync and complete independent byte/digest readback. Publication of retained content is exclusive/no-clobber. An existing retained target is reusable only when it is an admitted physical regular file with exact matching raw bytes; a differing file or any alias refuses. Recheck current effect authority and incumbent raw/identity at the actual global publication boundary. Retention failure, readback failure, stale context or collision leaves the incumbent unchanged, reports non-success and cannot clear dirty/lifecycle.
+
+Cleanup after a valid untitled Save/SaveAs may unlink only the exact current-session successfully written global autosave after raw/identity/context revalidation. A foreign/changed incumbent stays in place; it is not deleted merely because some other draft saved. If a later new draft has overwritten global, the foreign copy already has a verified durable retained file. Add the missing after-await target/generation check before the same-content autosave ACK. Do not relabel retained bytes as a new global owner or roll back/delete any already valid published document.
+
+The existing K1/SEC0 no-follow law and the exact PR2170 system alias adapter remain. No generic realpath laundering or arbitrary parent/leaf symlink acceptance. Product schemas, content normalization, Core public contract/receipt/phases, native helper and IPC/command catalogs stay unchanged; the separately declared generated-temp acquisition repair is the sole Core code exception. Check complete old raw bytes independently; never infer survival from UI or a writer's self-count. Path checks do not claim immunity to privileged OS replacement between syscalls or physical power loss.
+
+## ALLOWLIST
+
+- docs/CONTEXT.md
+- docs/HANDOFF.md
+- docs/WORKLOG.md
+- docs/ARCH_DIFF_LOG.md
+- docs/tasks/2026-10-26--startup-source-choice.md
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- scripts/ops/release-candidate.mjs
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/sector-m-scope-map.json
+- src/main.js
+- src/core/save-coordinator-v1.cjs
+- test/unit/r24-wp307-writer-local-profile-integration.test.js
+- test/unit/r24-wp302-session-continuity.test.mjs
+- test/unit/r24-wp200-durable-save.test.js
+- test/unit/r24-wp200-durable-save-physics.test.js
+- test/unit/r24-wp201-project-transaction.test.js
+- test/unit/r24-r5-lifecycle-physics.test.js
+- test/contracts/rtk-word-scene-identity-main.contract.test.js
+- src/renderer/editor.js
+- src/renderer/editor.bundle.js
+- test/unit/sector-m-tiptap-runtime-bridge.test.js
+- test/unit/r24-p0-autosave-integration.test.js
+- test/contracts/rtk-word-comment-return-apply.contract.test.js
+- test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js
+
+## DENYLIST
+
+Every unlisted path/effect. All Core except the exact declared save coordinator; command catalog/Kernel, utils, renderer except the exact revision4first-adoption argument and existing generated editor.bundle.js, HTML/CSS/preload/IPC, schema/format/migrations, workflow, dependencies, icon/font/token/palette/layout and policy/validator changes; arbitrary aliases/outside roots; executable plugins/cloud/network truth; new timers/providers/daemons/worker/registry/general retention framework; private/default/old QA profile mutation or fixture reseeding; old receipt/history rewriting; filtered tests, relaxed oracles, skip/todo/zero-test green; reset/stash/clean/rebase/amend/force or other-chat messaging; signing/notary/public release. Optional-service owner restriction is binding and remains unchanged.
+
+## CONTRACT / SHAPES
+
+CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
+
+Original fresh exact M bootstrap and complete normative/scoped2B factual/current source reads, registry/disks/current remote+literal fetch/clean registered technical branch,10018physical source comparison and21path declaration/preflight actual0 precede the first task edit. The necessary scope2amendment then repeats fresh exact clean9b bootstrap/remote+fetch/full normative/scoped factual and current Core/callers/whole WP200/Physics reads; fresh24path declaration/preflight0 precedes this task revision. All original admissions and receipts retain their own bytes/heads; new original protected denominator is9995. Root task E0 and an ordinary task-only checkpoint precede separate actor's fresh clean test-only declaration/ticket. Revision3then uses the same fresh clean d714startup, complete required reads, actual47failure review and27path preflight before task edit; new taskE0/checkpoint precedes the exact compatibility actor ticket. Revision4uses fresh clean F1reads/fetch/30path preflight and9989original protected sources before task edit; taskE0/checkpoint precedes the separate actor regression ticket. Root alone owns docs/current mechanical assurance and complete delivery.
+
+FEATURE_INTEGRATION_MANIFEST_V1:
+featureId=STARTUP_SAVED_SCENE_SEPARATE_AUTOSAVE_CHOICE; featureVersion=1;
+domainOwner=ExistingCoreDocumentAndMainStartupRecovery; authoritativeData=SavedRawSceneAndGlobalOrRetainedRawRecovery;
+derivedData=SingleBoundedChoiceSnapshotAndCurrentWriteProvenance; commandIds=ExistingKernelOpenSaveSaveAsAndGovernedAutosave;
+eventTypes=ExistingEditorAndSaveReceipts; queryIds=ExistingReadOnlySettingsSourceEligibility;
+productProjectionIds=ExistingEditorSetText; capabilityIds=ExistingOpenSaveAvailability;
+authorityMap=CoreTruth_KernelMutation_MainStartupAdapter_NativeForm;
+identityKeys=WindowContentsSessionSubjectFileGenerationProjectOwnerProfileRootsRawIdentityContinuity;
+revisionPolicy=ExactRawAndLifecycleBindingNoStalePublication;
+writePath=ExistingQueueDurableCoordinatorAndKernelHandlersOnly;
+readPath=RawValidatedSourcesToImmutableEditorProjection;
+requiredProductPorts=ExistingNativeDialogFileReadAndDurableCoordinatorAdapter;
+requiredDesignOsPorts=ExistingReadOnlyCapabilityAndEditorProjection;
+adapterRequirements=StrictRawEnum_NoFollow_ExclusiveRetention_ExclusiveOwnedTemporary_ExactReadback;
+surfaceManifests=ExistingNativeMessageBoxWithThreeOwnerLabels;
+slotRequirements=ExistingOwnedWindowModalSlot; supportedWorkspaces=WRITE;
+platformAvailability=ExistingElectronDesktopNativeDialog_MacActuallyQualified;
+accessibilityRequirements=VisibleVerbs_CancelDefault_Escape_Keyboard_OSFocusAndAX;
+fallbacks=ExplicitCancelOrHandledFailure_NoSilentSourceSelection;
+stateClasses=PROJECT_STATEprotected_AUTHORING_WORKING_STATEnoLoss_DERIVED_STATEbinding_SHELL_STATEcontinuity_TRANSIENT_STATEdialog;
+persistenceClass=ExistingRawRecoveryWithNoSchemaMigration; migrations=NONE;
+recovery=VerifiedNonPrunedRawRetentionBeforeForeignReplacement;
+rollback=OneNormalPRRevertWithAllRawCopiesRetained;
+performanceBudget=StartupAndExistingIdleSaveOnly_NoPerInputWork_NoNewTimer_OneDigestAddressedCopy;
+securityBoundary=UnchangedCoreAndDarwinException_NoNewRendererAuthority;
+lifecycle=ExactStartupSessionThenCurrentKernelOrAutosaveReceipt;
+negativeBypassChecks=WrongNativeEnum_StaleSourcesAndOwners_NoForeignCleanup_NoClobber_NoFalseACK;
+evidenceBindings=ExactWholeTestsRawReadbacksAndActualOwnedNativeBuild;
+currentReality=AutomaticAutosavePrecedenceAtM_TargetChoiceNotYetImplemented;
+integrationMode=EXISTING_SEAM; noSpeculativeRegistry=true.
+
+SURFACE_MANIFEST_V1:
+surfaceId=EXISTING_NATIVE_STARTUP_SOURCE_CHOICE; surfaceKind=NATIVE_MESSAGE_BOX;
+featureId=STARTUP_SAVED_SCENE_SEPARATE_AUTOSAVE_CHOICE;
+allowedPostures=ExistingDockedWindow; allowedTransforms=NoneCustom;
+slotMap=ExistingMainOwnedNativeModal; platformAvailability=ExistingNativeAdapter;
+fallbackSurface=ExistingTypedEmptyOrVisibleFailure; designBindings=DirectOwnerThreeLabelsAndPlatformNativeRendering;
+projectionAdapter=ExistingEditorSetTextAfterMainValidation; inputIntents=Saved_SeparateRecovery_Cancel;
+commandRepresentations=NativeSourceEnumOnly_NoPathPayload;
+contextRequirements=TwoValidatedSourcesAndCurrentOwner; readProjectionIds=ExistingEditorSource;
+stateOwnership=NativeDialogTransient_SourceAuthorityMainAndCore;
+interactionStates=Absent_SingleSource_Ambiguous_Chosen_Cancelled_Failed_Stale;
+accessibilityContract=CancelDefault_Escape_VisibleLabels_NativeFocusAndAX;
+responsiveContract=OSNativeLayout_NoCustomGeometry;
+performanceClass=StartupModalOnly; evidenceBindings=ActualOwnedNativeChoiceAndRawNoLoss.
+
+### DESIGN_TOOL_ROUTER
+
+DESIGN_TOOL_ROUTER: APPLIED
+DESIGN_VISUAL_QUESTION: How to name and distinguish the three already-approved source outcomes while preserving native focus and no-loss.
+DESIGN_SOURCE_OF_TRUTH: Direct human three-label choice, existing native message boxes and current architecture/accepted icon.
+DESIGN_SELECTED_DIRECTION: Native message box; saved scene, separate unbound autocopy, Cancel default; existing OS styling.
+DESIGN_RESEARCH_SOURCES: Fresh brain:refs, current actual Main/native patterns, native-fluency-typographic-sharpness.md, ui-craft skill and relevant references. External design source: none.
+DESIGN_AUDIT_TOOLS: Source-bound tests first; later actual native keyboard/AX/screenshot and independent raw readback, bounded accessibility/flow/finalize review. No check is credited before execution.
+DESIGN_TOOL_DEVIATIONS: Higher-priority owner prohibits automatic optional integrations; legacy machine enum APPLICABLE_LAZYWEB_FIRST is retained solely for compatible router applicability, never as a claim of service use. No design exploration, prototype, CSS/font/palette/token rewrite or new installation is needed for this already-selected native direction.
+
+Design brief: Yalken is an offline writing environment for an author on a Mac. Source truth and recoverable text outrank presentation convenience; ambiguity is explicit; Cancel preserves both; recovery never borrows another document's saved target; native controls remain familiar. Success is the correct chosen text/cursor and independently preserved unselected raw data across later writing and restart. A new recovery browser, general history catalog, product style changes and full release qualification are outside this surface. Existing native platform tokens render the dialog; no parallel custom token system is introduced.
+
+## IMPLEMENTATION_STEPS
+
+1. Root task E0/checkpoint, then fresh actor test-only declaration/ticket. Append actual whole-Main controls. Run complete WP302/WP307 plus the unchanged complete runtime-bridge file on unchanged Main; record every original case, observed RED and positive controls, source and raw fixture bytes.
+2. Root independently reviews causal before/after raw behavior and all existing test prefixes, freezes tests and original bytes. Fresh clean Main-only declaration/ticket produces unaccepted9b. The independently reproduced Core dependency defect requires the declared narrow amendment: after task E0/checkpoint, a fresh separate test-only ticket appends3WP200 cases and aligns the one measured Physics source literal. Root executes whole Core RED on unchanged coordinator and freezes all tests before a fresh Core/limited Main-wx ticket. No unplanned source/test change or runtime workaround for an incomplete fixture. Revision3actual whole47failure review permits only the measured Environment flag compatibility, three strict expected-current-call lines and faithful existing Word partialVM setup; all original behavior oracles remain.
+3. Revision4first executes complete appended bridge RED on unchanged renderer; Root freezes/reviews, then a separate runtime ticket changes only the first-adoption argument and normal generated bundle, followed by identical whole GREEN. Execute identical whole frozen tests and original path/save/coordination/lifecycle/compatibility chains. Check normal/boundary/malformed/stale/queued/retention-fault/idle-ACK behavior. Semantic checkpoint commit immediately; root reviews complete/inverse diff and protected source/profile bytes.
+4. Root assembles minimum current factual/ARCH_DIFF_LOG/approval/DATA/inventory/certificate/release companion set. Preserve all historical carriers, verifier body, fixed inventories/classes and all17UNKNOWN; exact current source witness only. Then freeze final committed candidate.
+5. Required whole affected and source gates, canonical npm baseline (owned test output retained separately), E0/OSS/audit/perf/guardrails/current CI; early exact new unsigned build/native three source choices, Unicode/UndoRedo/Save/SaveAs/Quit/cold and actual raw/retained recovery readback before push. Genuine native same-path restored scene must remain unchanged after unbound Save route. Transparent synthetic setup is labeled fixture, not organic author history.
+6. Normal complete push/attachedPR/currentallCI/merge. Fetch literal merged main in clean verification worktree; repeat relevant whole tests/newbuild/native/CI and independent closed bundle/profile/container/metadata evidence. Continue next permitted full Mac gap, not a plan-only or one-fix stop.
+
+## CHECKS
+
+CHECK_01_PRE_ADMISSION: Original new-scope M bootstrap/ordered reads/current code+tests/registry/disks/remote+fetch/clean21path preflight;10018source identities/9998protected, prior Save closure and direct human choice. Before the necessary same-task amendment, fresh clean9b bootstrap/remote+fetch/full normative/scoped factual/Core/current callers reads and24path preflight0;9995original protected. Revision3fresh exact clean d714reads/remote+fetch and27path preflight0 protect9992original sources, after actual six-whole-run review; task E0/checkpoint and a phase-specific fresh preflight precede the exact actor compatibility edits. Every historical receipt keeps its own exact bytes/head.
+CHECK_02_POST_TASK: Task E0 actual0 and clean task checkpoint; actor fresh test-only admission before any test edit.
+CHECK_03_POST_CAUSAL_RED: Actual unchanged whole Main has zero ambiguity modal/incorrect saved-Cancel publication and foreign recovery overwrite/cleanup; new positive single-source controls and every original810case remain. Actual existing Core occupied-temp/fullWP200 and Physics reproductions are independently reviewed, with original10Core/3Physics cases preserved. Setup/import errors and unreached downstream controls are not causal product proof.
+CHECK_04_POST_GREEN: Revision4valid first adoption is editable without authored dirty/generation/autosave while actual Unicode/Undo/Redo still emits all changes; invalid/review readonly controls retained. Same frozen complete suites, exact source-specific publication and null recovered file target; Cancel source/continuity preservation; genuine after-dialog/queued/source/lifecycle/capability negatives; verified exclusive retention before foreign overwrite, no foreign cleanup or stale idle ACK; actual Core occupied-temp/no-truncate/no-unowned-unlink/owned-handle-close cases and wx Main adapter work without receipt/phase/API drift.
+CHECK_05_POST_SOURCE: Original K1/SEC0, Save/coordinator/lifecycle/startup/Core/affected chain; whole current Word/release/source/DATA/inventory/certificate/corruption/governance/E0/OSS/audit/perf/guardrails and canonical baseline. Previous IME failures, fullaudit2HIGH8MODERATE/prod0 and59named skips remain explicit.
+CHECK_06_POST_NATIVE: Keep the original plain82B saved fixture and strict no-author-input raw equality; missing historical control bytes earn no acceptance. New exact candidate unsigned package and qualified unique owned profiles; real native buttons, keyboard/Escape, separate recovery unbound save path, saved/Cancel source preservation, Unicode/UndoRedo/ordinarySave/SaveAs/nativeQuit/cold and independent raw/retained file readbacks. Full closed profile/bundle/container and available metadata, no forged OS identity or old-profile reseeding.
+CHECK_07_POST_DELIVERY: Reviewed clean bounded commit/push/attachedPR/currentfullCI/normalmerge and literal merged exact source/relevant whole tests/freshbuild/native/currentCI. All17Mac qualifications remainUNKNOWN; no fullMac release or original private actuator clearance.
+
+## STOP_CONDITION
+
+Unknown source/base/scope/authority/owner; foreign dirty state; missing or stale binding; loss/false ACK; arbitrary path/link; unverified retention or same-signature third failure; weakened original oracle; required gate failure; unmergeable binding-base drift; dependency/runtime network/security expansion. Preserve expected/actual/seed/head/hashes and one next hypothesis. No silent rebase, fallback, skip, synthetic success or unrelated cleanup. Routine implementation choices within this explicit outcome do not require repeated owner approval.
+
+## REPORT_FORMAT
+
+AGENT_FINAL_REPORT_V1.schema.json and CODEX_OUTPUT_POLICY: exactly one text block KEY:VALUE; basenames only/no slash paths/URLs; exact task/before/after/mergedSHA/scope/oracles/counts/skips/commit/push/PR/CI/merge/exact verification/limits/rollback and one next step. Full first Mac goal remains active until its complete actual required outcome.
+
+## FAIL_PROTOCOL
+
+Retain original native Save failure/previous worktrees and every closed old and candidate/merged QA profile, raw115documents/Pulse and separate9epoch journal. No historical result is relabelled. Preserve two old IME primary-path harness failures, fullaudit2HIGH8MODERATE/prod0,59named baseline skips, prior private-actuator unknown effects and old Review hypothesis. Neither new source choice nor retained-copy bytes establish full Atlas/maps/WSE/Pulse/environment/MR06/signing/notary/public-release acceptance. Black Box and additional platforms are later.
+
+### Current source observation before final qualification
+
+Exact runtime checkpoint0b8cdbdb392f88451a86f733042728b7a324aac3 has all six complete semantic runs GREEN: Writer749, startup123, path72, Maincallers548, Core+Physics16 and50-file Coreconsumer258, each0fail/cancel/skip/todo. Original62source-choice and3Core controls execute with every old case retained. Root40a69e33578fef5942fc14180208752f4312174dea8f47cc098ae42efea16ae0 binds all10019source bytes/65ownedroots/772fixture members/full compact35038byte readback/native metadata0errors. The47d714 failures are immutable; their correction uses exactly the revision3compatibility deltas and all675new test lines remain frozen.
+
+Source assembly adds the new352binding/oneguard current carrier and820DATA/672pins; keeps74historical carrier bodies and every verifier predicate, with only one current lookup-item append. Inventory1603/classes/lanes/skips,66release pins and17UNKNOWN remain. Mechanical source witnesses are not current normal-gate/native/delivery acceptance. Required final committed source/affected/canonical baseline and new native three-choice no-loss/Save/history/Quit/cold beforepush, currentCI/normalmerge/literal merged verification remain. No fullMac/MR06/signing/notary/public-release or wider pathname-replacement/power-loss claim.

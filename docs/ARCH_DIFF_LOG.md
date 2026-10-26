@@ -637,3 +637,27 @@ Same owner-approved native Save delivery and original704rollback base. The new b
 - Риск: missing guard or broad error translation could allow stale publication; frozen held-dialog/fsync entitlement and whole source/native gates remain required.
 - Rollback: normal revert of the same bounded native Save PR; source/test/history/profiles and all retained six synthetic files stay readable.
 - План удаления исключения: unchanged original future platform-adapter migration; this C2 reuse introduces no extra permanent exception, authority or writer. Final source/native/full delivery still pending.
+
+## 2026-10-26 — Existing startup recovery and temporary acquisition boundary
+
+TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026
+CLASS: BOUNDED_EXISTING_SEAM_INTEGRATION_NO_CANON_EXCEPTION
+RUNTIME_CHECKPOINT_SHA: 0b8cdbdb392f88451a86f733042728b7a324aac3
+
+One owner-approved startup no-loss outcome uses existing Main query/native-effect/projection, existing capability owner, serialized autosave/Kernel Save and existing Core coordinator. Source choice cannot confer file ownership: saved continuity remains captured, recovered content is unbound and Cancel owns neither. RAM cleanup ownership comes only from actual current-session durable global readback. Foreign raw bytes receive one exclusive fixed digest-addressed retained copy before replacement; no pruning, new registry/catalog/writer, renderer/IPC authority, schema, dependency or runtime network.
+
+Actual occupied-temp EEXIST demonstrated that the original Main-only planning assumption was insufficient: unchanged Core removed a temporary before acquiring it. Standing owner fullMac/startup authority permits the necessary same-slice TierB correction; evidence establishes necessity and never authority. Corewx/acquisition-gated cleanup/owned-handle close preserve old public phase/receipt/API/durability. The existing Environment adapter's one strict-wx compatibility line and measured exact source-observer/finite-host expectations preserve all guards and behavior oracles. No architecture or release boundary expands.
+
+Actual whole749/123/72/548/16/258 at0b8 passes0failure/cancel/skip/todo, with rawsource/fixture readback and original47failurewave retained. Current source binding metadata appends one carrier/lookup item while preserving all74historical bodies and verification predicates. All17Mac qualifications remainUNKNOWN. New qualified native/complete source/baseline/currentCI/normal delivery/merged proofs are still required. Secondary-close failure is source-reviewed only; physical disk-full/power-loss/privileged pathname-replacement immunity is not claimed. One normal PR revert, with all valid saved/global/retained raw and existing evidence preserved.
+
+## 2026-10-26 — Authoritative adoption is not authored text
+
+TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026
+CLASS: BOUNDED_EXISTING_SEAM_CORRECTNESS_NO_CANON_EXCEPTION
+RUNTIME_CHECKPOINT_SHA: 66a0554d6e69078d98034e39a6a14c4fb07acf94
+
+The native source-choice raw failure made the Root-authored Main-only planning insufficient. Existing owner firstMac/no-loss authority permits the necessary current editor repair; evidence establishes need, never authority. Initial checked authoritative projection enables existing authoring silently through the same public setEditable argument, without issuing an authored dirty/generation/autosave signal. Real edits still traverse the existing lifecycle/Kernel/Core path. No new truth owner, writer, command/IPC, format, dependency, network or interface design.
+
+Separate actual installed Editor/PM plus complete production callbacks and real parser/checked adapter produce causal29of30 then fixed30of30; initial25of30 unmounted-host setup failure stays unaccepted. The finite liveness facade uses public SDK view state and delegates methods to the original Editor; no browser/native liveness follows. Exact runtime one-line/bundle3byte inverse and all10019source inputs independently reviewed; every prior assertion and675test lines remain frozen.
+
+Old temporary physical profiles vanished for an unknown reason; their immutable complete archives and protected raw history remain verified. Do not reconstruct or retag old runtime identities, fabricate missing raw native control or claim old current physical/cold continuity. New owned native identities require current qualified source/artifact and unchanged plain82B raw oracle. Current source metadata retains all75historical carriers/verifier predicates and17UNKNOWN; final current gates/baseline/native/CI/merge and literal merged proof are still pending. One normal PR revert preserves all valid source/recovery/archive data.

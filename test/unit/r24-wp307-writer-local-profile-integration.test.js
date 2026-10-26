@@ -5087,3 +5087,334 @@ test('native Save settings read after real target publication cannot ACK or eras
     assert.equal(lateAcks.length, 0, 'a stale Save must not acknowledge the newer document with a restarted local generation');
   } finally { gate.release(); fsp.readFile = originalRead; await pending; }
 });
+
+// Source-choice persistence proofs load Main without the historical __host
+// exports or process/source substitutions. Only native/IPC transports are
+// finite. All coordinator, policy and filesystem results are actual results.
+function sourceChoiceWriteGate() { let release; const promise = new Promise(resolve => { release = resolve; }); return { promise, release }; }
+async function sourceChoiceWriteWithin(promise) {
+  let timer; try { return await Promise.race([promise, new Promise((_, reject) => {
+    timer = setTimeout(() => reject(Error('owned source-choice persistence timeout')), 10000);
+  })]); } finally { clearTimeout(timer); }
+}
+async function sourceChoiceWriter(t, { saved = true, autosave = true, response = 2, foreignRaw } = {}) {
+  const os = require('node:os'), Module = require('node:module');
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-source-writer-')));
+  const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner'); fs.writeFileSync(markerPath, marker, { flag: 'wx' });
+  const identity = fs.lstatSync(root), documents = path.join(root, 'Documents'), userData = path.join(root, 'userData');
+  const base = path.join(documents, 'craftsman'), recoveryDir = path.join(base, '.autosave');
+  fs.mkdirSync(recoveryDir, { recursive: true }); fs.mkdirSync(userData);
+  const remembered = path.join(base, 'Remembered e\u0301 🧭.txt'), globalAutosave = path.join(recoveryDir, 'autosave.txt');
+  const settingsPath = path.join(userData, 'settings.json'), target = path.join(base, 'Separate e\u0301 🧭.txt');
+  const rememberedRaw = Buffer.from('Remembered saved scene e\u0301 🧭\nprotected second line');
+  const incumbent = foreignRaw ?? Buffer.from('Foreign autosave e\u0301 🧭\nprotected other words');
+  fs.writeFileSync(remembered, rememberedRaw); fs.writeFileSync(settingsPath, JSON.stringify({
+    ...(saved ? { lastExternalFilePath: remembered } : {}), unrelatedStartupPreference: { value: 'keep' } }));
+  if (autosave) fs.writeFileSync(globalAutosave, incumbent);
+  const h = { root, base, recoveryDir, remembered, rememberedRaw, globalAutosave, settingsPath, target, incumbent,
+    handlers: new Map(), listeners: new Map(), windows: [], choices: [], saveDialogs: [], releases: [], response,
+    chooseSave: async () => ({ canceled: true }) };
+  class Window {
+    constructor() { this.id = h.windows.length + 1; h.windows.push(this); h.window = this; this.destroyed = false;
+      this.sent = []; this.handlers = new Map(); this.editor = { content: '', generation: 0 }; this.load = sourceChoiceWriteGate();
+      this.webContents = { id: 3200 + this.id, session: {}, isDestroyed: () => this.destroyed, on() {}, setWindowOpenHandler() {}, setZoomFactor() {},
+        getURL: () => this.url || '', send: (channel, payload) => {
+          this.sent.push([channel, structuredClone(payload)]);
+          if (channel === 'editor:set-text') this.editor = { ...structuredClone(payload), generation: 0 };
+          if (channel === 'editor:snapshot-request') queueMicrotask(() => h.listeners.get('editor:snapshot-response')(
+            h.event(this), { requestId: payload.requestId, snapshot: structuredClone(this.editor) }));
+        } };
+    }
+    isDestroyed() { return this.destroyed; } on(name, fn) { this.handlers.set(name, fn); }
+    isFullScreen() { return false; } getBounds() { return { width: 1000, height: 700 }; }
+    loadFile(file, { query }) { const url = require('node:url').pathToFileURL(file);
+      Object.entries(query).forEach(([key, value]) => url.searchParams.set(key, value)); this.url = url.href;
+      const pending = this.load.promise, then = pending.then.bind(pending);
+      pending.then = (...args) => { const actual = then(...args); this.actualContinuation = actual; return actual; }; return pending;
+    }
+  }
+  Window.getAllWindows = () => h.windows.filter(window => !window.destroyed); Window.getFocusedWindow = () => h.window;
+  const electron = { app: { isPackaged: true, getPath: name => name === 'documents' ? documents : name === 'userData' ? userData : root,
+    setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true },
+    BrowserWindow: Window, screen: { getPrimaryDisplay: () => ({ workAreaSize: { width: 1000, height: 700 } }) },
+    Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
+    dialog: { async showMessageBox(...args) { h.choices.push(args.at(-1)); return { response: h.response }; },
+      async showSaveDialog(owner, options) { h.saveDialogs.push({ owner, options }); return h.chooseSave(owner, options); },
+      showOpenDialog: async () => ({ canceled: true }) },
+    ipcMain: { handle: (name, fn) => h.handlers.set(name, fn), on: (name, fn) => h.listeners.set(name, fn) },
+    session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
+  const cachePaths = ['src/main.js', 'src/utils/fileManager.js', 'src/utils/backupManager.js'].map(name => path.join(ROOT, name));
+  const cacheBefore = cachePaths.map(name => require.cache[name]), originalLoad = Module._load;
+  cachePaths.forEach(name => { delete require.cache[name]; });
+  try { Module._load = function(request, ...args) { return request === 'electron' ? electron : originalLoad.call(this, request, ...args); };
+    h.main = require(cachePaths[0]);
+  } finally { Module._load = originalLoad; }
+  const envelope = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope;
+  h.event = (window = h.window) => ({ sender: window.webContents, senderFrame: { url: window.url } });
+  h.command = (id, payload = {}) => h.handlers.get('ui:command-bridge')(h.event(), envelope('ui:command-bridge', id, payload));
+  h.signal = (id, payload = {}) => h.handlers.get('ui:save-lifecycle-signal-bridge')(h.event(), envelope('ui:save-lifecycle-signal-bridge', id, payload));
+  h.create = () => { const load = Module._load; try {
+    Module._load = function(request, ...args) { return request === 'electron' ? electron : load.call(this, request, ...args); };
+    h.main.createWindow(); return h.window;
+  } finally { Module._load = load; } };
+  h.boot = async () => { const window = h.create(); window.load.release(); await sourceChoiceWriteWithin(window.actualContinuation); await new Promise(setImmediate); return window; };
+  h.edit = async (content, generation = 1) => { h.window.editor = { ...h.window.editor, content, generation };
+    const result = await h.signal('signal.localDirty.set', { state: true, generation }); assert.equal(result.ok, true, JSON.stringify(result)); };
+  h.newDraft = async (content = nativeSaveSystemContent(), generation = 1) => {
+    const result = await h.command('cmd.project.new'); assert.equal(result.ok, true, JSON.stringify(result)); await h.edit(content, generation);
+  };
+  h.autosave = () => h.signal('signal.autoSave.request');
+  h.saveTo = async (commandId = 'cmd.project.saveAs', filePath = target) => {
+    h.chooseSave = async () => ({ canceled: false, filePath }); return h.command(commandId);
+  };
+  h.retainedPath = (bytes = incumbent) => path.join(recoveryDir, 'retained-' + crypto.createHash('sha256').update(bytes).digest('hex') + '.txt');
+  h.retainedFiles = () => fs.readdirSync(recoveryDir).filter(name => /^retained-[a-f0-9]{64}\.txt$/u.test(name)).sort();
+  h.acks = (window = h.window) => window.sent.filter(([channel, value]) => channel === 'set-dirty' && value.ack?.kind === 'SAVED');
+  h.assertRemembered = () => assert.deepEqual(fs.readFileSync(remembered), rememberedRaw);
+  h.observe = label => t.diagnostic(JSON.stringify({ causalReach: label, root, nativeAcceptance: false,
+    globalExists: fs.existsSync(globalAutosave), retained: h.retainedFiles(), saveDialogs: h.saveDialogs.length }));
+  h.restartMain = async () => {
+    h.window.destroyed = true; cachePaths.forEach(name => { delete require.cache[name]; });
+    const load = Module._load; try {
+      Module._load = function(request, ...args) { return request === 'electron' ? electron : load.call(this, request, ...args); };
+      h.main = require(cachePaths[0]);
+    } finally { Module._load = load; }
+    return h.boot(); // Fresh full Main state; this is not an OS process/native cold-reopen claim.
+  };
+  t.after(async () => {
+    h.releases.forEach(release => release()); h.windows.forEach(window => window.load.release());
+    await Promise.allSettled(h.windows.map(window => window.actualContinuation).filter(Boolean));
+    cachePaths.forEach((name, index) => { delete require.cache[name]; if (cacheBefore[index]) require.cache[name] = cacheBefore[index]; });
+    const current = fs.lstatSync(root); assert.equal(current.dev, identity.dev); assert.equal(current.ino, identity.ino);
+    assert.equal(fs.readFileSync(markerPath, 'utf8'), marker);
+    t.diagnostic(JSON.stringify({ retainedOwnedSourceWriterRoot: root, ownerMarker: marker, nativeAcceptance: false }));
+  });
+  await h.boot(); return h;
+}
+async function independentlyReadRetained(h, expected = h.incumbent) {
+  const target = h.retainedPath(expected), stat = fs.lstatSync(target);
+  assert.equal(stat.isFile(), true); assert.equal(stat.isSymbolicLink(), false); assert.equal(stat.nlink, 1);
+  const handle = await fs.promises.open(target, 'r'); let observed;
+  try { observed = await handle.readFile(); } finally { await handle.close(); }
+  assert.deepEqual(observed, expected, 'a fresh physical reader must recover every original byte independently of Main receipts');
+  assert.equal(crypto.createHash('sha256').update(observed).digest('hex'), path.basename(target).slice(9, -4));
+  return target;
+}
+for (const response of [0, 2]) for (const commandId of ['cmd.project.save', 'cmd.project.saveAs']) {
+  test('startup source choice ' + response + ' then New ' + commandId + ' cannot clean up a foreign global recovery', async t => {
+    const h = await sourceChoiceWriter(t, { response }), raw = fs.readFileSync(h.globalAutosave); await h.newDraft();
+    assert.deepEqual(fs.readFileSync(h.globalAutosave), raw); assert.equal(h.retainedFiles().length, 0, 'Cancel/New alone has no preservation write');
+    const result = await h.saveTo(commandId); h.observe('ACTUAL_KERNEL_SAVE_FOREIGN_CLEANUP_REFUSAL');
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(h.saveDialogs.length, 1);
+    assert.deepEqual(fs.readFileSync(h.target), Buffer.from(h.window.editor.content)); h.assertRemembered();
+    assert.deepEqual(fs.readFileSync(h.globalAutosave), raw, 'an unrelated successful Save ACK does not own the incumbent recovery');
+  });
+}
+for (const response of [0, 2]) test('startup source choice ' + response + ' then New autosave retains foreign raw before replacing global', async t => {
+  const h = await sourceChoiceWriter(t, { response }); await h.newDraft(); const content = h.window.editor.content;
+  const result = await h.autosave(); h.observe('ACTUAL_GOVERNED_AUTOSAVE_WITH_INDEPENDENT_RAW_RETENTION');
+  assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.ack.kind, 'SAVED');
+  assert.deepEqual(fs.readFileSync(h.globalAutosave), Buffer.from(content)); await independentlyReadRetained(h); h.assertRemembered();
+  const retainedBefore = fs.readFileSync(h.retainedPath());
+  const nextDoc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: nativeSaveSystemText + ' next owned edit' }] }] };
+  await h.edit(require('../../src/core/document-content-envelope-v1.cjs').composeObservablePayload({ doc: nextDoc }), 2);
+  assert.equal((await h.autosave()).ok, true); assert.deepEqual(fs.readFileSync(h.retainedPath()), retainedBefore);
+  assert.equal(h.retainedFiles().length, 1, 'current-session writes must reuse ownership rather than generate a retention history');
+  const saved = await h.saveTo(); assert.equal(saved.ok, true, JSON.stringify(saved)); assert.equal(fs.existsSync(h.globalAutosave), false);
+  await independentlyReadRetained(h); h.assertRemembered();
+});
+test('startup recovered equal text is foreign until the actual same-content write preserves it and earns ownership', async t => {
+  const h = await sourceChoiceWriter(t, { saved: false, response: 1 });
+  await h.edit(h.incumbent.toString('utf8'), 2); const result = await h.autosave();
+  assert.equal(result.ok, true, JSON.stringify(result)); await independentlyReadRetained(h);
+  assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent);
+  const saved = await h.saveTo('cmd.project.save'); assert.equal(saved.ok, true, JSON.stringify(saved));
+  assert.equal(fs.existsSync(h.globalAutosave), false, 'only the new successful current-session write authorizes cleanup');
+  await independentlyReadRetained(h); h.assertRemembered();
+});
+test('startup retention preserves undecodable foreign bytes without UTF8 normalization in the later write route', async t => {
+  const h = await sourceChoiceWriter(t, { autosave: false, saved: false }); await h.newDraft();
+  const raw = Buffer.from([0x61, 0xff, 0xfe, 0x00, 0x62]); fs.writeFileSync(h.globalAutosave, raw);
+  const result = await h.autosave(); assert.equal(result.ok, true, JSON.stringify(result)); await independentlyReadRetained(h, raw);
+  assert.deepEqual(fs.readFileSync(h.globalAutosave), Buffer.from(h.window.editor.content)); h.assertRemembered();
+});
+test('startup retention reuses an exact physical content-addressed target without rewriting or duplicating it', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); const retained = h.retainedPath(); fs.writeFileSync(retained, h.incumbent);
+  const before = fs.lstatSync(retained), result = await h.autosave(); assert.equal(result.ok, true, JSON.stringify(result));
+  const after = fs.lstatSync(retained); assert.equal(after.ino, before.ino); assert.equal(after.mtimeMs, before.mtimeMs);
+  await independentlyReadRetained(h); assert.equal(h.retainedFiles().length, 1); h.assertRemembered();
+});
+for (const variant of ['different-bytes', 'symlink']) test('startup retention refuses existing ' + variant + ' target without replacing incumbent or clearing dirty', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); const retained = h.retainedPath();
+  if (variant === 'different-bytes') fs.writeFileSync(retained, 'preexisting collision bytes');
+  else { const original = path.join(h.root, 'alias-original.txt'); fs.writeFileSync(original, h.incumbent); fs.symlinkSync(original, retained); }
+  const before = nativeSaveSystemRoster(h.root), acks = h.acks().length, result = await h.autosave();
+  h.observe('ACTUAL_RETENTION_COLLISION_OR_ALIAS_REFUSAL'); assert.equal(result.ok, false, JSON.stringify(result));
+  assert.notEqual(result.ack?.kind, 'SAVED'); assert.equal(h.acks().length, acks); assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent);
+  assert.deepEqual(nativeSaveSystemRoster(h.root), before); h.assertRemembered();
+});
+for (const phase of ['temp-write', 'temp-fsync', 'exclusive-publish', 'parent-fsync', 'readback']) {
+  test('startup retention actual coordinator ' + phase + ' fault cannot overwrite foreign recovery or grant lifecycle clearance', async t => {
+    const h = await sourceChoiceWriter(t); await h.newDraft(); const fsp = fs.promises, retained = h.retainedPath();
+    const original = { open: fsp.open, link: fsp.link, rename: fsp.rename, readFile: fsp.readFile }; let reached = false, published = false;
+    const failure = () => { reached = true; throw Object.assign(Error('owned retention ' + phase + ' failure'), { code: 'EIO' }); };
+    const isTemp = file => String(file).startsWith(retained + '.p2-');
+    fsp.open = async function(file, flags, ...args) {
+      if (phase === 'temp-write' && isTemp(file)) failure();
+      const handle = await original.open.call(this, file, flags, ...args);
+      if (phase === 'temp-fsync' && isTemp(file) || phase === 'parent-fsync' && published && String(file) === h.recoveryDir && flags === 'r') {
+        return new Proxy(handle, { get(target, key) { if (key === 'sync') return async () => failure();
+          const value = Reflect.get(target, key); return typeof value === 'function' ? value.bind(target) : value; } });
+      }
+      return handle;
+    };
+    for (const method of ['link', 'rename']) fsp[method] = async function(from, to, ...args) {
+      if (String(to) === retained) { if (phase === 'exclusive-publish') failure(); published = true; }
+      return original[method].call(this, from, to, ...args);
+    };
+    fsp.readFile = async function(file, ...args) { if (phase === 'readback' && String(file) === retained && fs.existsSync(retained)) failure();
+      return original.readFile.call(this, file, ...args); };
+    try {
+      const acks = h.acks().length, result = await h.autosave(); assert.equal(reached, true, 'the actual intended coordinator phase must execute');
+      assert.equal(result.ok, false, JSON.stringify(result)); assert.notEqual(result.ack?.kind, 'SAVED'); assert.equal(h.acks().length, acks);
+      assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent); h.assertRemembered();
+      // New is behind the real lifecycle barrier. The same active fault must
+      // keep the current authoring buffer and cannot return a fake empty doc.
+      const authoring = structuredClone(h.window.editor), publications = h.window.sent.filter(([channel]) => channel === 'editor:set-text').length;
+      await h.command('cmd.project.new'); assert.deepEqual(h.window.editor, authoring);
+      assert.equal(h.window.sent.filter(([channel]) => channel === 'editor:set-text').length, publications);
+      assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent);
+      h.observe('ACTUAL_RETENTION_FAULT_NO_ACK_OR_NEW_' + phase);
+    } finally { Object.assign(fsp, original); }
+  });
+}
+test('startup new-session equal bytes cannot borrow successful ownership from the prior authoring session', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); const content = h.window.editor.content;
+  assert.equal((await h.autosave()).ok, true); await independentlyReadRetained(h);
+  await h.newDraft(content, 1); assert.deepEqual(fs.readFileSync(h.globalAutosave), Buffer.from(content));
+  const second = await h.autosave(); assert.equal(second.ok, true, JSON.stringify(second));
+  await independentlyReadRetained(h, Buffer.from(content)); assert.equal(h.retainedFiles().length, 2);
+  const result = await h.saveTo(); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(fs.existsSync(h.globalAutosave), false); await independentlyReadRetained(h); await independentlyReadRetained(h, Buffer.from(content));
+});
+test('startup cleanup refuses a changed disk incumbent even after the current session obtained a real autosave ACK', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); assert.equal((await h.autosave()).ok, true);
+  const changed = Buffer.from('External newer recovery e\u0301 🧭'); fs.writeFileSync(h.globalAutosave, changed);
+  const result = await h.saveTo(); assert.equal(result.ok, true, JSON.stringify(result)); h.assertRemembered();
+  assert.deepEqual(fs.readFileSync(h.globalAutosave), changed, 'an old current-session ACK cannot authorize cleanup of different disk bytes');
+  await independentlyReadRetained(h);
+});
+test('startup held equal-content autosave readback cannot ACK or acquire ownership in a fresh window/session with restarted generation', async t => {
+  const h = await sourceChoiceWriter(t, { saved: false, response: 1 }); await h.edit(h.incumbent.toString('utf8'), 2);
+  const fsp = fs.promises, originalRead = fsp.readFile, entered = sourceChoiceWriteGate(), gate = sourceChoiceWriteGate(); h.releases.push(gate.release);
+  let held = false;
+  fsp.readFile = async function(file, ...args) {
+    const raw = await originalRead.call(this, file, ...args);
+    if (!held && String(file) === h.globalAutosave && new Error().stack.includes('save-coordinator-v1.cjs')) {
+      held = true; entered.release(); await gate.promise;
+    }
+    return raw;
+  };
+  const pending = h.autosave();
+  try {
+    const reached = await sourceChoiceWriteWithin(Promise.race([entered.promise.then(() => true), pending.then(() => false)]));
+    assert.equal(reached, true, 'actual same-content coordinator readback must be reached');
+    // Native window recreation is a public Main entrypoint. Give its startup
+    // a genuine remembered source so explicit Cancel establishes a new baseline.
+    fs.writeFileSync(h.settingsPath, JSON.stringify({ lastExternalFilePath: h.remembered }));
+    h.window.destroyed = true; h.response = 2; const current = await h.boot(); await h.edit(h.incumbent.toString('utf8'), 1);
+    const authoring = structuredClone(current.editor), ackCount = h.acks(current).length;
+    gate.release(); const result = await pending;
+    assert.equal(held, true); assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(h.acks(current).length, ackCount);
+    assert.deepEqual(current.editor, authoring); assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent);
+    const saved = await h.saveTo('cmd.project.save'); assert.equal(saved.ok, true, JSON.stringify(saved));
+    assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent, 'late readback cannot mint new-session cleanup ownership');
+    await independentlyReadRetained(h); h.assertRemembered(); h.observe('ACTUAL_IDLE_ACK_RESTARTED_GENERATION_REFUSAL');
+  } finally { gate.release(); fsp.readFile = originalRead; await pending; }
+});
+test('startup retired queued global publication preserves incumbent after an actual replacement-window source decision', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); const fsp = fs.promises, originalOpen = fsp.open;
+  const entered = sourceChoiceWriteGate(), gate = sourceChoiceWriteGate(); h.releases.push(gate.release); let held = false;
+  fsp.open = async function(file, flags, ...args) {
+    const handle = await originalOpen.call(this, file, flags, ...args);
+    if (!held && String(file).startsWith(h.globalAutosave + '.p2-')) {
+      return new Proxy(handle, { get(target, key) {
+        if (key === 'sync') return async () => { await target.sync(); if (!held) { held = true; entered.release(); await gate.promise; } };
+        const value = Reflect.get(target, key); return typeof value === 'function' ? value.bind(target) : value;
+      } });
+    }
+    return handle;
+  };
+  const pending = h.autosave();
+  try {
+    const reached = await sourceChoiceWriteWithin(Promise.race([entered.promise.then(() => true), pending.then(() => false)]));
+    assert.equal(reached, true, 'actual global temp fsync must precede the held publication');
+    fs.writeFileSync(h.settingsPath, JSON.stringify({ lastExternalFilePath: h.remembered }));
+    h.window.destroyed = true; h.response = 2; const current = await h.boot(), authoring = structuredClone(current.editor);
+    const ackCount = h.acks(current).length; gate.release(); const result = await pending;
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(h.acks(current).length, ackCount); assert.deepEqual(current.editor, authoring);
+    assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent); h.assertRemembered();
+    h.observe('ACTUAL_RETIRED_GLOBAL_PUBLICATION_REFUSAL');
+  } finally { gate.release(); fsp.open = originalOpen; await pending; }
+});
+
+test('startup empty recovery slot admits a normal owned autosave and cleans up only that successful write', async t => {
+  const h = await sourceChoiceWriter(t, { saved: false, autosave: false }); await h.newDraft();
+  const content = h.window.editor.content, result = await h.autosave(); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.ack.kind, 'SAVED'); assert.deepEqual(fs.readFileSync(h.globalAutosave), Buffer.from(content));
+  assert.equal(h.retainedFiles().length, 0, 'no foreign incumbent means no retention material');
+  const saved = await h.saveTo(); assert.equal(saved.ok, true, JSON.stringify(saved)); assert.equal(fs.existsSync(h.globalAutosave), false);
+  assert.deepEqual(fs.readFileSync(h.target), Buffer.from(content)); assert.equal(h.retainedFiles().length, 0); h.assertRemembered();
+});
+test('startup fresh full Main state cannot inherit previous process ownership of equal global bytes', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); const currentRaw = Buffer.from(h.window.editor.content);
+  assert.equal((await h.autosave()).ok, true); await independentlyReadRetained(h); await h.restartMain();
+  assert.equal(h.window.editor.content, currentRaw.toString('utf8')); await h.edit(currentRaw.toString('utf8'), 1);
+  const result = await h.autosave(); assert.equal(result.ok, true, JSON.stringify(result));
+  await independentlyReadRetained(h, currentRaw); await independentlyReadRetained(h); assert.equal(h.retainedFiles().length, 2);
+  h.assertRemembered(); h.observe('ACTUAL_FRESH_FULL_MAIN_OWNERSHIP_NOT_OS_COLD_ACCEPTANCE');
+});
+for (const change of ['raw', 'physical-identity']) test('startup retention rechecks incumbent ' + change + ' after actual retained readback', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); const fsp = fs.promises, originalRead = fsp.readFile;
+  const entered = sourceChoiceWriteGate(), gate = sourceChoiceWriteGate(); h.releases.push(gate.release); let held = false;
+  fsp.readFile = async function(file, ...args) {
+    const raw = await originalRead.call(this, file, ...args);
+    if (!held && String(file) === h.retainedPath() && new Error().stack.includes('save-coordinator-v1.cjs')) {
+      held = true; entered.release(); await gate.promise;
+    }
+    return raw;
+  };
+  const pending = h.autosave();
+  try {
+    const reached = await sourceChoiceWriteWithin(Promise.race([entered.promise.then(() => true), pending.then(() => false)]));
+    assert.equal(reached, true, 'the actual retained-copy coordinator readback must execute before testing incumbent replacement');
+    if (change === 'raw') fs.writeFileSync(h.globalAutosave, 'Newer incumbent e\u0301 🧭');
+    else { fs.renameSync(h.globalAutosave, h.globalAutosave + '.previous-inode'); fs.writeFileSync(h.globalAutosave, h.incumbent); }
+    const changedRaw = fs.readFileSync(h.globalAutosave), changedIdentity = fs.lstatSync(h.globalAutosave), acks = h.acks().length;
+    gate.release(); const result = await pending; assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(h.acks().length, acks);
+    assert.deepEqual(fs.readFileSync(h.globalAutosave), changedRaw); assert.equal(fs.lstatSync(h.globalAutosave).ino, changedIdentity.ino);
+    await independentlyReadRetained(h); h.assertRemembered(); h.observe('ACTUAL_INCUMBENT_CAS_REFUSAL_' + change);
+  } finally { gate.release(); fsp.readFile = originalRead; await pending; }
+});
+test('startup retained-copy publication cannot clobber a target created after its temp fsync', async t => {
+  const h = await sourceChoiceWriter(t); await h.newDraft(); const fsp = fs.promises, originalOpen = fsp.open;
+  const entered = sourceChoiceWriteGate(), gate = sourceChoiceWriteGate(); h.releases.push(gate.release); let held = false;
+  fsp.open = async function(file, flags, ...args) {
+    const handle = await originalOpen.call(this, file, flags, ...args);
+    if (!held && String(file).startsWith(h.retainedPath() + '.p2-')) return new Proxy(handle, { get(target, key) {
+      if (key === 'sync') return async () => { await target.sync(); if (!held) { held = true; entered.release(); await gate.promise; } };
+      const value = Reflect.get(target, key); return typeof value === 'function' ? value.bind(target) : value;
+    } });
+    return handle;
+  };
+  const pending = h.autosave();
+  try {
+    const reached = await sourceChoiceWriteWithin(Promise.race([entered.promise.then(() => true), pending.then(() => false)]));
+    assert.equal(reached, true, 'actual retained temp fsync must precede the collision');
+    const collision = Buffer.from('Other publisher owns these bytes'); fs.writeFileSync(h.retainedPath(), collision, { flag: 'wx' });
+    const acks = h.acks().length; gate.release(); const result = await pending;
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(h.acks().length, acks);
+    assert.deepEqual(fs.readFileSync(h.retainedPath()), collision); assert.deepEqual(fs.readFileSync(h.globalAutosave), h.incumbent);
+    h.assertRemembered(); h.observe('ACTUAL_EXCLUSIVE_PUBLICATION_LATE_COLLISION');
+  } finally { gate.release(); fsp.open = originalOpen; await pending; }
+});

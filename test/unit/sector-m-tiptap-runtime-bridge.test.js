@@ -780,3 +780,172 @@ test('actual checked document adapter retains Unicode edits and real Undo Redo a
   assert.equal(editor.state, state); assert.deepEqual(editor.state.doc.toJSON(), edited);
   t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_CHECKED_PM_ADOPTION_UNICODE_UNDO_REDO_AND_FAILED_ADOPTION_RETENTION', edited, finitePmNotBrowser: true }));
 });
+
+// FINITE_PM_NOT_BROWSER: actual installed Editor, production init/onUpdate,
+// complete adoption callback, parser, checked adapter and dirty/autosave chain.
+// Presentation and timer/lifecycle ports only observe; no filesystem or Save ACK.
+async function startupAdoptionDirtyHarness(t, { reviewLock = false } = {}) {
+  const vm = require('node:vm'), h = await startupRealInit(t);
+  const tiptapSource = fs.readFileSync(path.join(ROOT, 'src/renderer/tiptap/index.js'), 'utf8');
+  const rendererSource = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const realCheckedReviewDocument = h.c.setCheckedDocument;
+  Object.assign(h.c, {
+    history: (await import('@tiptap/pm/history')).history,
+    setCheckedReviewDocument: realCheckedReviewDocument,
+    wordSections: require('../../src/core/word-sections-v1.cjs'),
+    wordStories: require('../../src/core/word-stories-projection-v1.cjs'),
+    wordListNumbering: require('../../src/core/word-list-numbering-v1.cjs'),
+    buildParagraphDocumentFromText: envelope.buildParagraphDocumentFromText,
+  });
+  vm.runInContext(['setCheckedDocument', 'setTiptapDocumentSnapshot', 'getTiptapPlainText', 'readEditorText']
+    .map(name => startupActualFunction(tiptapSource, name)).join('\n'), h.c);
+  const signals = [], timers = new Map(), updates = [], parses = [], adoptions = [], presentation = [];
+  let incoming, timerSequence = 0;
+  const c = {
+    console, isTiptapMode: true, primaryTiptapEditor: null,
+    editor: { isConnected: true, dataset: reviewLock ? { reviewFormattingPreviousEditable: 'true' } : {},
+      removeAttribute(name) { presentation.push(['removeAttribute', name]); } },
+    initialDocumentAdopted: false, initialDocumentFailureStatus: null, heldCommandStatusMessage: false,
+    statusElement: { textContent: '', style: { visibility: '' } }, warningStateElement: { textContent: '' }, recoveryMessage: { textContent: '' },
+    currentProjectId: 'project-startup-dirty', currentDocumentId: null, currentDocumentKind: null,
+    currentDocumentTitle: '', localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
+    currentCards: [], currentMeta: envelope.createDefaultDocumentMeta(), metaEnabled: false, plainTextBuffer: '',
+    activeDocumentRevealRequested: false, currentRightTab: 'metadata', currentTreeContentPublicationId: '',
+    currentMetadataBaselineHash: '', metadataUpdatePending: false, treeDetachedOrigin: null,
+    storyDrafts: new Map(), manuscriptDrafts: new Map(), storyMutationPending: false, notesMutationPending: false,
+    wordCommentDraft: null, wordCommentBusy: false, pendingStoryRequestId: null,
+    flowModeState: { active: false }, centralSheetStripPendingStructuralInput: false,
+    centralSheetStripLargePayloadFastPathActive: false, autoSaveTimerId: null, AUTO_SAVE_DELAY: 400,
+    nowMs: () => 0,
+    window: {
+      electronAPI: {
+        onEditorSetText(handler) { incoming = handler; },
+        // Deliberately empty result: observation is not a synthetic successful ACK.
+        async invokeSaveLifecycleSignalBridge(request) { signals.push(JSON.parse(JSON.stringify(request))); return {}; },
+      },
+      setTimeout(callback, delay) { const id = ++timerSequence; timers.set(id, { callback, delay }); return id; },
+    },
+    clearTimeout(id) { timers.delete(id); },
+    parseObservablePayload: envelope.parseObservablePayload,
+    getTiptapPlainText: () => h.c.getTiptapPlainText(),
+    setTiptapDocumentSnapshot(snapshot) {
+      const result = h.c.setTiptapDocumentSnapshot(snapshot);
+      adoptions.push({ resetHistory: snapshot.resetHistory, accepted: result, hasDoc: Boolean(snapshot.doc) }); return result;
+    },
+    shouldUseCentralSheetLargePayloadFastPath: () => false,
+    reviewSurfaceResolveIncomingPayload: () => null,
+    revealActiveDocumentAncestors: () => ({ found: false }),
+    requestAnimationFrame(callback) { presentation.push(['selectionFrame', callback]); },
+  };
+  for (const name of ['cancelLinkDialog', 'invalidateAtlasPublications', 'clearFlowModeState', 'clearPendingMetadataUpdate',
+    'applyIncomingBookProfile', 'setReviewSurfaceState', 'clearCentralSheetLargePayloadFastPath', 'resetCentralSheetStripForIncomingPayload',
+    'updateMetaInputs', 'updateMetaVisibility', 'updateCardsList', 'updateWordCount', 'scheduleCentralSheetStripProofRefresh',
+    'showEditorPanelFor', 'renderTree', 'updateSaveStateText', 'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection',
+    'updatePerfHintText', 'updateInspectorSnapshot', 'refreshMetadataInspector', 'applyPendingProjectSearchJump',
+    'syncVisibleAuthoringSurfacesSurface', 'scheduleIncrementalInputDomSync', 'scheduleDeferredHotpathRender',
+    'scheduleDeferredPaginationRefresh', 'scheduleCentralSheetStripPostStructuralRefresh', 'scheduleWordCountRefresh',
+    'recordWriterRuntimeBudget']) c[name] = (...args) => { presentation.push([name, ...args]); };
+  vm.createContext(c);
+  vm.runInContext(['parseDocumentContent', 'normalizeProjectId', 'isProjectTreeDocumentId', 'holdInitialDocumentFailure',
+    'handleDocumentContentParseIssue', 'updateStatusText', 'updateWarningStateText', 'syncPlainTextBufferFromEditorDom',
+    'invokeSaveLifecycleSignalBridge', 'scheduleAutoSave', 'markAsModified', 'handleTiptapDocumentUpdate']
+    .map(name => startupActualFunction(rendererSource, name)).join('\n'), c);
+  const parse = c.parseDocumentContent;
+  c.parseDocumentContent = content => { const result = parse(content); parses.push({ issue: result.issue, doc: result.doc }); return result; };
+  const editor = h.c.initTiptap(h.mount, { attachIpc: false, onDocumentUpdate: () => c.handleTiptapDocumentUpdate() });
+  // FINITE_PM lifecycle projection from the SDK public headless view;
+  // this does not establish mounted DOM, browser or native liveness.
+  const lifecycleFacade = new Proxy(editor, { get(target, key) {
+    if (key === 'isDestroyed') return target.view.isDestroyed;
+    const value = Reflect.get(target, key, target);
+    return typeof value === 'function' ? value.bind(target) : value;
+  } });
+  c.primaryTiptapEditor = lifecycleFacade;
+  h.c.currentEditorInstance = lifecycleFacade;
+  editor.on('update', ({ transaction }) => updates.push({ docChanged: transaction.docChanged, text: editor.state.doc.textContent }));
+  const start = rendererSource.indexOf('window.electronAPI.onEditorSetText((payload) => {');
+  const end = rendererSource.indexOf('  window.electronAPI.onEditorTextRequest(', start);
+  assert.ok(start >= 0 && end > start, 'complete production adoption callback boundaries');
+  vm.runInContext(rendererSource.slice(start, end), c);
+  const observe = label => ({ label, finitePmNotBrowser: true, actualInitCount: h.constructorOptions.length,
+    lifecycle: { actualEditorIsDestroyed: editor.isDestroyed, publicSdkViewIsDestroyed: editor.view.isDestroyed,
+      facadeIsDestroyed: lifecycleFacade.isDestroyed, mountedBrowserOrNativeLivenessClaim: false },
+    editable: editor.isEditable, adopted: c.initialDocumentAdopted, failure: c.initialDocumentFailureStatus,
+    generation: c.localEditGeneration, lastAckedGeneration: c.lastAckedGeneration, dirty: c.localDirty,
+    text: h.c.getTiptapPlainText(), signals: JSON.parse(JSON.stringify(signals)),
+    timerCount: timers.size, timerDelays: [...timers.values()].map(item => item.delay),
+    updates: JSON.parse(JSON.stringify(updates)), parses: JSON.parse(JSON.stringify(parses)), adoptions: [...adoptions] });
+  const flushAutoSave = async () => {
+    for (const [id, entry] of [...timers]) { timers.delete(id); entry.callback(); }
+    // Await the actual async bridge, acknowledgement observer and finally chain.
+    for (let i = 0; i < 8; i++) await Promise.resolve();
+  };
+  return { c, editor, incoming: payload => incoming(payload), observe, flushAutoSave, updates, signals, timers };
+}
+
+const startupDirtySavedText = 'Saved e\u0301 🧭\nCurrent 👩🏽‍💻';
+function startupDirtyPayload(content = startupDirtySavedText) {
+  return { content, documentId: 'tree-node-' + 'a'.repeat(32), projectId: 'project-startup-dirty', kind: 'scene', title: 'Saved', metaEnabled: false };
+}
+
+test('first actual authoritative plain adoption enables authoring without dirty generation or autosave [FINITE_PM_NOT_BROWSER]', async t => {
+  const h = await startupAdoptionDirtyHarness(t);
+  h.incoming(startupDirtyPayload()); const loaded = h.observe('first-authoritative-plain-adoption');
+  await h.flushAutoSave(); const afterTimer = h.observe('after-finite-timer-drain');
+  t.diagnostic(JSON.stringify({ loaded, afterTimer }));
+  assert.equal(loaded.actualInitCount, 2); assert.equal(loaded.adopted, true); assert.equal(loaded.editable, true);
+  assert.equal(loaded.text, startupDirtySavedText); assert.equal(loaded.adoptions.length, 1); assert.equal(loaded.adoptions[0].accepted, true);
+  assert.equal(loaded.generation, 0, 'authoritative enable is not an author edit');
+  assert.equal(loaded.lastAckedGeneration, 0); assert.equal(loaded.dirty, false);
+  assert.deepEqual(loaded.signals, []); assert.equal(loaded.timerCount, 0);
+  assert.deepEqual(afterTimer.signals, []); assert.equal(afterTimer.generation, 0); assert.equal(afterTimer.dirty, false);
+});
+
+test('actual Unicode insertion and real Undo Redo retain dirty and autosave notifications after adoption [FINITE_PM_NOT_BROWSER]', async t => {
+  const h = await startupAdoptionDirtyHarness(t);
+  h.incoming(startupDirtyPayload()); const initial = h.observe('initial-observed-separately');
+  await h.flushAutoSave(); const baseline = h.observe('initial-timer-drain-observed-separately');
+  const before = h.editor.state.doc.toJSON(), suffix = ' authored e\u0301 🧭';
+  h.editor.view.dispatch(h.editor.state.tr.insertText(suffix, h.editor.state.doc.content.size - 1));
+  const inserted = h.observe('actual-unicode-transaction'), edited = h.editor.state.doc.toJSON();
+  const undone = h.editor.commands.undo(), afterUndo = h.observe('actual-undo'), undoDoc = h.editor.state.doc.toJSON();
+  const redone = h.editor.commands.redo(), afterRedo = h.observe('actual-redo'), redoDoc = h.editor.state.doc.toJSON();
+  await h.flushAutoSave(); const final = h.observe('actual-autosave-request-no-ack');
+  t.diagnostic(JSON.stringify({ initial, baseline, inserted, undone, afterUndo, redone, afterRedo, final }));
+  assert.equal(initial.editable, true); assert.equal(initial.adopted, true);
+  assert.equal(inserted.text, startupDirtySavedText + suffix); assert.notDeepEqual(edited, before);
+  assert.equal(undone, true); assert.deepEqual(undoDoc, before); assert.equal(redone, true); assert.deepEqual(redoDoc, edited);
+  for (const [offset, state] of [[1, inserted], [2, afterUndo], [3, afterRedo]]) {
+    assert.equal(state.generation, initial.generation + offset); assert.equal(state.dirty, true); assert.equal(state.timerCount, 1);
+    assert.equal(state.signals.filter(item => item.signalId === 'signal.localDirty.set').length,
+      initial.signals.filter(item => item.signalId === 'signal.localDirty.set').length + offset);
+    assert.deepEqual(state.signals.at(-1), { signalId: 'signal.localDirty.set', payload: { state: true, generation: state.generation } });
+    assert.equal(state.updates.at(-1).docChanged, true);
+  }
+  assert.equal(final.signals.filter(item => item.signalId === 'signal.autoSave.request').length,
+    baseline.signals.filter(item => item.signalId === 'signal.autoSave.request').length + 1);
+  assert.equal(final.lastAckedGeneration, initial.lastAckedGeneration, 'empty observation result cannot acknowledge an edit');
+  assert.equal(final.dirty, true); assert.equal(final.timerCount, 0);
+});
+
+for (const specimen of ['invalid-first-parse', 'invalid-first-schema', 'review-readonly-lock']) {
+  test('actual adoption preserves unavailable authoring for ' + specimen + ' [FINITE_PM_NOT_BROWSER]', async t => {
+    const h = await startupAdoptionDirtyHarness(t, { reviewLock: specimen === 'review-readonly-lock' });
+    const before = h.editor.state, raw = JSON.stringify({ type: 'doc', content: [{ type: 'not-a-schema-node' }] });
+    const content = specimen === 'invalid-first-parse' ? '[doc-v2 length=100]\n{' : specimen === 'invalid-first-schema'
+      ? `[doc-v2 length=${raw.length}]\n${raw}` : startupDirtySavedText;
+    h.incoming(startupDirtyPayload(content)); const observed = h.observe(specimen);
+    await h.flushAutoSave(); const afterTimer = h.observe(specimen + '-timer-drain');
+    t.diagnostic(JSON.stringify({ observed, afterTimer }));
+    assert.equal(observed.editable, false); assert.equal(observed.generation, 0); assert.equal(observed.dirty, false);
+    assert.deepEqual(observed.signals, []); assert.equal(observed.timerCount, 0); assert.deepEqual(afterTimer.signals, []);
+    if (specimen === 'review-readonly-lock') {
+      assert.equal(observed.adopted, true); assert.equal(observed.text, startupDirtySavedText); assert.equal(observed.adoptions[0].accepted, true);
+    } else {
+      assert.equal(observed.adopted, false); assert.equal(h.editor.state, before); assert.ok(observed.failure);
+      if (specimen === 'invalid-first-parse') { assert.ok(observed.parses[0].issue); assert.deepEqual(observed.adoptions, []); }
+      else { assert.equal(observed.parses[0].issue, null); assert.equal(observed.adoptions[0].accepted, false); }
+    }
+  });
+}

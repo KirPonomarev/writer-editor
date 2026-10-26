@@ -17105,7 +17105,7 @@ function createEnvironmentEpochPort(commandId) {
         ownBytes = Buffer.from(JSON.stringify(next) + '\n'); guard(); const ownedTemps = new Map();
         const adapter = {
           open: async (target, flags) => {
-            if (flags !== 'w' || path.dirname(target) !== directory || !path.basename(target).startsWith(ENVIRONMENT_EPOCH_FILE_NAME + '.p2-')
+            if (flags !== 'wx' || path.dirname(target) !== directory || !path.basename(target).startsWith(ENVIRONMENT_EPOCH_FILE_NAME + '.p2-')
               || !target.endsWith('.tmp')) refuse('E_ENVIRONMENT_EPOCH_TEMP_INVALID');
             guard(); const handle = await fs.open(target, fsSync.constants.O_WRONLY | fsSync.constants.O_CREAT | fsSync.constants.O_EXCL | fsSync.constants.O_NOFOLLOW, 0o600);
             try { const stat = await handle.stat(); guard();
@@ -25711,16 +25711,17 @@ async function saveSettings(settings, options = {}) {
 // Сохранение последнего открытого файла
 async function saveLastFile(options = {}) {
   try {
+    const filePath = Object.prototype.hasOwnProperty.call(options, 'filePath') ? options.filePath : currentFilePath;
     const settings = await loadSettings();
     if (typeof options.beforeWrite === 'function') options.beforeWrite();
     const selectionRange = normalizeSelectionRangeForSettings(options.selectionRange);
     const projectBinding = isPlainObjectValue(options.projectBinding)
       ? options.projectBinding
-      : await resolveProjectBindingForFile(currentFilePath);
+      : await resolveProjectBindingForFile(filePath);
     if (projectBinding && projectBinding.projectId) {
       const projectId = projectBinding.projectId;
       const relativePath = normalizeSessionDocumentRelativePath(
-        getProjectRelativeFilePath(currentFilePath, projectBinding.manifestPath),
+        getProjectRelativeFilePath(filePath, projectBinding.manifestPath),
       );
       if (!relativePath) throw new Error('E_SESSION_CONTINUITY_DOCUMENT_PATH');
       const previousContinuity = readSessionContinuityV1(settings);
@@ -25755,8 +25756,8 @@ async function saveLastFile(options = {}) {
       delete settings.lastProjectId;
       delete settings.lastProjectRelativePath;
       delete settings.lastProjectSelectionRange;
-      if (typeof currentFilePath === 'string' && currentFilePath.trim()) {
-        settings.lastExternalFilePath = currentFilePath;
+      if (typeof filePath === 'string' && filePath.trim()) {
+        settings.lastExternalFilePath = filePath;
       } else {
         delete settings.lastExternalFilePath;
       }
@@ -25764,6 +25765,7 @@ async function saveLastFile(options = {}) {
     delete settings.lastFilePath;
     if (typeof options.beforeWrite === 'function') options.beforeWrite();
     const persisted = await saveSettings(settings, options);
+    if (persisted && typeof options.onCommittedSettings === 'function') options.onCommittedSettings(JSON.stringify(settings));
     return persisted
       ? { ok: true, continuity: settings[SESSION_CONTINUITY_SETTINGS_KEY] || null }
       : { ok: false, code: 'E_SESSION_CONTINUITY_PERSIST_FAILED' };
@@ -34093,47 +34095,66 @@ async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex) {
 }
 
 // Автоматическое открытие последнего файла
-async function openLastFile(ownerWindow = mainWindow, isCurrent = () => Boolean(ownerWindow && mainWindow === ownerWindow && !ownerWindow.isDestroyed())) {
+async function openLastFile(ownerWindow = mainWindow, isCurrent = () => Boolean(ownerWindow && mainWindow === ownerWindow && !ownerWindow.isDestroyed()), sourceBinding = null, onEmpty = null, startupGuard = null) {
+  const windowCurrent = isCurrent, effectGuard = sourceBinding?.contextGuard || startupGuard || captureRecoveryEffect('cmd.project.open');
+  const sources = [];
+  const guard = () => { if (!windowCurrent()) throw recoveryFailure(); effectGuard(); sourceBinding?.guard(); sources.forEach(assertRecoverySnapshot); };
+  const report = () => showRecoveryFailure(ownerWindow, windowCurrent, () => effectGuard(false));
+  const noFile = () => { guard(); if (onEmpty) onEmpty(); return 'noFile'; };
+  isCurrent = () => { try { guard(); return true; } catch { report(); return false; } };
+  try {
   if (!isCurrent()) return 'stale';
 
-  const settings = await loadSettings();
+  const settingsSource = sourceBinding ? null : await readRecoverySnapshot(getSettingsPath(), guard);
+  if (settingsSource) sources.push(settingsSource);
+  const settings = sourceBinding ? sourceBinding.settings : recoverySettings(settingsSource);
   if (!isCurrent()) return 'stale';
   const continuity = readSessionContinuityV1(settings);
-  const lastFilePath = await resolveLastOpenedFilePath(settings);
+  const lastFilePath = sourceBinding ? sourceBinding.source.filePath : await resolveLastOpenedFilePath(settings);
   if (!isCurrent()) return 'stale';
-  if (!lastFilePath) return 'noFile';
-  if (!isAllowedFilePath(lastFilePath)) return 'noFile';
+  if (!lastFilePath) return noFile();
+  if (!isAllowedFilePath(lastFilePath)) throw recoveryFailure('E_RECOVERY_PATH');
   
   const exists = await fileExists(lastFilePath);
   if (!isCurrent()) return 'stale';
-  if (!exists) return 'noFile';
+  if (!exists) return noFile();
   
   try {
     await recoverWriterProjectTransactionForFile(lastFilePath);
   } catch (error) {
     logDevError('openLastFile:projectTransactionRecovery', error);
     if (!isCurrent()) return 'stale';
-    updateStatus('Ошибка');
+    report();
     return 'error';
   }
   if (!isCurrent()) return 'stale';
+  const source = sourceBinding?.source || await readRecoverySnapshot(lastFilePath, guard);
+  sources.push(source); guard();
+  const envelope = await loadDocumentContentEnvelopeModule(); guard();
+  const capturedContent = recoveryText(source.raw, envelope);
   const fileResult = await fileManager.readFile(lastFilePath);
   if (!isCurrent()) return 'stale';
     if (fileResult.success) {
-      const previousFilePath = currentFilePath;
-      currentFilePath = lastFilePath;
+      if (fileResult.content !== capturedContent) throw recoveryFailure('E_RECOVERY_SOURCE_CHANGED');
       const selectionRange = clampSelectionRangeForContent(
         continuity.ok ? continuity.record?.selectionRange || null : null,
         fileResult.content,
       );
-      const continuityCommit = await saveLastFile({ selectionRange, beforeWrite: () => {
+      if (!sourceBinding) {
+      const continuityCommit = await saveLastFile({ filePath: lastFilePath, selectionRange, beforeWrite: () => {
         if (!isCurrent()) throw Error('E_EDITOR_STARTUP_WINDOW_STALE');
+      }, onCommittedSettings: text => {
+        effectGuard(); if (!windowCurrent()) throw recoveryFailure();
+        sources.filter(item => item !== settingsSource).forEach(assertRecoverySnapshot);
+        const physical = recoveryPhysicalIdentity(settingsSource.filePath), raw = fsSync.readFileSync(settingsSource.filePath);
+        if (!raw.equals(Buffer.from(text, 'utf8'))) throw recoveryFailure('E_RECOVERY_SETTINGS_CHANGED');
+        Object.assign(settingsSource, { identity: physical.key, leaf: physical.leaf, parent: physical.parent, raw }); assertRecoverySnapshot(settingsSource);
       } });
       if (!isCurrent()) return 'stale';
       if (!continuityCommit.ok) {
-        currentFilePath = previousFilePath;
-        updateStatus('Ошибка');
+        report();
         return 'error';
+      }
       }
       const context = getDocumentContextFromPath(lastFilePath);
       const documentIdentity = await getProjectDocumentIdentityPayload(lastFilePath);
@@ -34147,6 +34168,7 @@ async function openLastFile(ownerWindow = mainWindow, isCurrent = () => Boolean(
         selectionRange,
       }, lastFilePath);
       if (!isCurrent()) return 'stale';
+      currentFilePath = lastFilePath;
       sendEditorText(publication);
       setDirtyState(false);
       const contentHash = computeHash(fileResult.content);
@@ -34156,8 +34178,13 @@ async function openLastFile(ownerWindow = mainWindow, isCurrent = () => Boolean(
       return 'loaded';
     }
 
-  updateStatus('Ошибка');
+  report();
   return 'error';
+  } catch (error) {
+    logDevError('openLastFile:sourceAdmission', error);
+    report();
+    return 'error';
+  }
 }
 
 // Применение сохранённого размера шрифта
@@ -34176,17 +34203,37 @@ async function loadSavedFontSize(ownerWindow = mainWindow) {
   if (mainWindow === ownerWindow && !ownerWindow.isDestroyed()) sendEditorFontSize(currentFontSize);
 }
 
-async function restoreAutosaveIfExists(ownerWindow = mainWindow, isCurrent = () => Boolean(ownerWindow && mainWindow === ownerWindow && !ownerWindow.isDestroyed())) {
+async function restoreAutosaveIfExists(ownerWindow = mainWindow, isCurrent = () => Boolean(ownerWindow && mainWindow === ownerWindow && !ownerWindow.isDestroyed()), onContext = null) {
   if (!isCurrent()) return false;
-  await ensureAutosaveDirectory();
-  if (!isCurrent()) return false;
-
+  const contextGuard = captureRecoveryEffect('cmd.project.open'), sources = [];
+  if (onContext) onContext(contextGuard);
+  const guard = () => { if (!isCurrent()) throw recoveryFailure(); contextGuard(); sources.forEach(assertRecoverySnapshot); };
   const autosavePath = getAutosavePath();
   try {
-    const content = await fs.readFile(autosavePath, 'utf-8');
-    if (!isCurrent()) return false;
-    if (!content) {
-      return false;
+    guard(); await ensureAutosaveDirectory(); guard();
+    const autosave = await readRecoverySnapshot(autosavePath, guard); sources.push(autosave); guard();
+    if (!autosave.raw?.length) return false;
+    const settingsSource = await readRecoverySnapshot(getSettingsPath(), guard); sources.push(settingsSource); guard();
+    const settings = recoverySettings(settingsSource), lastFilePath = await resolveLastOpenedFilePath(settings); guard();
+    const saved = lastFilePath && lastFilePath !== autosavePath ? await readRecoverySnapshot(lastFilePath, guard) : null;
+    if (saved) sources.push(saved); guard();
+    const envelope = await loadDocumentContentEnvelopeModule(); guard();
+    const content = recoveryText(autosave.raw, envelope);
+    if (saved && saved.raw !== null) recoveryText(saved.raw, envelope);
+    if (saved && saved.raw !== null) {
+      const choice = await dialog.showMessageBox(ownerWindow, { type: 'question', title: 'Выберите источник текста',
+        message: 'Есть сохранённая сцена и автокопия.', detail: `Сохранённая сцена: «${path.basename(saved.filePath)}». Автокопия откроется как отдельный несохранённый текст. Оба исходных файла сохранятся.`,
+        buttons: ['Открыть сохранённую сцену', 'Восстановить автокопию отдельно', 'Отмена'], defaultId: 2, cancelId: 2, noLink: true });
+      guard();
+      if (!isPlainObjectValue(choice) || !Number.isSafeInteger(choice.response) || ![0, 1, 2].includes(choice.response)) throw recoveryFailure('E_RECOVERY_CHOICE_INVALID');
+      if (choice.response === 0) {
+        await openLastFile(ownerWindow, isCurrent, { settings, source: saved, guard, contextGuard }); return true;
+      }
+      if (choice.response === 2) {
+        guard(); currentFilePath = null;
+        sendEditorText({ content: '', title: '', documentId: '', projectId: '', kind: 'empty', metaEnabled: false });
+        setDirtyState(false); lastAutosaveHash = null; updateStatus('Готово'); return true;
+      }
     }
 
     const publication = await attachProjectIdToEditorPayload({
@@ -34196,9 +34243,10 @@ async function restoreAutosaveIfExists(ownerWindow = mainWindow, isCurrent = () 
       kind: 'autosave',
       metaEnabled: false,
     });
-    if (!isCurrent()) return false;
+    guard(); currentFilePath = null;
     sendEditorText(publication);
 
+    setDirtyState(false); // A distinct authoring session; never inherit the remembered file's target.
     setDirtyState(true); // восстановленный черновик считается несохранённым
     const autosaveHash = computeHash(content);
     lastAutosaveHash = autosaveHash;
@@ -34213,7 +34261,8 @@ async function restoreAutosaveIfExists(ownerWindow = mainWindow, isCurrent = () 
     return true;
   } catch (error) {
     logDevError('restoreAutosaveIfExists', error);
-    return false;
+    showRecoveryFailure(ownerWindow, isCurrent, () => contextGuard(false));
+    return true;
   }
 }
 
@@ -34272,6 +34321,90 @@ function getAutosavePath() {
   return path.join(getAutosaveDir(), 'autosave.txt');
 }
 
+// Recovery snapshots confer no write ownership. Only a current coordinator
+// readback can own the global slot; a baseline/session reset retires that claim.
+let ownedGlobalAutosave = null;
+function recoveryFailure(code = 'E_RECOVERY_CONTEXT_STALE') { return Object.assign(new Error(code), { code }); }
+function recoveryContext() {
+  return [mainWindow, mainWindow?.webContents, commentAuthoringSessionId, getProjectRootPath(), fileManager.getDocumentsPath(),
+    app.getPath('userData'), activeStage10ApplicationBootstrap, JSON.stringify(getWriterLocalRuntimeProfile()), JSON.stringify(getFilePathAllowlistRoots())];
+}
+function captureRecoveryEffect(commandId) {
+  if (!['cmd.project.open', 'cmd.project.save', 'cmd.project.saveAs'].includes(commandId)) throw recoveryFailure('E_RECOVERY_COMMAND');
+  const context = recoveryContext(), file = currentFilePath, subject = currentLifecycleSubjectId(), generation = lastSignaledEditGeneration;
+  return (checkCapability = true) => {
+    if (recoveryContext().some((value, index) => value !== context[index]) || !context[0] || context[0].isDestroyed() || context[1].isDestroyed()
+      || currentFilePath !== file || currentLifecycleSubjectId() !== subject
+      || lastSignaledEditGeneration !== generation || projectArchiveOpenCapture || isWindowClosing || isQuitting) throw recoveryFailure();
+    if (!checkCapability) return;
+    userBookmarkCapability(commandId);
+    if (!evaluateCommandCapabilityAuthority({ commandId, capabilityId: commandId === 'cmd.project.open' ? 'cap.project.open' : commandId === 'cmd.project.saveAs' ? 'cap.project.saveAs' : 'cap.project.save',
+      platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc: readAuthorityCapabilityMatrixDoc() }).ok) throw recoveryFailure();
+  };
+}
+function showRecoveryFailure(ownerWindow, isCurrent, guard) {
+  try { if (!isCurrent() || mainWindow !== ownerWindow || ownerWindow.isDestroyed()) return; guard(); } catch { return; }
+  updateStatus('Ошибка восстановления');
+  if (typeof dialog.showErrorBox === 'function') {
+    try { dialog.showErrorBox('Yalken: восстановление текста', 'Не удалось безопасно открыть источник текста. Исходные файлы сохранены. Откройте нужный файл вручную или перезапустите приложение.'); }
+    catch (error) { logDevError('startup recovery error dialog', error); }
+  }
+}
+function recoveryPhysicalIdentity(filePath) {
+  if (!isAllowedFilePath(filePath)) throw recoveryFailure('E_RECOVERY_PATH');
+  const parents = [];
+  for (let directory = path.dirname(filePath);; directory = path.dirname(directory)) {
+    const stat = fsSync.lstatSync(directory, { bigint: true });
+    if (!stat.isDirectory() || stat.isSymbolicLink()) throw recoveryFailure('E_RECOVERY_PARENT');
+    parents.push([stat.dev, stat.ino, stat.uid, stat.mode].join(':')); if (directory === path.dirname(directory)) break;
+  }
+  let stat; try { stat = fsSync.lstatSync(filePath, { bigint: true }); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  if (stat && (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1n)) throw recoveryFailure('E_RECOVERY_FILE');
+  const leaf = stat ? recoveryLeafIdentity(stat) : 'MISSING';
+  return { exists: Boolean(stat), leaf, parent: parents[0], key: parents.join('|') + '|' + leaf };
+}
+function recoveryLeafIdentity(stat) { return [stat.dev, stat.ino, stat.uid, stat.mode, stat.size, stat.mtimeNs, stat.ctimeNs].join(':'); }
+function openRecoveryFile(filePath, flags, ...args) {
+  const c = fsSync.constants;
+  if (!Number.isInteger(c.O_NOFOLLOW) || !['w', 'wx', 'r'].includes(flags)) throw recoveryFailure('E_RECOVERY_OPEN_UNAVAILABLE');
+  return fs.open(filePath, flags !== 'r' ? c.O_WRONLY | c.O_CREAT | c.O_EXCL | c.O_NOFOLLOW : c.O_RDONLY | c.O_NOFOLLOW, ...args);
+}
+function assertRecoverySnapshot(source) {
+  if (recoveryPhysicalIdentity(source.filePath).key !== source.identity
+    || source.raw !== null && !fsSync.readFileSync(source.filePath).equals(source.raw)) throw recoveryFailure('E_RECOVERY_SOURCE_CHANGED');
+}
+async function readRecoverySnapshot(filePath, guard) {
+  guard(); const physical = recoveryPhysicalIdentity(filePath);
+  const raw = physical.exists ? await fs.readFile(filePath) : null; guard();
+  const source = { filePath, identity: physical.key, leaf: physical.leaf, parent: physical.parent, raw }; assertRecoverySnapshot(source); return source;
+}
+async function syncRecoverySnapshot(source, guard, includeParent = true) {
+  for (const filePath of includeParent ? [source.filePath, path.dirname(source.filePath)] : [source.filePath]) {
+    const isFile = filePath === source.filePath, handle = await (isFile ? openRecoveryFile(filePath, 'r') : fs.open(filePath, 'r'));
+    try {
+      guard(); assertRecoverySnapshot(source);
+      const stat = await handle.stat({ bigint: true }); guard();
+      if (isFile ? !stat.isFile() || stat.nlink !== 1n || recoveryLeafIdentity(stat) !== source.leaf
+        : !stat.isDirectory() || [stat.dev, stat.ino, stat.uid, stat.mode].join(':') !== source.parent) throw recoveryFailure('E_RECOVERY_HANDLE_CHANGED');
+      await handle.sync(); guard(); assertRecoverySnapshot(source);
+    } finally { await handle.close(); }
+    guard(); assertRecoverySnapshot(source);
+  }
+}
+function recoveryText(raw, envelope = null) {
+  if (!Buffer.isBuffer(raw)) throw recoveryFailure('E_RECOVERY_SOURCE_MISSING');
+  const text = raw.toString('utf8');
+  if (!Buffer.from(text, 'utf8').equals(raw) || envelope?.parseObservablePayload(text).issue) throw recoveryFailure('E_RECOVERY_SOURCE_INVALID');
+  return text;
+}
+function recoverySettings(source) {
+  const settings = source.raw === null ? {} : JSON.parse(recoveryText(source.raw));
+  if (!isPlainObjectValue(settings)) throw recoveryFailure('E_RECOVERY_SETTINGS_INVALID');
+  const continuity = readSessionContinuityV1(settings);
+  if (!continuity.ok && continuity.present) throw recoveryFailure('E_RECOVERY_SETTINGS_INVALID');
+  return settings;
+}
+
 async function ensureAutosaveDirectory() {
   const dir = getAutosaveDir();
   try {
@@ -34282,27 +34415,67 @@ async function ensureAutosaveDirectory() {
   return dir;
 }
 
-async function deleteAutosaveFile() {
-  const autosavePath = getAutosavePath();
+async function deleteAutosaveFile(beforeUnlink = () => {}, commandId = 'cmd.project.save') {
+  const owned = ownedGlobalAutosave;
+  if (!owned || recoveryContext().some((value, index) => value !== owned.context[index])) return false;
+  const guard = captureRecoveryEffect(commandId);
   try {
-    await fs.unlink(autosavePath);
-  } catch {
-    // Игнорируем, если файла нет
-  }
+    return await queueDiskOperation(async () => {
+      guard(); beforeUnlink();
+      if (ownedGlobalAutosave !== owned) return false;
+      assertRecoverySnapshot(owned); guard(); beforeUnlink();
+      await fs.unlink(owned.filePath);
+      if (ownedGlobalAutosave === owned) ownedGlobalAutosave = null;
+      guard(); return true;
+    }, 'cleanup owned autosave');
+  } catch (error) { logDevError('deleteAutosaveFile:ownership', error); return false; }
 }
 
 async function writeAutosaveFile(content, revision) {
-  const autosavePath = getAutosavePath();
-  await ensureAutosaveDirectory();
-  return durableSaveWithCoordinator(autosavePath, content, revision);
+  const autosavePath = getAutosavePath(), guard = captureRecoveryEffect('cmd.project.save');
+  try {
+    guard(); if (!Number.isSafeInteger(revision) || revision < lastSignaledEditGeneration) throw recoveryFailure();
+    await ensureAutosaveDirectory(); guard();
+    const incumbent = await readRecoverySnapshot(autosavePath, guard); guard();
+    const owned = ownedGlobalAutosave; let retained = null, retainedIdentity = null;
+    if (incumbent.raw !== null && !(owned && owned.filePath === autosavePath && owned.identity === incumbent.identity
+      && owned.raw.equals(incumbent.raw) && recoveryContext().every((value, index) => value === owned.context[index]))) {
+      const target = path.join(getAutosaveDir(), 'retained-' + crypto.createHash('sha256').update(incumbent.raw).digest('hex') + '.txt');
+      const existing = await readRecoverySnapshot(target, guard); guard();
+      if (existing.raw !== null) {
+        if (!existing.raw.equals(incumbent.raw)) throw recoveryFailure('E_RECOVERY_RETENTION_COLLISION');
+        retainedIdentity = existing.identity; await syncRecoverySnapshot(existing, guard); guard();
+      } else {
+        await durableSaveTransaction({ filePath: target, content: incumbent.raw, revision, fsAdapter: { ...fs, open: openRecoveryFile, rename: async (from, to) => {
+          guard(); assertRecoverySnapshot(incumbent); assertRecoverySnapshot(existing);
+          const temporary = fsSync.lstatSync(from, { bigint: true });
+          await fs.link(from, to); guard(); await fs.unlink(from); guard();
+          const physical = recoveryPhysicalIdentity(to), published = fsSync.lstatSync(to, { bigint: true });
+          if (published.dev !== temporary.dev || published.ino !== temporary.ino) throw recoveryFailure('E_RECOVERY_HANDLE_CHANGED');
+          retainedIdentity = physical.key;
+          await syncRecoverySnapshot({ filePath: to, identity: physical.key, leaf: physical.leaf, parent: physical.parent, raw: incumbent.raw }, guard, false);
+        } } }); guard();
+      }
+      retained = await readRecoverySnapshot(target, guard); guard();
+      if (retained.identity !== retainedIdentity || !retained.raw?.equals(incumbent.raw)) throw recoveryFailure('E_RECOVERY_RETENTION_READBACK');
+    }
+    const result = await durableSaveWithCoordinator(autosavePath, content, revision, { ...fs, open: openRecoveryFile, rename: (from, to) => {
+      guard(); assertRecoverySnapshot(incumbent); if (retained) assertRecoverySnapshot(retained); return fs.rename(from, to);
+    } }); guard();
+    if (result.success !== true) return result;
+    const written = await readRecoverySnapshot(autosavePath, guard); guard();
+    const expected = Buffer.isBuffer(content) ? content : Buffer.from(content, 'utf8');
+    if (!written.raw?.equals(expected)) throw recoveryFailure('E_RECOVERY_GLOBAL_READBACK');
+    ownedGlobalAutosave = { ...written, context: recoveryContext() }; return result;
+  } catch (error) { return { success: false, code: error.code || 'E_RECOVERY_WRITE_FAILED', error: error.message }; }
 }
 
 // R2.4 P2: the durable save transaction wrapper used by the autosave
 // lifecycle: exact-revision capture, unique temp, fsync, atomic publish,
 // parent fsync, exact readback and phase-bound ACK.
-async function durableSaveWithCoordinator(filePath, content, revision) {
+async function durableSaveWithCoordinator(filePath, content, revision, fsAdapter = fs) {
   try {
-    return await durableSaveTransaction({ filePath, content, revision });
+    return await durableSaveTransaction({ filePath, content, revision, fsAdapter });
   } catch (error) {
     return {
       success: false,
@@ -36579,18 +36752,17 @@ function createWindow() {
     logPerfStage('did-finish-load');
     await loadSavedFontSize(startupWindow);
     if (!isCurrentStartup()) return;
-    const restored = await restoreAutosaveIfExists(startupWindow, isCurrentStartup);
+    let startupGuard = null;
+    const restored = await restoreAutosaveIfExists(startupWindow, isCurrentStartup, guard => { startupGuard = guard; });
     if (!isCurrentStartup()) return;
     if (!restored) {
-      const openResult = await openLastFile(startupWindow, isCurrentStartup);
-      if (!isCurrentStartup()) return;
-      if (openResult !== 'loaded' && openResult !== 'error') {
+      await openLastFile(startupWindow, isCurrentStartup, null, () => {
         currentFilePath = null;
         sendEditorText({ content: '', title: '', documentId: '', projectId: '', kind: 'empty', metaEnabled: false });
         setDirtyState(false);
         lastAutosaveHash = null;
         updateStatus('Готово');
-      }
+      }, startupGuard);
     }
   }).catch((error) => {
     logDevError('editor startup bootstrap', error);
@@ -36739,8 +36911,10 @@ async function runAutoSave() {
 
   const lifecycleSubjectId = currentLifecycleSubjectId();
   const saveTargetPath = currentFilePath;
+  const saveContext = recoveryContext();
   const saveSessionId = commentAuthoringSessionId, saveProjectRoot = getProjectRootPath();
   const isCurrentAutoSaveTarget = () => currentLifecycleSubjectId() === lifecycleSubjectId
+    && recoveryContext().every((value, index) => value === saveContext[index])
     && commentAuthoringSessionId === saveSessionId && getProjectRootPath() === saveProjectRoot
     && currentFilePath === saveTargetPath;
   const executeCapturedAutoSave = async operation => isCurrentAutoSaveTarget()
@@ -36864,6 +37038,7 @@ async function runAutoSave() {
         updateStatus('Ошибка сохранения');
         return lifecycleSaveFailure(lifecycleSubjectId, 'SAVE_WRITE_FAILED', classify(false, null));
       }
+      if (!isCurrentAutoSaveTarget() || lastSignaledEditGeneration > snapshot.generation) return lifecycleSaveFailure(lifecycleSubjectId, 'SUBJECT_CHANGED_DURING_SAVE');
       const idleAck = await acknowledgeMainOwnedSave(
         sameContentResult,
         content,
@@ -37215,8 +37390,8 @@ async function handleSave() {
       publicationGuard();
       if (saveAck.kind === SAVE_ACK_KINDS.SAVED) { lastAutosaveHash = computeHash(content); updateStatus('Сохранено'); }
       if (wasUntitled && saveAck.kind === SAVE_ACK_KINDS.SAVED) {
-        publicationGuard(); await deleteAutosaveFile(); publicationGuard();
-        backupHashes.delete(getAutosavePath());
+        publicationGuard(); const removed = await deleteAutosaveFile(publicationGuard); publicationGuard();
+        if (removed) backupHashes.delete(getAutosavePath());
       }
       return saveAck.kind === SAVE_ACK_KINDS.SAVED
         ? true
@@ -37514,8 +37689,8 @@ async function handleSaveAs() {
       publicationGuard();
       if (saveAck.kind === SAVE_ACK_KINDS.SAVED) { lastAutosaveHash = computeHash(content); updateStatus('Сохранено'); }
       if (wasUntitled && saveAck.kind === SAVE_ACK_KINDS.SAVED) {
-        publicationGuard(); await deleteAutosaveFile(); publicationGuard();
-        backupHashes.delete(getAutosavePath());
+        publicationGuard(); const removed = await deleteAutosaveFile(publicationGuard, 'cmd.project.saveAs'); publicationGuard();
+        if (removed) backupHashes.delete(getAutosavePath());
       }
       return saveAck.kind === SAVE_ACK_KINDS.SAVED;
     }
