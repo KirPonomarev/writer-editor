@@ -1787,7 +1787,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "a9accffc0a5ee20f875185e5c4f26e22a431d97477f62ee66c807890422c96f8"
+        "sha256": "d1518d7c51c134d99e0ec570c6b038da0e7ca73454cc229b49dedefe45572661"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2743,15 +2743,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "71bc1c870c8eea7cc29d48b1439408fde20adf9a755acc8a2c9df705c6521e30"
+        "sha256": "08ce5c3b44132b27721f383d160ef7a5efcd41a30277f93d4d875560b0a8bd91"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c661b83abbc94ec2823ade789a1174b7d4f6ce146118b56b91e6ea9dffcdc60e"
+        "sha256": "99905544f6d8da0ab6bca883f304026fd664050fa8ab00e173f4d4fa2bbcd180"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2c6200189ecaaca4d20f4dc30b04d9eb18a5069f6f647542080310be9177e812"
+        "sha256": "7e51be473353aec4c96edf666c06fbc02979b358608e5037c3f3982c6ae17d26"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3291,7 +3291,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "48b26d07ea6363916dfccf1cd2d3c88414942eb54dc0c2a48a97beffe5e6578d"
+        "sha256": "94ec4e78020d52f1626c1d0129689321aa8e6e74a87e1d1d9874bf4121de7a27"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3427,7 +3427,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "a34971f5ffa9b3b6b889e8411fa272ecb844de86dff121838743c0a69495f283"
+        "sha256": "fcb731148c74cda711b5b33cc733f1a76ad844331594d71ffb94e97f505702b1"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3707,7 +3707,7 @@
       },
       {
         "path": "docs/tasks/2026-10-25--startup-input-admission.md",
-        "sha256": "f0f9dc0f59abf5cdc1d4484c30d96544eb276b7cbacdb1874b67b49558e1a3fa"
+        "sha256": "10437af2f6690faaf55fc66da48e958909f8950743a24d5885ee007b9bdbcc90"
       },
       {
         "path": "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",

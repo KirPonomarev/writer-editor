@@ -25401,6 +25401,116 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Current-only C5 complete finite RTK renderer setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
       "sha256": "a9accffc0a5ee20f875185e5c4f26e22a431d97477f62ee66c807890422c96f8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "634477232846dacfcedac61f453466b90f01ce9da08e9c8bcccedde6c5a2f9e5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "94ec4e78020d52f1626c1d0129689321aa8e6e74a87e1d1d9874bf4121de7a27"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "e4f29a7eeabb6ba60a813cfad09448d0c3af918833b2fa065cfb3a123db9670c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "1be582251a45da51cd1e3a38586b75c604a9ce67648cf4152f7c9c143a79351a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "506f4ad34f202ed4b022b3ca05603ec2ab9e9e35c52ea6820155ba555699c855"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "d1518d7c51c134d99e0ec570c6b038da0e7ca73454cc229b49dedefe45572661"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "7db454fbb0d95740d9330f8385616fcf1d89eca858a1c93d858b8ed38ac1b63b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "9a559a914f38e4d72c89ad03956c4230a8ca4cf85bcb7865bd264f4665dc66a9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "ad60cbfe0447852dba2ba040c296a498598a8ec6522a4a5c548e05c2fa4e0f56"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "a9666bd79630f17985576d49a9c1d4c29ee11e594e48b8ee205c5e6b52e2d2f8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T01:24:52.733345+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
+      "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "fcb731148c74cda711b5b33cc733f1a76ad844331594d71ffb94e97f505702b1"
     }
   ],
   "evidenceStampIds": [
