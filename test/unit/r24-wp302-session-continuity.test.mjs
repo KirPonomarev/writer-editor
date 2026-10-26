@@ -502,6 +502,8 @@ async function rawStartupHarness(t, { selected = true, schema = 1, external = fa
     readSessionContinuityV1, normalizeStableProjectId: value => typeof value === 'string' ? value.trim() : '',
     isPlainObjectValue: value => !!value && typeof value === 'object' && !Array.isArray(value),
     fileManager: { getDocumentsPath: () => documents },
+    getProjectRootPath: () => path.join(documents, context.currentProjectName || context.DEFAULT_PROJECT_NAME),
+    isPathInside: (root, target) => require('../../src/core/io/path-boundary').isPathInsideBoundary(root, target, { resolveSymlinks: false }),
     getProjectManifestPath: name => path.join(documents, name, PROJECT_MANIFEST_FILENAME),
     setActiveProjectNameFromRoot: root => { context.currentProjectName = path.basename(root); calls.push(['select', context.currentProjectName]); },
     recoverPendingWriterProjectTransaction: async () => {
@@ -859,4 +861,187 @@ test('initial Main retired load continuation cannot publish or clear authoring i
   assert.deepEqual(publications, [], 'a destroyed or replaced boot owner cannot release another window authoring');
   assert.equal(current.sent.some(([channel, p]) => channel === 'set-dirty' && p.state === false), false);
   const currentPending = h.finish(current); await currentPending; assert.equal(h.publications(current).length, 1); assert.equal(fs.readFileSync(h.scene, 'utf8'), h.text);
+});
+
+// Standalone applicability: whole exported Main initialization, then its real
+// finite window continuation. No project reconciler is replaced by this adapter.
+function externalStartupRoster(root) {
+  const rows = {};
+  const visit = directory => {
+    for (const name of fs.readdirSync(directory).sort()) {
+      const target = path.join(directory, name), stat = fs.lstatSync(target);
+      const relative = path.relative(root, target);
+      assert.equal(stat.isSymbolicLink(), false, relative);
+      rows[relative] = stat.isDirectory() ? { kind: 'directory' }
+        : { kind: 'file', bytes: stat.size, sha256: cryptoForStartup.createHash('sha256').update(fs.readFileSync(target)).digest('hex') };
+      if (stat.isDirectory()) visit(target);
+    }
+  };
+  visit(root);
+  return rows;
+}
+
+async function externalFullStartupFixture(t, { keepDefault = false } = {}) {
+  const h = await initialMainBoot(t, 'empty');
+  h.documentsRoot = path.join(h.root, 'Documents', 'craftsman');
+  h.settingsPath = path.join(h.root, 'userData', 'settings.json');
+  h.external = path.join(h.documentsRoot, 'standalone e\u0301 🧭.txt');
+  h.externalText = 'Продолжение отдельного файла e\u0301 🧭\n';
+  fs.writeFileSync(h.external, h.externalText);
+  if (!keepDefault) await fsPromises.rm(h.projectRoot, { recursive: true });
+  h.settings = { lastExternalFilePath: h.external, preservedUnrelatedSetting: { value: 'retain me' } };
+  fs.writeFileSync(h.settingsPath, JSON.stringify(h.settings));
+  return h;
+}
+
+async function observeWholeExternalInitializer(t, h) {
+  const before = externalStartupRoster(h.root);
+  let failure = null;
+  try { await h.main.initializeApp(); }
+  catch (error) { failure = error; }
+  const after = externalStartupRoster(h.root);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_EXPORTED_WHOLE_INITIALIZE_APP',
+    externalPath: h.external, before, after, windows: h.windows.length,
+    failure: failure && { name: failure.name, code: failure.code || null, message: failure.message, stack: failure.stack } }));
+  assert.ifError(failure);
+  return { before, after };
+}
+
+for (const keepDefault of [false, true]) test('external startup actual whole initializer opens standalone without fallback setup: default ' + (keepDefault ? 'retained' : 'absent'), async t => {
+  const h = await externalFullStartupFixture(t, { keepDefault });
+  const settingsBefore = fs.readFileSync(h.settingsPath);
+  const defaultBefore = keepDefault ? externalStartupRoster(h.projectRoot) : null;
+  await observeWholeExternalInitializer(t, h);
+  assert.deepEqual(fs.readFileSync(h.settingsPath), settingsBefore, 'initialization does not normalize standalone continuity');
+  if (keepDefault) assert.deepEqual(externalStartupRoster(h.projectRoot), defaultBefore, 'an unrelated existing project stays byte-exact');
+  else assert.equal(fs.existsSync(h.projectRoot), false, 'standalone startup cannot manufacture a default project');
+  const window = h.create(); await h.finish(window);
+  const publications = h.publications(window);
+  assert.equal(publications.length, 1);
+  const payload = publications[0];
+  assert.equal(payload.content, h.externalText); assert.equal(payload.kind, 'external'); assert.equal(payload.projectId, '');
+  assert.equal(payload.documentId, 'external-document-' + cryptoForStartup.createHash('sha256').update(path.resolve(h.external)).digest('hex').slice(0, 32));
+  assert.equal(fs.readFileSync(h.external, 'utf8'), h.externalText);
+  const settings = JSON.parse(fs.readFileSync(h.settingsPath, 'utf8'));
+  assert.equal(settings.lastExternalFilePath, h.external);
+  assert.deepEqual(settings.preservedUnrelatedSetting, h.settings.preservedUnrelatedSetting);
+  assert.equal(Object.hasOwn(settings, 'sessionContinuityV1'), false);
+  assert.equal(Object.hasOwn(settings, 'lastProjectId'), false);
+  const beforeTree = externalStartupRoster(h.documentsRoot);
+  const tree = await h.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
+  assert.deepEqual(externalStartupRoster(h.documentsRoot), beforeTree, 'navigator query cannot repair/create the fallback project');
+  if (!keepDefault) { assert.equal(tree.ok, false); assert.equal(tree.error, 'E_PROJECT_MANIFEST_UNAVAILABLE'); }
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_INITIALIZE_THEN_CREATEWINDOW_EXTERNAL_PUBLICATION', payload,
+    treeObservationOnly: { ok: tree.ok, projectId: tree.projectId || '', error: tree.error || '' },
+    settings, rawExternalBytes: Buffer.byteLength(h.externalText) }));
+});
+
+for (const keepDefault of [false, true]) test('external applicability retains actual default no-file initialization: ' + (keepDefault ? 'existing' : 'creation'), async t => {
+  const h = await externalFullStartupFixture(t, { keepDefault });
+  fs.writeFileSync(h.settingsPath, '{}');
+  const sceneBefore = keepDefault ? fs.readFileSync(h.scene) : null;
+  await h.main.initializeApp();
+  const manifest = JSON.parse(fs.readFileSync(path.join(h.projectRoot, PROJECT_MANIFEST_FILENAME), 'utf8'));
+  assert.equal(typeof manifest.projectId, 'string'); assert.ok(manifest.projectId);
+  assert.ok(manifest.treeIdentity && typeof manifest.treeIdentity.nodes === 'object');
+  assert.equal(fs.statSync(path.join(h.projectRoot, '.stage10-local')).isDirectory(), true);
+  if (keepDefault) assert.deepEqual(fs.readFileSync(h.scene), sceneBefore);
+  const window = h.create(); await h.finish(window);
+  const publications = h.publications(window); assert.equal(publications.length, 1);
+  assert.equal(publications[0].kind, 'empty'); assert.equal(publications[0].content, '');
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_DEFAULT_WHOLE_INITIALIZER_AND_NOFILE_TERMINAL', keepDefault,
+    projectId: manifest.projectId, publication: publications[0] }));
+});
+
+test('external applicability preserves real selected project precedence over standalone path', async t => {
+  const h = await externalFullStartupFixture(t, { keepDefault: true });
+  const settings = { ...h.settings, sessionContinuityV1: makeRecord({ projectId: 'project-startup',
+    documentRelativePath: 'roman/Imported/01 start.txt', selectionRange: { start: 2, end: 4 } }) };
+  fs.writeFileSync(h.settingsPath, JSON.stringify(settings));
+  await h.main.initializeApp();
+  const window = h.create(); h.releaseRead(); await h.finish(window);
+  const publications = h.publications(window); assert.equal(publications.length, 1);
+  assert.equal(publications[0].content, h.text); assert.equal(publications[0].projectId, 'project-startup');
+  assert.equal(publications[0].kind, 'scene'); assert.match(publications[0].documentId, /^tree-node-[a-f0-9]{32}$/u);
+  assert.equal(h.actualReads.length, 1); assert.equal(h.actualReads[0].success, true);
+  const saved = JSON.parse(fs.readFileSync(h.settingsPath, 'utf8'));
+  assert.equal(saved.sessionContinuityV1.projectId, 'project-startup'); assert.equal(Object.hasOwn(saved, 'lastExternalFilePath'), false);
+  assert.deepEqual(saved.preservedUnrelatedSetting, h.settings.preservedUnrelatedSetting);
+  assert.equal(fs.readFileSync(h.external, 'utf8'), h.externalText);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SELECTED_INITIALIZER_PRECEDES_EXTERNAL_FALLBACK', publication: publications[0] }));
+});
+
+for (const specimen of ['malformed-present-v1', 'missing-selected', 'ambiguous-selected', 'future-selected', 'malformed-selected', 'malformed-default']) {
+  test('external applicability actual whole initializer refuses ' + specimen + ' before publication', async t => {
+    const h = await externalFullStartupFixture(t, { keepDefault: true });
+    const manifestPath = path.join(h.projectRoot, PROJECT_MANIFEST_FILENAME);
+    let settings = { ...h.settings, sessionContinuityV1: makeRecord({ projectId: 'project-startup' }) };
+    let expected = 'E_STARTUP_PROJECT_BINDING';
+    if (specimen === 'malformed-present-v1') {
+      settings.sessionContinuityV1 = { ...settings.sessionContinuityV1, revision: 0 };
+      Object.assign(settings, { lastProjectId: 'project-startup', lastProjectRelativePath: 'roman/Imported/01 start.txt' });
+      expected = 'E_SESSION_CONTINUITY_INVALID';
+    }
+    if (specimen === 'missing-selected') settings.sessionContinuityV1 = makeRecord({ projectId: 'project-missing' });
+    if (specimen === 'ambiguous-selected') {
+      const twin = path.join(h.documentsRoot, 'Twin'); fs.mkdirSync(twin);
+      fs.copyFileSync(manifestPath, path.join(twin, PROJECT_MANIFEST_FILENAME));
+    }
+    if (specimen === 'future-selected') {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); manifest.schemaVersion = 99;
+      fs.writeFileSync(manifestPath, JSON.stringify(manifest)); expected = 'PROJECT_READONLY_SCHEMA';
+    }
+    if (specimen.startsWith('malformed-') && specimen !== 'malformed-present-v1') {
+      fs.writeFileSync(manifestPath, '{broken');
+      if (specimen === 'malformed-default') { settings = {}; expected = 'SyntaxError'; }
+    }
+    fs.writeFileSync(h.settingsPath, JSON.stringify(settings));
+    const before = externalStartupRoster(h.root); let failure = null;
+    try { await h.main.initializeApp(); } catch (error) { failure = error; }
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_WHOLE_INITIALIZER_REFUSAL', specimen,
+      failure: failure && { name: failure.name, code: failure.code || null, message: failure.message } }));
+    assert.ok(failure, 'untrusted selection cannot become standalone success');
+    assert.equal(expected === 'SyntaxError' ? failure.name : failure.code || failure.message, expected);
+    assert.deepEqual(externalStartupRoster(h.root), before, 'refusal retains all raw files/settings/unknown members');
+    assert.equal(h.windows.length, 0);
+  });
+}
+
+test('external startup actual failed read never publishes a successful empty authoring document', async t => {
+  const h = await externalFullStartupFixture(t);
+  await observeWholeExternalInitializer(t, h);
+  fs.renameSync(h.external, h.external + '.retained'); fs.mkdirSync(h.external);
+  const window = h.create(); await h.finish(window);
+  assert.deepEqual(h.publications(window), []);
+  assert.equal(fs.readFileSync(h.external + '.retained', 'utf8'), h.externalText);
+  assert.equal(window.sent.some(([channel, value]) => channel === 'status-update' && /Ошибка/u.test(value)), true);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_EXTERNAL_FAILED_READ_NO_READY_PUBLICATION', sent: window.sent }));
+});
+
+test('external applicability actual whole initializer honors nondefault selected project and preserves unrelated default', async t => {
+  const h = await externalFullStartupFixture(t, { keepDefault: true });
+  const selectedRoot = path.join(h.documentsRoot, 'Selected');
+  const { manifest, secondRelativePath } = await writeProject(selectedRoot);
+  const selectedFile = path.join(selectedRoot, ...secondRelativePath.split('/'));
+  const selectedBefore = fs.readFileSync(selectedFile), defaultBefore = externalStartupRoster(h.projectRoot);
+  fs.writeFileSync(h.settingsPath, JSON.stringify({ ...h.settings, sessionContinuityV1: makeRecord({
+    projectId: manifest.projectId, documentRelativePath: secondRelativePath, selectionRange: { start: 1, end: 4 } }) }));
+  await h.main.initializeApp();
+  assert.deepEqual(externalStartupRoster(h.projectRoot), defaultBefore, 'selected startup cannot normalize the unrelated default project');
+  const window = h.create(); await h.finish(window);
+  const publications = h.publications(window); assert.equal(publications.length, 1);
+  assert.equal(publications[0].content, selectedBefore.toString('utf8'));
+  assert.equal(publications[0].projectId, manifest.projectId); assert.equal(publications[0].kind, 'scene');
+  assert.match(publications[0].documentId, /^tree-node-[a-f0-9]{32}$/u);
+  assert.deepEqual(publications[0].selectionRange, { start: 1, end: 4 });
+  assert.deepEqual(fs.readFileSync(selectedFile), selectedBefore);
+  assert.deepEqual(externalStartupRoster(h.projectRoot), defaultBefore);
+  const settings = JSON.parse(fs.readFileSync(h.settingsPath, 'utf8'));
+  assert.equal(settings.sessionContinuityV1.projectId, manifest.projectId);
+  assert.equal(settings.sessionContinuityV1.documentRelativePath, secondRelativePath);
+  assert.equal(Object.hasOwn(settings, 'lastExternalFilePath'), false);
+  assert.deepEqual(settings.preservedUnrelatedSetting, h.settings.preservedUnrelatedSetting);
+  assert.equal(fs.readFileSync(h.external, 'utf8'), h.externalText);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_NONDEFAULT_SELECTED_WHOLE_INITIALIZER_AND_PUBLICATION', publication: publications[0],
+    selectedFileBytes: selectedBefore.length, originalDefaultSceneReadObservationsOnly: h.actualReads.length }));
 });
