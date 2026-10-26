@@ -110690,8 +110690,8 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
   "id": "YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
   "baseSha": "4a9779ae8b21d269db4ed4007c8a7ad0c553304e",
   "baseTree": "550cae3566db5b7f3b447a874fb929e8d889a967",
-  "successorBaseSha": "57bf2e90b41e361967c0644f7f153b6cb7d472af",
-  "successorBaseTree": "900b4a74c522d7352f46f0aeb13ca2b199451bee",
+  "successorBaseSha": "914df8b9c91fa0df3ff8377fc3aeb643fe447c8e",
+  "successorBaseTree": "08850d32f8251c731efaaa9f1f4c0dc59e12628a",
   "bindings": [
     {
       "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
@@ -110711,7 +110711,7 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "ab57bda47379c4bb210029b893f20e17524ddb2089152f9b7e60490375e6e7c6"
+      "sha256": "9e16bdd505c52119cf0192c45f759feba562683103a4bc810f02e217d87f6960"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -111139,15 +111139,15 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "632c94d4b9a678d9068f36f8b70419b00716dc3f59354d4ea1777dbad7c813db"
+      "sha256": "6c7b614c8710ed5cbe29a3d6a78bee9d53916900c56b07a7476bc4b88bfd60da"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "344ee609b610f19c7ab3f438e7bcc1e4ea5f3fc581c41531e49ede969f1b48dd"
+      "sha256": "61d6a39d17de1fb320d46dbfab6fa1b3b450d60480ab2d4f044fe9f85a7c00ee"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "d326a14b21c0bcb41f183346d55306d1aa47e14f6e512903d5609efc9e223492"
+      "sha256": "d06169f1f4e7e7d258abc78b6b0dfacd8aadeadc2d315412ecda5b248283958e"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -111239,7 +111239,7 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
-      "sha256": "98bafb9684119962bf772c8e82dddc38201c0e2e206bda8225351bde83a331f9"
+      "sha256": "634bdbee2b92e8bfdcabda03bbcc0bc7b103dd6e45cefede226581909df50605"
     },
     {
       "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
@@ -111535,7 +111535,7 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "882bdd6155f2f155e0b9a16bc1ea097cecdc78adaee9a47a7c273f051ce5a7e8"
+      "sha256": "dd82fab969591b8d01e77a48c5682352ade7d2eaeb9cccaceee2d8dda4cab15a"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -111571,7 +111571,7 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "b298d096aa0767e16805199d28453588503c4ee1228c0934e6d9b32eff757d31"
+      "sha256": "d22f713b22f26c1be41975499f170dce0cb1228b44f1f032a17dcaac8494a7fb"
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -111679,7 +111679,7 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "19ee22fb32be73553ebb165bab36b13630c358bbeb0b758d32af8d355e0da36f"
+      "sha256": "e57fcebce7baa8467db776d5298e640b7efbe440813ce5dd56222f381de58a64"
     },
     {
       "path": "src/renderer/flags.js",
@@ -112079,13 +112079,13 @@ const R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-26--native-save-system-path.md",
-      "sha256": "b19dd870ccea822052f591feefd5c756c2f4adbd1bd28e469b319c65eed8b221"
+      "sha256": "3a36411ddc3a0d078882b18938e29124b6e3fb21150f7a6827e68d157b596a91"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "bf206a54916ae241d7764514f889d46e6331e49806dc874a52a3ad50ec62aa68"
+      "sha256": "1da532af0352324d4a0b874f2290385edc4be72a06da93729901bada21e808e0"
     }
   ]
 });

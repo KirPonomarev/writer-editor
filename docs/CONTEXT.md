@@ -1,3 +1,45 @@
+# Native Save C2 — existing Save policy integration, 26 October 2026
+
+TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
+STATUS: C2_SOURCE_REVIEWED_FINAL_PROOFS_AND_DELIVERY_PENDING
+RUNTIME_CHECKPOINT_SHA: 914df8b9c91fa0df3ff8377fc3aeb643fe447c8e
+CLAIM_BOUNDARY: Existing-seam source correction; no native, full Mac or release acceptance.
+
+Actual canonical npm test atC7 retained3479tests:3409pass11ENT0failures and
+59named established skips,0cancel/todo. The new native effect duplicated the
+current-profile/product-tier decisions already owned by the synchronous
+userBookmarkCapability used by Save ACK/backup and recoveredSaveAs. C2 calls
+that existing guard at every native assertCurrent; only its known denial maps
+to NATIVE_SAVE_CONTEXT_STALE with cause, every other error rethrows. All
+matrix/context/path/system/parent/publication/ACK/recovery guards remain.
+No consultation rename, new helper/table, test/scanner edit or skip was used.
+
+Working98181plusMain9e16 executed the unchanged ENT0/WP100/mutant/meta20of20
+and69path controls, zero fail/cancel/skip/todo and source held. Matrix16channels
+has0violations; original Pulse7/Environment8vectors and wiring5of5mutants remain;
+WP104 independently ran22suites/126mutants allScoreOne. Root strict inverse
+matched the exact three replacements, all10017other current sources, all10018
+oldC7sources and the complete frozen test/prefix. Main103added+35deleted=138
+within160. Those working results are not retagged as a committed execution.
+
+The old test working copy remains unchanged with its six generated synthetic
+files. Complete19member roster/native metadata,2080B compact archive and full
+physical restoration plus independent readback of all6files supplement the
+retained originals; no cleanup/move/reseed occurred. The dirty preflight refusal
+remains; actual new registered clean technical worktree/bootstrap/preflight
+satisfied the same gate. One existing lock-matched dependency link adds no
+package/download. Direct connected GitHub main and literal fetch still704cb46.
+
+Current74thsourcecarrier/DATA/release refresh keeps all73historical bodies and
+the whole verifier,347bindings+1guard,817admitted/669sourcepins,1603inventory/C2A,
+66releasepins and all17UNKNOWN qualifications. Final committed724WP307,548whole
+callers,canonical baseline/all affected/source gates,perf proxy,new qualified
+build and actual firstSaveAs/firstSave/Save/UndoRedo/Quit/cold still must run.
+Full normal delivery and literal merged tests/newbuild/native/CI remain required.
+Original failures,two IME assessments/full audit findings and protected111/78
+profiles/115rawfiles/9epochs remain retained. No app/profile/build has started.
+Approved three-choice autosave UX follows completion of this delivery.
+
 # Native Save C1 — existing stale-dialog refusal, 26 October 2026
 
 TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026

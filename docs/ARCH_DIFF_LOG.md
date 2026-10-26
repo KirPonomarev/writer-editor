@@ -628,3 +628,12 @@ evidence; no source-only result promotes them. Original failures remain retained
 ## 2026-10-26 — native Save C1 preserves existing refusal
 
 Same owner-approved native Save delivery and original704rollback base. The new binder initially preempted an existing direct handleSave stale-dialog refusal; C1 maps only that exact stale error plus an independently failed existing target guard back to the original typed refusal. Every other error rethrows. No new exception, authority, path law, writer or test contract. Cancellation/raw/system-path and later publication checks remain intact; Main134within160. Frozen tests, all73historical certificates/verifier, protected profiles and raw epochs remain. Current source/native/full delivery still required; normal same-PR revert is rollback.
+
+## 2026-10-26 — native Save C2 reuses the existing policy owner
+
+- Контекст: same unfinished native Save delivery, C7 baseline exposed11cascading ENT0 count failures.
+- Что нарушаем: no new exception; original owner-approved fixed macOS system-prefix exception remains the only path-law delta.
+- Причина: replace duplicate native current-profile and product-owned entitlement decisions with existing synchronous Save/SaveAs guard; preserve every native revalidation and known typed refusal. No renamed consultation, helper, scanner/test change or policy bypass.
+- Риск: missing guard or broad error translation could allow stale publication; frozen held-dialog/fsync entitlement and whole source/native gates remain required.
+- Rollback: normal revert of the same bounded native Save PR; source/test/history/profiles and all retained six synthetic files stay readable.
+- План удаления исключения: unchanged original future platform-adapter migration; this C2 reuse introduces no extra permanent exception, authority or writer. Final source/native/full delivery still pending.
