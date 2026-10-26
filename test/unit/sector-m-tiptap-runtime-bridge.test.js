@@ -854,13 +854,23 @@ async function startupAdoptionDirtyHarness(t, { reviewLock = false } = {}) {
   const parse = c.parseDocumentContent;
   c.parseDocumentContent = content => { const result = parse(content); parses.push({ issue: result.issue, doc: result.doc }); return result; };
   const editor = h.c.initTiptap(h.mount, { attachIpc: false, onDocumentUpdate: () => c.handleTiptapDocumentUpdate() });
-  c.primaryTiptapEditor = editor;
+  // FINITE_PM lifecycle projection from the SDK public headless view;
+  // this does not establish mounted DOM, browser or native liveness.
+  const lifecycleFacade = new Proxy(editor, { get(target, key) {
+    if (key === 'isDestroyed') return target.view.isDestroyed;
+    const value = Reflect.get(target, key, target);
+    return typeof value === 'function' ? value.bind(target) : value;
+  } });
+  c.primaryTiptapEditor = lifecycleFacade;
+  h.c.currentEditorInstance = lifecycleFacade;
   editor.on('update', ({ transaction }) => updates.push({ docChanged: transaction.docChanged, text: editor.state.doc.textContent }));
   const start = rendererSource.indexOf('window.electronAPI.onEditorSetText((payload) => {');
   const end = rendererSource.indexOf('  window.electronAPI.onEditorTextRequest(', start);
   assert.ok(start >= 0 && end > start, 'complete production adoption callback boundaries');
   vm.runInContext(rendererSource.slice(start, end), c);
   const observe = label => ({ label, finitePmNotBrowser: true, actualInitCount: h.constructorOptions.length,
+    lifecycle: { actualEditorIsDestroyed: editor.isDestroyed, publicSdkViewIsDestroyed: editor.view.isDestroyed,
+      facadeIsDestroyed: lifecycleFacade.isDestroyed, mountedBrowserOrNativeLivenessClaim: false },
     editable: editor.isEditable, adopted: c.initialDocumentAdopted, failure: c.initialDocumentFailureStatus,
     generation: c.localEditGeneration, lastAckedGeneration: c.lastAckedGeneration, dirty: c.localDirty,
     text: h.c.getTiptapPlainText(), signals: JSON.parse(JSON.stringify(signals)),
