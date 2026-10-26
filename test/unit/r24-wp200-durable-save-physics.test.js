@@ -33,7 +33,7 @@ test('main save paths consume durable receipts and never use generic atomic succ
   ].sort());
   assert.match(main, /const \{ bookmarkPublication, \.\.\.durable \} = receipt;/);
   assert.match(main, /commitWriterProjectSnapshot\(/);
-  assert.match(main, /return await durableSaveTransaction\(\{ filePath, content, revision \}\);/);
+  assert.match(main, /return await durableSaveTransaction\(\{ filePath, content, revision, fsAdapter \}\);/);
   assert.doesNotMatch(main, /fileManager\.writeFileAtomic\(saveTargetPath, content\)/);
   assert.doesNotMatch(main, /acknowledgeMainOwnedSave\(snapshot\.generation\)/);
 });
