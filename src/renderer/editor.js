@@ -26221,7 +26221,7 @@ if (window.electronAPI) {
       }
       initialDocumentFailureStatus = null;
       if (!Object.prototype.hasOwnProperty.call(editor.dataset, 'reviewFormattingPreviousEditable')) {
-        if (isTiptapMode) primaryTiptapEditor.setEditable(true);
+        if (isTiptapMode) primaryTiptapEditor.setEditable(true, false);
         else editor.setAttribute('contenteditable', 'true');
         editor.removeAttribute('aria-readonly');
       }
