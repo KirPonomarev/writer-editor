@@ -707,3 +707,76 @@ test('actual Tiptap checked structural replacement resets only text history and 
   assert.equal(markerInitializations(), 1);
   editor.destroy();
 });
+
+// Startup admission: FINITE_HEADLESS_NOT_BROWSER. Actual production functions,
+// installed real Editor/PM, with only mount/focus and known empty-HTML ports.
+function startupActualFunction(source, name) {
+  const match = new RegExp('^(?:export )?(?:async )?function ' + name + '\\(', 'm').exec(source); assert.ok(match, name);
+  const end = source.indexOf('\n}\n', match.index); assert.ok(end > match.index); return source.slice(match.index, end + 2).replace(/^export /, '');
+}
+async function startupRealInit(t) {
+  const vm = require('node:vm'), { Editor: ActualEditor } = await import('@tiptap/core');
+  const c = { console, currentEditorInstance: null, currentIpcSession: null, currentRuntimeBridge: null, currentFormattingStateHandler: null,
+    unloadHookBound: false, runtimeCommandListenerAttached: false, recoveryRestoredListenerAttached: false, userBookmarkManageHandler: null };
+  const modules = ['documentCommentEditIntents', 'documentStories', 'documentSections', 'documentBreaks', 'documentListNumbering', 'documentListItems',
+    'documentHeadings', 'documentTextStyle', 'documentParagraphAlignment', 'documentTables', 'documentMedia', 'manuscriptNotes', 'wordPendingRevisions', 'userBookmarks'];
+  for (const name of modules) Object.assign(c, await import(pathToFileURL(path.join(ROOT, 'src/renderer/tiptap', name + '.mjs')).href));
+  for (const [name, spec] of [['StarterKit', '@tiptap/starter-kit'], ['Color', '@tiptap/extension-color'], ['Highlight', '@tiptap/extension-highlight'], ['Underline', '@tiptap/extension-underline']]) c[name] = (await import(spec)).default;
+  // VM configuration objects cross a realm. Copy their exact own fields into
+  // the real extension realm; preserve functions, booleans and all keys.
+  for (const name of ['StarterKit', 'Highlight', 'DocumentListNumbering', 'UserBookmarkLink']) {
+    const actual = c[name]; c[name] = Object.create(actual); c[name].configure = raw => actual.configure({ ...raw });
+  }
+  Object.assign(c, await loadIpcModule()); c.createTiptapRuntimeBridge = (await loadRuntimeBridgeModule()).createTiptapRuntimeBridge;
+  const listeners = new Map(), constructorOptions = [], focusCalls = [];
+  class Mount {
+    constructor(tag) { this.tagName = tag; this.attrs = {}; this.children = []; this.text = ''; this.classList = { add() {} }; }
+    getAttribute(key) { return this.attrs[key] ?? null; } setAttribute(key, value) { this.attrs[key] = value; } removeAttribute(key) { delete this.attrs[key]; }
+    appendChild(node) { this.children.push(node); return node; }
+    set innerHTML(value) { assert.equal(value, ''); this.text = ''; this.children = []; this.clearCount = (this.clearCount || 0) + 1; }
+    get textContent() { return this.text + this.children.map(child => child.textContent).join(''); }
+  }
+  const mount = new Mount('div'); mount.text = 'Retained pre-init bytes e\u0301 🧭'; mount.attrs = { role: 'textbox', 'aria-label': 'Текст сцены', contenteditable: 'true' };
+  c.document = { createElement: tag => new Mount(tag), getElementById: () => null };
+  c.window = { electronAPI: { onRuntimeCommand: handler => listeners.set('runtime', handler), onRecoveryRestored: handler => listeners.set('recovery', handler) }, addEventListener: (name, handler) => listeners.set(name, handler) };
+  c.Editor = function(options) {
+    assert.equal(options.content, '<p></p>', 'only the exact known initial DOM-parsed empty content may be adapted');
+    constructorOptions.push({ content: options.content, editableOwn: Object.hasOwn(options, 'editable'), editable: options.editable ?? null,
+      extensionNames: options.extensions.map(extension => extension.name), attributes: { ...options.editorProps.attributes } });
+    const editor = new ActualEditor({ ...options, element: null, content: { type: 'doc', content: [{ type: 'paragraph' }] } });
+    editor.view.updateState(editor.state.reconfigure({ plugins: editor.extensionManager.plugins }));
+    const chain = editor.chain.bind(editor); editor.chain = (...args) => { const actual = chain(...args); actual.focus = (...values) => { focusCalls.push(values); return actual; }; return actual; };
+    return editor;
+  };
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/tiptap/index.js'), 'utf8'); vm.createContext(c);
+  vm.runInContext(['initTiptap', 'destroyCurrentEditor', 'ensureRuntimeListenersAttached', 'notifyFormattingStateChange'].map(name => startupActualFunction(source, name)).join('\n'), c);
+  const editor = c.initTiptap(mount, { attachIpc: false }); assert.equal(editor instanceof ActualEditor, true); t.after(() => c.destroyCurrentEditor());
+  return { c, editor, listeners, mount, constructorOptions, focusCalls };
+}
+
+test('initial production TipTap construction keeps authoring unavailable before first current document [FINITE_HEADLESS_NOT_BROWSER]', async t => {
+  const h = await startupRealInit(t); assert.equal(h.constructorOptions.length, 1); assert.equal(h.mount.clearCount, 1); assert.equal(h.mount.textContent, '');
+  assert.equal(h.editor.state.doc.textContent, ''); assert.ok(h.editor.state.plugins.length > 0);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_INIT_TIPTAP_AND_REAL_CONSTRUCTOR', options: h.constructorOptions, effectiveEditable: h.editor.isEditable, clearedMount: true, actualPmDocument: h.editor.state.doc.toJSON(), finiteHeadlessNotBrowser: true }));
+  assert.equal(h.editor.isEditable, false, 'a blank primary editor cannot accept authoring before its first current document');
+});
+
+test('initial production runtime subscription cannot mutate a readonly document through the list bridge [FINITE_HEADLESS_NOT_BROWSER]', async t => {
+  const h = await startupRealInit(t); h.editor.setEditable(false); assert.equal(h.editor.isEditable, false);
+  const before = h.editor.state.doc.toJSON(), listener = h.listeners.get('runtime'); assert.equal(typeof listener, 'function');
+  listener({ commandId: 'cmd.project.list.toggleBullet' }); const after = h.editor.state.doc.toJSON();
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_INDEX_RUNTIME_LISTENER_AND_REAL_PM_LIST_COMMAND', editable: h.editor.isEditable, before, after, presentationFocusCalls: h.focusCalls.length, finiteHeadlessNotBrowser: true }));
+  assert.deepEqual(after, before, 'the initial unavailable editor cannot acquire authored list structure via the existing runtime bridge');
+});
+
+test('actual checked document adapter retains Unicode edits and real Undo Redo after legal adoption [FINITE_PM_NOT_BROWSER]', async t => {
+  const first = { type: 'doc', content: [treeParagraph('Saved e\u0301 🧭')] }, second = { type: 'doc', content: [treeParagraph('Current 👩🏽‍💻 e\u0301')] };
+  const { c, editor } = await treeDocumentAdapter(first); t.after(() => editor.destroy());
+  assert.equal(c.replaceTiptapTreeDocumentSnapshot({ doc: second }), true); assert.equal(editor.state.doc.textContent, 'Current 👩🏽‍💻 e\u0301');
+  const before = editor.state.doc.toJSON(); editor.view.dispatch(editor.state.tr.insertText(' author 🧭', editor.state.doc.content.size - 1)); const edited = editor.state.doc.toJSON();
+  assert.notDeepEqual(edited, before); assert.equal(editor.commands.undo(), true); assert.deepEqual(editor.state.doc.toJSON(), before);
+  assert.equal(editor.commands.redo(), true); assert.deepEqual(editor.state.doc.toJSON(), edited);
+  const state = editor.state; assert.equal(c.replaceTiptapTreeDocumentSnapshot({ doc: { type: 'doc', content: [{ type: 'not-a-schema-node' }] } }), false);
+  assert.equal(editor.state, state); assert.deepEqual(editor.state.doc.toJSON(), edited);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_CHECKED_PM_ADOPTION_UNICODE_UNDO_REDO_AND_FAILED_ADOPTION_RETENTION', edited, finitePmNotBrowser: true }));
+});

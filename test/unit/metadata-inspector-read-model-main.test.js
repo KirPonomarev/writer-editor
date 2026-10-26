@@ -395,6 +395,7 @@ async function metadataWorkingHarness(t) {
       if (gate) await gate.promise;
       return result;
     },
+    initialDocumentAdopted: true, // This fixture already owns an adopted live document.
     isTiptapMode: false, activeDocumentRevealRequested: false, currentRightTab: 'metadata', localEditGeneration: 7,
     lastAckedGeneration: 7, localDirty: false, currentCards: [], editor: null, editorPanel: null, mainContent: null, emptyState: null,
     normalizeProjectId: (id) => id, isProjectTreeDocumentId: () => false,

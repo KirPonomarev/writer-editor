@@ -523,6 +523,9 @@ function ensureRuntimeListenersAttached() {
 
   if (!runtimeCommandListenerAttached && typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
+      if ((!currentEditorInstance || currentEditorInstance.isDestroyed || currentEditorInstance.isEditable === false)
+        && (/^cmd\.project\.(?:format|list|insert|edit|bookmarks)\./.test(payload?.commandId || '')
+          || /^(?:undo|redo|edit-undo|edit-redo|format-|insert-)/.test(payload?.command || ''))) return
       if (payload?.commandId === 'cmd.project.bookmarks.managePrompt') {
         userBookmarkManageHandler?.(); return
       }
@@ -586,6 +589,7 @@ export function initTiptap(mountEl, options = {}) {
 
   const editor = new Editor({
     element: contentEl,
+    editable: false,
     editorProps: {
       attributes: editorAccessibilityAttributes,
     },

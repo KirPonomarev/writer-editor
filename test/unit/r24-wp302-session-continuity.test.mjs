@@ -415,7 +415,7 @@ test('WP302 active document path rebind preserves selection without adding UI or
   const mainSource = fs.readFileSync(path.join(ROOT, 'src', 'main.js'), 'utf8');
   const contractSource = fs.readFileSync(path.join(ROOT, 'src', 'core', 'session-continuity-v1.cjs'), 'utf8');
   assert.match(mainSource, /const continuity = readSessionContinuityV1\(settings\);[\s\S]*openLastFile/u);
-  assert.match(mainSource, /await saveLastFile\(\{ selectionRange \}\);/u);
+  assert.match(mainSource, /await saveLastFile\(\{ selectionRange, beforeWrite: \(\) => \{\s*if \(!isCurrent\(\)\) throw Error\('E_EDITOR_STARTUP_WINDOW_STALE'\);\s*\} \}\);/u);
   assert.match(mainSource, /metaEnabled: context\.metaEnabled,[\s\S]*selectionRange,/u);
   assert.match(mainSource, /preserveSelectionOnPathRebind: true/u);
   assert.equal(contractSource.includes('src/renderer'), false);
@@ -544,6 +544,10 @@ test('actual window startup continuation preserves autosave precedence after pro
   const vm = await import('node:vm');
   const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
   const windowStart = source.indexOf('function createWindow()');
+  const ownerStart = source.indexOf('  const startupWindow = mainWindow, startupSession = commentAuthoringSessionId;', windowStart);
+  const ownerEnd = source.indexOf('\n  editorStartupReadyPromise = ', ownerStart);
+  assert.ok(ownerStart > windowStart && ownerEnd > ownerStart);
+  const ownerPrelude = source.slice(ownerStart, ownerEnd);
   const continuationStart = source.indexOf('}).then(async () => {', windowStart) + '}).then(async () => {'.length;
   const continuationEnd = source.indexOf('}).catch((error)', continuationStart);
   const continuation = 'async function loadedWindow() {' + source.slice(continuationStart, continuationEnd) + '}';
@@ -560,10 +564,11 @@ test('actual window startup continuation preserves autosave precedence after pro
       ensureProjectStructure: async () => calls.push('structure'), buildProjectTreeRootsWithIdentities: async () => calls.push('tree'),
       bootstrapStage10ApplicationAtStartup: async () => calls.push('stage10'),
       reconcileReviewFormattingReturnAtStartup: async () => {}, reconcileReviewStructuralReturnAtStartup: async () => {}, reconcileReviewExactTextApplyJournalsAtStartup: async () => {},
-      mainWindow: { webContents: { setZoomFactor: () => {} } }, logPerfStage: () => {}, loadSavedFontSize: async () => {},
+      commentAuthoringSessionId: 'owned-startup-session',
+      mainWindow: { destroyed: false, isDestroyed() { return this.destroyed; }, webContents: { setZoomFactor: () => {} } }, logPerfStage: () => {}, loadSavedFontSize: async () => {},
       restoreAutosaveIfExists: async () => { calls.push('autosave'); return autosave; }, openLastFile: async () => { calls.push('last-file'); return 'loaded'; }, updateStatus: () => {},
     };
-    vm.runInNewContext(source.slice(initializeStart, initializeEnd) + '}\n' + continuation, c);
+    vm.runInNewContext(source.slice(initializeStart, initializeEnd) + '}\n' + ownerPrelude + '\n' + continuation, c);
     const startup = async () => { await c.initializeApp(); await c.loadedWindow(); };
     if (refuses) {
       await assert.rejects(startup(), error => error.code === 'E_STAGE10_RECOVERY_CANCELLED');
@@ -776,4 +781,82 @@ test('WP302 bound missing target retains legitimate visible and external startup
   assert.equal(await h.main.resolveLastOpenedFilePath({ lastExternalFilePath: external }), external);
   assert.equal(h.reads.length, 0, 'resolver preserves its read-only path-result role');
   await h.assertPreserved();
+});
+
+// Initial authoring admission: actual full Main boot continuation, finite window only.
+function startupDeferred() { let release; const promise = new Promise(resolve => { release = resolve; }); return { promise, release }; }
+async function startupWithin(promise) { let timer; try { return await Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(Error('finite Main startup timeout')), 10000); })]); } finally { clearTimeout(timer); } }
+async function initialMainBoot(t, mode = 'saved') {
+  const root = await fsPromises.realpath(await fsPromises.mkdtemp(path.join(os.tmpdir(), 'yalken-initial-main-')));
+  const owner = cryptoForStartup.randomUUID(), marker = path.join(root, '.owner'); fs.writeFileSync(marker, owner, { flag: 'wx' }); const identity = fs.statSync(root);
+  const documents = path.join(root, 'Documents'), userData = path.join(root, 'userData'), base = path.join(documents, 'craftsman'), projectRoot = path.join(base, 'Роман');
+  fs.mkdirSync(userData, { recursive: true }); fs.mkdirSync(path.join(projectRoot, 'roman', 'Imported'), { recursive: true }); fs.mkdirSync(path.join(base, '.autosave'), { recursive: true });
+  const scene = path.join(projectRoot, 'roman', 'Imported', '01 start.txt'), text = 'Saved scene e\u0301 🧭'; fs.writeFileSync(scene, text);
+  fs.writeFileSync(path.join(projectRoot, PROJECT_MANIFEST_FILENAME), JSON.stringify({ schemaVersion: 1, projectId: 'project-startup', projectName: 'Роман', createdAtUtc: '2026-10-25T00:00:00.000Z' }));
+  fs.writeFileSync(path.join(userData, 'settings.json'), JSON.stringify(mode === 'saved' || mode === 'read-error' ? { lastFilePath: scene } : {}));
+  if (mode === 'autosave') fs.writeFileSync(path.join(base, '.autosave', 'autosave.txt'), 'Recovered draft e\u0301 🧭');
+  const h = { root, projectRoot, scene, text, windows: [], actualReads: [] }, readGate = startupDeferred(), readEntered = startupDeferred();
+  class Window {
+    constructor() { this.id = h.windows.length + 1; h.windows.push(this); this.sent = []; this.handlers = new Map(); this.destroyed = false; this.load = startupDeferred();
+      this.webContents = { id: 810 + this.id, session: {}, on() {}, setWindowOpenHandler() {}, setZoomFactor() {}, isDestroyed: () => this.destroyed,
+        getURL: () => this.url || '', send: (channel, payload) => this.sent.push([channel, structuredClone(payload)]) }; }
+    on(name, callback) { this.handlers.set(name, callback); } isDestroyed() { return this.destroyed; } isFullScreen() { return false; }
+    loadFile(file, { query }) { const url = new URL('file://' + file); Object.entries(query).forEach(([key, value]) => url.searchParams.set(key, value)); this.url = url.href;
+      const promise = this.load.promise, then = promise.then.bind(promise); promise.then = (...args) => { const actual = then(...args); this.actualContinuation = actual; return actual; }; return promise; }
+  }
+  Window.getAllWindows = () => h.windows.filter(w => !w.destroyed); Window.getFocusedWindow = () => h.windows.at(-1);
+  const electron = { app: { isPackaged: false, getPath: name => name === 'documents' ? documents : name === 'userData' ? userData : root,
+    setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true }, BrowserWindow: Window,
+    screen: { getPrimaryDisplay: () => ({ workAreaSize: { width: 1000, height: 700 } }) }, Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
+    dialog: { showMessageBox: async () => ({ response: 0 }), showOpenDialog: async () => ({ canceled: true }), showSaveDialog: async () => ({ canceled: true }) },
+    ipcMain: { on() {}, handle() {} }, session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
+  const mainPath = path.join(ROOT, 'src/main.js'), managerPath = path.join(ROOT, 'src/utils/fileManager.js'), previousLoad = Module._load;
+  delete require.cache[mainPath]; delete require.cache[managerPath]; let manager, previousDocuments, previousRead;
+  t.after(async () => {
+    readGate.release(); h.windows.forEach(w => w.load.release()); await Promise.allSettled(h.windows.map(w => w.actualContinuation).filter(Boolean));
+    if (manager) { manager.getDocumentsPath = previousDocuments; manager.readFile = previousRead; }
+    delete require.cache[mainPath]; delete require.cache[managerPath];
+    const now = fs.statSync(root); assert.equal(now.dev, identity.dev); assert.equal(now.ino, identity.ino); assert.equal(fs.readFileSync(marker, 'utf8'), owner); await fsPromises.rm(root, { recursive: true });
+  });
+  try { Module._load = function(request, ...args) { return request === 'electron' ? electron : previousLoad.call(this, request, ...args); };
+    h.main = require(mainPath); manager = require(managerPath); previousDocuments = manager.getDocumentsPath; previousRead = manager.readFile; manager.getDocumentsPath = () => base;
+    manager.readFile = async (...args) => { if (args[0] === scene) { readEntered.release(); await readGate.promise; } const actual = await previousRead(...args); if (args[0] === scene) h.actualReads.push(actual); return actual; };
+  } finally { Module._load = previousLoad; }
+  h.create = () => { const previous = Module._load; try { Module._load = function(request, ...args) { return request === 'electron' ? electron : previous.call(this, request, ...args); }; h.main.createWindow(); return h.windows.at(-1); } finally { Module._load = previous; } };
+  h.finish = async window => { window.load.release(); await startupWithin(window.actualContinuation); await new Promise(setImmediate); };
+  h.releaseRead = () => readGate.release(); h.readEntered = readEntered.promise;
+  h.publications = window => window.sent.filter(([channel]) => channel === 'editor:set-text').map(([, payload]) => payload);
+  return h;
+}
+const cryptoForStartup = require('node:crypto');
+
+for (const mode of ['saved', 'autosave', 'empty']) test('initial Main actual createWindow publishes a usable typed authoring terminal ' + mode + ' [FINITE_WINDOW_NOT_BROWSER]', async t => {
+  const h = await initialMainBoot(t, mode), window = h.create();
+  assert.deepEqual(h.publications(window), []); const pending = h.finish(window);
+  if (mode === 'saved') { await startupWithin(h.readEntered); assert.deepEqual(h.publications(window), []); assert.equal(fs.readFileSync(h.scene, 'utf8'), h.text); h.releaseRead(); }
+  await pending; const publications = h.publications(window);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_FULL_MAIN_CREATEWINDOW_BOOT_TERMINAL', mode, publications, dirtyPackets: window.sent.filter(([channel]) => channel === 'set-dirty'), actualReads: h.actualReads }));
+  assert.equal(publications.length, 1, 'successful initial boot must deliberately publish the saved/autosave/empty authoring document');
+  const payload = publications[0]; assert.equal(typeof payload.content, 'string'); assert.equal(typeof payload.documentId, 'string'); assert.equal(typeof payload.projectId, 'string');
+  if (mode === 'saved') { assert.equal(payload.content, h.text); assert.ok(payload.documentId); assert.equal(payload.kind, 'scene'); assert.equal(h.actualReads.length, 1); assert.equal(h.actualReads[0].success, true); }
+  if (mode === 'autosave') { assert.equal(payload.content, 'Recovered draft e\u0301 🧭'); assert.equal(payload.documentId, 'autosave-document'); assert.equal(payload.kind, 'autosave'); assert.equal(window.sent.some(([channel, p]) => channel === 'set-dirty' && p.state === true), true); }
+  if (mode === 'empty') { assert.equal(payload.content, ''); assert.equal(payload.documentId, ''); assert.equal(payload.kind, 'empty'); }
+  assert.equal(fs.readFileSync(h.scene, 'utf8'), h.text);
+});
+
+test('initial Main actual file read error cannot manufacture a ready empty document [FINITE_WINDOW_NOT_BROWSER]', async t => {
+  const h = await initialMainBoot(t, 'read-error'), window = h.create(), pending = h.finish(window); await startupWithin(h.readEntered);
+  fs.renameSync(h.scene, h.scene + '.retained'); fs.mkdirSync(h.scene); h.releaseRead(); await pending;
+  assert.equal(h.actualReads.length, 1); assert.equal(h.actualReads[0].success, false); assert.deepEqual(h.publications(window), []);
+  assert.equal(fs.readFileSync(h.scene + '.retained', 'utf8'), h.text); assert.equal(window.sent.some(([channel, p]) => channel === 'status-update' && /Ошибка/u.test(p)), true);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_FAILED_SOURCE_READ_NO_READY_PUBLICATION', actualRead: h.actualReads[0], sent: window.sent }));
+});
+
+test('initial Main retired load continuation cannot publish or clear authoring in a replacement window [FINITE_WINDOW_NOT_BROWSER]', async t => {
+  const h = await initialMainBoot(t), retired = h.create(), current = h.create(); retired.destroyed = true;
+  const pending = h.finish(retired); await new Promise(setImmediate); h.releaseRead(); await pending;
+  const publications = h.publications(current); t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_RETIRED_WINDOW_BOOT_CONTINUATION', retiredId: retired.id, currentId: current.id, publications, currentPackets: current.sent }));
+  assert.deepEqual(publications, [], 'a destroyed or replaced boot owner cannot release another window authoring');
+  assert.equal(current.sent.some(([channel, p]) => channel === 'set-dirty' && p.state === false), false);
+  const currentPending = h.finish(current); await currentPending; assert.equal(h.publications(current).length, 1); assert.equal(fs.readFileSync(h.scene, 'utf8'), h.text);
 });

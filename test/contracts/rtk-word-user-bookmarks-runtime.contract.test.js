@@ -505,6 +505,7 @@ function installActualRendererPublication(h, editor, api) {
   editor.getText = () => editor.state.doc.textBetween(0, editor.state.doc.content.size, '\n');
   const observable = envelope.parseObservablePayload(h.working);
   const r = vm.createContext({ currentEditorInstance: editor, currentIpcSession: null,
+    primaryTiptapEditor: editor, editor: { isConnected: true }, initialDocumentAdopted: true,
     applyUserBookmarkPublication: api.applyUserBookmarkPublication, ...envelope,
     isTiptapMode: true, centralSheetStripLargePayloadFastPathActive: false,
     metaEnabled: observable.hasMetaBlock, currentMeta: observable.meta, currentCards: observable.cards,

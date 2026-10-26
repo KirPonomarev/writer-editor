@@ -584,6 +584,7 @@ test('actual active-scene caller publishes before identity commit including same
     try {
       const calls=[],notices=[],closed=[],attempt={requestId:'existing'},preview={source:'existing'},plan={ok:true},modal={};
       const ctx=vm.createContext({pendingDocxImportAttempt:attempt,pendingDocxImportPreviewValue:preview,pendingDocxImportPreviewPlan:plan,
+        initialDocumentAdopted:true,
         docxImportPreviewModal:modal,closeSimpleModal:value=>closed.push(value),treeContentParsed:scenario==='tree'?{doc:doc(p('Tree already published'))}:null,
         parseDocumentContent:()=>({doc:doc(p('Scene B'))}),content:'irrelevant',shouldUseCentralSheetLargePayloadFastPath:()=>false,
         hasDocumentId:true,documentId:scenario==='scene'?'B':'A',hasKind:true,hasProjectId:true,

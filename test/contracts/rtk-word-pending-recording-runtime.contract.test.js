@@ -94,6 +94,7 @@ async function harness(t) {
   };
   const renderer=fs.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
   const r=vm.createContext({ ...envelope,parseDocumentContent:envelope.parseObservablePayload,
+    primaryTiptapEditor:{isDestroyed:false},editor:{isConnected:true},
     currentProjectId:'recording-project',currentDocumentId:'d',currentTreeContentPublicationId:'',
     isTiptapMode:true,centralSheetStripLargePayloadFastPathActive:false,localEditGeneration:0,
     wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),storyDrafts:new Map(),flowModeState:{active:false},
@@ -604,6 +605,7 @@ test('actual PM conditional recording callback preserves private envelope and co
  const tiptap=fs.readFileSync(path.join(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
  const part=name=>tiptap.match(new RegExp('(?:export )?function '+name+'\\([^]*?\\n}'))[0].replace(/^export /,'');
  Object.assign(h.renderer,{currentEditorInstance:editor,wordSections:require('../../src/core/word-sections-v1.cjs'),
+  primaryTiptapEditor:editor,
   wordStories:require('../../src/core/word-stories-projection-v1.cjs'),wordListNumbering:require('../../src/core/word-list-numbering-v1.cjs'),
   numberingDocumentJSON:lists.numberingDocumentJSON,setCheckedReviewDocument:pending.setCheckedDocument,history,notifyFormattingStateChange(){}});
  vm.runInContext(['readEditorText','readEditorDocument','getTiptapDocumentSnapshot','setCheckedDocument','setTiptapDocumentSnapshot'].map(part).join('\n'),h.renderer);

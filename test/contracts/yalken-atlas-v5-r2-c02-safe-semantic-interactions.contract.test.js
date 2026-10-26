@@ -363,6 +363,7 @@ function publicationHarness(transform) {
   const statuses = [], errors = [], queries = [], commands = [], delivered = [], renders = [];
   let incoming, working = 'manuscript é 🧭';
   Object.assign(c, { currentDocumentId: 'scene-a', currentDocumentTitle: 'A', currentRightTab: 'atlas',
+    initialDocumentAdopted: true,
     isTiptapMode: false, COMMAND_BUS_ROUTE: 'command.bus', METADATA_UPDATE_COMMAND_ID: 'cmd.project.metadata.update',
     atlasJourneyState: { status: 'idle', commandSeq: 0 }, atlasJourneyDraft: {}, atlasSelectedEntityId: '', atlasSelectedRelation: {},
     atlasHeatmapExplicitOpen: true, atlasTemporalLayoutExplicitOpen: true, atlasContinuityLedgerExplicitOpen: true,
@@ -2681,13 +2682,13 @@ test('V11 inherits source ownership default confirmation fact IDs and selected-o
 function ideaMeaningStartupUnloadDom() {
   const h = ideaMeaningAuthorDom(), vm = require('node:vm');
   const tiptap = fs.readFileSync(path.join(repoRoot, 'src', 'renderer', 'tiptap', 'index.js'), 'utf8');
-  const initAt = editor.indexOf('\n  initTiptap(editor, {'), mapSource = 'let ideaMeaningAuthorDrafts = new Map();';
+  const initAt = editor.indexOf('\nconst primaryTiptapEditor = isTiptapMode ? initTiptap(editor, {'), mapSource = 'let ideaMeaningAuthorDrafts = new Map();';
   const mapAt = editor.indexOf(mapSource), guard = editor.match(/window\.addEventListener\('beforeunload', guardIdeaMeaningDraftUnload, \{ capture: true \}\);/u);
   const teardown = tiptap.match(/window\.addEventListener\('beforeunload', \(\) => \{\n      destroyCurrentEditor\(\)\n    \}\)/u);
   const initStart = tiptap.indexOf('export function initTiptap('), initEnd = tiptap.indexOf('\nexport function destroyTiptap(', initStart);
   assert.ok(initAt > 0 && mapAt > 0 && guard && teardown && initEnd > initStart);
   assert.equal(editor.indexOf(mapSource, mapAt + 1), -1, 'single actual lexical draft initializer');
-  assert.equal(editor.indexOf('\n  initTiptap(editor, {', initAt + 1), -1, 'single actual initial Tiptap call');
+  assert.equal(editor.indexOf('\nconst primaryTiptapEditor = isTiptapMode ? initTiptap(editor, {', initAt + 1), -1, 'single actual initial Tiptap call');
   assert.ok(teardown.index > initStart && teardown.index < initEnd, 'teardown registration belongs to actual initTiptap');
   assert.ok(h.initializers.includes('ideaMeaningAuthorDrafts'), 'actual draft initializer was evaluated');
   const target = new EventTarget(), scene = h.document.createElement('div');
@@ -2897,7 +2898,7 @@ test('V12 language author guard precedes actual Tiptap destruction and preserves
   for (const mode of ['dirty', 'pending', 'foreign-project', 'clean', 'discard']) await t.test(mode, async () => {
     const h = sceneLanguageDom(), vm = require('node:vm'), tiptap = fs.readFileSync(path.join(repoRoot, 'src/renderer/tiptap/index.js'), 'utf8');
     assert.ok(h.registration, 'actual beforeunload registration required');
-    const initAt = editor.indexOf('\n  initTiptap(editor, {'), teardown = tiptap.match(/window\.addEventListener\('beforeunload', \(\) => \{\n      destroyCurrentEditor\(\)\n    \}\)/u);
+    const initAt = editor.indexOf('\nconst primaryTiptapEditor = isTiptapMode ? initTiptap(editor, {'), teardown = tiptap.match(/window\.addEventListener\('beforeunload', \(\) => \{\n      destroyCurrentEditor\(\)\n    \}\)/u);
     assert.ok(initAt > 0 && teardown); const target = new EventTarget(), scene = h.document.createElement('div'); h.document.body.append(scene); let destroyed = 0;
     h.c.destroyCurrentEditor = () => { destroyed++; scene.remove(); }; h.c.window.addEventListener = target.addEventListener.bind(target);
     for (const row of [{ index: initAt, source: teardown[0] }, { index: h.registration.index, source: h.registration[0] }].sort((a, b) => a.index - b.index)) vm.runInContext(row.source + ';', h.c);

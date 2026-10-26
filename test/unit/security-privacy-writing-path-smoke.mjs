@@ -269,7 +269,13 @@ async function runRendererWritingPath(win) {
       window.WebSocket = makeBlocked('renderer.WebSocket');
     }
 
-    const prose = document.querySelector('.ProseMirror');
+    const admissionDeadline = Date.now() + 12000;
+    let prose = document.querySelector('#editor .ProseMirror');
+    while (!prose?.isConnected || !prose.isContentEditable) {
+      if (Date.now() >= admissionDeadline) throw new Error('EDITOR_ADMISSION_TIMEOUT');
+      await sleep(10);
+      prose = document.querySelector('#editor .ProseMirror');
+    }
     const api = window.electronAPI || null;
     const bodyText = (document.body && document.body.innerText ? document.body.innerText : '').toLowerCase();
     const surfaceNeedles = {
@@ -290,6 +296,8 @@ async function runRendererWritingPath(win) {
       return { ok: 0, stage: 'api', reason: 'ELECTRON_API_MISSING', rendererEvents, supported, visibleSurface };
     }
 
+    prose = document.querySelector('#editor .ProseMirror');
+    if (!prose?.isConnected || !prose.isContentEditable) throw new Error('CURRENT_EDITOR_NOT_EDITABLE');
     prose.focus();
     document.execCommand('selectAll', false, null);
     document.execCommand('insertText', false, initialText + ' SECURITY_PRIVACY_EDIT_MARKER ');

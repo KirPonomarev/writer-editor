@@ -478,6 +478,9 @@
       "test/unit/r24-wp303-design-os-customization.test.js",
       "docs/tasks/2026-10-25--settings-theme-summary.md",
       "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+      "docs/tasks/2026-10-25--startup-input-admission.md",
+      "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
+      "test/unit/security-privacy-writing-path-smoke.mjs",
       "src/renderer/assets/logo.png",
       "src/renderer/assets/README.md",
       "build/icon.png",
@@ -491,7 +494,11 @@
       "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "src/renderer/assets/app-icon.svg"
+      "src/renderer/assets/app-icon.svg",
+      "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
+      "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
+      "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js"
     ]
   },
   "allowPrefixByPhase": {

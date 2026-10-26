@@ -812,6 +812,9 @@
     "test/unit/r24-wp303-design-os-customization.test.js",
     "docs/tasks/2026-10-25--settings-theme-summary.md",
     "docs/tasks/2026-10-25--bug-native-undo-redo.md",
+    "docs/tasks/2026-10-25--startup-input-admission.md",
+    "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
+    "test/unit/security-privacy-writing-path-smoke.mjs",
     "src/renderer/assets/logo.png",
     "src/renderer/assets/README.md",
     "build/icon.png",
@@ -1048,7 +1051,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c59a70dcb983475bd376b7677aa7e9f74f4fb6b5715861bbc6eafddd7a66cf95"
+        "sha256": "5cf67a6d12b9b3b06324437f562041e6007e162c36db8723257b9e1829722175"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1060,7 +1063,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "d812eb6d41af2645348bf2f692e506bb5ef3a994503979d418bc0239c2f1ace6"
+        "sha256": "28787b8c344b86e805c67c4192e6f9a671293c42bbd85b3b838a6f1388b61ea6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1188,7 +1191,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "c6c1c13690a7a7bc0e7eef4a70acfef42cc9ddf69d3681287fc13d98307b0fec"
+        "sha256": "4d623a4f06d7d6a0a6fb4f29a28669fb406b180465fbfd46e383b70f394de7fb"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -1204,7 +1207,7 @@
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-        "sha256": "215d0093f7955011724c1185a3d43871ece6b9bd61c635edd52c58cd8d9892ca"
+        "sha256": "154841e5155a09dd732999bc799059dfae7ff8befb40e1e13205132d96b36df7"
       },
       {
         "path": "src/io/inlineTypography.cjs",
@@ -1224,7 +1227,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "fc91bacfa390e097e3b43043866f7dcb36ae5a9aad4c50f5e24fca6de89bff2a"
+        "sha256": "cf58c2f966adedcb116ce51e744f2ffae25d6ee74cf8a56d652e49a6cc80c547"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1536,7 +1539,7 @@
       },
       {
         "path": "src/renderer/index.html",
-        "sha256": "c898b0b26e245dd6a841548a6c75fcda5be2a7289167e1f7d15110990d8268ff"
+        "sha256": "23bd5af699ce1784375dcd83543bc18544dc84812e53cd9167eadb72c726fc44"
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
@@ -1688,7 +1691,7 @@
       },
       {
         "path": "test/unit/project-tree-pathless-contract.test.js",
-        "sha256": "071cac522c2d1d11660140368acc9d66f759ab916ae9b803739de530df23d9ae"
+        "sha256": "b11345df92d8853038eb5d9dd2c64efc39bfbf5e3c5d757092d6441030fefe34"
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
@@ -1784,7 +1787,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "7a853172128544a7dc21fb7e8d4af1792092e77460f38592820a70ebffed3beb"
+        "sha256": "d1518d7c51c134d99e0ec570c6b038da0e7ca73454cc229b49dedefe45572661"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1960,7 +1963,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "fa57675e5f4c2ff8bf44c7739ac756da9e8c72fd5316950a06472e7bb6095858"
+        "sha256": "ad60cbfe0447852dba2ba040c296a498598a8ec6522a4a5c548e05c2fa4e0f56"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2052,7 +2055,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "922caf08f8188d484da7fd87e8d1f08a9aef11d6a2260e68fc1d3c951c5426cd"
+        "sha256": "a9666bd79630f17985576d49a9c1d4c29ee11e594e48b8ee205c5e6b52e2d2f8"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -2344,7 +2347,7 @@
       },
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
-        "sha256": "df1e350e5f87cb3d696cda35ee7690b4b4fc92efbfe8b0f361c67f57515589b8"
+        "sha256": "4db0057043520de3765943b0fbbfdd39fc1f2d58a1f651250df3f3d678782cf7"
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
@@ -2644,7 +2647,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "7df2331aa0c1a54806a5b512699b08f45bbcde71dc33aef3dc537a02fb53c407"
+        "sha256": "7db454fbb0d95740d9330f8385616fcf1d89eca858a1c93d858b8ed38ac1b63b"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
@@ -2736,19 +2739,19 @@
       },
       {
         "path": "test/unit/r24-wp302-session-continuity.test.mjs",
-        "sha256": "16b4295febd49f7a735f91ecc2eb9fee4108c1280e8e4977c62ffa1e70a3a0f5"
+        "sha256": "23509d40959d6b331961e332df3bb2996a8fb9bbb6d02bee91fcc5782bfe1b34"
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5fc0ea7b1b4e4c921293fa65ed9973869137a87a5d381a8cd6bda4bb79beea87"
+        "sha256": "08ce5c3b44132b27721f383d160ef7a5efcd41a30277f93d4d875560b0a8bd91"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "7a5dfa5bdb275e888c440294bc86be08b8e1ededb6aa3710832bcedd7bb2a275"
+        "sha256": "99905544f6d8da0ab6bca883f304026fd664050fa8ab00e173f4d4fa2bbcd180"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2bb666bcf42b7cc4c54f9f86c386f973d7f97f7109f98d731c1a88e967d0f56b"
+        "sha256": "7e51be473353aec4c96edf666c06fbc02979b358608e5037c3f3982c6ae17d26"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3008,7 +3011,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "247060e8e38bf31abf13594d5f769ba8fdc3357453fdea7511aa2c7bf8e93a14"
+        "sha256": "9a559a914f38e4d72c89ad03956c4230a8ca4cf85bcb7865bd264f4665dc66a9"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -3288,7 +3291,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "7a47a073108af3813106e038542d303036c62f5d6ea58a3b1c90e1664b3151df"
+        "sha256": "94ec4e78020d52f1626c1d0129689321aa8e6e74a87e1d1d9874bf4121de7a27"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3312,7 +3315,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "50422d0fc2429801c1491cd8efc8b86156c7d45ad8fe87f5c8c1b9ca1ed1a6ae"
+        "sha256": "054dcdba0136d53833ef27742363ef8a18859b2551bbdfc4c216bb830843b716"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3404,7 +3407,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "cf174f17ad67c1d5edbdb92236276617babb02ee85d00830236cea741fd56c43"
+        "sha256": "2b28a4b185e7b23128eac63e9589a16393afd265af1df865887844b71aa81516"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3420,11 +3423,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "c92052e2dccfabf078d37909b4bbcf83be6951b07cb7a3dd5c3ba2265a3deae6"
+        "sha256": "64f913367a983dcd00c3a5f8c3d7acfa2d9173a1de5d515eb9b1f8ed3e7a050b"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "df3ffe9c117b86a7482ef2ab654b36494d6b79f4f091b35bc3a444e32cc41650"
+        "sha256": "fcb731148c74cda711b5b33cc733f1a76ad844331594d71ffb94e97f505702b1"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3701,6 +3704,18 @@
       {
         "path": "docs/tasks/2026-10-25--bug-native-undo-redo.md",
         "sha256": "3154bdb5c52cbba1a676082a77ebc6fbf54087a4ac2e222d29bb901ee42accfa"
+      },
+      {
+        "path": "docs/tasks/2026-10-25--startup-input-admission.md",
+        "sha256": "10437af2f6690faaf55fc66da48e958909f8950743a24d5885ee007b9bdbcc90"
+      },
+      {
+        "path": "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
+        "sha256": "6ad33b0390d016a28cc73985e0a41470a90c345cae0bf8a00f20e4e7485ea3c5"
+      },
+      {
+        "path": "test/unit/security-privacy-writing-path-smoke.mjs",
+        "sha256": "17f039830d975f21acc617ab0ffc099c1b14725f6021111edc209aed43dd26f1"
       }
     ],
     "followupRepair": {
