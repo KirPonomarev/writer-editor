@@ -1,6 +1,6 @@
 # Initial authoring input admission
 
-STATUS: SOURCE_C5_RTK_FIXTURE_COMPLETION_PENDING
+STATUS: SOURCE_C6_ATLAS_LOCATOR_AND_CURRENT_WITNESSES_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing editor startup safety only; no full Mac, WSE or release acceptance.
 TASK_ID: YALKEN_STARTUP_INPUT_ADMISSION_20261025
@@ -215,3 +215,14 @@ Append current C5 at the fresh clean spec checkpoint with345bindings/oneguard, r
 
 
 C5 current source binding: only six prescribed already-live/adopted finite renderer fixture sites across five existing contracts plus two Word current selector/id literals changed. Full inverse/oracles/protected-source/runtime1485package-input review is required before this mechanical assembly; no behavioral GREEN follows from an assembly or checkpoint. Retain original C4 actual whole697/108/73/privacy and current RED336/200/136 plus Atlas524/478/46. Append C5 with345bindings/oneguard,815DATA/667pins,1603inventory and66release/17UNKNOWN unchanged; final whole five860GREEN and108/73/697/privacy/strict/E0/source/officialCI and literalmerged proofs still required.
+
+
+### Finish Atlas startup source locators and complete existing current witnesses
+
+Actual literal918 C5 whole fourRTK336336, Writer697697 and original108108 pass with zero skipped/cancelled/todo. Their execution identities stay918. Atlas524508pass16fail0skip remains an actual failure:9 idea-unload children and5 scene-language-unload children plus2 parents. Complete nested classification proves only initAt=-1; actual map, guards, teardown, init bounds, uniqueness and guard-before-init order remain valid. The remaining helper still searches the old standalone initial call. Exactly THREE occurrences need the current literal: idea helper initAt lookup, its uniqueness lookup, and separate language-unload initAt lookup. Replace only the escaped old newline/two-space initTiptap locator with newline plus actual const primaryTiptapEditor = isTiptapMode ? initTiptap(editor, {. Preserve every predicate, assertion, guard registration, source-order/draft/focus/caret/history/teardown/no-write oracle. No new global/context/runtime/editor code.
+
+Fresh29B explicitly corrected the earlier two-occurrence proposal before any source edit. After this task-only clean checkpoint require fresh declaration30/root and actor clean preflight. Actor first owns only these3Atlas string replacements and must execute the complete unchanged524case file before root advances current source carrier or starts any new broad wave. Only after actual524GREEN root may permit the two current Word selector/id literals C5toC6, count345 unchanged, then assemble current C6 companions preserving all71previous carriers/verifier predicates,815DATA/667pins,1603inventory/66release/17UNKNOWN. No prior green result is relabelled as a newhead execution.
+
+The separate actual C5 governance failure is missing five exact current contract witnesses in defaultGA:15 required current keys,10 matched,5missing. Complete unmodified production-parser read-only diagnosis accepts the proposed five and rejects all11omission/forgery/duplicate controls. It creates no authority or real gate PASS. Root must append actual missing witnesses for the COMPLETE changed governance target set from the already owner-authorized task, not only newly generated companions; retain every old entry and avoid duplicate current tuples. GA and PA are not certificate/DATA/release source-pinned, so witness completion creates no separate carrier/runtime change. Prepared28GA-only method was never applied and is superseded by this combined finish.
+
+After cheap fullAtlas GREEN: current source/inventory/DATA/Word corruption, startup73/privacy10, strict16governance/doctorOPS/E0/guardrails/OSS/perf/audit and complete current officialCI, then normal merge and literalmerged relevant fulltests/fresh package/owned native. Already passed unchanged long336/697/108 remain exact918 evidence with full source-input equivalence, not new-head PASS. Never rerun an unaffected long wave merely for locator or approval metadata; all actually required final CI and literalmerged proofs remain mandatory. Runtime and all1485actualC3buildinputs stay exact, actualC3native/build keeps66a identity and every prior limitation/failure remains.
