@@ -5269,3 +5269,5 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Owner-approved mainc139 logo integration preserved via clean two-parent checkpointcc117. Both source histories and all68carriers exact; current-only C3 adds345bindings and mechanical Word literals. DATA815/667, fixed1603/66/17UNKNOWN; fresh combined proofs and same PR2168 delivery remain open.
 
 - Startup PR2168 C4: retain official3439/3376pass4VMReferenceError/59skip; separate actor repairs only lexical/liveness fixture state and2current Word literals, all original108oracles retained. Runtime/build1485inputs unchanged;345/1,815/667,1603/66/17UNKNOWN held. Final current source/tests/CI/merged proof remain open.
+
+- Startup PR2168 C5: retain officialRTK4416/4280/136 and current four336/200/136 plus Atlas524/478/46 RED. Separate actor repairs only six missing setup sites in five existing partial renderer VM contracts plus2currentWord literals; original oracles and actualC3runtime/build1485inputs exact. Hold345/1,815/667,1603/66/17UNKNOWN and all70historical carriers. Final actual whole860/108/73/697/source/strict/CI/literalmerged proofs remain open.

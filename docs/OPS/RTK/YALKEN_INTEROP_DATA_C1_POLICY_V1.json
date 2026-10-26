@@ -1787,7 +1787,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b8157352d223a884dcb961494fea38ed74cb438e5a1e61c1b5cd5e29d3828500"
+        "sha256": "a9accffc0a5ee20f875185e5c4f26e22a431d97477f62ee66c807890422c96f8"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1963,7 +1963,7 @@
       },
       {
         "path": "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
-        "sha256": "fa57675e5f4c2ff8bf44c7739ac756da9e8c72fd5316950a06472e7bb6095858"
+        "sha256": "ad60cbfe0447852dba2ba040c296a498598a8ec6522a4a5c548e05c2fa4e0f56"
       },
       {
         "path": "test/contracts/rtk-word-table-cell-lists.contract.test.js",
@@ -2055,7 +2055,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "922caf08f8188d484da7fd87e8d1f08a9aef11d6a2260e68fc1d3c951c5426cd"
+        "sha256": "a9666bd79630f17985576d49a9c1d4c29ee11e594e48b8ee205c5e6b52e2d2f8"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -2647,7 +2647,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "7df2331aa0c1a54806a5b512699b08f45bbcde71dc33aef3dc537a02fb53c407"
+        "sha256": "7db454fbb0d95740d9330f8385616fcf1d89eca858a1c93d858b8ed38ac1b63b"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
@@ -2743,15 +2743,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "62db9063642e082209a2d7fb99a727a99329a7fc211ac8cde16a3c5b1bb11751"
+        "sha256": "71bc1c870c8eea7cc29d48b1439408fde20adf9a755acc8a2c9df705c6521e30"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9bc1879962b548e8a7ddc0b0f2c0ae661eacf4604169c38723002b1d7ced6cb8"
+        "sha256": "c661b83abbc94ec2823ade789a1174b7d4f6ce146118b56b91e6ea9dffcdc60e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "649d7d55c1f3d0d1e35266183554adf85a2620acd7ab9f59ab7cf8358bb255b0"
+        "sha256": "2c6200189ecaaca4d20f4dc30b04d9eb18a5069f6f647542080310be9177e812"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3011,7 +3011,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "247060e8e38bf31abf13594d5f769ba8fdc3357453fdea7511aa2c7bf8e93a14"
+        "sha256": "9a559a914f38e4d72c89ad03956c4230a8ca4cf85bcb7865bd264f4665dc66a9"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -3291,7 +3291,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "cbb61f3f2a4add614fa08bfe5e2261d51b04b0cba4e68f2350bc272dcab3dfeb"
+        "sha256": "48b26d07ea6363916dfccf1cd2d3c88414942eb54dc0c2a48a97beffe5e6578d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3423,11 +3423,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "4829613fcf86f5b8f869886ddc2c23d5e7c72800f8a28ce1ad3579c879eae0d3"
+        "sha256": "64f913367a983dcd00c3a5f8c3d7acfa2d9173a1de5d515eb9b1f8ed3e7a050b"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "df3ffe9c117b86a7482ef2ab654b36494d6b79f4f091b35bc3a444e32cc41650"
+        "sha256": "a34971f5ffa9b3b6b889e8411fa272ecb844de86dff121838743c0a69495f283"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3707,7 +3707,7 @@
       },
       {
         "path": "docs/tasks/2026-10-25--startup-input-admission.md",
-        "sha256": "903bcc850b13d81e390f3a0641a5a520ee8e176d21a3480f5f3668fdfcb76f45"
+        "sha256": "f0f9dc0f59abf5cdc1d4484c30d96544eb276b7cbacdb1874b67b49558e1a3fa"
       },
       {
         "path": "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
