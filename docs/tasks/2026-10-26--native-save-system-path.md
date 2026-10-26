@@ -109,3 +109,34 @@ SOURCE_CHECKPOINT: 5289f8b4af6203e821acbd25c12e732d92dc539e
 SOURCE_MAIN_SHA256: b3c34235510c23908e1578941bf9f3df79d27c5b0b1a2b99362cef44a44f10c0
 FROZEN_WP307_SHA256: 85c62cc7825c533c5f032a74f3a95300085ca8ac22418596a89f139fb878dcae
 SOURCE_PROOF: frozen724whole tests and69unchangedpathcontrols actual0; original697cases and438071bytes retained. No native/fullMac/delivery acceptance at this source checkpoint.
+
+### Same-delivery C1: existing stale-dialog refusal
+
+REPAIR_BINDING_BASE_SHA: 3d549ed99cbb532f577d72499ba7668b39a88e87
+REPAIR_STATUS: AFFECTED_CHAIN_FAILURE_RETAINED_SOURCE_NOT_ACCEPTED
+
+The completed additional whole Main caller execution at this exact clean source
+ran548cases:547pass1fail, zero cancel/skip/todo. The unchanged scene-identity
+contract's direct handleSave call changes the authoring session during the native
+choice. New native acquisition throws NATIVE_SAVE_CONTEXT_STALE before the
+existing AUTHORING_TARGET_CHANGED_DURING_DIALOG refusal can return. The complete
+failed receipt/log remain in the dated report folder; prior724and69green do not
+waive it. No build or native acceptance has started.
+
+Fresh clean3d declaration/preflight precede this amendment. A separate executor
+may change only handleSave's native acquisition to return its existing typed
+refusal when the binder reports exactly NATIVE_SAVE_CONTEXT_STALE and the
+existing isCurrentSaveTarget check independently confirms the changed target.
+Other errors rethrow. Original cancellation, raw validation, fixed-system path,
+capability, queue and publication guards, SaveAs and the saved-file route remain
+unchanged. No new test path, assertion, helper or frozen test byte may change.
+The cumulative Main delta from original704remains within160lines; original
+delivery base,19path allowlist, one rollback and full delivery chain remain.
+
+CHECK_C1_PRE: exact clean checkpoint, fresh executor declaration/preflight and
+task E0 before Main edit; preserve full548failure and all prior source/evidence.
+CHECK_C1_POST: whole unchanged scene-identity contract, frozen724WP307,69original
+controls and required affected chain on final exact source, then current
+mechanical companions/gates, new qualified build/native and complete ordinary
+delivery/literal merged verification. No name filtering, relaxed oracle or
+different-head evidence promotion. All17Mac qualifications remain UNKNOWN.
