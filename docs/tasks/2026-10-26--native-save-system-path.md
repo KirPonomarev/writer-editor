@@ -11,7 +11,7 @@ ACTIVE_EXECUTION_CANON: v3.13a-final
 BINDING_BASE_SHA: 704cb46ee5cbbba1a6098b7828fb2ea0849e060b
 HEAD_SHA_AT_START: 704cb46ee5cbbba1a6098b7828fb2ea0849e060b
 TARGET_BRANCH: main
-PUSH_BRANCH: codex/native-save-system-path-20261026
+PUSH_BRANCH: codex/native-save-system-path-20261026-c2
 DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
 OWNER_AUTHORITY: Direct26October2026 human reply "Да, исправляй этот системный путь" authorizes only standard macOS var-to-private-var native save compatibility, with arbitrary symlink and outside-root refusal retained. Direct "Да, показывать такой выбор" separately authorizes later three-way saved-scene versus unbound autosave choice; implement it only after this delivery. Existing complete firstMac/unrestricted synthetic native-testing directive continues. No historical stage/lease resumed.
 PREDECESSOR: PR2169 fully delivered at literal704cb46; current remote main/API/fetch equals base. Existing accepted icon/source and original failures preserved.
@@ -145,3 +145,50 @@ C1_RUNTIME_CHECKPOINT: 57bf2e90b41e361967c0644f7f153b6cb7d472af
 C1_SOURCE_MAIN_SHA256: ab57bda47379c4bb210029b893f20e17524ddb2089152f9b7e60490375e6e7c6
 C1_SOURCE_REVIEW: ROOT_RUNTIME_C1_REVIEW.json; strict inverse/all10017other sources/frozen tests/four physical570B targets verified. Working738plusMain executions374and724and69 actual0 are not retagged as final committed proof.
 C1_FINAL_PROOFS: current committed full548/source/gates/build/native/CI/merge/literalmerged remain mandatory; no fullMac or release acceptance.
+
+### Same-delivery C2: reuse the existing Save policy guard
+
+REPAIR_C2_BINDING_BASE_SHA: c7a4b888b9d06354a90e49002a7e919fb96582e9
+REPAIR_C2_STATUS: MEASURED_BASELINE_FAILURE_RETAINED_NOT_ACCEPTED
+
+Actual canonical npm test atC7 ran3479tests:3409pass,11fail,59established
+skips,0cancel/todo. Every failure is the extra direct ENT0 consultation in
+captureNativeSaveEffect or its unchanged WP100/mutation/meta dependants.
+The complete66673223byte output and original failed receipt remain intact;
+the64MiB buffer did not fail. All10018tracked bytes and9999protected source
+bytes remained exact. The test run created six synthetic fixture files for
+book-profile-roundtrip and tree-identity-main in its working directory.
+That whole previous working copy and all fixture bytes remain untouched.
+
+A new registered clean technical worktree at exactlyC7 carries the same
+delivery under codex/native-save-system-path-20261026-c2. Original704base,
+main target,19path scope,one rollback and full delivery chain do not change.
+Fresh bootstrap, declaration and clean preflight precede this amendment.
+The original dirty-state preflight refusal remains retained; it is not waived.
+
+Separate executor may replace only the native guard's duplicated current
+profile and ENT0 decisions with existing synchronous userBookmarkCapability.
+That exact shared guard already serves Save ACK, Save backup and recovered
+SaveAs, reads the product-owned tier and current profile, and has no writer.
+Call it at every existing native assertCurrent without await. Translate only
+USER_BOOKMARK_CAPABILITY_DENIED to NATIVE_SAVE_CONTEXT_STALE with its cause;
+rethrow every other error. Remove only the now-unused captured command record.
+Keep every matrix/context/path/system/parent/queue/publication/ACK/recovery
+guard and the same typed stale-dialog refusal. No helper, policy table,
+consultation spelling, scanner, test, assertion, skip or frozen byte changes.
+Projected cumulative Main138lines stays below160; this is existing-seam reuse,
+not a renamed call that escapes the oracle.
+
+CHECK_C2_PRE: clean exact source, fresh executor declaration/preflight/taskE0;
+all frozen tests and prior source/evidence/profile bytes protected.
+CHECK_C2_POST: unchanged ENT0/WP100/mutant/meta suites must observe original
+legacy3/whole5direct decisions,16channels and all existing mutants. Same
+frozen724WP307,548whole callers,69controls and required affected gates must
+execute on final committed source; canonical baseline expected3420pass and
+59named established skips is a prediction, not evidence. Run that baseline
+in an exact-commit detached test worktree if needed to retain generated test
+outputs separately from the clean product-write/build checkout. Its actual
+execution path, raw status and all source hashes must be reported explicitly.
+Current companions, new qualified build/native, required CI,normal merge and
+literalmerged source/build/native verification remain mandatory. No native
+app/profile/build has started; no fullMac or release claim is created.
