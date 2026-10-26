@@ -25601,6 +25601,186 @@
       "filePath": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
       "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
       "sha256": "85e923b220dd89de78238cf42bff1a4e0c542ba0fc276a357502418daba7721c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "2a583ee4e51f46d562e70c5da98fa7eb2eef209544a8a7aca25759fb9370643c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "509c555efeb5ab0aca5cb720f015d094496cb2b9eda8f6d3c0a81f933290b6e7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "6645e0bef36514c8e5ecbb003f20341a75cbcce0d7531d7891ce3e3e160b0e9f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "3d19d485226dfd120caddb3fd4e502a574ea35a0fc8984f9847e9823ad5d012d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "8bfb999462395331b823dabcb957f9acb6c01b945701f57fe16834b91de87ec8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "3f551b096c6719acfaeb278953273caff5c99b137b5d794314182f6163dea8e9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "0d82d202da53d707ededb1cb53ea196982cb3b1259996186afe0038835fc7c30"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T08:19:03.526408+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "03a3e579f643e135f0112924e09db015a205001220fe41059ea8dc0def7e9f1e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "19ee22fb32be73553ebb165bab36b13630c358bbeb0b758d32af8d355e0da36f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "bf206a54916ae241d7764514f889d46e6331e49806dc874a52a3ad50ec62aa68"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "4a1bbfd427f9b96156d7ce5d8d6cc6b56eea90316826113d1d1c577a8c274d08"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "b298d096aa0767e16805199d28453588503c4ee1228c0934e6d9b32eff757d31"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "882bdd6155f2f155e0b9a16bc1ea097cecdc78adaee9a47a7c273f051ce5a7e8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T10:33:37.007721+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same unfinished native Save delivery: existing shared Save policy guard replaces duplicate decisions; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "e57fcebce7baa8467db776d5298e640b7efbe440813ce5dd56222f381de58a64"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T10:33:37.007721+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished native Save delivery: existing shared Save policy guard replaces duplicate decisions; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "1da532af0352324d4a0b874f2290385edc4be72a06da93729901bada21e808e0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T10:33:37.007721+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished native Save delivery: existing shared Save policy guard replaces duplicate decisions; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "d55cdd85e2ef4ee9fe733d583fb13f4d64144161bb40479360c92931415ac97e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T10:33:37.007721+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same unfinished native Save delivery: existing shared Save policy guard replaces duplicate decisions; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "d22f713b22f26c1be41975499f170dce0cb1228b44f1f032a17dcaac8494a7fb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T10:33:37.007721+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished native Save delivery: existing shared Save policy guard replaces duplicate decisions; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "dd82fab969591b8d01e77a48c5682352ade7d2eaeb9cccaceee2d8dda4cab15a"
     }
   ],
   "evidenceStampIds": [

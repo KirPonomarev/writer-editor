@@ -823,7 +823,8 @@
     "test/unit/r24-wp308-brand-baseline.test.mjs",
     "docs/tasks/2026-10-25--canonical-logo.md",
     "src/renderer/assets/app-icon.svg",
-    "docs/tasks/2026-10-26--external-file-startup.md"
+    "docs/tasks/2026-10-26--external-file-startup.md",
+    "docs/tasks/2026-10-26--native-save-system-path.md"
   ],
   "protectedFiles": [
     {
@@ -1052,7 +1053,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a7144947f900e87a63db560a8ab0e4e5446b60e7dee8f70888cc5f026170f986"
+        "sha256": "9e16bdd505c52119cf0192c45f759feba562683103a4bc810f02e217d87f6960"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1076,7 +1077,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "49ef2411b594b22d944c59939fb799dfedb454b71401d1fcc6ec871631f98434"
+        "sha256": "85c62cc7825c533c5f032a74f3a95300085ca8ac22418596a89f139fb878dcae"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1788,7 +1789,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b35ec97cdd56e4489dd0374677fe7069d98f02b207f093b99c73474a44d7b2a0"
+        "sha256": "03a3e579f643e135f0112924e09db015a205001220fe41059ea8dc0def7e9f1e"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2296,7 +2297,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "77d9e38d799f76cfd5ffb304e4475bb89f796af05d56cace4ba5a55a1465e0d3"
+        "sha256": "634bdbee2b92e8bfdcabda03bbcc0bc7b103dd6e45cefede226581909df50605"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2744,15 +2745,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "c61f27395bcc8aeeab0e2ebfd826963310edc2e3b3dfa0c4934784c4af29ed62"
+        "sha256": "6c7b614c8710ed5cbe29a3d6a78bee9d53916900c56b07a7476bc4b88bfd60da"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "993d612bb7e000e31bca0bb564b4420824caaed1ef93a59d0503c44da3719c70"
+        "sha256": "61d6a39d17de1fb320d46dbfab6fa1b3b450d60480ab2d4f044fe9f85a7c00ee"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "3cf0c73447dc1ee1fef01033dfde05792d44a8d520fcb939658fe69a96b836e8"
+        "sha256": "d06169f1f4e7e7d258abc78b6b0dfacd8aadeadc2d315412ecda5b248283958e"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3292,7 +3293,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "520f3aef3bdc6910f052910a7cc4dde96eb4d826ff1b62777e7612400203e34e"
+        "sha256": "509c555efeb5ab0aca5cb720f015d094496cb2b9eda8f6d3c0a81f933290b6e7"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3316,7 +3317,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "e28451526ebaa712db7602c2d4d31b7b3f3aa7522fb34f8dfb7590f1f3d7a677"
+        "sha256": "d22f713b22f26c1be41975499f170dce0cb1228b44f1f032a17dcaac8494a7fb"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3408,7 +3409,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "2231e0e1a29ba1daa6ab4a98b3d3856b32255742935a3e8b1f1cda0bfea61de1"
+        "sha256": "e57fcebce7baa8467db776d5298e640b7efbe440813ce5dd56222f381de58a64"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3721,6 +3722,10 @@
       {
         "path": "docs/tasks/2026-10-26--external-file-startup.md",
         "sha256": "c3c3c31b10078c718f4cec72f1e4a5a3de9f5a2176c36bb66112952736148e79"
+      },
+      {
+        "path": "docs/tasks/2026-10-26--native-save-system-path.md",
+        "sha256": "3a36411ddc3a0d078882b18938e29124b6e3fb21150f7a6827e68d157b596a91"
       }
     ],
     "followupRepair": {

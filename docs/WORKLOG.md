@@ -5275,3 +5275,15 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 - Startup PR2168 C6: exact3obsolete initial-call locator strings corrected after all16remainingAtlasfailures classified; whole524GREEN first, then2Word selector/id literals. Preserve C5actual336/697/108at918 and oldfailures; newhead not inferred from predecessor tests. Complete GA witnesses for ALLchangedgovernance targets, preserve71oldcarriers/verifier and345/1,815/667,1603/66/17UNKNOWN. Currentstrict/affected/source/E0/fullCI/literalmerged tests/package/native remain required.
 
 - 2026-10-26 YALKEN_EXTERNAL_FILE_STARTUP_20261026: closed predecessor64e3/PR2168; actual initializer61/58/3 and recovery37/34/3 causal RED, then15line Main correction and whole61/61+37/37 working-source GREEN independently reviewed. Original82cases/all frozen oracles retained. Current346/1,816/668,1603/66/17UNKNOWN source companions are byte qualification only. Fresh actual candidate native standalone Save/Quit/cold, current fullCI, ordinary delivery and literalmerged proof remain required. Full first Mac goal continues; retained limitations unchanged.
+
+## 2026-10-26 — native Save system path source correction
+
+Owner-approved fixed Darwin prefix binding and current-context/parent/publication checks implemented through the existing Main/Kernel/Core path. Frozen724wholeMain and69unchanged safetycontrols passed; original697tests/Core/renderer/icon preserved. Real stale post-target completion counterexample and original native failure retained. Current companions/native/CI/full delivery remain pending; fullMac17UNKNOWN unchanged.
+
+## 2026-10-26 — same native Save delivery C1
+
+Original additional548caller execution retained one real directSave stale-dialog refusal failure. Separate executor changed only six acquisition lines; all frozen tests unchanged. Actual working374,724and69pass with zero exclusions; root strict inverse/all10017other bytes and four570B target/settings readback independently verified. Ordinary runtime checkpoint 57bf2e90b41e361967c0644f7f153b6cb7d472af; source/native/normal full delivery remains pending. Root amendment E0 first rejected an extra H2 and passed after its heading-only correction; two root review diagnostic-prefix mistakes were retained and corrected from actual character bytes. No product oracle or assertion was relaxed.
+
+## 2026-10-26 — same native Save delivery C2
+
+C7 canonical baseline retained3479tests:3409pass11ENT0count/meta cascades59skips; all tracked source bytes exact, six own synthetic outputs retained. Separate executor reuses existing shared synchronous Save policy guard with known-denial-only mapping; tests/scanners and all original guards unchanged. Working98181plusMain actual20and69green,22meta suites126mutants; root strict inverse/all10017others/fulloldC7andfixtures verified. Runtime checkpoint 914df8b9c91fa0df3ff8377fc3aeb643fe447c8e;138Mainlines within160. Clean registered technical worktree preserves old dirty workspace; full19member archive/physical6file restoration and metadata supplement originals. Final exact source/native/full normal delivery pending; no result relabel or oracle weakening.

@@ -1,3 +1,116 @@
+# Native Save C2 — existing Save policy integration, 26 October 2026
+
+TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
+STATUS: C2_SOURCE_REVIEWED_FINAL_PROOFS_AND_DELIVERY_PENDING
+RUNTIME_CHECKPOINT_SHA: 914df8b9c91fa0df3ff8377fc3aeb643fe447c8e
+CLAIM_BOUNDARY: Existing-seam source correction; no native, full Mac or release acceptance.
+
+Actual canonical npm test atC7 retained3479tests:3409pass11ENT0failures and
+59named established skips,0cancel/todo. The new native effect duplicated the
+current-profile/product-tier decisions already owned by the synchronous
+userBookmarkCapability used by Save ACK/backup and recoveredSaveAs. C2 calls
+that existing guard at every native assertCurrent; only its known denial maps
+to NATIVE_SAVE_CONTEXT_STALE with cause, every other error rethrows. All
+matrix/context/path/system/parent/publication/ACK/recovery guards remain.
+No consultation rename, new helper/table, test/scanner edit or skip was used.
+
+Working98181plusMain9e16 executed the unchanged ENT0/WP100/mutant/meta20of20
+and69path controls, zero fail/cancel/skip/todo and source held. Matrix16channels
+has0violations; original Pulse7/Environment8vectors and wiring5of5mutants remain;
+WP104 independently ran22suites/126mutants allScoreOne. Root strict inverse
+matched the exact three replacements, all10017other current sources, all10018
+oldC7sources and the complete frozen test/prefix. Main103added+35deleted=138
+within160. Those working results are not retagged as a committed execution.
+
+The old test working copy remains unchanged with its six generated synthetic
+files. Complete19member roster/native metadata,2080B compact archive and full
+physical restoration plus independent readback of all6files supplement the
+retained originals; no cleanup/move/reseed occurred. The dirty preflight refusal
+remains; actual new registered clean technical worktree/bootstrap/preflight
+satisfied the same gate. One existing lock-matched dependency link adds no
+package/download. Direct connected GitHub main and literal fetch still704cb46.
+
+Current74thsourcecarrier/DATA/release refresh keeps all73historical bodies and
+the whole verifier,347bindings+1guard,817admitted/669sourcepins,1603inventory/C2A,
+66releasepins and all17UNKNOWN qualifications. Final committed724WP307,548whole
+callers,canonical baseline/all affected/source gates,perf proxy,new qualified
+build and actual firstSaveAs/firstSave/Save/UndoRedo/Quit/cold still must run.
+Full normal delivery and literal merged tests/newbuild/native/CI remain required.
+Original failures,two IME assessments/full audit findings and protected111/78
+profiles/115rawfiles/9epochs remain retained. No app/profile/build has started.
+Approved three-choice autosave UX follows completion of this delivery.
+
+# Native Save C1 — existing stale-dialog refusal, 26 October 2026
+
+TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
+STATUS: C1_SOURCE_REVIEWED_FINAL_PROOFS_AND_DELIVERY_PENDING
+RUNTIME_CHECKPOINT_SHA: 57bf2e90b41e361967c0644f7f153b6cb7d472af
+CLAIM_BOUNDARY: Bounded source correction; no native, full Mac or release acceptance.
+
+The completed additional548Main caller run at3d549ed99 retained547pass1failure:
+an authoring-session change during the untitled native panel reached the new
+binder assertion before the existing typed handleSave refusal. The C1 correction
+catches only NATIVE_SAVE_CONTEXT_STALE together with the independently failed
+existing target check, returns AUTHORING_TARGET_CHANGED_DURING_DIALOG, and
+rethrows every other error. Cancellation/validation, binder, SaveAs, saved-file
+route and all later publication guards remain byte-exact to the prior source.
+
+Actual working-source proof at738cad6plusMainab57 executed374scene-identity,
+724frozenWriter and69unchangedpath cases, all passing with zero fail/cancel/skip/
+todo. Those executions are retained with their dirty-working-source identity,
+not retagged as a committed run. Root independently reconstructed the one hunk,
+matched all10017other committed sources and the original438071test bytes, and
+read all four actual570B targets/settings through a separate file/expected-text
+oracle and the production parser. Cumulative Main delta134remains within160.
+
+Current74thcarrier/DATA/release hash refresh retains all73historical carrier
+bodies and the entire verifier,347bindings+1guard,817admitted/669sourcepins,
+1603inventory/C2A bytes and66releasepins/all17UNKNOWN qualifications. Current
+final committed source gates, the complete548affected chain, owned fresh build,
+genuine firstSaveAs/firstSave/Save/UndoRedo/Quit/cold and normal complete delivery
+plus literal merged verification remain required. Original failures, two IME
+assessment failures/full audit findings and all protected profiles/raw epochs
+remain retained. Approved autosave-choice UX follows this complete chain.
+
+# Native Save standard macOS path — source correction, 26 October 2026
+
+TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
+STATUS: SOURCE_CHECKED_NATIVE_AND_DELIVERY_PROOFS_PENDING
+
+The owner's explicit standard macOS var-to-private-var exception is confined to
+native untitled Save and ordinary SaveAs acquisition. Main validates the original
+dialog result and path before interpretation, verifies only the fixed root-owned
+OS alias with bigint filesystem identities, then applies the unchanged Core K1
+containment and SEC0 no-follow law to the canonical candidate. Arbitrary aliases,
+outside-root targets and canceled or malformed responses remain refused.
+
+The effect binds the current window, contents, authoring session, project root,
+owner, profile, userData, command capability, path roots, generation and parent
+identity. Existing nonproject beforeScenePublish is now consumed at the durable
+coordinator, including immediately before rename. Native settings, ACK and
+recovery cleanup remain bound across the handler's explicit own-path transition;
+a stale completion retains an already published copy and cannot acknowledge a
+different restarted-generation draft. No new Core writer, schema, IPC or surface.
+
+The maintained full-Main counterexample reached a real post-target settings read:
+New reset generation to zero, a separate draft acquired generation one, and the
+old source incorrectly acknowledged generation two and deleted the new recovery.
+Frozen whole-source correction checks cover 724 executed cases, including every
+original 697 case; all original 438071 test bytes remain exact. The unchanged
+69 path and persistence controls also passed. These finite Electron adapters use
+real Main, Core and filesystem; they are not native OS acceptance. Native factory
+first SaveAs and first Save, normal Quit/cold readback, current source companions,
+all required local/CI gates and normal merge/literal merged verification remain
+mandatory in the task's dated T777 report folder.
+
+Historical failed111-member and previous78-member profiles, 115 old document/Pulse
+files and the separate nine-epoch raw journal remain protected. Available native
+metadata is retained without claiming forged OS security identity or physical
+power-loss/privileged-syscall-race acceptance. All17 fullMac qualifications stay
+UNKNOWN. The separately owner-approved saved-scene/unbound-autosave three-button
+choice follows this complete delivery. Existing historical IME/audit failures are
+retained, not relabeled green.
+
 ## 2026-10-26 — Standalone external startup: bounded source frozen
 
 TASK_ID: YALKEN_EXTERNAL_FILE_STARTUP_20261026

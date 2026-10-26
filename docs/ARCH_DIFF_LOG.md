@@ -603,3 +603,37 @@ native repeat export or the original large-novel denominator. Existing task-only
 - Риск: an overbroad import exception could hide new effects. Whole maintained purity tests and appended actual-source plus forbidden-import/effect controls refuse expansion, including same-line calls; the general scanner is unchanged.
 - Rollback: ordinary revert of this one PR restores the portable hash, canonical-only comparison and prior exact import set; native profiles and complete journals remain preserved.
 - План удаления исключения: remove these two exact admissions if a separately owner-approved deterministic computation adapter replaces this existing host-specific seam. Until then they remain bounded by exact source/line checks; this entry adds no release gate or wider exception.
+
+## 2026-10-26 — owner-approved standard Darwin native Save path exception
+
+Task YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026 binds the direct human approval
+"Да, исправляй этот системный путь". The genuine macOS Save panel returned var,
+while unchanged Core no-follow correctly refused that root-owned system link.
+Main now normalizes only this verified fixed OS prefix before unchanged Core
+admission. It never realpaths an arbitrary selected parent or grants write
+authority from visibility, native metadata or a renderer payload. Current
+capability/session/generation/path/parent and post-settings publication checks
+also prevent the reproduced stale completion from deleting a new draft recovery.
+
+This narrow adapter exception has one normal PR-revert rollback. Remove it only
+when a separately admitted platform adapter provides equivalent verified native
+normalization, without weakening arbitrary-link/outside-root refusal. No Core,
+schema, renderer, dependency, command, executable pack or network expansion.
+Historical frozen carriers and every corruption oracle remain unchanged; the
+current successor only binds exact new source bytes. Pathname rechecks do not
+claim immunity to privileged replacement between syscalls or power loss. Native
+OS, complete release and all17 qualification acceptance are separate required
+evidence; no source-only result promotes them. Original failures remain retained.
+
+## 2026-10-26 — native Save C1 preserves existing refusal
+
+Same owner-approved native Save delivery and original704rollback base. The new binder initially preempted an existing direct handleSave stale-dialog refusal; C1 maps only that exact stale error plus an independently failed existing target guard back to the original typed refusal. Every other error rethrows. No new exception, authority, path law, writer or test contract. Cancellation/raw/system-path and later publication checks remain intact; Main134within160. Frozen tests, all73historical certificates/verifier, protected profiles and raw epochs remain. Current source/native/full delivery still required; normal same-PR revert is rollback.
+
+## 2026-10-26 — native Save C2 reuses the existing policy owner
+
+- Контекст: same unfinished native Save delivery, C7 baseline exposed11cascading ENT0 count failures.
+- Что нарушаем: no new exception; original owner-approved fixed macOS system-prefix exception remains the only path-law delta.
+- Причина: replace duplicate native current-profile and product-owned entitlement decisions with existing synchronous Save/SaveAs guard; preserve every native revalidation and known typed refusal. No renamed consultation, helper, scanner/test change or policy bypass.
+- Риск: missing guard or broad error translation could allow stale publication; frozen held-dialog/fsync entitlement and whole source/native gates remain required.
+- Rollback: normal revert of the same bounded native Save PR; source/test/history/profiles and all retained six synthetic files stay readable.
+- План удаления исключения: unchanged original future platform-adapter migration; this C2 reuse introduces no extra permanent exception, authority or writer. Final source/native/full delivery still pending.
