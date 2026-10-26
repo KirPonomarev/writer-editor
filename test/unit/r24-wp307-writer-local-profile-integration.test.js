@@ -5049,3 +5049,41 @@ test('native Save system binding fixed metadata contract [FINITE_METADATA_NOT_PL
   for (const name of ['/', '/private', '/private/var', '/var']) { const p = port(), b = p.bind({ canceled: false, filePath: raw }); p.states[name].ino++; assert.throws(() => b.assertCurrent(), name + ' identity drift'); }
   t.diagnostic('FINITE_FIXED_SYSTEM_METADATA_ONLY; real K1 and actual Mac Main/native outcomes are separate mandatory oracles');
 });
+
+test('native Save settings read after real target publication cannot ACK or erase a new restarted-generation draft', async t => {
+  const h = await nativeSaveSystemFixture(t), chosenContent = h.editor.content;
+  h.choose({ canceled: false, filePath: h.target });
+  const fsp = require('node:fs/promises'), originalRead = fsp.readFile, entered = nativeSaveSystemGate(), gate = nativeSaveSystemGate();
+  let held = false, settingsReadStack = '';
+  fsp.readFile = async function(file, ...args) {
+    const bytes = await originalRead.call(this, file, ...args);
+    if (!held && String(file) === h.settingsPath && fs.existsSync(h.target)) {
+      held = true; settingsReadStack = new Error('real post-target settings read').stack; entered.release(); await gate.promise;
+    }
+    return bytes;
+  };
+  const pending = h.command('cmd.project.saveAs', {});
+  try {
+    await environmentEpochWait(entered.promise, 'real native Save settings read after target publication');
+    assert.equal(fs.readFileSync(h.target, 'utf8'), chosenContent, 'actual old document copy is already durable and must remain');
+    assert.equal((await h.command('cmd.project.new', {})).ok, true);
+    assert.equal(h.editor.generation, 0, 'real New restarts the finite renderer generation'); assert.equal(h.editor.content, '');
+    const envelope = require('../../src/core/document-content-envelope-v1.cjs'), text = 'Другой новый документ e\u0301 🌱';
+    const content = envelope.composeObservablePayload({ doc: { type: 'doc', attrs: { wordPendingRevisions: null, wordUserBookmarks: null },
+      content: [{ type: 'paragraph', attrs: { textAlign: null }, content: [{ type: 'text', text }] }] } });
+    const parsed = envelope.parseObservablePayload(content); assert.equal(parsed.issue, null); assert.equal(parsed.text, text);
+    h.editor = { ...h.editor, content, plainText: text, generation: 1 };
+    assert.equal((await h.signal('signal.localDirty.set', { state: true, generation: 1 })).ok, true);
+    assert.equal((await h.signal('signal.autoSave.request')).ok, true);
+    assert.equal(fs.readFileSync(h.globalAutosave, 'utf8'), content);
+    const current = nativeSaveSystemSnapshot(h), packetCut = h.sent.length; gate.release(); const result = await pending;
+    const after = nativeSaveSystemSnapshot(h), lateAcks = h.sent.slice(packetCut).filter(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED');
+    const digest = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+    t.diagnostic(JSON.stringify({ postTargetSettingsRead: held, settingsReadStack, result, newGeneration: h.editor.generation,
+      targetSha256: crypto.createHash('sha256').update(fs.readFileSync(h.target)).digest('hex'), newRecoveryRetained: fs.existsSync(h.globalAutosave)
+        && fs.readFileSync(h.globalAutosave, 'utf8') === content, beforeStateSha256: digest(current), afterStateSha256: digest(after), lateAcks }));
+    assert.equal(result.ok, false); assert.equal(fs.readFileSync(h.target, 'utf8'), chosenContent);
+    assert.deepEqual(after, current); assert.equal(fs.readFileSync(h.globalAutosave, 'utf8'), content);
+    assert.equal(lateAcks.length, 0, 'a stale Save must not acknowledge the newer document with a restarted local generation');
+  } finally { gate.release(); fsp.readFile = originalRead; await pending; }
+});
