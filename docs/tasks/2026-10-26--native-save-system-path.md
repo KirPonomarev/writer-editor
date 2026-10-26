@@ -16,7 +16,7 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MER
 OWNER_AUTHORITY: Direct26October2026 human reply "Да, исправляй этот системный путь" authorizes only standard macOS var-to-private-var native save compatibility, with arbitrary symlink and outside-root refusal retained. Direct "Да, показывать такой выбор" separately authorizes later three-way saved-scene versus unbound autosave choice; implement it only after this delivery. Existing complete firstMac/unrestricted synthetic native-testing directive continues. No historical stage/lease resumed.
 PREDECESSOR: PR2169 fully delivered at literal704cb46; current remote main/API/fetch equals base. Existing accepted icon/source and original failures preserved.
 STORAGE: Dated2026-10-26--native-save-system-path report/material folders on mounted writable T777 UUID F2FA9AE0-0081-3FC3-BF56-CC4280D16513. Registered reused worktree on encrypted unlocked writable T7-Secure UUID D1F2E2C1-3210-4A39-A4E0-0AA0AD5110E2; canonicalowner6de remains unchanged. Temporary APFS fixtures/build/unique QA app/profile only under actual canonical OS temporary root, no TMPDIR spoof; final useful results/metadata and compact containers on T777. No cleanup/reseed/deletion.
-DESIGN_TOOL_ROUTER_BINDING: TASK_ARCHITECTURE_DECLARATION_01.json; NOT_APPLICABLE, existing native panels and interface unchanged.
+DESIGN_TOOL_ROUTER_BINDING: TASK_ARCHITECTURE_DECLARATION_01.json; existing native panels and interface unchanged.
 REFERENCES: Fresh brain:refs native SaveAs/macOS/path/no-follow executed; current actual Main/Core and real native platform/finite Main failures are causal evidence. Suggested writer/native-fluency notes advisory only; no external source, dependency or service used.
 
 ## MICRO_GOAL
