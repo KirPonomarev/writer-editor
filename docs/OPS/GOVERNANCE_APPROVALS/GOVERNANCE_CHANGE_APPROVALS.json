@@ -25191,6 +25191,106 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Current-only combined C3 after clean normal parent integration; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
       "sha256": "a90b40b22232e22227c10dacdce3bbaddeaa160d006bf9f49eaf517666f11959"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "62db9063642e082209a2d7fb99a727a99329a7fc211ac8cde16a3c5b1bb11751"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "9bc1879962b548e8a7ddc0b0f2c0ae661eacf4604169c38723002b1d7ced6cb8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "9b6b2ff9447f3195ec7bf6e1392ade0d770434c400433ea3eb295f13df697ef2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "cbb61f3f2a4add614fa08bfe5e2261d51b04b0cba4e68f2350bc272dcab3dfeb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "083b90c25e1c9aff4a81ee01fda6a492e6f4ad34d39f3bda05f02d2201390f57"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "649d7d55c1f3d0d1e35266183554adf85a2620acd7ab9f59ab7cf8358bb255b0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-25--startup-input-admission.md",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "903bcc850b13d81e390f3a0641a5a520ee8e176d21a3480f5f3668fdfcb76f45"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "88880f67fdce9d0efe681bb9e16ab6dac653f3b1e3f7141cd94046641b3427d5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "612ad6bf5520e4b4ac388a08869599f6933e8d1fa2c27e081c57986d14ef8f4c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T00:43:26.706352+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_INPUT_ADMISSION_20261025",
+      "authority": "DIRECT_OWNER_EXACT_C1398682_BASE_INTEGRATION_APPROVAL",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current-only C4 finite VM setup compatibility after clean docs checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
+      "sha256": "b8157352d223a884dcb961494fea38ed74cb438e5a1e61c1b5cd5e29d3828500"
     }
   ],
   "evidenceStampIds": [
