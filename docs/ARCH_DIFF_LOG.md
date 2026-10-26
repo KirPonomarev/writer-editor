@@ -624,3 +624,7 @@ current successor only binds exact new source bytes. Pathname rechecks do not
 claim immunity to privileged replacement between syscalls or power loss. Native
 OS, complete release and all17 qualification acceptance are separate required
 evidence; no source-only result promotes them. Original failures remain retained.
+
+## 2026-10-26 — native Save C1 preserves existing refusal
+
+Same owner-approved native Save delivery and original704rollback base. The new binder initially preempted an existing direct handleSave stale-dialog refusal; C1 maps only that exact stale error plus an independently failed existing target guard back to the original typed refusal. Every other error rethrows. No new exception, authority, path law, writer or test contract. Cancellation/raw/system-path and later publication checks remain intact; Main134within160. Frozen tests, all73historical certificates/verifier, protected profiles and raw epochs remain. Current source/native/full delivery still required; normal same-PR revert is rollback.

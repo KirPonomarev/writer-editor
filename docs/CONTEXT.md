@@ -1,3 +1,35 @@
+# Native Save C1 — existing stale-dialog refusal, 26 October 2026
+
+TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
+STATUS: C1_SOURCE_REVIEWED_FINAL_PROOFS_AND_DELIVERY_PENDING
+RUNTIME_CHECKPOINT_SHA: 57bf2e90b41e361967c0644f7f153b6cb7d472af
+CLAIM_BOUNDARY: Bounded source correction; no native, full Mac or release acceptance.
+
+The completed additional548Main caller run at3d549ed99 retained547pass1failure:
+an authoring-session change during the untitled native panel reached the new
+binder assertion before the existing typed handleSave refusal. The C1 correction
+catches only NATIVE_SAVE_CONTEXT_STALE together with the independently failed
+existing target check, returns AUTHORING_TARGET_CHANGED_DURING_DIALOG, and
+rethrows every other error. Cancellation/validation, binder, SaveAs, saved-file
+route and all later publication guards remain byte-exact to the prior source.
+
+Actual working-source proof at738cad6plusMainab57 executed374scene-identity,
+724frozenWriter and69unchangedpath cases, all passing with zero fail/cancel/skip/
+todo. Those executions are retained with their dirty-working-source identity,
+not retagged as a committed run. Root independently reconstructed the one hunk,
+matched all10017other committed sources and the original438071test bytes, and
+read all four actual570B targets/settings through a separate file/expected-text
+oracle and the production parser. Cumulative Main delta134remains within160.
+
+Current74thcarrier/DATA/release hash refresh retains all73historical carrier
+bodies and the entire verifier,347bindings+1guard,817admitted/669sourcepins,
+1603inventory/C2A bytes and66releasepins/all17UNKNOWN qualifications. Current
+final committed source gates, the complete548affected chain, owned fresh build,
+genuine firstSaveAs/firstSave/Save/UndoRedo/Quit/cold and normal complete delivery
+plus literal merged verification remain required. Original failures, two IME
+assessment failures/full audit findings and all protected profiles/raw epochs
+remain retained. Approved autosave-choice UX follows this complete chain.
+
 # Native Save standard macOS path — source correction, 26 October 2026
 
 TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026

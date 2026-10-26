@@ -140,3 +140,8 @@ controls and required affected chain on final exact source, then current
 mechanical companions/gates, new qualified build/native and complete ordinary
 delivery/literal merged verification. No name filtering, relaxed oracle or
 different-head evidence promotion. All17Mac qualifications remain UNKNOWN.
+
+C1_RUNTIME_CHECKPOINT: 57bf2e90b41e361967c0644f7f153b6cb7d472af
+C1_SOURCE_MAIN_SHA256: ab57bda47379c4bb210029b893f20e17524ddb2089152f9b7e60490375e6e7c6
+C1_SOURCE_REVIEW: ROOT_RUNTIME_C1_REVIEW.json; strict inverse/all10017other sources/frozen tests/four physical570B targets verified. Working738plusMain executions374and724and69 actual0 are not retagged as final committed proof.
+C1_FINAL_PROOFS: current committed full548/source/gates/build/native/CI/merge/literalmerged remain mandatory; no fullMac or release acceptance.

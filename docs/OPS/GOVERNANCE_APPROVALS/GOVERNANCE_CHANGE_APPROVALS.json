@@ -25681,6 +25681,56 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Current exact bytes for owner-approved native Save standard OS-prefix compatibility, preserved arbitrary no-follow/lifecycle/durability and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
       "sha256": "03a3e579f643e135f0112924e09db015a205001220fe41059ea8dc0def7e9f1e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "19ee22fb32be73553ebb165bab36b13630c358bbeb0b758d32af8d355e0da36f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "bf206a54916ae241d7764514f889d46e6331e49806dc874a52a3ad50ec62aa68"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "4a1bbfd427f9b96156d7ce5d8d6cc6b56eea90316826113d1d1c577a8c274d08"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "b298d096aa0767e16805199d28453588503c4ee1228c0934e6d9b32eff757d31"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T09:16:39.628265+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STANDARD_MACOS_VAR_NATIVE_SAVE_EXCEPTION_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unfinished native Save delivery: existing stale-dialog typed refusal retained; frozen tests, no-follow guards and historical carriers/verifier unchanged. Exact source witness only, no native/stage/fullMac/release/security acceptance.",
+      "sha256": "882bdd6155f2f155e0b9a16bc1ea097cecdc78adaee9a47a7c273f051ce5a7e8"
     }
   ],
   "evidenceStampIds": [

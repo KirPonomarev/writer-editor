@@ -1053,7 +1053,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "b3c34235510c23908e1578941bf9f3df79d27c5b0b1a2b99362cef44a44f10c0"
+        "sha256": "ab57bda47379c4bb210029b893f20e17524ddb2089152f9b7e60490375e6e7c6"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2297,7 +2297,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "2fbe9fb85363e3de53214d241c38e679dd150cca0aee35930e836bd6ca8d7bdf"
+        "sha256": "98bafb9684119962bf772c8e82dddc38201c0e2e206bda8225351bde83a331f9"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2745,15 +2745,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8b2bcff5a5b2e4075ea0e5ccebf5bc20e55fd010c1044a1589504faeb017eae7"
+        "sha256": "632c94d4b9a678d9068f36f8b70419b00716dc3f59354d4ea1777dbad7c813db"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "32e5a60b69ad9e18b882090f1aa36cd7fc788c391f8fda7f66235abde04d1777"
+        "sha256": "344ee609b610f19c7ab3f438e7bcc1e4ea5f3fc581c41531e49ede969f1b48dd"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "9100d3b46bb01a9e25c2a15dd09ee1ace70f38917dfdd367b1e9593da267c4f0"
+        "sha256": "d326a14b21c0bcb41f183346d55306d1aa47e14f6e512903d5609efc9e223492"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3317,7 +3317,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "3f551b096c6719acfaeb278953273caff5c99b137b5d794314182f6163dea8e9"
+        "sha256": "b298d096aa0767e16805199d28453588503c4ee1228c0934e6d9b32eff757d31"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3409,7 +3409,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "6645e0bef36514c8e5ecbb003f20341a75cbcce0d7531d7891ce3e3e160b0e9f"
+        "sha256": "19ee22fb32be73553ebb165bab36b13630c358bbeb0b758d32af8d355e0da36f"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3725,7 +3725,7 @@
       },
       {
         "path": "docs/tasks/2026-10-26--native-save-system-path.md",
-        "sha256": "7270735fe9419ea8ef40d1854ae2fb52e13223c323d5d2b4a2adc9fd75f6e422"
+        "sha256": "b19dd870ccea822052f591feefd5c756c2f4adbd1bd28e469b319c65eed8b221"
       }
     ],
     "followupRepair": {

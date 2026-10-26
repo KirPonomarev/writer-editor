@@ -5279,3 +5279,7 @@ Early exact rebuilt app smoke follows applicable source gates and clean commit; 
 ## 2026-10-26 — native Save system path source correction
 
 Owner-approved fixed Darwin prefix binding and current-context/parent/publication checks implemented through the existing Main/Kernel/Core path. Frozen724wholeMain and69unchanged safetycontrols passed; original697tests/Core/renderer/icon preserved. Real stale post-target completion counterexample and original native failure retained. Current companions/native/CI/full delivery remain pending; fullMac17UNKNOWN unchanged.
+
+## 2026-10-26 — same native Save delivery C1
+
+Original additional548caller execution retained one real directSave stale-dialog refusal failure. Separate executor changed only six acquisition lines; all frozen tests unchanged. Actual working374,724and69pass with zero exclusions; root strict inverse/all10017other bytes and four570B target/settings readback independently verified. Ordinary runtime checkpoint 57bf2e90b41e361967c0644f7f153b6cb7d472af; source/native/normal full delivery remains pending. Root amendment E0 first rejected an extra H2 and passed after its heading-only correction; two root review diagnostic-prefix mistakes were retained and corrected from actual character bytes. No product oracle or assertion was relaxed.
