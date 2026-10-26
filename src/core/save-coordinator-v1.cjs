@@ -75,11 +75,20 @@ async function durableSaveTransaction({ filePath, content, revision, fsAdapter =
   const expectedDigest = sha256hex(Buffer.isBuffer(content) ? content : Buffer.from(content, 'utf8'));
 
   let handle;
+  let tempAcquired = false;
   try {
-    handle = await fsAdapter.open(tempPath, 'w');
+    handle = await fsAdapter.open(tempPath, 'wx');
+    tempAcquired = true;
     await handle.writeFile(content);
   } catch (error) {
-    await safeUnlink(tempPath);
+    if (handle) {
+      try { await handle.close(); }
+      catch (closeError) {
+        throw new SaveCoordinatorError('E_SAVE_TEMP_WRITE', SAVE_PHASES.TEMP_WRITE,
+          `${error.message}; temporary close failed: ${closeError.message}`);
+      }
+    }
+    if (tempAcquired) await safeUnlink(tempPath);
     throw new SaveCoordinatorError('E_SAVE_TEMP_WRITE', SAVE_PHASES.TEMP_WRITE, error.message);
   }
   phases.push(SAVE_PHASES.TEMP_WRITE);

@@ -34366,8 +34366,8 @@ function recoveryPhysicalIdentity(filePath) {
 function recoveryLeafIdentity(stat) { return [stat.dev, stat.ino, stat.uid, stat.mode, stat.size, stat.mtimeNs, stat.ctimeNs].join(':'); }
 function openRecoveryFile(filePath, flags, ...args) {
   const c = fsSync.constants;
-  if (!Number.isInteger(c.O_NOFOLLOW) || !['w', 'r'].includes(flags)) throw recoveryFailure('E_RECOVERY_OPEN_UNAVAILABLE');
-  return fs.open(filePath, flags === 'w' ? c.O_WRONLY | c.O_CREAT | c.O_EXCL | c.O_NOFOLLOW : c.O_RDONLY | c.O_NOFOLLOW, ...args);
+  if (!Number.isInteger(c.O_NOFOLLOW) || !['w', 'wx', 'r'].includes(flags)) throw recoveryFailure('E_RECOVERY_OPEN_UNAVAILABLE');
+  return fs.open(filePath, flags !== 'r' ? c.O_WRONLY | c.O_CREAT | c.O_EXCL | c.O_NOFOLLOW : c.O_RDONLY | c.O_NOFOLLOW, ...args);
 }
 function assertRecoverySnapshot(source) {
   if (recoveryPhysicalIdentity(source.filePath).key !== source.identity
