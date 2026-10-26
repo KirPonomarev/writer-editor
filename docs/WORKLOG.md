@@ -5287,3 +5287,11 @@ Original additional548caller execution retained one real directSave stale-dialog
 ## 2026-10-26 — same native Save delivery C2
 
 C7 canonical baseline retained3479tests:3409pass11ENT0count/meta cascades59skips; all tracked source bytes exact, six own synthetic outputs retained. Separate executor reuses existing shared synchronous Save policy guard with known-denial-only mapping; tests/scanners and all original guards unchanged. Working98181plusMain actual20and69green,22meta suites126mutants; root strict inverse/all10017others/fulloldC7andfixtures verified. Runtime checkpoint 914df8b9c91fa0df3ff8377fc3aeb643fe447c8e;138Mainlines within160. Clean registered technical worktree preserves old dirty workspace; full19member archive/physical6file restoration and metadata supplement originals. Final exact source/native/full normal delivery pending; no result relabel or oracle weakening.
+
+## 2026-10-26 — Startup saved scene versus separate recovery: source observation
+
+- Same owner-approved no-loss outcome and original efdf18c18ec63883090b256379c2fa422951dec7 delivery base; three exact native choices, Cancel default and unchanged raw-source protection.
+- Main source selection/provenance/retention/late-publication guards and existing Core exclusive actually-owned temporary correction stay within271and13lines. Three measured strict source-observer expectations and one existing finite lifecycle host align actual dependencies; every behavior assertion and675newlines stay.
+- Actual0b8whole749/123/72/548/16/258 all pass, no fail/cancel/skip/todo. Earlier47failurewave retained. Root complete source/closed packet/65root772member compact readback reviewed; metadata0errors.
+- Current-only352+1source carrier,820/672DATA,1603inventory/C2A and66release hashes/witnesses;74historical bodies/predicates and17UNKNOWN retained.
+- Final-source/baseline/gates, new actual native three-choice Save/history/Quit/cold/raw proof and complete normal delivery/literal merged qualification remain. No full firstMac/signing/publication claim.

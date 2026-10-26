@@ -1,6 +1,6 @@
 # Startup saved scene versus separate autosave choice
 
-STATUS: ADMITTED_SAME_CONTOUR_ADAPTER_AND_SOURCE_OBSERVER_COMPATIBILITY_RUNTIME_UNACCEPTED
+STATUS: SOURCE_FROZEN_REQUIRED_GATES_NATIVE_AND_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Explicit native startup source choice and downstream no-loss only; full first Mac remains open.
 TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026
@@ -217,3 +217,9 @@ AGENT_FINAL_REPORT_V1.schema.json and CODEX_OUTPUT_POLICY: exactly one text bloc
 ## FAIL_PROTOCOL
 
 Retain original native Save failure/previous worktrees and every closed old and candidate/merged QA profile, raw115documents/Pulse and separate9epoch journal. No historical result is relabelled. Preserve two old IME primary-path harness failures, fullaudit2HIGH8MODERATE/prod0,59named baseline skips, prior private-actuator unknown effects and old Review hypothesis. Neither new source choice nor retained-copy bytes establish full Atlas/maps/WSE/Pulse/environment/MR06/signing/notary/public-release acceptance. Black Box and additional platforms are later.
+
+### Current source observation before final qualification
+
+Exact runtime checkpoint0b8cdbdb392f88451a86f733042728b7a324aac3 has all six complete semantic runs GREEN: Writer749, startup123, path72, Maincallers548, Core+Physics16 and50-file Coreconsumer258, each0fail/cancel/skip/todo. Original62source-choice and3Core controls execute with every old case retained. Root40a69e33578fef5942fc14180208752f4312174dea8f47cc098ae42efea16ae0 binds all10019source bytes/65ownedroots/772fixture members/full compact35038byte readback/native metadata0errors. The47d714 failures are immutable; their correction uses exactly the revision3compatibility deltas and all675new test lines remain frozen.
+
+Source assembly adds the new352binding/oneguard current carrier and820DATA/672pins; keeps74historical carrier bodies and every verifier predicate, with only one current lookup-item append. Inventory1603/classes/lanes/skips,66release pins and17UNKNOWN remain. Mechanical source witnesses are not current normal-gate/native/delivery acceptance. Required final committed source/affected/canonical baseline and new native three-choice no-loss/Save/history/Quit/cold beforepush, currentCI/normalmerge/literal merged verification remain. No fullMac/MR06/signing/notary/public-release or wider pathname-replacement/power-loss claim.

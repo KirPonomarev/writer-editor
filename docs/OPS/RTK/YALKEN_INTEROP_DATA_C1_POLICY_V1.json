@@ -824,7 +824,10 @@
     "docs/tasks/2026-10-25--canonical-logo.md",
     "src/renderer/assets/app-icon.svg",
     "docs/tasks/2026-10-26--external-file-startup.md",
-    "docs/tasks/2026-10-26--native-save-system-path.md"
+    "docs/tasks/2026-10-26--native-save-system-path.md",
+    "docs/tasks/2026-10-26--startup-source-choice.md",
+    "src/core/save-coordinator-v1.cjs",
+    "test/unit/r24-wp200-durable-save.test.js"
   ],
   "protectedFiles": [
     {
@@ -1053,7 +1056,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "9e16bdd505c52119cf0192c45f759feba562683103a4bc810f02e217d87f6960"
+        "sha256": "f28102c22555c6adbca52d885363dac76bf5e905c2c93f8e1e4e954c584ebc86"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1077,7 +1080,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "85c62cc7825c533c5f032a74f3a95300085ca8ac22418596a89f139fb878dcae"
+        "sha256": "d8bb607da8901f53c5526f25828a992f6fbfe3b40ea72b605f5eb539c700a7ac"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1789,7 +1792,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "03a3e579f643e135f0112924e09db015a205001220fe41059ea8dc0def7e9f1e"
+        "sha256": "71675c071e6201b2f8cea3c7212ce2068aa6768283d5fc8657ab7b31df054d28"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2017,11 +2020,11 @@
       },
       {
         "path": "test/unit/r24-r5-lifecycle-physics.test.js",
-        "sha256": "bfddd5d7257d052dd6e9a7df52574779f4045b6b376d96ae58841a6f1735ce3f"
+        "sha256": "138b38378f09ea94512e0b9741e7b475dc5f4f4038aa39545a00f0b33763050d"
       },
       {
         "path": "test/unit/r24-wp200-durable-save-physics.test.js",
-        "sha256": "48a760c5698e8f010778f398b122b92bc3da31b1af36fe29b82b39abeae9842d"
+        "sha256": "519870535155fabab2a33915d6ecea00b87a5b9483970c5e6b018c353e985279"
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-current-project.contract.test.js",
@@ -2241,7 +2244,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "192c59f8b173a264bd6e46f02d9779c7b0cc11a6e6605e21df61f59bf2abb1b8"
+        "sha256": "7816bf8dffe98abe7d81824186bb6b81c27476c1c65430f696f944b792e4fe62"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2297,7 +2300,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "634bdbee2b92e8bfdcabda03bbcc0bc7b103dd6e45cefede226581909df50605"
+        "sha256": "ab4aa2d07da42fc8bd913cd4c1fedde160189120eb44a75894fe65536e7b0ef7"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2625,7 +2628,7 @@
       },
       {
         "path": "test/unit/r24-wp201-project-transaction.test.js",
-        "sha256": "1eb0625643a8fdc0aed3c83f8ce40d6be35c3bf81f134c7c1e1b263d1cb55a37"
+        "sha256": "8ebc07ac8573f51d5185bf63a28f5899d3d614938f86234e7e1667d56d491aa0"
       },
       {
         "path": "test/unit/sector-m-toolbar-expansion-wave-a2.test.js",
@@ -2741,19 +2744,19 @@
       },
       {
         "path": "test/unit/r24-wp302-session-continuity.test.mjs",
-        "sha256": "6dd272d17f78c0cd9f6fd9eda0eabe96b95c49a0b850619f6afa7fbe1c5a19e9"
+        "sha256": "c1d7902fe54b74517b55f021c0b7e111aee7149445a59bd1db2b09a89faead4b"
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6c7b614c8710ed5cbe29a3d6a78bee9d53916900c56b07a7476bc4b88bfd60da"
+        "sha256": "8ebe39d494eb045e2147b2f28250578fd2062e9cb0f81a278b94d77893c32a9e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "61d6a39d17de1fb320d46dbfab6fa1b3b450d60480ab2d4f044fe9f85a7c00ee"
+        "sha256": "1d21589a696eb42f49baad91b7636c9804fa5e3a813055be8c0a75926bb2a0bc"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "d06169f1f4e7e7d258abc78b6b0dfacd8aadeadc2d315412ecda5b248283958e"
+        "sha256": "2c942b8261631cc6b086e6bdd95a6a42cbd39e0a88cef7e874ba004ac857c669"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3293,7 +3296,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "509c555efeb5ab0aca5cb720f015d094496cb2b9eda8f6d3c0a81f933290b6e7"
+        "sha256": "b4fd2e776705fc727d3d42d13146d407101c137765be28793f701f5dd2e640dd"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3317,7 +3320,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "d22f713b22f26c1be41975499f170dce0cb1228b44f1f032a17dcaac8494a7fb"
+        "sha256": "7b6cc4efc5c7cbe1ba27ccf7de0db89479297d036278bbc95ee1dc040afef716"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3409,7 +3412,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "e57fcebce7baa8467db776d5298e640b7efbe440813ce5dd56222f381de58a64"
+        "sha256": "a2304eb0e1a918941164fd83200d9f871117625cf99ddac5247ac880b9794bef"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3726,6 +3729,18 @@
       {
         "path": "docs/tasks/2026-10-26--native-save-system-path.md",
         "sha256": "3a36411ddc3a0d078882b18938e29124b6e3fb21150f7a6827e68d157b596a91"
+      },
+      {
+        "path": "docs/tasks/2026-10-26--startup-source-choice.md",
+        "sha256": "8e7978a629ec2c9fc0b9f491552e57e307e944a7938f9a07929926a071c71dc9"
+      },
+      {
+        "path": "src/core/save-coordinator-v1.cjs",
+        "sha256": "410d931264cae89702e72b980603f3aa8746c6ebe34758b5cd742384601d4c24"
+      },
+      {
+        "path": "test/unit/r24-wp200-durable-save.test.js",
+        "sha256": "76a0fa805b060f750daa4004e0a6582f0946162ae60a0be06450f55bf47e1886"
       }
     ],
     "followupRepair": {

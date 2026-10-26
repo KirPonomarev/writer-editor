@@ -1,3 +1,20 @@
+# Startup source choice and retained recovery — source observed, 26 October 2026
+
+TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026
+STATUS: SEMANTIC_SOURCE_OBSERVED_REQUIRED_GATES_NATIVE_AND_DELIVERY_PENDING
+RUNTIME_CHECKPOINT_SHA: 0b8cdbdb392f88451a86f733042728b7a324aac3
+CLAIM_BOUNDARY: Complete bounded source correctness only; no new native, full Mac or release acceptance.
+
+Predecessor native Save PR2170 is fully closed at literal efdf18c18ec63883090b256379c2fa422951dec7: actual candidate and merged20CI, merged whole/source proofs, fresh1476leaf/530member package, four real native sessions/six independent raw readbacks/normal exits and protected state are bound by its dated T777 closure. Earlier pending predecessor text below is historical.
+
+The owner's exact native choices are saved scene, separate unbound autocopy and Cancel default/Escape. Main validates the raw result before interpretation, binds complete source/settings/context snapshots and rechecks existing capability/lifecycle/source identities before adoption. Saved continuity stays attached to its captured scene; recovery has no remembered write target; Cancel publishes only the existing empty baseline. Foreign global recovery is not process-owned. Before replacement, the existing durable coordinator preserves full raw bytes at a fixed content-addressed retained name with exclusive publication, fsync and exact readback. Cleanup requires the actual current-session global write/readback identity. No automatic pruning/catalog, renderer authority or new persistent format.
+
+Actual Core EEXIST proof exposed unowned temporary deletion and the frozen three-case reproducer also measured incoming-w truncation and an acquired-handle write-failure close omission. The same TierB coordinator now requestswx, acquires cleanup only after successful open and closes an acquired handle before owned cleanup. Public phase/receipt/ACK/API and target/durability semantics remain. Main271andCore13added/deleted lines are within320/60; every675new behavior-test line is frozen. Source observers align only exact current calls; one existing finite export-lifecycle host consumes actual context/profile/root dependencies without changing any callback/assertion.
+
+The first complete d714wave remains47failed:39real ENV/Theme setup/dependency failures from the old Main-w adapter, five missing-context finite-host failures and three old expected source literals. A separate actor's sole ENV-wx literal, strict expected-call lines and faithful host setup preserve every original behavior oracle. Exact0b8whole Writer749, startup123, path72, Maincallers548, Core+Physics16 and50-file Coreconsumer258 all actually pass with0fail/cancel/skip/todo. These are six executions with repeated Core cases, not a fabricated unique total. Root independently reread all10019physical inputs and closed packets, all65ownedroot/772fixture members and compact35038byte container/native metadata0errors. Review40a69e33578fef5942fc14180208752f4312174dea8f47cc098ae42efea16ae0.
+
+Current source companions bind352members/oneguard,820DATAadmitted/672pins,1603inventory and66release pins. All74historical carrier bodies and verifier predicates remain; the exact inverse removes only the new current constant and lookup item. Every17fullMac qualification remainsUNKNOWN. Normal final-source checkers/corruption oracles, canonical baseline, OSS/fullaudit/perf/guardrails, new qualified native three-choice Save/history/Quit/cold/raw-retention proof beforepush, full currentCI/normalmerge and literal merged verification are still required. Prior IME/audit/private-actuator and broader Atlas/maps/WSE/Pulse/epoch/MR06/signing/notary limits remain, with Black Box later. Historical five source worktrees, seven profiles,115raw files and nine epochs are retained; owner canonical6de stays clean.
+
 # Native Save C2 — existing Save policy integration, 26 October 2026
 
 TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
