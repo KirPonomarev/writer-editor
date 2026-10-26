@@ -17105,7 +17105,7 @@ function createEnvironmentEpochPort(commandId) {
         ownBytes = Buffer.from(JSON.stringify(next) + '\n'); guard(); const ownedTemps = new Map();
         const adapter = {
           open: async (target, flags) => {
-            if (flags !== 'w' || path.dirname(target) !== directory || !path.basename(target).startsWith(ENVIRONMENT_EPOCH_FILE_NAME + '.p2-')
+            if (flags !== 'wx' || path.dirname(target) !== directory || !path.basename(target).startsWith(ENVIRONMENT_EPOCH_FILE_NAME + '.p2-')
               || !target.endsWith('.tmp')) refuse('E_ENVIRONMENT_EPOCH_TEMP_INVALID');
             guard(); const handle = await fs.open(target, fsSync.constants.O_WRONLY | fsSync.constants.O_CREAT | fsSync.constants.O_EXCL | fsSync.constants.O_NOFOLLOW, 0o600);
             try { const stat = await handle.stat(); guard();

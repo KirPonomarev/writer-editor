@@ -273,7 +273,7 @@ test('live Writer save routes use WP201 while non-project fallback remains WP200
   assert.match(source, /save new project transaction/u);
   assert.match(source, /save as project transaction/u);
   assert.match(source, /autosave project transaction/u);
-  assert.match(source, /return await durableSaveTransaction\(\{ filePath, content, revision \}\);/u);
+  assert.match(source, /return await durableSaveTransaction\(\{ filePath, content, revision, fsAdapter \}\);/u);
   assert.ok((source.match(/recoverWriterProjectTransactionForFile\(/gu) || []).length >= 5);
   assert.ok(
     source.indexOf('await recoverPendingWriterProjectTransaction()')

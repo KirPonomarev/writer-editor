@@ -191,7 +191,7 @@ test('main quit joins saves and renderer false-clean signals have no authority',
   assert.match(main, /result\.subjectId !== subjectId/);
   assert.equal((main.match(/const saveSubjectId = currentLifecycleSubjectId\(\);/g) || []).length, 2);
   assert.match(main, /commitWriterProjectSnapshot\(/);
-  assert.match(main, /return await durableSaveTransaction\(\{ filePath, content, revision \}\);/);
+  assert.match(main, /return await durableSaveTransaction\(\{ filePath, content, revision, fsAdapter \}\);/);
   assert.doesNotMatch(main, /fileManager\.writeFileAtomic\(saveTargetPath, content\)/);
   const closeBlock = main.slice(main.indexOf("mainWindow.on('close'"), main.indexOf("mainWindow.on('closed'"));
   assert.ok(closeBlock.indexOf('await persistWindowState(bounds)') < closeBlock.indexOf('await confirmDiscardChanges()'));

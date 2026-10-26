@@ -415,7 +415,7 @@ test('WP302 active document path rebind preserves selection without adding UI or
   const mainSource = fs.readFileSync(path.join(ROOT, 'src', 'main.js'), 'utf8');
   const contractSource = fs.readFileSync(path.join(ROOT, 'src', 'core', 'session-continuity-v1.cjs'), 'utf8');
   assert.match(mainSource, /const continuity = readSessionContinuityV1\(settings\);[\s\S]*openLastFile/u);
-  assert.match(mainSource, /await saveLastFile\(\{ selectionRange, beforeWrite: \(\) => \{\s*if \(!isCurrent\(\)\) throw Error\('E_EDITOR_STARTUP_WINDOW_STALE'\);\s*\} \}\);/u);
+  assert.match(mainSource, /await saveLastFile\(\{ filePath: lastFilePath, selectionRange, beforeWrite: \(\) => \{\s*if \(!isCurrent\(\)\) throw Error\('E_EDITOR_STARTUP_WINDOW_STALE'\);\s*\}, onCommittedSettings: text => \{\s*effectGuard\(\); if \(!windowCurrent\(\)\) throw recoveryFailure\(\);\s*sources\.filter\(item => item !== settingsSource\)\.forEach\(assertRecoverySnapshot\);\s*const physical = recoveryPhysicalIdentity\(settingsSource\.filePath\), raw = fsSync\.readFileSync\(settingsSource\.filePath\);\s*if \(!raw\.equals\(Buffer\.from\(text, 'utf8'\)\)\) throw recoveryFailure\('E_RECOVERY_SETTINGS_CHANGED'\);\s*Object\.assign\(settingsSource, \{ identity: physical\.key, leaf: physical\.leaf, parent: physical\.parent, raw \}\); assertRecoverySnapshot\(settingsSource\);\s*\} \}\);/u);
   assert.match(mainSource, /metaEnabled: context\.metaEnabled,[\s\S]*selectionRange,/u);
   assert.match(mainSource, /preserveSelectionOnPathRebind: true/u);
   assert.equal(contractSource.includes('src/renderer'), false);
