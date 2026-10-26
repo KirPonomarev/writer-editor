@@ -25204,7 +25204,7 @@ function captureNativeSaveEffect(commandId) {
   if (!['cmd.project.save', 'cmd.project.saveAs'].includes(commandId)) throw Error('NATIVE_SAVE_COMMAND_INVALID');
   const read = () => [mainWindow, mainWindow?.webContents, commentAuthoringSessionId, getProjectRootPath(),
     activeStage10ApplicationBootstrap, app.getPath('userData'), JSON.stringify(getWriterLocalRuntimeProfile()), JSON.stringify(getFilePathAllowlistRoots())];
-  const captured = read(), file = currentFilePath, subject = currentLifecycleSubjectId(), record = getProductCommandRecord(commandId);
+  const captured = read(), file = currentFilePath, subject = currentLifecycleSubjectId();
   return (snapshot, result) => {
     const native = bindNativeSaveDialogPath(result); if (!native) return null;
     const filePath = native.filePath.endsWith('.txt') ? native.filePath : native.filePath + '.txt';
@@ -25216,14 +25216,18 @@ function captureNativeSaveEffect(commandId) {
     };
     const assertCurrent = (expectedFile = file) => {
       native.assertCurrent();
+      try { userBookmarkCapability(commandId); }
+      catch (cause) {
+        if (cause?.message !== 'USER_BOOKMARK_CAPABILITY_DENIED') throw cause;
+        throw new Error('NATIVE_SAVE_CONTEXT_STALE', { cause });
+      }
       const capability = evaluateCommandCapabilityAuthority({ commandId, capabilityId: commandId === 'cmd.project.save' ? 'cap.project.save' : 'cap.project.saveAs',
         platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc: readAuthorityCapabilityMatrixDoc() });
       if ((expectedFile !== file && expectedFile !== filePath) || read().some((value, index) => value !== captured[index])
         || !captured[0] || captured[0].isDestroyed() || captured[1].isDestroyed() || projectArchiveOpenCapture
         || currentFilePath !== expectedFile || currentLifecycleSubjectId() !== (expectedFile === file ? subject : 'document:' + computeHash(filePath))
         || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0 || lastSignaledEditGeneration > snapshot.generation
-        || !capability.ok || !decideCommandEntitlement(commandId, getProductEntitlementTier()).available
-        || !evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId, productCommandRecord: record }).allowed
+        || !capability.ok
         || !isAllowedFilePath(filePath) || (parentIdentity !== null && parent() !== parentIdentity)) throw Error('NATIVE_SAVE_CONTEXT_STALE');
     };
     assertCurrent(); parentIdentity = parent(); assertCurrent();
