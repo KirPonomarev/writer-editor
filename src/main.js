@@ -16145,7 +16145,8 @@ async function resolveReadOnlyStartupRecoveryBinding() {
   const settings=await loadSettings(),continuity=readSessionContinuityV1(settings);
   if(!continuity.ok && continuity.present)throw Object.assign(new Error('E_SESSION_CONTINUITY_INVALID'),{code:'E_SESSION_CONTINUITY_INVALID'});
   const selectedId=normalizeStableProjectId(continuity.record?.projectId || continuity.projectId);
-  if(!selectedId && typeof settings.lastExternalFilePath==='string' && settings.lastExternalFilePath.trim())return null;
+  if(!selectedId && typeof settings.lastExternalFilePath==='string' && settings.lastExternalFilePath.trim()
+    && !isPathInside(getProjectRootPath(),settings.lastExternalFilePath.trim()))return null;
   const root=fileManager.getDocumentsPath();
   let names;
   try {names=selectedId?(await fs.readdir(root,{withFileTypes:true})).filter(entry=>entry.isDirectory()).map(entry=>entry.name)
@@ -16279,7 +16280,8 @@ async function resolveStartupStage10ProjectBinding() {
   const lastExternalFilePath = typeof settings?.lastExternalFilePath === 'string'
     ? settings.lastExternalFilePath.trim()
     : '';
-  if (lastExternalFilePath && !lastProjectId) return null;
+  if (lastExternalFilePath && !lastProjectId
+    && !isPathInside(getProjectRootPath(), lastExternalFilePath)) return null;
 
   const projectName = currentProjectName || DEFAULT_PROJECT_NAME;
   const { manifestPath, manifest } = await ensureProjectManifest(projectName);
@@ -16297,7 +16299,10 @@ async function recoverSelectedProjectAtStartup() {
   const continuity = readSessionContinuityV1(settings);
   if (!continuity.ok && continuity.present) throw Object.assign(new Error('E_SESSION_CONTINUITY_INVALID'), { code: 'E_SESSION_CONTINUITY_INVALID' });
   const selectedId = normalizeStableProjectId(continuity.record?.projectId || continuity.projectId);
-  if (!selectedId && typeof settings.lastExternalFilePath === 'string' && settings.lastExternalFilePath.trim()) return;
+  if (!selectedId && typeof settings.lastExternalFilePath === 'string' && settings.lastExternalFilePath.trim()
+    && !isPathInside(getProjectRootPath(), settings.lastExternalFilePath.trim())) {
+    return { ok: true, skipped: true, reason: 'NO_SELECTED_PROJECT' };
+  }
   let manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
   if (selectedId) {
     const roots = await fs.readdir(fileManager.getDocumentsPath(), { withFileTypes: true });
@@ -40309,7 +40314,9 @@ async function initializeApp() {
   await fileManager.migrateDocumentsFolder();
   await fileManager.ensureDocumentsFolder();
   await ensureAutosaveDirectory();
-  await recoverSelectedProjectAtStartup();
+  const startupApplicability = await recoverSelectedProjectAtStartup();
+  if (startupApplicability?.ok === true && startupApplicability.skipped === true
+    && startupApplicability.reason === 'NO_SELECTED_PROJECT') return;
   await ensureProjectStructure(currentProjectName || DEFAULT_PROJECT_NAME);
   await buildProjectTreeRootsWithIdentities();
   await bootstrapStage10ApplicationAtStartup();

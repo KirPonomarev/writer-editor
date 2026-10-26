@@ -355,3 +355,79 @@ test('missing-anchor recovery: selection changes during the final real snapshot 
   finally {fsp.readFile=read;}
   assert.equal(changed,true,'the final Core snapshot was entered before selection changed');assert.equal(fs.existsSync(f.paths.anchor),false);assert.deepEqual(snapshot(f.root),f.protected);
 });
+
+// External-labelled files inside the existing fallback project cannot turn
+// ordinary project recovery into standalone initialization. The old fixture's
+// review ports observe order only; recovery credit below comes from actual
+// transaction bytes, journal removal and the real Stage10 reopen.
+function installInsideExternalStartupReads(main, f, settings) {
+  const c=main.sandbox,source=fs.readFileSync(path.join(ROOT,'src/main.js'),'utf8');
+  const law=require('../../src/core/io/path-boundary');
+  const settingsPath=path.join(f.userData,'inside-external-settings.json');json(settingsPath,settings);
+  Object.assign(c,{loadSettings:async()=>JSON.parse(await fsp.readFile(settingsPath,'utf8')),
+    readSessionContinuityV1:require('../../src/core/session-continuity-v1.cjs').readSessionContinuityV1,
+    joinPathSegmentsWithinRoot:law.joinPathSegmentsWithinRoot,
+    isPathInsideBoundary:law.isPathInsideBoundary,sanitizePathFieldsWithinRoot:law.sanitizePathFieldsWithinRoot});
+  vm.runInNewContext(['getProjectRootPath','isPathInside'].map(name=>named(source,name)).join('\n'),c);
+  return {c,source,settingsPath};
+}
+
+for(const hasAutosave of [false,true])test('external inside fallback retains actual pending scene A before target B'+(hasAutosave?' and global autosave':''),async t=>{
+  const f=await harness(t,{initialCreateInterruption:true});
+  const initial=await ordinaryStartupPort(f);await initial.sandbox.initializeApp();
+  assert.equal(fs.existsSync(f.paths.anchor),true,'ordinary real recovery restores original trust before this independent case');
+  const sceneA=path.join(f.root,'roman','Imported','startup-pending-A.txt'),targetB=path.join(f.root,f.ids[1]);
+  fs.mkdirSync(path.dirname(sceneA),{recursive:true});fs.writeFileSync(sceneA,'A before e\u0301 🧭');
+  const manifestRaw=fs.readFileSync(f.manifestPath,'utf8'),targetBBefore=fs.readFileSync(targetB);
+  let hit=false;
+  const fault=new Proxy(fsp,{get(target,key){
+    if(key==='rename')return async(from,to)=>{if(to===sceneA){hit=true;throw Error('OWNED_PENDING_A_RENAME_INTERRUPTION');}return target.rename(from,to);};
+    const value=target[key];return typeof value==='function'?value.bind(target):value;
+  }});
+  await assert.rejects(f.transactionAuthority.withProjectLease(f.projectId,lease=>tx.commitProjectTransaction({
+    scenePath:sceneA,sceneContent:'A after',expectedSceneContent:'A before e\u0301 🧭',manifestPath:f.manifestPath,
+    manifestContent:manifestRaw,expectedManifestContent:manifestRaw,revision:2,fsAdapter:fault,
+    publishManifest:args=>f.transactionAuthority.commitManifestText({...args,projectId:f.projectId,lease}),
+    revalidate:()=>lease.assertOwned()})));
+  assert.equal(hit,true,'real durable transaction reached the requested scene rename after its journal');
+  const pending=await tx.readPendingProjectTransactionBinding({manifestPath:f.manifestPath});
+  assert.equal(pending.pending,true);assert.equal(pending.scenePath,sceneA);assert.notEqual(sceneA,targetB);
+  const journalPath=f.manifestPath+'.wp201-transaction.json',journalBefore=fs.readFileSync(journalPath);
+  const autosavePath=path.join(path.dirname(f.root),'.autosave','autosave.txt');
+  if(hasAutosave){fs.mkdirSync(path.dirname(autosavePath),{recursive:true});fs.writeFileSync(autosavePath,'Untitled recovery e\u0301 🧭');}
+  const before=snapshot(f.root),startup=await ordinaryStartupPort(f);
+  const {c,source,settingsPath}=installInsideExternalStartupReads(startup,f,{lastExternalFilePath:targetB});
+  Object.assign(c,{getMainProjectManifestAuthority:async()=>f.transactionAuthority,
+    docxImportPreviewProjectGeneration:0,readPendingProjectTransactionBinding:tx.readPendingProjectTransactionBinding,
+    recoverProjectTransaction:tx.recoverProjectTransaction,
+    treeCohortError:code=>Object.assign(Error(code),{code})});
+  vm.runInNewContext(['captureDocxImportPreviewContext','makePathBoundaryViolationResult','sanitizePayloadWithinProjectRoot',
+    'recoverWriterProjectTransactionForFile','recoverPendingWriterProjectTransaction'].map(name=>named(source,name)).join('\n'),c);
+  let failure=null;try{await c.initializeApp();}catch(error){failure=error;}
+  t.diagnostic(JSON.stringify({causalReach:'ACTUAL_INSIDE_FALLBACK_INITIALIZER_WITH_REAL_PENDING_A',hasAutosave,
+    sceneA,targetB,pending,journalBeforeSha256:sha(journalBefore),journalStillPresent:fs.existsSync(journalPath),order:startup.order,
+    failure:failure&&{name:failure.name,code:failure.code||null,message:failure.message}}));
+  assert.ifError(failure);
+  assert.equal(fs.existsSync(journalPath),false,'actual initial recovery consumes A independently of the future B/autosave source');
+  assert.equal(fs.readFileSync(sceneA,'utf8'),'A before e\u0301 🧭');assert.deepEqual(fs.readFileSync(targetB),targetBBefore);
+  assert.equal((await tx.readPendingProjectTransactionBinding({manifestPath:f.manifestPath})).pending,false);
+  assert.equal(c.activeStage10ApplicationBootstrap.getProjectId(),f.projectId);
+  assert.deepEqual(startup.order,['integrity','migrate','documents','autosave-directory','recoverSelectedProjectAtStartup','structure','tree',
+    'bootstrapStage10ApplicationAtStartup','reconcileReviewFormattingReturnAtStartup','reconcileReviewStructuralReturnAtStartup',
+    'reconcileReviewExactTextApplyJournalsAtStartup','reconcileRoundRecordV3StoreAtStartup']);
+  assert.equal(JSON.parse(fs.readFileSync(settingsPath,'utf8')).lastExternalFilePath,targetB);
+  const after=snapshot(f.root);
+  for(const [name,bytes]of Object.entries(before))if(name!==path.relative(f.root,journalPath)&&!name.startsWith('.stage10-local/'))assert.deepEqual(after[name],bytes,name);
+  if(hasAutosave)assert.equal(fs.readFileSync(autosavePath,'utf8'),'Untitled recovery e\u0301 🧭');
+});
+
+test('external inside fallback cannot bypass actual missing-anchor native Cancel before writers',async t=>{
+  const f=await harness(t),main=mainPort(f,{choice:0}),targetB=path.join(f.root,f.ids[1]);
+  installInsideExternalStartupReads(main,f,{lastExternalFilePath:targetB});
+  let failure=null;try{await main.sandbox.initializeApp();}catch(error){failure=error;}
+  t.diagnostic(JSON.stringify({causalReach:'ACTUAL_INSIDE_EXTERNAL_MISSING_ANCHOR_CANCEL',targetB,dialog:main.calls.dialog,
+    writers:main.calls.writers,failure:failure&&{code:failure.code||null,message:failure.message}}));
+  assert.equal(failure?.code,'E_STAGE10_RECOVERY_CANCELLED');
+  assert.equal(main.calls.dialog,1);assert.equal(main.calls.writers,0);
+  assert.equal(fs.existsSync(f.paths.anchor),false);assert.deepEqual(snapshot(f.root),f.protected);
+});

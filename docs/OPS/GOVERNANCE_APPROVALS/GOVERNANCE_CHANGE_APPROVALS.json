@@ -25511,6 +25511,96 @@
       "filePath": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
       "rationale": "Current-only C6 source locator compatibility and complete current governance witness coverage after clean specification checkpoint; preserve all prior accepted entries and source successors, unchanged runtime/logo and every mutation/corruption/ancestry predicate. Fresh whole source/runtime/native/CI required; no fullMac/release/security acceptance.",
       "sha256": "fcb731148c74cda711b5b33cc733f1a76ad844331594d71ffb94e97f505702b1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "78f09831368b0f436f4facee96f918c31892f25f8c90eac3407b90e23deeacb5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "520f3aef3bdc6910f052910a7cc4dde96eb4d826ff1b62777e7612400203e34e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "2231e0e1a29ba1daa6ab4a98b3d3856b32255742935a3e8b1f1cda0bfea61de1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "843f19ff4919be6f0d04fa776d9cc96e6888d668ec883a43700c09fc6cb02d4a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "2020708085f76d56e4a62578fcf733c765964ab65badb6d699b088fd98cfa083"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "e28451526ebaa712db7602c2d4d31b7b3f3aa7522fb34f8dfb7590f1f3d7a677"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "c7f0ed17b4a74322e354fdeff179f2a4e8e599cbc3a94ec8f01b68f59208c3dc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "b35ec97cdd56e4489dd0374677fe7069d98f02b207f093b99c73474a44d7b2a0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T02:48:43.910260+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_EXTERNAL_FILE_STARTUP_20261026",
+      "authority": "DIRECT_OWNER_CONTINUATION_FULL_MAC_OWNED_STARTUP_REPAIR",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
+      "rationale": "Current exact bytes for bounded standalone startup applicability, preserved project recovery and existing source qualification. Original historical entries/carriers/verifier and every corruption oracle retained. No native, stage, fullMac, release or security acceptance.",
+      "sha256": "85e923b220dd89de78238cf42bff1a4e0c542ba0fc276a357502418daba7721c"
     }
   ],
   "evidenceStampIds": [
