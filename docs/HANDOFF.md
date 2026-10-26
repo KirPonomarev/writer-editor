@@ -1,3 +1,42 @@
+# Native Save standard macOS path — source correction, 26 October 2026
+
+TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
+STATUS: SOURCE_CHECKED_NATIVE_AND_DELIVERY_PROOFS_PENDING
+
+The owner's explicit standard macOS var-to-private-var exception is confined to
+native untitled Save and ordinary SaveAs acquisition. Main validates the original
+dialog result and path before interpretation, verifies only the fixed root-owned
+OS alias with bigint filesystem identities, then applies the unchanged Core K1
+containment and SEC0 no-follow law to the canonical candidate. Arbitrary aliases,
+outside-root targets and canceled or malformed responses remain refused.
+
+The effect binds the current window, contents, authoring session, project root,
+owner, profile, userData, command capability, path roots, generation and parent
+identity. Existing nonproject beforeScenePublish is now consumed at the durable
+coordinator, including immediately before rename. Native settings, ACK and
+recovery cleanup remain bound across the handler's explicit own-path transition;
+a stale completion retains an already published copy and cannot acknowledge a
+different restarted-generation draft. No new Core writer, schema, IPC or surface.
+
+The maintained full-Main counterexample reached a real post-target settings read:
+New reset generation to zero, a separate draft acquired generation one, and the
+old source incorrectly acknowledged generation two and deleted the new recovery.
+Frozen whole-source correction checks cover 724 executed cases, including every
+original 697 case; all original 438071 test bytes remain exact. The unchanged
+69 path and persistence controls also passed. These finite Electron adapters use
+real Main, Core and filesystem; they are not native OS acceptance. Native factory
+first SaveAs and first Save, normal Quit/cold readback, current source companions,
+all required local/CI gates and normal merge/literal merged verification remain
+mandatory in the task's dated T777 report folder.
+
+Historical failed111-member and previous78-member profiles, 115 old document/Pulse
+files and the separate nine-epoch raw journal remain protected. Available native
+metadata is retained without claiming forged OS security identity or physical
+power-loss/privileged-syscall-race acceptance. All17 fullMac qualifications stay
+UNKNOWN. The separately owner-approved saved-scene/unbound-autosave three-button
+choice follows this complete delivery. Existing historical IME/audit failures are
+retained, not relabeled green.
+
 ## 2026-10-26 — Standalone external startup: bounded source frozen
 
 TASK_ID: YALKEN_EXTERNAL_FILE_STARTUP_20261026

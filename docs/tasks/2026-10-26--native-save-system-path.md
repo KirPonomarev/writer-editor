@@ -1,6 +1,6 @@
 # Native Save standard macOS path
 
-STATUS: ADMITTED_BOUNDED_CORRECTION
+STATUS: SOURCE_FROZEN_REQUIRED_PROOFS_AND_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Native Save path compatibility and no-loss only; full Mac remains open.
 TASK_ID: YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026
@@ -104,3 +104,8 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY: one text block KEY: VALUE, basena
 ## FAIL_PROTOCOL
 
 Keep factory native57334 SaveAs FAIL, global570B, all111profile members/fullmetadata/archive, platform63476 rawreturn, finite paired45+45fixtures and all original errors unchanged. Original native return was not captured; do not rewrite its inference as direct observation. Previous post-probe default Electron window63607 was closed; private effects remain unaudited. Preserve old two IME failures/fullaudit2HIGH8MODERATE/prod0 and all previous raw profiles/epochs. Owner-approved startup saved-scene versus unbound autosave three-choice behavior is NEXT, not part of this source delivery. No full Atlas/WSE/Pulse/environment/Mac/sign/notary acceptance or Black Box expansion.
+
+SOURCE_CHECKPOINT: 5289f8b4af6203e821acbd25c12e732d92dc539e
+SOURCE_MAIN_SHA256: b3c34235510c23908e1578941bf9f3df79d27c5b0b1a2b99362cef44a44f10c0
+FROZEN_WP307_SHA256: 85c62cc7825c533c5f032a74f3a95300085ca8ac22418596a89f139fb878dcae
+SOURCE_PROOF: frozen724whole tests and69unchangedpathcontrols actual0; original697cases and438071bytes retained. No native/fullMac/delivery acceptance at this source checkpoint.

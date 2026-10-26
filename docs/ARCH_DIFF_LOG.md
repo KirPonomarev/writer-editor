@@ -603,3 +603,24 @@ native repeat export or the original large-novel denominator. Existing task-only
 - Риск: an overbroad import exception could hide new effects. Whole maintained purity tests and appended actual-source plus forbidden-import/effect controls refuse expansion, including same-line calls; the general scanner is unchanged.
 - Rollback: ordinary revert of this one PR restores the portable hash, canonical-only comparison and prior exact import set; native profiles and complete journals remain preserved.
 - План удаления исключения: remove these two exact admissions if a separately owner-approved deterministic computation adapter replaces this existing host-specific seam. Until then they remain bounded by exact source/line checks; this entry adds no release gate or wider exception.
+
+## 2026-10-26 — owner-approved standard Darwin native Save path exception
+
+Task YALKEN_NATIVE_SAVE_SYSTEM_PATH_20261026 binds the direct human approval
+"Да, исправляй этот системный путь". The genuine macOS Save panel returned var,
+while unchanged Core no-follow correctly refused that root-owned system link.
+Main now normalizes only this verified fixed OS prefix before unchanged Core
+admission. It never realpaths an arbitrary selected parent or grants write
+authority from visibility, native metadata or a renderer payload. Current
+capability/session/generation/path/parent and post-settings publication checks
+also prevent the reproduced stale completion from deleting a new draft recovery.
+
+This narrow adapter exception has one normal PR-revert rollback. Remove it only
+when a separately admitted platform adapter provides equivalent verified native
+normalization, without weakening arbitrary-link/outside-root refusal. No Core,
+schema, renderer, dependency, command, executable pack or network expansion.
+Historical frozen carriers and every corruption oracle remain unchanged; the
+current successor only binds exact new source bytes. Pathname rechecks do not
+claim immunity to privileged replacement between syscalls or power loss. Native
+OS, complete release and all17 qualification acceptance are separate required
+evidence; no source-only result promotes them. Original failures remain retained.
