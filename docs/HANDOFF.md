@@ -1,3 +1,22 @@
+## 2026-10-26 — Standalone external startup: bounded source frozen
+
+TASK_ID: YALKEN_EXTERNAL_FILE_STARTUP_20261026
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_CANDIDATE_REQUIRED_PROOFS_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 64e3eeaade7b57026b53d00053f0429cfe1f69b9
+RUNTIME_CHECKPOINT_SHA: 60f25a5e1ab44c1cf66932292b3de884fa0326ab
+CLAIM_BOUNDARY: Source-bound finite startup/recovery only; no native, full Mac or release acceptance.
+
+Previous startup PR2168 is closed at literal64e3 with all20mainCI, actual merged relevant suites/fresh package and separate warm/cold canonical authoring proof; its exact dated closure supersedes earlier pending checkpoints. Its automatic old global-autosave first view and external standalone cold failure were retained.
+
+Fresh clean19path declaration/preflight/taskE0 and separate executor precede actual whole initializer RED61/58pass3failure and actual recovery37/34pass3failure. All82original cases pass. A genuine standalone outside fallback wrongly creates/normalizes unrelated default before PROJECT_REQUIRED; external-labelled inside-default skips pendingA/trust probes. Raw failures and all complete before-images are retained. Root reviewed all261test delta lines and all10017source bytes, with original tests inverse exact after only2truthful VM ports.
+
+Separate executor changes Main only11added/4deleted lines. The same existing read-only containment qualifies all three external short-circuits. Only validated no-selected/outside-fallback returns the existing typed disposition, consumed before project-only setup. Inside fallback retains raw project/journal/integrity/Stage10 recovery, selected/default flow and all error/publication/readiness/lease guards. No helper, schema, IPC/API, dependency, writer, renderer or design change. Root exactfourreplacement inverse and actual whole61of61/37of37 working-source GREEN hold the frozen tests/other10016sources. Standalone content/identity/no-default-write/failed-read, nondefault selection and actual pendingA/Cancel outcomes execute; review ports establish order only. These executions retain their test-checkpoint plus working-source identity.
+
+Current mechanical assurance adds only this task to the existing source/admission sets:346carrier paths/oneguard,816DATA/668source pins; inventory1603/release66/all17UNKNOWN remain. All72historical carriers and verifier predicates preserved. Every current governed changed path receives its exact byte witness. Literal current required source/affected/CI, fresh candidate native standalone Save/Quit/cold/full compact readback before push, normal merge and exactmerged verification remain required.
+
+All prior global-autosave/blank lifecycle/recovered SaveAs, two IME failures, fullaudit2HIGH8MODERATE/prod0, original private-actuator unknown effects and retained Review hypothesis remain separate. No full Atlas/maps/WSE/Pulse/environment/Mac/security/signing/notary acceptance; Black Box later. New compact reports/materials use dated2026-10-26--external-file-startup on verifiedT777 and declared owned APFS runtime. Old115raw project/Pulse files plus9epoch journal remain protected.
+
 ## 2026-10-25 — Native Undo integration with accepted Settings summary fix
 
 TASK_ID: YALKEN_BUG_NATIVE_UNDO_REDO_20261025

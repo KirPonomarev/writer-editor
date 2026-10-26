@@ -1,6 +1,6 @@
 # Standalone external file cold startup
 
-STATUS: ADMITTED_CAUSAL_TESTS_BEFORE_RUNTIME
+STATUS: SOURCE_FROZEN_REQUIRED_PROOFS_AND_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing standalone startup applicability only; no full Mac acceptance.
 TASK_ID: YALKEN_EXTERNAL_FILE_STARTUP_20261026
@@ -101,3 +101,6 @@ AGENT_FINAL_REPORT_V1/CODEX_OUTPUT_POLICY: exactly one text block KEY: VALUE, ba
 ## FAIL_PROTOCOL
 
 Retain originalQA04fatal and all setup/oracle errors, earlier native warm/cold/profile evidence and unchanged raw external file. Known stale global autosave, blank/recovered SaveAs lifecycle, prior2IME failures, fullaudit2HIGH8MODERATE/prod0, private actuator unknown effects, retained Review hypothesis and17MacUNKNOWN remain separate. No artificial success, narrowed required oracle or historical rewrite.
+
+
+Source checkpoint60f25a5e: separately executed Main correction is11added/4deleted lines in exactly four existing startup blocks. All other runtime/renderer/icon/Core bytes remain. Root verified actual whole WP30261of61 and missing-anchor37of37 working-source GREEN after literal old-source61/58/3 and37/34/3 causal RED, all82oldcases retained. New tests append259lines plus2truthful oldVM setup lines; complete old bodies/assertions inverse exact. Genuine standalone publication/no-default-write/read-error and real pendingA recovery/Cancel oracles now execute. Review ports remain order-only and finite Window is not native. Current source assembly adds only this task to345existing carrier paths and815DATA admission, with one new task source pin; inventory1603/release66/17UNKNOWN and every historical carrier/verifier remain. Word current selector/id/count/description only follows346source plus1guard; every corruption/mixed/ancestry predicate stays exact. Required literal current gates, newly built native standalone Save/Quit/cold, official CI and normal delivery/exactmerged verification remain pending.
