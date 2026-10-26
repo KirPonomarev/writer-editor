@@ -29,7 +29,7 @@ I: Exact M tree d007558c4af0a09c6616507547460c168ae78b4a;21declared paths/10018i
 
 ## ARTIFACT
 
-One bounded existing-seam correction in Main. Separate executor first appends real behavior controls to the existing WP302/WP307 suites. Preserve every original64693WP302 byte and459981WP307 byte, all86+724original cases, helpers/assertions and names. Main remains exactly9e16bdd505c52119cf0192c45f759feba562683103a4bc810f02e217d87f6960 during RED. No runtime export, test hook, private writer or fabricated raw/native evidence.
+One bounded existing-seam correction in Main. Separate executor first appends real behavior controls to the existing WP302/WP307 suites. Preserve every original64693WP302 byte and459981WP307 byte, all61WP302+724Writer original cases, helpers/assertions and names. The unchanged complete runtime-bridge suite adds25original cases: the previously measured startup bundle86 is61WP302+25bridge, and the required complete bundle preserves810original cases. Main remains exactly9e16bdd505c52119cf0192c45f759feba562683103a4bc810f02e217d87f6960 during RED. No runtime export, test hook, private writer or fabricated raw/native evidence.
 
 After root causal review and exact test freeze, a new clean code declaration/ticket releases Main edits only. Runtime cumulative delta at most320added/deleted lines from M, test append at most1400lines across the two suites. The original p0 autosave suite is an unused allowance for a measured transparent finite-input compatibility case only, not permission to weaken any assertion; explicit root review is required before changing its original body. No formatting/refactor or module extraction. Mechanical current assurance is root-owned and separately bound; all historical carrier bodies/verifier predicates/skip policy and all17MacUNKNOWN remain.
 
@@ -152,7 +152,7 @@ Design brief: Yalken is an offline writing environment for an author on a Mac. S
 
 ## IMPLEMENTATION_STEPS
 
-1. Root task E0/checkpoint, then fresh actor test-only declaration/ticket. Append actual whole-Main controls. Run both complete WP302/WP307 on unchanged Main; record every original case, observed RED and positive controls, source and raw fixture bytes.
+1. Root task E0/checkpoint, then fresh actor test-only declaration/ticket. Append actual whole-Main controls. Run complete WP302/WP307 plus the unchanged complete runtime-bridge file on unchanged Main; record every original case, observed RED and positive controls, source and raw fixture bytes.
 2. Root independently reviews causal before/after raw behavior and all existing test prefixes, freezes tests and original bytes. Fresh clean Main-only declaration/ticket then releases one bounded mechanism. Stop for any unplanned source/test change; no runtime workaround for an incomplete fixture.
 3. Execute identical whole frozen tests and original path/save/coordination/lifecycle/compatibility chains. Check normal/boundary/malformed/stale/queued/retention-fault/idle-ACK behavior. Semantic checkpoint commit immediately; root reviews complete/inverse diff and protected source/profile bytes.
 4. Root assembles minimum current factual/ARCH_DIFF_LOG/approval/DATA/inventory/certificate/release companion set. Preserve all historical carriers, verifier body, fixed inventories/classes and all17UNKNOWN; exact current source witness only. Then freeze final committed candidate.
