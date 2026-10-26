@@ -4836,3 +4836,213 @@ test('THEME summary reopened current Settings receives the real held event witho
     assert.equal(f.themeRow().value, 'Dark', 'the current reopened view reads the actual global Theme at its application boundary');
   } finally { f.deliver(); }
 });
+
+// Native Save standard system path: real Main/Core/FS; finite Electron transport only.
+const nativeSaveSystemText = 'Чистый запуск e\u0301 🧭\nПервая сцена.';
+function nativeSaveSystemContent() {
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs');
+  const doc = { type: 'doc', attrs: { wordPendingRevisions: null, wordUserBookmarks: null },
+    content: nativeSaveSystemText.split('\n').map(text => ({ type: 'paragraph', attrs: { textAlign: null }, content: [{ type: 'text', text }] })) };
+  const content = envelope.composeObservablePayload({ doc });
+  assert.equal(Buffer.byteLength(content), 570, 'the observed native two-paragraph counterexample stays exact');
+  return content;
+}
+function nativeSaveSystemRoster(root) {
+  const rows = {};
+  function visit(dir) { for (const name of fs.readdirSync(dir).sort()) {
+    const file = path.join(dir, name), s = fs.lstatSync(file), relative = path.relative(root, file);
+    if (s.isSymbolicLink()) rows[relative] = { kind: 'symlink', target: fs.readlinkSync(file) };
+    else if (s.isDirectory()) { rows[relative] = { kind: 'directory' }; visit(file); }
+    else { const raw = fs.readFileSync(file); rows[relative] = { kind: 'file', bytes: raw.length, sha256: crypto.createHash('sha256').update(raw).digest('hex'), rawBase64: raw.toString('base64') }; }
+  } } visit(root); return rows;
+}
+function nativeSaveSystemSnapshot(h) {
+  return { roster: nativeSaveSystemRoster(h.root), content: h.editor.content, generation: h.editor.generation };
+}
+async function nativeSaveSystemFixture(t) {
+  const callbacks = [], retained = { after: callback => callbacks.push(callback), diagnostic: value => t.diagnostic(value) };
+  const h = await fullMacMainFixture(retained);
+  assert.equal(callbacks.length, 2, 'the unchanged fixture registers its manager restoration and owned-root cleanup');
+  const owner = fs.lstatSync(h.root), marker = fs.readFileSync(path.join(h.root, '.owner'), 'utf8');
+  t.after(() => {
+    callbacks[0](); // Original fileManager restoration only; never invoke the destructive root cleanup.
+    const s = fs.lstatSync(h.root); assert.equal(s.dev, owner.dev); assert.equal(s.ino, owner.ino);
+    assert.equal(fs.readFileSync(path.join(h.root, '.owner'), 'utf8'), marker);
+  });
+  await h.main.initializeApp();
+  const fresh = await h.command('cmd.project.new', {}); assert.equal(fresh.ok, true, JSON.stringify(fresh));
+  assert.ok(h.sent.some(([channel, payload]) => channel === 'editor:set-text' && payload.kind === 'empty'), 'actual New must publish an empty document');
+  h.editor = { ...h.editor, content: nativeSaveSystemContent(), plainText: nativeSaveSystemText, generation: 2 };
+  h.signal = (id, payload = {}) => h.handlers.get('ui:save-lifecycle-signal-bridge')(h.event(),
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', id, payload));
+  assert.equal((await h.signal('signal.localDirty.set', { state: true, generation: 2 })).ok, true);
+  const autosave = await h.signal('signal.autoSave.request'); assert.equal(autosave.ok, true, JSON.stringify(autosave));
+  h.target = path.join(h.documents, 'craftsman', 'Новая сцена e\u0301 🧭.txt');
+  h.settingsPath = path.join(h.userData, 'settings.json'); h.globalAutosave = path.join(h.documents, 'craftsman', '.autosave', 'autosave.txt');
+  assert.equal(fs.readFileSync(h.globalAutosave, 'utf8'), h.editor.content);
+  h.dialogCalls = []; h.choose = result => { h.dialog.showSaveDialog = async (...args) => { h.dialogCalls.push({ options: args.at(-1), result }); return result; }; };
+  t.diagnostic(JSON.stringify({ finiteMainFixture: h.root, originalFixtureUnchanged: true, noCleanup: true, nativeOrBrowserAcceptance: false }));
+  return h;
+}
+function nativeSaveSystemHostPath(t, canonical) {
+  if (process.platform === 'darwin') {
+    assert.ok(canonical.startsWith('/private/var/'), 'actual Mac alias coverage requires the genuine canonical OS temporary ancestry');
+    t.diagnostic('ACTUAL_DARWIN_ALIAS_BRANCH_REAL_MAIN_AND_FILESYSTEM'); return canonical.slice('/private'.length);
+  }
+  t.diagnostic('HOST_NATIVE_CANONICAL_PATH_REAL_MAIN; DARWIN_ALIAS_POSITIVE_NOT_EXERCISED_ON_THIS_HOST'); return canonical;
+}
+function nativeSaveSystemObserve(t, h, result, before, label) {
+  const after = nativeSaveSystemSnapshot(h);
+  t.diagnostic(JSON.stringify({ nativeSaveSystem: label, result, dialogCalls: h.dialogCalls, targetExists: fs.existsSync(h.target), before, after,
+    actualPackets: h.sent.filter(([channel]) => ['status-update', 'set-dirty'].includes(channel)), nativeAcceptance: false }));
+  return after;
+}
+for (const commandId of ['cmd.project.saveAs', 'cmd.project.save']) for (const spelling of ['native', 'canonical']) {
+  test(`native Save system path ${commandId} first Unicode ${spelling} selection commits through actual Main [FINITE_IPC_NOT_NATIVE]`, async t => {
+    const h = await nativeSaveSystemFixture(t), content = h.editor.content;
+    h.choose({ canceled: false, filePath: spelling === 'native' ? nativeSaveSystemHostPath(t, h.target) : h.target });
+    const before = nativeSaveSystemSnapshot(h), result = await h.command(commandId, {});
+    nativeSaveSystemObserve(t, h, result, before, 'REAL_FIRST_SAVE_' + spelling);
+    assert.equal(h.dialogCalls.length, 1, 'actual Main native-dialog acquisition must be reached');
+    assert.equal(result.ok, true, 'actual Main must admit the genuine host native spelling and durably save the new document');
+    assert.equal(fs.readFileSync(h.target, 'utf8'), content);
+    const parsed = require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(fs.readFileSync(h.target, 'utf8'));
+    assert.equal(parsed.issue, null); assert.equal(parsed.text, nativeSaveSystemText);
+    assert.equal(JSON.parse(fs.readFileSync(h.settingsPath)).lastExternalFilePath, h.target);
+    assert.equal(fs.existsSync(h.globalAutosave), false, 'untitled recovery is removed only after the actual successful ACK');
+    assert.ok(h.sent.some(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED' && payload.ack.savedGeneration === 2));
+    assert.equal(h.editor.content, content);
+  });
+}
+for (const commandId of ['cmd.project.saveAs', 'cmd.project.save']) {
+  test(`native Save system path ${commandId} Cancel retains exact working and recovery bytes`, async t => {
+    const h = await nativeSaveSystemFixture(t); h.choose({ canceled: true, filePath: h.target });
+    const before = nativeSaveSystemSnapshot(h), result = await h.command(commandId, {}), after = nativeSaveSystemObserve(t, h, result, before, 'CANCEL');
+    assert.equal(result.ok, false); assert.equal(h.dialogCalls.length, 1); assert.deepEqual(after, before); assert.equal(fs.existsSync(h.target), false);
+  });
+}
+for (const [label, make] of [
+  ['canceled-number', h => ({ canceled: 0, filePath: h.target })],
+  ['canceled-missing', h => ({ filePath: h.target })],
+  ['path-number', () => ({ canceled: false, filePath: 42 })],
+  ['relative-path', () => ({ canceled: false, filePath: 'relative.txt' })],
+  ['control-path', h => ({ canceled: false, filePath: h.target + '\u0000.txt' })],
+  ['traversal-path', h => ({ canceled: false, filePath: path.dirname(h.target) + '/nested/../blocked.txt' })],
+  ['oversize-path', h => ({ canceled: false, filePath: path.dirname(h.target) + '/' + 'x'.repeat(5000) + '.txt' })],
+]) {
+  test(`native Save system path rejects raw ${label} before writer authority`, async t => {
+    const h = await nativeSaveSystemFixture(t); h.choose(make(h)); const before = nativeSaveSystemSnapshot(h);
+    const result = await h.command('cmd.project.saveAs', {}), after = nativeSaveSystemObserve(t, h, result, before, label);
+    assert.equal(h.dialogCalls.length, 1); assert.equal(result.ok, false); assert.deepEqual(after, before); assert.equal(fs.existsSync(h.target), false);
+  });
+}
+for (const variant of ['directory-in-root', 'directory-outside-root', 'leaf-link', 'outside-root']) {
+  test(`native Save system path retains real SEC0 refusal for ${variant}`, async t => {
+    const h = await nativeSaveSystemFixture(t), base = path.dirname(h.target); let selected;
+    if (variant === 'outside-root') { selected = path.join(h.root, 'outside.txt'); }
+    else if (variant === 'leaf-link') {
+      const original = path.join(base, 'untouched.txt'); fs.writeFileSync(original, 'existing protected bytes');
+      selected = path.join(base, 'leaf.txt'); fs.symlinkSync(original, selected);
+    } else {
+      const original = path.join(variant === 'directory-in-root' ? base : h.root, 'real-directory'); fs.mkdirSync(original);
+      const link = path.join(base, 'directory-link'); fs.symlinkSync(original, link, 'dir'); selected = path.join(link, 'blocked.txt');
+    }
+    h.choose({ canceled: false, filePath: nativeSaveSystemHostPath(t, selected) }); const before = nativeSaveSystemSnapshot(h);
+    const result = await h.command('cmd.project.saveAs', {}), after = nativeSaveSystemObserve(t, h, result, before, variant);
+    assert.equal(result.ok, false); assert.deepEqual(after, before); assert.equal(fs.existsSync(h.target), false);
+  });
+}
+function nativeSaveSystemGate() { let release; const promise = new Promise(resolve => { release = resolve; }); return { promise, release }; }
+for (const variant of ['new-to-new-session', 'entitlement', 'project-root', 'window', 'lifecycle']) {
+  test(`native Save system path held dialog refuses changed ${variant} without overwriting current authoring`, async t => {
+    const h = await nativeSaveSystemFixture(t), entered = nativeSaveSystemGate(), gate = nativeSaveSystemGate();
+    h.dialog.showSaveDialog = async () => { entered.release(); await gate.promise; return { canceled: false, filePath: h.target }; };
+    const pending = h.command('cmd.project.saveAs', {});
+    try {
+      await entered.promise;
+      if (variant === 'new-to-new-session') assert.equal((await h.command('cmd.project.new', {})).ok, true);
+      if (variant === 'entitlement') h.main.__host.revokeEntitlement('cmd.project.saveAs');
+      if (variant === 'project-root') h.main.__host.invalidateProjectRoot();
+      if (variant === 'window') h.window.isDestroyed = () => true;
+      if (variant === 'lifecycle') h.main.__host.invalidateLifecycle();
+      const current = nativeSaveSystemSnapshot(h); gate.release(); const result = await pending;
+      nativeSaveSystemObserve(t, h, result, current, 'HELD_DIALOG_' + variant);
+      assert.equal(result.ok, false); assert.deepEqual(nativeSaveSystemSnapshot(h), current); assert.equal(fs.existsSync(h.target), false);
+    } finally { gate.release(); await pending; }
+  });
+}
+test('native Save system path queued generation change refuses before target publication', async t => {
+  const h = await nativeSaveSystemFixture(t), entered = nativeSaveSystemGate(), gate = nativeSaveSystemGate(), dialog = nativeSaveSystemGate();
+  const blocker = h.main.__host.holdDiskQueue(async () => { entered.release(); await gate.promise; }); await entered.promise;
+  h.dialog.showSaveDialog = async () => { dialog.release(); return { canceled: false, filePath: h.target }; };
+  const pending = h.command('cmd.project.saveAs', {});
+  try {
+    await dialog.promise; const next = require('../../src/core/document-content-envelope-v1.cjs').composeDocumentContentFromBase({ baseContent: h.editor.content, nextVisibleText: nativeSaveSystemText + '\nlate authoring' }); assert.equal(next.ok, true);
+    h.editor = { ...h.editor, content: next.content, plainText: nativeSaveSystemText + '\nlate authoring', generation: 3 };
+    assert.equal((await h.signal('signal.localDirty.set', { state: true, generation: 3 })).ok, true);
+    const current = nativeSaveSystemSnapshot(h); gate.release(); const result = await pending; await blocker;
+    nativeSaveSystemObserve(t, h, result, current, 'QUEUED_GENERATION');
+    assert.equal(result.ok, false); assert.deepEqual(nativeSaveSystemSnapshot(h), current); assert.equal(fs.existsSync(h.target), false);
+  } finally { gate.release(); await pending; await blocker; }
+});
+for (const variant of ['entitlement', 'parent-identity']) {
+  test(`native Save system path real temp fsync then ${variant} change cannot publish stale target`, async t => {
+    const h = await nativeSaveSystemFixture(t), parent = path.join(path.dirname(h.target), 'chosen-parent'); fs.mkdirSync(parent);
+    h.target = path.join(parent, path.basename(h.target)); h.choose({ canceled: false, filePath: h.target });
+    const fsp = require('node:fs/promises'), originalOpen = fsp.open; let injected = false;
+    fsp.open = async function(file, ...args) {
+      const handle = await originalOpen.call(this, file, ...args);
+      if (typeof file !== 'string' || !file.startsWith(h.target + '.p2-')) return handle;
+      return new Proxy(handle, { get(target, key) {
+        if (key === 'sync') return async () => {
+          await target.sync(); if (injected) return; injected = true;
+          if (variant === 'entitlement') h.main.__host.revokeEntitlement('cmd.project.saveAs');
+          else { fs.renameSync(parent, parent + '-retained'); fs.mkdirSync(parent); fs.renameSync(path.join(parent + '-retained', path.basename(file)), file); }
+        };
+        const value = Reflect.get(target, key, target); return typeof value === 'function' ? value.bind(target) : value;
+      } });
+    };
+    const recovery = fs.readFileSync(h.globalAutosave), settings = fs.readFileSync(h.settingsPath), working = h.editor.content;
+    let result; try { result = await h.command('cmd.project.saveAs', {}); } finally { fsp.open = originalOpen; }
+    t.diagnostic(JSON.stringify({ realTempFsyncReached: injected, variant, result, targetExists: fs.existsSync(h.target), after: nativeSaveSystemSnapshot(h) }));
+    assert.equal(injected, true, 'real durable coordinator temp fsync is the adversarial boundary');
+    assert.equal(result.ok, false); assert.equal(fs.existsSync(h.target), false);
+    assert.deepEqual(fs.readFileSync(h.globalAutosave), recovery); assert.deepEqual(fs.readFileSync(h.settingsPath), settings); assert.equal(h.editor.content, working);
+  });
+}
+// Portable metadata-only contract: no Core admission, writer, native OS or platform proof is fabricated.
+test('native Save system binding fixed metadata contract [FINITE_METADATA_NOT_PLATFORM_ACCEPTANCE]', async t => {
+  const main = read('src/main.js'), token = 'function bindNativeSaveDialogPath(';
+  const start = main.indexOf(token); assert.ok(start >= 0, 'private native path binder is required; missing API alone is not causal Main RED');
+  const end = main.indexOf('\n}\n', start); assert.ok(end > start);
+  const body = main.slice(start, end + 2), boundary = require('../../src/core/io/path-boundary');
+  function port(platform = 'darwin', change = () => {}) {
+    const states = { '/': { kind: 'directory', uid: 0, mode: 0o40755, ino: 1 }, '/private': { kind: 'directory', uid: 0, mode: 0o40755, ino: 2 },
+      '/private/var': { kind: 'directory', uid: 0, mode: 0o40755, ino: 3 }, '/var': { kind: 'link', uid: 0, mode: 0o120755, ino: 4, target: 'private/var' } };
+    change(states); const reads = [];
+    const realpath = name => { reads.push(['realpath', name]); assert.ok(Object.hasOwn(states, name), 'arbitrary parent realpath is forbidden'); return name === '/var' ? '/private/var' : name; }; realpath.native = realpath;
+    const fsPort = { realpathSync: realpath, readlinkSync(name) { reads.push(['readlink', name]); assert.equal(name, '/var'); return states[name].target; },
+      lstatSync(name, options = {}) { reads.push(['lstat', name]); assert.ok(Object.hasOwn(states, name), 'only fixed system entries are simulated'); const s = states[name], n = x => options.bigint ? BigInt(x) : x;
+        return { dev: n(1), ino: n(s.ino), uid: n(s.uid), gid: n(0), mode: n(s.mode), mtimeNs: n(10), ctimeNs: n(10), isDirectory: () => s.kind === 'directory', isSymbolicLink: () => s.kind === 'link' }; } };
+    const simple = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+    const bind = Function('fsSync', 'path', 'process', 'validatePathBoundary', 'resolveValidatedPath', 'isPlainObjectValue', body + '\nreturn bindNativeSaveDialogPath;')(
+      fsPort, path, { platform }, boundary.validatePathBoundary, boundary.resolveValidatedPath, simple);
+    return { bind, states, reads };
+  }
+  const raw = '/var/folders/owned/Новая сцена e\u0301 🧭.txt';
+  const valid = port(), bound = valid.bind({ canceled: false, filePath: raw });
+  assert.equal(bound.filePath, '/private' + raw); assert.equal(Object.isFrozen(bound), true); assert.equal(typeof bound.assertCurrent, 'function'); bound.assertCurrent();
+  assert.equal(valid.bind({ canceled: true, filePath: raw }), null);
+  assert.equal(port('linux').bind({ canceled: false, filePath: raw }).filePath, raw);
+  for (const prefix of ['/variable/file.txt', '/various/file.txt', '/private/var/file.txt']) assert.equal(port().bind({ canceled: false, filePath: prefix }).filePath, prefix);
+  for (const bad of [null, [], { canceled: 0, filePath: raw }, { filePath: raw }, { canceled: false, filePath: 42 },
+    { canceled: false, filePath: 'relative.txt' }, { canceled: false, filePath: '/var/a/../b.txt' }, { canceled: false, filePath: '/var/a\u0000.txt' },
+    { canceled: false, filePath: '/var/' + 'x'.repeat(5000) + '.txt' }]) assert.throws(() => port().bind(bad));
+  for (const [label, change] of [ ['wrong-link', s => { s['/var'].target = 'other'; }], ['unowned-link', s => { s['/var'].uid = 501; }],
+    ['private-symlink', s => { s['/private'].kind = 'link'; }], ['unowned-directory', s => { s['/private/var'].uid = 501; }],
+    ['writable-directory', s => { s['/private'].mode |= 0o022; }], ['not-link', s => { s['/var'].kind = 'directory'; }] ]) {
+    assert.throws(() => port('darwin', change).bind({ canceled: false, filePath: raw }), label);
+  }
+  for (const name of ['/', '/private', '/private/var', '/var']) { const p = port(), b = p.bind({ canceled: false, filePath: raw }); p.states[name].ino++; assert.throws(() => b.assertCurrent(), name + ' identity drift'); }
+  t.diagnostic('FINITE_FIXED_SYSTEM_METADATA_ONLY; real K1 and actual Mac Main/native outcomes are separate mandatory oracles');
+});
