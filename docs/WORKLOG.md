@@ -5303,3 +5303,11 @@ C7 canonical baseline retained3479tests:3409pass11ENT0count/meta cascades59skips
 - Runtime66a changes only first setEditable argument; normal bundle differs by3bytes. Initial generation0/no autosave; true Unicode/UndoRedo gen1/2/3 and dirty/autosave retained. Original tests and other10017runtime-phase sources exact.
 - Missing old temp physical identities are explicitUNKNOWN; seven archives/115raw files/9epochs and five old source snapshots fully reread, no reseed/retag/restore or old cold claim.
 - Current353+1carrier retains75historical bodies/all verifier predicates, DATA820/672,1603inventory/66release/17UNKNOWN. Final current whole/baseline/package/native/CI/full normal delivery pending.
+
+## 2026-10-27 — Existing WSE evidence jump: source observation
+
+- Closed predecessor PR2171 has corrected primary-contract qualification; every raw failure/oldSTOP report remains immutable. Full Mac continues.
+- Current handler matches actual hidden-refusal native58596. Appended202C07lines preserve original14161bytes/fivecases; actual wholeRED25/8pass/17failure records,0exclusions, then same frozen wholeGREEN25/25.
+- Separate actor only adds visible/held options at four calls, inverse-exact editor12f585dc; current editor80b573e9. Actual normal renderer build0 produces bundlecd416719; root committed98whole25/25, no native claim.
+- Mechanical current355+1carrier,822/674DATA, fixed1603inventory and66release bindings preserve76historical bodies/predicates and17UNKNOWN. No design contract,Core,Main,shared status,HTML/CSS or dependency change.
+- Final current gates/baseline, new current native visibility/AX/no-loss/Quit/cold and full normal delivery/literal merged proofs remain required; no fullMac acceptance.

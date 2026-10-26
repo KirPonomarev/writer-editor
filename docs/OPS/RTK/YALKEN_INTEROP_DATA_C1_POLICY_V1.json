@@ -827,7 +827,9 @@
     "docs/tasks/2026-10-26--native-save-system-path.md",
     "docs/tasks/2026-10-26--startup-source-choice.md",
     "src/core/save-coordinator-v1.cjs",
-    "test/unit/r24-wp200-durable-save.test.js"
+    "test/unit/r24-wp200-durable-save.test.js",
+    "docs/tasks/2026-10-27--wse-evidence-jump-feedback.md",
+    "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1068,7 +1070,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "1d107cc5b19bb8333c6dea85ec5048b928017386b1784ade1c4455a32ff82d81"
+        "sha256": "cd416719dfbf093432d2f42be7e6e74c72c2918502d67b5f8c08c2f382322135"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1232,7 +1234,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "12f585dcd072d999d3f21af9bd5f815c7e66475646f9fb89cb26609a6bbc7a10"
+        "sha256": "80b573e95f5aed36c8056a82143f35ea4d8f73e03c7b3dc33340d71ac0c0501d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1792,7 +1794,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "28c28a17777b551f7481a91f9d42abbe016f5c88cad045a17dca110d9f20fc0d"
+        "sha256": "62c21e12fc7251d1ab1e5ab5d2c915353b1c15f63519c629e02ae28aa493e959"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2300,7 +2302,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "ff298e337b9d4e0feb434bbe22d233ffed76e06d8c64139fdef7b62ed3fc4bb1"
+        "sha256": "a70e78f2c8016cf940fe9d87326c5f67d8ec809855366f71964981b826e29911"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2748,15 +2750,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "434164cb07cb38694c67e49623e4aafdc196713d86170ba4807f9829585c9fe8"
+        "sha256": "3a9e4d594f1ee06e2cdaef22436aa6f95213409e56f0e7669e08be2f7a7a6691"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5f8361201cae427e47e7c68481875aca79742a281e3c834cd465252b8c5a3d30"
+        "sha256": "5e72e13ec0c28357fd8f0880ababd9b5cedc99c32108b3cc0285f61a0cb006ba"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "43b2bf2ccebb6f194748be7daa132135495b15858c5c2d4f43aa19f5b086ee5c"
+        "sha256": "9f34f316417719ba4074ce82c5ed09926f6218b5ed36c871bea449762d917226"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3296,7 +3298,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "6636bcb000332aa4c17f026d81a3388aa03b25cded32ca94990731b1ba90faa8"
+        "sha256": "c104317563a409cb2d7fa584eef5c03ad9fe46ac6e5b4c141cfb7cd5b222564b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3741,6 +3743,14 @@
       {
         "path": "test/unit/r24-wp200-durable-save.test.js",
         "sha256": "76a0fa805b060f750daa4004e0a6582f0946162ae60a0be06450f55bf47e1886"
+      },
+      {
+        "path": "docs/tasks/2026-10-27--wse-evidence-jump-feedback.md",
+        "sha256": "381b5e08979720cc213c2bc962776c410b7e3d90496703a8e5817e1ca149ee7e"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js",
+        "sha256": "499ab5fc70c1b7a0d64f2f47e3505a28ad13acef466914e398c1254aeccad208"
       }
     ],
     "followupRepair": {

@@ -25931,6 +25931,76 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and first-authoritative-adoption false-dirty correction. Plain raw native oracle and every real author-edit observer stay unchanged. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
       "sha256": "28c28a17777b551f7481a91f9d42abbe016f5c88cad045a17dca110d9f20fc0d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T23:24:34.196792+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_WSE_EVIDENCE_FEEDBACK_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "1b1bd7788d0823b42750897a75b92dda18bcb0423696623011b2a9523a5d3d7f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T23:24:34.196792+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_WSE_EVIDENCE_FEEDBACK_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "c104317563a409cb2d7fa584eef5c03ad9fe46ac6e5b4c141cfb7cd5b222564b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T23:24:34.196792+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_WSE_EVIDENCE_FEEDBACK_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "a785d08ab193007002d8e79c0487f905298ca4b8915b0bf81e62f8e0f1bd97ae"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T23:24:34.196792+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_WSE_EVIDENCE_FEEDBACK_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "d3f4c08caf499c066d94a3d2e9e8b4b42f9ffbc88b4ba51f3c6497edb0a99fcd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T23:24:34.196792+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_WSE_EVIDENCE_FEEDBACK_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "eaa141c33207e72e338ffff1c762428f520911016fab84221f71bee28165c7c2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T23:24:34.196792+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_WSE_EVIDENCE_FEEDBACK_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "62c21e12fc7251d1ab1e5ab5d2c915353b1c15f63519c629e02ae28aa493e959"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T23:24:34.196792+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_WSE_EVIDENCE_FEEDBACK_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "499ab5fc70c1b7a0d64f2f47e3505a28ad13acef466914e398c1254aeccad208"
     }
   ],
   "evidenceStampIds": [
