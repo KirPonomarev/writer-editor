@@ -25871,6 +25871,66 @@
       "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
       "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and measured adapter/source-observer compatibility. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
       "sha256": "7816bf8dffe98abe7d81824186bb6b81c27476c1c65430f696f944b792e4fe62"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T20:34:11.517667+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_SOURCE_CHOICE_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STARTUP_SOURCE_CHOICE_AND_COMPLETE_FIRST_MAC_DEVELOPMENT_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and first-authoritative-adoption false-dirty correction. Plain raw native oracle and every real author-edit observer stay unchanged. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
+      "sha256": "f148fbc3f162d798070d6e0f677473ad792e17d9406789e72ab354970843a420"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T20:34:11.517667+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_SOURCE_CHOICE_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STARTUP_SOURCE_CHOICE_AND_COMPLETE_FIRST_MAC_DEVELOPMENT_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and first-authoritative-adoption false-dirty correction. Plain raw native oracle and every real author-edit observer stay unchanged. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
+      "sha256": "6636bcb000332aa4c17f026d81a3388aa03b25cded32ca94990731b1ba90faa8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T20:34:11.517667+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_SOURCE_CHOICE_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STARTUP_SOURCE_CHOICE_AND_COMPLETE_FIRST_MAC_DEVELOPMENT_20261026",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and first-authoritative-adoption false-dirty correction. Plain raw native oracle and every real author-edit observer stay unchanged. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
+      "sha256": "29278f21eded22a21303f5e3140a9f4004cdb06fdc8bd06083ef1928c85373e2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T20:34:11.517667+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_SOURCE_CHOICE_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STARTUP_SOURCE_CHOICE_AND_COMPLETE_FIRST_MAC_DEVELOPMENT_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and first-authoritative-adoption false-dirty correction. Plain raw native oracle and every real author-edit observer stay unchanged. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
+      "sha256": "c7b942b25c02a5dba73c367ab31b8457617a97aeb9349186a5b71baf17f25833"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T20:34:11.517667+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_SOURCE_CHOICE_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STARTUP_SOURCE_CHOICE_AND_COMPLETE_FIRST_MAC_DEVELOPMENT_20261026",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and first-authoritative-adoption false-dirty correction. Plain raw native oracle and every real author-edit observer stay unchanged. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
+      "sha256": "6f6e222a033c26d00bf61023189f694459f16367ae50aa264b365eae1357ccf6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-26T20:34:11.517667+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_STARTUP_SOURCE_CHOICE_20261026",
+      "authority": "DIRECT_OWNER_APPROVED_STARTUP_SOURCE_CHOICE_AND_COMPLETE_FIRST_MAC_DEVELOPMENT_20261026",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for the owner-approved startup saved-scene versus separate-autocopy versus Cancel/no-loss outcome, necessary existing-Core temp acquisition and first-authoritative-adoption false-dirty correction. Plain raw native oracle and every real author-edit observer stay unchanged. Original no-follow, lifecycle, durable data, historical carriers/verifier and corruption oracles preserved. This source witness creates no native, stage, fullMac, signing or release acceptance.",
+      "sha256": "28c28a17777b551f7481a91f9d42abbe016f5c88cad045a17dca110d9f20fc0d"
     }
   ],
   "evidenceStampIds": [

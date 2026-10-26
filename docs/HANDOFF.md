@@ -1,3 +1,20 @@
+# Startup source choice — first-adoption source correction, 26 October 2026
+
+TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026
+STATUS: CORRECTED_RUNTIME_SOURCE_OBSERVED_FINAL_GATES_NATIVE_AND_DELIVERY_PENDING
+RUNTIME_CHECKPOINT_SHA: 66a0554d6e69078d98034e39a6a14c4fb07acf94
+CLAIM_BOUNDARY: Finite actual Editor source behavior only; no corrected native or full Mac acceptance.
+
+Original M-bound source-choice delivery and owner-approved saved scene/separate unbound autocopy/Cancel remain one PR/revert. Exact F1 completed26source commands25exit0 plus known fullauditexit1 and canonical npm3485executed passes/59named skips. Its actual first native Saved selection showed correct text/cursor but changed plain82B to682B before author input; strict raw equality failed. Normal native Quit/exit0 was observed. F1 source/package/baseline retains its own identity and the failed120member profile archive remains immutable; no completed current warm/cold case follows.
+
+The installed public setEditable defaults to an update even for an unchanged transaction. Production first checked adoption therefore reached the real dirty-generation/autosave chain. A separate actor appends169maintained lines after all782original bridge lines/25cases, with actual installed Editor/PM, full adoption callback, real parser/checked adapter and actual dirty/autosave functions. First setup30cases25pass5fail returned before parsing because unmounted Editor.isDestroyed is true; it remains NOT_CAUSAL. A narrowly declared finite lifecycle facade reads the SDK public headless view liveness and delegates every method to the same actual Editor; no mounted/browser/native liveness is claimed. Every semantic assertion and original byte remains.
+
+The corrected fixture whole causal RED executes30cases29pass1fail: accepted plain adoption emits unchanged-doc update, generation1/dirtytrue and a real observed autosave request. Unicode insert/UndoRedo and invalid-parse/schema/review-lock controls independently pass. Frozen exact one-line runtime correction adds false only to first-adoption setEditable; existing normal renderer build adds exactly3bundle bytes. Same whole30of30 actual GREEN has initial generation0/no dirty/updates/signals/timers/request; actual Unicode/UndoRedo produces generations1/2/3 and existing dirty/autosave, with no synthetic ACK. Working-source execution is independently matched to committed66a bytes; final clean committed all-source executions remain pending. Main/Core/earlier675test lines and every other10017runtime-phase input stay exact. Root independent runtime review d3ce95221cfff3d67b679392ebb01b6d98f1d0f94a832de44e7c3b8153a66317.
+
+After interruption all seven old temporary profiles and old F1 IO/profile/build roots are absent, causeUNKNOWN. Existing seven archives were independently reread111/78/117/112/117/112/813members, including115raw document/Pulse files and the separate2152B/nineepoch journal. Five old source worktrees50090physical Git blobs and clean owner canonical6de remain exact. Review5f7d01280be524aec877c0d0e7253702f68fb7c13636cc5b8a2350205dde18a9. Missing original F1 native control JSON cannot be recreated or credited. New independent owned IO/profile/build identities are required; archives stay protected, no original physical inode or current old cold continuity is claimed.
+
+Current mechanical source assurance appends353bindings/oneguard while preserving75historical carrier bodies and all verifier predicates; DATA820/672, inventory1603classes/lanes/skips,66release pins and17UNKNOWN remain. Full current source/affected/Word/corruption/E0/canonical baseline/OSS/audit/perf/guardrails, fresh exact package/native all3choices/Save/history/Quit/cold/raw beforepush, current official CI/normalmerge/literal merged verification remain required. Original plain82B native fixture and strict raw oracle stay. Full Mac/MR06/signing/notary/public release and earlier IME/private-actuator/audit/font/layout limits remain open; Black Box later.
+
 # Startup source choice and retained recovery — source observed, 26 October 2026
 
 TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026

@@ -1068,7 +1068,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "28787b8c344b86e805c67c4192e6f9a671293c42bbd85b3b838a6f1388b61ea6"
+        "sha256": "1d107cc5b19bb8333c6dea85ec5048b928017386b1784ade1c4455a32ff82d81"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1212,7 +1212,7 @@
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-        "sha256": "154841e5155a09dd732999bc799059dfae7ff8befb40e1e13205132d96b36df7"
+        "sha256": "f2eb5b4a51fde99c9fbe2acd353b66a3ce0b04f6e766f3a246a82f8bea8a3e66"
       },
       {
         "path": "src/io/inlineTypography.cjs",
@@ -1232,7 +1232,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "cf58c2f966adedcb116ce51e744f2ffae25d6ee74cf8a56d652e49a6cc80c547"
+        "sha256": "12f585dcd072d999d3f21af9bd5f815c7e66475646f9fb89cb26609a6bbc7a10"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1792,7 +1792,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "71675c071e6201b2f8cea3c7212ce2068aa6768283d5fc8657ab7b31df054d28"
+        "sha256": "28c28a17777b551f7481a91f9d42abbe016f5c88cad045a17dca110d9f20fc0d"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2300,7 +2300,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "ab4aa2d07da42fc8bd913cd4c1fedde160189120eb44a75894fe65536e7b0ef7"
+        "sha256": "ff298e337b9d4e0feb434bbe22d233ffed76e06d8c64139fdef7b62ed3fc4bb1"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2748,15 +2748,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8ebe39d494eb045e2147b2f28250578fd2062e9cb0f81a278b94d77893c32a9e"
+        "sha256": "434164cb07cb38694c67e49623e4aafdc196713d86170ba4807f9829585c9fe8"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "1d21589a696eb42f49baad91b7636c9804fa5e3a813055be8c0a75926bb2a0bc"
+        "sha256": "5f8361201cae427e47e7c68481875aca79742a281e3c834cd465252b8c5a3d30"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2c942b8261631cc6b086e6bdd95a6a42cbd39e0a88cef7e874ba004ac857c669"
+        "sha256": "43b2bf2ccebb6f194748be7daa132135495b15858c5c2d4f43aa19f5b086ee5c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3296,7 +3296,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "b4fd2e776705fc727d3d42d13146d407101c137765be28793f701f5dd2e640dd"
+        "sha256": "6636bcb000332aa4c17f026d81a3388aa03b25cded32ca94990731b1ba90faa8"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3732,7 +3732,7 @@
       },
       {
         "path": "docs/tasks/2026-10-26--startup-source-choice.md",
-        "sha256": "8e7978a629ec2c9fc0b9f491552e57e307e944a7938f9a07929926a071c71dc9"
+        "sha256": "301644ccc15cb4a98fd35807b2f2b561300d99a5bfd6d5d7d74ee18e0c3d5bdd"
       },
       {
         "path": "src/core/save-coordinator-v1.cjs",

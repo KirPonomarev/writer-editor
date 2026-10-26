@@ -5295,3 +5295,11 @@ C7 canonical baseline retained3479tests:3409pass11ENT0count/meta cascades59skips
 - Actual0b8whole749/123/72/548/16/258 all pass, no fail/cancel/skip/todo. Earlier47failurewave retained. Root complete source/closed packet/65root772member compact readback reviewed; metadata0errors.
 - Current-only352+1source carrier,820/672DATA,1603inventory/C2A and66release hashes/witnesses;74historical bodies/predicates and17UNKNOWN retained.
 - Final-source/baseline/gates, new actual native three-choice Save/history/Quit/cold/raw proof and complete normal delivery/literal merged qualification remain. No full firstMac/signing/publication claim.
+
+## 2026-10-26 — First authoritative adoption without false author edits
+
+- Same source-choice/no-loss task, originalM and one PR/revert; first F1 native plain82B→682B failure remains failed.
+- Separate actual Editor/full callback regression: initial setup25of30 is NOT_CAUSAL and retained; exact finite public-view liveness adapter leads causal29of30 and fixed30of30, no skips/cancel/todo.
+- Runtime66a changes only first setEditable argument; normal bundle differs by3bytes. Initial generation0/no autosave; true Unicode/UndoRedo gen1/2/3 and dirty/autosave retained. Original tests and other10017runtime-phase sources exact.
+- Missing old temp physical identities are explicitUNKNOWN; seven archives/115raw files/9epochs and five old source snapshots fully reread, no reseed/retag/restore or old cold claim.
+- Current353+1carrier retains75historical bodies/all verifier predicates, DATA820/672,1603inventory/66release/17UNKNOWN. Final current whole/baseline/package/native/CI/full normal delivery pending.
