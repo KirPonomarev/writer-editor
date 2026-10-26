@@ -37170,7 +37170,12 @@ async function handleSave() {
     ]
   });
 
-  const nativeTarget = nativeSaveEffect(snapshot, result);
+  let nativeTarget;
+  try { nativeTarget = nativeSaveEffect(snapshot, result); }
+  catch (error) {
+    if (error?.message === 'NATIVE_SAVE_CONTEXT_STALE' && !isCurrentSaveTarget()) return projectSaveFailure('AUTHORING_TARGET_CHANGED_DURING_DIALOG');
+    throw error;
+  }
   if (nativeTarget) {
     const filePath = nativeTarget.filePath;
     nativeTarget.assertCurrent();
