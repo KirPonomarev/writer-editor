@@ -4977,8 +4977,11 @@ test('native Save system path queued generation change refuses before target pub
   h.dialog.showSaveDialog = async () => { dialog.release(); return { canceled: false, filePath: h.target }; };
   const pending = h.command('cmd.project.saveAs', {});
   try {
-    await dialog.promise; const next = require('../../src/core/document-content-envelope-v1.cjs').composeDocumentContentFromBase({ baseContent: h.editor.content, nextVisibleText: nativeSaveSystemText + '\nlate authoring' }); assert.equal(next.ok, true);
-    h.editor = { ...h.editor, content: next.content, plainText: nativeSaveSystemText + '\nlate authoring', generation: 3 };
+    await dialog.promise; const envelope = require('../../src/core/document-content-envelope-v1.cjs'), doc = structuredClone(envelope.parseObservablePayload(h.editor.content).doc);
+    doc.content.push({ type: 'paragraph', attrs: { textAlign: null }, content: [{ type: 'text', text: 'late authoring' }] });
+    const next = envelope.composeObservablePayload({ doc }), parsed = envelope.parseObservablePayload(next);
+    assert.equal(parsed.issue, null); assert.equal(parsed.text, nativeSaveSystemText + '\nlate authoring');
+    h.editor = { ...h.editor, content: next, plainText: nativeSaveSystemText + '\nlate authoring', generation: 3 }; assert.equal(h.editor.generation, 3);
     assert.equal((await h.signal('signal.localDirty.set', { state: true, generation: 3 })).ok, true);
     const current = nativeSaveSystemSnapshot(h); gate.release(); const result = await pending; await blocker;
     nativeSaveSystemObserve(t, h, result, current, 'QUEUED_GENERATION');
