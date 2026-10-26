@@ -1,6 +1,6 @@
 # Initial authoring input admission
 
-STATUS: SOURCE_C2_PRIVACY_FIXTURE_FINAL_PROOFS_PENDING
+STATUS: SOURCE_C5_RTK_FIXTURE_COMPLETION_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing editor startup safety only; no full Mac, WSE or release acceptance.
 TASK_ID: YALKEN_STARTUP_INPUT_ADMISSION_20261025
@@ -195,3 +195,20 @@ Fresh clean phase19 admission precedes this doc-only reachable checkpoint; no cu
 
 
 C4 current-source binding: separate actor binds only missing lexical/liveness input state in pre-existing adopted/live-document finite VM fixtures and two Word current selector/id literals. Original108tests and every original assertion/callback/refusal/history/persistence branch are retained; whole108GREEN required before assembly. Runtime and all1485build-input bytes stay exact66a, oldnative/build evidence remains at66a and is not relabelled. Append C4 with345bindings/oneguard,815DATA/667pins,1603inventory and66release/17UNKNOWN unchanged; final current source/73/697/privacy/strict/E0/source/officialCI and literalmerged proofs still required.
+
+
+### Complete extracted-renderer fixture admission after final C3 RTK graph
+
+Literal cleanC4 4d6bb743 retains actual whole697,73,108,privacy10,Word19,785release,16governance,E0172plus40mutants and all1485actualC3package inputs. These are bounded actual successes; delivery remains blocked. Final C3 official RTK graph reports4416total4280pass136fail0skip, across four unchanged contract fixture files.131 failures explicitly mention one missing renderer lexical name; five other assertion failures remain unclassified until full fixed whole execution. Do not relabel all136 as ReferenceError or product defects. Current literal whole4 RED {"cancelled": 0, "fail": 136, "pass": 200, "skipped": 0, "suites": 0, "tests": 336, "todo": 0} is retained. Additional actual Atlas C02 whole524/478pass46fail0skip demonstrates the same missing-adoption fixture state; nested failures/parents remain part of the actual denominator.
+
+Independent finite extraction map24 binds14 exact-marker files, seven executing outer renderer VM contexts. Two were correctly repaired in C4; the remaining five existing contracts below form the complete observed compatibility delta. All five already belong to certificate345, DATA815/667 and fixed inventory1603. Add no membership, framework, dependency, runtime source, package input or new product surface.
+
+- test/contracts/rtk-word-list-pattern-renderer.contract.test.js: already-active scene publication body VM declares only truthful initialDocumentAdopted true.
+- test/contracts/rtk-word-novel-import-partition.contract.test.js: existing rich recording renderer binds primaryTiptapEditor to its actual production Editor plus a transparent finite connected outer mount.
+- test/contracts/rtk-word-pending-recording-runtime.contract.test.js: finite buffer renderer declares finite live editor and connected mount; existing real-PM upgrade additionally binds primaryTiptapEditor to the same actual Editor alongside currentEditorInstance.
+- test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js: existing PM-backed publication renderer binds the actual supplied editor, transparent finite connected outer mount and truthful already-adopted state.
+- test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js: existing legacy active scene renderer declares truthful already-adopted state only.
+
+Before actor edits require a fresh clean declaration/preflight. Actor owns only these five fixture setup sites/six contexts plus two existing current Word selector/id literals C4 to C5; count345 remains unchanged. Preserve every old assertion, callback, guard, expected error, test name/count, PM/history/snapshot/ACK/dirty/draft/lifecycle/stale/refusal/persistence branch. No setEditable, force mounting, new Editor instance, production fallback, policy substitute, skip/todo/filter, workflow change or manufactured Kernel success. Root independently reconstructs the complete original bytes, all protected sources, runtime/build1485inputs and historical70carriers. If valid current-source qualification requires the new C5 source carrier, root may assemble and checkpoint that current-only companion before final whole GREEN; no failed or missing behavioral outcome gains acceptance from assembly or commit.
+
+Append current C5 at the fresh clean spec checkpoint with345bindings/oneguard, refresh only actual changed hashes and current approvals, preserve all70previous carriers/verifier-body predicates, fixed815/667/1603/66 and17UNKNOWN. Complete whole five changed contracts and original108 plus current73/697/privacy/strict/source/E0/OSS/audit/perf, then current official fullCI and normal delivery with literal merged tests/fresh package/native. All actualC3 build/native evidence keeps66a identity; current fixture-only source equivalence is not new native execution. Keep earlier IME/externalcold/staleautosave/blanksave/private-actuator/audit/Review-hypothesis limits and original failures.
