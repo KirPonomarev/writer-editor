@@ -24733,11 +24733,17 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
         observeLegacy,
         observeGateway,
         executors: {
-          [SAVE_AUTHORITY_ROUTES.DURABLE_SAVE_V1]: async () => durableSaveTransaction({
-            filePath,
-            content,
-            revision,
-          }),
+          [SAVE_AUTHORITY_ROUTES.DURABLE_SAVE_V1]: async () => {
+            if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
+            return durableSaveTransaction({ filePath, content, revision,
+              ...(typeof options.beforeScenePublish === 'function' ? { fsAdapter: { ...fs,
+                rename: (...args) => {
+                  const admission = options.beforeScenePublish();
+                  return admission && typeof admission.then === 'function' ? admission.then(() => fs.rename(...args)) : fs.rename(...args);
+                },
+              } } : {}),
+            });
+          },
         },
       });
     }
@@ -25172,6 +25178,57 @@ function getFilePathAllowlistRoots() {
 
 function isAllowedFilePath(candidatePath) {
   return isAllowedFilePathByLaw(candidatePath, getFilePathAllowlistRoots());
+}
+
+function bindNativeSaveDialogPath(result) {
+  if (!isPlainObjectValue(result) || typeof result.canceled !== 'boolean') throw Error('NATIVE_SAVE_DIALOG_INVALID');
+  if (result.canceled) return null;
+  const raw = result.filePath;
+  if (typeof raw !== 'string' || !path.isAbsolute(raw) || Buffer.byteLength(raw, 'utf8') > 4096) throw Error('NATIVE_SAVE_PATH_INVALID');
+  resolveValidatedPath(raw, { mode: 'any' }); // Validate grammar; keep the selected Unicode spelling.
+  if (process.platform !== 'darwin' || !raw.startsWith('/var/')) return Object.freeze({ filePath: raw, assertCurrent() {} });
+  const identity = () => ['/', '/private', '/private/var', '/var'].map((name, index) => {
+    const stat = fsSync.lstatSync(name, { bigint: true });
+    if (stat.uid !== 0n || (index < 3
+      ? !stat.isDirectory() || stat.isSymbolicLink() || (stat.mode & 0o022n) !== 0n
+      : !stat.isSymbolicLink() || fsSync.readlinkSync(name) !== 'private/var' || fsSync.realpathSync(name) !== '/private/var')) throw Error('NATIVE_SAVE_SYSTEM_PATH_INVALID');
+    return [stat.dev, stat.ino, stat.uid, stat.mode, stat.isSymbolicLink()].join(':');
+  }).join('|');
+  const fixedIdentity = identity();
+  return Object.freeze({ filePath: '/private' + raw, assertCurrent() {
+    if (identity() !== fixedIdentity) throw Error('NATIVE_SAVE_SYSTEM_PATH_CHANGED');
+  } });
+}
+
+function captureNativeSaveEffect(commandId) {
+  if (!['cmd.project.save', 'cmd.project.saveAs'].includes(commandId)) throw Error('NATIVE_SAVE_COMMAND_INVALID');
+  const read = () => [mainWindow, mainWindow?.webContents, commentAuthoringSessionId, getProjectRootPath(),
+    activeStage10ApplicationBootstrap, app.getPath('userData'), JSON.stringify(getWriterLocalRuntimeProfile()), JSON.stringify(getFilePathAllowlistRoots())];
+  const captured = read(), file = currentFilePath, subject = currentLifecycleSubjectId(), record = getProductCommandRecord(commandId);
+  return (snapshot, result) => {
+    const native = bindNativeSaveDialogPath(result); if (!native) return null;
+    const filePath = native.filePath.endsWith('.txt') ? native.filePath : native.filePath + '.txt';
+    let parentIdentity = null;
+    const parent = () => {
+      const stat = fsSync.lstatSync(path.dirname(filePath), { bigint: true });
+      if (!stat.isDirectory() || stat.isSymbolicLink()) throw Error('NATIVE_SAVE_PARENT_INVALID');
+      return [stat.dev, stat.ino, stat.uid, stat.mode].join(':');
+    };
+    const assertCurrent = (expectedFile = file) => {
+      native.assertCurrent();
+      const capability = evaluateCommandCapabilityAuthority({ commandId, capabilityId: commandId === 'cmd.project.save' ? 'cap.project.save' : 'cap.project.saveAs',
+        platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc: readAuthorityCapabilityMatrixDoc() });
+      if ((expectedFile !== file && expectedFile !== filePath) || read().some((value, index) => value !== captured[index])
+        || !captured[0] || captured[0].isDestroyed() || captured[1].isDestroyed() || projectArchiveOpenCapture
+        || currentFilePath !== expectedFile || currentLifecycleSubjectId() !== (expectedFile === file ? subject : 'document:' + computeHash(filePath))
+        || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0 || lastSignaledEditGeneration > snapshot.generation
+        || !capability.ok || !decideCommandEntitlement(commandId, getProductEntitlementTier()).available
+        || !evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId, productCommandRecord: record }).allowed
+        || !isAllowedFilePath(filePath) || (parentIdentity !== null && parent() !== parentIdentity)) throw Error('NATIVE_SAVE_CONTEXT_STALE');
+    };
+    assertCurrent(); parentIdentity = parent(); assertCurrent();
+    return Object.freeze({ filePath, assertCurrent });
+  };
 }
 
 function isAllowedFileNavigationUrl(url) {
@@ -37020,6 +37077,7 @@ async function handleSave() {
     return projectSaveFailure('NO_ACTIVE_WINDOW');
   }
 
+  const nativeSaveEffect = currentFilePath === null ? captureNativeSaveEffect('cmd.project.save') : null;
   const saveSubjectId = currentLifecycleSubjectId();
   const saveTargetPath = currentFilePath;
   const saveSessionId = commentAuthoringSessionId, saveProjectRoot = getProjectRootPath();
@@ -37112,43 +37170,43 @@ async function handleSave() {
     ]
   });
 
-  if (!result.canceled && result.filePath) {
-    let filePath = result.filePath;
-    if (!filePath.endsWith('.txt')) {
-      filePath += '.txt';
-    }
-    if (!isAllowedFilePath(filePath)) {
-      updateStatus('Ошибка');
-      return projectSaveFailure('TARGET_PATH_NOT_ALLOWED');
-    }
+  const nativeTarget = nativeSaveEffect(snapshot, result);
+  if (nativeTarget) {
+    const filePath = nativeTarget.filePath;
+    nativeTarget.assertCurrent();
     if (!isCurrentSaveTarget()) return projectSaveFailure('AUTHORING_TARGET_CHANGED_DURING_DIALOG');
 
     const saveResult = await queueDiskOperation(
       async () => {
         if (!isCurrentSaveTarget()) return staleSaveReceipt();
+        nativeTarget.assertCurrent();
         return commitWriterProjectSnapshot(
         filePath,
         content,
         snapshot.generation,
         snapshot.bookProfile,
         'save new project transaction',
-        { beforeScenePublish: guardSaveTarget, commentEditIntentsJson: snapshot.commentEditIntentsJson },
+        { beforeScenePublish: () => { guardSaveTarget(); nativeTarget.assertCurrent(); }, commentEditIntentsJson: snapshot.commentEditIntentsJson },
       ); },
       'save new project transaction'
     );
     if (saveResult.success) {
+      nativeTarget.assertCurrent();
       if (projectArchiveOpenCapture) return projectSaveFailure('PROJECT_ARCHIVE_OPEN_IN_PROGRESS');
       if (saveResult.projectTransaction !== true) {
         await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       }
       if (currentLifecycleSubjectId() !== saveSubjectId) return projectSaveFailure('SUBJECT_CHANGED_DURING_SAVE');
-      lastAutosaveHash = computeHash(content);
-      currentFilePath = filePath;
-      await saveLastFile({ selectionRange: snapshot.selectionRange });
+      nativeTarget.assertCurrent(); currentFilePath = filePath;
+      const publicationGuard = () => nativeTarget.assertCurrent(filePath);
+      const continuity = await saveLastFile({ selectionRange: snapshot.selectionRange, beforeWrite: publicationGuard });
+      publicationGuard();
+      if (continuity?.ok !== true) return projectSaveFailure('SESSION_CONTINUITY_PERSIST_FAILED');
       const saveAck = await acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
-      if (saveAck.kind === SAVE_ACK_KINDS.SAVED) updateStatus('Сохранено');
+      publicationGuard();
+      if (saveAck.kind === SAVE_ACK_KINDS.SAVED) { lastAutosaveHash = computeHash(content); updateStatus('Сохранено'); }
       if (wasUntitled && saveAck.kind === SAVE_ACK_KINDS.SAVED) {
-        await deleteAutosaveFile();
+        publicationGuard(); await deleteAutosaveFile(); publicationGuard();
         backupHashes.delete(getAutosavePath());
       }
       return saveAck.kind === SAVE_ACK_KINDS.SAVED
@@ -37384,6 +37442,7 @@ async function handleSaveAs() {
     return false;
   }
 
+  const nativeSaveEffect = captureNativeSaveEffect('cmd.project.saveAs');
   const saveSubjectId = currentLifecycleSubjectId();
   const isCurrentSaveAsTarget = () => !projectArchiveOpenCapture && currentLifecycleSubjectId() === saveSubjectId;
   const guardSaveAsTarget = () => {
@@ -37410,43 +37469,43 @@ async function handleSaveAs() {
     ]
   });
 
-  if (!result.canceled && result.filePath) {
-    let filePath = result.filePath;
-    if (!filePath.endsWith('.txt')) {
-      filePath += '.txt';
-    }
-    if (!isAllowedFilePath(filePath)) {
-      updateStatus('Ошибка');
-      return false;
-    }
+  const nativeTarget = nativeSaveEffect(snapshot, result);
+  if (nativeTarget) {
+    const filePath = nativeTarget.filePath;
+    nativeTarget.assertCurrent();
     if (!isCurrentSaveAsTarget()) return false;
 
     const saveResult = await queueDiskOperation(
       async () => {
         if (!isCurrentSaveAsTarget()) return { success: false, code: 'E_SAVE_AUTHORING_TARGET_STALE' };
+        nativeTarget.assertCurrent();
         return commitWriterProjectSnapshot(
         filePath,
         content,
         snapshot.generation,
         snapshot.bookProfile,
         'save as project transaction',
-        { beforeScenePublish: guardSaveAsTarget },
+        { beforeScenePublish: () => { guardSaveAsTarget(); nativeTarget.assertCurrent(); } },
       ); },
       'save as project transaction'
     );
     if (saveResult.success) {
+      nativeTarget.assertCurrent();
       if (!isCurrentSaveAsTarget()) return false;
       if (saveResult.projectTransaction !== true) {
         await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       }
       if (!isCurrentSaveAsTarget()) return false;
-      lastAutosaveHash = computeHash(content);
-      currentFilePath = filePath;
-      await saveLastFile({ selectionRange: snapshot.selectionRange });
+      nativeTarget.assertCurrent(); currentFilePath = filePath;
+      const publicationGuard = () => nativeTarget.assertCurrent(filePath);
+      const continuity = await saveLastFile({ selectionRange: snapshot.selectionRange, beforeWrite: publicationGuard });
+      publicationGuard();
+      if (continuity?.ok !== true) return false;
       const saveAck = await acknowledgeMainOwnedSave(saveResult, content, snapshot.generation);
-      if (saveAck.kind === SAVE_ACK_KINDS.SAVED) updateStatus('Сохранено');
+      publicationGuard();
+      if (saveAck.kind === SAVE_ACK_KINDS.SAVED) { lastAutosaveHash = computeHash(content); updateStatus('Сохранено'); }
       if (wasUntitled && saveAck.kind === SAVE_ACK_KINDS.SAVED) {
-        await deleteAutosaveFile();
+        publicationGuard(); await deleteAutosaveFile(); publicationGuard();
         backupHashes.delete(getAutosavePath());
       }
       return saveAck.kind === SAVE_ACK_KINDS.SAVED;
