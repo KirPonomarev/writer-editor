@@ -835,7 +835,10 @@
     "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
     "test/unit/stage10-imported-project-copy.test.mjs",
     "test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs",
-    "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md"
+    "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md",
+    "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V2.json",
+    ".github/workflows/r24-c1a-hermetic.yml",
+    "docs/tasks/YALKEN_SECURITY_UPDATE_20261027.md"
   ],
   "protectedFiles": [
     {
@@ -864,11 +867,11 @@
     },
     {
       "path": "package.json",
-      "sha256": "96164dc319209209c1edf12c4d1a745b3bc0fcd38a8fc2d943ac143d87338696"
+      "sha256": "cf0d3ec978b446c78a0b1879057461f3de7ae72731a5dfeca90957a3afcbe799"
     },
     {
       "path": "package-lock.json",
-      "sha256": "f4576445e5e73be0ee6388f1379297dd9f9f232f1361b6ab172ccd1c827ec9f1"
+      "sha256": "665c70ae2910d9514a54a0409c8b2fb3e4aa3bd69600b26f3a0faad9968c7559"
     },
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_ORDER_C1_RECIPE_POLICY_V1.json",
@@ -876,7 +879,7 @@
     },
     {
       "path": "scripts/ops/rtk-interop-order-c1.mjs",
-      "sha256": "2d609ea9057920008504060e5a8717e4cdeaafa568d1d1f5bf67091ffefc9a9d"
+      "sha256": "54d7929d7da19ca5bf395dd9abba98b0e484150ff6044541082f2a3de5295c7a"
     },
     {
       "path": "scripts/ops/rtk-interop-order-c1-readback.py",
@@ -888,7 +891,7 @@
     },
     {
       "path": "scripts/ops/rtk-interop-text-order-c1.mjs",
-      "sha256": "0a89e7208c95794229b7482f6629e30767fda172529f93a107a8fa11a225585c"
+      "sha256": "43101b1acef666bf02167d3a6ce4a8ef05399f94ca0d7ec1472e2eefcf851560"
     },
     {
       "path": "scripts/ops/rtk-interop-text-c1-readback.py",
@@ -1132,7 +1135,7 @@
       },
       {
         "path": ".github/workflows/oss-policy.yml",
-        "sha256": "6c7aed71f2953007cc8634bee6445229bff9929dcefd54887cba15d14f7d348a"
+        "sha256": "be974a9a0b44c1329d8f5e2631a5befcef4ab073e4aed75a945882e08bb75607"
       },
       {
         "path": "test/contracts/r24-postbuild-lanes.contract.test.mjs",
@@ -1256,7 +1259,7 @@
       },
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-        "sha256": "8fe586be974f922d227b18852550a6b5deba5d54b3b5b7bb83294e3d13b90a46"
+        "sha256": "efa7438efe42b45e76ebd8c4b785525142b2c7e6c5f2fbb4424f47b6abe858f7"
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
@@ -1280,7 +1283,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "1ece1618bc151f223699d78e0126f574532445ccb70d51f277f6845d19d9c4f5"
+        "sha256": "399d51ff26cdac07c3f6114b43067bea2ddb20391168d60e5d522ca97072a768"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -1316,7 +1319,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "5945db1e5867c880e5fd27ddfa4f7f9d15d068e1e68f706cb27f82e462963ac0"
+        "sha256": "f464dcf72c94c2fa7143738a683ae472e83d72b6bd2b1c2bed8ee3e89296c4bc"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1800,7 +1803,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b4e2f0b9362ab1326385bcd20069b8c6fc430e28639789df8dc38f800134812c"
+        "sha256": "be4d2efbc82a4285b0354dfd41c3b912cbdd14b23828f7c35794076983c22924"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2576,23 +2579,23 @@
       },
       {
         "path": "test/unit/r24-pk0-package-content-trust.test.js",
-        "sha256": "730a8a22dab6ef86845dd77f696dd2abcb4058ce308df1378ead44fd06c0614c"
+        "sha256": "8ab8f67f54201f00b4282a46b62470db6c798642f4da6785dba0979eb34b6d78"
       },
       {
         "path": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
-        "sha256": "8844b36feaef87427b9f9e26bababed47bc375ade4e77b55b7babb8b1ac6a24c"
+        "sha256": "63466e3c8784958d7370659bbfb06ffca7eefb0bd206efb0fe4f034b41808442"
       },
       {
         "path": "src/core/electron-pdf-profile-port-v1.cjs",
-        "sha256": "70acd9dfcd427abb106b77f22a46ae8a90b404518cad06f9a64fcb78a65c91df"
+        "sha256": "698afbd9660e32699e90c4696473c8d1fa1286dc767464dcd6dd0f4659f95737"
       },
       {
         "path": "src/core/pdf-archive-review-profile-v1.mjs",
-        "sha256": "e476c25f970b5275377c1bb13be76e5536848788b8d410cf3471c1fb9dc79997"
+        "sha256": "9a4652843674d29493256af91b3e4bcaa8ec6d13858d6e3897aaacec2b3871fe"
       },
       {
         "path": "test/unit/r24-wp704-pdf-archive-review-integration.test.js",
-        "sha256": "53797bf493c8da1da7d2355120bd4acfa42ac9b3364691e153c40ddf6c6d8c73"
+        "sha256": "6da51a704df06ced5cb103b7d27df2ca977b3d291e27cd66513cdd9ecb676899"
       },
       {
         "path": "src/core/word-paragraph-layout-v1.cjs",
@@ -2756,15 +2759,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "ff26b95cf0d88447382b03863b311096f160b2cb09969c64f191465c73a2ed74"
+        "sha256": "b78f79e480103825e933a42bacb706be29dcb8db7bedc31a86b6876a79674e6f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e9f4d57246719e6f69e2860998c78e424f8035ac70ff19d41a45c3f1374ff770"
+        "sha256": "2730d742504814100241a691dd73fcbf9cb12d0789829ace8fd1b6157eddc567"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "63e379c7be8d43fea882c0ce4868e6d8be655cce5f5274863afd5b31bbd3ddd0"
+        "sha256": "d9c710b036ee3aad76979fcb3611663c700b151c04c9595a189fea28c95b727e"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3304,7 +3307,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "f6535421f7d5eb87b81fa2e973934d27c77914e3b4d62eb7c7fb6d62f6766c18"
+        "sha256": "c0ccdc5cd39d149ab2f870b452f6f2f5f1eb31f724a26982a4d8d68c1e19f47e"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3328,7 +3331,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "34c616141293a06ba17b9163aab810aed36754ce589c949816390854f74a96fe"
+        "sha256": "0ccc967f0ae84dd1922b3799c506e7f001881b005492a1adabe5718b0c27d797"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3420,7 +3423,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "9a8a2264bda25a5ea4cf136935713c78ca31a851946987e627f7a2a1f28ea383"
+        "sha256": "89c3ada92fa96c385a03625da1dee9e28064146a56e3d8fbdd478c043f95b6c3"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3781,6 +3784,18 @@
       {
         "path": "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md",
         "sha256": "820e8acf268c644565f71b9ef9cfab256337e956937f92630654b1905997145e"
+      },
+      {
+        "path": "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V2.json",
+        "sha256": "93a0ee4744df1143e265102e7f3ad94b6d4e95527f3e39de46676194bcc133ab"
+      },
+      {
+        "path": ".github/workflows/r24-c1a-hermetic.yml",
+        "sha256": "655d8230762cf250da1b6480a833bee9e19aa1272d3afaf7014638b475e533b6"
+      },
+      {
+        "path": "docs/tasks/YALKEN_SECURITY_UPDATE_20261027.md",
+        "sha256": "d871b70e8a79adcc901e2aebfd5a3c6a7fedfadba58d15fd28b797acdac68982"
       }
     ],
     "followupRepair": {

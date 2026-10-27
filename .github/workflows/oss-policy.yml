@@ -281,6 +281,8 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci --engine-strict
+      - name: Install the exact Electron binary
+        run: node node_modules/electron/install.js
       - name: Configure the Electron SUID sandbox
         run: |
           sudo chown root:root node_modules/electron/dist/chrome-sandbox

@@ -34,6 +34,8 @@ jobs:
           test "$(npm --version)" = "10.9.0"
       - name: Clean exact engine-strict install
         run: npm ci --engine-strict
+      - name: Install the exact Electron binary
+        run: node node_modules/electron/install.js
       - name: Configure the Electron SUID sandbox on Linux
         if: runner.os == 'Linux'
         shell: bash

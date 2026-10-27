@@ -26411,6 +26411,186 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Same directly authorized COPY delivery phase05: current hashes for bounded test-owned teardown and its exact task, with all production semantics, historical carriers/checkers, inventory classifications and release qualification preserved. No external reviewer, stage, signing, native or release authority is asserted.",
       "sha256": "b4e2f0b9362ab1326385bcd20069b8c6fc430e28639789df8dc38f800134812c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "fbdc2cbfd2e1800e8e529c6b66ca379ebd03bda07595e6da36f04278275a90fa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "c0ccdc5cd39d149ab2f870b452f6f2f5f1eb31f724a26982a4d8d68c1e19f47e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V2.json",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "93a0ee4744df1143e265102e7f3ad94b6d4e95527f3e39de46676194bcc133ab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "89c3ada92fa96c385a03625da1dee9e28064146a56e3d8fbdd478c043f95b6c3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "56562976dcb0c747ba2b483b499a2d4598f20d466afc3d25313090c19dbcefaf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "86f227b847138b6efbce7a39535d697cbac488440f273b68d9e8f5a032dee34a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "f9a77776ed2ad1129c628c5714b6e1d1e7a561278fc20cbc1cb7967f2cec501e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/package-content-trust-pk0.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "8c1e07d4a0b5bf23cae06e0955a18c2b678e0a428ea18fc950356e28c922f593"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/wp704-physical-pdf.cjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "8cbaf25a1c6834f37d3234bbcb03c184e926a90bf2d4dde40b311f6e5707a245"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "0ccc967f0ae84dd1922b3799c506e7f001881b005492a1adabe5718b0c27d797"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "a8dd7c157c8ceda96f6fd8cb3f17a5943c72171b46017d01d7e5e1834d699a6d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-order-c1.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "54d7929d7da19ca5bf395dd9abba98b0e484150ff6044541082f2a3de5295c7a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-text-order-c1.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "43101b1acef666bf02167d3a6ce4a8ef05399f94ca0d7ec1472e2eefcf851560"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "63466e3c8784958d7370659bbfb06ffca7eefb0bd206efb0fe4f034b41808442"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "399d51ff26cdac07c3f6114b43067bea2ddb20391168d60e5d522ca97072a768"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "f464dcf72c94c2fa7143738a683ae472e83d72b6bd2b1c2bed8ee3e89296c4bc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "efa7438efe42b45e76ebd8c4b785525142b2c7e6c5f2fbb4424f47b6abe858f7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T20:57:05.579754+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
+      "sha256": "be4d2efbc82a4285b0354dfd41c3b912cbdd14b23828f7c35794076983c22924"
     }
   ],
   "evidenceStampIds": [

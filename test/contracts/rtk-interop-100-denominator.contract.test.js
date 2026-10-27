@@ -1565,15 +1565,15 @@ it('shared policy binds two exact fields and preserves the delivered single-fiel
   assert.equal(p.textControlIds.length,10);
   assert.equal(p.textRawCheckerSha256,shared.sharedHash(fs.readFileSync(path.join(root,'scripts/ops/rtk-interop-text-c1-readback.py'))));
   const security=await import('../../scripts/ops/r24/package-content-trust-pk0.mjs');
-  const admission=security.readWordMacDependencySecurityAdmission(root);
+  const admission=security.readCurrentWordMacDependencySecurityAdmission(root);
   assert.ok(admission,'current security successor must validate independently');
-  const carrierBytes=fs.readFileSync(path.join(root,security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
+  const carrierBytes=fs.readFileSync(path.join(root,security.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
   assert.equal(shared.sharedHash(carrierBytes),admission.carrierSha256);
   const carrier=JSON.parse(carrierBytes);
   for(const binding of p.protectedFiles) {
     const actual=shared.sharedHash(fs.readFileSync(path.join(root,binding.path)));
     if(actual===binding.sha256) continue;
-    assert.equal(security.admitsWordMacSecurityProtectedBinding(binding,actual,carrier),true,binding.path);
+    assert.equal(security.admitsResolvedWordMacSecurityProtectedBinding(binding,actual,carrier),true,binding.path);
     const previous=securityHistoricalFixture(binding.path);
     assert.equal(shared.sharedHash(previous),binding.sha256,`historical policy remains exact: ${binding.path}`);
   }
@@ -1823,27 +1823,37 @@ test('security successor admits exact candidate ORDER and TEXT checkers without 
  const root=path.resolve(__dirname,'../..'),cp=require('node:child_process');
  const order=await import('../../scripts/ops/rtk-interop-order-c1.mjs'),shared=await import('../../scripts/ops/rtk-interop-text-order-c1.mjs');
  const security=await import('../../scripts/ops/r24/package-content-trust-pk0.mjs');
- const base=security.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha,candidate='c'.repeat(40),delivery='b'.repeat(40);
+ const base=security.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION.baseSha,candidate='c'.repeat(40),delivery='b'.repeat(40);
  for(const entry of [
   {verify:order.verifyOrderPostEvaluation,policy:order.ORDER_POLICY_PATH,base:order.ORDER_BASE,tree:order.ORDER_BASE_TREE,paths:order.ORDER_ADMITTED_PATHS,checker:'scripts/ops/rtk-interop-order-c1.mjs',raw:'scripts/ops/rtk-interop-order-c1-readback.py'},
   {verify:shared.verifyTextOrderPostEvaluation,policy:shared.SHARED_POLICY_PATH,base:shared.SHARED_BASE,tree:shared.SHARED_BASE_TREE,paths:shared.SHARED_ADMITTED_PATHS,checker:'scripts/ops/rtk-interop-text-order-c1.mjs',raw:'scripts/ops/rtk-interop-text-c1-readback.py'}]){
   let tamper=null,missing=false,ancestry=true,drift=[entry.checker];
+  const real=args=>cp.execFileSync('git',args,{cwd:root,stdio:['ignore','pipe','pipe']});
   const git=args=>{
-   if(args[0]==='rev-parse')return args[1]===entry.base+'^{tree}'?entry.tree:candidate;
+   if(args[0]==='rev-parse'){
+    if(args[1]===entry.base+'^{tree}')return entry.tree;
+    if(args[1]===candidate)return candidate;
+    return real(args);
+   }
    if(args[0]==='ls-tree')return entry.policy;
    if(args[0]==='log')return delivery;
-   if(args[0]==='merge-base'){if(args[2]===base&&!ancestry)throw Error('NOT_ANCESTOR');return '';}
+   if(args[0]==='merge-base'){
+    if(args[2]===candidate&&args[3]===base)throw Error('CURRENT_NOT_HISTORICAL');
+    if(args[2]===base&&args[3]===candidate){if(!ancestry)throw Error('NOT_ANCESTOR');return '';}
+    if(args[2]===entry.base&&args[3]===delivery)return '';
+    return real(args);
+   }
    if(args[0]==='diff')return (args[3]===entry.base?entry.paths:drift).join('\n');
    if(args[0]==='show'){
-    if(args[1].startsWith(base+':'))return securityHistoricalFixture(args[1].slice(base.length+1));
+    if(!args[1].startsWith(candidate+':')&&!args[1].startsWith(delivery+':'))return real(args);
     const relative=args[1].slice(args[1].indexOf(':')+1);
-    if(relative===security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH&&missing)throw Error('MISSING_CARRIER');
+    if(relative===security.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH&&missing)throw Error('MISSING_CARRIER');
     const bytes=fs.readFileSync(path.join(root,relative));return relative===tamper?Buffer.concat([bytes,Buffer.from(' ')]):bytes;
    }
    throw Error('UNEXPECTED_GIT');
   };
   const valid=entry.verify({candidateSha:candidate,git});assert.equal(valid.status,'PASS');assert.equal(valid.cellAcceptanceAuthority,false);
-  for(const changed of [security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH,'package.json','package-lock.json','scripts/electron-download-config.cjs',entry.checker]){tamper=changed;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE|IMPLEMENTATION_DRIFT/);}
+  for(const changed of [security.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH,'package.json','package-lock.json','scripts/electron-download-config.cjs',entry.checker]){tamper=changed;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE|IMPLEMENTATION_DRIFT/);}
   tamper=null;missing=true;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE/);missing=false;
   ancestry=false;assert.throws(()=>entry.verify({candidateSha:candidate,git}),/PROTECTED_FILE/);ancestry=true;
   drift=[entry.raw];assert.throws(()=>entry.verify({candidateSha:candidate,git}),/IMPLEMENTATION_DRIFT/);

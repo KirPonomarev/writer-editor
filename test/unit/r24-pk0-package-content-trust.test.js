@@ -15,6 +15,25 @@ async function loadModule() {
   return import(pathToFileURL(MODULE_PATH).href);
 }
 
+const SECURITY_M2 = 'c6328f82d872f6d591bd880fe0676a421072331b';
+function securityGit(args) {
+  return require('node:child_process').execFileSync('git', args, { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
+}
+function securityFilesystemFixture(t, module, historical = false) {
+  const fs = require('node:fs'), os = require('node:os');
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'pk0-security-files-'));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const read = relative => historical ? securityGit(['show', `${SECURITY_M2}:${relative}`]) : fs.readFileSync(path.join(ROOT, relative));
+  const carrierPath = historical ? module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH : module.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH;
+  const carrier = JSON.parse(read(carrierPath));
+  fs.writeFileSync(path.join(directory, '.git'), `gitdir: ${String(securityGit(['rev-parse', '--absolute-git-dir'])).trim()}\n`);
+  for (const relative of new Set([module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH, carrierPath, ...Object.keys(carrier.currentFiles)])) {
+    const target = path.join(directory, relative);
+    fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, read(relative));
+  }
+  return directory;
+}
+
 function programDagFixture() {
   return {
     stages: [
@@ -388,7 +407,7 @@ test('PK0 current Word Mac security successor binds exact graph and rejects expa
   const module=await loadModule(),fs=require('node:fs'),cp=require('node:child_process');
   const admission=module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION;
   const baselinePackageJson=JSON.parse(cp.execFileSync('git',['show','e4be0d8d22937745f691dc6121541278668139ed:package.json'],{cwd:ROOT,encoding:'utf8'}));
-  const packageJson=JSON.parse(fs.readFileSync(path.join(ROOT,'package.json'),'utf8'));
+  const packageJson=JSON.parse(securityGit(['show',`${SECURITY_M2}:package.json`]));
   const evaluate=(pkg,candidate=admission,changedFiles=['package.json','package-lock.json'])=>module.evaluatePackageContentTrust({packageJson:pkg,baselinePackageJson,trackedFiles:trackedFixture(),changedFiles,dependencyMutationAdmission:candidate,wordMacSecuritySuccessorRequired:true,programDag:programDagFixture(),scientificContracts:scientificContractsFixture()});
   assert.equal(evaluate(packageJson).ok,true);
   for(const mutate of [p=>p.dependencies.unapproved='1.0.0',p=>p.devDependencies.electron='41.10.7',p=>p.overrides['fast-uri']='4.1.6',p=>p.engines.node='>=24',p=>p.build.extends='./unapproved.cjs']){
@@ -400,7 +419,8 @@ test('PK0 current Word Mac security successor binds exact graph and rejects expa
 
 test('PK0 repository security successor refuses altered carrier package lock hook and missing admission', async t=>{
   const module=await loadModule(),fs=require('node:fs'),os=require('node:os');
-  assert.deepEqual(module.readWordMacDependencySecurityAdmission(ROOT),module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION);
+  const historicalRoot=securityFilesystemFixture(t,module,true);
+  assert.deepEqual(module.readWordMacDependencySecurityAdmission(historicalRoot),module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'word-mac-security-'));
   t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
   const carrierPath=module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH;
@@ -408,7 +428,7 @@ test('PK0 repository security successor refuses altered carrier package lock hoo
   const gitDir=require('node:child_process').execFileSync('git',['rev-parse','--absolute-git-dir'],{cwd:ROOT,encoding:'utf8'}).trim();
   fs.writeFileSync(path.join(temp,'.git'),`gitdir: ${gitDir}\n`);
   const files=[carrierPath,...Object.keys(carrier.currentFiles)];
-  for(const relative of files){fs.mkdirSync(path.dirname(path.join(temp,relative)),{recursive:true});fs.copyFileSync(path.join(ROOT,relative),path.join(temp,relative));}
+  for(const relative of files){fs.mkdirSync(path.dirname(path.join(temp,relative)),{recursive:true});fs.copyFileSync(path.join(historicalRoot,relative),path.join(temp,relative));}
   assert.ok(module.readWordMacDependencySecurityAdmission(temp));
   for(const relative of files){const target=path.join(temp,relative),before=fs.readFileSync(target);fs.appendFileSync(target,' ');assert.equal(module.readWordMacDependencySecurityAdmission(temp),null,relative);fs.writeFileSync(target,before);}
   fs.unlinkSync(path.join(temp,carrierPath));assert.equal(module.readWordMacDependencySecurityAdmission(temp),null);
@@ -460,6 +480,7 @@ test('PK0 recognizes only the exact squash lineage and retains all candidate byt
 
 test('PK0 filesystem reader supports a main clone without the branch admission object and refuses false squash ancestry', async t => {
   const fs = require('node:fs'), os = require('node:os'), cp = require('node:child_process');
+  const historicalRoot = securityFilesystemFixture(t, await loadModule(), true);
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'word-squash-git-'));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const preload = path.join(directory, 'git-boundary.cjs');
@@ -479,8 +500,120 @@ require('node:module').syncBuiltinESMExports();
   const moduleUrl = require('node:url').pathToFileURL(path.join(ROOT, 'scripts/ops/r24/package-content-trust-pk0.mjs')).href;
   const probe = `import {readWordMacDependencySecurityAdmission} from ${JSON.stringify(moduleUrl)};console.log(JSON.stringify(Boolean(readWordMacDependencySecurityAdmission(process.cwd()))));`;
   const run = invalid => cp.execFileSync(process.execPath, ['--require', preload, '--input-type=module', '-e', probe], {
-    cwd: ROOT, encoding: 'utf8', env: { ...process.env, YALKEN_TEST_SQUASH_BAD_ANCESTRY: invalid ? '1' : '0' },
+    cwd: historicalRoot, encoding: 'utf8', env: { ...process.env, YALKEN_TEST_SQUASH_BAD_ANCESTRY: invalid ? '1' : '0' },
   }).trim();
   assert.equal(run(false), 'true');
   assert.equal(run(true), 'false');
+});
+
+test('PK0 current V2 admits only the exact four approved pins and cannot substitute V1 authority', async () => {
+  const module = await loadModule(), fs = require('node:fs');
+  const admission = module.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION;
+  const baselinePackageJson = JSON.parse(securityGit(['show', `${SECURITY_M2}:package.json`]));
+  const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json')));
+  const evaluate = (pkg, candidate = admission, changedFiles = ['package.json', 'package-lock.json']) => module.evaluatePackageContentTrust({
+    packageJson: pkg, baselinePackageJson, trackedFiles: trackedFixture(), changedFiles,
+    dependencyMutationAdmission: candidate, currentWordMacSecuritySuccessorRequired: true,
+    programDag: programDagFixture(), scientificContracts: scientificContractsFixture(),
+  });
+  assert.equal(evaluate(packageJson).ok, true);
+  for (const mutate of [p => p.devDependencies.electron = '41.10.6', p => p.devDependencies.electron = '43.8.5',
+    p => p.devDependencies.electron = '^43.8.4', p => p.overrides['undici@^6'] = '6.28.1',
+    p => p.overrides['undici@^7'] = '7.29.1', p => p.overrides['fast-uri'] = '4.1.5',
+    p => p.dependencies.unapproved = '1.0.0', p => p.overrides.tar = '7.5.23',
+    p => p.engines.node = '>=24', p => p.scripts.install = 'unapproved', p => p.build.extends = './unapproved.cjs']) {
+    const expanded = structuredClone(packageJson); mutate(expanded); assert.equal(evaluate(expanded).ok, false);
+  }
+  for (const candidate of [null, module.WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION,
+    { ...admission, carrierSha256: '0'.repeat(64) }, { ...admission, baseSha: 'a'.repeat(40) },
+    { ...admission, targetElectronVersion: '43.8.5' }]) assert.equal(evaluate(packageJson, candidate).ok, false);
+  assert.equal(evaluate(packageJson, admission, ['package.json', 'package-lock.json', 'pnpm-lock.yaml']).ok, false);
+});
+
+test('PK0 current filesystem admission consumes exact V2, predecessor and all five physical inputs', async t => {
+  const module = await loadModule(), fs = require('node:fs'), crypto = require('node:crypto');
+  assert.deepEqual(module.readCurrentWordMacDependencySecurityAdmission(ROOT), module.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_MUTATION_ADMISSION);
+  const root = securityFilesystemFixture(t, module);
+  const relative = module.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH, target = path.join(root, relative);
+  const bytes = fs.readFileSync(target), carrier = JSON.parse(bytes);
+  const files = [relative, module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH, ...Object.keys(carrier.currentFiles)];
+  assert.ok(module.readCurrentWordMacDependencySecurityAdmission(root));
+  for (const file of files) {
+    const name = path.join(root, file), original = fs.readFileSync(name);
+    fs.appendFileSync(name, ' '); assert.equal(module.readCurrentWordMacDependencySecurityAdmission(root), null, file);
+    fs.writeFileSync(name, original); assert.ok(module.readCurrentWordMacDependencySecurityAdmission(root));
+  }
+  for (const mutate of [c => c.authority.ownerAuthorizationSha256 = '0'.repeat(64),
+    c => c.baseTree = '0'.repeat(40), c => c.predecessor.sha256 = '0'.repeat(64),
+    c => c.transition.overrides.after['undici@^7'] = '7.29.1', c => c.currentFiles['outside.txt'] = '0'.repeat(64),
+    c => c.previousFiles['package.json'] = '0'.repeat(64), c => c.claims.testsPassed = true]) {
+    const forged = structuredClone(carrier); mutate(forged); fs.writeFileSync(target, JSON.stringify(forged));
+    assert.equal(module.readCurrentWordMacDependencySecurityAdmission(root), null); fs.writeFileSync(target, bytes);
+  }
+  const packagePath = path.join(root, 'package.json'), packageBytes = fs.readFileSync(packagePath);
+  const packageJson = JSON.parse(packageBytes); packageJson.devDependencies.electron = '43.8.5';
+  const forgedPackage = Buffer.from(JSON.stringify(packageJson)); fs.writeFileSync(packagePath, forgedPackage);
+  const coordinated = structuredClone(carrier); coordinated.currentFiles['package.json'] = crypto.createHash('sha256').update(forgedPackage).digest('hex');
+  fs.writeFileSync(target, JSON.stringify(coordinated)); assert.equal(module.readCurrentWordMacDependencySecurityAdmission(root), null, 'coordinated input and carrier forgery');
+  fs.writeFileSync(packagePath, packageBytes); fs.writeFileSync(target, bytes);
+  fs.unlinkSync(target); assert.equal(module.readCurrentWordMacDependencySecurityAdmission(root), null, 'missing V2 cannot fall back');
+});
+
+test('PK0 current candidate requires exact M2 ancestry and complete historical-to-current chain', async () => {
+  const module = await loadModule(), fs = require('node:fs');
+  const current = String(securityGit(['rev-parse', 'HEAD'])).trim();
+  const carrierPath = module.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH;
+  const predecessorPath = module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH;
+  const carrier = JSON.parse(fs.readFileSync(path.join(ROOT, carrierPath)));
+  let fault = null;
+  const git = args => {
+    if (fault === 'ancestry' && args[0] === 'merge-base' && args[2] === SECURITY_M2 && args[3] === current) throw Error('NOT_ANCESTOR');
+    if (fault === 'tree' && args[0] === 'rev-parse' && args[1] === `${SECURITY_M2}^{tree}`) return '0'.repeat(40);
+    if (fault === 'historical-lineage' && args[0] === 'merge-base' && args[3] === SECURITY_M2 && args[2] !== current) throw Error('FALSE_PREDECESSOR_ANCESTRY');
+    let bytes;
+    if (args[0] === 'show' && args[1].startsWith(current + ':')) bytes = fs.readFileSync(path.join(ROOT, args[1].slice(41)));
+    else bytes = securityGit(args);
+    return args[0] === 'show' && args[1] === fault ? Buffer.concat([Buffer.from(bytes), Buffer.from(' ')]) : bytes;
+  };
+  assert.deepEqual(module.readCurrentWordMacDependencySecurityCandidate({ candidateSha: current, git }), carrier);
+  assert.deepEqual(module.resolveWordMacDependencySecurityCandidate({ candidateSha: current, git }), carrier);
+  for (const failure of ['ancestry', 'tree', 'historical-lineage', `${SECURITY_M2}:${predecessorPath}`,
+    ...Object.keys(carrier.previousFiles).map(p => `${SECURITY_M2}:${p}`),
+    ...[carrierPath, predecessorPath, ...Object.keys(carrier.currentFiles)].map(p => `${current}:${p}`)]) {
+    fault = failure;
+    assert.equal(module.readCurrentWordMacDependencySecurityCandidate({ candidateSha: current, git }), null, failure);
+    assert.equal(module.resolveWordMacDependencySecurityCandidate({ candidateSha: current, git }), null, failure);
+  }
+  fault = null;
+  assert.ok(module.resolveWordMacDependencySecurityCandidate({ candidateSha: SECURITY_M2, git: securityGit }), 'explicit historical M2 replay remains valid');
+  const downgraded = args => {
+    if (args[0] === 'show' && args[1].startsWith(current + ':')) {
+      if (args[1] === `${current}:${carrierPath}`) throw Error('MISSING_V2');
+      return securityGit(['show', `${SECURITY_M2}:${args[1].slice(41)}`]);
+    }
+    return securityGit(args);
+  };
+  assert.ok(module.readWordMacDependencySecurityCandidate({ candidateSha: current, git: downgraded }), 'fixture proves V1 alone would be accepted by the historical reader');
+  assert.equal(module.resolveWordMacDependencySecurityCandidate({ candidateSha: current, git: downgraded }), null, 'current resolver must not use otherwise valid historical V1 as fallback');
+});
+
+test('PK0 resolved bridge admits only the pinned predecessor hashes and designated protected paths', async () => {
+  const module = await loadModule(), fs = require('node:fs');
+  const carrier = JSON.parse(fs.readFileSync(path.join(ROOT, module.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH)));
+  const historical = JSON.parse(securityGit(['show', `${SECURITY_M2}:${module.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH}`]));
+  for (const relative of ['package.json', 'package-lock.json', 'scripts/ops/rtk-interop-order-c1.mjs', 'scripts/ops/rtk-interop-text-order-c1.mjs']) {
+    for (const sha256 of [historical.previousFiles[relative], carrier.previousFiles[relative]])
+      assert.equal(module.admitsResolvedWordMacSecurityProtectedBinding({ path: relative, sha256 }, carrier.currentFiles[relative], carrier), true);
+    assert.equal(module.admitsResolvedWordMacSecurityProtectedBinding({ path: relative, sha256: '0'.repeat(64) }, carrier.currentFiles[relative], carrier), false);
+    assert.equal(module.admitsResolvedWordMacSecurityProtectedBinding({ path: relative, sha256: carrier.previousFiles[relative] }, '0'.repeat(64), carrier), false);
+  }
+  for (const relative of ['outside.txt', 'scripts/electron-download-config.cjs', 'src/main.js']) {
+    assert.equal(module.admitsResolvedWordMacSecurityProtectedBinding({ path: relative, sha256: carrier.previousFiles[relative] }, carrier.currentFiles[relative], carrier), false);
+    assert.equal(module.admitsResolvedWordMacSecurityChecker(relative, carrier.currentFiles[relative], carrier), false);
+  }
+  for (const relative of ['scripts/ops/rtk-interop-order-c1.mjs', 'scripts/ops/rtk-interop-text-order-c1.mjs']) {
+    assert.equal(module.admitsResolvedWordMacSecurityChecker(relative, carrier.currentFiles[relative], carrier), true);
+    const forged = structuredClone(carrier); forged.currentFiles[relative] = '0'.repeat(64);
+    assert.equal(module.admitsResolvedWordMacSecurityChecker(relative, '0'.repeat(64), forged), false);
+  }
 });

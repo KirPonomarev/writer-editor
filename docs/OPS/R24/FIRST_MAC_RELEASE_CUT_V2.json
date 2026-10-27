@@ -1095,7 +1095,7 @@
     "docs/OPS/STATUS/YALKEN_ATLAS_MINDMAP_AUTONOMOUS_MASTER_PLAN_V5_REPO_SNAPSHOT.md": "2bf4000f45fe13ad99c3da75c0c197ae19603473539482b642cbf6ec695d36fe",
     "docs/corex/COREX.md": "4f4582deceb92c1b796f098b9cf87eac65317513a1bdfa3429e3d9076b3e914c",
     "docs/corex/COREX.v2.md": "ea25f66352497e58935c673d3bf3c82d828e31dcc3cdad1ca19ef1250512f0bf",
-    "package.json": "96164dc319209209c1edf12c4d1a745b3bc0fcd38a8fc2d943ac143d87338696",
+    "package.json": "cf0d3ec978b446c78a0b1879057461f3de7ae72731a5dfeca90957a3afcbe799",
     "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs": "21d9d8c6e0e214d3142f0d0b5f7f7f9e42ad23858adacb8519aacdea7b415504",
     "scripts/ops/r24/effective-state-compiler.mjs": "6f7d5be6ed58afea72ee32a1145381aaed552461ec0b5d62f61dbdd945fefcf3",
     "scripts/ops/r24/package-claim-compiler-v3.mjs": "c79ee1641b5a4339eb1b8d6a76fb8f0075c9da718e2ab8b2ba22d7d89de56f0c",

@@ -5,7 +5,7 @@ TYPE: OPS_WRITE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 EXECUTION_CANON: v3.13a-final
-STATUS: OPEN_UNACCEPTED_PHASE01_DEPENDENCY_RESOLUTION
+STATUS: OPEN_UNACCEPTED_PHASE03_STRICT_COMPATIBILITY
 BINDING_BASE_SHA: c6328f82d872f6d591bd880fe0676a421072331b
 DESIGN_TOOL_ROUTER: Mechanical existing dependency/profile compatibility; exact value is in validated declaration.
 
@@ -28,6 +28,48 @@ New reports use the verified dated T777 security-update directory; new material 
 
 
 Phase02 at clean checkpoint c7a436cbaf2037f567d6e6e50c250eb63bf228ac admits root dependency-environment preparation under separate ROOT_ENVIRONMENT_DECLARATION_02 preflight. Exact four npm archives may be downloaded to dated T777 materials, fully SHA512 checked and all members safely parsed without execution. Root may then populate only fresh ignored node_modules here with npm ci --ignore-scripts --engine-strict. Current package/lock bytes are frozen. All lifecycle scripts, installer and new binary execution remain blocked pending actual script/engine/license/integrity review; no application/profile launch. This is same-task prerequisite work, not another delivery or an accepted security result. Actor runtime/test paths remain read-only pending prospective phase03.
+
+Phase03 at clean checkpoint 468d6890d79bc7bb839f398720cc12a09b577fe9 prospectively admits the exact 32-path shared scope below. Root OPS declaration9a39576876afb228260a48672a1683e64c8570f056e06e35fafeae6fa273ec3c and separate PRODUCT_CODE actor declaration98acbc6916efd7174f921c68c4f1a2938b048ade77f19dded17c1d0e3c17d704 both passed actual clean preflight before this amendment. Actor preflightbffef458baf8cf3af6b95f7f52f4067238722b93c023ad3415125253fd386ada is independently reread by root. Actor release requires this exact amended HARD task and actual E0 exit0. Root reserves carrier, workflow, factual and generated companion paths; actor reserves existing strict readers, PDF adapter/profile and tests. Package/lock remain frozen.
+
+Actor write paths (13):
+- `scripts/ops/r24/package-content-trust-pk0.mjs`
+- `scripts/ops/r24/corrective/post-audit-toolchain.mjs`
+- `scripts/ops/rtk-interop-order-c1.mjs`
+- `scripts/ops/rtk-interop-text-order-c1.mjs`
+- `src/core/electron-pdf-profile-port-v1.cjs`
+- `src/core/pdf-archive-review-profile-v1.mjs`
+- `scripts/ops/r24/wp704-physical-pdf.cjs`
+- `test/unit/r24-pk0-package-content-trust.test.js`
+- `test/unit/r24-wp704-pdf-archive-review-integration.test.js`
+- `test/contracts/r24-post-audit-corrections.contract.test.mjs`
+- `test/contracts/rtk-interop-100-denominator.contract.test.js`
+- `test/contracts/rtk-interop-word-manuscript.contract.test.js`
+- `test/contracts/rtk-release01-terminal-claims.contract.test.js`
+
+Root write paths (17):
+- `docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V2.json`
+- `.github/workflows/r24-c1a-hermetic.yml`
+- `.github/workflows/oss-policy.yml`
+- `docs/tasks/YALKEN_SECURITY_UPDATE_20261027.md`
+- `docs/CONTEXT.md`
+- `docs/HANDOFF.md`
+- `docs/WORKLOG.md`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json`
+- `scripts/ops/release-candidate.mjs`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+
+Phase03 contract: new V2 current dependency admission binds actual human authorization, exact M2 SHA/tree/ancestry, immutable V1 predecessor, exact approved package/lock and final ORDER/TEXT bytes. Missing or forged V2 cannot fall back to V1. Historical V1 carrier, C6D/WP702 and squash provenance predicates remain exact. Existing PDF profile accepts exactly43.8.4 and its exact new profile ID while retaining sandbox, no-network/navigation, stale identity, bounds, timeout, classic-xref and date normalization. All old negative assertions and8PK0/20WP704 mutants remain; add actual consumed wrong-version, missing/tampered-carrier/lineage/path/tuple and coordinated-forgery tests. No feature, surface or product mutation route is added.
+
+Root may add the existing explicit Electron installer after npm ci and before sandbox permissions at the two declared workflow sites only; keep sandbox protections. There is no new package lifecycle hook. Archive450member source/integrity/license/engine review and explicit installer admission414b9de87a5cfd3fd960dbf4a1e1f0edba1e80638b90da2c194679205e7b18a6 completed before its actual download-only execution. Full/prod audit0 and OSS0 are dependency preparation evidence only. No Electron43 application has yet run.
+
+Current source companions must be generated with existing builders, unchanged test membership/classes/skips, append-only current governance witnesses, all83historical source-carrier bodies/verifiers exact, and all17full-Mac qualifications still UNKNOWN. Current DATA bindings may update only changed admitted sources; new security task/carrier membership is explicit. Original FIRST_MAC_RELEASE_SOURCE_PINS remains exact; current V2 package source pin alone follows approved bytes. Source-only focused tests may execute in bounded owned temporary runtime with full actual command/source receipts. Full baseline, physical PDF/build/native and old-profile upgrade/cold require root exact-source execution plans before launch. No self-PASS or private/default-profile use.
 
 ## DENYLIST
 
