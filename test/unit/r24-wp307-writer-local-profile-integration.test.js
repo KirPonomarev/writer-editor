@@ -5437,9 +5437,15 @@ async function continuityAuthorMainRefusal(t, row, direct = false) {
     opId: 'author-required-' + (direct ? 'direct-' : 'producer-') + row.name });
   const after = continuityAuthorMainSnapshot(x);
   t.diagnostic(JSON.stringify({ causalReach: direct ? 'ACTUAL_MAIN_DIRECT_REQUIRED_CONTROL' : 'ACTUAL_PRODUCER_MAIN_REQUIRED',
-    case: row.name, payload, response, beforeManifest: before.manifest, afterManifest: after.manifest,
-    oldEvents: before.events, newEvents: after.events, oldReceipts: before.receipts, newReceipts: after.receipts,
-    beforeRoster: before.roster, afterRoster: after.roster }));
+    case: row.name, payload, response,
+    beforeManifest: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.manifest))).digest('hex'), lastCommandId: before.manifest.lastCommandId, promiseFactCount: Object.keys(before.manifest.atlas.continuityFactLedgers.promise).length },
+    afterManifest: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.manifest))).digest('hex'), lastCommandId: after.manifest.lastCommandId, promiseFactCount: Object.keys(after.manifest.atlas.continuityFactLedgers.promise).length },
+    oldEvents: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.events))).digest('hex'), count: before.events.length },
+    newEvents: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.events))).digest('hex'), count: after.events.length },
+    oldReceipts: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.receipts))).digest('hex'), count: before.receipts.length },
+    newReceipts: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.receipts))).digest('hex'), count: after.receipts.length },
+    beforeRoster: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.roster))).digest('hex'), count: before.roster.length },
+    afterRoster: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.roster))).digest('hex'), count: after.roster.length } }));
   assert.deepEqual(after.scene, before.scene); x.assertOriginal();
   for (const [id, fact] of Object.entries(before.manifest.atlas.continuityFactLedgers.promise))
     assert.deepEqual(after.manifest.atlas.continuityFactLedgers.promise[id], fact, 'all prior author facts remain exact');
