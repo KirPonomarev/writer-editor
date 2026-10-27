@@ -19266,11 +19266,11 @@ function focusAtlasContinuityLedgerEvidence(button) {
   const expectedQuoteHash = button.dataset.atlasContinuityEvidenceQuoteHash || '';
   const expectedSceneTextHash = button.dataset.atlasContinuityEvidenceSceneHash || '';
   if (!sceneId || sceneId !== currentDocumentId) {
-    updateStatusText(`Atlas evidence route: ${sceneId || 'scene'} нужно открыть вручную`);
+    updateStatusText(`Atlas evidence route: ${sceneId || 'scene'} нужно открыть вручную`, { visible: true });
     return;
   }
   if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) {
-    updateStatusText('Atlas continuity anchor устарел');
+    updateStatusText('Atlas continuity anchor устарел', { visible: true });
     return;
   }
   const sceneText = getPlainText();
@@ -19278,12 +19278,12 @@ function focusAtlasContinuityLedgerEvidence(button) {
   if (!expectedQuote || currentQuote !== expectedQuote
     || hashCanonicalValue(currentQuote) !== expectedQuoteHash
     || hashCanonicalValue(sceneText) !== expectedSceneTextHash) {
-    updateStatusText('Atlas continuity anchor устарел');
+    updateStatusText('Atlas continuity anchor устарел', { visible: true });
     return;
   }
   focusEditorSurface('atlas-continuity-ledger');
   setSelectionRange(start, end);
-  updateStatusText('Atlas continuity evidence открыт в тексте');
+  updateStatusText('Atlas continuity evidence открыт в тексте', { visible: true });
 }
 
 function focusAtlasContinuityAuthorRoute(button) {

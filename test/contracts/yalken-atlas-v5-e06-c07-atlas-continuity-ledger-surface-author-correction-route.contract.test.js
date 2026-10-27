@@ -267,3 +267,205 @@ test('E06 C07: continuity ledger derived sources keep side-effect boundaries clo
     }
   }
 });
+
+// Finite VM ports exercise the actual handler and shared status function. They
+// do not provide a browser layout, computed visibility, AX or filesystem oracle.
+async function continuityEvidenceFeedbackHarness({ currentText, hasStatus = true } = {}) {
+  const vm = require('node:vm');
+  const { hashCanonicalValue } = await loadModule(path.join('src', 'core', 'browser-safe-hash.mjs'));
+  const editorSource = fs.readFileSync(path.join(process.cwd(), 'src', 'renderer', 'editor.js'), 'utf8');
+  function exactFunction(startMarker, endMarker) {
+    const start = editorSource.indexOf(startMarker);
+    const end = editorSource.indexOf(endMarker, start + startMarker.length);
+    assert.ok(start >= 0 && end > start, startMarker);
+    assert.equal(editorSource.indexOf(startMarker, start + startMarker.length), -1, startMarker);
+    return editorSource.slice(start, end);
+  }
+  const sharedStatus = exactFunction('function updateStatusText(', '\nfunction holdInitialDocumentFailure(');
+  const evidenceJump = exactFunction('function focusAtlasContinuityLedgerEvidence(', '\nfunction focusAtlasContinuityAuthorRoute(');
+  const originalText = 'Начало é 🧭 конец.';
+  const quote = 'é 🧭';
+  const start = originalText.indexOf(quote);
+  const end = start + quote.length;
+  const authored = Object.freeze({
+    text: currentText ?? originalText,
+    revision: 42,
+    facts: Object.freeze([{ id: 'fact-original', value: 'author-decision' }]),
+    history: Object.freeze(['revision-40', 'revision-41', 'revision-42']),
+    pulse: Object.freeze(['content-free-event']),
+    epochs: Object.freeze(['epoch-1', 'epoch-2']),
+  });
+  const authoredBefore = JSON.stringify(authored);
+  const effects = { reads: 0, focus: [], selections: [], commands: 0, writes: 0 };
+  const selection = { start: 1, end: 1 };
+  const status = { textContent: 'Готово', style: { visibility: '' } };
+  class EvidenceButton {
+    constructor(dataset) { this.dataset = { ...dataset }; }
+  }
+  function refuseMutation(kind) {
+    effects[kind] += 1;
+    throw new Error('Unexpected product mutation through finite evidence-jump port: ' + kind);
+  }
+  const sandbox = {
+    HTMLElement: EvidenceButton,
+    statusElement: hasStatus ? status : null,
+    hashCanonicalValue,
+    getPlainText() { effects.reads += 1; return authored.text; },
+    focusEditorSurface(reason) { effects.focus.push(reason); },
+    setSelectionRange(from, to) {
+      effects.selections.push([from, to]);
+      selection.start = from; selection.end = to;
+    },
+    dispatchUiCommand() { refuseMutation('commands'); },
+    setPlainText() { refuseMutation('writes'); },
+    writeFileAtomic() { refuseMutation('writes'); },
+  };
+  const context = vm.createContext(sandbox);
+  const api = vm.runInContext("'use strict';\n"
+    + "let currentDocumentId = 'scene-current';\n"
+    + 'let heldCommandStatusMessage = false;\nlet initialDocumentFailureStatus = null;\n'
+    + sharedStatus + '\n' + evidenceJump
+    + '\n({ jump: focusAtlasContinuityLedgerEvidence, status: updateStatusText, held: () => heldCommandStatusMessage });', context);
+  const originalDataset = {
+    atlasContinuityEvidenceSceneId: 'scene-current',
+    atlasContinuityEvidenceStart: String(start),
+    atlasContinuityEvidenceEnd: String(end),
+    atlasContinuityEvidenceQuote: quote,
+    atlasContinuityEvidenceQuoteHash: hashCanonicalValue(quote),
+    atlasContinuityEvidenceSceneHash: hashCanonicalValue(originalText),
+  };
+  function assertAuthoredUnchanged() {
+    assert.equal(JSON.stringify(authored), authoredBefore);
+    assert.equal(effects.commands, 0);
+    assert.equal(effects.writes, 0);
+  }
+  function assertRefused(expectedReads) {
+    assertAuthoredUnchanged();
+    assert.equal(effects.reads, expectedReads);
+    assert.deepEqual(effects.focus, []);
+    assert.deepEqual(effects.selections, []);
+    assert.deepEqual(selection, { start: 1, end: 1 });
+  }
+  function assertSelected() {
+    assertAuthoredUnchanged();
+    assert.deepEqual(effects.focus, ['atlas-continuity-ledger']);
+    assert.deepEqual(effects.selections, [[start, end]]);
+    assert.deepEqual(selection, { start, end });
+    assert.equal(authored.text.slice(selection.start, selection.end), quote);
+  }
+  return {
+    api, effects, status, originalText, assertAuthoredUnchanged, assertRefused, assertSelected,
+    button(patch = {}) { return new EvidenceButton({ ...originalDataset, ...patch }); },
+    observe() { return { text: status.textContent, inlineVisibility: status.style.visibility, held: api.held(), effects }; },
+  };
+}
+
+const continuityEvidenceRefusalCases = [
+  { name: 'missing scene', patch: { atlasContinuityEvidenceSceneId: '' }, reads: 0, message: 'Atlas evidence route: scene нужно открыть вручную' },
+  { name: 'foreign scene', patch: { atlasContinuityEvidenceSceneId: 'scene-other' }, reads: 0, message: 'Atlas evidence route: scene-other нужно открыть вручную' },
+  { name: 'nonfinite start', patch: { atlasContinuityEvidenceStart: 'NaN' }, reads: 0 },
+  { name: 'nonfinite end', patch: { atlasContinuityEvidenceEnd: 'Infinity' }, reads: 0 },
+  { name: 'inverted range', patch: { atlasContinuityEvidenceStart: '8', atlasContinuityEvidenceEnd: '3' }, reads: 0 },
+  { name: 'empty quote', patch: { atlasContinuityEvidenceQuote: '' }, reads: 1 },
+  { name: 'changed quote', patch: { atlasContinuityEvidenceQuote: 'чужая цитата' }, reads: 1 },
+  { name: 'changed quote hash', patch: { atlasContinuityEvidenceQuoteHash: '0'.repeat(64) }, reads: 1 },
+  { name: 'changed scene hash', patch: { atlasContinuityEvidenceSceneHash: 'f'.repeat(64) }, reads: 1 },
+  { name: 'edited source with unchanged quote', suffix: '\nПоздняя правка вне цитаты.', patch: {}, reads: 1 },
+];
+
+test('E06 C07: actual evidence handler refuses stale or foreign sources with explicit held feedback', async (t) => {
+  for (const scenario of continuityEvidenceRefusalCases) {
+    await t.test(scenario.name, async (t) => {
+      const harness = await continuityEvidenceFeedbackHarness({
+        currentText: scenario.suffix ? 'Начало é 🧭 конец.' + scenario.suffix : undefined,
+      });
+      harness.api.jump(harness.button(scenario.patch));
+      harness.assertRefused(scenario.reads);
+      t.diagnostic(JSON.stringify(harness.observe()));
+      assert.equal(harness.status.textContent, scenario.message || 'Atlas continuity anchor устарел');
+      assert.equal(harness.status.style.visibility, 'visible', 'explicit refusal must use the existing visible status override');
+      assert.equal(harness.api.held(), true, 'explicit refusal must survive quiet status updates');
+    });
+  }
+});
+
+test('E06 C07: actual evidence handler ignores invalid elements without a status or selection effect', async () => {
+  const harness = await continuityEvidenceFeedbackHarness();
+  harness.api.jump(null);
+  harness.api.jump({ dataset: harness.button().dataset });
+  harness.assertRefused(0);
+  assert.equal(harness.status.textContent, 'Готово');
+  assert.equal(harness.status.style.visibility, '');
+  assert.equal(harness.api.held(), false);
+});
+
+test('E06 C07: actual valid evidence selects the exact Unicode quote once without author mutation', async () => {
+  const harness = await continuityEvidenceFeedbackHarness();
+  harness.api.jump(harness.button());
+  harness.assertSelected();
+  assert.equal(harness.effects.reads, 1);
+  assert.equal(harness.status.textContent, 'Atlas continuity evidence открыт в тексте');
+});
+
+test('E06 C07: explicit evidence outcomes replace old held messages and resist quiet status', async (t) => {
+  await t.test('fresh valid selection visibly reports success', async (t) => {
+    const harness = await continuityEvidenceFeedbackHarness();
+    harness.api.jump(harness.button());
+    harness.assertSelected();
+    t.diagnostic(JSON.stringify(harness.observe()));
+    assert.equal(harness.status.style.visibility, 'visible');
+    assert.equal(harness.api.held(), true);
+  });
+  await t.test('foreign scene refusal replaces a previous held command message', async (t) => {
+    const harness = await continuityEvidenceFeedbackHarness();
+    harness.api.status('Предыдущее действие', { visible: true });
+    harness.api.jump(harness.button({ atlasContinuityEvidenceSceneId: 'scene-other' }));
+    harness.assertRefused(0);
+    t.diagnostic(JSON.stringify(harness.observe()));
+    assert.equal(harness.status.textContent, 'Atlas evidence route: scene-other нужно открыть вручную');
+    assert.equal(harness.status.style.visibility, 'visible');
+  });
+  await t.test('stale source refusal replaces a previous held command message', async (t) => {
+    const harness = await continuityEvidenceFeedbackHarness();
+    harness.api.status('Предыдущее действие', { visible: true });
+    harness.api.jump(harness.button({ atlasContinuityEvidenceQuoteHash: '0'.repeat(64) }));
+    harness.assertRefused(1);
+    t.diagnostic(JSON.stringify(harness.observe()));
+    assert.equal(harness.status.textContent, 'Atlas continuity anchor устарел');
+  });
+  await t.test('valid current source replaces a held refusal after selecting the exact quote', async (t) => {
+    const harness = await continuityEvidenceFeedbackHarness();
+    harness.api.status('Atlas continuity anchor устарел', { visible: true });
+    harness.api.jump(harness.button());
+    harness.assertSelected();
+    t.diagnostic(JSON.stringify(harness.observe()));
+    assert.equal(harness.status.textContent, 'Atlas continuity evidence открыт в тексте');
+    assert.equal(harness.status.style.visibility, 'visible');
+  });
+  await t.test('a quiet idle message cannot erase an actual explicit evidence refusal', async (t) => {
+    const harness = await continuityEvidenceFeedbackHarness();
+    harness.api.jump(harness.button({ atlasContinuityEvidenceQuoteHash: '0'.repeat(64) }));
+    harness.api.status('Готово');
+    harness.assertRefused(1);
+    t.diagnostic(JSON.stringify(harness.observe()));
+    assert.equal(harness.status.textContent, 'Atlas continuity anchor устарел');
+    assert.equal(harness.status.style.visibility, 'visible');
+  });
+});
+
+test('E06 C07: actual shared visible-status primitive already holds and clears; absent status is safe', async () => {
+  const harness = await continuityEvidenceFeedbackHarness();
+  harness.api.status('Проверенное сообщение', { visible: true });
+  harness.api.status('Тихий фон');
+  assert.equal(harness.status.textContent, 'Проверенное сообщение');
+  assert.equal(harness.status.style.visibility, 'visible');
+  assert.equal(harness.api.held(), true);
+  harness.api.status('Готово', { clear: true });
+  assert.equal(harness.status.textContent, 'Готово');
+  assert.equal(harness.status.style.visibility, '');
+  assert.equal(harness.api.held(), false);
+  harness.assertRefused(0);
+  const missingStatus = await continuityEvidenceFeedbackHarness({ hasStatus: false });
+  assert.doesNotThrow(() => missingStatus.api.jump(missingStatus.button()));
+  missingStatus.assertSelected();
+});

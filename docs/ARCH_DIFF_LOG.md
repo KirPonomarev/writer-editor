@@ -661,3 +661,15 @@ The native source-choice raw failure made the Root-authored Main-only planning i
 Separate actual installed Editor/PM plus complete production callbacks and real parser/checked adapter produce causal29of30 then fixed30of30; initial25of30 unmounted-host setup failure stays unaccepted. The finite liveness facade uses public SDK view state and delegates methods to the original Editor; no browser/native liveness follows. Exact runtime one-line/bundle3byte inverse and all10019source inputs independently reviewed; every prior assertion and675test lines remain frozen.
 
 Old temporary physical profiles vanished for an unknown reason; their immutable complete archives and protected raw history remain verified. Do not reconstruct or retag old runtime identities, fabricate missing raw native control or claim old current physical/cold continuity. New owned native identities require current qualified source/artifact and unchanged plain82B raw oracle. Current source metadata retains all75historical carriers/verifier predicates and17UNKNOWN; final current gates/baseline/native/CI/merge and literal merged proof are still pending. One normal PR revert preserves all valid source/recovery/archive data.
+
+## 2026-10-27 — Existing WSE selection feedback boundary
+
+TASK_ID: YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027
+CLASS: BOUNDED_EXISTING_SEAM_BEHAVIOR_NO_CANON_EXCEPTION
+RUNTIME_CHECKPOINT_SHA: 98eed1c8e0bd252a74ee36a5735d9fe0e0b0b3a0
+
+Read-only source evidence still belongs to Core; existing guarded renderer intent may only focus/select an exact current quote. Four existing calls use the existing held visible-status primitive, preserving every scene/range/quote/hash check, message, focus/selection order and every other editor byte by exact inverse. No new command,port,state machine,writer,UI surface,markup/style,dependency,typing work or async publication. Footer already owns role=status/polite/atomic and native keyboard routes.
+
+FullMac/legacy graph/gate/lease and source authority are distinct: historical selectorNO_ELIGIBLE/RCV00Funresolved is not promoted or resumed. Ongoing human fullMac task authorizes this ordinary bounded task with fresh clean19path preflight and separate test/runtime actor tickets. Preflight wrong PRODUCT_UI classification and task-router literal E0 failure are retained; the correct PRODUCT_CODE classification describes existing-call behavior without a design-contract decision, and no global validator/router/service configuration is changed.
+
+Actual C07causalRED25/8pass/17failure records reaches all guards; same frozen25/25GREEN, current98whole25/25 and normal bundle production0 are source evidence only. Native computed visibility/AX and protected authored bytes/cold remain required. Mechanical355+1current carrier preserves76historical bodies and verifier predicates; DATA822/674, fixed1603inventory/66release and17UNKNOWN retain their original roles. One normal PR revert preserves all author data and raw failed/successful evidence. No fullWSE/Mac/numerical/signing/publication claim.

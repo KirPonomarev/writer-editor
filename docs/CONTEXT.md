@@ -1,3 +1,22 @@
+# WSE evidence jump feedback — source observed, 27 October 2026
+
+TASK_ID: YALKEN_WSE_EVIDENCE_JUMP_FEEDBACK_20261027
+STATUS: BOUNDED_SOURCE_OBSERVED_FINAL_GATES_NATIVE_AND_DELIVERY_PENDING
+RUNTIME_CHECKPOINT_SHA: 98eed1c8e0bd252a74ee36a5735d9fe0e0b0b3a0
+CLAIM_BOUNDARY: Existing explicit selection/status behavior only; finite source evidence is not native/full WSE/Mac acceptance.
+
+PR2171 is fully closed at literal238a8891. Corrected external final report48014f6b5489a8b38edf7c02e8872f069ee36c0feb497767880639ebcf67d965 requalifies actual candidate/merged source,12native sessions, retained82Braw and full package/CI under the original verified-retention contract. Strict recovery-global methodFAIL, first build-checkerFAIL and previous erroneousSTOP interpretation remain immutable; the correction is additive, not a product waiver. Earlier pending predecessor text below is historical.
+
+Read-only fullMac reconciliation preserves original109node171edge program, independently compares99node159edge root closure and actual current scopeVALID/NOT_READY. Every17qualification remainsUNKNOWN. Historical corrective selectorNO_ELIGIBLE/RCV00Funresolved/mutationfalse is not resumed or relabeled; this bounded task follows ongoing direct-human full Mac authority and ordinary task policy.
+
+The primary58596native snapshot contains the exact stale reason but computed visibilityhidden; the entire current handler is literally identical. Separate actor appends202lines after all14161originalC07bytes/fivecases. Actual unchanged-runtime whole25tests8pass17failure records includes15visibility/held-result children and2parent rollups; no cancel/skip/todo or setup-failure credit. Every no-focus/selection/command/write guard executes before the failing feedback assertion. All five originals and three positive/primitive controls pass.
+
+Frozen test499ab5fc remains exact. Separate runtime ticket changes only four existing updateStatusText calls to the already present visible/held option; full inverse restores editor12f585dc. Messages, source/range/quote/hash guards, focus/selection order, shared status helper, footer live region, HTML/CSS/tokens/Main/Core/persistence and all other sources remain. Actual same whole GREEN25of25 and root committed98whole25of25 pass without exclusions. Root normal renderer producer0 changes only generated bundlecd416719. No new surface,state,framework,dependency,network or legacy stage/lease.
+
+Current source assurance appends355bindings/oneguard with76historical carrier bodies and verifier predicates intact; DATA822/674, inventory1603fixed membership/classes/lanes/skips,66release pins and17UNKNOWN. These are current byte witnesses, not completed normal source gates or native acceptance. Final complete affected/current source/Word/corruption/E0/canonical baseline/OSS/audit/perf/guardrail proofs, actual current native visible/AX/no-loss/Quit/cold, current fullCI/normalmerge/literal merged verification remain required.
+
+Dated2026-10-27wse-evidence-jump-feedback T777 evidence and separately admitted owned APFS runtimes preserve every original raw/archive/profile. Existing2high8moderate fullaudit/prod0,59named skips, IME/private-actuator/font/layout and fullAtlas/WSE/Pulse/epoch/numerical/signing/channel limits remain. Black Box and additional platforms stay later.
+
 # Startup source choice — first-adoption source correction, 26 October 2026
 
 TASK_ID: YALKEN_STARTUP_SOURCE_CHOICE_20261026
