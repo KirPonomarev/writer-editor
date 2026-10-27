@@ -26131,6 +26131,76 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Current exact bytes for the same standing-owner fullMac continuity author-input task. One newly appended diagnostic statement now hashes snapshots to address the actual configured baseline output cutoff; every original test byte, assertion, input and case stays exact. Runtime seven statements and bundle remain unchanged. Old freeze01 and exit7/UNKNOWN baseline remain immutable; successor02 requires fresh whole causal/GREEN and unchanged configured baseline. All78historical carriers and verifier/corruption predicates remain. No native, stage, fullMac, signing or release acceptance.",
       "sha256": "3e5a9bb569e4bc459b715e77c65152a2529e5bb21889bac67bb4c199c635a572"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "da84c10d6956878eec934a7ab84b28f69d774388f32123706cf25389be0e9b60"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "25a4337ded680029ca6e09fd05f82f0d7520b954a2fcd36d525b8342416cd70b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "43e5628af10d725da0f1bc83147c8f015585481b8a0c35c3a4d8defbf84a1511"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "44c25d315b707f8beb3bbddb97fa109b6808457f12fbbc67bb6c293663873cf7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "3df1559cf1ba81007db7c3efdc7fc76d6eb071158d0e447eb899e92cecbe69a2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "451ed608837fc77044205b9c20429b7d51c13e24984e1beb7aa2f6a604c7b420"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "e7798a21315b39016a97dbea4570274188539024b2c3f235d816ccecc5d595e3"
     }
   ],
   "evidenceStampIds": [
