@@ -1126,9 +1126,9 @@ let atlasContinuityAuthorDraft = {
   promiseState: 'open',
   entityId: '',
   mentionId: '',
-  factLabel: 'R3 C02 continuity promise',
-  factValue: 'visible UI command path',
-  note: 'R3 C02 visible continuity fact',
+  factLabel: '',
+  factValue: '',
+  note: '',
   factId: '',
 };
 let atlasReportsAuthorDraft = {
@@ -16395,7 +16395,7 @@ async function runAtlasSurfaceProductCommand(commandId, payload = {}, options = 
   }, { isCurrentPresentation: current });
   if (!current()) return result;
   const statusLabel = options.statusLabel || commandId;
-  updateStatusText(result && result.ok ? `${statusLabel} persisted` : (result?.reason || result?.error?.reason || `${statusLabel} failed`));
+  updateStatusText(result && result.ok ? `${statusLabel} persisted` : (result?.reason || result?.error?.reason || `${statusLabel} failed`), { visible: Boolean(result && result.ok) });
   await refreshAtlasCurrentScene({ force: true, isCurrent: current });
   if (!current()) return result;
   void refreshAtlasProductSurfaces({ currentScene: false, isCurrent: current }).catch((error) => {
@@ -16730,11 +16730,11 @@ function getAtlasContinuityFactPayload() {
     }),
     sceneId: mention?.sceneId || atlasCurrentSceneState.sceneId || currentDocumentId || '',
     subjectEntityId: atlasContinuityAuthorDraft.entityId || '',
-    factLabel: atlasContinuityAuthorDraft.factLabel || 'R3 C02 continuity fact',
-    factValue: atlasContinuityAuthorDraft.factValue || 'visible UI command path',
+    factLabel: atlasContinuityAuthorDraft.factLabel || '',
+    factValue: atlasContinuityAuthorDraft.factValue || '',
     promiseState: ledgerKind === 'promise' ? (atlasContinuityAuthorDraft.promiseState || 'open') : '',
     evidenceAnchor: mention?.evidenceAnchor || null,
-    note: atlasContinuityAuthorDraft.note || 'R3 C02 visible continuity fact',
+    note: atlasContinuityAuthorDraft.note || '',
   };
 }
 
