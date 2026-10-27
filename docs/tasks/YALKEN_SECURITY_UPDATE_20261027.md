@@ -26,6 +26,9 @@ Phase01 root owns exactly:
 
 New reports use the verified dated T777 security-update directory; new material containers use its corresponding materials directory. A fresh marked APFS temporary npm cache is admitted for metadata-only lock resolution because physical executable/symlink runtimes cannot live on ExFAT. Later independent node_modules/build/test/native execution requires exact phase admission. Old dependency cohorts, apps, synthetic profiles, raw histories and frozen receipts are preserved.
 
+
+Phase02 at clean checkpoint c7a436cbaf2037f567d6e6e50c250eb63bf228ac admits root dependency-environment preparation under separate ROOT_ENVIRONMENT_DECLARATION_02 preflight. Exact four npm archives may be downloaded to dated T777 materials, fully SHA512 checked and all members safely parsed without execution. Root may then populate only fresh ignored node_modules here with npm ci --ignore-scripts --engine-strict. Current package/lock bytes are frozen. All lifecycle scripts, installer and new binary execution remain blocked pending actual script/engine/license/integrity review; no application/profile launch. This is same-task prerequisite work, not another delivery or an accepted security result. Actor runtime/test paths remain read-only pending prospective phase03.
+
 ## DENYLIST
 
 - No other repository edit during phase01; no runtime, tests, script, schema, UI, workflow, baseline or historical evidence change.
