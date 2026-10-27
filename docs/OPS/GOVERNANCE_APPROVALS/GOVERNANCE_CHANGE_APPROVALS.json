@@ -26351,6 +26351,66 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Same directly authorized COPY delivery: exact single missing task-file witness found by actual H2 failure; mechanical current hashes only. Preserve all committed historical carriers/checkers and every runtime/test behavior; no review/stage/release qualification.",
       "sha256": "a4333ff2990a9a2bf4fa6db4e43f00585d46db845f28af3343a6ed8fb68ee603"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T16:58:51.149082+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_ARCHIVE_COPY_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same directly authorized COPY delivery phase05: current hashes for bounded test-owned teardown and its exact task, with all production semantics, historical carriers/checkers, inventory classifications and release qualification preserved. No external reviewer, stage, signing, native or release authority is asserted.",
+      "sha256": "ddffb9a369105006aad110940609ae095c1fe89724c9fd749bf7f2aaf2cf93f6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T16:58:51.149082+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_ARCHIVE_COPY_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same directly authorized COPY delivery phase05: current hashes for bounded test-owned teardown and its exact task, with all production semantics, historical carriers/checkers, inventory classifications and release qualification preserved. No external reviewer, stage, signing, native or release authority is asserted.",
+      "sha256": "f6535421f7d5eb87b81fa2e973934d27c77914e3b4d62eb7c7fb6d62f6766c18"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T16:58:51.149082+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_ARCHIVE_COPY_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same directly authorized COPY delivery phase05: current hashes for bounded test-owned teardown and its exact task, with all production semantics, historical carriers/checkers, inventory classifications and release qualification preserved. No external reviewer, stage, signing, native or release authority is asserted.",
+      "sha256": "df17a47eda77ad89add41a7934ccf9d83b59d21d3f999f5c48ace4593ee457f8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T16:58:51.149082+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_ARCHIVE_COPY_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same directly authorized COPY delivery phase05: current hashes for bounded test-owned teardown and its exact task, with all production semantics, historical carriers/checkers, inventory classifications and release qualification preserved. No external reviewer, stage, signing, native or release authority is asserted.",
+      "sha256": "834045b4392640dac7bfc31ccd7d4c56ef2968a48e2bdd5dcc99ca2dd23041e7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T16:58:51.149082+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_ARCHIVE_COPY_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same directly authorized COPY delivery phase05: current hashes for bounded test-owned teardown and its exact task, with all production semantics, historical carriers/checkers, inventory classifications and release qualification preserved. No external reviewer, stage, signing, native or release authority is asserted.",
+      "sha256": "21ff3f59012731fb6a0b9acb72d53e21751ebbfe33fe998bd340d74261b9a72f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T16:58:51.149082+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_ARCHIVE_COPY_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same directly authorized COPY delivery phase05: current hashes for bounded test-owned teardown and its exact task, with all production semantics, historical carriers/checkers, inventory classifications and release qualification preserved. No external reviewer, stage, signing, native or release authority is asserted.",
+      "sha256": "b4e2f0b9362ab1326385bcd20069b8c6fc430e28639789df8dc38f800134812c"
     }
   ],
   "evidenceStampIds": [

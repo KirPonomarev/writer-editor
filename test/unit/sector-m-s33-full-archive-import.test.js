@@ -1225,7 +1225,94 @@ function copyHistoryWireEntries(raw, keys) {
   return entries;
 }
 
+function captureAuthoredCopyTeardown(root) {
+  const stat = fs.lstatSync(root, { bigint: true });
+  assert.equal(stat.isDirectory() && !stat.isSymbolicLink(), true);
+  assert.equal(fs.realpathSync(root), root);
+  assert.equal(path.dirname(root), fs.realpathSync(os.tmpdir()));
+  assert.equal(path.basename(root).startsWith('project-archive-s33-'), true);
+  if (typeof process.getuid === 'function') assert.equal(stat.uid, BigInt(process.getuid()));
+  const markerPath = path.join(root, '.task-owner.json');
+  const markerStat = fs.lstatSync(markerPath, { bigint: true });
+  assert.equal(markerStat.isFile() && !markerStat.isSymbolicLink(), true);
+  assert.equal(markerStat.nlink, 1n); assert.equal(markerStat.uid, stat.uid);
+  const fd = fs.openSync(markerPath, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0));
+  try {
+    const opened = fs.fstatSync(fd, { bigint: true });
+    assert.equal(opened.dev, markerStat.dev); assert.equal(opened.ino, markerStat.ino);
+    return { root, stat, markerStat, marker: fs.readFileSync(fd) };
+  } finally { fs.closeSync(fd); }
+}
+
+function prepareAuthoredCopyTeardown(owner) {
+  const cohort = [], descriptors = [], carriers = [];
+  const same = (actual, expected) => ['dev', 'ino', 'uid', 'mode'].every(key => actual[key] === expected[key])
+    && (expected.isDirectory() || ['nlink', 'size', 'mtimeNs', 'ctimeNs'].every(key => actual[key] === expected[key]));
+  const inspect = (target, directory, expected, reason = 'S33_TEARDOWN_IDENTITY') => {
+    const stat = fs.lstatSync(target, { bigint: true });
+    assert.equal(stat.isSymbolicLink(), false, 'S33_TEARDOWN_SYMLINK');
+    assert.equal(directory ? stat.isDirectory() : stat.isFile(), true, 'S33_TEARDOWN_TYPE');
+    assert.equal(stat.dev, owner.stat.dev, 'S33_TEARDOWN_DEVICE');
+    assert.equal(stat.uid, owner.stat.uid, 'S33_TEARDOWN_OWNER');
+    assert.equal(fs.realpathSync(target), target, 'S33_TEARDOWN_PATH');
+    if (expected) assert.equal(same(stat, expected), true, reason);
+    if (!directory) assert.equal(stat.nlink, 1n, 'S33_TEARDOWN_LINKS');
+    // Windows performs the same path/identity checks. Its original fs.rm
+    // handles readonly attributes; POSIX alone needs a directory permission effect.
+    const fd = directory && process.platform === 'win32' ? null
+      : fs.openSync(target, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0));
+    if (fd !== null) {
+      descriptors.push(fd);
+      assert.equal(same(fs.fstatSync(fd, { bigint: true }), stat), true, reason);
+    }
+    const entry = { target, stat, fd }; cohort.push(entry); return entry;
+  };
+  const revalidate = () => {
+    for (const entry of cohort) {
+      const current = fs.lstatSync(entry.target, { bigint: true });
+      assert.equal(current.isSymbolicLink(), false, 'S33_TEARDOWN_SYMLINK');
+      assert.equal(same(current, entry.stat), true, 'S33_TEARDOWN_COHORT_CHANGED');
+      assert.equal(fs.realpathSync(entry.target), entry.target, 'S33_TEARDOWN_PATH');
+      if (entry.fd !== null) assert.equal(same(fs.fstatSync(entry.fd, { bigint: true }), entry.stat), true);
+    }
+  };
+  try {
+    assert.equal(path.dirname(owner.root), fs.realpathSync(os.tmpdir()), 'S33_TEARDOWN_ROOT_PATH');
+    inspect(owner.root, true, owner.stat, 'S33_TEARDOWN_ROOT_IDENTITY');
+    const marker = inspect(path.join(owner.root, '.task-owner.json'), false, owner.markerStat);
+    assert.deepEqual(fs.readFileSync(marker.fd), owner.marker, 'S33_TEARDOWN_MARKER');
+    let parent = owner.root;
+    for (const name of ['Documents', 'craftsman', 'Project Alpha', '.stage10-local', 'recovery', 'import-copy-source']) {
+      parent = path.join(parent, name);
+      if (!fs.lstatSync(parent, { bigint: true, throwIfNoEntry: false })) { revalidate(); return; }
+      inspect(parent, true);
+    }
+    const names = fs.readdirSync(parent);
+    assert.ok(names.length <= 1 && names.every(name => /^[a-f0-9]{64}$/u.test(name)), 'S33_TEARDOWN_CARRIER_SHAPE');
+    const expectedNames = ['command-receipt-authority-store.v2.json', 'product-session.v2.json',
+      'project-truth.latest.v1.json', 'provenance.v1.json'].sort();
+    for (const name of names) {
+      const carrier = inspect(path.join(parent, name), true);
+      assert.deepEqual(fs.readdirSync(carrier.target).sort(), expectedNames, 'S33_TEARDOWN_PAYLOAD_SHAPE');
+      for (const file of expectedNames) inspect(path.join(carrier.target, file), false);
+      if (process.platform !== 'win32') assert.equal(carrier.stat.mode & 0o777n, 0o500n, 'S33_TEARDOWN_CARRIER_MODE');
+      carriers.push(carrier);
+    }
+    revalidate();
+    assert.deepEqual(fs.readdirSync(parent), names, 'S33_TEARDOWN_CARRIER_SHAPE');
+    for (const carrier of carriers) {
+      assert.deepEqual(fs.readdirSync(carrier.target).sort(), expectedNames, 'S33_TEARDOWN_PAYLOAD_SHAPE');
+      revalidate();
+      if (process.platform !== 'win32') fs.fchmodSync(carrier.fd, 0o700);
+    }
+  } finally { for (const fd of descriptors.reverse()) fs.closeSync(fd); }
+}
+
 async function authoredCopyFixture(t, corrupt = null, options = {}) {
+  let teardownOwner;
+  // Node after-hooks are FIFO: validate/unlock only this fixture before the
+  // original harness rm. A denial throws and leaves that original hook unrun.
+  t.after(() => { assert.ok(teardownOwner, 'S33_TEARDOWN_OWNER_UNAVAILABLE'); prepareAuthoredCopyTeardown(teardownOwner); });
   const compile = Module.prototype._compile;
   if (options.guardProbe) Module.prototype._compile = function(source, filename) {
     if (filename === path.join(ROOT, 'src', 'main.js')) source += `
@@ -1241,7 +1328,11 @@ async function authoredCopyFixture(t, corrupt = null, options = {}) {
     return compile.call(this, source, filename);
   };
   let input;
-  try { input = await archiveBridgeFixture(t); } finally { Module.prototype._compile = compile; }
+  try {
+    input = await archiveBridgeFixture(t);
+    teardownOwner = captureAuthoredCopyTeardown(input.tempRoot);
+    t.diagnostic('OWNED_S33_COPY_TEARDOWN ' + input.tempRoot);
+  } finally { Module.prototype._compile = compile; }
   const { pathToFileURL } = require('node:url');
   const load = file => import(pathToFileURL(path.join(ROOT, file)).href);
   const wiring = await load('src/product/stage10ProductWiring.mjs');
@@ -1552,4 +1643,56 @@ test('S33 authored COPY source drift after extraction cannot mint a private fork
   for (const [key, bytes] of Object.entries(input.history)) assert.deepEqual(
     await fsPromises.readFile(path.join(root, path.relative(input.source, input.historyPaths[key]))), bytes);
   assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+});
+
+test('S33 authored COPY teardown refuses changed roots, outside links and unexpected carrier members without mutation', async t => {
+  for (const kind of ['root', 'symlink', 'shape']) await t.test(kind, async t => {
+    const input = await authoredCopyFixture(t, null, { small: true }), requestId = 'copy-teardown-' + kind;
+    assert.equal((await input.invoke({ requestId })).value.preview, true);
+    assert.equal((await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: true })).ok, true);
+    const owner = captureAuthoredCopyTeardown(input.tempRoot);
+    const parent = path.join(input.documentsRoot, 'Project Alpha', '.stage10-local/recovery/import-copy-source');
+    assert.equal((await fsPromises.readdir(parent)).length, 1);
+    if (kind === 'root') {
+      const held = input.tempRoot + '-held';
+      await fsPromises.rename(input.tempRoot, held);
+      await fsPromises.mkdir(input.tempRoot, { mode: 0o700 });
+      const impostor = await fsPromises.lstat(input.tempRoot, { bigint: true });
+      const before = await completeBridgeFilesystemSnapshot(held), foreign = await completeBridgeFilesystemSnapshot(input.tempRoot);
+      try {
+        assert.throws(() => prepareAuthoredCopyTeardown(owner), /S33_TEARDOWN_ROOT_IDENTITY/u);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(held), before);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), foreign);
+      } finally {
+        const current = await fsPromises.lstat(input.tempRoot, { bigint: true });
+        assert.equal(current.dev, impostor.dev); assert.equal(current.ino, impostor.ino);
+        await fsPromises.rmdir(input.tempRoot); await fsPromises.rename(held, input.tempRoot);
+      }
+    } else if (kind === 'symlink') {
+      const held = path.join(input.tempRoot, 'held-carriers'), outside = path.join(input.tempRoot, 'outside-carrier');
+      await fsPromises.mkdir(outside, { mode: 0o755 });
+      await fsPromises.writeFile(path.join(outside, 'untouched.txt'), 'OUTSIDE OWNED TEST TARGET', { mode: 0o400 });
+      await fsPromises.rename(parent, held);
+      await fsPromises.symlink(outside, parent, process.platform === 'win32' ? 'junction' : 'dir');
+      const link = await fsPromises.lstat(parent, { bigint: true });
+      const before = await completeBridgeFilesystemSnapshot(held), foreign = await completeBridgeFilesystemSnapshot(outside);
+      try {
+        assert.throws(() => prepareAuthoredCopyTeardown(owner), /S33_TEARDOWN_SYMLINK/u);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(held), before);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(outside), foreign);
+      } finally {
+        const current = await fsPromises.lstat(parent, { bigint: true });
+        assert.equal(current.isSymbolicLink(), true); assert.equal(current.dev, link.dev); assert.equal(current.ino, link.ino);
+        await fsPromises.unlink(parent); await fsPromises.rename(held, parent);
+      }
+    } else {
+      const extra = path.join(parent, 'unexpected-carrier');
+      await fsPromises.mkdir(extra); await fsPromises.writeFile(path.join(extra, 'untouched.txt'), 'UNKNOWN SHAPE');
+      const before = await completeBridgeFilesystemSnapshot(parent);
+      try {
+        assert.throws(() => prepareAuthoredCopyTeardown(owner), /S33_TEARDOWN_CARRIER_SHAPE/u);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(parent), before);
+      } finally { await fsPromises.unlink(path.join(extra, 'untouched.txt')); await fsPromises.rmdir(extra); }
+    }
+  });
 });

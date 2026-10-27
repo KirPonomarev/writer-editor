@@ -1800,7 +1800,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "a4333ff2990a9a2bf4fa6db4e43f00585d46db845f28af3343a6ed8fb68ee603"
+        "sha256": "b4e2f0b9362ab1326385bcd20069b8c6fc430e28639789df8dc38f800134812c"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2756,15 +2756,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "855a0f913776ac419722f854eeedc3411eb6f7501f7785de9967f65b18f5c79c"
+        "sha256": "ff26b95cf0d88447382b03863b311096f160b2cb09969c64f191465c73a2ed74"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d6fe3b281dd69948dfd331dfb2e6db18e04c0696922b6034d5e2be8caca16ccd"
+        "sha256": "e9f4d57246719e6f69e2860998c78e424f8035ac70ff19d41a45c3f1374ff770"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "13fded9ff643977c8dfbb9a07fd963c23451e8f16e39e7999f10b21b5c21b3d1"
+        "sha256": "63e379c7be8d43fea882c0ce4868e6d8be655cce5f5274863afd5b31bbd3ddd0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3296,7 +3296,7 @@
       },
       {
         "path": "test/unit/sector-m-s33-full-archive-import.test.js",
-        "sha256": "c0504648068106b370c6c811fc28323b85cd4cad909b51d59c6552f80467970c"
+        "sha256": "1468901adb55c6f059d1751466dbee3b778b76bc2b6edaecc01b2d96df6e0f03"
       },
       {
         "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -3304,7 +3304,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "811a3b8d5548434503a5a068e445c92a0995a85469be7460f4846f323b5bd1db"
+        "sha256": "f6535421f7d5eb87b81fa2e973934d27c77914e3b4d62eb7c7fb6d62f6766c18"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3780,7 +3780,7 @@
       },
       {
         "path": "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md",
-        "sha256": "137202b3b8c7ec463facdd9e35c226444baacdc3c8feeba3c455ac28ed6d18df"
+        "sha256": "820e8acf268c644565f71b9ef9cfab256337e956937f92630654b1905997145e"
       }
     ],
     "followupRepair": {
