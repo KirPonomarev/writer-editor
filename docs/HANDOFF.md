@@ -1,3 +1,11 @@
+## 2026-10-27 — Authored COPY: exact task admission correction, baseline failures retained
+
+Same task YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027 and draft PR2174 at b282c196e060d1adb9bf45260932fd667413cbd8. Actual OPS and dependent CI fail SHARED_UNADMITTED_DELTA. The normal local companion run executes 677 tests: 669 pass, eight fail with that same error and zero skips/todos/cancels. Exact comparison finds only the existing task document missing from the DATA admission/source witnesses. All raw failures remain preserved.
+
+Fresh clean H2 root declaration04/preflight0 precedes this mechanical correction within the same 21 paths. Add that single task member, preserve all 81 historical carriers and every verifier/corruption predicate, and append a complete current successor. The normal inventory keeps all 1604 members/classes/skip policies; release 66 source pins and all 17 UNKNOWN cells remain exact. Expected current totals 361 bindings, 828 DATA admitted paths and 680 DATA source pins require actual committed-source verification. No runtime, C5C2 or COPY behavior-test change is included.
+
+The unchanged full H2 npm run exits 1: 3621 unit tests, 3555 pass, seven fail, 59 skipped and zero todo/cancelled. One failure requires a named candidate branch; six new S33 after hooks cannot delete protected historical-carrier files. These are retained failures, not baseline acceptance. Execution-context correction and prospectively admitted test-owned teardown compatibility, current complete proofs, exact package/native warm/cold, CI/merge/merged verification and the remaining full Mac plan stay open. Final Mac candidate remains UNFROZEN; no security, signing or release qualification.
+
 ## 2026-10-27 — Authored archive COPY: reviewed source and current proof companions
 
 Same task YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027; clean semantic checkpoint768865016afd019971f686d724303626c119f210 remains UNACCEPTED_FULL_DELIVERY_PENDING. Root independent review binds frozen runtime and COPY tests: actual122of122 whole,263of263 affected and51of51 focused including genuine9,452,013byte history. These working-source observations do not qualify a new native build. The original native failure and all causal RED/partial results remain immutable.

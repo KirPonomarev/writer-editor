@@ -9,6 +9,7 @@ STATUS: OPEN_UNACCEPTED_SAME_DELIVERY_CHAIN
 ORIGINAL_BINDING_BASE_SHA: 229dd01a412435ecfb26c393944e157d5f8feda5
 PHASE_02_BINDING_BASE_SHA: 780fef0f0d34081f2034a47c71cd2770fcbe77d1
 PHASE_03_BINDING_BASE_SHA: 768865016afd019971f686d724303626c119f210
+PHASE_04_BINDING_BASE_SHA: b282c196e060d1adb9bf45260932fd667413cbd8
 DESIGN_TOOL_ROUTER: Mechanical existing import/persistence correction; exact router value is in validated declarations.
 
 ## MICRO_GOAL
@@ -267,6 +268,16 @@ Root updates exact current hashes through the existing inventory/C2A/DATA/certif
 
 After independent actor review, one coherent mechanical assembly is reviewed and committed as an unaccepted checkpoint. Execute C5A/C5C2 on a clean source checkpoint before tests that generate cwd anchors; execute every remaining affected file without filtering or exclusions. Preserve generated fixtures, original failures and exact source identities. Whole configured baseline, source gates, package, actual native warm/cold, push/PR/CI/merge and exact merged verification remain mandatory.
 
+### Prospective phase04: complete the existing task-file admission
+
+The same delivery is now at clean b282c196e060d1adb9bf45260932fd667413cbd8 and draft PR2174. Actual OPS CI and dependent macOS, Windows, Linux and build jobs fail SHARED_UNADMITTED_DELTA. Independent comparison of all 796 changed paths against 827 DATA admitted paths identifies exactly this existing task document as missing; it is also absent from DATA source pins and the current successor. The unchanged local three-file companion run executes 677 tests: 669 pass, eight fail with that same admission error, zero skipped/todo/cancelled. Its closed raw packet and all prior failures remain preserved. H2 source checks and the independent H2 full baseline retain their actual identities; they cannot qualify a new commit. The full H2 npm run subsequently exits 1: 3621 unit tests, 3555 pass, seven fail and 59 skipped, no todo/cancelled. One failure is the detached candidate checkout branch prerequisite; six are new S33 after-hook EACCES failures under protected historical-carrier directories. Their failure evidence remains; correcting execution context and any separately admitted test-owned cleanup is required before baseline acceptance. This phase does not authorize a behavior-test edit.
+
+Fresh root OPS declaration04/preflight0 and full normative/scoped factual reads precede this amendment. The total task scope stays 21 paths. Phase04 permits only the existing 12 root documentation and OPS companion paths; the phase03 root list except FIRST_MAC_RELEASE_CUT_V2.json and release-candidate.mjs. All six runtime/COPY-test inputs, the complete C5C2 test and both release pin files are frozen H2. No code actor edit or new product behavior is admitted.
+
+Add only this task document to exact DATA admission/source bindings and to a newly appended complete current successor. Preserve all 81 committed historical carrier bodies and every verifier/corruption predicate. Expected totals are 828 DATA admitted paths, 680 DATA source pins and 361 current successor bindings plus one guard; actual normal checkers must verify them. Word Apply changes only the current carrier-name and count literals. Regenerate the normal inventory/C2A hashes while retaining all 1604 memberships, classifications and skip policies. Preserve all 66 release source pins and 17 UNKNOWN qualifications; append only exact current governance witnesses and factual history.
+
+The CW source batch must be closed before any phase04 repository write; the independent H2 baseline may finish with its own unchanged physical inputs. Review the complete mechanical inverse and all 10023 source files, then make a normal unaccepted checkpoint. Before any new long current proof, execute the unchanged DATA post-evaluation and static correction checks on that exact committed source. Complete all required whole corruption/affected/baseline, package, native warm/cold and same-PR delivery/merged checks. No failure, exclusion, historical run or new witness creates acceptance.
+
 ## IMPLEMENTATION_STEPS
 
 1. Revalidate clean phase02 base, mounted identities and startup/authority. Complete separate actor declaration/preflight; root verifies it before this contract and any implementation.
@@ -291,6 +302,9 @@ CHECK_01 выполняется ДО любых изменений; CHECK_02+ в
 - CHECK_08_PRE_PHASE: Phase03 fresh exact clean76886501 bootstrap, required reads and root/actor21path declarations/preflights complete before the first phase03 write. Root verifies both actual preflights and this HARD amendment/E0 before releasing the one actor test path.
 - CHECK_09_POST_PHASE: Whole C5C2 must execute all original cases/10mutants plus the three consumed source controls, with no filtering/skips/todo. Root independently reviews the exact inverse, all10023source inputs and frozen6; C5A whole executes on the subsequent clean checkpoint.
 - CHECK_10_POST_PHASE: Normal physical inventory/C2A/DATA/source-carrier corruption/release/governance checks, complete affected-chain files and whole required baseline, OSS/audits/performance/doctor/guardrails execute on exact committed source. All native/package/delivery obligations above remain required.
+
+- CHECK_11_PRE_PHASE: Phase04 root clean H2 bootstrap, fresh required reads, unchanged 21-path scope and actual OPS declaration04/preflight0 precede all repository writes. Preserve and independently reread the closed H2 677-test failure packet; exact task-document omission is the only admitted repair. C5C2, six runtime/COPY files and release pins stay frozen.
+- CHECK_12_POST_PHASE: Exact task membership and physical source pins, complete appended successor/inverse, unchanged original 81 carriers/checkers, normal inventory/C2A/governance and task E0 must verify. After a normal checkpoint, run the unchanged DATA post-evaluation and static checker before remaining complete current gates. All original native and full delivery obligations remain.
 
 Required phase02 preflight is prospective at literal780f; initial scope/preflight remains tied to229dd. The root and actor declarations contain the same nine task paths and explicit disjoint ownership. Test denominators, hashes, original/current prefixes, skipped/todo/cancel counts and actual argv/status are retained. Native expected source corpus is ten facts with6current4stale and68event/UI/receipt entries each; new active chain counts must be observed and frozen before native.
 

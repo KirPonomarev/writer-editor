@@ -5327,3 +5327,9 @@ YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: C1 configured baseline exited7 wi
 - Semantic checkpoint76886501 preserves authored current/stale facts and immutable donor history; actual122whole/263affected/51focused passes are bounded source observations. Original native and causal failures remain retained.
 - Clean C5 pair27tests26pass isolates the pre-existing global-call oracle; prospective phase03 separate actor strengthens the two existing guarded gateway regions. Whole19of19 and10old mutants pass; root exact inverse protects all other test bytes.
 - Same21path COPY chain updates mechanical current source pins and two missing witness memberships while preserving80historical carriers, all old classifications/skips and17UNKNOWN release qualification cells. Normal physical checkers, full baseline, real package/native, CI and delivery remain pending.
+
+## 2026-10-27 — Authored COPY task admission and baseline diagnosis
+
+- H2 b282c196e060d1adb9bf45260932fd667413cbd8 is draft PR2174. OPS/dependent CI and local 677-test companion run fail on the single missing task-file admission; 669 local cases pass, eight fail, no exclusions. Preserve actual logs and exact source bindings.
+- Fresh phase04 root preflight0 admits only mechanical current witnesses: one task member, append-only successor, unchanged 81 historical carriers/checkers, fixed inventory/classes/skips and frozen release pins/qualifications. Production and behavior tests remain H2.
+- Full H2 npm baseline fails: 3555 pass, seven fail and 59 skipped out of 3621; one detached-branch prerequisite plus six S33 after-hook EACCES failures. Keep the failure; next use a named candidate branch and separately admit test-owned cleanup compatibility before complete baseline/native/delivery acceptance. Full Mac remains incomplete.

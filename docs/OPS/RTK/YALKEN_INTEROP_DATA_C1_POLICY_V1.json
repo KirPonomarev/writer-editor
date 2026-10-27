@@ -834,7 +834,8 @@
     "test/contracts/yalken-atlas-v5-r3-c02-temporal-continuity-saved-query-journeys.contract.test.js",
     "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
     "test/unit/stage10-imported-project-copy.test.mjs",
-    "test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs"
+    "test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs",
+    "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md"
   ],
   "protectedFiles": [
     {
@@ -1799,7 +1800,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "eec207950d0ede1462b78a8e5ee3c2f5ed7ea86a422ef1fdb5855c9ea4a5eabc"
+        "sha256": "a4333ff2990a9a2bf4fa6db4e43f00585d46db845f28af3343a6ed8fb68ee603"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2755,15 +2756,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b5ca13dc8f69720ffb15868e9afa763d2eb67bb6660990ee7b2c053a55b6bb5d"
+        "sha256": "855a0f913776ac419722f854eeedc3411eb6f7501f7785de9967f65b18f5c79c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "854511958ec075c13c980c06aa6c83ad9fd4d75931a0a36b33e764f3f77e62a8"
+        "sha256": "d6fe3b281dd69948dfd331dfb2e6db18e04c0696922b6034d5e2be8caca16ccd"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "95d24abe58256342f970b9a3759b83bcf8062e4fdf688abd6521edaec9f17e57"
+        "sha256": "13fded9ff643977c8dfbb9a07fd963c23451e8f16e39e7999f10b21b5c21b3d1"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3303,7 +3304,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "5f5e96e4fcd06ad5fbd78ff52a793cc358d14f51cdfe17ec640b5c166f767c51"
+        "sha256": "811a3b8d5548434503a5a068e445c92a0995a85469be7460f4846f323b5bd1db"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3776,6 +3777,10 @@
       {
         "path": "test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs",
         "sha256": "f0afa96a76ee42c6c75c51b96df392b0c5b4695c3e16be16b54ff0b6482cd94c"
+      },
+      {
+        "path": "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md",
+        "sha256": "137202b3b8c7ec463facdd9e35c226444baacdc3c8feeba3c455ac28ed6d18df"
       }
     ],
     "followupRepair": {
