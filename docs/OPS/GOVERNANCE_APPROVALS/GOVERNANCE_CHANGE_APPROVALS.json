@@ -26001,6 +26001,76 @@
       "filePath": "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js",
       "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
       "sha256": "499ab5fc70c1b7a0d64f2f47e3505a28ad13acef466914e398c1254aeccad208"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "50323d83a214e40e9b99e49b5b2ad1838d2b4a1080bfa4d3d31b166f08a76cc1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "e831015259d606669c452f9d09de1f5c4b430df2b87e947298543582445d6321"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "0ed7f293dfaca62348ccff5eaf9d7e0a5f580ba94568061d2b50259aa63466ac"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "24d1ff06ece85ae7eb326ded9b619eb4828c4e0fa24bad66420c3790dd3f6578"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "44dc53659a858be5b99938961f9ea87916dfb2a505637524366c044b2e1244fe"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "515da9a71754d8bf314d77e1fe984686d268ad711d5be6ddbd56d63befb9202e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-r3-c02-temporal-continuity-saved-query-journeys.contract.test.js",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "3429a28914aff5ff69aec297fdd6aa63f5474d7b7a5dc4add8a7f15a01145ee6"
     }
   ],
   "evidenceStampIds": [

@@ -5311,3 +5311,7 @@ C7 canonical baseline retained3479tests:3409pass11ENT0count/meta cascades59skips
 - Separate actor only adds visible/held options at four calls, inverse-exact editor12f585dc; current editor80b573e9. Actual normal renderer build0 produces bundlecd416719; root committed98whole25/25, no native claim.
 - Mechanical current355+1carrier,822/674DATA, fixed1603inventory and66release bindings preserve76historical bodies/predicates and17UNKNOWN. No design contract,Core,Main,shared status,HTML/CSS or dependency change.
 - Final current gates/baseline, new current native visibility/AX/no-loss/Quit/cold and full normal delivery/literal merged proofs remain required; no fullMac acceptance.
+
+### 2026-10-27 — continuity author input source correction
+
+YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: actual native/Core/Main baseline confirmed demo-text substitution for empty author fields. Seven existing renderer statements corrected by separate actor; frozen whole R3C02 33of33actual0, normal bundle actual0 and exact inverse/source protection reviewed. Existing Core, Main, identity/capability/source guards and all prior author data/history preserved. Full Main/current source companions, final-candidate baseline/native and complete delivery remain pending; this is not task or full-Mac acceptance. Evidence and compact native container are in the dated T777 task folders.
