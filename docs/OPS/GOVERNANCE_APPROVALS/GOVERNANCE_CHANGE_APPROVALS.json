@@ -26651,6 +26651,216 @@
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
       "rationale": "Same unaccepted security delivery: correct only two inconsistent Git fixtures and their current exact source bindings. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
       "sha256": "e42fea295912bedbc1fa38366ee5237863d06ca09876aece657124e26b7ed27e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "dfbed9a8c207d32d5c11f739c06f23e514d90ffbda998abee4f887960945e9a9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "71d60ad5433452cf389080bd1b6da68808c6a3b629358c7052571760a8dd31a1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "75a04666446e2a28fe4c1e3bbe3f2f5438d6df304cd4917f5c9c7c27f36693ac"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "ab2e3e304681a448b055cd032ef9b5452e79f06a022b995fa9aa9f56b94841cf"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "f33890c0d4b62bd11ddfe42d9a6d4c28ee633bb15bf8cff3010c39bdc7ba1627"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "efc35fefbfeb609cd97e93c6ca7af2ffba27281feacf357436cabc2a6ea39052"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "bdb4f81cc6ce93c41f40a7ba86bf2dce56bbff22ab5d721ec0ae5837d023c8f6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "src/export/docx/atomicWriteBuffer.js",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "c3d5d3a3475271e5cc02e584427841a54e782122f9a46fbcc0e534925521eb1b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "src/export/pdf/pdfExportHandler.js",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "9b2ab7a6da234609e06dc54e221daaa69f5c71963eff05f1f7565eaba507fad3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "2fe0341f8ba0999558c7ccae005f696ebc6d7672c0886b941ef4e2422ed03c83"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "e1d7ec3e90563684cb2e427a33109a489b2ef0787ac7d8d3e23b58e026959dce"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:42:27.899362+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s31-pdf-export.test.js",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "c1b6cb5b9c89aa0c3fcff5ba6a8925005023cdf76a88e84a8dab4061a003ed92"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "87ac93de189329e45fb474d3055d9f67bdc8e246c320b63eaef2d8cefd607c6c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "370ba787b70ceb85610dbaed90597d3cad2acd265d3ccee929b73ccae2a407c1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "ddced59ceb980a7fd790dc4ec1ae8d90c35ee77cea16ad3b68fed7673e175bb3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "9eba7868eb0735b7d45de890d219e6824d318fe4962e7d4b97dbdf19baf69a13"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "0ee0face732b44c3d0073074fddcbc1eaff63f6dcfd844c15d48a96806cb10b4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "775a0b8cbf1f115e7b2c74045380e09cdb98999dde59fd79204d78f88893458f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "d43ff1b690cae0391603362dfaa89906d8c1ba7e1183401911bdfa390135ede5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "8cbd1520d576a2819454433474ea7aee71ad6f70da423ab9c6b900089a3ef00e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:43:33.539050+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s31-pdf-export.test.js",
+      "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
+      "sha256": "0f2bda36a28165767b7d65f5da0ceff1ce6be675f7271005b4dedae3743b2197"
     }
   ],
   "evidenceStampIds": [

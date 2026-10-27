@@ -125115,7 +125115,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "a1b0e4c6ee437fc0bea449d7102ec91431aedd57f050ee1fe551586cff50a30e"
+      "sha256": "8cbd1520d576a2819454433474ea7aee71ad6f70da423ab9c6b900089a3ef00e"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -125543,15 +125543,15 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "b78f79e480103825e933a42bacb706be29dcb8db7bedc31a86b6876a79674e6f"
+      "sha256": "802f3f56dcc87e7bb6c2830150fc3f2a278a3b30e3c6660df3b115c5bb920e6b"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "2730d742504814100241a691dd73fcbf9cb12d0789829ace8fd1b6157eddc567"
+      "sha256": "cdfcfd68c2229f6591af77ae20e0c7e8f7fe164698c39fd7c92f5416f01ae925"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "d9c710b036ee3aad76979fcb3611663c700b151c04c9595a189fea28c95b727e"
+      "sha256": "1766cbe8364737330a429a236d56fc9fa6f5c01e1c213bec2e5a2a38a5c72cbc"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -125939,7 +125939,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "3d63ce8c5637ee7d120092e142601033e4d9e887440b3978f56d44b999af9ae2"
+      "sha256": "d43ff1b690cae0391603362dfaa89906d8c1ba7e1183401911bdfa390135ede5"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -125947,7 +125947,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "02e0dccfb725eda7feb48306d66c65e0341c1481ea1e2cb281ebc111d0b7c8d4"
+      "sha256": "370ba787b70ceb85610dbaed90597d3cad2acd265d3ccee929b73ccae2a407c1"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -125975,7 +125975,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "0ccc967f0ae84dd1922b3799c506e7f001881b005492a1adabe5718b0c27d797"
+      "sha256": "775a0b8cbf1f115e7b2c74045380e09cdb98999dde59fd79204d78f88893458f"
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -126083,7 +126083,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "89c3ada92fa96c385a03625da1dee9e28064146a56e3d8fbdd478c043f95b6c3"
+      "sha256": "ddced59ceb980a7fd790dc4ec1ae8d90c35ee77cea16ad3b68fed7673e175bb3"
     },
     {
       "path": "src/renderer/flags.js",
@@ -126471,7 +126471,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "0b02954b386785536d9b70f6e61137f6bfb07285b0100d0ca512feac4ae5e4e0"
+      "sha256": "87ac93de189329e45fb474d3055d9f67bdc8e246c320b63eaef2d8cefd607c6c"
     },
     {
       "path": "src/renderer/assets/app-icon.svg",
@@ -126551,13 +126551,29 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/YALKEN_SECURITY_UPDATE_20261027.md",
-      "sha256": "904fe20259b434fe2d904167a4519df926e5a6e4407e621ef71d570659dc7247"
+      "sha256": "9514c46c0246a0ef310f5f5b13976f3d74fff5ab1a9f603a809f4bc92dc8fc77"
+    },
+    {
+      "path": "src/export/pdf/pdfExportHandler.js",
+      "sha256": "9b2ab7a6da234609e06dc54e221daaa69f5c71963eff05f1f7565eaba507fad3"
+    },
+    {
+      "path": "src/export/docx/atomicWriteBuffer.js",
+      "sha256": "c3d5d3a3475271e5cc02e584427841a54e782122f9a46fbcc0e534925521eb1b"
+    },
+    {
+      "path": "test/unit/pdf-export-handler.test.js",
+      "sha256": "e1d7ec3e90563684cb2e427a33109a489b2ef0787ac7d8d3e23b58e026959dce"
+    },
+    {
+      "path": "test/unit/sector-m-s31-pdf-export.test.js",
+      "sha256": "0f2bda36a28165767b7d65f5da0ceff1ce6be675f7271005b4dedae3743b2197"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c3f6a5f8d4024b7754d622236224889f3c4a3372ba152f2aec83737d9a6ce828"
+      "sha256": "9eba7868eb0735b7d45de890d219e6824d318fe4962e7d4b97dbdf19baf69a13"
     }
   ]
 });
