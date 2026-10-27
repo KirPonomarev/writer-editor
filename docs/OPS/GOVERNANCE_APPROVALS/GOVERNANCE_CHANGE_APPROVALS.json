@@ -26861,6 +26861,66 @@
       "filePath": "test/unit/sector-m-s31-pdf-export.test.js",
       "rationale": "Same unpushed owner-approved security delivery: repair the observed native PDF active-project source blocker with source/context/target publication guards and maintained real-filesystem regressions. Preserve historical carriers, existing assertions, default writer behavior and all17UNKNOWN qualifications. No native or full-release acceptance.",
       "sha256": "0f2bda36a28165767b7d65f5da0ceff1ce6be675f7271005b4dedae3743b2197"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:53:51.983694+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unaccepted security delivery: correct only the stale current Word Apply binding denominator 364 to368 and its current exact source hashes. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "1060f6f06df4bef23541e9ba450370340384789288241976098ad50f511632a8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:53:51.983694+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unaccepted security delivery: correct only the stale current Word Apply binding denominator 364 to368 and its current exact source hashes. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "0872d969cdd6eb3cb86a3f63232a3195edc8e2d8bc7e04e0c16996f364e02356"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:53:51.983694+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unaccepted security delivery: correct only the stale current Word Apply binding denominator 364 to368 and its current exact source hashes. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "7e3a51d2573a24c2c0d604d0546cfbd771fab6ec46ca11ff5930a2fec1a8fd63"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:53:51.983694+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unaccepted security delivery: correct only the stale current Word Apply binding denominator 364 to368 and its current exact source hashes. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "79be6d2986804d7b020a1b83286b262e3f0d6caed5c280c9c4579f1425542b09"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:53:51.983694+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unaccepted security delivery: correct only the stale current Word Apply binding denominator 364 to368 and its current exact source hashes. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "da4e04be81815b0cc6e450a7ede7662348e5daedb4b18c6977f833c5b691b44c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T23:53:51.983694+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same unaccepted security delivery: correct only the stale current Word Apply binding denominator 364 to368 and its current exact source hashes. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "2897221aa066137157c01d5a044bdb7ad170a9c6a44afaab0749446a9cb60937"
     }
   ],
   "evidenceStampIds": [

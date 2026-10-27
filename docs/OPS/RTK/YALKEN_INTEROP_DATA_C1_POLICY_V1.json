@@ -1807,7 +1807,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "be4d2efbc82a4285b0354dfd41c3b912cbdd14b23828f7c35794076983c22924"
+        "sha256": "2897221aa066137157c01d5a044bdb7ad170a9c6a44afaab0749446a9cb60937"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -3311,7 +3311,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "370ba787b70ceb85610dbaed90597d3cad2acd265d3ccee929b73ccae2a407c1"
+        "sha256": "0872d969cdd6eb3cb86a3f63232a3195edc8e2d8bc7e04e0c16996f364e02356"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3799,7 +3799,7 @@
       },
       {
         "path": "docs/tasks/YALKEN_SECURITY_UPDATE_20261027.md",
-        "sha256": "9514c46c0246a0ef310f5f5b13976f3d74fff5ab1a9f603a809f4bc92dc8fc77"
+        "sha256": "24c46f6d21f8438074921bfa00a355c40802d265d0a5759a77b7a7aa8fdcd8a3"
       },
       {
         "path": "src/export/pdf/pdfExportHandler.js",
