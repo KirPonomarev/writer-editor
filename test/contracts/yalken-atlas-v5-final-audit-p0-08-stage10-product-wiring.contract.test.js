@@ -209,3 +209,144 @@ test('P0 08: source guard keeps adapter browser-safe and blocks receipt-only DON
   assert.match(runnerSource, /DIRECT_BRIDGE_NEGATIVE_NOT_PROVEN/u);
   assert.match(runnerSource, /NETWORK_ADAPTER_REQUIRED_OR_ACCEPTED/u);
 });
+
+function continuityHistoryWireEntries(raw, keys) {
+  const text = raw.toString('utf8');
+  let at = 0;
+  const space = () => { while (/\s/u.test(text[at] || '\0')) at += 1; };
+  function value() {
+    space();
+    if (text[at] === '"') {
+      at += 1;
+      while (at < text.length) {
+        if (text[at++] === '\\') at += 1;
+        else if (text[at - 1] === '"') return;
+      }
+      assert.fail('Unterminated persisted JSON string');
+    }
+    if (text[at] === '{' || text[at] === '[') {
+      const close = text[at++] === '{' ? '}' : ']';
+      space();
+      while (text[at] !== close) {
+        value(); space();
+        if (text[at] === ':') { at += 1; value(); space(); }
+        if (text[at] === ',') { at += 1; space(); }
+        else break;
+      }
+      assert.equal(text[at++], close);
+      return;
+    }
+    const start = at;
+    while (at < text.length && !/[\s,\]}]/u.test(text[at])) at += 1;
+    assert.ok(at > start, 'Persisted JSON value must be present');
+  }
+  for (const wanted of keys) {
+    space(); assert.equal(text[at++], '{'); space();
+    let found = false;
+    while (text[at] !== '}') {
+      const start = at; value(); const key = JSON.parse(text.slice(start, at));
+      space(); assert.equal(text[at++], ':'); space();
+      if (key === wanted) { found = true; break; }
+      value(); space(); if (text[at] === ',') { at += 1; space(); }
+    }
+    assert.equal(found, true, `Missing persisted history field ${wanted}`);
+  }
+  space(); assert.equal(text[at++], '['); space();
+  const entries = [];
+  while (text[at] !== ']') {
+    const start = at; value(); entries.push(Buffer.from(text.slice(start, at)));
+    space(); if (text[at] === ',') { at += 1; space(); }
+  }
+  return entries;
+}
+
+test('P0 08 continuity: operation65 retains all earlier activation evidence through real persistence and reopen', async (t) => {
+  const wiring = await importModule('src/product/stage10ProductWiring.mjs');
+  const { createStage10MainPersistenceAdapter } = await importModule('src/product/stage10MainPersistenceAdapter.mjs');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-continuity-ui-history-test-'));
+  const rootStat = fs.statSync(root);
+  fs.writeFileSync(path.join(root, '.task-owner.json'), JSON.stringify({ taskId: 'YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027', role: 'FINITE_CONTRACT_IO_NOT_NATIVE', root, dev: rootStat.dev, ino: rootStat.ino, uid: rootStat.uid }));
+  const projectId = 'continuity-history-boundary', sceneId = 'scene-1';
+  let interruptAuthorityWrite = false;
+  const makePort = () => createStage10MainPersistenceAdapter({
+    projectRoot: path.join(root, 'project'), anchorRoot: path.join(root, 'anchors'),
+    onKillpoint(name) {
+      if (interruptAuthorityWrite && name === 'after-authority-write') {
+        interruptAuthorityWrite = false;
+        throw new Error('HISTORY_TEST_INTERRUPTED_AUTHORITY');
+      }
+    },
+  });
+  let port = makePort();
+  const options = () => ({ projectId, persistencePort: port, capabilitySnapshot: { capabilities: { stage10LocalProductWiring: true } } });
+  let runtime = await wiring.createStage10ProductRuntime(options());
+  const activation = { mode: wiring.STAGE10_ACTIVATION_MODES.DOM_VISIBLE_CONTROL_LISTENER_FALLBACK, controlId: 'continuity-history-visible-intent' };
+  const edit = (target, text) => target.dispatchVisibleCommand('project.applyTextEdit', { projectId, sceneId, text }, activation);
+  assert.equal((await runtime.dispatchVisibleCommand('project.create', { projectId, sceneId }, activation)).ok, true);
+  for (let index = 1; index < 64; index += 1) assert.equal((await edit(runtime, `Author edit ${index}`)).ok, true);
+  const paths = port.paths(projectId);
+  const raw = () => Object.fromEntries(['session', 'authority', 'anchor', 'anchorRecovery'].map((key) => [key, fs.readFileSync(paths[key])]));
+  const beforeRaw = raw(), beforeSession = runtime.getSession();
+  const beforeBundle = await port.readStage10State(projectId);
+  assert.equal(beforeSession.coreState.data.lastCommandId, 64);
+  assert.equal(beforeSession.uiEvents.length, 64);
+  assert.equal(beforeSession.eventLog.events.length, 64);
+  assert.equal(beforeBundle.authorityStore.receipts.length, 64);
+  const beforeWire = {
+    events: continuityHistoryWireEntries(beforeRaw.session, ['eventLog', 'events']),
+    uiEvents: continuityHistoryWireEntries(beforeRaw.session, ['uiEvents']),
+    receipts: continuityHistoryWireEntries(beforeRaw.authority, ['receipts']),
+  };
+  assert.deepEqual(Object.values(beforeWire).map((entries) => entries.length), [64, 64, 64]);
+  await t.test('boundary refusals preserve all64 activations and every committed byte', async () => {
+    const direct = await runtime.dispatchVisibleCommand('project.applyTextEdit', { projectId, sceneId, text: 'Denied direct write' }, { mode: wiring.STAGE10_ACTIVATION_MODES.FORBIDDEN_DIRECT_BRIDGE, controlId: 'hidden-ipc' });
+    assert.equal(direct.error.code, 'E_STAGE10_DIRECT_BRIDGE_DENIED');
+    assert.deepEqual(runtime.getSession(), beforeSession); assert.deepEqual(raw(), beforeRaw);
+    const unavailable = await wiring.reopenStage10ProductRuntime({ ...options(), capabilitySnapshot: { capabilities: { stage10LocalProductWiring: false } } });
+    assert.equal((await edit(unavailable, 'Denied capability write')).error.code, 'E_STAGE10_CAPABILITY_DENIED');
+    assert.deepEqual(unavailable.getSession(), beforeSession); assert.deepEqual(raw(), beforeRaw);
+    const invalid = await runtime.dispatchVisibleCommand('project.applyTextEdit', { projectId, sceneId: 'missing-scene', text: 'Invalid Core write' }, activation);
+    assert.equal(invalid.error.code, 'E_COLLAB_EVENTLOG_APPLY_COMMAND_FAILED');
+    assert.equal(invalid.error.details.innerCode, 'E_CORE_SCENE_NOT_FOUND');
+    assert.deepEqual(runtime.getSession(), beforeSession); assert.deepEqual(raw(), beforeRaw);
+  });
+  await t.test('real partial authority write rolls back64 histories and requires a fresh reopen', async () => {
+    interruptAuthorityWrite = true;
+    await assert.rejects(() => edit(runtime, 'Interrupted operation65'), /HISTORY_TEST_INTERRUPTED_AUTHORITY/u);
+    assert.deepEqual(runtime.getSession(), beforeSession);
+    assert.notDeepEqual(fs.readFileSync(paths.authority), beforeRaw.authority, 'Fault must reach an actual authority-file publication');
+    assert.deepEqual(fs.readFileSync(paths.session), beforeRaw.session);
+    await assert.rejects(() => edit(runtime, 'Forbidden retry before reopen'), (error) => error.code === 'E_STAGE10_RUNTIME_REOPEN_REQUIRED');
+    port = makePort();
+    const recovered = await port.readStage10State(projectId);
+    assert.equal(recovered.recoveryConsumed, true);
+    assert.deepEqual(recovered.session, beforeSession);
+    runtime = await wiring.reopenStage10ProductRuntime(options());
+    assert.deepEqual(runtime.getSession(), beforeSession); assert.deepEqual(raw(), beforeRaw);
+  });
+  await t.test('operation65 persists and reopens every old encoded activation prefix', async () => {
+    const applied = await edit(runtime, 'Author operation65 e\u0301 🧭');
+    assert.equal(applied.ok, true); assert.equal(applied.receipt.storageWritten, true);
+    const afterRaw = raw(), afterBundle = await port.readStage10State(projectId);
+    const reopened = await wiring.reopenStage10ProductRuntime({ ...options(), persistencePort: makePort() });
+    assert.deepEqual(reopened.getSession(), runtime.getSession()); assert.deepEqual(raw(), afterRaw);
+    assert.equal(reopened.getReadModels().replay.ok, true);
+    assert.equal(reopened.getSession().coreState.data.projects[projectId].scenes[sceneId].text, 'Author operation65 e\u0301 🧭');
+    const afterWire = {
+      events: continuityHistoryWireEntries(afterRaw.session, ['eventLog', 'events']),
+      uiEvents: continuityHistoryWireEntries(afterRaw.session, ['uiEvents']),
+      receipts: continuityHistoryWireEntries(afterRaw.authority, ['receipts']),
+    };
+    assert.equal(afterWire.events.length, 65); assert.equal(afterWire.receipts.length, 65);
+    assert.deepEqual(afterWire.events.slice(0, 64), beforeWire.events);
+    assert.deepEqual(afterWire.receipts.slice(0, 64), beforeWire.receipts);
+    assert.equal(afterBundle.authorityStore.currentHead.receiptCount, 65);
+    assert.equal(reopened.getSession().coreState.data.lastCommandId, 65);
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_RUNTIME_MAIN_ADAPTER_COMMIT_AND_REOPEN65', counts: Object.values(afterWire).map((entries) => entries.length), expected: [65, 65, 65], nativeProof: false, firstOldUiEventHash: crypto.createHash('sha256').update(beforeWire.uiEvents[0]).digest('hex'), firstNewUiEventHash: crypto.createHash('sha256').update(afterWire.uiEvents[0]).digest('hex') }));
+    assert.equal(afterWire.uiEvents.length, 65, 'Operation65 must retain all64 earlier persisted UI activations');
+    assert.deepEqual(afterWire.uiEvents.slice(0, 64), beforeWire.uiEvents);
+    assert.deepEqual(reopened.getSession().uiEvents.slice(0, 64), beforeSession.uiEvents);
+    assert.equal(reopened.getSession().uiEvents[64].opId, applied.receipt.operationId);
+    assert.equal(reopened.getSession().uiEvents[64].directBridge, false);
+  });
+});
