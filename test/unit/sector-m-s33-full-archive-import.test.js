@@ -1172,3 +1172,527 @@ test('S33 actual guarded SaveAs and untitled Save refuse queued or completed-rec
     } finally { clearTimeout(timer); release.resolve({ success: true }); resume.resolve(); fsPromises.readdir = readdir; await opening; }
   });
 });
+
+// The fixture uses the real Core, Stage10 runtime, persistence adapter and ZIP
+// producer. Electron is inert; Main's normal guarded bridge remains executable.
+function copyHistoryWireEntries(raw, keys) {
+  const text = raw.toString('utf8');
+  let at = 0;
+  const space = () => { while (/\s/u.test(text[at] || '\0')) at += 1; };
+  function value() {
+    space();
+    if (text[at] === '"') {
+      at += 1;
+      while (at < text.length) {
+        if (text[at++] === '\\') at += 1;
+        else if (text[at - 1] === '"') return;
+      }
+      assert.fail('Unterminated persisted JSON string');
+    }
+    if (text[at] === '{' || text[at] === '[') {
+      const close = text[at++] === '{' ? '}' : ']';
+      space();
+      while (text[at] !== close) {
+        value(); space();
+        if (text[at] === ':') { at += 1; value(); space(); }
+        if (text[at] === ',') { at += 1; space(); }
+        else break;
+      }
+      assert.equal(text[at++], close);
+      return;
+    }
+    const start = at;
+    while (at < text.length && !/[\s,\]}]/u.test(text[at])) at += 1;
+    assert.ok(at > start, 'Persisted JSON value must be present');
+  }
+  for (const wanted of keys) {
+    space(); assert.equal(text[at++], '{'); space();
+    let found = false;
+    while (text[at] !== '}') {
+      const start = at; value(); const key = JSON.parse(text.slice(start, at));
+      space(); assert.equal(text[at++], ':'); space();
+      if (key === wanted) { found = true; break; }
+      value(); space(); if (text[at] === ',') { at += 1; space(); }
+    }
+    assert.equal(found, true, `Missing persisted history field ${wanted}`);
+  }
+  space(); assert.equal(text[at++], '['); space();
+  const entries = [];
+  while (text[at] !== ']') {
+    const start = at; value(); entries.push(Buffer.from(text.slice(start, at)));
+    space(); if (text[at] === ',') { at += 1; space(); }
+  }
+  return entries;
+}
+
+function captureAuthoredCopyTeardown(root) {
+  const stat = fs.lstatSync(root, { bigint: true });
+  assert.equal(stat.isDirectory() && !stat.isSymbolicLink(), true);
+  assert.equal(fs.realpathSync(root), root);
+  assert.equal(path.dirname(root), fs.realpathSync(os.tmpdir()));
+  assert.equal(path.basename(root).startsWith('project-archive-s33-'), true);
+  if (typeof process.getuid === 'function') assert.equal(stat.uid, BigInt(process.getuid()));
+  const markerPath = path.join(root, '.task-owner.json');
+  const markerStat = fs.lstatSync(markerPath, { bigint: true });
+  assert.equal(markerStat.isFile() && !markerStat.isSymbolicLink(), true);
+  assert.equal(markerStat.nlink, 1n); assert.equal(markerStat.uid, stat.uid);
+  const fd = fs.openSync(markerPath, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0));
+  try {
+    const opened = fs.fstatSync(fd, { bigint: true });
+    assert.equal(opened.dev, markerStat.dev); assert.equal(opened.ino, markerStat.ino);
+    return { root, stat, markerStat, marker: fs.readFileSync(fd) };
+  } finally { fs.closeSync(fd); }
+}
+
+function prepareAuthoredCopyTeardown(owner) {
+  const cohort = [], descriptors = [], carriers = [];
+  const same = (actual, expected) => ['dev', 'ino', 'uid', 'mode'].every(key => actual[key] === expected[key])
+    && (expected.isDirectory() || ['nlink', 'size', 'mtimeNs', 'ctimeNs'].every(key => actual[key] === expected[key]));
+  const inspect = (target, directory, expected, reason = 'S33_TEARDOWN_IDENTITY') => {
+    const stat = fs.lstatSync(target, { bigint: true });
+    assert.equal(stat.isSymbolicLink(), false, 'S33_TEARDOWN_SYMLINK');
+    assert.equal(directory ? stat.isDirectory() : stat.isFile(), true, 'S33_TEARDOWN_TYPE');
+    assert.equal(stat.dev, owner.stat.dev, 'S33_TEARDOWN_DEVICE');
+    assert.equal(stat.uid, owner.stat.uid, 'S33_TEARDOWN_OWNER');
+    assert.equal(fs.realpathSync(target), target, 'S33_TEARDOWN_PATH');
+    if (expected) assert.equal(same(stat, expected), true, reason);
+    if (!directory) assert.equal(stat.nlink, 1n, 'S33_TEARDOWN_LINKS');
+    // Windows performs the same path/identity checks. Its original fs.rm
+    // handles readonly attributes; POSIX alone needs a directory permission effect.
+    const fd = directory && process.platform === 'win32' ? null
+      : fs.openSync(target, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0));
+    if (fd !== null) {
+      descriptors.push(fd);
+      assert.equal(same(fs.fstatSync(fd, { bigint: true }), stat), true, reason);
+    }
+    const entry = { target, stat, fd }; cohort.push(entry); return entry;
+  };
+  const revalidate = () => {
+    for (const entry of cohort) {
+      const current = fs.lstatSync(entry.target, { bigint: true });
+      assert.equal(current.isSymbolicLink(), false, 'S33_TEARDOWN_SYMLINK');
+      assert.equal(same(current, entry.stat), true, 'S33_TEARDOWN_COHORT_CHANGED');
+      assert.equal(fs.realpathSync(entry.target), entry.target, 'S33_TEARDOWN_PATH');
+      if (entry.fd !== null) assert.equal(same(fs.fstatSync(entry.fd, { bigint: true }), entry.stat), true);
+    }
+  };
+  try {
+    assert.equal(path.dirname(owner.root), fs.realpathSync(os.tmpdir()), 'S33_TEARDOWN_ROOT_PATH');
+    inspect(owner.root, true, owner.stat, 'S33_TEARDOWN_ROOT_IDENTITY');
+    const marker = inspect(path.join(owner.root, '.task-owner.json'), false, owner.markerStat);
+    assert.deepEqual(fs.readFileSync(marker.fd), owner.marker, 'S33_TEARDOWN_MARKER');
+    let parent = owner.root;
+    for (const name of ['Documents', 'craftsman', 'Project Alpha', '.stage10-local', 'recovery', 'import-copy-source']) {
+      parent = path.join(parent, name);
+      if (!fs.lstatSync(parent, { bigint: true, throwIfNoEntry: false })) { revalidate(); return; }
+      inspect(parent, true);
+    }
+    const names = fs.readdirSync(parent);
+    assert.ok(names.length <= 1 && names.every(name => /^[a-f0-9]{64}$/u.test(name)), 'S33_TEARDOWN_CARRIER_SHAPE');
+    const expectedNames = ['command-receipt-authority-store.v2.json', 'product-session.v2.json',
+      'project-truth.latest.v1.json', 'provenance.v1.json'].sort();
+    for (const name of names) {
+      const carrier = inspect(path.join(parent, name), true);
+      assert.deepEqual(fs.readdirSync(carrier.target).sort(), expectedNames, 'S33_TEARDOWN_PAYLOAD_SHAPE');
+      for (const file of expectedNames) inspect(path.join(carrier.target, file), false);
+      if (process.platform !== 'win32') assert.equal(carrier.stat.mode & 0o777n, 0o500n, 'S33_TEARDOWN_CARRIER_MODE');
+      carriers.push(carrier);
+    }
+    revalidate();
+    assert.deepEqual(fs.readdirSync(parent), names, 'S33_TEARDOWN_CARRIER_SHAPE');
+    for (const carrier of carriers) {
+      assert.deepEqual(fs.readdirSync(carrier.target).sort(), expectedNames, 'S33_TEARDOWN_PAYLOAD_SHAPE');
+      revalidate();
+      if (process.platform !== 'win32') fs.fchmodSync(carrier.fd, 0o700);
+    }
+  } finally { for (const fd of descriptors.reverse()) fs.closeSync(fd); }
+}
+
+async function authoredCopyFixture(t, corrupt = null, options = {}) {
+  let teardownOwner;
+  // Node after-hooks are FIFO: validate/unlock only this fixture before the
+  // original harness rm. A denial throws and leaves that original hook unrun.
+  t.after(() => { assert.ok(teardownOwner, 'S33_TEARDOWN_OWNER_UNAVAILABLE'); prepareAuthoredCopyTeardown(teardownOwner); });
+  const compile = Module.prototype._compile;
+  if (options.guardProbe) Module.prototype._compile = function(source, filename) {
+    if (filename === path.join(ROOT, 'src', 'main.js')) source += `
+      module.exports.__copyGuard = {
+        capture: () => ({ window:mainWindow,contents:mainWindow.webContents,projectName:currentProjectName,
+          filePath:currentFilePath,session:commentAuthoringSessionId,owner:activeStage10ApplicationBootstrap,generation:lastSignaledEditGeneration }),
+        prepare: (root,manifest) => bootstrapStage10ApplicationForProject(root,manifest,'reopen',{publish:false}),
+        open: openImportedArchiveProject,
+        foreign(file) { currentProjectName='Foreign'; currentFilePath=file; },
+        retireSession() { commentAuthoringSessionId='foreign-copy-session'; lastSignaledEditGeneration+=1; },
+        state: () => ({ projectName:currentProjectName,owner:activeStage10ApplicationBootstrap,capture:!!projectArchiveOpenCapture })
+      };`;
+    return compile.call(this, source, filename);
+  };
+  let input;
+  try {
+    input = await archiveBridgeFixture(t);
+    teardownOwner = captureAuthoredCopyTeardown(input.tempRoot);
+    t.diagnostic('OWNED_S33_COPY_TEARDOWN ' + input.tempRoot);
+  } finally { Module.prototype._compile = compile; }
+  const { pathToFileURL } = require('node:url');
+  const load = file => import(pathToFileURL(path.join(ROOT, file)).href);
+  const wiring = await load('src/product/stage10ProductWiring.mjs');
+  const { createStage10MainPersistenceAdapter } = await load('src/product/stage10MainPersistenceAdapter.mjs');
+  const { hashCanonicalValue } = await load('src/core/browser-safe-hash.mjs');
+  const { parseObservablePayload } = await load('src/renderer/documentContentEnvelope.mjs');
+  const projectId = 'project-authored-copy-donor';
+  const sceneId = 'tree-node-33333333333333333333333333333333';
+  const entityId = 'copy-character', scenePath = 'roman/Part One/Scene 01.txt';
+  const text = parseObservablePayload(input.files.get(scenePath).toString('utf8')).text;
+  const sourceManifestPath = path.join(input.source, PROJECT_MANIFEST_FILENAME);
+  await fsPromises.writeFile(sourceManifestPath, JSON.stringify({ ...JSON.parse(await fsPromises.readFile(sourceManifestPath)), projectId }));
+  const port = createStage10MainPersistenceAdapter({ projectRoot: input.source,
+    anchorRoot: path.join(input.tempRoot, 'donor-anchors') });
+  const runtime = await wiring.createStage10ProductRuntime({ projectId, persistencePort: port });
+  const activation = { mode: wiring.STAGE10_ACTIVATION_MODES.DOM_VISIBLE_CONTROL_LISTENER_FALLBACK,
+    controlId: 'archive-authored-copy-fixture' };
+  const dispatch = async (command, payload, context) => {
+    const result = await runtime.dispatchVisibleCommand(command, { projectId, ...payload }, activation, context);
+    assert.equal(result.ok, true, JSON.stringify(result.error));
+  };
+  await dispatch('project.create', { sceneId });
+  const draftCount = options.small ? 1 : 56;
+  for (let i = 0; i < draftCount; i++) await dispatch('project.applyTextEdit', { sceneId, text: i === draftCount - 1 ? text : `draft ${i}` });
+  await dispatch('atlas.entity.create', { entityId, name: 'Герой Ёж' });
+  const anchor = { schemaVersion: 'atlas.evidenceAnchor.v1', anchorId: 'copy-evidence', projectId,
+    sceneId, entityId, startOffset: 0, endOffset: text.length, quote: text,
+    quoteHash: hashCanonicalValue(text), sceneTextHash: hashCanonicalValue(text) };
+  for (let i = 0; i < 10; i++) {
+    // Generate the genuine fixed latest-recovery file through the existing
+    // canonical transaction; it must survive the copy's next author command.
+    const previousText = await fsPromises.readFile(sourceManifestPath, 'utf8');
+    const digest = value => require('node:crypto').createHash('sha256').update(value).digest('hex');
+    const context = i === 9 ? { canonicalProjectTruth: {
+      projectId, coreState: runtime.getSession().coreState, sourceHash: digest(previousText), sourceRevision: 0,
+      prepareMutation({ nextCoreState }) {
+        const nextText = JSON.stringify({ ...JSON.parse(previousText), atlas: nextCoreState.data.projects[projectId].atlas,
+          lastCommandId: nextCoreState.data.lastCommandId });
+        return { schemaVersion: 'yalken.stage10.projectTruthMutation.v1', projectId, relativePath: PROJECT_MANIFEST_FILENAME,
+          previousText, nextText, previousHash: digest(previousText), nextHash: digest(nextText) };
+      },
+    } } : undefined;
+    await dispatch('atlas.continuityFact.record', {
+    sceneId, subjectEntityId: entityId, factId: `authored-copy-fact-${i}`,
+    ledgerKind: ['location', 'knowledge', 'object', 'promise'][i % 4],
+    factLabel: `Авторский факт ${i}`, factValue: `Ёж / e\u0301 / 👩🏽‍🚀 ${i}`,
+    promiseState: 'open', note: `Не терять примечание ${i}`, evidenceAnchor: anchor,
+    }, context);
+  }
+  if (options.staleScene) {
+    const before = runtime.getSession(), previous = await port.readStage10State(projectId);
+    const changedText = text + '\nНастоящая следующая редакция сцены.';
+    await dispatch('project.applyTextEdit', { sceneId, text: changedText });
+    const written = await input.fileManager.writeFileAtomic(path.join(input.source, scenePath), changedText);
+    assert.equal(written.success, true);
+    const after = runtime.getSession(), next = await port.readStage10State(projectId);
+    assert.deepEqual(after.coreState.data.projects[projectId].atlas.continuityFactLedgers,
+      before.coreState.data.projects[projectId].atlas.continuityFactLedgers);
+    assert.deepEqual(after.eventLog.events.slice(0, 68), before.eventLog.events);
+    assert.deepEqual(after.uiEvents.slice(0, 68), before.uiEvents);
+    assert.deepEqual(next.authorityStore.receipts.slice(0, 68), previous.authorityStore.receipts);
+  }
+  const manifestPath = path.join(input.source, PROJECT_MANIFEST_FILENAME);
+  const manifest = JSON.parse(await fsPromises.readFile(manifestPath));
+  manifest.projectId = projectId;
+  manifest.treeIdentity = { schemaVersion: 1, nodes: {
+    'tree-node-11111111111111111111111111111111': { bindingKey: 'file:roman/Part One', kind: 'part', present: true },
+    [sceneId]: { bindingKey: 'file:' + scenePath, kind: 'chapter-file', present: true },
+  } };
+  manifest.atlas = runtime.getSession().coreState.data.projects[projectId].atlas;
+  manifest.lastCommandId = runtime.getSession().coreState.data.lastCommandId;
+  if (corrupt) corrupt(manifest);
+  await fsPromises.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+  const historyPaths = port.paths(projectId);
+  const history = Object.fromEntries(['session', 'authority', 'projectTruthRecovery'].map(key => [key, fs.readFileSync(historyPaths[key])]));
+  const session = JSON.parse(history.session), authority = JSON.parse(history.authority);
+  const operationCount = 12 + draftCount + (options.staleScene ? 1 : 0);
+  assert.deepEqual([session.eventLog.events.length, session.uiEvents.length, authority.receipts.length],
+    [operationCount, operationCount, operationCount]);
+  const zip = (await buildProjectArchiveBuffer(input.source)).buffer;
+  await fsPromises.writeFile(input.archivePath, zip);
+  const before = await completeBridgeFilesystemSnapshot(input.source);
+  const query = (queryId, payload) => input.bridge.handlers.get('ui:workspace-query-bridge')(input.event(),
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:workspace-query-bridge', queryId, payload));
+  const facts = Object.values(manifest.atlas.continuityFactLedgers).flatMap(ledger => Object.values(ledger));
+  return { ...input, projectId, sceneId, entityId, manifest, manifestPath, history, historyPaths, createStage10MainPersistenceAdapter, wiring,
+    zip, before, query, facts, anchor, scenePath, hashCanonicalValue };
+}
+
+test('S33 authored COPY retains scene authority, ten usable facts and original history, then accepts a new canonical author command', async t => {
+  const input = await authoredCopyFixture(t), requestId = 'authored-copy-valid';
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const result = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: true });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.notEqual(result.value.projectId, input.projectId);
+  const copyId = result.value.projectId, copyRoot = path.join(input.documentsRoot, 'Project Alpha');
+  const readManifest = async () => JSON.parse(await fsPromises.readFile(path.join(copyRoot, PROJECT_MANIFEST_FILENAME)));
+  const copyManifest = await readManifest();
+  const copyHistory = async () => {
+    const parent = path.join(copyRoot, '.stage10-local/recovery/import-copy-source');
+    const directories = await fsPromises.readdir(parent); assert.equal(directories.length, 1);
+    const carrier = path.join(parent, directories[0]);
+    const index = JSON.parse(await fsPromises.readFile(path.join(carrier, 'provenance.v1.json')));
+    assert.equal(index.role, 'HISTORICAL_ONLY'); assert.equal(index.sourceProjectId, input.projectId); assert.equal(index.projectId, copyId);
+    assert.deepEqual([index.denominator.events, index.denominator.uiEvents, index.denominator.receipts], [68, 68, 68]);
+    return Object.fromEntries(await Promise.all(Object.keys(input.history).map(async key =>
+      [key, await fsPromises.readFile(path.join(carrier, path.basename(input.historyPaths[key])))])));
+  };
+  // These controls execute before each causal assertion and do not depend on
+  // a repaired view. No old event, activation or receipt may be rewritten.
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+  assert.deepEqual(await fsPromises.readFile(input.archivePath), input.zip);
+  assert.deepEqual(await copyHistory(), input.history);
+  assert.equal(copyManifest.copiedFromProjectId, input.projectId);
+  await t.test('copied scene identity resolves in metadata and Atlas under only its own project scope', async () => {
+    const metadata = await input.query('query.metadataInspector', { projectId: copyId, nodeId: input.sceneId });
+    const atlas = await input.query('query.atlasCurrentScene', { projectId: copyId, nodeId: input.sceneId });
+    const foreign = await input.query('query.metadataInspector', { projectId: input.projectId, nodeId: input.sceneId });
+    t.diagnostic(JSON.stringify({ metadataState: metadata.state, metadataReason: metadata.unavailableReason,
+      atlasState: atlas.atlasCurrentScene?.state, atlasReason: atlas.atlasCurrentScene?.unavailableReason,
+      foreignReason: foreign.unavailableReason, openedDocumentId: result.value.documentId }));
+    assert.equal(foreign.unavailableReason, 'E_TREE_NODE_PROJECT_MISMATCH');
+    assert.equal(metadata.state, 'ready', 'COPY_METADATA_MUST_RESOLVE_REGISTERED_SCENE');
+    assert.notEqual(atlas.atlasCurrentScene.state, 'unavailable');
+    assert.equal(result.value.documentId, input.sceneId);
+    assert.deepEqual(copyManifest.treeIdentity, input.manifest.treeIdentity);
+  });
+  await t.test('all ten semantic values and current evidence reach actual WSE without foreign identity', async () => {
+    const response = await input.query('query.atlasContinuityLedgerSurface', { projectId: copyId, explicitOpen: true });
+    const surface = response.atlasContinuityLedgerSurface;
+    t.diagnostic(JSON.stringify({ state: surface?.state, reason: surface?.unavailableReason,
+      inputFacts: surface?.wseStateEvidence?.denominator?.inputFacts }));
+    assert.notEqual(surface.state, 'unavailable', 'COPY_WSE_MUST_ACCEPT_CURRENT_FACT_IDENTITIES');
+    assert.equal(surface.wseStateEvidence.denominator.inputFacts, 10);
+    const visibleFacts = surface.wseStateEvidence.views.livingEvidenceBible;
+    assert.equal(visibleFacts.rows.length, 10); assert.equal(visibleFacts.omittedCount, 0);
+    assert.equal(visibleFacts.rows.every(fact => fact.evidenceState === 'current'), true);
+    const copiedFacts = Object.values(copyManifest.atlas.continuityFactLedgers).flatMap(ledger => Object.values(ledger));
+    assert.equal(copiedFacts.length, input.facts.length);
+    for (const old of input.facts) {
+      const fact = copiedFacts.find(row => row.id === old.id);
+      const { sourceHash, projectId, evidenceAnchor, ...semantics } = fact;
+      const { sourceHash: oldHash, projectId: oldProject, evidenceAnchor: oldAnchor, ...oldSemantics } = old;
+      assert.deepEqual(semantics, oldSemantics);
+      assert.equal(projectId, copyId); assert.equal(evidenceAnchor.projectId, copyId);
+      assert.deepEqual({ ...evidenceAnchor, projectId: oldProject }, oldAnchor);
+      const { sourceHash: ignoredHash, ...base } = fact;
+      assert.equal(sourceHash, input.hashCanonicalValue(base));
+    }
+  });
+  await t.test('one ordinary Kernel author-command in COPY is durable and preserves every prior history object', async () => {
+    const port = input.createStage10MainPersistenceAdapter({ projectRoot: copyRoot,
+      anchorRoot: path.join(input.tempRoot, 'userData', 'stage10-integrity-anchors') });
+    const before = await port.readStage10State(copyId), manifestBefore = await fsPromises.readFile(path.join(copyRoot, PROJECT_MANIFEST_FILENAME));
+    const activeRaw = async () => Object.fromEntries(await Promise.all(['session', 'authority', 'anchor', 'anchorRecovery']
+      .map(async key => [key, await fsPromises.readFile(port.paths(copyId)[key])])));
+    const beforeRaw = await activeRaw();
+    const payload = { projectId: copyId, sceneId: input.sceneId, subjectEntityId: input.entityId,
+      ledgerKind: 'promise', factId: 'copy-new-author-fact', factLabel: 'Новый факт в копии',
+      factValue: 'Сохраняется после открытия', promiseState: 'open',
+      evidenceAnchor: { ...input.anchor, projectId: copyId } };
+    const invalid = await input.invoke({ ...payload, evidenceAnchor: { ...payload.evidenceAnchor, sceneTextHash: '0'.repeat(64) } }, 'atlas.continuityFact.record');
+    assert.equal(invalid.ok, false);
+    assert.deepEqual(await port.readStage10State(copyId), before);
+    assert.deepEqual(await activeRaw(), beforeRaw);
+    assert.deepEqual(await fsPromises.readFile(path.join(copyRoot, PROJECT_MANIFEST_FILENAME)), manifestBefore);
+    assert.deepEqual(await copyHistory(), input.history);
+    const recorded = await input.invoke(payload, 'atlas.continuityFact.record');
+    t.diagnostic(JSON.stringify({ commandOk: recorded.ok, reason: recorded.reason, code: recorded.value?.error?.code,
+      kernelCalls: input.bridge.kernelCalls.slice(-1) }));
+    assert.equal(recorded.ok, true, 'COPY_CANONICAL_AUTHOR_COMMAND_MUST_BE_AVAILABLE');
+    assert.equal((await readManifest()).atlas.continuityFactLedgers.promise['copy-new-author-fact'].factValue, payload.factValue);
+    assert.deepEqual(await copyHistory(), input.history);
+    const after = await port.readStage10State(copyId);
+    const afterRaw = await activeRaw();
+    assert.equal(after.session.projectId, copyId);
+    assert.equal(after.session.eventLog.events.length, before.session.eventLog.events.length + 1);
+    assert.equal(after.session.uiEvents.length, before.session.uiEvents.length + 1);
+    assert.equal(after.authorityStore.receipts.length, before.authorityStore.receipts.length + 1);
+    assert.deepEqual(after.session.eventLog.events.slice(0, -1), before.session.eventLog.events);
+    assert.deepEqual(after.session.uiEvents.slice(0, -1), before.session.uiEvents);
+    assert.deepEqual(after.authorityStore.receipts.slice(0, -1), before.authorityStore.receipts);
+    for (const [file, keys] of [['session', ['eventLog', 'events']], ['session', ['uiEvents']], ['authority', ['receipts']]]) {
+      const old = copyHistoryWireEntries(beforeRaw[file], keys), next = copyHistoryWireEntries(afterRaw[file], keys);
+      assert.equal(next.length, old.length + 1); assert.deepEqual(next.slice(0, old.length), old);
+    }
+    const reopened = await input.wiring.reopenStage10ProductRuntime({ projectId: copyId, persistencePort: port });
+    assert.deepEqual(reopened.getSession(), after.session); assert.deepEqual(await copyHistory(), input.history);
+    assert.deepEqual(await activeRaw(), afterRaw);
+    t.diagnostic(JSON.stringify({ oldSourceOperations: 68, activeBefore: before.session.eventLog.events.length,
+      activeAfter: after.session.eventLog.events.length, semanticLastCommandId: after.session.coreState.data.lastCommandId }));
+    assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+  });
+});
+
+test('S33 authored COPY rejects foreign current fact or evidence scope before publication', async t => {
+  for (const field of ['fact', 'evidence']) await t.test(field, async t => {
+    const input = await authoredCopyFixture(t, manifest => {
+      const fact = Object.values(manifest.atlas.continuityFactLedgers.location)[0];
+      if (field === 'fact') fact.projectId = 'unrelated-external-project';
+      else fact.evidenceAnchor.projectId = 'unrelated-external-project';
+    });
+    const requestId = 'authored-copy-foreign-' + field;
+    assert.equal((await input.invoke({ requestId })).value.preview, true);
+    const result = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: false });
+    t.diagnostic(JSON.stringify({ field, ok: result.ok, reason: result.reason }));
+    assert.equal(result.ok, false, 'COPY_FOREIGN_CURRENT_SCOPE_MUST_NOT_GAIN_AUTHORITY');
+    assert.deepEqual(await fsPromises.readdir(input.documentsRoot), []);
+    assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+    assert.deepEqual(await fsPromises.readFile(input.archivePath), input.zip);
+    assert.deepEqual(input.bridge.sent.filter(([channel]) => channel === 'editor:set-text'), []);
+  });
+});
+
+test('S33 authored COPY preserves stale evidence after a real source edit instead of repairing its anchors', async t => {
+  const input = await authoredCopyFixture(t, null, { staleScene: true }), requestId = 'authored-copy-stale';
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const result = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: true });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const response = await input.query('query.atlasContinuityLedgerSurface', { projectId: result.value.projectId, explicitOpen: true });
+  const wse = response.atlasContinuityLedgerSurface.wseStateEvidence;
+  assert.equal(wse.denominator.inputFacts, 10); assert.equal(wse.state, 'degraded');
+  assert.equal(wse.views.livingEvidenceBible.rows.length, 10);
+  assert.equal(wse.views.livingEvidenceBible.rows.every(fact => fact.evidenceState === 'staleOrMissing'), true);
+  const copyRoot = path.join(input.documentsRoot, 'Project Alpha');
+  assert.deepEqual(await fsPromises.readFile(path.join(copyRoot, input.scenePath)),
+    await fsPromises.readFile(path.join(input.source, input.scenePath)));
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+  const parent = path.join(copyRoot, '.stage10-local/recovery/import-copy-source');
+  const directories = await fsPromises.readdir(parent); assert.equal(directories.length, 1);
+  for (const [key, bytes] of Object.entries(input.history)) assert.deepEqual(
+    await fsPromises.readFile(path.join(parent, directories[0], path.basename(input.historyPaths[key]))), bytes);
+});
+
+test('S33 authored COPY without immediate open later opens and reopens through ordinary Kernel lifecycle', async t => {
+  const input = await authoredCopyFixture(t, null, { small: true, guardProbe: true }), requestId = 'copy-ordinary-later-open';
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const copied = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: false });
+  assert.equal(copied.ok, true, JSON.stringify(copied));
+  assert.equal(input.bridge.sent.filter(([name]) => name === 'editor:set-text').length, 0);
+  const projectId = copied.value.projectId;
+  assert.equal(input.main.__copyGuard.state().owner, null);
+  let editor = { content: '', generation: 0 };
+  input.bridge.sendEffect = (channel, payload) => {
+    if (channel === 'editor:set-text') editor = { ...payload, generation: 0 };
+    if (channel === 'editor:snapshot-request') queueMicrotask(() => input.bridge.listeners.get('editor:snapshot-response')(
+      input.event(), { requestId: payload.requestId, snapshot: editor }));
+  };
+  for (let i = 0; i < 2; i++) {
+    const opened = await input.invoke({ projectId }, 'cmd.project.lifecycle.open');
+    assert.equal(opened.ok, true, JSON.stringify(opened));
+    assert.equal(input.main.__copyGuard.state().owner.getProjectId(), projectId);
+    const metadata = await input.query('query.metadataInspector', { projectId, nodeId: input.sceneId });
+    assert.equal(metadata.state, 'ready');
+  }
+  const root = path.join(input.documentsRoot, 'Project Alpha'), port = input.createStage10MainPersistenceAdapter({ projectRoot: root,
+    anchorRoot: path.join(input.tempRoot, 'userData', 'stage10-integrity-anchors') });
+  const reopened = await input.wiring.reopenStage10ProductRuntime({ projectId, persistencePort: port });
+  assert.equal(reopened.getSession().projectId, projectId);
+  const parent = path.join(root, '.stage10-local/recovery/import-copy-source'), [carrier] = await fsPromises.readdir(parent);
+  for (const [key, bytes] of Object.entries(input.history)) assert.deepEqual(
+    await fsPromises.readFile(path.join(parent, carrier, path.basename(input.historyPaths[key]))), bytes);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+});
+
+for (const kind of ['project', 'window', 'session']) test('S33 queued foreign ' + kind + ' wins after async COPY verification before synchronous publication', async t => {
+  const input = await authoredCopyFixture(t, null, { small: true, guardProbe: true }), requestId = 'copy-late-' + kind;
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const copied = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: false });
+  assert.equal(copied.ok, true, JSON.stringify(copied));
+  const probe = input.main.__copyGuard, root = path.join(input.documentsRoot, 'Project Alpha');
+  const manifest = JSON.parse(await fsPromises.readFile(path.join(root, PROJECT_MANIFEST_FILENAME)));
+  const binding = { projectId: copied.value.projectId, projectRoot: root, manifestPath: path.join(root, PROJECT_MANIFEST_FILENAME), manifest, sourceSchemaVersion: 1 };
+  const prepared = await probe.prepare(root, manifest), captured = probe.capture(), verify = prepared.bootstrap.reopenProjectRuntime;
+  let foreignObserved = false, ownerAtForeign;
+  prepared.bootstrap.reopenProjectRuntime = async (...args) => {
+    const result = await verify(...args);
+    // First queued completion precedes the async prepare continuation; the
+    // second runs after it returns but before its awaiting caller resumes.
+    queueMicrotask(() => queueMicrotask(() => {
+      foreignObserved = true; ownerAtForeign = probe.state().owner;
+      if (kind === 'project') probe.foreign(path.join(input.documentsRoot, 'Foreign', 'Scene.txt'));
+      else if (kind === 'session') probe.retireSession();
+      else input.bridge.window.webContents = { ...input.bridge.window.webContents, id: 999 };
+    }));
+    return result;
+  };
+  await assert.rejects(() => probe.open(binding, captured, prepared), { code: 'E_PROJECT_ARCHIVE_OPEN_CONTEXT_STALE' });
+  assert.equal(foreignObserved, true); assert.equal(ownerAtForeign, captured.owner);
+  assert.equal(probe.state().owner, captured.owner); assert.equal(probe.state().capture, false);
+  assert.equal(input.bridge.sent.filter(([name]) => name === 'editor:set-text').length, 0);
+  if (kind === 'project') assert.equal(probe.state().projectName, 'Foreign');
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+});
+
+test('S33 authored COPY source drift after extraction cannot mint a private fork intent', async t => {
+  const input = await authoredCopyFixture(t, null, { small: true });
+  const result = await input.main.handleImportProjectArchive({ confirmed: true, requestId: 'copy-source-drift',
+    archivePath: input.archivePath, mode: 'copy', openAfterImport: true }, {
+    afterExtractBeforeFinalMove: async () => fsPromises.appendFile(input.archivePath, 'SOURCE CHANGED'),
+  });
+  assert.equal(result.ok, false); assert.equal(result.error.reason, 'PROJECT_ARCHIVE_COPY_CONTEXT_STALE');
+  const root = path.join(input.documentsRoot, 'Project Alpha'), manifest = JSON.parse(await fsPromises.readFile(path.join(root, PROJECT_MANIFEST_FILENAME)));
+  const port = input.createStage10MainPersistenceAdapter({ projectRoot: root,
+    anchorRoot: path.join(input.tempRoot, 'userData', 'stage10-integrity-anchors') });
+  await assert.rejects(fsPromises.lstat(path.join(port.paths(manifest.projectId).anchorRoot, 'import-copy-intent.v1.json')), { code: 'ENOENT' });
+  await assert.rejects(() => port.readStage10State(manifest.projectId), error => error.code === 'E_STAGE10_PERSISTENCE_SPLIT_STATE');
+  for (const [key, bytes] of Object.entries(input.history)) assert.deepEqual(
+    await fsPromises.readFile(path.join(root, path.relative(input.source, input.historyPaths[key]))), bytes);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+});
+
+test('S33 authored COPY teardown refuses changed roots, outside links and unexpected carrier members without mutation', async t => {
+  for (const kind of ['root', 'symlink', 'shape']) await t.test(kind, async t => {
+    const input = await authoredCopyFixture(t, null, { small: true }), requestId = 'copy-teardown-' + kind;
+    assert.equal((await input.invoke({ requestId })).value.preview, true);
+    assert.equal((await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: true })).ok, true);
+    const owner = captureAuthoredCopyTeardown(input.tempRoot);
+    const parent = path.join(input.documentsRoot, 'Project Alpha', '.stage10-local/recovery/import-copy-source');
+    assert.equal((await fsPromises.readdir(parent)).length, 1);
+    if (kind === 'root') {
+      const held = input.tempRoot + '-held';
+      await fsPromises.rename(input.tempRoot, held);
+      await fsPromises.mkdir(input.tempRoot, { mode: 0o700 });
+      const impostor = await fsPromises.lstat(input.tempRoot, { bigint: true });
+      const before = await completeBridgeFilesystemSnapshot(held), foreign = await completeBridgeFilesystemSnapshot(input.tempRoot);
+      try {
+        assert.throws(() => prepareAuthoredCopyTeardown(owner), /S33_TEARDOWN_ROOT_IDENTITY/u);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(held), before);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), foreign);
+      } finally {
+        const current = await fsPromises.lstat(input.tempRoot, { bigint: true });
+        assert.equal(current.dev, impostor.dev); assert.equal(current.ino, impostor.ino);
+        await fsPromises.rmdir(input.tempRoot); await fsPromises.rename(held, input.tempRoot);
+      }
+    } else if (kind === 'symlink') {
+      const held = path.join(input.tempRoot, 'held-carriers'), outside = path.join(input.tempRoot, 'outside-carrier');
+      await fsPromises.mkdir(outside, { mode: 0o755 });
+      await fsPromises.writeFile(path.join(outside, 'untouched.txt'), 'OUTSIDE OWNED TEST TARGET', { mode: 0o400 });
+      await fsPromises.rename(parent, held);
+      await fsPromises.symlink(outside, parent, process.platform === 'win32' ? 'junction' : 'dir');
+      const link = await fsPromises.lstat(parent, { bigint: true });
+      const before = await completeBridgeFilesystemSnapshot(held), foreign = await completeBridgeFilesystemSnapshot(outside);
+      try {
+        assert.throws(() => prepareAuthoredCopyTeardown(owner), /S33_TEARDOWN_SYMLINK/u);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(held), before);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(outside), foreign);
+      } finally {
+        const current = await fsPromises.lstat(parent, { bigint: true });
+        assert.equal(current.isSymbolicLink(), true); assert.equal(current.dev, link.dev); assert.equal(current.ino, link.ino);
+        await fsPromises.unlink(parent); await fsPromises.rename(held, parent);
+      }
+    } else {
+      const extra = path.join(parent, 'unexpected-carrier');
+      await fsPromises.mkdir(extra); await fsPromises.writeFile(path.join(extra, 'untouched.txt'), 'UNKNOWN SHAPE');
+      const before = await completeBridgeFilesystemSnapshot(parent);
+      try {
+        assert.throws(() => prepareAuthoredCopyTeardown(owner), /S33_TEARDOWN_CARRIER_SHAPE/u);
+        assert.deepEqual(await completeBridgeFilesystemSnapshot(parent), before);
+      } finally { await fsPromises.unlink(path.join(extra, 'untouched.txt')); await fsPromises.rmdir(extra); }
+    }
+  });
+});

@@ -194,10 +194,43 @@ test('C5C2 physical gateway writes exactly one file and returns pathless capabil
   assert.equal(receipt.atomicSingleFileGateway.contentDigest, sha256(request.content));
 });
 
+function assertProductionAtomicGatewayEntrypoints(source) {
+  const region = (startToken, endToken) => {
+    assert.equal(source.split(startToken).length - 1, 1, startToken);
+    assert.equal(source.split(endToken).length - 1, 1, endToken);
+    const start = source.indexOf(startToken);
+    const end = source.indexOf(endToken);
+    assert.ok(end > start, `${startToken} must precede ${endToken}`);
+    return { start, end, text: source.slice(start, end) };
+  };
+  const notes = region('\nasync function writeNotesOrSettingsThroughAtomicGateway({',
+    '\nasync function executeImportOrLibraryThroughAtomicGateway({');
+  const epoch = region('\nfunction createEnvironmentEpochPort(commandId) {',
+    '\nasync function handleEnvironmentEpochCommand(commandId, payload) {');
+  const calls = (text) => [...text.matchAll(/\bexecuteAtomicSingleFileGatewayCutover\s*\(\s*\{/gu)].length;
+  assert.equal(calls(notes.text), 1, 'dedicated notes/settings gateway call');
+  assert.equal(calls(epoch.text), 1, 'environment epoch gateway call');
+  assert.ok(epoch.end <= notes.start, 'gateway function regions must not overlap');
+  const outside = source.slice(0, epoch.start) + source.slice(epoch.end, notes.start) + source.slice(notes.end);
+  assert.equal(calls(outside), 0, 'no atomic single-file gateway call outside the two authorized regions');
+  assert.match(epoch.text,
+    /executeAtomicSingleFileGatewayCutover\s*\(\s*\{\s*request:\s*\{\s*filePath,\s*content:\s*ownBytes,\s*targetRole:\s*ATOMIC_SINGLE_FILE_TARGET_ROLES\.SETTINGS_PRIMARY,\s*projectId:\s*null\s*\}/u,
+    'environment epoch gateway retains settings-only authority');
+  assert.match(epoch.text,
+    /const observation = observerId => async identity => \{ guard\(\); return createAuthorityObservation\(\{ observerId,\s*requestDigest: identity\.identityDigest, route: SAVE_AUTHORITY_ROUTES\.ATOMIC_FILE_V1 \}\); \};/u,
+    'environment epoch observers revalidate before binding the atomic route');
+  assert.match(epoch.text,
+    /observeLegacy: observation\(SAVE_AUTHORITY_OBSERVER_IDS\.LEGACY\), observeGateway: observation\(SAVE_AUTHORITY_OBSERVER_IDS\.GATEWAY\),/u,
+    'environment epoch retains both independent observers');
+  assert.match(epoch.text,
+    /executeGateway: async \(\{ authorityIdentity \}\) => \{ guard\(\); const result = await durableSaveTransaction\(\{ filePath, content: ownBytes,\s*revision: next\.revision, fsAdapter: adapter \}\); guard\(\);\s*return \{ \.\.\.result, targetRole: authorityIdentity\.targetRole, contentDigest: authorityIdentity\.contentDigest \}; \}/u,
+    'environment epoch revalidates around its durable writer and binds the receipt');
+}
+
 test('C5C2 production notes and settings entrypoints reach only the dedicated gateway', () => {
   const source = fs.readFileSync(path.join(REPO_ROOT, 'src', 'main.js'), 'utf8');
   assert.equal(source.split('async function writeNotesOrSettingsThroughAtomicGateway({').length - 1, 1);
-  assert.equal(source.split('executeAtomicSingleFileGatewayCutover({').length - 1, 1);
+  assertProductionAtomicGatewayEntrypoints(source);
   assert.equal(source.split('writeNotesOrSettingsThroughAtomicGateway({').length - 1, 4);
   assert.equal(source.split('fileManager.writeFileAtomic(filePath, content)').length - 1, 1);
   assert.equal(source.includes('fileManager.writeFileAtomic(notesPath'), false);
@@ -348,4 +381,30 @@ test('C5C2 named implementation mutants have zero survivors', async () => {
   console.log(`R24_C5C2_MUTATION_RECEIPT=${JSON.stringify({ total: results.length, killed: results.length - survived.length, survived })}`);
   assert.equal(results.length, 10);
   assert.deepEqual(survived, []);
+});
+
+test('C5C2 production gateway source controls refuse missing, extra and wrong-role calls', async (t) => {
+  const source = fs.readFileSync(path.join(REPO_ROOT, 'src', 'main.js'), 'utf8');
+  await t.test('removed dedicated notes/settings call', () => {
+    const changed = mutateSection(source,
+      '\nasync function writeNotesOrSettingsThroughAtomicGateway({',
+      '\nasync function executeImportOrLibraryThroughAtomicGateway({',
+      'executeAtomicSingleFileGatewayCutover({', 'missingAtomicSingleFileGatewayCutover({');
+    assert.throws(() => assertProductionAtomicGatewayEntrypoints(changed),
+      /dedicated notes\/settings gateway call/u);
+  });
+  await t.test('unauthorized third call outside both regions', () => {
+    const changed = `${source}\nvoid executeAtomicSingleFileGatewayCutover ({ request: {} });\n`;
+    assert.throws(() => assertProductionAtomicGatewayEntrypoints(changed),
+      /no atomic single-file gateway call outside the two authorized regions/u);
+  });
+  await t.test('wrong environment epoch target role', () => {
+    const changed = mutateSection(source,
+      '\nfunction createEnvironmentEpochPort(commandId) {',
+      '\nasync function handleEnvironmentEpochCommand(commandId, payload) {',
+      'targetRole: ATOMIC_SINGLE_FILE_TARGET_ROLES.SETTINGS_PRIMARY, projectId: null',
+      'targetRole: ATOMIC_SINGLE_FILE_TARGET_ROLES.NOTES_PRIMARY, projectId: null');
+    assert.throws(() => assertProductionAtomicGatewayEntrypoints(changed),
+      /environment epoch gateway retains settings-only authority/u);
+  });
 });

@@ -16219,7 +16219,9 @@ function readStage10LocalStatePresence(projectRoot) {
   };
 }
 
-async function bootstrapStage10ApplicationForProject(projectRoot, manifest, mode) {
+async function bootstrapStage10ApplicationForProject(projectRoot, manifest, mode, options = {}) {
+  const assertCurrent = typeof options.assertCurrent === 'function' ? options.assertCurrent : async () => {};
+  await assertCurrent();
   const projectId = normalizeStableProjectId(manifest?.projectId);
   if (!projectId) return null;
   const [
@@ -16239,31 +16241,38 @@ async function bootstrapStage10ApplicationForProject(projectRoot, manifest, mode
     throw error;
   }
   const transactionAuthority = await getMainProjectManifestAuthority();
+  await assertCurrent();
   const persistencePort = createStage10MainPersistenceAdapter({
     projectRoot,
     anchorRoot: path.join(app.getPath('userData'), 'stage10-integrity-anchors'),
     writeFileAtomic: (targetPath, content) => fileManager.writeFileAtomic(targetPath, content),
     transactionAuthority,
+    ...(options.importCopyIntent ? { importCopyIntent: options.importCopyIntent,
+      revalidateImportCopy: async () => { await assertCurrent(); return true; } } : {}),
     ...(process.platform === 'darwin' ? { publishFileExclusive: createDarwinExclusiveFilePublisher() } : {}),
   });
   const bootstrap = createStage10ApplicationBootstrap({
     persistencePort,
   });
   const existingState = await persistencePort.readStage10State(projectId);
-  const result = mode === 'create' || !existingState
+  await assertCurrent();
+  const result = mode === 'create' || !existingState || existingState.importCopyNeedsProjectCreate
     ? await bootstrap.createProjectRuntime({
       projectId,
       title: typeof manifest.projectName === 'string' ? manifest.projectName : projectId,
     })
     : await bootstrap.reopenProjectRuntime({ projectId });
-  activeStage10ApplicationBootstrap = bootstrap;
-  activeStage10ApplicationCommandRoute = createStage10ApplicationCommandRoute({
+  await assertCurrent();
+  const commandRoute = createStage10ApplicationCommandRoute({
     getBootstrap: () => activeStage10ApplicationBootstrap,
     canonicalProjectTruthPort: {
       schemaVersion: 'yalken.stage10.canonicalProjectTruthPort.v1',
       prepare: prepareCanonicalProjectTruthCommand,
     },
   });
+  if (options.publish === false) return { bootstrap, commandRoute, result };
+  activeStage10ApplicationBootstrap = bootstrap;
+  activeStage10ApplicationCommandRoute = commandRoute;
   return result;
 }
 
@@ -22300,6 +22309,10 @@ async function openProjectDocumentFile(filePath, options = {}) {
       continuityCommit.code || 'E_SESSION_CONTINUITY_COMMIT_FAILED',
       'SESSION_CONTINUITY_COMMIT_FAILED',
     );
+  }
+  if (typeof options.beforeEditorPublication === 'function') {
+    const commitPublication = await options.beforeEditorPublication();
+    commitPublication();
   }
   sendEditorText(editorPayload);
   setDirtyState(false);
@@ -31282,7 +31295,7 @@ async function handleExportProjectArchive(payloadRaw = {}) {
   });
 }
 
-async function openImportedArchiveProject(binding, captured) {
+async function openImportedArchiveProject(binding, captured, preparedStage10 = null) {
   const stale = () => Object.assign(Error('PROJECT_ARCHIVE_OPEN_CONTEXT_STALE'), { code: 'E_PROJECT_ARCHIVE_OPEN_CONTEXT_STALE' });
   let expectedName = captured.projectName, targetFile = captured.filePath;
   const sameOwner = () => mainWindow === captured.window && mainWindow?.webContents === captured.contents
@@ -31310,7 +31323,16 @@ async function openImportedArchiveProject(binding, captured) {
     if (!target.filePath) throw Object.assign(Error('PROJECT_EMPTY'), { code: 'E_PROJECT_EMPTY' });
     targetFile = target.filePath;
     const opened = await openProjectDocumentFile(targetFile, { projectId: binding.projectId, projectBinding: binding,
-      statusText: 'Архив проекта импортирован', assertCurrent });
+      statusText: 'Архив проекта импортирован', assertCurrent,
+      ...(preparedStage10 ? { beforeEditorPublication: async () => {
+        await preparedStage10.bootstrap.reopenProjectRuntime({ projectId: binding.projectId });
+        return () => {
+          assertCurrent(targetFile);
+          activeStage10ApplicationBootstrap = preparedStage10.bootstrap;
+          activeStage10ApplicationCommandRoute = preparedStage10.commandRoute;
+        };
+      } } : {}),
+    });
     if (!opened?.ok || opened.opened !== true) throw Object.assign(Error(opened?.reason || 'PROJECT_ARCHIVE_OPEN_FAILED'), {
       code: opened?.code || 'E_PROJECT_ARCHIVE_OPEN_FAILED' });
     return opened;
@@ -31513,6 +31535,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
   };
   let publication = { namePublished: false, publicationOutcome: 'NOT_STARTED', directorySynced: false, readbackVerified: false };
   let publishedBinding = null;
+  let copyForkIntent = null;
 
   try {
     const imported = await authority.withProjectLease(newProjectId, async (lease) => {
@@ -31561,7 +31584,16 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
           createdAtUtc: new Date().toISOString(),
           copiedFromProjectId: archiveProjectId,
         };
-        delete nextManifest.treeIdentity;
+        const identityModule = await loadProjectTreeIdentityModule();
+        const registry = identityModule.normalizeProjectTreeIdentity(sourceManifest.treeIdentity);
+        if (!registry.ok) throw registry.error;
+        // Registered node IDs are project-local opaque identities. Retain them
+        // with authored references; legacy empty registries can be regenerated.
+        if (Object.keys(registry.value.nodes).length === 0) delete nextManifest.treeIdentity;
+        if (Object.hasOwn(sourceManifest, 'atlas')) {
+          const { rebindAtlasContinuityFactsForProjectCopy } = await loadCoreRuntimeModule();
+          nextManifest.atlas = rebindAtlasContinuityFactsForProjectCopy(sourceManifest.atlas, archiveProjectId, newProjectId);
+        }
         await writeProjectManifestRawAtomic(tempManifestPath, nextManifest, {
           expectedText: rawRecord.raw,
           expectedProjectId: archiveProjectId,
@@ -31572,6 +31604,16 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       }
       const expectedManifest = mode === 'copy' ? Buffer.from(`${JSON.stringify(nextManifest, null, 2)}\n`, 'utf8')
         : archivePayload.entries.find(entry => entry.relativePath === PROJECT_MANIFEST_FILENAME).buffer;
+      if (mode === 'copy') {
+        const historyFiles = ['.stage10-local/product-session.v2.json', '.stage10-local/command-receipt-authority-store.v2.json',
+          '.stage10-local/recovery/project-truth.latest.v1.json'].map(relative => archivePayload.entries.find(entry => entry.relativePath === relative));
+        if (historyFiles.some(Boolean)) {
+          if (!historyFiles[0] || !historyFiles[1]) throw Error('PROJECT_ARCHIVE_COPY_HISTORY_PAIR_REQUIRED');
+          copyForkIntent = { sourceProjectId: archiveProjectId, projectId: newProjectId, manifestSha256: computeHash(expectedManifest),
+            files: historyFiles.filter(Boolean).map(entry => ({ name: path.basename(entry.relativePath), relativePath: entry.relativePath,
+              bytes: entry.buffer.length, sha256: computeHash(entry.buffer) })) };
+        }
+      }
       if (typeof options.afterExtractBeforeFinalMove === 'function') {
         await options.afterExtractBeforeFinalMove({ tempRoot, targetRoot });
       }
@@ -31655,8 +31697,30 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         },
       };
     });
+    let preparedStage10 = null;
+    if (mode === 'copy' && copyForkIntent) {
+      const assertCopyCurrent = async () => {
+        await ownership.assertParent();
+        const stat = await fs.lstat(targetRoot, { bigint: true }), source = await fs.lstat(loaded.filePath, { bigint: true });
+        const sourceRealPath = await fs.realpath(loaded.filePath);
+        const access = evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
+          productCommandRecord: getProductCommandRecord(IMPORT_PROJECT_ARCHIVE_COMMAND_ID) });
+        if (!stat.isDirectory() || stat.isSymbolicLink() || !sameArchiveObject(stat, ownership.identity)
+          || !source.isFile() || source.isSymbolicLink() || ['dev', 'ino', 'mode', 'mtimeNs', 'ctimeNs'].some(key => String(source[key]) !== loaded.identity[key])
+          || Number(source.size) !== loaded.identity.size || sourceRealPath !== loaded.identity.realPath
+          || !access.allowed || getProjectRootPath() !== context.root || mainWindow !== openContext.window
+          || mainWindow?.webContents !== openContext.contents
+          || mainWindow?.isDestroyed() || openContext.contents?.isDestroyed() || currentFilePath !== openContext.filePath
+          || activeStage10ApplicationBootstrap !== context.owner || commentAuthoringSessionId !== context.session
+          || lastSignaledEditGeneration !== openContext.generation || isDirty) throw Error('PROJECT_ARCHIVE_COPY_CONTEXT_STALE');
+      };
+      preparedStage10 = await bootstrapStage10ApplicationForProject(targetRoot, publishedBinding.manifest, 'reopen', {
+        publish: false, assertCurrent: assertCopyCurrent, importCopyIntent: copyForkIntent,
+      });
+      await assertCopyCurrent();
+    }
     if (payload.openAfterImport === true) {
-      const opened = await openImportedArchiveProject(publishedBinding, openContext);
+      const opened = await openImportedArchiveProject(publishedBinding, openContext, preparedStage10);
       imported.opened = opened.opened;
       imported.documentId = opened.documentId;
     }

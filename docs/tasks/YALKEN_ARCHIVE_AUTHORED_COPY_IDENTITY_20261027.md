@@ -1,0 +1,341 @@
+# Authored archive COPY: project identity and lossless active-session adoption
+
+TASK_ID: YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027
+TYPE: CORE
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+EXECUTION_CANON: v3.13a-final
+STATUS: OPEN_UNACCEPTED_SAME_DELIVERY_CHAIN
+ORIGINAL_BINDING_BASE_SHA: 229dd01a412435ecfb26c393944e157d5f8feda5
+PHASE_02_BINDING_BASE_SHA: 780fef0f0d34081f2034a47c71cd2770fcbe77d1
+PHASE_03_BINDING_BASE_SHA: 768865016afd019971f686d724303626c119f210
+PHASE_04_BINDING_BASE_SHA: b282c196e060d1adb9bf45260932fd667413cbd8
+PHASE_05_BINDING_BASE_SHA: 9d24df6153a16530cfcbd37634fe3a95fa587288
+DESIGN_TOOL_ROUTER: Mechanical existing import/persistence correction; exact router value is in validated declarations.
+
+## MICRO_GOAL
+
+A confirmed real ZIP COPY retains manuscript and project-local scene identities, all ten authored values and current/stale evidence distinctions, every donor encoded history object, and supports a new ordinary Kernel author command plus qualified same-physical-profile cold reopen.
+
+This contract continues the same human-authorized full supported macOS goal. It does not close that goal, authorize signing or publication, or promote a bounded test result into release qualification. The phase01 checkpoint remains expressly unaccepted.
+
+## ARTIFACT
+
+One bounded correction at the existing Main archive COPY and Stage10 persistence/bootstrap seams, focused maintained regressions, preserved source-history provenance and exact candidate/merged delivery evidence. Separate code actor implements runtime/tests; root owns this contract, status docs, independent review, native QA and full delivery.
+
+## ALLOWLIST
+
+Phase02 runtime and COPY regressions are frozen inputs at checkpoint76886501:
+
+- `src/main.js`
+- `src/core/runtime.mjs`
+- `src/product/stage10MainPersistenceAdapter.mjs`
+- `src/product/stage10ApplicationBootstrap.mjs`
+- `test/unit/sector-m-s33-full-archive-import.test.js`
+- `test/unit/stage10-imported-project-copy.test.mjs`
+
+Phase03 separate code actor may edit only:
+
+- `test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs`
+
+Phase03 root may edit only these documentation and mechanical current-source companions:
+
+- `docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md`
+- `docs/CONTEXT.md`
+- `docs/HANDOFF.md`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json`
+- `scripts/ops/release-candidate.mjs`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `docs/WORKLOG.md`
+
+New evidence and materials use verified dated T777 task directories. Finite explicitly owned APFS runtime is an exception for tests/build/native execution; original donor, failed QA and other profiles are preserved. Every original S33 byte through offset75053 remains exact. Only the new phase01 appended test region may be prospectively strengthened.
+
+## DENYLIST
+
+- No renderer/UI/markup/style change.
+- No new Core or active product schema, bus, SDK, history registry, runtime network or dependency.
+- No generic missing-anchor relaxation or untrusted imported-data authority.
+- No donor/foreign/private/default profile mutation or cleanup.
+- No reset/stash/clean/rebase/amend/force-push.
+- No native or tests outside declared scope.
+- No terminal/full-Mac acceptance from bounded test counts.
+- `src/product/stage10ProductWiring.mjs` and all other source paths remain read-only absent another prospective amendment.
+- No historical receipt, executed RED, old preflight, old test digest or syntax-only strengthening is relabeled as new acceptance.
+
+## CONTRACT / SHAPES
+
+The following is a task integration block, not a new runtime registry.
+
+FEATURE_INTEGRATION_MANIFEST_V1:
+
+```json
+{
+  "featureId": "YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027",
+  "featureVersion": "EXISTING_SEAM_CORRECTION_PHASE_02",
+  "integrationMode": "EXISTING_SEAM: BOUND_TO_CURRENT_APPROVED_ENTRYPOINTS",
+  "domainOwner": "Product Core authored project identity/truth; Main existing import use case; Command Kernel mutation authority",
+  "authoritativeData": [
+    "Canonical Main manifest/scenes after validation",
+    "Current authored Atlas facts in distinct copy namespace",
+    "Existing current copy-owned Stage10 active session/authority/anchor after ordinary validated initialization"
+  ],
+  "derivedData": [
+    "Existing metadata/Atlas/WSE immutable read models",
+    "Historical-only immutable raw donor provenance and readable index: evidence, never current authority"
+  ],
+  "commandIds": [
+    "cmd.project.importFullArchiveV1",
+    "project.create",
+    "atlas.continuityFact.record"
+  ],
+  "eventTypes": [
+    "Existing project.create event mapping",
+    "Existing CORE_EVENT_IDS.CONTINUITY_DECISION_COMMITTED and its projection invalidation; no new event type",
+    "Existing canonical compensation provenance inside actual author command, not a new synthetic user command"
+  ],
+  "queryIds": [
+    "query.metadataInspector",
+    "query.atlasCurrentScene",
+    "query.atlasContinuityLedgerSurface"
+  ],
+  "productProjectionIds": [
+    "Existing metadata inspector projection",
+    "Existing yalken.r24.atlasSurface.v1 scene/continuity projection with WSE views"
+  ],
+  "capabilityIds": [
+    "cap.project.import.fullArchiveV1",
+    "cap.atlas.continuityFact.record",
+    "stage10LocalProductWiring"
+  ],
+  "authorityMap": {
+    "productTruth": "Product Core and canonical Main truth port, never donor/session/index/UI-derived truth",
+    "commandAuthority": "Existing Kernel capability at dispatch plus captured private confirmed COPY and revalidation",
+    "designAuthority": "Existing Design OS form/visibility/read-only projections unchanged; no product write"
+  },
+  "identityKeys": [
+    "exact base and branch",
+    "physical root dev/ino/owner",
+    "source and distinct copied projectId",
+    "project-local scene/entity/fact/anchor IDs",
+    "canonical revision/hash",
+    "raw donor pair+optional latest-file digests",
+    "lifecycle/window/session/generation",
+    "lease/fencing/capability"
+  ],
+  "revisionPolicy": "Fresh canonical Main source cohort/revision at capture and before async publication; immutable derived projection guards; ordinary copy-owned active CAS/replay/anchor; no stale result publication",
+  "writePath": "Existing surface intent -> Kernel -> Main confirmed validated ZIP COPY -> verified owned staging -> existing adapter durable private fork intent plus immutable donor carrier -> ordinary copy-owned active initialization and guarded bootstrap publication; new author intent -> Kernel -> canonicalProjectTruth -> ordinary atomic persistence",
+  "readPath": "Canonical Main copy manifest/scenes -> existing workspace query/Atlas/WSE projections -> existing Design OS surfaces; old donor data only through explicit historical recovery carrier",
+  "requiredProductPorts": [
+    "Existing MainProjectManifestAuthority",
+    "Existing Stage10 MainPersistenceAdapter and ApplicationBootstrap",
+    "Existing canonicalProjectTruth port and atomic local file gateway"
+  ],
+  "requiredDesignOsPorts": [
+    "Existing CommandCatalogPort",
+    "Existing intent-only CommandDispatchPort",
+    "Existing read-only DomainProjectionPort",
+    "Existing ShellProjectionPort"
+  ],
+  "adapterRequirements": [
+    "Existing Main ZIP validation/publication and owned physical IO",
+    "Existing local atomic writer, lease/fence, transaction/CAS and readable recovery",
+    "Existing platform exclusive publication primitive; no new provider or infrastructure registry"
+  ],
+  "surfaceManifests": [
+    "Existing archive dialogs unchanged",
+    "Existing surface.atlas.currentScene",
+    "Existing surface.atlas.continuityLedger",
+    "Existing metadata inspector; no new visual zone"
+  ],
+  "slotRequirements": [
+    "Existing rightRail.context.atlas",
+    "Existing rightRail.context.atlas.continuityLedger",
+    "Existing native archive dialog routing; no new slot"
+  ],
+  "supportedWorkspaces": [
+    "WRITE",
+    "PLAN",
+    "REVIEW"
+  ],
+  "platformAvailability": {
+    "macos": "Current release scope and actual native proof target",
+    "otherPlatforms": "No new platform activation or qualification; existing portable maintained test behavior preserved"
+  },
+  "accessibilityRequirements": [
+    "Existing keyboard/dialog/a11y parity",
+    "Existing visible status and explicit-open projections; no markup/style/input model change"
+  ],
+  "fallbacks": [
+    "Typed failure, original bytes and durable readable recovery retained",
+    "No view-only success, generic reseed, swallowed error or changed command meaning"
+  ],
+  "stateClasses": [
+    "PROJECT_STATE",
+    "AUTHORING_WORKING_STATE",
+    "DERIVED_STATE",
+    "SHELL_STATE"
+  ],
+  "persistenceClass": "Current PROJECT_STATE uses existing Stage10 active schema/transaction; original donor raw pair and optional existing latest recovery file are immutable historical recovery provenance, never second mutable current store",
+  "migrations": "No new active Core/project schema; bounded explicit import COPY fork only. Generic missing-anchor and cold recovery remain strict. Opaque local IDs preserved; typed live ownership rebind and sourceHash recomputed only after raw validation",
+  "recovery": "Exact durable private fork intent before pair retirement; immutable raw donor pair and optional original project-truth.latest retained before overwrite; all interruption/retry/ordinary reopen cutpoints and foreign/lease/source-drift denials tested",
+  "rollback": "One same-contour source revert by new commit after delivery; original runtime bytes retained for explicit readable recovery, no automatic destructive downgrade",
+  "performanceBudget": "Existing bounded archive byte/member limits and finite one-shot fork/replay IO; no per-keystroke import/scan; actual native timing retained without invented MR06 numeric SLO",
+  "securityBoundary": "Validate external ZIP before normalization/identity/path interpretation; only private confirmed Main intent grants fork authority; imported hashes/CRC/metadata/index alone never do; no dependency/network/secrets/platform boundary expansion",
+  "lifecycle": "Capture source+target ownership before work, revalidate after await and before every publication, activate prepared verified new bootstrap only if same current lifecycle; foreign switch wins",
+  "negativeBypassChecks": [
+    "foreign fact/evidence/project/scene",
+    "malformed/hash mismatch/symlink/hardlink/collision",
+    "cancel/source drift/lease expiry/stale lifecycle/async owner",
+    "crash before/after provenance, retirement, authority, session and anchor",
+    "same-intent retry and ordinary later-open when openAfterImport:false",
+    "new author-command failure preserves pre-command current state and all donor provenance",
+    "all current vs real source-stale facts unchanged in meaning"
+  ],
+  "evidenceBindings": [
+    "Original M actual native ZIP SHA6d33c4c4a7f7c6554d2625e730d719fe24b48b54f055dcd5df26e82c0c59f655",
+    "Original current source corpus10facts/204encodedobjects with6current4stale",
+    "Immutable original RED/partial receipts and checkpoint780f",
+    "Phase02 root and actor declarations/preflights exact clean780f, prospective amendment02 and optional latest-file clarification03",
+    "New actual tests/package/native/CI/merged receipts required; no old result is new-head acceptance"
+  ],
+  "currentReality": "Phase01 is an UNACCEPTED partial fix: actual old65-test partial63pass2fail, author command missing bootstrap; phase02 strengthened baseline and new focused regression are under execution. No full-green/native/cold/release acceptance. This expands the task integration block into every doctrine field without changing prior scope or runtime design."
+}
+```
+
+### Authority and canonical truth
+
+Only existing Main confirmed validated COPY intent and its privately captured source/target/lifecycle/window/lease/generation/capability/source bytes authorizes a fork. copiedFromProjectId, imported provenance, hashes/CRC, old events or a read-only view alone never create authority. No generic cold/recovery auto-fork or arbitrary missing-pair reseed.
+
+### Current authored state
+
+Retain valid nonempty project-local tree registry. Typed live fact projectId/evidenceAnchor.projectId rebind only after raw current schema/identity/hash validation; preserve semantic fields/opaque IDs and stale source selectors. New current truth comes only from freshly validated canonical copy Main manifest/scenes through existing canonicalProjectTruth path, never donor.session.coreState authority.
+
+### Immutable historical provenance
+
+Before retiring either donor canonical history file, exclusively preserve and fsync BOTH original exact named raw files in one immutable project-local existing recovery subtree, with a bounded readable provenance index. Chosen fixed subtree .stage10-local/recovery/import-copy-source/<locally computed raw-pair digest>/. Retain original filenames product-session.v2.json and command-receipt-authority-store.v2.json, exact bytes/lengths/SHA, source and new copy IDs, original event/UI/receipt denominators and historical-only role. Optional original raw project.craftsman.json may be preserved there only if needed for reconstruction. No external path/command authority from the index. All previous imported recovery files remain byte-exact. Do not nest/duplicate whole ZIPs on every copy.
+
+The existing native source also contains `.stage10-local/recovery/project-truth.latest.v1.json`. The first ordinary canonical command replaces that active recovery slot. To satisfy the same no-loss invariant, preserve its exact original bytes when present in the same immutable historical carrier before any command can replace it; record original relative locator, length and SHA in the bounded index. This optional source file is historical data only and never grants mutation authority. Validate its physical regular-file identity/bounds and reject source drift or collision. Other pre-existing recovery files remain unchanged. A focused regression must generate this existing recovery file through the actual persistence/canonical mutation path and prove the original bytes remain readable before/after the new command and reopen. This clarifies preservation of existing archive bytes; it adds no source path, Core schema, runtime store or release feature.
+
+### Ordinary new-copy active chain
+
+Use existing ordinary application bootstrap + createStage10ProductRuntime empty verified bundle initialization and existing project.create. First actual canonical author command may use existing CANONICAL_PROJECT_TRUTH_COMPENSATION from validated Main truth; no new Core active schema, synthetic donor receipts, historical retag/re-hash or phantom user click claim. Active chain is copy-owned and replay/anchor-validated; its actual denominator is separately frozen before native and never assumed69.
+
+### Transaction and durable interruption protection
+
+Implement only a bounded extension at existing Main persistence/recovery/atomic transaction seam. Durable fork intent/recovery binding must exist before foreign pair retirement, bind exact source/copy IDs, raw-pair hashes, canonical manifest revision/hash, physical owned roots and current private intent. Protect every cutpoint between provenance, authority, session, anchor and bootstrap publication. Existing normal commit/reopen and missing-anchor recovery stay strict; foreign pair is never previousBundle/current authority. No second mutable history writer/store, generic migration registry, new dependency or new command bus.
+
+### Recovery and retry
+
+Same-intent retries must independently revalidate all bound bytes and physical identities and resolve only ordinary existing transaction or precisely matching bounded fork recovery. No broad success fallback or cleanup on unknown outcome. Conflicting carrier, foreign trust/transaction, source drift, symlink/hardlink, lost lease/cancel/stale owner must fail closed with all original bytes and readable recovery retained. No bare missing-pair inference as permission.
+
+### Async publication
+
+Revalidate original existing import guards. Fully verify extracted original ZIP before added recovery files. Define exact intentional post-verification additions and only required active-pair replacement; do not weaken original archive denominator. Swap active application bootstrap only after complete verified new-copy initialization and final unchanged project/window/session/generation/capability check. Never broadly relax guards expecting captured donor owner or publish stale async bootstrap into another lifecycle.
+
+### Prospective history oracle
+
+The new188line initial/post-author assertions currently read donor bytes at canonical active paths. Author command has never passed them. Prospectively replace ONLY those appended assertions with stronger checks: exact full raw donor pair in immutable readable carrier before/after author command and reopen; every original204 encoded native object reconstructible byte-exact; ordinary new-copy active pair/anchor replay valid, and one new command appends exactly once preserving all of its own prior encoded objects. Source donor/ZIP/foreign scope controls remain. No executed failing oracle is re-labeled green.
+
+### State, compatibility and hot-path boundary
+
+Manuscript and authored facts remain PROJECT_STATE; unsaved author text retains AUTHORING_WORKING_STATE no-loss duties. Atlas/WSE projections are DERIVED_STATE, shell navigation is SHELL_STATE. Imported raw historical sessions never become current project authority. Keep current/stale selectors and note/label/value semantics unchanged. Import validation, copying, hashing, provenance and fork recovery are bounded import/open operations and never run for every keystroke. No UI or accessibility contract changes.
+
+### Current reality and target claims
+
+At original merged base229dd, actual native authored ZIP COPY preserved raw files but scene metadata and Atlas/WSE were unavailable. Phase01 executed58 original passes, then genuine65-test RED58pass7fail, then partial63pass2fail with new author command missing bootstrap. The current188line test strengthening was syntax-checked only before this contract. Affected171 tests passed. Root independently verified10018 other source files and75053 original test bytes; an ordinary three-path UNACCEPTED checkpoint was committed at780f. These are historical exact-scope facts, not phase02 or native acceptance.
+
+### Phase02 independently reviewed working-source result
+
+Root ROOT_SEMANTIC_REVIEW_03 binds the exact six actor source/test hashes at checkpoint780f plus declared working delta. Whole S33+COPY actual0 with122of122, final14-file affected actual0 with263of263, focused actual0 with51of51, no skipped/todo/cancelled; all75053originalS33 bytes and10017other original source files remain exact. The genuine9,452,013byte production-history fixture executes the actual Darwin trust publisher, preserves raw carrier bytes and supports one ordinary command and reopen. Native9,564,495byte donor history remains a prospective GUI input.
+
+Causal final-intent, FD/path-boundary and large-history failures remain immutable. Historical raw files explicitly use the existing exclusive hard-link primitive with a fixed digest-bound temporary name. Only the already-validated durable intent may resume the exact staged-only inode or the exact two same-inode names; generic raw reads still require one link, and mismatched/third/unknown links or stale ownership preserve data and refuse. Intent/index retain the provided native publisher; no error fallback or global limit increase was added.
+
+The earlier26-file affected run remains actual1 with367tests365pass2fail. C5A requires a clean-checkpoint rerun. C5C2 requires prospective test-only admission for its existing notes/settings function plus separately validated existing environment-epoch gateway and no other caller, preserving every other assertion and all10mutants. No edit to that file is authorized by phase02. Root’s semantic checkpoint is expressly UNACCEPTED_FULL_DELIVERY_PENDING; current-source OPS witnesses, required whole gates, native warm/cold and the entire delivery chain are still required.
+
+### Prospective phase03: current-source delivery companions
+
+This is the same COPY outcome, rollback and delivery chain, admitted at clean768865016afd019971f686d724303626c119f210 after actual separate root OPS and actor PRODUCT_CODE preflights. ROOT_PHASE03_SCOPE_AMENDMENT_02 fixes all21 paths: six frozen runtime/COPY-test inputs, root14 and actor1. No old stage, lease or historical result grants new authority. Phase02 runtime and the complete original S33 prefix stay unchanged.
+
+The root cleanH1 C5 pair actually executes27tests26pass1fail,0skip/todo/cancel. C5A now passes without any edit or waiver. C5C2 alone fails its obsolete whole-file count because both the dedicated notes/settings wrapper and the existing guarded environment-epoch writer legitimately call the same atomic gateway. Replace only that unscoped assertion with one call in each exact named function region, independent epoch SETTINGS_PRIMARY/projectId-null/guard/observer/durable-writer requirements, and no call outside those two regions. Preserve every other original assertion and all10implementation mutants. Add three consumed source counterexamples: missing dedicated call, third unauthorized caller and wrong epoch target role. This authorizes no production change or broad count relaxation.
+
+Root updates exact current hashes through the existing inventory/C2A/DATA/certificate/release machinery. Add only the genuinely absent focused COPY and C5C2 source-witness memberships. Expected denominators are360current certificate bindings,827DATA admitted paths,679DATA source pins and1604inventory members; these are predictions until normal physical validators execute. Preserve all80historical carrier bodies, all verifier and corruption predicates, every old inventory classification/skip policy, all66release pin memberships and all17UNKNOWN qualification cells. Word Apply changes only four literals identifying the current carrier. Append exact governance witnesses under the direct human task, without inventing external reviewer, stage, signing or release authority. Preserve existing factual history and append a concise WORKLOG chronology.
+
+After independent actor review, one coherent mechanical assembly is reviewed and committed as an unaccepted checkpoint. Execute C5A/C5C2 on a clean source checkpoint before tests that generate cwd anchors; execute every remaining affected file without filtering or exclusions. Preserve generated fixtures, original failures and exact source identities. Whole configured baseline, source gates, package, actual native warm/cold, push/PR/CI/merge and exact merged verification remain mandatory.
+
+### Prospective phase04: complete the existing task-file admission
+
+The same delivery is now at clean b282c196e060d1adb9bf45260932fd667413cbd8 and draft PR2174. Actual OPS CI and dependent macOS, Windows, Linux and build jobs fail SHARED_UNADMITTED_DELTA. Independent comparison of all 796 changed paths against 827 DATA admitted paths identifies exactly this existing task document as missing; it is also absent from DATA source pins and the current successor. The unchanged local three-file companion run executes 677 tests: 669 pass, eight fail with that same admission error, zero skipped/todo/cancelled. Its closed raw packet and all prior failures remain preserved. H2 source checks and the independent H2 full baseline retain their actual identities; they cannot qualify a new commit. The full H2 npm run subsequently exits 1: 3621 unit tests, 3555 pass, seven fail and 59 skipped, no todo/cancelled. One failure is the detached candidate checkout branch prerequisite; six are new S33 after-hook EACCES failures under protected historical-carrier directories. Their failure evidence remains; correcting execution context and any separately admitted test-owned cleanup is required before baseline acceptance. This phase does not authorize a behavior-test edit.
+
+Fresh root OPS declaration04/preflight0 and full normative/scoped factual reads precede this amendment. The total task scope stays 21 paths. Phase04 permits only the existing 12 root documentation and OPS companion paths; the phase03 root list except FIRST_MAC_RELEASE_CUT_V2.json and release-candidate.mjs. All six runtime/COPY-test inputs, the complete C5C2 test and both release pin files are frozen H2. No code actor edit or new product behavior is admitted.
+
+Add only this task document to exact DATA admission/source bindings and to a newly appended complete current successor. Preserve all 81 committed historical carrier bodies and every verifier/corruption predicate. Expected totals are 828 DATA admitted paths, 680 DATA source pins and 361 current successor bindings plus one guard; actual normal checkers must verify them. Word Apply changes only the current carrier-name and count literals. Regenerate the normal inventory/C2A hashes while retaining all 1604 memberships, classifications and skip policies. Preserve all 66 release source pins and 17 UNKNOWN qualifications; append only exact current governance witnesses and factual history.
+
+The CW source batch must be closed before any phase04 repository write; the independent H2 baseline may finish with its own unchanged physical inputs. Review the complete mechanical inverse and all 10023 source files, then make a normal unaccepted checkpoint. Before any new long current proof, execute the unchanged DATA post-evaluation and static correction checks on that exact committed source. Complete all required whole corruption/affected/baseline, package, native warm/cold and same-PR delivery/merged checks. No failure, exclusion, historical run or new witness creates acceptance.
+
+### Prospective phase05: bounded cleanup of test-owned immutable carriers
+
+This same COPY delivery starts at clean H3 9d24df6153a16530cfcbd37634fe3a95fa587288. The unchanged DATA post-evaluation and static checks now execute successfully, and the whole Word Apply contract executes 19 of 19 with no skips, todo or cancellation. These repair the task-file admission only. The H2 full baseline remains actual failure: six S33 teardown EACCES failures and one detached-branch prerequisite. Root has preserved and independently restored all six generated baseline cwd files and placed the unchanged H2 baseline checkout on its own named branch. Neither preservation nor context correction is a new test PASS.
+
+Fresh root OPS declaration05/preflight0 and separate actor PRODUCT_CODE declaration05/preflight0 bind the same clean H3 and all21 paths. Root owns the same12 documentation/OPS companions. The actor may edit only the appended region of sector-m-s33-full-archive-import.test.js. Freeze the other eight paths, every original75053 S33 byte and every existing appended case body/assertion. Production immutability, the focused COPY suite, C5C2 and both release pin files remain unchanged. Root verifies this prospective amendment with E0 before releasing the actor.
+
+The observed cause is FIFO after-hook ordering: the original harness registers recursive rm first, while product history carriers intentionally have directories0500 and files0400. Register a bounded test-owned pre-hook before archiveBridgeFixture registers that original hook; capture the exact newly created root's physical dev/ino/uid and existing owner-marker bytes. The helper must validate that captured root, fixed no-follow ancestor chain, direct lowercase64hex carrier directory and expected regular single-link payload roster before any permission effect. Validate the complete observed cohort, then on POSIX hold a no-follow directory FD and revalidate immediately before fchmod of only the owned carrier directory to0700. Do not chmod payload files or arbitrary recursive targets, ignore errors, suppress the original hook or change production protection. Missing carriers are an explicit normal no-fork outcome after root/ancestor validation. Unknown shape, changed identity, foreign ownership or symlink escape fails visibly before original removal, retaining evidence.
+
+Common identity, marker, type, link and containment validation applies on every platform. Windows must not require POSIX directory-FD, getuid or0500 semantics; after common validation its unchanged Node fs.rm permission handling remains responsible for removal. Add only meaningful real-filesystem negatives consuming this same helper for foreign/changed root identity, outside-target symlink or junction, and unexpected carrier shape. Verify bytes, modes and physical identities remain unchanged after denial. Do not add skip, todo, synthetic success, runner override or normative retention preload. All six old failed roots and their24 carrier files stay untouched.
+
+After actor proof, root independently reviews the full inverse and all10023 source inputs. Refresh only the existing current witness hashes through normal inventory/C2A/DATA generation and append one complete current successor; preserve all82 historical bodies and checker predicates. Predicted memberships remain1604 inventory,828 DATA admitted,680 DATA pins,361 current bindings plus one guard,66 frozen release pins and17 UNKNOWN qualification cells. No new inventory member or policy exclusion is allowed. Required source gates and the unchanged full npm baseline execute on the subsequent exact committed candidate, with the baseline's owned named branch and fresh admission. Preserve every actual failure and generated runtime output.
+
+The H2 draft push preceded rebuilt native verification and is an actual ordering deviation, not a waiver or compliant delivery. Before the next product push, execute current source gates and fresh exact rebuilt native on an explicitly owned synthetic profile: warm COPY, one ordinary author command, normal Quit and same-physical-profile cold reopen. All original package, CI, merge and exact merged-head proof obligations remain. Test teardown success cannot qualify native behavior, security or the full Mac release.
+
+## IMPLEMENTATION_STEPS
+
+1. Revalidate clean phase02 base, mounted identities and startup/authority. Complete separate actor declaration/preflight; root verifies it before this contract and any implementation.
+2. Preserve the original RED and all existing cases. Execute the strengthened whole S33 and focused fork regression, keeping actual failing seams visible.
+3. Add the minimal privately authorized fork path at the existing adapter/transaction seam, preserving durable original provenance before retirement. Use normal new-copy bootstrap and existing canonical compensation.
+4. Guard final bootstrap publication against stale project/lifecycle/session/window/generation/capability. Keep existing source and staging verification, and normal missing-anchor recovery strict.
+5. Prove ordinary authoring, exact historical reconstruction, active-chain replay, denied/foreign/stale and interrupted/retried paths; review every change and return HOLD to root.
+6. Root performs independent scope review, required whole gates, exact candidate package/native warm and cold checks, then the required commit/push/PR/CI/merge/exact merged verification.
+
+## CHECKS
+
+CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
+
+- CHECK_01_PRE_PHASE: CHECK_01_PRE performs fresh bootstrap and full required normative startup at literal clean780f; scoped factual2B acknowledged honestly. Own declaration02 includes exact allScopeIn with rootReserved ownership. Preserve actual npm preflight02 exit0 BEFORE ANY phase02 repo edit. Do not fake HYGIENE, test elsewhere or reuse old preflight.
+- CHECK_02_PRE_PHASE: After successful actor declaration/preflight02, HOLD before all source edits until root checks it and writes the prospectively scoped10-section HARD contract. Root may run own same-base declaration/preflight while still clean. Actor verifies contract bytes before implementing.
+- CHECK_03_POST_PHASE: CHECK_02_POST real whole strengthened S33 before/after adoption and new focused persistence fork suite; actor captures actualargv/streams/status/test hashes and every stage count. Main bridge tests use genuine generated Core+runtime+adapter histories, not hand-authored successful receipts.
+- CHECK_04_POST_PHASE: Focused normal, allcurrent and genuine sourcestale, foreign fact/evidence/scene/project, cancelled/stale source/lease/lifecycle/async completion, conflict/symlink/hardlink and interruption/retry/reopen cutpoints. Failure of first new author command preserves pre-command manifest/active pair/anchor and all donor provenance.
+- CHECK_05_POST_PHASE: Full actual affected existing archive/tree identity/persistence/bootstrap/transaction/lease/recovery/history/command boundary chains. No maintained case deletion, skips/todo or unexecuted/zero-test PASS. Any generated cwd runtime artifacts must be reported and preserved, not silently deleted.
+- CHECK_06_POST_PHASE: Root independently reviews exact diff, all original protected bytes, RED/current result distinction, package/source identities and all mandatory whole Main/source/baseline/OSS/audit/CI gates. Root fresh exactcandidate native ZIP COPY and one actual author command, normalQuit, qualified cold on samephysical profile. Use qualified tenfact829member input with6current4stale; failed native profiles remain sealed.
+- CHECK_07_POST_PHASE: Native host failure/noREADY or controlled PID exit forbids cua.getApp and any incidental default profile launch. Keep unknown outcomes explicit; no blind cold retry. Root owns finite passive observer and CUA GUI actuation.
+
+- CHECK_08_PRE_PHASE: Phase03 fresh exact clean76886501 bootstrap, required reads and root/actor21path declarations/preflights complete before the first phase03 write. Root verifies both actual preflights and this HARD amendment/E0 before releasing the one actor test path.
+- CHECK_09_POST_PHASE: Whole C5C2 must execute all original cases/10mutants plus the three consumed source controls, with no filtering/skips/todo. Root independently reviews the exact inverse, all10023source inputs and frozen6; C5A whole executes on the subsequent clean checkpoint.
+- CHECK_10_POST_PHASE: Normal physical inventory/C2A/DATA/source-carrier corruption/release/governance checks, complete affected-chain files and whole required baseline, OSS/audits/performance/doctor/guardrails execute on exact committed source. All native/package/delivery obligations above remain required.
+
+- CHECK_11_PRE_PHASE: Phase04 root clean H2 bootstrap, fresh required reads, unchanged 21-path scope and actual OPS declaration04/preflight0 precede all repository writes. Preserve and independently reread the closed H2 677-test failure packet; exact task-document omission is the only admitted repair. C5C2, six runtime/COPY files and release pins stay frozen.
+- CHECK_12_POST_PHASE: Exact task membership and physical source pins, complete appended successor/inverse, unchanged original 81 carriers/checkers, normal inventory/C2A/governance and task E0 must verify. After a normal checkpoint, run the unchanged DATA post-evaluation and static checker before remaining complete current gates. All original native and full delivery obligations remain.
+
+- CHECK_13_PRE_PHASE: Both actual clean H3 declarations/preflights, current source freeze and root review of actor read bindings precede phase05 edits. Root validates this HARD amendment with E0 before releasing the sole actor S33 path. Historical six failed roots and24 carrier files remain physically and byte exact.
+- CHECK_14_POST_PHASE: Whole normal S33 runs without filtering or retention preload; original prefix and every prior case/assertion remain exact. Real consumed ownership, symlink/outside-target and unexpected-shape counterexamples prove refusal before mutation. Root reviews all source and companion inverses, then normal current gates and unchanged full named-branch npm baseline, exact rebuilt warm/cold native before next push, CI/merge and exact merged verification. Windows/Linux claims require actual platform execution.
+
+Required phase02 preflight is prospective at literal780f; initial scope/preflight remains tied to229dd. The root and actor declarations contain the same nine task paths and explicit disjoint ownership. Test denominators, hashes, original/current prefixes, skipped/todo/cancel counts and actual argv/status are retained. Native expected source corpus is ten facts with6current4stale and68event/UI/receipt entries each; new active chain counts must be observed and frozen before native.
+
+## STOP_CONDITION
+
+Stop the affected mutation on ambiguous identity/authority, foreign WIP, out-of-scope required source, missing or failed preflight, source drift, lost lease, unknown publication, collision or any invariant bypass. After the third identical failure signature, retain expected/actual/seed/HEAD/hashes and one next hypothesis. No silent fallback, skip, rerun loop or cleanup creates a PASS. A discovered implementation issue within this same authorized scope is repaired and re-proved rather than recast as a smaller accepted outcome.
+
+## REPORT_FORMAT
+
+Use the existing AGENT_FINAL_REPORT_V1 schema. Root final TZ chat output is exactly one text code block with KEY: VALUE lines and basenames only. Report task ID, before/after/commit/merged SHA, changed basenames, actual tests and denominators, push/PR/CI/merge, exact-head verification, open limits, rollback and one next action. Full macOS qualification stays NOT_READY until every actual release obligation is proved.
+
+## FAIL_PROTOCOL
+
+One same-bounded-contour source rollback by new revert commit after delivery; runtime original histories retained in immutable recovery for explicit readable recovery, never auto-downgraded or destroyed.
+
+Retain the original archive, all source/failed native profiles, all actual failures and durable fork recovery on unknown outcomes. Failed candidate/native checks do not authorize default-profile launch, new external authority or history rewriting. No READY or an exited controlled process forbids cua.getApp; no cold acceptance may be inferred from a different instance. Root owns further review and exact same-task delivery.

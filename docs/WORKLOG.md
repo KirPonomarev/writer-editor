@@ -5321,3 +5321,19 @@ YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: actual native/Core/Main baseline 
 YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: C1 configured baseline exited7 with truncated64MiB unit TAP and UNKNOWN complete denominator; retain FAIL and all raw streams, original freezes and restored6file/19member evidence. Separate actor changed only one added diagnostic statement; exact original prefix/assertions/input/cases and runtime/bundle remain. Frozen02 Main requires fresh whole causal/GREEN and unchanged configured baseline. Hash-only source successor retains all78old carriers and every verification predicate; no scope, membership, runtime or release authority expands. Complete native/delivery/full-Mac outcome remains pending.
 
 - 2026-10-27 same continuity chain: preserve actual failed822member native history run191of192prefixes. Separate actor actual P0-08 boundary/rollback/reopen RED10/8/2, then one existing11byte slice removal and same frozen whole10GREEN/192prefixes, committed42d186fa. Root current normal producer0/R3C0233GREEN, all earlier editor/bundle/Main bytes exact. Mechanical source successor only; current complete gates/baseline/new native/full delivery remain mandatory. No fullMac acceptance.
+
+## 2026-10-27 — Authored archive COPY source and proof companions
+
+- Semantic checkpoint76886501 preserves authored current/stale facts and immutable donor history; actual122whole/263affected/51focused passes are bounded source observations. Original native and causal failures remain retained.
+- Clean C5 pair27tests26pass isolates the pre-existing global-call oracle; prospective phase03 separate actor strengthens the two existing guarded gateway regions. Whole19of19 and10old mutants pass; root exact inverse protects all other test bytes.
+- Same21path COPY chain updates mechanical current source pins and two missing witness memberships while preserving80historical carriers, all old classifications/skips and17UNKNOWN release qualification cells. Normal physical checkers, full baseline, real package/native, CI and delivery remain pending.
+
+## 2026-10-27 — Authored COPY task admission and baseline diagnosis
+
+- H2 b282c196e060d1adb9bf45260932fd667413cbd8 is draft PR2174. OPS/dependent CI and local 677-test companion run fail on the single missing task-file admission; 669 local cases pass, eight fail, no exclusions. Preserve actual logs and exact source bindings.
+- Fresh phase04 root preflight0 admits only mechanical current witnesses: one task member, append-only successor, unchanged 81 historical carriers/checkers, fixed inventory/classes/skips and frozen release pins/qualifications. Production and behavior tests remain H2.
+- Full H2 npm baseline fails: 3555 pass, seven fail and 59 skipped out of 3621; one detached-branch prerequisite plus six S33 after-hook EACCES failures. Keep the failure; next use a named candidate branch and separately admit test-owned cleanup compatibility before complete baseline/native/delivery acceptance. Full Mac remains incomplete.
+
+## 2026-10-27 — Authored COPY phase05: test-owned teardown
+
+Separate clean H3 preflights and prospective task E0 preceded the S33-only actor correction. Root reviewed the full inverse, all10023 source bindings, frozen runtime and old six failed roots/24files. Normal whole S33 actual75/75 without preload, filtering or skips; three real ownership/shape denials exercise the helper. Earlier73/75 failure remains retained as a new negative setup error before its intended guard; original failed baseline is not relabelled. Current companions refresh hashes only, preserving82 historical carriers, all inventory/skip policy and release UNKNOWNs. Full candidate source/baseline, rebuilt native before next push, CI/merge and exact merged proof remain required.

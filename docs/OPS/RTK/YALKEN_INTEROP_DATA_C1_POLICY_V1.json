@@ -832,7 +832,10 @@
     "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js",
     "docs/tasks/2026-10-27--atlas-continuity-author-input.md",
     "test/contracts/yalken-atlas-v5-r3-c02-temporal-continuity-saved-query-journeys.contract.test.js",
-    "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js"
+    "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
+    "test/unit/stage10-imported-project-copy.test.mjs",
+    "test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs",
+    "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md"
   ],
   "protectedFiles": [
     {
@@ -1061,7 +1064,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f28102c22555c6adbca52d885363dac76bf5e905c2c93f8e1e4e954c584ebc86"
+        "sha256": "a1b0e4c6ee437fc0bea449d7102ec91431aedd57f050ee1fe551586cff50a30e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1797,7 +1800,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "451ed608837fc77044205b9c20429b7d51c13e24984e1beb7aa2f6a604c7b420"
+        "sha256": "b4e2f0b9362ab1326385bcd20069b8c6fc430e28639789df8dc38f800134812c"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2753,15 +2756,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "447115dcc18f2f8e4f3506d98c2ca90b84bbaf5e4dab42edcaa6a39a5ac98c08"
+        "sha256": "ff26b95cf0d88447382b03863b311096f160b2cb09969c64f191465c73a2ed74"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "bd0ffab5e3b02c107087fdf094b35c2c2d66e5c61ce7f594c5ecbe05ac74d698"
+        "sha256": "e9f4d57246719e6f69e2860998c78e424f8035ac70ff19d41a45c3f1374ff770"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "dc8da14f6e09de594be3c3afa1b1393c4a8361a80c5bf9eb8cbd1c0c60d420bb"
+        "sha256": "63e379c7be8d43fea882c0ce4868e6d8be655cce5f5274863afd5b31bbd3ddd0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3125,7 +3128,7 @@
       },
       {
         "path": "src/product/stage10MainPersistenceAdapter.mjs",
-        "sha256": "1d258e7b71346c2ca5243a9272cde2216dcba4276b52d26f520a6acfaffd9c91"
+        "sha256": "bffab1daf99425322d83169fad426e22bd1ed2c6584b96aadda63e7c3978ffc6"
       },
       {
         "path": "test/contracts/rtk-word-missing-anchor-recovery.contract.test.js",
@@ -3293,7 +3296,7 @@
       },
       {
         "path": "test/unit/sector-m-s33-full-archive-import.test.js",
-        "sha256": "c9beab32d88ecebb1d1d06ce2dd846cfecbb8a323e9cd3346507bddc95a18b9e"
+        "sha256": "1468901adb55c6f059d1751466dbee3b778b76bc2b6edaecc01b2d96df6e0f03"
       },
       {
         "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -3301,7 +3304,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "25a4337ded680029ca6e09fd05f82f0d7520b954a2fcd36d525b8342416cd70b"
+        "sha256": "f6535421f7d5eb87b81fa2e973934d27c77914e3b4d62eb7c7fb6d62f6766c18"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3325,7 +3328,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "7b6cc4efc5c7cbe1ba27ccf7de0db89479297d036278bbc95ee1dc040afef716"
+        "sha256": "34c616141293a06ba17b9163aab810aed36754ce589c949816390854f74a96fe"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3417,7 +3420,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "a2304eb0e1a918941164fd83200d9f871117625cf99ddac5247ac880b9794bef"
+        "sha256": "9a8a2264bda25a5ea4cf136935713c78ca31a851946987e627f7a2a1f28ea383"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3493,7 +3496,7 @@
       },
       {
         "path": "src/core/runtime.mjs",
-        "sha256": "860a0486dc2b6ecbf4d72aacd248056c73038a55ab5b0bea069a14f14aa0c654"
+        "sha256": "51f067d3899289eae99029bd2e3400336aa2baab4a88ba46db50ecbed9f39022"
       },
       {
         "path": "docs/tasks/2026-10-23--mac-manual-map-pdf.md",
@@ -3766,6 +3769,18 @@
       {
         "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
         "sha256": "e7798a21315b39016a97dbea4570274188539024b2c3f235d816ccecc5d595e3"
+      },
+      {
+        "path": "test/unit/stage10-imported-project-copy.test.mjs",
+        "sha256": "de02d7b4bc1da801ff20d528b5678b9e094a5f86392ac8629218274b6ff7dcfc"
+      },
+      {
+        "path": "test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs",
+        "sha256": "f0afa96a76ee42c6c75c51b96df392b0c5b4695c3e16be16b54ff0b6482cd94c"
+      },
+      {
+        "path": "docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md",
+        "sha256": "820e8acf268c644565f71b9ef9cfab256337e956937f92630654b1905997145e"
       }
     ],
     "followupRepair": {
