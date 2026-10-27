@@ -1956,6 +1956,37 @@ function normalizeAtlasPromiseState(value) {
   return '';
 }
 
+// COPY changes the owning project of current authored facts, not the opaque
+// project-local fact/scene/anchor IDs or the separate historical event stream.
+export function rebindAtlasContinuityFactsForProjectCopy(atlas, sourceProjectId, projectId) {
+  if (!isPlainObject(atlas) || !Object.hasOwn(atlas, 'continuityFactLedgers')) return atlas;
+  const reject = reason => { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', reason); };
+  if (!sourceProjectId || !projectId || sourceProjectId === projectId
+    || atlas.schemaVersion !== ATLAS_AUTHOR_SCHEMA_VERSION || !isPlainObject(atlas.continuityFactLedgers)) {
+    reject('COPY_CONTINUITY_FACT_SCHEMA_INVALID');
+  }
+  const kinds = Object.keys(createEmptyAtlasContinuityFactLedgers());
+  const next = cloneJson(atlas);
+  for (const [kind, ledger] of Object.entries(atlas.continuityFactLedgers)) {
+    if (!kinds.includes(kind) || !isPlainObject(ledger)) reject('COPY_CONTINUITY_LEDGER_INVALID');
+    for (const [id, fact] of Object.entries(ledger)) {
+      const anchor = fact?.evidenceAnchor;
+      if (!isPlainObject(fact) || fact.schemaVersion !== 'atlas.continuityFact.v1'
+        || fact.id !== id || fact.ledgerKind !== kind || !isPlainObject(anchor)
+        || anchor.schemaVersion !== 'atlas.evidenceAnchor.v1') reject('COPY_CONTINUITY_FACT_SCHEMA_INVALID');
+      // Integrity of an external ZIP never grants authority to a foreign fact
+      // or foreign evidence scope. Check the raw identities before rebinding.
+      if (fact.projectId !== sourceProjectId || anchor.projectId !== sourceProjectId) reject('COPY_CONTINUITY_FACT_PROJECT_MISMATCH');
+      if (anchor.sceneId !== fact.sceneId || anchor.entityId !== fact.subjectEntityId) reject('COPY_CONTINUITY_FACT_EVIDENCE_MISMATCH');
+      const { sourceHash, ...base } = fact;
+      if (sourceHash !== hashCanonicalValue(base)) reject('COPY_CONTINUITY_FACT_HASH_INVALID');
+      const copied = { ...base, projectId, evidenceAnchor: { ...anchor, projectId } };
+      next.continuityFactLedgers[kind][id] = { ...copied, sourceHash: hashCanonicalValue(copied) };
+    }
+  }
+  return next;
+}
+
 function normalizeAtlasContinuityRelatedEntityIds(values) {
   return uniqueStringList(values).slice(0, 24);
 }

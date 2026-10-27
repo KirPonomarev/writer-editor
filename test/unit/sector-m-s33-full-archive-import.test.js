@@ -1172,3 +1172,191 @@ test('S33 actual guarded SaveAs and untitled Save refuse queued or completed-rec
     } finally { clearTimeout(timer); release.resolve({ success: true }); resume.resolve(); fsPromises.readdir = readdir; await opening; }
   });
 });
+
+// The fixture uses the real Core, Stage10 runtime, persistence adapter and ZIP
+// producer. Electron is inert; Main's normal guarded bridge remains executable.
+async function authoredCopyFixture(t, corrupt = null, options = {}) {
+  const input = await archiveBridgeFixture(t);
+  const { pathToFileURL } = require('node:url');
+  const load = file => import(pathToFileURL(path.join(ROOT, file)).href);
+  const wiring = await load('src/product/stage10ProductWiring.mjs');
+  const { createStage10MainPersistenceAdapter } = await load('src/product/stage10MainPersistenceAdapter.mjs');
+  const { hashCanonicalValue } = await load('src/core/browser-safe-hash.mjs');
+  const projectId = 'project-authored-copy-donor';
+  const sceneId = 'tree-node-33333333333333333333333333333333';
+  const entityId = 'copy-character', scenePath = 'roman/Part One/Scene 01.txt';
+  const text = input.files.get(scenePath).toString('utf8');
+  const port = createStage10MainPersistenceAdapter({ projectRoot: input.source,
+    anchorRoot: path.join(input.tempRoot, 'donor-anchors') });
+  const runtime = await wiring.createStage10ProductRuntime({ projectId, persistencePort: port });
+  const activation = { mode: wiring.STAGE10_ACTIVATION_MODES.DOM_VISIBLE_CONTROL_LISTENER_FALLBACK,
+    controlId: 'archive-authored-copy-fixture' };
+  const dispatch = async (command, payload) => {
+    const result = await runtime.dispatchVisibleCommand(command, { projectId, ...payload }, activation);
+    assert.equal(result.ok, true, JSON.stringify(result.error));
+  };
+  await dispatch('project.create', { sceneId });
+  for (let i = 0; i < 56; i++) await dispatch('project.applyTextEdit', { sceneId, text: i === 55 ? text : `draft ${i}` });
+  await dispatch('atlas.entity.create', { entityId, name: 'Герой Ёж' });
+  const anchor = { schemaVersion: 'atlas.evidenceAnchor.v1', anchorId: 'copy-evidence', projectId,
+    sceneId, entityId, startOffset: 0, endOffset: text.length, quote: text,
+    quoteHash: hashCanonicalValue(text), sceneTextHash: hashCanonicalValue(text) };
+  for (let i = 0; i < 10; i++) await dispatch('atlas.continuityFact.record', {
+    sceneId, subjectEntityId: entityId, factId: `authored-copy-fact-${i}`,
+    ledgerKind: ['location', 'knowledge', 'object', 'promise'][i % 4],
+    factLabel: `Авторский факт ${i}`, factValue: `Ёж / e\u0301 / 👩🏽‍🚀 ${i}`,
+    promiseState: 'open', note: `Не терять примечание ${i}`, evidenceAnchor: anchor,
+  });
+  if (options.staleScene) {
+    const before = runtime.getSession(), previous = await port.readStage10State(projectId);
+    const changedText = text + '\nНастоящая следующая редакция сцены.';
+    await dispatch('project.applyTextEdit', { sceneId, text: changedText });
+    const written = await input.fileManager.writeFileAtomic(path.join(input.source, scenePath), changedText);
+    assert.equal(written.success, true);
+    const after = runtime.getSession(), next = await port.readStage10State(projectId);
+    assert.deepEqual(after.coreState.data.projects[projectId].atlas.continuityFactLedgers,
+      before.coreState.data.projects[projectId].atlas.continuityFactLedgers);
+    assert.deepEqual(after.eventLog.events.slice(0, 68), before.eventLog.events);
+    assert.deepEqual(after.uiEvents.slice(0, 68), before.uiEvents);
+    assert.deepEqual(next.authorityStore.receipts.slice(0, 68), previous.authorityStore.receipts);
+  }
+  const manifestPath = path.join(input.source, PROJECT_MANIFEST_FILENAME);
+  const manifest = JSON.parse(await fsPromises.readFile(manifestPath));
+  manifest.projectId = projectId;
+  manifest.treeIdentity = { schemaVersion: 1, nodes: {
+    'tree-node-11111111111111111111111111111111': { bindingKey: 'file:roman/Part One', kind: 'part', present: true },
+    [sceneId]: { bindingKey: 'file:' + scenePath, kind: 'chapter-file', present: true },
+  } };
+  manifest.atlas = runtime.getSession().coreState.data.projects[projectId].atlas;
+  manifest.lastCommandId = runtime.getSession().coreState.data.lastCommandId;
+  if (corrupt) corrupt(manifest);
+  await fsPromises.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+  const historyPaths = port.paths(projectId);
+  const history = Object.fromEntries(['session', 'authority'].map(key => [key, fs.readFileSync(historyPaths[key])]));
+  const session = JSON.parse(history.session), authority = JSON.parse(history.authority);
+  const operationCount = options.staleScene ? 69 : 68;
+  assert.deepEqual([session.eventLog.events.length, session.uiEvents.length, authority.receipts.length],
+    [operationCount, operationCount, operationCount]);
+  const zip = (await buildProjectArchiveBuffer(input.source)).buffer;
+  await fsPromises.writeFile(input.archivePath, zip);
+  const before = await completeBridgeFilesystemSnapshot(input.source);
+  const query = (queryId, payload) => input.bridge.handlers.get('ui:workspace-query-bridge')(input.event(),
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:workspace-query-bridge', queryId, payload));
+  const facts = Object.values(manifest.atlas.continuityFactLedgers).flatMap(ledger => Object.values(ledger));
+  return { ...input, projectId, sceneId, entityId, manifest, manifestPath, history, historyPaths,
+    zip, before, query, facts, anchor, scenePath, hashCanonicalValue };
+}
+
+test('S33 authored COPY retains scene authority, ten usable facts and original history, then accepts a new canonical author command', async t => {
+  const input = await authoredCopyFixture(t), requestId = 'authored-copy-valid';
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const result = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: true });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.notEqual(result.value.projectId, input.projectId);
+  const copyId = result.value.projectId, copyRoot = path.join(input.documentsRoot, 'Project Alpha');
+  const readManifest = async () => JSON.parse(await fsPromises.readFile(path.join(copyRoot, PROJECT_MANIFEST_FILENAME)));
+  const copyManifest = await readManifest();
+  const copyHistory = async () => Object.fromEntries(await Promise.all(Object.entries(input.historyPaths)
+    .filter(([key]) => key === 'session' || key === 'authority')
+    .map(async ([key, file]) => [key, await fsPromises.readFile(path.join(copyRoot, path.relative(input.source, file)))])));
+  // These controls execute before each causal assertion and do not depend on
+  // a repaired view. No old event, activation or receipt may be rewritten.
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+  assert.deepEqual(await fsPromises.readFile(input.archivePath), input.zip);
+  assert.deepEqual(await copyHistory(), input.history);
+  assert.equal(copyManifest.copiedFromProjectId, input.projectId);
+  await t.test('copied scene identity resolves in metadata and Atlas under only its own project scope', async () => {
+    const metadata = await input.query('query.metadataInspector', { projectId: copyId, nodeId: input.sceneId });
+    const atlas = await input.query('query.atlasCurrentScene', { projectId: copyId, nodeId: input.sceneId });
+    const foreign = await input.query('query.metadataInspector', { projectId: input.projectId, nodeId: input.sceneId });
+    t.diagnostic(JSON.stringify({ metadataState: metadata.state, metadataReason: metadata.unavailableReason,
+      atlasState: atlas.atlasCurrentScene?.state, atlasReason: atlas.atlasCurrentScene?.unavailableReason,
+      foreignReason: foreign.unavailableReason, openedDocumentId: result.value.documentId }));
+    assert.equal(foreign.unavailableReason, 'E_TREE_NODE_PROJECT_MISMATCH');
+    assert.equal(metadata.state, 'ready', 'COPY_METADATA_MUST_RESOLVE_REGISTERED_SCENE');
+    assert.notEqual(atlas.atlasCurrentScene.state, 'unavailable');
+    assert.equal(result.value.documentId, input.sceneId);
+    assert.deepEqual(copyManifest.treeIdentity, input.manifest.treeIdentity);
+  });
+  await t.test('all ten semantic values and current evidence reach actual WSE without foreign identity', async () => {
+    const response = await input.query('query.atlasContinuityLedgerSurface', { projectId: copyId, explicitOpen: true });
+    const surface = response.atlasContinuityLedgerSurface;
+    t.diagnostic(JSON.stringify({ state: surface?.state, reason: surface?.unavailableReason,
+      inputFacts: surface?.wseStateEvidence?.denominator?.inputFacts }));
+    assert.notEqual(surface.state, 'unavailable', 'COPY_WSE_MUST_ACCEPT_CURRENT_FACT_IDENTITIES');
+    assert.equal(surface.wseStateEvidence.denominator.inputFacts, 10);
+    const visibleFacts = surface.wseStateEvidence.views.livingEvidenceBible;
+    assert.equal(visibleFacts.rows.length, 10); assert.equal(visibleFacts.omittedCount, 0);
+    assert.equal(visibleFacts.rows.every(fact => fact.evidenceState === 'current'), true);
+    const copiedFacts = Object.values(copyManifest.atlas.continuityFactLedgers).flatMap(ledger => Object.values(ledger));
+    assert.equal(copiedFacts.length, input.facts.length);
+    for (const old of input.facts) {
+      const fact = copiedFacts.find(row => row.id === old.id);
+      const { sourceHash, projectId, evidenceAnchor, ...semantics } = fact;
+      const { sourceHash: oldHash, projectId: oldProject, evidenceAnchor: oldAnchor, ...oldSemantics } = old;
+      assert.deepEqual(semantics, oldSemantics);
+      assert.equal(projectId, copyId); assert.equal(evidenceAnchor.projectId, copyId);
+      assert.deepEqual({ ...evidenceAnchor, projectId: oldProject }, oldAnchor);
+      const { sourceHash: ignoredHash, ...base } = fact;
+      assert.equal(sourceHash, input.hashCanonicalValue(base));
+    }
+  });
+  await t.test('one ordinary Kernel author-command in COPY is durable and preserves every prior history object', async () => {
+    const payload = { projectId: copyId, sceneId: input.sceneId, subjectEntityId: input.entityId,
+      ledgerKind: 'promise', factId: 'copy-new-author-fact', factLabel: 'Новый факт в копии',
+      factValue: 'Сохраняется после открытия', promiseState: 'open',
+      evidenceAnchor: { ...input.anchor, projectId: copyId } };
+    const recorded = await input.invoke(payload, 'atlas.continuityFact.record');
+    t.diagnostic(JSON.stringify({ commandOk: recorded.ok, reason: recorded.reason, code: recorded.value?.error?.code,
+      kernelCalls: input.bridge.kernelCalls.slice(-1) }));
+    assert.equal(recorded.ok, true, 'COPY_CANONICAL_AUTHOR_COMMAND_MUST_BE_AVAILABLE');
+    assert.equal((await readManifest()).atlas.continuityFactLedgers.promise['copy-new-author-fact'].factValue, payload.factValue);
+    // The imported donor session is historical evidence, not a receipt store
+    // that the copy may silently retag into authority for another project.
+    for (const [key, bytes] of Object.entries(input.history)) {
+      const old = JSON.parse(bytes), next = JSON.parse((await copyHistory())[key]);
+      if (key === 'session') {
+        assert.deepEqual(next.eventLog.events.slice(0, 68), old.eventLog.events);
+        assert.deepEqual(next.uiEvents.slice(0, 68), old.uiEvents);
+      } else assert.deepEqual(next.receipts.slice(0, 68), old.receipts);
+    }
+    assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+  });
+});
+
+test('S33 authored COPY rejects foreign current fact or evidence scope before publication', async t => {
+  for (const field of ['fact', 'evidence']) await t.test(field, async t => {
+    const input = await authoredCopyFixture(t, manifest => {
+      const fact = Object.values(manifest.atlas.continuityFactLedgers.location)[0];
+      if (field === 'fact') fact.projectId = 'unrelated-external-project';
+      else fact.evidenceAnchor.projectId = 'unrelated-external-project';
+    });
+    const requestId = 'authored-copy-foreign-' + field;
+    assert.equal((await input.invoke({ requestId })).value.preview, true);
+    const result = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: false });
+    t.diagnostic(JSON.stringify({ field, ok: result.ok, reason: result.reason }));
+    assert.equal(result.ok, false, 'COPY_FOREIGN_CURRENT_SCOPE_MUST_NOT_GAIN_AUTHORITY');
+    assert.deepEqual(await fsPromises.readdir(input.documentsRoot), []);
+    assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+    assert.deepEqual(await fsPromises.readFile(input.archivePath), input.zip);
+    assert.deepEqual(input.bridge.sent.filter(([channel]) => channel === 'editor:set-text'), []);
+  });
+});
+
+test('S33 authored COPY preserves stale evidence after a real source edit instead of repairing its anchors', async t => {
+  const input = await authoredCopyFixture(t, null, { staleScene: true }), requestId = 'authored-copy-stale';
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const result = await input.invoke({ requestId, confirmed: true, mode: 'copy', openAfterImport: true });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const response = await input.query('query.atlasContinuityLedgerSurface', { projectId: result.value.projectId, explicitOpen: true });
+  const wse = response.atlasContinuityLedgerSurface.wseStateEvidence;
+  assert.equal(wse.denominator.inputFacts, 10); assert.equal(wse.state, 'degraded');
+  assert.equal(wse.views.livingEvidenceBible.rows.length, 10);
+  assert.equal(wse.views.livingEvidenceBible.rows.every(fact => fact.evidenceState === 'staleOrMissing'), true);
+  const copyRoot = path.join(input.documentsRoot, 'Project Alpha');
+  assert.deepEqual(await fsPromises.readFile(path.join(copyRoot, input.scenePath)),
+    await fsPromises.readFile(path.join(input.source, input.scenePath)));
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), input.before);
+  for (const [key, bytes] of Object.entries(input.history)) assert.deepEqual(
+    await fsPromises.readFile(path.join(copyRoot, path.relative(input.source, input.historyPaths[key]))), bytes);
+});

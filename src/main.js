@@ -31561,7 +31561,16 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
           createdAtUtc: new Date().toISOString(),
           copiedFromProjectId: archiveProjectId,
         };
-        delete nextManifest.treeIdentity;
+        const identityModule = await loadProjectTreeIdentityModule();
+        const registry = identityModule.normalizeProjectTreeIdentity(sourceManifest.treeIdentity);
+        if (!registry.ok) throw registry.error;
+        // Registered node IDs are project-local opaque identities. Retain them
+        // with authored references; legacy empty registries can be regenerated.
+        if (Object.keys(registry.value.nodes).length === 0) delete nextManifest.treeIdentity;
+        if (Object.hasOwn(sourceManifest, 'atlas')) {
+          const { rebindAtlasContinuityFactsForProjectCopy } = await loadCoreRuntimeModule();
+          nextManifest.atlas = rebindAtlasContinuityFactsForProjectCopy(sourceManifest.atlas, archiveProjectId, newProjectId);
+        }
         await writeProjectManifestRawAtomic(tempManifestPath, nextManifest, {
           expectedText: rawRecord.raw,
           expectedProjectId: archiveProjectId,
