@@ -8,6 +8,7 @@ EXECUTION_CANON: v3.13a-final
 STATUS: OPEN_UNACCEPTED_SAME_DELIVERY_CHAIN
 ORIGINAL_BINDING_BASE_SHA: 229dd01a412435ecfb26c393944e157d5f8feda5
 PHASE_02_BINDING_BASE_SHA: 780fef0f0d34081f2034a47c71cd2770fcbe77d1
+PHASE_03_BINDING_BASE_SHA: 768865016afd019971f686d724303626c119f210
 DESIGN_TOOL_ROUTER: Mechanical existing import/persistence correction; exact router value is in validated declarations.
 
 ## MICRO_GOAL
@@ -22,7 +23,7 @@ One bounded correction at the existing Main archive COPY and Stage10 persistence
 
 ## ALLOWLIST
 
-Code actor may edit only:
+Phase02 runtime and COPY regressions are frozen inputs at checkpoint76886501:
 
 - `src/main.js`
 - `src/core/runtime.mjs`
@@ -31,11 +32,26 @@ Code actor may edit only:
 - `test/unit/sector-m-s33-full-archive-import.test.js`
 - `test/unit/stage10-imported-project-copy.test.mjs`
 
-Main plus persistence adapter are the expected minimal new seams; bootstrap changes are optional only if necessary. Root may edit only these version-controlled docs:
+Phase03 separate code actor may edit only:
+
+- `test/contracts/r24-c5c2-atomic-gateway.contract.test.mjs`
+
+Phase03 root may edit only these documentation and mechanical current-source companions:
 
 - `docs/tasks/YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027.md`
 - `docs/CONTEXT.md`
 - `docs/HANDOFF.md`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json`
+- `scripts/ops/release-candidate.mjs`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `docs/WORKLOG.md`
 
 New evidence and materials use verified dated T777 task directories. Finite explicitly owned APFS runtime is an exception for tests/build/native execution; original donor, failed QA and other profiles are preserved. Every original S33 byte through offset75053 remains exact. Only the new phase01 appended test region may be prospectively strengthened.
 
@@ -241,6 +257,16 @@ Causal final-intent, FD/path-boundary and large-history failures remain immutabl
 
 The earlier26-file affected run remains actual1 with367tests365pass2fail. C5A requires a clean-checkpoint rerun. C5C2 requires prospective test-only admission for its existing notes/settings function plus separately validated existing environment-epoch gateway and no other caller, preserving every other assertion and all10mutants. No edit to that file is authorized by phase02. Root’s semantic checkpoint is expressly UNACCEPTED_FULL_DELIVERY_PENDING; current-source OPS witnesses, required whole gates, native warm/cold and the entire delivery chain are still required.
 
+### Prospective phase03: current-source delivery companions
+
+This is the same COPY outcome, rollback and delivery chain, admitted at clean768865016afd019971f686d724303626c119f210 after actual separate root OPS and actor PRODUCT_CODE preflights. ROOT_PHASE03_SCOPE_AMENDMENT_02 fixes all21 paths: six frozen runtime/COPY-test inputs, root14 and actor1. No old stage, lease or historical result grants new authority. Phase02 runtime and the complete original S33 prefix stay unchanged.
+
+The root cleanH1 C5 pair actually executes27tests26pass1fail,0skip/todo/cancel. C5A now passes without any edit or waiver. C5C2 alone fails its obsolete whole-file count because both the dedicated notes/settings wrapper and the existing guarded environment-epoch writer legitimately call the same atomic gateway. Replace only that unscoped assertion with one call in each exact named function region, independent epoch SETTINGS_PRIMARY/projectId-null/guard/observer/durable-writer requirements, and no call outside those two regions. Preserve every other original assertion and all10implementation mutants. Add three consumed source counterexamples: missing dedicated call, third unauthorized caller and wrong epoch target role. This authorizes no production change or broad count relaxation.
+
+Root updates exact current hashes through the existing inventory/C2A/DATA/certificate/release machinery. Add only the genuinely absent focused COPY and C5C2 source-witness memberships. Expected denominators are360current certificate bindings,827DATA admitted paths,679DATA source pins and1604inventory members; these are predictions until normal physical validators execute. Preserve all80historical carrier bodies, all verifier and corruption predicates, every old inventory classification/skip policy, all66release pin memberships and all17UNKNOWN qualification cells. Word Apply changes only four literals identifying the current carrier. Append exact governance witnesses under the direct human task, without inventing external reviewer, stage, signing or release authority. Preserve existing factual history and append a concise WORKLOG chronology.
+
+After independent actor review, one coherent mechanical assembly is reviewed and committed as an unaccepted checkpoint. Execute C5A/C5C2 on a clean source checkpoint before tests that generate cwd anchors; execute every remaining affected file without filtering or exclusions. Preserve generated fixtures, original failures and exact source identities. Whole configured baseline, source gates, package, actual native warm/cold, push/PR/CI/merge and exact merged verification remain mandatory.
+
 ## IMPLEMENTATION_STEPS
 
 1. Revalidate clean phase02 base, mounted identities and startup/authority. Complete separate actor declaration/preflight; root verifies it before this contract and any implementation.
@@ -261,6 +287,10 @@ CHECK_01 выполняется ДО любых изменений; CHECK_02+ в
 - CHECK_05_POST_PHASE: Full actual affected existing archive/tree identity/persistence/bootstrap/transaction/lease/recovery/history/command boundary chains. No maintained case deletion, skips/todo or unexecuted/zero-test PASS. Any generated cwd runtime artifacts must be reported and preserved, not silently deleted.
 - CHECK_06_POST_PHASE: Root independently reviews exact diff, all original protected bytes, RED/current result distinction, package/source identities and all mandatory whole Main/source/baseline/OSS/audit/CI gates. Root fresh exactcandidate native ZIP COPY and one actual author command, normalQuit, qualified cold on samephysical profile. Use qualified tenfact829member input with6current4stale; failed native profiles remain sealed.
 - CHECK_07_POST_PHASE: Native host failure/noREADY or controlled PID exit forbids cua.getApp and any incidental default profile launch. Keep unknown outcomes explicit; no blind cold retry. Root owns finite passive observer and CUA GUI actuation.
+
+- CHECK_08_PRE_PHASE: Phase03 fresh exact clean76886501 bootstrap, required reads and root/actor21path declarations/preflights complete before the first phase03 write. Root verifies both actual preflights and this HARD amendment/E0 before releasing the one actor test path.
+- CHECK_09_POST_PHASE: Whole C5C2 must execute all original cases/10mutants plus the three consumed source controls, with no filtering/skips/todo. Root independently reviews the exact inverse, all10023source inputs and frozen6; C5A whole executes on the subsequent clean checkpoint.
+- CHECK_10_POST_PHASE: Normal physical inventory/C2A/DATA/source-carrier corruption/release/governance checks, complete affected-chain files and whole required baseline, OSS/audits/performance/doctor/guardrails execute on exact committed source. All native/package/delivery obligations above remain required.
 
 Required phase02 preflight is prospective at literal780f; initial scope/preflight remains tied to229dd. The root and actor declarations contain the same nine task paths and explicit disjoint ownership. Test denominators, hashes, original/current prefixes, skipped/todo/cancel counts and actual argv/status are retained. Native expected source corpus is ten facts with6current4stale and68event/UI/receipt entries each; new active chain counts must be observed and frozen before native.
 

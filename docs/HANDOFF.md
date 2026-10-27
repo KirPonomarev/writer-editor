@@ -1,3 +1,11 @@
+## 2026-10-27 — Authored archive COPY: reviewed source and current proof companions
+
+Same task YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027; clean semantic checkpoint768865016afd019971f686d724303626c119f210 remains UNACCEPTED_FULL_DELIVERY_PENDING. Root independent review binds frozen runtime and COPY tests: actual122of122 whole,263of263 affected and51of51 focused including genuine9,452,013byte history. These working-source observations do not qualify a new native build. The original native failure and all causal RED/partial results remain immutable.
+
+Fresh cleanH1 C5 pair actually executes27tests26pass1fail; C5A passes unchanged. Prospective all21path phase03 root/actor preflights and HARD task precede the one C5C2 test correction. Whole C5C2 now executes19of19 with0fail/cancel/skip/todo, all10old implementation mutants killed and three consumed source counterexamples. Root exact inverse proves all other original test bytes unchanged; six runtime/COPY inputs frozen. The source oracle independently requires the dedicated notes/settings call, guarded settings-environment history call and zero other callers.
+
+Mechanical current-source companions add only two missing witness members: focused COPY and existing C5C2 tests. All80historical carriers and verifier/corruption predicates, old inventory classifications/skip policies,66release pin memberships and17UNKNOWN qualification cells remain protected. Current bindings360, DATA827admitted/679pins and1604inventory members still require the normal physical checkers and full configured baseline. No full Mac, package, native warm/cold, CI, merge or release acceptance follows from this assembly. Root continues exact candidate verification and the same full delivery chain, then the remaining supported Mac scope.
+
 ## 2026-10-27 — Authored ZIP COPY: identity, durable history preservation and source proof
 
 - Task YALKEN_ARCHIVE_AUTHORED_COPY_IDENTITY_20261027 continues the owner’s full first-supported-macOS goal from merged229dd01a412435ecfb26c393944e157d5f8feda5, through ordinary unaccepted checkpoint780fef0f0d34081f2034a47c71cd2770fcbe77d1. The failed actual native COPY and every original profile/archive remain retained; no historical stage or lease is reactivated.
