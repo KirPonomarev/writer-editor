@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { constants as fsConstants, lstatSync } from 'node:fs';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 
@@ -354,6 +355,8 @@ export function createStage10MainPersistenceAdapter(input = {}) {
   const writeFileAtomic = typeof input.writeFileAtomic === 'function' ? input.writeFileAtomic : defaultAtomicWrite;
   const onKillpoint = typeof input.onKillpoint === 'function' ? input.onKillpoint : null;
   const recoveryConsumedProjects = new Set();
+  let importedCopyCompleted = false;
+  let importCopyPublication = null;
   const leaseClock = typeof input.leaseNowMs === 'function' ? input.leaseNowMs : () => Date.now();
   const leaseMonotonicClock = typeof input.leaseNowMonotonicMs === 'function'
     ? input.leaseNowMonotonicMs
@@ -593,6 +596,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
 
   async function writeJson(targetPath, value, label, lease = null) {
     const publication = async () => {
+      if (importCopyPublication && !importedCopyCompleted) await importCopyPublication.validate();
       await fs.mkdir(path.dirname(targetPath), { recursive: true });
       const result = await writeFileAtomic(targetPath, jsonText(value));
       if (result?.success === false || result?.ok === false) {
@@ -1253,6 +1257,380 @@ export function createStage10MainPersistenceAdapter(input = {}) {
     return true;
   }
 
+  // This intent lives outside the imported project, in Main's existing trust
+  // root. Imported manifests and historical carriers cannot create it. It is
+  // retained until ordinary initialization has a fully replayable first event.
+  const copyNames = [SESSION_FILENAME, AUTHORITY_FILENAME, PROJECT_TRUTH_RECOVERY_FILENAME];
+  const copyRelative = name => name === PROJECT_TRUTH_RECOVERY_FILENAME
+    ? `.stage10-local/recovery/${name}` : `.stage10-local/${name}`;
+  const copyReject = reason => { throw typedError('E_STAGE10_IMPORT_COPY_INVALID', reason); };
+  const copySha = raw => createHash('sha256').update(raw).digest('hex');
+  const copyJson = raw => { try { const value = JSON.parse(raw); if (isPlainObject(value)) return value; } catch {} copyReject('COPY_JSON_INVALID'); };
+  const copyIdentity = stat => ({ dev: String(stat.dev), ino: String(stat.ino), uid: stat.uid });
+  async function copyEffect(publication, label, effect) {
+    if (!publication) copyReject('COPY_PUBLICATION_AUTHORITY_REQUIRED');
+    await killpoint(`before-${label}`);
+    return publication.lease.publish(async () => { await publication.validate(); return effect(); });
+  }
+  function copyAssertDirectoryCohort(base, target, expected) {
+    const relative = path.relative(base, target);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) copyReject('COPY_PATH_BOUNDARY');
+    for (const item of [base, ...relative.split(path.sep).filter(Boolean).map((_, i, parts) => path.join(base, ...parts.slice(0, i + 1)))]) {
+      const current = lstatSync(item, { bigint: true });
+      if (!current.isDirectory() || current.isSymbolicLink()) copyReject('COPY_DIRECTORY_BOUNDARY');
+      if (item === target && (current.dev !== expected.dev || current.ino !== expected.ino || current.uid !== expected.uid)) copyReject('COPY_DIRECTORY_COHORT_CHANGED');
+    }
+  }
+  function copyAssertRawCohort(base, target, cohort) {
+    copyAssertDirectoryCohort(base, path.dirname(target), cohort.parentStat);
+    const current = lstatSync(target, { bigint: true });
+    if (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1n
+      || ['dev', 'ino', 'uid', 'mode', 'size', 'mtimeNs', 'ctimeNs'].some(key => current[key] !== cohort.stat[key])) copyReject('COPY_RAW_COHORT_CHANGED');
+  }
+  async function copyCreateDirectory(base, target, publication, label) {
+    const parent = path.dirname(target), expected = await fs.lstat(parent, { bigint: true });
+    await copyEffect(publication, label, () => {
+      copyAssertDirectoryCohort(base, parent, expected);
+      return fs.mkdir(target, { mode: 0o700 });
+    });
+  }
+  async function copyDirectory(base, target, create = false, publication = null) {
+    const relative = path.relative(base, target);
+    if (relative.startsWith('..') || path.isAbsolute(relative) || await fs.realpath(base) !== base) copyReject('COPY_PATH_BOUNDARY');
+    for (const item of [base, ...relative.split(path.sep).filter(Boolean).map((_, i, parts) => path.join(base, ...parts.slice(0, i + 1)))]) {
+      if (create && !await physicallyPresent(item)) await copyCreateDirectory(base, item, publication, 'import-copy-directory-publish');
+      const stat = await fs.lstat(item);
+      if (!stat.isDirectory() || stat.isSymbolicLink()) copyReject('COPY_DIRECTORY_BOUNDARY');
+    }
+  }
+  async function copyRaw(base, target, optional = false, consume = null, links = 1n) {
+    let parent, handle;
+    try {
+      await copyDirectory(base, path.dirname(target));
+      parent = await fs.open(path.dirname(target), fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW);
+      const parentBefore = await parent.stat({ bigint: true });
+      const before = await fs.lstat(target, { bigint: true });
+      if (!before.isFile() || before.isSymbolicLink() || before.nlink !== links || before.size > 32n * 1024n * 1024n) copyReject('COPY_RAW_FILE_BOUNDARY');
+      handle = await fs.open(target, fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW);
+      const opened = await handle.stat({ bigint: true });
+      if (opened.dev !== before.dev || opened.ino !== before.ino || opened.nlink !== links || !opened.isFile()) copyReject('COPY_RAW_OPEN_CHANGED');
+      const raw = Buffer.alloc(Number(before.size));
+      let position = 0;
+      while (position < raw.length) {
+        const { bytesRead } = await handle.read(raw, position, raw.length - position, position);
+        if (!bytesRead) copyReject('COPY_RAW_FILE_SHORT');
+        position += bytesRead;
+      }
+      if ((await handle.read(Buffer.alloc(1), 0, 1, raw.length)).bytesRead) copyReject('COPY_RAW_FILE_GREW');
+      const after = await handle.stat({ bigint: true }), current = await fs.lstat(target, { bigint: true });
+      const parentAfter = await fs.lstat(path.dirname(target), { bigint: true });
+      if (before.dev !== after.dev || before.ino !== after.ino || before.size !== after.size
+        || before.mtimeNs !== after.mtimeNs || before.ctimeNs !== after.ctimeNs || current.dev !== before.dev || current.ino !== before.ino
+        || current.isSymbolicLink() || current.nlink !== links || parentBefore.dev !== parentAfter.dev || parentBefore.ino !== parentAfter.ino
+        || parentAfter.isSymbolicLink()) copyReject('COPY_RAW_FILE_CHANGED');
+      if (consume) await consume({ raw, handle, parent, parentStat: parentBefore, stat: after });
+      return raw;
+    } catch (error) { if (optional && error.code === 'ENOENT') return null; throw error; }
+    finally { await handle?.close(); await parent?.close(); }
+  }
+  async function copySyncDirectory(target) {
+    const before = await fs.lstat(target, { bigint: true });
+    const handle = await fs.open(target, fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW);
+    try {
+      const opened = await handle.stat({ bigint: true });
+      if (!opened.isDirectory() || before.dev !== opened.dev || before.ino !== opened.ino) copyReject('COPY_SYNC_DIRECTORY_CHANGED');
+      await handle.sync();
+    } finally { await handle.close(); }
+  }
+  async function copyExclusive(base, target, raw, retry, publication, label) {
+    await copyDirectory(base, path.dirname(target));
+    const parent = await fs.open(path.dirname(target), fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW);
+    try {
+      const parentStat = await parent.stat({ bigint: true });
+      const historical = label === 'import-copy-source-publish';
+      const useNative = !historical && typeof input.publishFileExclusive === 'function';
+      if (historical && !copyNames.includes(path.basename(target))) copyReject('COPY_HISTORICAL_FILENAME');
+      // Only fixed historical payloads use a digest-bound temporary name and
+      // the existing exclusive same-parent link. Native trust publication keeps
+      // its separate bound and primitive; there is no error-based fallback.
+      const staged = path.join(path.dirname(target), historical
+        ? `.import-copy-source-${copySha(raw)}.tmp` : `.import-copy-${randomUUID()}.tmp`);
+      const retireStaged = async cohort => {
+        await publication.validate();
+        copyAssertDirectoryCohort(base, path.dirname(target), parentStat);
+        const source = lstatSync(staged, { bigint: true }), final = lstatSync(target, { bigint: true });
+        if (!source.isFile() || source.dev !== cohort.stat.dev || source.ino !== cohort.stat.ino
+          || source.uid !== cohort.stat.uid || source.mode !== cohort.stat.mode
+          || source.size !== cohort.stat.size || source.mtimeNs !== cohort.stat.mtimeNs
+          || source.nlink !== (useNative ? 1n : 2n)
+          || !final.isFile() || final.isSymbolicLink()
+          || !useNative && (source.dev !== final.dev || source.ino !== final.ino || final.nlink !== 2n)) copyReject('COPY_LINK_IDENTITY');
+        await fs.unlink(staged);
+      };
+      const targetStat = await fs.lstat(target, { bigint: true }).catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
+      if (historical && targetStat?.nlink === 2n) {
+        if (!retry) copyReject('COPY_EXCLUSIVE_CONFLICT');
+        // The durable intent binds these exact two names and bytes. A third
+        // link, another inode or any unknown staged file never grants recovery.
+        await copyRaw(base, target, false, finalCohort => copyEffect(publication, label, () => copyRaw(base, staged, false, async cohort => {
+          if (!cohort.raw.equals(raw) || !finalCohort.raw.equals(raw)
+            || cohort.stat.dev !== finalCohort.stat.dev || cohort.stat.ino !== finalCohort.stat.ino) copyReject('COPY_STAGED_FILE_CHANGED');
+          await retireStaged(cohort);
+        }, 2n)), 2n);
+        await copySyncDirectory(path.dirname(target));
+        if (!(await copyRaw(base, target)).equals(raw)) copyReject('COPY_EXCLUSIVE_READBACK');
+        return;
+      }
+      const existing = await copyRaw(base, target, true);
+      if (existing) {
+        if (!retry || !existing.equals(raw) || historical && await physicallyPresent(staged)) copyReject('COPY_EXCLUSIVE_CONFLICT');
+        return;
+      }
+      // A fully written, synced file precedes exclusive final-name publication.
+      // Unknown interrupted staging remains readable; it never becomes an intent.
+      const previousStage = historical ? await copyRaw(base, staged, true) : null;
+      if (previousStage && (!retry || !previousStage.equals(raw))) copyReject('COPY_STAGED_FILE_CHANGED');
+      if (!previousStage) {
+        let handle;
+        try {
+          handle = await copyEffect(publication, `${label}-stage`, () => {
+            copyAssertDirectoryCohort(base, path.dirname(target), parentStat);
+            return fs.open(staged, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, 0o600);
+          });
+          await handle.writeFile(raw); await handle.sync();
+        } finally { await handle?.close(); }
+      }
+      await copyEffect(publication, label, () => copyRaw(base, staged, false, async cohort => {
+        if (!cohort.raw.equals(raw)) copyReject('COPY_STAGED_FILE_CHANGED');
+        const assertStaged = async () => {
+          await publication.validate();
+          copyAssertDirectoryCohort(base, path.dirname(target), parentStat);
+          copyAssertRawCohort(base, staged, cohort);
+        };
+        if (historical) await killpoint('before-import-copy-source-link');
+        await assertStaged();
+        if (useNative) {
+          await input.publishFileExclusive({ sourcePath: staged, targetPath: target, assertCurrent: assertStaged });
+        } else await fs.link(staged, target);
+        if (historical) await killpoint('after-import-copy-source-link');
+        // Only the exact private staging inode is retired. Any publication error
+        // leaves staging and the original donor files for explicit reconciliation.
+        await retireStaged(cohort);
+      }));
+      await copySyncDirectory(path.dirname(target));
+      if (!(await copyRaw(base, target)).equals(raw)) copyReject('COPY_EXCLUSIVE_READBACK');
+    } finally { await parent.close(); }
+  }
+  async function copyFreezeFile(base, target, publication) {
+    await copyRaw(base, target, false, cohort => copyEffect(publication, 'import-copy-source-freeze', async () => {
+      copyAssertRawCohort(base, target, cohort);
+      await cohort.handle.chmod(0o400); await cohort.handle.sync();
+    }));
+  }
+  async function copyFreezeDirectory(base, target, publication) {
+    await copyDirectory(base, target);
+    const handle = await fs.open(target, fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW);
+    try {
+      const stat = await handle.stat({ bigint: true });
+      await copyEffect(publication, 'import-copy-carrier-freeze', async () => {
+        copyAssertDirectoryCohort(base, target, stat);
+        await handle.chmod(0o500); await handle.sync();
+      });
+    } finally { await handle.close(); }
+  }
+  function validateCopyBinding(binding, projectId) {
+    if (!isPlainObject(binding) || Object.keys(binding).sort().join(',') !== 'files,manifestSha256,projectId,sourceProjectId'
+      || binding.projectId !== projectId || !normalizeString(binding.sourceProjectId) || binding.sourceProjectId === projectId
+      || !/^[a-f0-9]{64}$/u.test(binding.manifestSha256) || !Array.isArray(binding.files)
+      || binding.files.length < 2 || binding.files.length > 3) copyReject('COPY_PRIVATE_BINDING_INVALID');
+    try { projectIdentity(binding.sourceProjectId); } catch { copyReject('COPY_SOURCE_PROJECT_INVALID'); }
+    for (let i = 0; i < binding.files.length; i++) {
+      const file = binding.files[i];
+      if (!isPlainObject(file) || Object.keys(file).sort().join(',') !== 'bytes,name,relativePath,sha256'
+        || file.name !== copyNames[i] || file.relativePath !== copyRelative(file.name)
+        || !Number.isSafeInteger(file.bytes) || file.bytes < 1 || file.bytes > 32 * 1024 * 1024
+        || !/^[a-f0-9]{64}$/u.test(file.sha256)) copyReject('COPY_SOURCE_ROSTER_INVALID');
+    }
+  }
+  async function recoverImportedCopy(projectId, lease) {
+    if (importedCopyCompleted) return null;
+    const paths = pathsFor(projectId), intentPath = path.join(paths.anchorRoot, 'import-copy-intent.v1.json');
+    if (!input.importCopyIntent && !await physicallyPresent(intentPath)) return null;
+    const rawIntent = await copyRaw(anchorRoot, intentPath, true);
+    const live = input.importCopyIntent;
+    if (!rawIntent && !live) return null;
+    const guard = async () => {
+      if (live && (typeof input.revalidateImportCopy !== 'function' || await input.revalidateImportCopy() !== true)) copyReject('COPY_PRIVATE_CAPABILITY_REQUIRED');
+      await lease.assertOwned();
+    };
+    await guard();
+    let intent;
+    if (rawIntent) {
+      intent = copyJson(rawIntent);
+      const { intentDigest, ...body } = intent;
+      if (intent.schemaVersion !== 'yalken.stage10.importCopyIntent.v1' || intentDigest !== hashCanonicalValue(body)
+        || rawIntent.toString('utf8') !== jsonText(intent)
+        || intent.projectId !== projectId || intent.projectRoot !== projectRoot
+        || live && hashCanonicalValue(live) !== hashCanonicalValue(intent.binding)) copyReject('COPY_INTENT_BINDING');
+    } else {
+      validateCopyBinding(live, projectId);
+      if (await physicallyPresent(paths.anchor) && !await physicallyPresent(paths.transaction)) {
+        // A repeated live call can only read an already trusted completed copy;
+        // historical metadata alone never authorizes creating another bundle.
+        const carrier = path.join(paths.recoveryRoot, 'import-copy-source', hashCanonicalValue(live.files.slice(0, 2)));
+        const original = await Promise.all(live.files.map(file => copyRaw(projectRoot, path.join(carrier, file.name))));
+        original.forEach((raw, i) => { if (raw.length !== live.files[i].bytes || copySha(raw) !== live.files[i].sha256) copyReject('COPY_COMPLETED_PROVENANCE_DRIFT'); });
+        const sourceSession = copyJson(original[0]), sourceAuthority = copyJson(original[1]);
+        try { validateStage10MissingAnchorRecoveryPair(sourceSession, sourceAuthority, live.sourceProjectId); }
+        catch { copyReject('COPY_COMPLETED_SOURCE_INVALID'); }
+        const expectedIndex = { schemaVersion: 'yalken.stage10.importCopySource.v1', role: 'HISTORICAL_ONLY', projectId,
+          sourceProjectId: live.sourceProjectId, rawPairDigest: hashCanonicalValue(live.files.slice(0, 2)), files: live.files,
+          denominator: { events: sourceSession.eventLog.events.length, uiEvents: sourceSession.uiEvents.length, receipts: sourceAuthority.receipts.length } };
+        if (!(await copyRaw(projectRoot, path.join(carrier, 'provenance.v1.json'))).equals(Buffer.from(jsonText(expectedIndex)))) copyReject('COPY_COMPLETED_INDEX_INVALID');
+        const manifest = await copyRaw(projectRoot, path.join(projectRoot, 'project.craftsman.json'));
+        if (copySha(manifest) !== live.manifestSha256) copyReject('COPY_MANIFEST_DRIFT');
+        const bundle = await readRawBundle(projectId);
+        validateBundleIntegrity(projectId, bundle, bundle?.previousIntegrityAnchor || null);
+        validateStage10MissingAnchorRecoveryPair(bundle.session, bundle.authorityStore, projectId);
+        if (!bundle.session.coreState.data.projects[projectId]) copyReject('COPY_COMPLETED_PROJECT_MISSING');
+        await guard(); importedCopyCompleted = true; return null;
+      }
+      if (await physicallyPresent(paths.anchor) || await physicallyPresent(paths.anchorRecovery)
+        || await physicallyPresent(paths.transaction)) copyReject('COPY_EXISTING_TRUST_OR_TRANSACTION');
+      const manifest = await copyRaw(projectRoot, path.join(projectRoot, 'project.craftsman.json'));
+      if (copySha(manifest) !== live.manifestSha256 || copyJson(manifest).projectId !== projectId) copyReject('COPY_MANIFEST_DRIFT');
+      const files = await Promise.all(live.files.map(file => copyRaw(projectRoot, path.join(projectRoot, file.relativePath))));
+      files.forEach((raw, i) => { if (raw.length !== live.files[i].bytes || copySha(raw) !== live.files[i].sha256) copyReject('COPY_SOURCE_BYTES_DRIFT'); });
+      const session = copyJson(files[0]), authority = copyJson(files[1]);
+      try { validateStage10MissingAnchorRecoveryPair(session, authority, live.sourceProjectId); }
+      catch { copyReject('COPY_SOURCE_PAIR_INVALID'); }
+      const rawPairDigest = hashCanonicalValue(live.files.slice(0, 2));
+      const parent = path.join(paths.recoveryRoot, 'import-copy-source');
+      if (await physicallyPresent(parent)) {
+        await copyDirectory(projectRoot, parent);
+        for (const name of await fs.readdir(parent)) {
+          if (!/^[a-f0-9]{64}$/u.test(name) || !(await fs.lstat(path.join(parent, name))).isDirectory()) copyReject('COPY_CARRIER_CONFLICT');
+        }
+        if (await physicallyPresent(path.join(parent, rawPairDigest))) copyReject('COPY_CARRIER_CONFLICT');
+      }
+      intent = { schemaVersion: 'yalken.stage10.importCopyIntent.v1', projectId, sourceProjectId: live.sourceProjectId,
+        projectRoot, rootIdentity: copyIdentity(await fs.lstat(projectRoot)), anchorIdentity: copyIdentity(await fs.lstat(paths.anchorRoot)),
+        binding: cloneJson(live), rawPairDigest,
+        denominator: { events: session.eventLog.events.length, uiEvents: session.uiEvents.length, receipts: authority.receipts.length } };
+      intent.intentDigest = hashCanonicalValue(intent);
+      const validateInitial = async () => {
+        await guard();
+        if (!sameValue(copyIdentity(await fs.lstat(projectRoot)), intent.rootIdentity)
+          || !sameValue(copyIdentity(await fs.lstat(paths.anchorRoot)), intent.anchorIdentity)
+          || copySha(await copyRaw(projectRoot, path.join(projectRoot, 'project.craftsman.json'))) !== live.manifestSha256) copyReject('COPY_INITIAL_SOURCE_DRIFT');
+        for (const file of live.files) {
+          const raw = await copyRaw(projectRoot, path.join(projectRoot, file.relativePath));
+          if (raw.length !== file.bytes || copySha(raw) !== file.sha256) copyReject('COPY_INITIAL_SOURCE_DRIFT');
+        }
+        await guard();
+      };
+      await copyExclusive(anchorRoot, intentPath, Buffer.from(jsonText(intent)), false,
+        { lease, validate: validateInitial }, 'import-copy-intent-publish');
+      await killpoint('import-copy-intent-written');
+    }
+    validateCopyBinding(intent.binding, projectId);
+    if (Object.keys(intent).sort().join(',') !== 'anchorIdentity,binding,denominator,intentDigest,projectId,projectRoot,rawPairDigest,rootIdentity,schemaVersion,sourceProjectId'
+      || intent.sourceProjectId !== intent.binding.sourceProjectId || intent.rawPairDigest !== hashCanonicalValue(intent.binding.files.slice(0, 2))
+      || !isPlainObject(intent.denominator) || Object.keys(intent.denominator).sort().join(',') !== 'events,receipts,uiEvents'
+      || Object.values(intent.denominator).some(value => !Number.isSafeInteger(value) || value < 1)
+      || [intent.rootIdentity, intent.anchorIdentity].some(identity => !isPlainObject(identity)
+        || Object.keys(identity).sort().join(',') !== 'dev,ino,uid' || !/^\d+$/u.test(identity.dev) || !/^\d+$/u.test(identity.ino)
+        || !Number.isSafeInteger(identity.uid))) copyReject('COPY_INTENT_SHAPE');
+    const validate = async () => {
+      await guard();
+      if (!sameValue(copyIdentity(await fs.lstat(projectRoot)), intent.rootIdentity)
+        || !sameValue(copyIdentity(await fs.lstat(paths.anchorRoot)), intent.anchorIdentity)) copyReject('COPY_ROOT_CHANGED');
+      const raw = await copyRaw(projectRoot, path.join(projectRoot, 'project.craftsman.json'));
+      if (copySha(raw) !== intent.binding.manifestSha256 || copyJson(raw).projectId !== projectId) copyReject('COPY_MANIFEST_DRIFT');
+      await guard();
+    };
+    await validate();
+    const publication = { lease, validate };
+    importCopyPublication = publication;
+    const carrier = path.join(paths.recoveryRoot, 'import-copy-source', intent.rawPairDigest);
+    await copyDirectory(projectRoot, path.dirname(carrier), true, publication);
+    const exists = await physicallyPresent(carrier);
+    if (!exists) { await copyCreateDirectory(projectRoot, carrier, publication, 'import-copy-carrier-publish'); await copySyncDirectory(path.dirname(carrier)); }
+    await copyDirectory(projectRoot, carrier);
+    const expectedNames = [...intent.binding.files.map(file => file.name), 'provenance.v1.json'];
+    const stagedNames = intent.binding.files.map(file => `.import-copy-source-${file.sha256}.tmp`);
+    for (const name of await fs.readdir(carrier)) if (!expectedNames.includes(name)
+      && !(rawIntent && stagedNames.includes(name))) copyReject('COPY_CARRIER_CONFLICT');
+    for (const file of intent.binding.files) {
+      const target = path.join(carrier, file.name);
+      const stat = await fs.lstat(target, { bigint: true }).catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
+      let raw = stat?.nlink === 2n ? null : await copyRaw(projectRoot, target, true);
+      if (!raw) {
+        raw = await copyRaw(projectRoot, path.join(projectRoot, file.relativePath));
+      }
+      if (raw.length !== file.bytes || copySha(raw) !== file.sha256) copyReject('COPY_PROVENANCE_DRIFT');
+      await copyExclusive(projectRoot, target, raw, Boolean(rawIntent), publication, 'import-copy-source-publish');
+      await killpoint(`import-copy-source-preserved:${file.name}`);
+    }
+    const sourceSession = copyJson(await copyRaw(projectRoot, path.join(carrier, SESSION_FILENAME)));
+    const sourceAuthority = copyJson(await copyRaw(projectRoot, path.join(carrier, AUTHORITY_FILENAME)));
+    try { validateStage10MissingAnchorRecoveryPair(sourceSession, sourceAuthority, intent.sourceProjectId); }
+    catch { copyReject('COPY_HISTORICAL_PAIR_INVALID'); }
+    if (!sameValue(intent.denominator, { events: sourceSession.eventLog.events.length,
+      uiEvents: sourceSession.uiEvents.length, receipts: sourceAuthority.receipts.length })) copyReject('COPY_HISTORICAL_DENOMINATOR');
+    const index = { schemaVersion: 'yalken.stage10.importCopySource.v1', role: 'HISTORICAL_ONLY',
+      projectId, sourceProjectId: intent.sourceProjectId, rawPairDigest: intent.rawPairDigest,
+      files: intent.binding.files, denominator: intent.denominator };
+    await copyExclusive(projectRoot, path.join(carrier, 'provenance.v1.json'), Buffer.from(jsonText(index)), Boolean(rawIntent), publication, 'import-copy-index-publish');
+    for (const name of expectedNames) await copyFreezeFile(projectRoot, path.join(carrier, name), publication);
+    await copyFreezeDirectory(projectRoot, carrier, publication);
+    await killpoint('import-copy-provenance-written');
+    // Once ordinary initialization has a journal/anchor, its strict existing
+    // recovery owns the active pair. Never classify its partial writes as donor.
+    if (!await physicallyPresent(paths.anchor) && !await physicallyPresent(paths.transaction)) {
+      for (const [name, point] of [[AUTHORITY_FILENAME, 'import-copy-authority-retired'], [SESSION_FILENAME, 'import-copy-session-retired']]) {
+        const file = intent.binding.files.find(row => row.name === name), target = path.join(projectRoot, file.relativePath);
+        const raw = await copyRaw(projectRoot, target, true);
+        if (raw) {
+          if (raw.length !== file.bytes || copySha(raw) !== file.sha256) copyReject('COPY_CANONICAL_PAIR_CONFLICT');
+          await copyEffect(publication, point, async () => {
+            await copyRaw(projectRoot, target, false, async cohort => {
+              if (!cohort.raw.equals(raw)) copyReject('COPY_CANONICAL_PAIR_CHANGED');
+              await validate();
+              copyAssertRawCohort(projectRoot, target, cohort);
+              await fs.unlink(target); await copySyncDirectory(path.dirname(target));
+            });
+          });
+          await killpoint(point);
+        }
+      }
+    }
+    return intent;
+  }
+  async function finishImportedCopy(projectId, bundle, lease, intent) {
+    if (!intent || !bundle?.session?.coreState?.data?.projects?.[projectId]) return;
+    validateBundleIntegrity(projectId, bundle, bundle.previousIntegrityAnchor || null);
+    validateStage10MissingAnchorRecoveryPair(bundle.session, bundle.authorityStore, projectId);
+    const target = path.join(pathsFor(projectId).anchorRoot, 'import-copy-intent.v1.json');
+    await copyEffect(importCopyPublication, 'import-copy-intent-retired', () => copyRaw(anchorRoot, target, false, async cohort => {
+      if (!sameValue(JSON.parse(cohort.raw), intent)) copyReject('COPY_INTENT_CHANGED');
+      const parent = await cohort.parent.stat({ bigint: true });
+      await importCopyPublication.validate();
+      // No await separates the final owned physical cohort check from issuing
+      // unlink. The read FD remains open; a replacement is never our intent.
+      const current = lstatSync(target, { bigint: true }), directory = lstatSync(path.dirname(target), { bigint: true });
+      const root = lstatSync(projectRoot), anchor = lstatSync(pathsFor(projectId).anchorRoot);
+      if (current.dev !== cohort.stat.dev || current.ino !== cohort.stat.ino || current.nlink !== 1n
+        || current.mtimeNs !== cohort.stat.mtimeNs || current.ctimeNs !== cohort.stat.ctimeNs || !current.isFile()
+        || directory.dev !== parent.dev || directory.ino !== parent.ino || !directory.isDirectory() || directory.isSymbolicLink()
+        || !root.isDirectory() || root.isSymbolicLink() || !sameValue(copyIdentity(root), intent.rootIdentity)
+        || !anchor.isDirectory() || anchor.isSymbolicLink() || !sameValue(copyIdentity(anchor), intent.anchorIdentity)) copyReject('COPY_INTENT_RETIRE_COHORT_CHANGED');
+      await fs.unlink(target); await copySyncDirectory(path.dirname(target));
+    }));
+    importedCopyCompleted = true;
+    await killpoint('import-copy-complete');
+  }
+
   return {
     schemaVersion: STAGE10_MAIN_PERSISTENCE_PORT_SCHEMA,
     async prepareMissingIntegrityAnchorRecovery(projectId) {
@@ -1312,12 +1690,15 @@ export function createStage10MainPersistenceAdapter(input = {}) {
     async readStage10State(projectId) {
       await ensureProjectAnchorRootBinding(projectId);
       return serializeProjectOperation(projectId, () => leaseManager.withLease(projectId, async (lease) => {
+        const copyIntent = await recoverImportedCopy(projectId, lease);
         await recoverPendingTransaction(projectId, lease);
         const bundle = await readRawBundle(projectId);
         await lease.assertOwned();
         if (!bundle) return null;
+        await finishImportedCopy(projectId, bundle, lease, copyIntent);
         return {
           ...cloneJson(bundle),
+          ...(copyIntent && !importedCopyCompleted ? { importCopyNeedsProjectCreate: true } : {}),
           recoveryConsumed: recoveryConsumedProjects.has(projectStorageKey(projectId)),
         };
       }));
@@ -1329,6 +1710,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
         if (!isPlainObject(nextBundle.session) || !isPlainObject(nextBundle.authorityStore) || !isPlainObject(nextBundle.integrityAnchor)) {
           throw typedError('E_STAGE10_PERSISTENCE_BUNDLE_INVALID', 'PERSISTENCE_BUNDLE_REQUIRED');
         }
+        const copyIntent = await recoverImportedCopy(projectId, lease);
         await recoverPendingTransaction(projectId, lease);
         const previousBundle = await readRawBundle(projectId);
         const expectedPreviousDigest = normalizeString(options.expectedPreviousIntegrityAnchorDigest);
@@ -1462,6 +1844,7 @@ export function createStage10MainPersistenceAdapter(input = {}) {
         }
         await lease.renew();
         await lease.publish(() => fs.unlink(paths.transaction));
+        await finishImportedCopy(projectId, verified, lease, copyIntent);
         return {
           ok: true,
           schemaVersion: STAGE10_MAIN_PERSISTENCE_PORT_SCHEMA,
