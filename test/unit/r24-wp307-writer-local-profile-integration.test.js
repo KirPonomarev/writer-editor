@@ -5418,3 +5418,71 @@ test('startup retained-copy publication cannot clobber a target created after it
     h.assertRemembered(); h.observe('ACTUAL_EXCLUSIVE_PUBLICATION_LATE_COLLISION');
   } finally { gate.release(); fsp.open = originalOpen; await pending; }
 });
+
+// Actual producer -> registered renderer/Main/Kernel -> canonical bytes. Finite IPC ports, not native acceptance.
+function continuityAuthorMainSnapshot(x) {
+  const sessionPath = path.join(x.f.projectRoot, '.stage10-local', 'product-session.v2.json');
+  const authorityPath = path.join(x.f.projectRoot, '.stage10-local', 'command-receipt-authority-store.v2.json');
+  return { roster: reattachmentWholeFixtureRoster(x.h), manifest: JSON.parse(fs.readFileSync(x.f.manifestPath)),
+    events: JSON.parse(fs.readFileSync(sessionPath)).eventLog.events, receipts: JSON.parse(fs.readFileSync(authorityPath)).receipts,
+    scene: fs.readFileSync(x.f.scenePath) };
+}
+
+async function continuityAuthorMainRefusal(t, row, direct = false) {
+  const x = await reattachmentMainFixture(t, false), commandId = 'atlas.continuityFact.record';
+  const control = await temporalMainPayload(x, commandId, 'author-required-control');
+  const renderer = actualTemporalFactRenderer(x, await x.query()); renderer.intent(row.label, row.value);
+  const payload = direct ? { ...control, factLabel: row.label, factValue: row.value, note: '' } : renderer.payload();
+  const before = continuityAuthorMainSnapshot(x), response = await x.ui(commandId, { ...payload, projectId: x.projectId,
+    opId: 'author-required-' + (direct ? 'direct-' : 'producer-') + row.name });
+  const after = continuityAuthorMainSnapshot(x);
+  t.diagnostic(JSON.stringify({ causalReach: direct ? 'ACTUAL_MAIN_DIRECT_REQUIRED_CONTROL' : 'ACTUAL_PRODUCER_MAIN_REQUIRED',
+    case: row.name, payload, response,
+    beforeManifest: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.manifest))).digest('hex'), lastCommandId: before.manifest.lastCommandId, promiseFactCount: Object.keys(before.manifest.atlas.continuityFactLedgers.promise).length },
+    afterManifest: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.manifest))).digest('hex'), lastCommandId: after.manifest.lastCommandId, promiseFactCount: Object.keys(after.manifest.atlas.continuityFactLedgers.promise).length },
+    oldEvents: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.events))).digest('hex'), count: before.events.length },
+    newEvents: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.events))).digest('hex'), count: after.events.length },
+    oldReceipts: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.receipts))).digest('hex'), count: before.receipts.length },
+    newReceipts: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.receipts))).digest('hex'), count: after.receipts.length },
+    beforeRoster: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(before.roster))).digest('hex'), count: before.roster.length },
+    afterRoster: { canonicalJsonSha256: crypto.createHash('sha256').update(JSON.stringify(canonicalTemporalValue(after.roster))).digest('hex'), count: after.roster.length } }));
+  assert.deepEqual(after.scene, before.scene); x.assertOriginal();
+  for (const [id, fact] of Object.entries(before.manifest.atlas.continuityFactLedgers.promise))
+    assert.deepEqual(after.manifest.atlas.continuityFactLedgers.promise[id], fact, 'all prior author facts remain exact');
+  assert.deepEqual(after.events.slice(0, before.events.length), before.events);
+  assert.deepEqual(after.receipts.slice(0, before.receipts.length), before.receipts);
+  assert.equal(response.mainResult.ok, false, 'empty required producer intent must not become a persisted demo fact');
+  assert.equal(response.result.ok, false, 'actual renderer envelope agrees with Main refusal');
+  assert.equal(response.mainResult.value?.applyResult?.error?.code, row.code, JSON.stringify(response.mainResult));
+  assert.deepEqual(after.roster, before.roster, 'complete canonical, receipt, event and integrity-anchor roster is unchanged');
+  assert.deepEqual(after.manifest, before.manifest); assert.deepEqual(after.events, before.events); assert.deepEqual(after.receipts, before.receipts);
+  assert.equal(payload.factLabel, row.label); assert.equal(payload.factValue, row.value);
+}
+
+const CONTINUITY_AUTHOR_MAIN_REQUIRED = [
+  { name: 'empty-label', label: '', value: 'Вернуться e\u0301 🧭', code: 'E_ATLAS_CONTINUITY_FACT_LABEL_REQUIRED' },
+  { name: 'empty-value', label: 'Обещание e\u0301 🧭', value: '', code: 'E_ATLAS_CONTINUITY_FACT_VALUE_REQUIRED' },
+  { name: 'both-empty', label: '', value: '', code: 'E_ATLAS_CONTINUITY_FACT_LABEL_REQUIRED' },
+  { name: 'whitespace-label', label: ' \t\n', value: 'Вернуться', code: 'E_ATLAS_CONTINUITY_FACT_LABEL_REQUIRED' },
+  { name: 'whitespace-value', label: 'Обещание', value: ' \t\n', code: 'E_ATLAS_CONTINUITY_FACT_VALUE_REQUIRED' },
+];
+for (const row of CONTINUITY_AUTHOR_MAIN_REQUIRED) test('actual author producer Main refuses ' + row.name + ' with no canonical/history write [FINITE_IPC_NOT_NATIVE]',
+  async t => continuityAuthorMainRefusal(t, row));
+for (const row of CONTINUITY_AUTHOR_MAIN_REQUIRED.slice(0, 2)) test('actual direct Main required-field control refuses ' + row.name + ' [FINITE_IPC_NOT_NATIVE]',
+  async t => continuityAuthorMainRefusal(t, row, true));
+
+test('actual author producer Main preserves Unicode and empty optional note through the real receipt and readback [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await reattachmentMainFixture(t, false), commandId = 'atlas.continuityFact.record';
+  const control = await temporalMainPayload(x, commandId, 'author-unicode-control');
+  const renderer = actualTemporalFactRenderer(x, await x.query()), label = 'Авторское обещание e\u0301 🧭', value = 'Вернуться — 東京';
+  renderer.intent(label, value); const payload = renderer.payload();
+  assert.equal(payload.sceneId, control.sceneId); assert.equal(payload.subjectEntityId, control.subjectEntityId);
+  assert.deepEqual(payload.evidenceAnchor, control.evidenceAnchor); assert.deepEqual(renderer.payload(), payload);
+  const before = continuityAuthorMainSnapshot(x), saved = await persistActualRendererFact(t, x, payload, 'author-unicode-empty-note');
+  for (const [id, record] of Object.entries(before.manifest.atlas.continuityFactLedgers.promise)) assert.deepEqual(saved.ledger[id], record);
+  const record = Object.values(saved.ledger).find(row => row.factLabel === label && row.subjectEntityId === x.entityId); assert.ok(record);
+  assert.equal(record.factValue, value); assert.equal(record.sceneId, x.sceneId); assert.deepEqual(record.evidenceAnchor, payload.evidenceAnchor);
+  const persistedPayload = { ...payload, projectId: x.projectId, factId: record.id }; assertTemporalCanonicalReadback(x, commandId, persistedPayload);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_AUTHOR_EMPTY_NOTE_READBACK', payload, record, receipt: saved.response.mainResult.value.receipt }));
+  assert.equal(payload.note, '', 'untouched optional note contains no demo author text'); assert.equal(record.note, '');
+});

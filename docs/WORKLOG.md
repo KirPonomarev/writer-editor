@@ -5311,3 +5311,13 @@ C7 canonical baseline retained3479tests:3409pass11ENT0count/meta cascades59skips
 - Separate actor only adds visible/held options at four calls, inverse-exact editor12f585dc; current editor80b573e9. Actual normal renderer build0 produces bundlecd416719; root committed98whole25/25, no native claim.
 - Mechanical current355+1carrier,822/674DATA, fixed1603inventory and66release bindings preserve76historical bodies/predicates and17UNKNOWN. No design contract,Core,Main,shared status,HTML/CSS or dependency change.
 - Final current gates/baseline, new current native visibility/AX/no-loss/Quit/cold and full normal delivery/literal merged proofs remain required; no fullMac acceptance.
+
+### 2026-10-27 — continuity author input source correction
+
+YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: actual native/Core/Main baseline confirmed demo-text substitution for empty author fields. Seven existing renderer statements corrected by separate actor; frozen whole R3C02 33of33actual0, normal bundle actual0 and exact inverse/source protection reviewed. Existing Core, Main, identity/capability/source guards and all prior author data/history preserved. Full Main/current source companions, final-candidate baseline/native and complete delivery remain pending; this is not task or full-Mac acceptance. Evidence and compact native container are in the dated T777 task folders.
+
+### 2026-10-27 — same-task continuity diagnostic capture correction
+
+YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: C1 configured baseline exited7 with truncated64MiB unit TAP and UNKNOWN complete denominator; retain FAIL and all raw streams, original freezes and restored6file/19member evidence. Separate actor changed only one added diagnostic statement; exact original prefix/assertions/input/cases and runtime/bundle remain. Frozen02 Main requires fresh whole causal/GREEN and unchanged configured baseline. Hash-only source successor retains all78old carriers and every verification predicate; no scope, membership, runtime or release authority expands. Complete native/delivery/full-Mac outcome remains pending.
+
+- 2026-10-27 same continuity chain: preserve actual failed822member native history run191of192prefixes. Separate actor actual P0-08 boundary/rollback/reopen RED10/8/2, then one existing11byte slice removal and same frozen whole10GREEN/192prefixes, committed42d186fa. Root current normal producer0/R3C0233GREEN, all earlier editor/bundle/Main bytes exact. Mechanical source successor only; current complete gates/baseline/new native/full delivery remain mandatory. No fullMac acceptance.

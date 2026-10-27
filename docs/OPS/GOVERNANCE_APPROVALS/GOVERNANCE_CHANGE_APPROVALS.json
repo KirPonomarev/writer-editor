@@ -26001,6 +26001,206 @@
       "filePath": "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js",
       "rationale": "Current exact bytes for the standing-owner fullMac bounded WSE evidence-jump feedback correction. Exactly four calls use the existing visible/held primitive; source guards, all author data, old test prefixes and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
       "sha256": "499ab5fc70c1b7a0d64f2f47e3505a28ad13acef466914e398c1254aeccad208"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "50323d83a214e40e9b99e49b5b2ad1838d2b4a1080bfa4d3d31b166f08a76cc1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "e831015259d606669c452f9d09de1f5c4b430df2b87e947298543582445d6321"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "0ed7f293dfaca62348ccff5eaf9d7e0a5f580ba94568061d2b50259aa63466ac"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "24d1ff06ece85ae7eb326ded9b619eb4828c4e0fa24bad66420c3790dd3f6578"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "44dc53659a858be5b99938961f9ea87916dfb2a505637524366c044b2e1244fe"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "515da9a71754d8bf314d77e1fe984686d268ad711d5be6ddbd56d63befb9202e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T03:47:51.395430+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-r3-c02-temporal-continuity-saved-query-journeys.contract.test.js",
+      "rationale": "Current exact bytes for the standing-owner fullMac bounded continuity author-input correction. Seven existing statements remove demo author text and hold current explicit Atlas success; existing mapped failures and every source/capability/identity guard remain. All frozen causal-test bytes, old authored history and historical carriers/verifier/corruption predicates remain. This source witness creates no native, legacy stage, fullMac, signing or release acceptance.",
+      "sha256": "3429a28914aff5ff69aec297fdd6aa63f5474d7b7a5dc4add8a7f15a01145ee6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T05:10:02.238018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for the same standing-owner fullMac continuity author-input task. One newly appended diagnostic statement now hashes snapshots to address the actual configured baseline output cutoff; every original test byte, assertion, input and case stays exact. Runtime seven statements and bundle remain unchanged. Old freeze01 and exit7/UNKNOWN baseline remain immutable; successor02 requires fresh whole causal/GREEN and unchanged configured baseline. All78historical carriers and verifier/corruption predicates remain. No native, stage, fullMac, signing or release acceptance.",
+      "sha256": "c6e9cf08b4a524131f44b154e2d3ae21152be0decbf47b92cd7efb9123834d60"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T05:10:02.238018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for the same standing-owner fullMac continuity author-input task. One newly appended diagnostic statement now hashes snapshots to address the actual configured baseline output cutoff; every original test byte, assertion, input and case stays exact. Runtime seven statements and bundle remain unchanged. Old freeze01 and exit7/UNKNOWN baseline remain immutable; successor02 requires fresh whole causal/GREEN and unchanged configured baseline. All78historical carriers and verifier/corruption predicates remain. No native, stage, fullMac, signing or release acceptance.",
+      "sha256": "01e6a0a042c9b1340c9df6527bafbec7dcc33d81a581e0a34c25eedca66bd140"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T05:10:02.238018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for the same standing-owner fullMac continuity author-input task. One newly appended diagnostic statement now hashes snapshots to address the actual configured baseline output cutoff; every original test byte, assertion, input and case stays exact. Runtime seven statements and bundle remain unchanged. Old freeze01 and exit7/UNKNOWN baseline remain immutable; successor02 requires fresh whole causal/GREEN and unchanged configured baseline. All78historical carriers and verifier/corruption predicates remain. No native, stage, fullMac, signing or release acceptance.",
+      "sha256": "e307614397a62e2743eb28ec9781360511e3c89d15b16cbc5d67f965a9dfeae8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T05:10:02.238018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for the same standing-owner fullMac continuity author-input task. One newly appended diagnostic statement now hashes snapshots to address the actual configured baseline output cutoff; every original test byte, assertion, input and case stays exact. Runtime seven statements and bundle remain unchanged. Old freeze01 and exit7/UNKNOWN baseline remain immutable; successor02 requires fresh whole causal/GREEN and unchanged configured baseline. All78historical carriers and verifier/corruption predicates remain. No native, stage, fullMac, signing or release acceptance.",
+      "sha256": "ce78cbea3430104fda33072a371b5faebe747e7af6b2059f5c61d85ff791e90f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T05:10:02.238018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for the same standing-owner fullMac continuity author-input task. One newly appended diagnostic statement now hashes snapshots to address the actual configured baseline output cutoff; every original test byte, assertion, input and case stays exact. Runtime seven statements and bundle remain unchanged. Old freeze01 and exit7/UNKNOWN baseline remain immutable; successor02 requires fresh whole causal/GREEN and unchanged configured baseline. All78historical carriers and verifier/corruption predicates remain. No native, stage, fullMac, signing or release acceptance.",
+      "sha256": "719a54b298ed87fe42ffdc2b942fa61a61250e71a9b2acfc7b30a623af1f8b13"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T05:10:02.238018+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for the same standing-owner fullMac continuity author-input task. One newly appended diagnostic statement now hashes snapshots to address the actual configured baseline output cutoff; every original test byte, assertion, input and case stays exact. Runtime seven statements and bundle remain unchanged. Old freeze01 and exit7/UNKNOWN baseline remain immutable; successor02 requires fresh whole causal/GREEN and unchanged configured baseline. All78historical carriers and verifier/corruption predicates remain. No native, stage, fullMac, signing or release acceptance.",
+      "sha256": "3e5a9bb569e4bc459b715e77c65152a2529e5bb21889bac67bb4c199c635a572"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "da84c10d6956878eec934a7ab84b28f69d774388f32123706cf25389be0e9b60"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "25a4337ded680029ca6e09fd05f82f0d7520b954a2fcd36d525b8342416cd70b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "43e5628af10d725da0f1bc83147c8f015585481b8a0c35c3a4d8defbf84a1511"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "44c25d315b707f8beb3bbddb97fa109b6808457f12fbbc67bb6c293663873cf7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "3df1559cf1ba81007db7c3efdc7fc76d6eb071158d0e447eb899e92cecbe69a2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "451ed608837fc77044205b9c20429b7d51c13e24984e1beb7aa2f6a604c7b420"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T07:54:31.590161+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027",
+      "authority": "DIRECT_OWNER_ONGOING_FULL_MAC_AND_CONTINUITY_AUTHOR_INPUT_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
+      "rationale": "Current exact bytes for the same owner-authorized fullMac continuity author-input task after actual native history failure. Separate actor appends141maintained P0-08 lines after all10350originalbytes/sixcases, proves actual10/8/2boundary RED with real rollback/reopen, then removes only11bytes from the existing UI activation append expression; same frozen whole10GREEN retains192encodedprefixes. Original Main/R3 tests, seven renderer replacements and generated bundle remain exact. Failed822member native profile/strict oracle stay immutable. All79historical carriers and verifier/corruption predicates remain; only current hashes and one existing-test membership added. Current full source/baseline/native/delivery still mandatory; no stage/fullMac/signing/release acceptance.",
+      "sha256": "e7798a21315b39016a97dbea4570274188539024b2c3f235d816ccecc5d595e3"
     }
   ],
   "evidenceStampIds": [

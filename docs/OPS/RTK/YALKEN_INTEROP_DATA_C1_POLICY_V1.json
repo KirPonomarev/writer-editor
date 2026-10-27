@@ -829,7 +829,10 @@
     "src/core/save-coordinator-v1.cjs",
     "test/unit/r24-wp200-durable-save.test.js",
     "docs/tasks/2026-10-27--wse-evidence-jump-feedback.md",
-    "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js"
+    "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js",
+    "docs/tasks/2026-10-27--atlas-continuity-author-input.md",
+    "test/contracts/yalken-atlas-v5-r3-c02-temporal-continuity-saved-query-journeys.contract.test.js",
+    "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1070,7 +1073,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "cd416719dfbf093432d2f42be7e6e74c72c2918502d67b5f8c08c2f382322135"
+        "sha256": "95d3e4f960a6154662a505a3a9739c7d9760dadcf362c0c31e9ce3845ef22d1e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1082,7 +1085,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "d8bb607da8901f53c5526f25828a992f6fbfe3b40ea72b605f5eb539c700a7ac"
+        "sha256": "5a4545ca717a6c1f3e7714ca4b8e876b216b019e9e5d1fce35da7c611b07920c"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1234,7 +1237,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "80b573e95f5aed36c8056a82143f35ea4d8f73e03c7b3dc33340d71ac0c0501d"
+        "sha256": "6e17713246e09bce3483d26d3b61163854a5e1d1c5d35993e278fff041f1a05c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1794,7 +1797,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "62c21e12fc7251d1ab1e5ab5d2c915353b1c15f63519c629e02ae28aa493e959"
+        "sha256": "451ed608837fc77044205b9c20429b7d51c13e24984e1beb7aa2f6a604c7b420"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2302,7 +2305,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "a70e78f2c8016cf940fe9d87326c5f67d8ec809855366f71964981b826e29911"
+        "sha256": "5c6d76f4071c84b41fcde8ee373ef6f9f094e48589273c5fa4b5867583f6b3b4"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2750,15 +2753,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3a9e4d594f1ee06e2cdaef22436aa6f95213409e56f0e7669e08be2f7a7a6691"
+        "sha256": "447115dcc18f2f8e4f3506d98c2ca90b84bbaf5e4dab42edcaa6a39a5ac98c08"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5e72e13ec0c28357fd8f0880ababd9b5cedc99c32108b3cc0285f61a0cb006ba"
+        "sha256": "bd0ffab5e3b02c107087fdf094b35c2c2d66e5c61ce7f594c5ecbe05ac74d698"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "9f34f316417719ba4074ce82c5ed09926f6218b5ed36c871bea449762d917226"
+        "sha256": "dc8da14f6e09de594be3c3afa1b1393c4a8361a80c5bf9eb8cbd1c0c60d420bb"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3118,7 +3121,7 @@
       },
       {
         "path": "src/product/stage10ProductWiring.mjs",
-        "sha256": "c72402fc77d654500b6dac2c9d940e1ec18c1ab425f37e32e2ab45ccb3148479"
+        "sha256": "97a612b5901eddd6062b3249150906456364c6d1d06a3182c9e6e2c435cb8a68"
       },
       {
         "path": "src/product/stage10MainPersistenceAdapter.mjs",
@@ -3298,7 +3301,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c104317563a409cb2d7fa584eef5c03ad9fe46ac6e5b4c141cfb7cd5b222564b"
+        "sha256": "25a4337ded680029ca6e09fd05f82f0d7520b954a2fcd36d525b8342416cd70b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3751,6 +3754,18 @@
       {
         "path": "test/contracts/yalken-atlas-v5-e06-c07-atlas-continuity-ledger-surface-author-correction-route.contract.test.js",
         "sha256": "499ab5fc70c1b7a0d64f2f47e3505a28ad13acef466914e398c1254aeccad208"
+      },
+      {
+        "path": "docs/tasks/2026-10-27--atlas-continuity-author-input.md",
+        "sha256": "aa05279110b74d44e6b763812b125221d8dcdb25d7a1db0298aef8d7ed71ed34"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-r3-c02-temporal-continuity-saved-query-journeys.contract.test.js",
+        "sha256": "3429a28914aff5ff69aec297fdd6aa63f5474d7b7a5dc4add8a7f15a01145ee6"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
+        "sha256": "e7798a21315b39016a97dbea4570274188539024b2c3f235d816ccecc5d595e3"
       }
     ],
     "followupRepair": {

@@ -1657,7 +1657,7 @@ export async function createStage10ProductRuntime(input = {}) {
     const anchorBefore = authorityState.integrityAnchor;
     const previousAnchorBefore = authorityState.previousIntegrityAnchor;
     const revisionBefore = authorityState.revision;
-    session.uiEvents = [...session.uiEvents.slice(-63), {
+    session.uiEvents = [...session.uiEvents, {
       opId,
       commandId,
       activationMode: activation.mode,
