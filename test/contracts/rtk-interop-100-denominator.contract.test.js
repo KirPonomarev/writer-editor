@@ -1463,12 +1463,25 @@ test('governance admission is bounded to the delivery and never grants cell cred
   const p=readOrderPolicy(policyBytes()), delivery='b'.repeat(40), candidate='c'.repeat(40);
   let changed=ORDER_ADMITTED_PATHS.slice(), drift=[];
   const git=args=>{
-    if(args[0]==='rev-parse') return args[1]===ORDER_BASE+'^{tree}'?ORDER_BASE_TREE:candidate;
-    if(args[0]==='ls-tree') return ORDER_POLICY_PATH;
-    if(args[0]==='log') return delivery;
-    if(args[0]==='merge-base') return '';
-    if(args[0]==='diff') return (args[3]===ORDER_BASE?changed:drift).join('\n');
-    if(args[0]==='show') return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:') ? securityHistoricalFixture(args[1].slice(args[1].indexOf(':')+1)) : fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    const real=argv=>execFileSync('git',argv,{cwd:root,stdio:['ignore','pipe','pipe']});
+    const securityBase='c6328f82d872f6d591bd880fe0676a421072331b';
+    if(args[0]==='rev-parse'){
+      if(args[1]==='HEAD'||args[1]===candidate)return candidate;
+      if(args[1]===ORDER_BASE+'^{tree}')return ORDER_BASE_TREE;
+      return real(args);
+    }
+    if(args[0]==='ls-tree')return ORDER_POLICY_PATH;
+    if(args[0]==='log')return delivery;
+    if(args[0]==='merge-base'){
+      if(args[2]===candidate&&args[3]===securityBase)throw Error('CURRENT_NOT_HISTORICAL');
+      if((args[2]===securityBase&&args[3]===candidate)||(args[2]===ORDER_BASE&&args[3]===delivery))return '';
+      return real(args);
+    }
+    if(args[0]==='diff')return (args[3]===ORDER_BASE?changed:drift).join('\n');
+    if(args[0]==='show'){
+      if(!args[1].startsWith(candidate+':')&&!args[1].startsWith(delivery+':'))return real(args);
+      return fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    }
     throw Error('unexpected git');
   };
   const good=verifyOrderPostEvaluation({candidateSha:candidate,git});
@@ -1654,12 +1667,25 @@ it('shared governance admits only the delivered successor scope and gives no run
   const delivery='b'.repeat(40),candidate='c'.repeat(40);
   let changed=[...shared.SHARED_ADMITTED_PATHS],drift=[];
   const git=args=>{
-    if(args[0]==='rev-parse')return args[1]===shared.SHARED_BASE+'^{tree}'?shared.SHARED_BASE_TREE:candidate;
+    const real=argv=>execFileSync('git',argv,{cwd:root,stdio:['ignore','pipe','pipe']});
+    const securityBase='c6328f82d872f6d591bd880fe0676a421072331b';
+    if(args[0]==='rev-parse'){
+      if(args[1]==='HEAD'||args[1]===candidate)return candidate;
+      if(args[1]===shared.SHARED_BASE+'^{tree}')return shared.SHARED_BASE_TREE;
+      return real(args);
+    }
     if(args[0]==='ls-tree')return shared.SHARED_POLICY_PATH;
     if(args[0]==='log')return delivery;
-    if(args[0]==='merge-base')return '';
+    if(args[0]==='merge-base'){
+      if(args[2]===candidate&&args[3]===securityBase)throw Error('CURRENT_NOT_HISTORICAL');
+      if((args[2]===securityBase&&args[3]===candidate)||(args[2]===shared.SHARED_BASE&&args[3]===delivery))return '';
+      return real(args);
+    }
     if(args[0]==='diff')return (args[3]===shared.SHARED_BASE?changed:drift).join('\n');
-    if(args[0]==='show')return args[1].startsWith('89d9991331013c26b724e3cbb17ea3faa7d058e9:')?securityHistoricalFixture(args[1].slice(args[1].indexOf(':')+1)):fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    if(args[0]==='show'){
+      if(!args[1].startsWith(candidate+':')&&!args[1].startsWith(delivery+':'))return real(args);
+      return fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    }
     throw Error('unexpected git');
   };
   const good=shared.verifyTextOrderPostEvaluation({git});

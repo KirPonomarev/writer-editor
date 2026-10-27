@@ -26591,6 +26591,66 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Exact human-approved four-pin security update and strict current compatibility; source witnesses only. Preserves all historical carrier bodies and predicates, original inventory classifications and 17 unknown Mac qualifications. No external review, native acceptance, signing or release authority is asserted.",
       "sha256": "be4d2efbc82a4285b0354dfd41c3b912cbdd14b23828f7c35794076983c22924"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T21:52:53.021087+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same unaccepted security delivery: correct only two inconsistent Git fixtures and their current exact source bindings. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "0b02954b386785536d9b70f6e61137f6bfb07285b0100d0ca512feac4ae5e4e0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T21:52:53.021087+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same unaccepted security delivery: correct only two inconsistent Git fixtures and their current exact source bindings. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "02e0dccfb725eda7feb48306d66c65e0341c1481ea1e2cb281ebc111d0b7c8d4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T21:52:53.021087+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same unaccepted security delivery: correct only two inconsistent Git fixtures and their current exact source bindings. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "c3f6a5f8d4024b7754d622236224889f3c4a3372ba152f2aec83737d9a6ce828"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T21:52:53.021087+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same unaccepted security delivery: correct only two inconsistent Git fixtures and their current exact source bindings. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "c449d98b9e4c772ef80665f162ba0285c802e43d8549392d6fc0b6eb272bf91a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T21:52:53.021087+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same unaccepted security delivery: correct only two inconsistent Git fixtures and their current exact source bindings. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "3d63ce8c5637ee7d120092e142601033e4d9e887440b3978f56d44b999af9ae2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-27T21:52:53.021087+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECURITY_UPDATE_20261027",
+      "authority": "DIRECT_HUMAN_EXACT_DEPENDENCY_SECURITY_APPROVAL_20261027",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "rationale": "Same unaccepted security delivery: correct only two inconsistent Git fixtures and their current exact source bindings. Every production predicate, all assertions, 83 original historical source carriers and 17 UNKNOWN Mac qualifications remain unchanged. No external-review, native or release acceptance.",
+      "sha256": "e42fea295912bedbc1fa38366ee5237863d06ca09876aece657124e26b7ed27e"
     }
   ],
   "evidenceStampIds": [
