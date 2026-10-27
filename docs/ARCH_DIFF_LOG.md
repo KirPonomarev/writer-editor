@@ -677,3 +677,7 @@ Actual C07causalRED25/8pass/17failure records reaches all guards; same frozen25/
 ### 2026-10-27 — existing continuity author-intent seam
 
 YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027 uses the existing Core-required label/value policy, existing registered Kernel/Main writer and existing held-status primitive. Exactly three draft strings, three getter fallback strings and one current-success status option change; no new semantics, port, registry, schema, UI composition, dependency or runtime network. Author input is no longer replaced with fixture prose. Full original test prefixes, old authored facts/history and all higher source/authority guards remain. No canon exception or release acceptance is requested; one normal bounded PR revert is the rollback.
+
+### 2026-10-27 — diagnostic-only capture correction in the same continuity task
+
+Actual configured baseline output stopped at64MiB and exited7 with UNKNOWN unit denominator. Only one newly added Main diagnostic statement is compacted to canonical snapshot hashes/counts; all original488454bytes, assertions/input/cases and seven-statement runtime/bundle remain exact. Additive freeze02 and a fresh causal/GREEN/full-baseline chain are required; freeze01 and the failure are never rewritten. Existing source witnesses are hash-only successors;78historical bodies and every oracle predicate remain exact. No canon exception, runner/buffer/timeout/selector change or new architecture; rollback remains one normal PR revert with all evidence/data retained.

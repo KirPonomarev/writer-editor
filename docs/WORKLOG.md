@@ -5315,3 +5315,7 @@ C7 canonical baseline retained3479tests:3409pass11ENT0count/meta cascades59skips
 ### 2026-10-27 — continuity author input source correction
 
 YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: actual native/Core/Main baseline confirmed demo-text substitution for empty author fields. Seven existing renderer statements corrected by separate actor; frozen whole R3C02 33of33actual0, normal bundle actual0 and exact inverse/source protection reviewed. Existing Core, Main, identity/capability/source guards and all prior author data/history preserved. Full Main/current source companions, final-candidate baseline/native and complete delivery remain pending; this is not task or full-Mac acceptance. Evidence and compact native container are in the dated T777 task folders.
+
+### 2026-10-27 — same-task continuity diagnostic capture correction
+
+YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: C1 configured baseline exited7 with truncated64MiB unit TAP and UNKNOWN complete denominator; retain FAIL and all raw streams, original freezes and restored6file/19member evidence. Separate actor changed only one added diagnostic statement; exact original prefix/assertions/input/cases and runtime/bundle remain. Frozen02 Main requires fresh whole causal/GREEN and unchanged configured baseline. Hash-only source successor retains all78old carriers and every verification predicate; no scope, membership, runtime or release authority expands. Complete native/delivery/full-Mac outcome remains pending.
