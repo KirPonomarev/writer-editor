@@ -220,6 +220,20 @@ module.exports.__pdfTest = {
     if(kind==='autosave')autoSaveInProgress=true;
     if(kind==='capability')getWriterLocalRuntimeProfile=()=>({profileId:'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'});
   },
+  txtScope:()=>buildSelectedScenesTxtExportScope(),
+  txtQuery:()=>handleWorkspaceSelectedScenesTxtExportScopeQuery(),
+  txtSelected:payload=>handleExportSelectedScenesTxt(payload),
+  txtAll:payload=>handleExportAllScenesTxt(payload),
+  prepareTxt(hooks={}) {
+    const resolve=async payload=>{await hooks.dialog?.();return hooks.cancel?{canceled:true}:{outPath:payload.outPath};};
+    resolveSelectedScenesTxtExportPath=resolve;
+    resolveAllScenesTxtExportPath=resolve;
+    const originalQueue=queueDiskOperation;
+    queueDiskOperation=(operation,label)=>originalQueue(async()=>{
+      if(label==='export selected scenes txt'||label==='export all scenes txt')await hooks.queued?.();
+      return operation();
+    },label);
+  },
   source:()=>readCanonicalPdfExportSource(),
   validate:(target,source)=>validatePdfExportTarget(target,source),
   prepareExport(hooks={}) {
@@ -456,4 +470,322 @@ test('actual Main PDF reports committed output when lease finalization fails aft
       assert.equal(h.main.statuses().some(args => args.includes('PDF экспортирован')), false);
     });
   }
+});
+
+
+test('actual Main TXT uses the open named project and canonical order, without renderer source authority', async t => {
+  const path = require('node:path');
+  for (const mode of ['selected', 'all']) await t.test(mode, async t => {
+    const h = await pdfMainFixture(t), second = require('../../src/core/io/path-boundary.js')
+      .joinPathSegmentsWithinRoot(path.dirname(h.scene), ['02 Второй é 🧭.txt'], { resolveSymlinks: false });
+    const firstText = 'Только открытый проект é 🧭 東京.', secondText = 'Вторая сцена\nCafé שלום 🧭.';
+    await h.fs.writeFile(second, secondText);
+    await h.fs.writeFile(path.join(h.defaultRoot, 'roman', 'foreign.txt'), 'FOREIGN DEFAULT');
+    const beforeManifest = await h.fs.readFile(h.manifestPath), beforeFirst = await h.fs.readFile(h.scene);
+    const query = await h.main.txtQuery();
+    assert.equal(query.ok, true);
+    assert.equal(query.scope.projectId, 'project-active-pdf');
+    assert.match(query.scope.requestId, /^selected-scenes-txt-/u);
+    assert.equal(query.scope.sceneCandidates.length, 2);
+    assert.equal(JSON.stringify(query).includes(h.root), false);
+    assert.equal(JSON.stringify(query).includes(firstText), false);
+    const ids = query.scope.sceneCandidates.map(c => c.sceneId), target = path.join(h.root, mode + '.txt');
+    h.main.prepareTxt();
+    const result = mode === 'selected'
+      ? await h.main.txtSelected({ confirmed: true, requestId: query.scope.requestId, selectedSceneIds: [...ids].reverse(), outPath: target })
+      : await h.main.txtAll({ requestId: 'all-main', outPath: target });
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.equal(result.exported, true);
+    assert.equal(result.sceneCount, 2);
+    assert.deepEqual(await h.fs.readFile(target), Buffer.from(firstText + '\n\n' + secondText));
+    assert.deepEqual(await h.fs.readFile(h.scene), beforeFirst);
+    assert.deepEqual(await h.fs.readFile(h.manifestPath), beforeManifest);
+    if (mode === 'selected') {
+      const replay = await h.main.txtSelected({ confirmed: true, requestId: query.scope.requestId, selectedSceneIds: ids, outPath: target });
+      assert.equal(replay.ok, false);
+      assert.equal(replay.error.reason, 'txt_selection_stale');
+    }
+  });
+});
+
+test('actual Main TXT selection continuation rejects unissued, superseded and stale project choices', async t => {
+  const path = require('node:path');
+  for (const phase of ['unissued', 'superseded', 'project', 'manifest', 'roster']) await t.test(phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'selection.txt');
+    await h.fs.writeFile(target, 'KEEP');
+    const query = await h.main.txtQuery();
+    if (phase === 'superseded') await h.main.txtQuery();
+    if (phase === 'project') h.main.mutate('project');
+    if (phase === 'manifest') await h.fs.appendFile(h.manifestPath, '\n');
+    if (phase === 'roster') await h.fs.writeFile(path.join(path.dirname(h.scene), '02 New.txt'), 'NEW');
+    let dialog = false;
+    h.main.prepareTxt({ dialog: () => { dialog = true; } });
+    const result = await h.main.txtSelected({ confirmed: true,
+      requestId: phase === 'unissued' ? 'renderer-made-request' : query.scope.requestId,
+      selectedSceneIds: query.scope.sceneCandidates.map(c => c.sceneId), outPath: target });
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.error.reason, 'txt_selection_stale');
+    assert.equal(dialog, false);
+    assert.equal(await h.fs.readFile(target, 'utf8'), 'KEEP');
+  });
+});
+
+test('actual Main TXT permits a dirty unselected scene, but never a dirty selected source', async t => {
+  const path = require('node:path');
+  for (const mode of ['selected-other', 'selected-current', 'all']) await t.test(mode, async t => {
+    const h = await pdfMainFixture(t), second = path.join(path.dirname(h.scene), '02 Saved.txt');
+    await h.fs.writeFile(second, 'SAVED é 🧭');
+    h.main.mutate('dirty');
+    const query = await h.main.txtQuery();
+    assert.equal(query.ok, true);
+    const id = query.scope.sceneCandidates.find(c => c.sceneId.endsWith(mode === 'selected-other' ? '02 Saved.txt' : '01 Начало.txt'))?.sceneId;
+    assert.ok(id);
+    const target = path.join(h.root, 'dirty.txt');
+    await h.fs.writeFile(target, 'KEEP');
+    let dialog = false;
+    h.main.prepareTxt({ dialog: () => { dialog = true; } });
+    const result = mode === 'all' ? await h.main.txtAll({ outPath: target })
+      : await h.main.txtSelected({ confirmed: true, requestId: query.scope.requestId, selectedSceneIds: [id], outPath: target });
+    if (mode === 'selected-other') {
+      assert.equal(result.ok, true, JSON.stringify(result));
+      assert.equal(await h.fs.readFile(target, 'utf8'), 'SAVED é 🧭');
+      assert.equal(dialog, true);
+    } else {
+      assert.equal(result.ok, false);
+      assert.equal(dialog, false);
+      assert.equal(await h.fs.readFile(target, 'utf8'), 'KEEP');
+    }
+    assert.equal(await h.fs.readFile(h.scene, 'utf8'), 'Только открытый проект é 🧭 東京.');
+  });
+});
+
+
+test('actual Main TXT guards dialog, queue, staging, targets and committed publication', async t => {
+  const path = require('node:path');
+  const phases = ['cancel', 'project', 'document', 'session', 'owner', 'window', 'generation', 'capability',
+    'source', 'manifest', 'roster', 'queued', 'staging', 'target', 'target-link', 'target-hardlink',
+    'root-target', 'source-target', 'rename-fail', 'published'];
+  for (const mode of ['selected', 'all']) for (const phase of phases) await t.test(mode + ':' + phase, async t => {
+    const h = await pdfMainFixture(t), originalSource = await h.fs.readFile(h.scene), originalManifest = await h.fs.readFile(h.manifestPath);
+    const target = phase === 'source-target' ? h.scene : phase === 'root-target'
+      ? path.join(h.activeRoot, 'inside.txt') : path.join(h.root, 'guarded.txt');
+    if (phase !== 'source-target') await h.fs.writeFile(target, 'KEEP');
+    const query = await h.main.txtQuery(), ids = query.scope.sceneCandidates.map(c => c.sceneId);
+    h.main.prepareTxt({ cancel: phase === 'cancel', dialog: async () => {
+      if (['project', 'document', 'session', 'owner', 'window', 'generation'].includes(phase)) h.main.mutate(phase);
+      if (phase === 'source') await h.fs.appendFile(h.scene, ' NEW SOURCE');
+      if (phase === 'manifest') await h.fs.appendFile(h.manifestPath, '\n');
+      if (phase === 'roster') await h.fs.writeFile(path.join(path.dirname(h.scene), '02 Added.txt'), 'NEW');
+    }, queued: async () => {
+      if (phase === 'queued') h.main.mutate('session');
+      if (phase === 'capability') h.main.mutate('capability');
+      if (phase === 'target') await h.fs.writeFile(target, 'FOREIGN TARGET');
+      if (phase === 'target-link' || phase === 'target-hardlink') {
+        await h.fs.unlink(target);
+        if (phase === 'target-link') await h.fs.symlink(h.scene, target); else await h.fs.link(h.scene, target);
+      }
+    } });
+    const write = h.fs.writeFile, rename = h.fs.rename;
+    let staged = false, published = false;
+    h.fs.writeFile = async function (file, ...args) {
+      const value = await write.call(this, file, ...args);
+      if (String(file).startsWith(target + '.') && String(file).endsWith('.tmp')) {
+        staged = true;
+        if (phase === 'staging') h.main.mutate('owner');
+      }
+      return value;
+    };
+    h.fs.rename = async function (from, to) {
+      if (to === target && phase === 'rename-fail') throw Object.assign(Error('TXT_RENAME_DENIED'), { code: 'EACCES' });
+      const value = await rename.call(this, from, to);
+      if (to === target) {
+        published = true;
+        if (phase === 'published') h.main.mutate('project');
+      }
+      return value;
+    };
+    let result;
+    try { result = mode === 'selected'
+      ? await h.main.txtSelected({ confirmed: true, requestId: query.scope.requestId, selectedSceneIds: ids, outPath: target })
+      : await h.main.txtAll({ outPath: target }); }
+    finally { h.fs.writeFile = write; h.fs.rename = rename; }
+    if (phase === 'cancel') {
+      assert.equal(result.ok, true); assert.equal(result.canceled, true);
+    } else {
+      assert.equal(result.ok, false, JSON.stringify(result));
+      assert.ok(result.error.reason);
+    }
+    assert.equal(published, phase === 'published');
+    if (phase === 'staging' || phase === 'rename-fail' || phase === 'published') assert.equal(staged, true);
+    const expected = phase === 'target' ? Buffer.from('FOREIGN TARGET')
+      : ['published', 'target-link', 'target-hardlink', 'source-target'].includes(phase) ? originalSource : Buffer.from('KEEP');
+    assert.deepEqual(await h.fs.readFile(target), expected);
+    if (phase === 'published') {
+      assert.equal(result.error.reason, 'txt_context_stale');
+      assert.equal(result.error.details.exported, true);
+      assert.equal(result.error.details.outPath, target);
+      assert.equal(result.error.details.bytesWritten, originalSource.length);
+    } else assert.notEqual(result.error?.details?.exported, true);
+    assert.equal(h.main.statuses().some(args => args.includes(mode === 'selected'
+      ? 'TXT выбранных сцен экспортирован' : 'TXT всех сцен экспортирован')), false);
+    assert.deepEqual(await h.fs.readFile(h.scene), phase === 'source'
+      ? Buffer.concat([originalSource, Buffer.from(' NEW SOURCE')]) : originalSource);
+    assert.deepEqual(await h.fs.readFile(h.manifestPath), phase === 'manifest'
+      ? Buffer.concat([originalManifest, Buffer.from('\n')]) : originalManifest);
+  });
+});
+
+test('actual Main TXT retains committed effect when actual lease cleanup fails', async t => {
+  const path = require('node:path');
+  for (const mode of ['selected', 'all']) for (const phase of ['unlink', 'directory']) await t.test(mode + ':' + phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'cleanup.txt'), source = await h.fs.readFile(h.scene);
+    await h.fs.writeFile(target, 'KEEP');
+    const query = await h.main.txtQuery(); h.main.prepareTxt();
+    const rename = h.fs.rename, unlink = h.fs.unlink, rmdir = h.fs.rmdir;
+    let published = false, injected = false;
+    h.fs.rename = async function (from, to) {
+      const value = await rename.call(this, from, to); if (to === target) published = true; return value;
+    };
+    const fail = file => {
+      if (!published || injected || !String(file).startsWith(h.root + path.sep)) return;
+      injected = true;
+      throw Object.assign(Error('TXT_LEASE_FINALIZATION_' + phase), { code: 'EACCES',
+        ...(phase === 'directory' ? { reason: 'txt_lease_directory_finalize_denied' } : {}) });
+    };
+    h.fs.unlink = async function (file, ...args) { if (phase === 'unlink') fail(file); return unlink.call(this, file, ...args); };
+    h.fs.rmdir = async function (file, ...args) { if (phase === 'directory') fail(file); return rmdir.call(this, file, ...args); };
+    let result;
+    try { result = mode === 'selected'
+      ? await h.main.txtSelected({ confirmed: true, requestId: query.scope.requestId,
+        selectedSceneIds: query.scope.sceneCandidates.map(c => c.sceneId), outPath: target })
+      : await h.main.txtAll({ outPath: target }); }
+    finally { h.fs.rename = rename; h.fs.unlink = unlink; h.fs.rmdir = rmdir; }
+    assert.equal(published, true); assert.equal(injected, true);
+    assert.equal(result.ok, false);
+    assert.deepEqual(await h.fs.readFile(target), source);
+    assert.equal(result.error.reason, phase === 'directory' ? 'txt_lease_directory_finalize_denied' : 'txt_write_failed');
+    assert.equal(result.error.details.exported, true);
+    assert.equal(result.error.details.outPath, target);
+    assert.equal(result.error.details.bytesWritten, source.length);
+    assert.equal(h.main.statuses().some(args => args.includes(mode === 'selected'
+      ? 'TXT выбранных сцен экспортирован' : 'TXT всех сцен экспортирован')), false);
+  });
+});
+
+test('actual Main TXT rejects malformed raw manifests and source UTF8 without changing protected bytes', async t => {
+  const path = require('node:path');
+  for (const phase of ['future-manifest', 'invalid-project', 'invalid-manifest-utf8', 'invalid-source-utf8']) await t.test(phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'invalid.txt');
+    await h.fs.writeFile(target, 'KEEP');
+    if (phase === 'future-manifest') await h.fs.writeFile(h.manifestPath, JSON.stringify({ ...h.manifest, schemaVersion: 999 }));
+    if (phase === 'invalid-project') await h.fs.writeFile(h.manifestPath, JSON.stringify({ ...h.manifest, projectId: null }));
+    if (phase === 'invalid-manifest-utf8') await h.fs.writeFile(h.manifestPath, Buffer.from([0xff, 0xfe]));
+    if (phase === 'invalid-source-utf8') await h.fs.writeFile(h.scene, Buffer.from([0xff, 0xfe]));
+    const source = await h.fs.readFile(h.scene), manifest = await h.fs.readFile(h.manifestPath);
+    let dialog = false; h.main.prepareTxt({ dialog: () => { dialog = true; } });
+    const result = await h.main.txtAll({ outPath: target });
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.equal(dialog, false);
+    assert.equal(await h.fs.readFile(target, 'utf8'), 'KEEP');
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+    assert.deepEqual(await h.fs.readFile(h.manifestPath), manifest);
+  });
+});
+
+
+test('actual Main TXT refuses changed target bytes when the filesystem preserves all version metadata', async t => {
+  const path = require('node:path');
+  for (const mode of ['selected', 'all']) for (const phase of ['queued', 'staging']) await t.test(mode + ':' + phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'coarse-target.txt');
+    await h.fs.writeFile(target, 'KEEP');
+    const version = await h.fs.lstat(target, { bigint: true }), source = await h.fs.readFile(h.scene);
+    const lstat = h.fs.lstat, open = h.fs.open, write = h.fs.writeFile;
+    let changed = false, reached = false;
+    // Real ExFAT demonstrates this metadata view. Keep the byte I/O real on every CI filesystem.
+    h.fs.lstat = async function (file, ...args) {
+      if (changed && file === target) return version;
+      return lstat.call(this, file, ...args);
+    };
+    h.fs.open = async function (file, flags, ...args) {
+      const handle = await open.call(this, file, flags, ...args);
+      if (file === target && flags === 'r') {
+        const readStat = handle.stat.bind(handle);
+        handle.stat = async (...options) => changed ? version : readStat(...options);
+      }
+      return handle;
+    };
+    const foreignWrite = async () => {
+      const handle = await open.call(h.fs, target, 'r+');
+      try { await handle.write('NEXT', 0, 'utf8'); } finally { await handle.close(); }
+      changed = true; reached = true;
+      assert.equal(await h.fs.readFile(target, 'utf8'), 'NEXT');
+    };
+    h.fs.writeFile = async function (file, ...args) {
+      const value = await write.call(this, file, ...args);
+      if (phase === 'staging' && String(file).startsWith(target + '.') && String(file).endsWith('.tmp')) await foreignWrite();
+      return value;
+    };
+    const query = await h.main.txtQuery();
+    h.main.prepareTxt({ queued: async () => { if (phase === 'queued') await foreignWrite(); } });
+    let result;
+    try { result = mode === 'selected'
+      ? await h.main.txtSelected({ confirmed: true, requestId: query.scope.requestId,
+        selectedSceneIds: query.scope.sceneCandidates.map(c => c.sceneId), outPath: target })
+      : await h.main.txtAll({ outPath: target }); }
+    finally { h.fs.lstat = lstat; h.fs.open = open; h.fs.writeFile = write; }
+    assert.equal(reached, true);
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.error.reason, 'txt_context_stale');
+    assert.notEqual(result.error.details?.exported, true);
+    assert.equal(await h.fs.readFile(target, 'utf8'), 'NEXT');
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+    assert.equal(h.main.statuses().some(args => args.includes(mode === 'selected'
+      ? 'TXT выбранных сцен экспортирован' : 'TXT всех сцен экспортирован')), false);
+  });
+});
+
+
+test('actual Main TXT streams target versions with bounded reads and rejects growth or truncation', async t => {
+  const path = require('node:path');
+  for (const phase of ['stable', 'grow', 'truncate']) await t.test(phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'streamed-target.txt');
+    const original = Buffer.alloc(64 * 1024 + 8, 'x');
+    await h.fs.writeFile(target, original);
+    const version = await h.fs.lstat(target, { bigint: true }), source = await h.fs.readFile(h.scene);
+    const open = h.fs.open, lstat = h.fs.lstat;
+    let injected = false, reads = 0, largestRead = 0;
+    h.fs.lstat = async function (file, ...args) { return file === target ? version : lstat.call(this, file, ...args); };
+    h.fs.open = async function (file, flags, ...args) {
+      const handle = await open.call(this, file, flags, ...args);
+      if (file === target && flags === 'r') {
+        const read = handle.read.bind(handle);
+        handle.stat = async () => version;
+        handle.read = async function (buffer, offset, length, position) {
+          reads++; largestRead = Math.max(largestRead, length);
+          const value = await read(buffer, offset, length, position);
+          if (!injected && value.bytesRead && phase !== 'stable') {
+            injected = true;
+            const writer = await open.call(h.fs, target, phase === 'grow' ? 'a' : 'r+');
+            try { if (phase === 'grow') await writer.write('GROW'); else await writer.truncate(0); }
+            finally { await writer.close(); }
+          }
+          return value;
+        };
+      }
+      return handle;
+    };
+    h.main.prepareTxt();
+    let result;
+    try { result = await h.main.txtAll({ outPath: target }); }
+    finally { h.fs.open = open; h.fs.lstat = lstat; }
+    assert.ok(reads > 1); assert.ok(largestRead > 0 && largestRead <= 64 * 1024);
+    if (phase === 'stable') {
+      assert.equal(result.ok, true, JSON.stringify(result));
+      assert.deepEqual(await h.fs.readFile(target), source);
+    } else {
+      assert.equal(injected, true); assert.equal(result.ok, false);
+      assert.notEqual(result.error.details?.exported, true);
+      assert.deepEqual(await h.fs.readFile(target), phase === 'grow' ? Buffer.concat([original, Buffer.from('GROW')]) : Buffer.alloc(0));
+    }
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+  });
 });

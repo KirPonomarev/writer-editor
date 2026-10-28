@@ -27021,6 +27021,696 @@
       "filePath": "test/unit/pdf-export-handler.test.js",
       "rationale": "Same owner-approved security delivery PR2175: preserve an actual committed PDF state when existing lease finalization fails, with two maintained real-Main/real-lease post-rename negative regressions. All prepublication guards, original tests, historical carriers and17UNKNOWN qualifications remain exact. No native or release acceptance.",
       "sha256": "6420b2835cfe6b9ee73a4f2dd780716a70fc61dd49dd7a153af114b9c42e4c84"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "8b4e256336114e04cc1148a975933d681f8451c61213992648d4e4c950ede0c5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "042558d2d0a9ba3989e0d3a59a3d28c6784ec22b52648e7433254f0ca8023a6d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "7f449657450352e1445db0aa55b1e6166fe826f290cb30b707ea6a448e516bbd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "a964e5f21048e5f4294d5ee0abfa64d0f065f135a101ea2dbcbcdde39dcd8757"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "f47cb23abf8af93c0b0f96a224c4c5372547bc8769f4db231ca1c04820e859ef"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "da8f9728fef7e5a3669fcca42aa260385ced6cef70422067d36f997551b1693a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "49280727796b990b68f57ff41d574ce64c172fee36abb2aea0017e489a6d7782"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "ec50a1082a3cc41f4c73aa54fb3e44bd78aab8d023cfe5a1c7b1fca243d4bcd7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "4dbda11e425cb49eb499665f9851f47bdd440fac55c3cef080c1d13a282d743f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "b3d917db32791ea054e1d3e6589280e35dd9b6328d1f7f1912dfe3abd8d4d6cc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "fe3d47b3871df9eafa31374e2ef33e6305eb7110e9c33ca270395a714adc3355"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "4c60f72f1b0d8d4ca1f881781c302d08fcb0fe1c87daf7e91d4f727f4fbee2d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "1c1c66834da6f723c8df270842812870ad49495e51e7c5dd13275eea178b71a7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "a80c057846534f37aed26540c540dbe8dd1859b93c0e7d54b51ee7660ab529b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/post-mvp-project-txt-export.contract.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "345a313e9764b5411f2f2c2052b8d765e0ede47342ce84e2a794a027188f29d5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/post-mvp-selected-scenes-txt-export.contract.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "62c78a32b9cf6ad810326c9c8570f7d8ace652331d244199e6eebd457a2f898b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "8b04895e722a2725c116c0d79ec9f9e6b8c762aef028c36def619748f310e16a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "a20a882defc2321615dfcd1b0170be78a0e43d7a997cfd39969fcbc653ab3626"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/selected-scenes-txt-export-ui-flow.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "b8d6dad4df9f2a914c11434c62da0133689c27adf1e85f88bc3200d80bbc81d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "f9da7d872c37df4e615d866a55336a8b02cbcc6e401dca59a124c84a9162fc92"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "970bff098b922c6340cf46cae52a8053cdfd22282f7327665ce8fc765fcb2c94"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "b439efad664da58437433111515a9459e6a8417f2eba5073c8d09e3b89a07062"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "f3441ec3873a34016fac3c7d44731baf01a1d7669bd6b33f18fd1d220d0fb8aa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "ebf86f1466507961189345c545cd168ea24ceca2d83d9e5afeeb326e7bc5a344"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "d43509b69742f2afd3c3b0364ef901d4c7cc924f23557c6abb99d4026accb3d3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "947340dde89635885f9d60dfc9e763a50f5b29bbc056216703494790741f411e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "a408058ec616f1683fd73320a7d44ce5c40cd5b96e640d71d2eefa028c3f5ca5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "fac4293d908fbf4e247f4e10afa76a29f9044db50046ea74ca511b626e0a4a09"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "42274df26f291e6255e012f2b8d5ad3c0b3d09c9178bcc297ac182518862392d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "7b847001c00fb018b908bf2f3aa47f0a927efe5ed5dd30762df551e38dd02fca"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/check-command-namespace-static.mjs",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "d642442bc6e2caca3757ed1ac121e0a4920fe2f7cfecfbd0674605503729e799"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "78756f96db9bf2a1b840e68d83175de97c5a8029e1292523d77110cb428ddac6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "8df03ec0d15a4a9e0d7c4bba6753698983fd7ffb13d72019a3054e4cad8d5486"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "0485c9feaaceea8720d1325e2cda3b4c7871e45c3dea3c21485b71b5032a83f5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "47a2c5d38515f26924b03a28a24d3e87106f2d2c1a69cc187438d36ea01fed51"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "6092f81a1aa4b9f26d339ad7c304d2cb639782694336ccb5059e9aafeb9eefc7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "625efd1c273985f01d41095ca4b4e3de7a871675ff1e0938717cf74c034ece97"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "5f03385d2ef7dd91bf534d21c794f6c77613946970bcd9c4d3a853c84c719c15"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "b791e0019b68cff0e140cef4d5f638cf27a6f6aeabed8f05f1e2b20f5ece5b81"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "b758353e61ff37d282701e6ba7c50ab8cd1cc079731240c1c67b7af4f2cfaf7b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "acd55bba94e48bc42956f3ff3beef1712b9666fcbcc5f15d4f368e9f9790be10"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "90cf7ad86502444b534c68f879d2ba8f2fee80d20234449b1a18bd28c814cf5b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "ed725e339d7c766e5ce86a36881ea13d0cbe3e442384a0cde17a3c6123f21c59"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "9661c86d2c830f25a0055c5c728feb4cc9b05a821355d1eb0bc71d3bd5f745c7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "e21b8282c80e2e6f5cf91f964fd214588c101f37afe65d2ddfb458621edf5fb3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "4df18c1e5ccf5b568a774472369d0b3d250a014a910faebb3a314a4794906b76"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "31cf2645f0daf12796825bf46ff7e44dc8a82e6dd7a46bfca2c481952b95039e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "6dbc1354c354694fe3288feda658d7f7daea7ff0ef8fb7431f627f74ca9493e0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "66bf8351a9523f75e32a762e8194084fa2b37fce6f2543043270f6cc301434e8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "9d13f8e9b491bb5d6c520c405387e9b16b78de6cb7d05ad2f5258263aeba1dd2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "cd8014ecc757e328b5fd1c5ef0dc0c366036d2413e278353ba3649c6a3ade29f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "2e216324d07bbed975a674857cb70226c91bc8485d67074d91ab8d1a963c0969"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "e6dec506a2613c2a490db74a4026736c78d470ad49fc973dede5a7c37248205c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "083355a2e00993a20f30c6ecc39a08b492c138f9bdc8eb6b261e9fb16837694b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "99882b78576482fc32a2ab3d635a9a6cd218ddfd96ff64ef4b864669cdcf9de2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "7109f47163ec0bc9a14dd6f0678bf0368fd91ce0bd8fa9355bf0a40e829f3bf7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "89f22dff359817e7ca19d06f66d87899207f70849ac1961c9d833f390c71aa7c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-ent0-port-enforcement.test.js",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "d242053bb39556d18dbb95f173e3a03c263bbb27e900222902af030b7a7d75ab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp100-wiring-matrix.test.js",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "4d9a0de291d84e7746a9d0208981ff07ea8a8e5b43b8adee30439da5a401cf2a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "dfa24d30846cef88634871e822a581ba9d2fd11abd836798270b0c5f13daf56c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "f634c0c55d32d849874756380fa6ac96425327dd4e1e1ecf891e40846d56d731"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "a265caf65c756fd81ead5360ecbd8286fdd81134424bc38fa8f3b372f5232619"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "93ac3caaac524a3686b2386b951b2da1b122e3cd16cc2d84c946f717db989cab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "f52869dfd05bfaf8e0a82032ea3ed09e1b1b89f760959844297420b46efa829f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "224248011853f4a069d6858b97ca676488b58fff0bd4dbcb847c24d019a3d672"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "215574cfc16be88b999f7a3668ae8515996cd42cb1ea91801692624775c0882a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "8bdfd417212ae35081e82abe0f01faef5ae2644f2aa859bcfb25ee6f82dc98b5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "ba9c59571319f184500633a81e87be488fca55711cf5e1593f1916b63eedeac1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "43635cd615d6a19a74d6d0c61fdae420f233b3b376e6e0b9715e4bf2b64eaec7"
     }
   ],
   "evidenceStampIds": [

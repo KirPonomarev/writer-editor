@@ -298,7 +298,7 @@ function main() {
   });
   if (args.json) process.stdout.write(`${stableStringify(payload)}\n`);
   else printHuman(payload);
-  process.exit(payload.result === RESULT_FAIL ? 1 : 0);
+  process.exitCode = payload.result === RESULT_FAIL ? 1 : 0;
 }
 
 const selfPath = fileURLToPath(import.meta.url);

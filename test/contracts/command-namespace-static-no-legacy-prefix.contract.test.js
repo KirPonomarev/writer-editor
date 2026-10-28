@@ -153,3 +153,16 @@ test('command namespace static freeze: advisory token is present and not in requ
   const flattened = flattenStrings(requiredSet).map((value) => String(value || '').trim());
   assert.equal(flattened.includes('COMMAND_NAMESPACE_STATIC_CLEAN_OK'), false);
 });
+
+
+test('command namespace static freeze: CLI pipe preserves the complete scan before exit', async () => {
+  const { evaluateCommandNamespaceStaticCheck } = await import(pathToFileURL(STATIC_CHECK_PATH).href);
+  const expected = evaluateCommandNamespaceStaticCheck({ cwd: REPO_ROOT, mode: 'release' });
+  assert.ok(Buffer.byteLength(JSON.stringify(expected, null, 2)) > 8192, 'full scan must exercise pipe backpressure');
+  const result = runStaticCheck(['--mode=release']);
+  assert.equal(result.status, 0);
+  assert.equal(result.signal, null);
+  assert.equal(result.error, undefined);
+  assert.deepEqual(JSON.parse(result.stdout), expected);
+  assert.ok(result.stdout.endsWith('\n'));
+});

@@ -95,7 +95,9 @@ test('post-mvp project TXT export: handler reuses canonical scene traversal and 
   assert.match(handlerSource, /for \(const candidate of sceneCandidates\)/u);
   assert.match(handlerSource, /readSelectedScenesTxtExportSceneContent\(candidate\)/u);
   assert.match(handlerSource, /sceneTexts\.join\('\\n\\n'\)/u);
-  assert.match(handlerSource, /fileManager\.writeFileAtomic\(outPath, content\)/u);
+  assert.match(handlerSource, /publishScenesTxtExport\(outPath, content, scope, EXPORT_ALL_SCENES_TXT_COMMAND_ID/u);
+  assert.match(handlerSource, /scope\.assertContext\(EXPORT_ALL_SCENES_TXT_COMMAND_ID\)/u);
+  assert.match(handlerSource, /scope\.captureScene\(candidate\)/u);
   assert.match(handlerSource, /sceneCount:\s*sceneCandidates\.length/u);
   assert.doesNotMatch(handlerSource, /selectedSceneIds|payload\.text|payload\.scene|payload\.rendererState|payload\.plainText/u);
 });
