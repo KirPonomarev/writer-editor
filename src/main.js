@@ -37143,7 +37143,11 @@ async function handleUiRenameNodeCommand(payload) {
     const base = path.basename(node.nodePath), isFile = base.endsWith('.txt'), prefix = extractNumericPrefix(base);
     const name = sanitizeFilename(safe.name);
     const finalBase = prefix !== null ? `${String(prefix).padStart(2, '0')}_${name}` : name;
-    const to = path.posix.join(path.posix.dirname(node.relativePath), finalBase + (isFile ? '.txt' : ''));
+    // Match the canonical path boundary used by create, open and tree reads.
+    // Otherwise a decomposed name can acquire a different stable ID on reopen.
+    const target = joinPathSegmentsWithinRoot(path.dirname(node.nodePath),
+      [finalBase + (isFile ? '.txt' : '')], { resolveSymlinks: false });
+    const to = path.relative(context.projectRoot, target).split(path.sep).join('/');
     return { operation: 'rename', bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath: to }] };
   });
 }

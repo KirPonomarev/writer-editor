@@ -344,10 +344,32 @@ test('S27 physical project rename preserves verified tree packets, scene Save an
     publishManifest: ({ manifestPath: targetPath, expectedText, nextText }) => authority.commitManifestText({ projectId: created.projectId, lease, targetPath, expectedText, nextText }),
   }));
   assert.equal(await fsPromises.readFile(scenePath, 'utf8'), next);
-  const changedAgain = await harness.main.handleUiRenameNodeCommand({ projectId: created.projectId, nodeId: scene.nodeId, name: 'Продолжение Ω' });
+  const changedAgain = await harness.main.handleUiRenameNodeCommand({ projectId: created.projectId, nodeId: scene.nodeId, name: 'Продолжение é' });
   assert.equal(changedAgain.ok, true, JSON.stringify(changedAgain));
   const renamedIdentity = await harness.main.resolveProjectTreeNodeIdentity(scene.nodeId, created.projectId);
   assert.equal(await fsPromises.readFile(renamedIdentity.nodePath, 'utf8'), next);
+  const afterTreeText = await fsPromises.readFile(manifestPath, 'utf8');
+  assert.deepEqual(await harness.main.getProjectDocumentIdentityPayload(renamedIdentity.nodePath),
+    { documentId: scene.nodeId }, 'read projection must retain the scene ID for decomposed Unicode input');
+  await harness.main.buildProjectTreeRootsWithIdentities(path.basename(priorRoot));
+  assert.equal(await fsPromises.readFile(manifestPath, 'utf8'), afterTreeText,
+    'cold tree reconciliation must not retire the renamed scene or assign another ID');
+  const reopened = await harness.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
+  assert.equal(reopened.ok, true, JSON.stringify(reopened));
+  assert.equal(findScene(reopened.root).nodeId, scene.nodeId);
+  const unchanged = await harness.main.handleUiRenameNodeCommand({ projectId: created.projectId,
+    nodeId: scene.nodeId, name: 'Продолжение é' });
+  assert.equal(unchanged.ok, true, JSON.stringify(unchanged));
+  assert.equal(unchanged.changed, false, 'canonically equivalent name must be a no-op');
+  const occupied = path.join(path.dirname(renamedIdentity.nodePath), 'Занято é.txt');
+  await fsPromises.writeFile(occupied, 'another scene must remain intact');
+  const collision = await harness.main.handleUiRenameNodeCommand({ projectId: created.projectId,
+    nodeId: scene.nodeId, name: 'Занято é' });
+  assert.equal(collision.ok, false, JSON.stringify(collision));
+  assert.equal(collision.error, 'E_TREE_COHORT_COLLISION');
+  assert.equal(await fsPromises.readFile(occupied, 'utf8'), 'another scene must remain intact');
+  assert.equal(await fsPromises.readFile(renamedIdentity.nodePath, 'utf8'), next);
+  assert.equal(await fsPromises.readFile(manifestPath, 'utf8'), afterTreeText);
   assert.deepEqual(await fsPromises.readFile(path.join(priorRoot, packetRelative)), packetBytes);
 });
 

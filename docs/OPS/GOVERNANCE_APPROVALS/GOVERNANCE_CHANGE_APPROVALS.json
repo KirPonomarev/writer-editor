@@ -28321,6 +28321,136 @@
       "filePath": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
       "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
       "sha256": "0d3abe92873525b94109a853bfafae65bc2342c8a5774ea896b68f5fe259b386"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "4b0b38fbfca7c93af7a3fe3c45cbb3f59a6c786d83aaf0347446f3cb98b53e5d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "34b95608f0c46570c928f59053abc4ad45465ff29011875add50753cd7f0c14b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "5c0074f8e25fa2c5a0c53c0478b11e279e9b53dae7272e598168f3318769bf1a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "feedf8548fd7a7d2b697530e06b89a2431ee7fa0d5ad58aa019eb157b1574c1f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "3e75b2f885ae8155e8b0e01dbffd3686912fb75ed281c91215994c317b241006"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "6df16a38df399d49e02cc4b3472f22b6a5348755f8f8fc95371a95b519b719c4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "76c3720d1bdea5b31d1af5526344b2543df88e6ebcf4ddfb36279faf39b1ff4c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "1604d8d4fa23acff6faed7073930d2918805d9e2728021138b6a3320626e6c60"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "2cd1dcc86b9f94fdd7f65da8559fed31e92f93fdddcfd0b1c4568d6e17333134"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "f92baf333e10995fadc77c29c2e4d796d4c891be141b9e712953f36c0d595434"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "3507434374d33e8bc26daec0852a5e24de0c003f4ba4ccaf4018545e9dacdbea"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "a5ba48417b4fad0f2a5dbd08c1b92bf547f802b8274492616ae6b395f7d4494a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T19:35:55.746709+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
+      "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
+      "sha256": "be56150ac3d24b71f198de03b1af0b9725199cfe2e2f4d8b8c5112bc48a1554f"
     }
   ],
   "evidenceStampIds": [
