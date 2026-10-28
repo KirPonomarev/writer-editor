@@ -280,6 +280,7 @@ async function runPdfExport(payloadRaw, deps = {}) {
     });
   }
 
+  let namePublished = false;
   try {
     await queueDiskOperation(async () => {
       const currentTarget = await validatePdfExportTarget(outPath, source);
@@ -292,8 +293,10 @@ async function runPdfExport(payloadRaw, deps = {}) {
         error.reason = error.message;
         throw error;
       }
-      await writeBufferAtomic(outPath, pdfBuffer);
+      await writeBufferAtomic(outPath, pdfBuffer, source, () => { namePublished = true; });
+      namePublished = true;
     }, 'export pdf');
+    if (typeof source.assertContext === 'function') source.assertContext();
     updateStatus('PDF экспортирован');
     return {
       ok: true,
@@ -309,11 +312,13 @@ async function runPdfExport(payloadRaw, deps = {}) {
     };
   } catch (error) {
     if (typeof error?.reason === 'string') {
-      return makeTypedPdfExportError('E_EXPORT_PDF_TARGET_FORBIDDEN', error.reason);
+      return makeTypedPdfExportError('E_EXPORT_PDF_TARGET_FORBIDDEN', error.reason,
+        { exported: namePublished, ...(namePublished ? { outPath, bytesWritten: pdfBuffer.length } : {}) });
     }
     return makeTypedPdfExportError('E_EXPORT_PDF_WRITE_FAILED', 'pdf_write_failed', {
       message: getErrorMessage(error),
       outPath,
+      ...(namePublished ? { exported: true, bytesWritten: pdfBuffer.length } : {}),
     });
   }
 }

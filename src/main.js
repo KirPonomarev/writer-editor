@@ -29840,7 +29840,7 @@ function buildSelectedScenesTxtExportCandidateLabel(sceneId) {
 }
 
 async function collectSelectedScenesTxtExportCandidates(folderPath, binding, out) {
-  const entries = await readDirectoryEntries(folderPath);
+  const entries = await readDirectoryEntries(folderPath, { throwOnError: binding.strictRead === true });
   for (const entry of entries) {
     if (entry.isDirectory) {
       await collectSelectedScenesTxtExportCandidates(entry.path, binding, out);
@@ -29903,11 +29903,15 @@ async function collectFullManuscriptDocxReviewExportCandidates(folderPath, bindi
 }
 
 async function buildSelectedScenesTxtExportScope() {
-  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
   const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  return buildSelectedScenesTxtExportScopeForProject(DEFAULT_PROJECT_NAME, manifestRecord);
+}
+
+async function buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, strictRead = false) {
+  const manifestPath = getProjectManifestPath(projectName);
   const manifest = manifestRecord ? manifestRecord.manifest : null;
   const projectRoot = path.dirname(manifestPath);
-  const romanPath = getProjectSectionPath('roman', DEFAULT_PROJECT_NAME);
+  const romanPath = getProjectSectionPath('roman', projectName);
   const nodeIdsByBindingKey = new Map();
   const identityNodes = manifest?.treeIdentity?.nodes;
   if (identityNodes && typeof identityNodes === 'object' && !Array.isArray(identityNodes)) {
@@ -29927,7 +29931,7 @@ async function buildSelectedScenesTxtExportScope() {
   if (await fileExists(romanPath)) {
     await collectSelectedScenesTxtExportCandidates(
       romanPath,
-      { manifestPath, nodeIdsByBindingKey },
+      { manifestPath, nodeIdsByBindingKey, strictRead },
       sceneCandidates,
     );
   }
@@ -30136,11 +30140,14 @@ async function validatePdfExportTarget(outPath, source = {}) {
   }
 
   try {
+    await source.assertCapture();
     const validated = await validateExternalWriteTarget(outPath, {
       projectRoot: typeof source.projectRoot === 'string' ? source.projectRoot : '',
       sourcePaths: Array.isArray(source.sourcePaths) ? source.sourcePaths : [],
       allowedExtensions: ['.pdf'],
     });
+    await source.assertTarget(validated.targetPath);
+    await source.assertCapture();
     return { ok: true, outPath: validated.targetPath };
   } catch (error) {
     let reason = typeof error?.reason === 'string' && error.reason
@@ -30286,13 +30293,16 @@ async function readFullManuscriptDocxReviewExportDocumentContent(sceneCandidate)
   };
 }
 
-async function readPdfExportBookProfile() {
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
-  const manifest = manifestRecord && isPlainObjectValue(manifestRecord.manifest)
-    ? manifestRecord.manifest
-    : {};
+async function readPdfExportBookProfile(manifest) {
+  if (!isPlainObjectValue(manifest)
+    || (Object.hasOwn(manifest, 'bookProfile') && !isPlainObjectValue(manifest.bookProfile))) {
+    throw new Error('Project BookProfile is invalid for PDF export');
+  }
   const sourceProfile = isPlainObjectValue(manifest.bookProfile) ? manifest.bookProfile : {};
   const bookProfileModule = await loadBookProfileModule();
+  if (Object.hasOwn(manifest, 'bookProfile') && !bookProfileModule.validateBookProfile(sourceProfile).ok) {
+    throw new Error('Project BookProfile is invalid for PDF export');
+  }
   const normalized = bookProfileModule.normalizeBookProfile(sourceProfile);
   if (!normalized || normalized.ok !== true || !isPlainObjectValue(normalized.value)) {
     throw new Error('Project BookProfile is invalid for PDF export');
@@ -30305,37 +30315,91 @@ async function readCanonicalPdfExportSource() {
     throw new Error('Unsaved editor state cannot be used as canonical PDF export source');
   }
 
-  const scope = await buildSelectedScenesTxtExportScope();
-  const sceneCandidates = Array.isArray(scope?.sceneCandidates) ? scope.sceneCandidates : [];
-  if (sceneCandidates.length === 0) {
-    return {
-      projectId: typeof scope?.projectId === 'string' ? scope.projectId : '',
-      projectRoot: typeof scope?.projectRoot === 'string' ? scope.projectRoot : getProjectRootPath(),
-      sourcePaths: [],
-      bookProfile: await readPdfExportBookProfile(),
-      scenes: [],
-    };
-  }
-
-  const scenes = [];
-  for (const candidate of sceneCandidates) {
-    scenes.push({
-      sceneId: typeof candidate.sceneId === 'string' ? candidate.sceneId : '',
-      label: typeof candidate.label === 'string' ? candidate.label : '',
-      title: typeof candidate.title === 'string' ? candidate.title : '',
-      text: await readSelectedScenesTxtExportSceneContent(candidate),
-    });
-  }
-
-  return {
-    projectId: typeof scope.projectId === 'string' ? scope.projectId : '',
-    projectRoot: typeof scope.projectRoot === 'string' ? scope.projectRoot : getProjectRootPath(),
-    sourcePaths: sceneCandidates
-      .map((candidate) => (candidate && typeof candidate.path === 'string' ? candidate.path : ''))
-      .filter(Boolean),
-    bookProfile: await readPdfExportBookProfile(),
-    scenes,
+  const projectName = currentProjectName;
+  if (typeof projectName !== 'string' || !projectName.trim()) throw Error('PDF_PROJECT_REQUIRED');
+  const projectRoot = getProjectRootPath(projectName), manifestPath = getProjectManifestPath(projectName);
+  const file = currentFilePath, subject = currentLifecycleSubjectId(), session = commentAuthoringSessionId;
+  const owner = activeStage10ApplicationBootstrap, generation = lastSignaledEditGeneration;
+  const window = mainWindow, contents = window?.webContents;
+  const stale = () => Object.assign(Error('PDF_CONTEXT_STALE'), { reason: 'pdf_context_stale' });
+  const assertContext = () => {
+    if (!evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: EXPORT_PDF_COMMAND_ID,
+      productCommandRecord: getProductCommandRecord(EXPORT_PDF_COMMAND_ID) }).allowed
+      || !decideCommandEntitlement(EXPORT_PDF_COMMAND_ID, getProductEntitlementTier()).available) {
+      throw Object.assign(Error('PDF_CAPABILITY_DENIED'), { reason: 'pdf_capability_denied' });
+    }
+    if (projectName !== currentProjectName || projectRoot !== getProjectRootPath()
+      || file !== currentFilePath || subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId
+      || owner !== activeStage10ApplicationBootstrap || generation !== lastSignaledEditGeneration
+      || window !== mainWindow || !window || window.isDestroyed() || contents !== window.webContents || contents.isDestroyed()
+      || isDirty || autoSaveInProgress) throw stale();
   };
+  assertContext();
+  return queueDiskOperation(async () => {
+    assertContext();
+    const rootIdentity = await fs.lstat(projectRoot, { bigint: true });
+    if (!rootIdentity.isDirectory() || rootIdentity.isSymbolicLink()) throw stale();
+    const sameVersion = (a, b) => ['dev', 'ino', 'size', 'mtimeNs', 'ctimeNs', 'nlink'].every(key => a[key] === b[key]);
+    const cohort = [];
+    const readSource = async sourcePath => {
+      assertContext();
+      if (!isAllowedFilePath(sourcePath)) throw stale();
+      const before = await fs.lstat(sourcePath, { bigint: true });
+      if (!before.isFile() || before.isSymbolicLink() || before.nlink !== 1n) throw stale();
+      const bytes = await fs.readFile(sourcePath);
+      if (!sameVersion(before, await fs.lstat(sourcePath, { bigint: true }))) throw stale();
+      assertContext();
+      return { path: sourcePath, bytes, identity: before };
+    };
+    const manifestSource = await readSource(manifestPath);
+    cohort.push(manifestSource);
+    const manifest = JSON.parse(manifestSource.bytes.toString('utf8'));
+    if (!isPlainObjectValue(manifest) || manifest.schemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION
+      || !normalizeStableProjectId(manifest.projectId)) throw Error('PDF_PROJECT_MANIFEST_INVALID_OR_READ_ONLY');
+    const manifestRecord = { manifest };
+    const scope = await buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, true);
+    assertContext();
+    const bookProfile = await readPdfExportBookProfile(manifest);
+    assertContext();
+    const scenes = [];
+    for (const candidate of scope.sceneCandidates) {
+      cohort.push(await readSource(candidate.path));
+      scenes.push(Object.freeze({ sceneId: candidate.sceneId, label: candidate.label, title: candidate.title,
+        text: await readSelectedScenesTxtExportSceneContent(candidate) }));
+      assertContext();
+    }
+    const roster = candidates => JSON.stringify(candidates.map(candidate => [candidate.sceneId, candidate.nodeId, candidate.path]));
+    const capturedRoster = roster(scope.sceneCandidates);
+    const targets = new Map();
+    const assertTarget = async outPath => {
+      assertContext();
+      let current = null;
+      try { current = await fs.lstat(outPath, { bigint: true }); }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (current && (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1n)) throw stale();
+      if (targets.has(outPath)) {
+        const previous = targets.get(outPath);
+        if (previous ? !current || !sameVersion(previous, current) : current !== null) throw stale();
+      } else targets.set(outPath, current);
+      assertContext();
+    };
+    const assertCapture = async () => {
+      assertContext();
+      const root = await fs.lstat(projectRoot, { bigint: true });
+      if (!root.isDirectory() || root.isSymbolicLink() || root.dev !== rootIdentity.dev || root.ino !== rootIdentity.ino) throw stale();
+      for (const source of cohort) {
+        const current = await readSource(source.path);
+        if (!sameVersion(current.identity, source.identity) || !current.bytes.equals(source.bytes)) throw stale();
+      }
+      const currentScope = await buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, true);
+      if (roster(currentScope.sceneCandidates) !== capturedRoster) throw stale();
+      assertContext();
+    };
+    await assertCapture();
+    return Object.freeze({ projectId: manifest.projectId, projectRoot,
+      sourcePaths: Object.freeze(scope.sceneCandidates.map(candidate => candidate.path)),
+      bookProfile: Object.freeze(bookProfile), scenes: Object.freeze(scenes), assertCapture, assertContext, assertTarget });
+  }, 'capture pdf source');
 }
 
 async function collectProjectArchiveSourcePaths(projectRoot) {
@@ -31275,7 +31339,21 @@ async function handleExportPdf(payloadRaw = {}) {
     readCanonicalPdfExportSource,
     renderPdfBuffer: renderPdfBufferFromHtml,
     queueDiskOperation,
-    writeBufferAtomic,
+    writeBufferAtomic: async (outPath, buffer, source, onPublished) => {
+      const authority = await getMainProjectManifestAuthority();
+      return authority.withProjectLease(source.projectId, async lease => {
+        await source.assertCapture();
+        await lease.assertOwned();
+        const result = await writeBufferAtomic(outPath, buffer, { beforePublish: async () => {
+          const target = await validatePdfExportTarget(outPath, source);
+          if (!target.ok) throw Object.assign(Error(target.reason), { reason: target.reason });
+          await lease.assertOwned();
+          source.assertContext();
+        } });
+        onPublished();
+        return result;
+      });
+    },
     updateStatus,
   });
 }
@@ -32987,11 +33065,12 @@ async function ensureProjectStructure(projectName = DEFAULT_PROJECT_NAME) {
   return projectRoot;
 }
 
-async function readDirectoryEntries(folderPath) {
+async function readDirectoryEntries(folderPath, options = {}) {
   let entries = [];
   try {
     entries = await fs.readdir(folderPath, { withFileTypes: true });
   } catch (error) {
+    if (options.throwOnError === true) throw error;
     logDevError('readDirectoryEntries', error);
     return [];
   }

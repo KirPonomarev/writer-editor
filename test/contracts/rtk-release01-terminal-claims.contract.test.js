@@ -471,9 +471,9 @@ async function compileRelease01CurrentWordingRegistry({
   // Only after the preserved wording chain is validated may the exact
   // security successor replace the current package surface binding.
   const security = await import(pathToFileURL(path.join(REPO_ROOT, 'scripts/ops/r24/package-content-trust-pk0.mjs')).href);
-  const admission = security.readWordMacDependencySecurityAdmission(REPO_ROOT);
+  const admission = security.readCurrentWordMacDependencySecurityAdmission(REPO_ROOT);
   const successor = securitySuccessorLoad === undefined
-    ? loadJsonWithBytes(path.join(REPO_ROOT, security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH)) : securitySuccessorLoad;
+    ? loadJsonWithBytes(path.join(REPO_ROOT, security.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH)) : securitySuccessorLoad;
   if (!admission || !successor || !Buffer.isBuffer(successor.bytes)
     || sha256RawBytes(successor.bytes) !== admission.carrierSha256
     || successor.digest !== admission.carrierSha256
@@ -2199,7 +2199,7 @@ test('RELEASE01 security wording successor rejects missing changed and forged cu
  const module=await loadModule(),loaded=module.loadTerminalClaimRegistry(REGISTRY_PATH);
  assert.equal(loaded.ok,true);
  const security=await import(pathToFileURL(path.join(REPO_ROOT,'scripts/ops/r24/package-content-trust-pk0.mjs')).href);
- const original=loadJsonWithBytes(path.join(REPO_ROOT,security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
+ const original=loadJsonWithBytes(path.join(REPO_ROOT,security.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH));
  const tampered=clone(original.value);tampered.currentFiles['package.json']='0'.repeat(64);
  const forgedBytes=Buffer.from(JSON.stringify(tampered));
  for(const securitySuccessorLoad of [null,{...original,bytes:Buffer.concat([original.bytes,Buffer.from(' ')])},{...original,digest:'0'.repeat(64)},{...original,value:tampered},{bytes:forgedBytes,value:tampered,digest:sha256RawBytes(forgedBytes)}]){

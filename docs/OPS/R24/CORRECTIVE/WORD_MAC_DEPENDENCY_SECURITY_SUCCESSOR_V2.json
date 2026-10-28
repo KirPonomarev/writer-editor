@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V2",
+  "status": "AUTHORIZED_EXACT_SUCCESSOR_NOT_ACCEPTANCE",
+  "baseSha": "c6328f82d872f6d591bd880fe0676a421072331b",
+  "baseTree": "3d672ecb5d6834df2615ce7de8cf88d6406f1793",
+  "taskId": "YALKEN_SECURITY_UPDATE_20261027",
+  "authority": {
+    "source": "Direct human approval of the exact four existing dependency updates after COPY; no runtime network, profile or release acceptance is created by this carrier.",
+    "ownerAuthorizationSha256": "727a452d411d026299982612eaf47986b2d39dd02fbac275a2fee80b9be60fea",
+    "rootArchitectureDeclarationSha256": "9a39576876afb228260a48672a1683e64c8570f056e06e35fafeae6fa273ec3c"
+  },
+  "predecessor": {
+    "path": "docs/OPS/R24/CORRECTIVE/WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_V1.json",
+    "sha256": "b828a56cc30440ae70d6084784dec01ea390bfb8ed505806954c83f7daddd952",
+    "baseSha": "c6328f82d872f6d591bd880fe0676a421072331b",
+    "baseTree": "3d672ecb5d6834df2615ce7de8cf88d6406f1793"
+  },
+  "previousFiles": {
+    "package.json": "96164dc319209209c1edf12c4d1a745b3bc0fcd38a8fc2d943ac143d87338696",
+    "package-lock.json": "f4576445e5e73be0ee6388f1379297dd9f9f232f1361b6ab172ccd1c827ec9f1",
+    "scripts/electron-download-config.cjs": "75347c0f003529acef299f07eee7ac03007666576d4e3b0133e719379ecbdc7a",
+    "scripts/ops/rtk-interop-order-c1.mjs": "2d609ea9057920008504060e5a8717e4cdeaafa568d1d1f5bf67091ffefc9a9d",
+    "scripts/ops/rtk-interop-text-order-c1.mjs": "0a89e7208c95794229b7482f6629e30767fda172529f93a107a8fa11a225585c"
+  },
+  "currentFiles": {
+    "package.json": "cf0d3ec978b446c78a0b1879057461f3de7ae72731a5dfeca90957a3afcbe799",
+    "package-lock.json": "665c70ae2910d9514a54a0409c8b2fb3e4aa3bd69600b26f3a0faad9968c7559",
+    "scripts/electron-download-config.cjs": "75347c0f003529acef299f07eee7ac03007666576d4e3b0133e719379ecbdc7a",
+    "scripts/ops/rtk-interop-order-c1.mjs": "54d7929d7da19ca5bf395dd9abba98b0e484150ff6044541082f2a3de5295c7a",
+    "scripts/ops/rtk-interop-text-order-c1.mjs": "43101b1acef666bf02167d3a6ce4a8ef05399f94ca0d7ec1472e2eefcf851560"
+  },
+  "transition": {
+    "electron": {
+      "before": "41.10.6",
+      "after": "43.8.4"
+    },
+    "overrides": {
+      "before": {
+        "@xmldom/xmldom": "0.9.12",
+        "linkify-it": "5.0.2",
+        "picomatch": "4.0.4",
+        "plist": "3.1.1",
+        "tar": "7.5.22",
+        "fast-uri": "4.1.5",
+        "app-builder-lib": {
+          "@electron/get": "5.1.0"
+        },
+        "brace-expansion@^1": "1.1.21",
+        "brace-expansion@^2": "2.1.7",
+        "brace-expansion@^5": "5.0.12",
+        "undici@^6": "6.28.1",
+        "undici@^7": "7.29.1"
+      },
+      "after": {
+        "@xmldom/xmldom": "0.9.12",
+        "linkify-it": "5.0.2",
+        "picomatch": "4.0.4",
+        "plist": "3.1.1",
+        "tar": "7.5.22",
+        "fast-uri": "4.2.3",
+        "app-builder-lib": {
+          "@electron/get": "5.1.0"
+        },
+        "brace-expansion@^1": "1.1.21",
+        "brace-expansion@^2": "2.1.7",
+        "brace-expansion@^5": "5.0.12",
+        "undici@^6": "6.29.1",
+        "undici@^7": "7.30.1"
+      }
+    },
+    "buildExtends": {
+      "before": "./scripts/electron-download-config.cjs",
+      "after": "./scripts/electron-download-config.cjs"
+    },
+    "dependenciesUnchanged": true,
+    "enginesUnchanged": true,
+    "packageManagerUnchanged": true,
+    "newDirectDependencyFamilies": []
+  },
+  "claims": {
+    "testsPassed": false,
+    "releaseReady": false,
+    "productRuntimeNetwork": false,
+    "historicalEvidenceRewritten": false
+  }
+}

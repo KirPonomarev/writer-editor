@@ -16,7 +16,7 @@ function verify(dir) {
   const pdf = fs.readFileSync(path.join(dir, 'synthetic.pdf'));
   assert.equal(hash(pdf), receipt.pdfSha256); assert.equal(pdf.length, receipt.pdfBytes);
   assert.equal(receipt.repeatedRenderDenominator, 2); assert.equal(receipt.repeatedEqual, true);
-  assert.equal(receipt.electron, '41.10.6'); assert.equal(receipt.syntheticOnly, true);
+  assert.equal(receipt.electron, '43.8.4'); assert.equal(receipt.syntheticOnly, true);
   for (const binding of receipt.implementationArtifacts) assert.equal(hash(fs.readFileSync(path.join(root, binding.path))), binding.sha256);
   return { schemaVersion: 'WP704_PHYSICAL_PDF_BYTE_READBACK_V1', status: 'PASS', pdfSha256: hash(pdf), byteLength: pdf.length, renderingDenominator: 2, independentPdfSemanticOrVisualClaim: false, outputDirectory: dir };
 }

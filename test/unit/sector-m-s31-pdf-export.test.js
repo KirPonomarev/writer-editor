@@ -85,9 +85,11 @@ test('S31 PDF export: main-owned renderer uses isolated print projection and sav
     'async function readCanonicalPdfExportSource()',
     'async function resolveMarkdownExportPath(payload)',
   );
-  assert.ok(sourceSection.includes('buildSelectedScenesTxtExportScope()'));
+  assert.ok(sourceSection.includes('buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, true)'));
   assert.ok(sourceSection.includes('readSelectedScenesTxtExportSceneContent(candidate)'));
-  assert.ok(sourceSection.includes('readPdfExportBookProfile()'));
+  assert.ok(sourceSection.includes('readPdfExportBookProfile(manifest)'));
+  assert.ok(sourceSection.includes('const projectName = currentProjectName;'));
+  assert.ok(sourceSection.includes('assertCapture, assertContext'));
   assert.equal(sourceSection.includes('requestEditorSnapshot('), false);
   assert.equal(sourceSection.includes('requestEditorText('), false);
 

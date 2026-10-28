@@ -1,3 +1,9 @@
+## 2026-10-28 — Same security delivery: native PDF source-selection repair under proof
+
+At clean b4ecc3a9e6b87b9e9f3bfd26bdaed552b9d13035 the sole owner-directed developer completed H2 source gates, unchanged full baseline3570pass59existing named skips and Electron lane; actual unsigned43 app save/recovery/cold/import/ZIP proofs remain bound to H2. Actual native PDF twice failed before its target dialog with pdf_source_empty. Both failures, complete closed synthetic profiles and original applications remain retained. Main was byte-exact to binding M2: fixed default Roman has no scenes while the open imported copy has one. Complete actual-Main/real-filesystem causal RED returns the default project ID; a separate atomic guard RED preserves its original failure.
+
+Fresh phase05 declaration/preflight0 and HARD/E0 precede the bounded same-chain repair. PDF selects active raw canonical manifest/BookProfile and saved scenes, binds source bytes/identity/generation and current capability, propagates read errors, and rechecks the captured source and selected output before atomic publication. Legacy writer/TXT defaults stay unchanged. Actual maintained17of17 focused tests cover original PDF behavior plus full Main with real filesystem, cancellation, dialog/render/queue/staging/foreign-target/post-publication schedules and stale/source/profile negatives. Synthetic dialog/render ports do not qualify actual native PDF. Current-source companions, complete final gates/baseline, rebuilt real app/PDF semantic/visual/cold and normal push/CI/merge/merged verification remain required. No full-Mac acceptance: final candidate UNFROZEN and all17qualification rows UNKNOWN.
+
 ## 2026-10-25 — Canonical logo, isolated visual integration
 
 TASK_ID: YALKEN_CANONICAL_LOGO_20261025
@@ -5337,3 +5343,5 @@ YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027: C1 configured baseline exited7 wi
 ## 2026-10-27 — Authored COPY phase05: test-owned teardown
 
 Separate clean H3 preflights and prospective task E0 preceded the S33-only actor correction. Root reviewed the full inverse, all10023 source bindings, frozen runtime and old six failed roots/24files. Normal whole S33 actual75/75 without preload, filtering or skips; three real ownership/shape denials exercise the helper. Earlier73/75 failure remains retained as a new negative setup error before its intended guard; original failed baseline is not relabelled. Current companions refresh hashes only, preserving82 historical carriers, all inventory/skip policy and release UNKNOWNs. Full candidate source/baseline, rebuilt native before next push, CI/merge and exact merged proof remain required.
+
+2026-10-27 YALKEN_SECURITY_UPDATE_20261027: direct owner approval bound to c6328f82d872f6d591bd880fe0676a421072331b; exact four dependency pins reviewed, whole/prod audit0 and OSS0 in fresh environment. Separate actor and root clean preflight admitted strict V2/PDF43 compatibility; native, final tests and full delivery remain pending. Historical evidence and full-Mac UNKNOWN qualifications preserved.

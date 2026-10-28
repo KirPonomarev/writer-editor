@@ -714,14 +714,14 @@ async function assertSecurityProtectedSuccessor(before,after,{
  readFile=relative=>fs.readFileSync(path.join(ROOT,relative)),
 }={}) {
  const security=await import('../../scripts/ops/r24/package-content-trust-pk0.mjs');
- const carrier=security.readWordMacDependencySecurityCandidate({candidateSha:'HEAD',git});
+ const carrier=security.readCurrentWordMacDependencySecurityCandidate({candidateSha:'HEAD',git});
  assert.ok(carrier,'exact committed security successor required');
  for(const [relative,sha256] of Object.entries(carrier.currentFiles))
   assert.equal(digest(readFile(relative)),sha256,relative);
  const admitted=new Set(['package.json','package-lock.json','scripts/ops/rtk-interop-order-c1.mjs','scripts/ops/rtk-interop-text-order-c1.mjs']);
  const expected=before.map(binding=>{
   if(!admitted.has(binding.path))return binding;
-  assert.equal(binding.sha256,carrier.previousFiles[binding.path],`historical protected binding: ${binding.path}`);
+  assert.equal(security.admitsResolvedWordMacSecurityProtectedBinding(binding,carrier.currentFiles[binding.path],carrier),true,`historical protected binding: ${binding.path}`);
   assert.ok(carrier.currentFiles[binding.path],binding.path);
   return {...binding,sha256:carrier.currentFiles[binding.path]};
  });
@@ -789,7 +789,7 @@ test('Manuscript security successor rejects missing carrier, tampered bytes and 
  const git=args=>execFileSync('git',args,{cwd:ROOT,maxBuffer:16*1024*1024});
  for(const mode of ['missing','tampered']) {
   await assert.rejects(()=>assertSecurityProtectedSuccessor(before,after,{git:args=>{
-   if(args[0]==='show'&&args[1].endsWith(':'+security.WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH)) {
+   if(args[0]==='show'&&args[1].endsWith(':'+security.CURRENT_WORD_MAC_DEPENDENCY_SECURITY_SUCCESSOR_PATH)) {
     if(mode==='missing')throw new Error('missing carrier');
     return Buffer.concat([git(args),Buffer.from(' ')]);
    }

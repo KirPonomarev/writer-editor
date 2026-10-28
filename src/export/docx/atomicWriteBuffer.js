@@ -6,7 +6,7 @@ const path = require('node:path');
 
 const { joinPathSegmentsWithinRoot } = require('../../core/io/path-boundary');
 
-async function writeBufferAtomic(filePath, buffer) {
+async function writeBufferAtomic(filePath, buffer, options = {}) {
   const directory = path.dirname(filePath);
   const baseName = path.basename(filePath);
   const randomSuffix = crypto.randomBytes(5).toString('hex');
@@ -16,6 +16,7 @@ async function writeBufferAtomic(filePath, buffer) {
 
   await fs.mkdir(directory, { recursive: true });
   await fs.writeFile(tempPath, buffer);
+  if (typeof options.beforePublish === 'function') await options.beforePublish();
   await fs.rename(tempPath, filePath);
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
-import { readWordMacDependencySecurityAdmission } from '../package-content-trust-pk0.mjs';
+import { readCurrentWordMacDependencySecurityAdmission } from '../package-content-trust-pk0.mjs';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 
@@ -46,7 +46,7 @@ export function verifyToolchain({ verifyRuntime = true, verifyBundles = true } =
   const pkg = readJson('package.json');
   const lock = readJson('package-lock.json');
   const electron = readJson('node_modules/electron/package.json');
-  const successor = readWordMacDependencySecurityAdmission(process.cwd());
+  const successor = readCurrentWordMacDependencySecurityAdmission(process.cwd());
   assert(successor, 'E_ELECTRON_SECURITY_SUCCESSOR_BINDING');
   const currentElectron = successor.targetElectronVersion;
   assert(pkg.devDependencies?.electron === currentElectron, 'E_ELECTRON_PACKAGE_PIN');
