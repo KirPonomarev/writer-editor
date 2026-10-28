@@ -409,3 +409,51 @@ test('actual Main PDF handler preserves output across dialog/render/queue/stagin
     });
   }
 });
+
+
+test('actual Main PDF reports committed output when lease finalization fails after rename', async t => {
+  const path = require('node:path');
+  for (const phase of ['unlink', 'directory']) {
+    await t.test(phase, async t => {
+      const h = await pdfMainFixture(t), target = path.join(h.root, 'book.pdf');
+      await h.fs.writeFile(target, '%PDF-existing');
+      h.main.prepareExport();
+      const rename = h.fs.rename, unlink = h.fs.unlink, rmdir = h.fs.rmdir;
+      let published = false, injected = false;
+      h.fs.rename = async function (from, to) {
+        const result = await rename.call(this, from, to);
+        if (to === target) published = true;
+        return result;
+      };
+      const failFinalization = file => {
+        if (!published || injected || !String(file).startsWith(h.root + path.sep)) return;
+        injected = true;
+        throw Object.assign(new Error('PDF_LEASE_FINALIZATION_' + phase), {
+          code: 'EACCES', ...(phase === 'directory' ? { reason: 'pdf_lease_directory_finalize_denied' } : {}),
+        });
+      };
+      h.fs.unlink = async function (file, ...args) {
+        if (phase === 'unlink') failFinalization(file);
+        return unlink.call(this, file, ...args);
+      };
+      h.fs.rmdir = async function (file, ...args) {
+        if (phase === 'directory') failFinalization(file);
+        return rmdir.call(this, file, ...args);
+      };
+      let result;
+      try { result = await h.main.export(target); }
+      finally { h.fs.rename = rename; h.fs.unlink = unlink; h.fs.rmdir = rmdir; }
+      const bytes = await h.fs.readFile(target);
+      assert.equal(published, true);
+      assert.equal(injected, true);
+      assert.deepEqual(bytes, Buffer.from('%PDF-native-port-fixture'));
+      assert.equal(result.ok, false);
+      assert.equal(result.error.reason, phase === 'directory' ? 'pdf_lease_directory_finalize_denied' : 'pdf_write_failed');
+      if (phase === 'unlink') assert.equal(result.error.details.message, 'PDF_LEASE_FINALIZATION_unlink');
+      assert.equal(result.error.details.exported, true);
+      assert.equal(result.error.details.outPath, target);
+      assert.equal(result.error.details.bytesWritten, bytes.length);
+      assert.equal(h.main.statuses().some(args => args.includes('PDF экспортирован')), false);
+    });
+  }
+});

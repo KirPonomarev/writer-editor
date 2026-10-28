@@ -125115,7 +125115,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "8cbd1520d576a2819454433474ea7aee71ad6f70da423ab9c6b900089a3ef00e"
+      "sha256": "79037c2493d4742e025fe40a2fc1e4dcda94ee00d17db114c0b57729a9527a29"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -125939,7 +125939,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "da4e04be81815b0cc6e450a7ede7662348e5daedb4b18c6977f833c5b691b44c"
+      "sha256": "203d8950692af338aebd37aa25987949a8d7790079060cd9805d34de98a3ee99"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -125947,7 +125947,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "0872d969cdd6eb3cb86a3f63232a3195edc8e2d8bc7e04e0c16996f364e02356"
+      "sha256": "7a984295b547a0414a9cfd6fa8635374119556ad94382aab04852563d264d097"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -125975,7 +125975,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "775a0b8cbf1f115e7b2c74045380e09cdb98999dde59fd79204d78f88893458f"
+      "sha256": "634e431ac8566b096b69869a164b4cf5494644f87e5da8b1761fb409bfc5151c"
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -126083,7 +126083,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "ddced59ceb980a7fd790dc4ec1ae8d90c35ee77cea16ad3b68fed7673e175bb3"
+      "sha256": "c3d75b46450235a0e902f78500b75a1dbbfdeeca25ec30c77cf402d8a29e187f"
     },
     {
       "path": "src/renderer/flags.js",
@@ -126471,7 +126471,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "1060f6f06df4bef23541e9ba450370340384789288241976098ad50f511632a8"
+      "sha256": "ce4a5e3e090bab97f59672a04fb37e2806b67c73694b7f03b043f9528647a9ed"
     },
     {
       "path": "src/renderer/assets/app-icon.svg",
@@ -126551,11 +126551,11 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/YALKEN_SECURITY_UPDATE_20261027.md",
-      "sha256": "24c46f6d21f8438074921bfa00a355c40802d265d0a5759a77b7a7aa8fdcd8a3"
+      "sha256": "5f3958710151467f65600c45f38fffae1f04d7ba3d5583c176c3106fa97378fe"
     },
     {
       "path": "src/export/pdf/pdfExportHandler.js",
-      "sha256": "9b2ab7a6da234609e06dc54e221daaa69f5c71963eff05f1f7565eaba507fad3"
+      "sha256": "0961ab0f7505f304fe43708c5aea82929cf4b879ea38144390cb517caa3903e3"
     },
     {
       "path": "src/export/docx/atomicWriteBuffer.js",
@@ -126563,7 +126563,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/unit/pdf-export-handler.test.js",
-      "sha256": "e1d7ec3e90563684cb2e427a33109a489b2ef0787ac7d8d3e23b58e026959dce"
+      "sha256": "6420b2835cfe6b9ee73a4f2dd780716a70fc61dd49dd7a153af114b9c42e4c84"
     },
     {
       "path": "test/unit/sector-m-s31-pdf-export.test.js",
@@ -126573,7 +126573,7 @@ const R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "7e3a51d2573a24c2c0d604d0546cfbd771fab6ec46ca11ff5930a2fec1a8fd63"
+      "sha256": "d8595f89f02434eadc1095baa5896e15b7cffca3e4e85486747a445ad09f34d5"
     }
   ]
 });

@@ -293,7 +293,7 @@ async function runPdfExport(payloadRaw, deps = {}) {
         error.reason = error.message;
         throw error;
       }
-      await writeBufferAtomic(outPath, pdfBuffer, source);
+      await writeBufferAtomic(outPath, pdfBuffer, source, () => { namePublished = true; });
       namePublished = true;
     }, 'export pdf');
     if (typeof source.assertContext === 'function') source.assertContext();
@@ -318,6 +318,7 @@ async function runPdfExport(payloadRaw, deps = {}) {
     return makeTypedPdfExportError('E_EXPORT_PDF_WRITE_FAILED', 'pdf_write_failed', {
       message: getErrorMessage(error),
       outPath,
+      ...(namePublished ? { exported: true, bytesWritten: pdfBuffer.length } : {}),
     });
   }
 }

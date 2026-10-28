@@ -31339,17 +31339,19 @@ async function handleExportPdf(payloadRaw = {}) {
     readCanonicalPdfExportSource,
     renderPdfBuffer: renderPdfBufferFromHtml,
     queueDiskOperation,
-    writeBufferAtomic: async (outPath, buffer, source) => {
+    writeBufferAtomic: async (outPath, buffer, source, onPublished) => {
       const authority = await getMainProjectManifestAuthority();
       return authority.withProjectLease(source.projectId, async lease => {
         await source.assertCapture();
         await lease.assertOwned();
-        return writeBufferAtomic(outPath, buffer, { beforePublish: async () => {
+        const result = await writeBufferAtomic(outPath, buffer, { beforePublish: async () => {
           const target = await validatePdfExportTarget(outPath, source);
           if (!target.ok) throw Object.assign(Error(target.reason), { reason: target.reason });
           await lease.assertOwned();
           source.assertContext();
         } });
+        onPublished();
+        return result;
       });
     },
     updateStatus,
