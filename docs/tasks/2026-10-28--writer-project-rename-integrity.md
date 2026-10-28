@@ -40,6 +40,7 @@ One ordinary commit/push/PR/required-CI/merge/exact-merged verification chain. R
 - `docs/CONTEXT.md`
 - `docs/HANDOFF.md`
 - `docs/WORKLOG.md`
+- `docs/ARCH_DIFF_LOG.md`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
 - `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
@@ -71,13 +72,21 @@ Location metadata has a closed schema with stable projectId and logical/physical
 
 No typing-path work or new dependencies. Location record is bounded and per-invocation, never a stale global cache. Existing keyboard, locale and accessibility contracts remain. Bootstrap, full normative reads and scoped factual history were completed for this new objective; no P03 cache or full-history claim. PRODUCT_PREFLIGHT_01 is0 before any repository edit. Direct owner scope supplies task authority; evidence supplies only proof.
 
+### Owner decision — early diagnostic admission, 28 October 2026
+
+Direct owner audit decision YALKEN_DEV_AUDIT_20261028, conveyed by the existing monitor chat and followed by explicit owner resume, authorizes only the diagnostic ordering below. Audit attachment SHA256:272df9b951a38bdec7ce84c33c88c5842a430cf048f4082a34ee50c5c5714a5c. The same bounded delivery and original base remain.
+
+Before another expensive full wave, an exact committed source/build and fresh synthetic owned profile may run the actual UI open/edit/Save/physical rename/tree/normal Quit/cold reopen journey. Fresh PRODUCT_CODE declaration/preflight and native StageAdmission, source/artifact/app/PID/profile/ownership bindings, complete dependency cohort, genuine canonical OS TMPDIR and independent raw identity/content/history oracle remain required. No injected product mutation or private/default profile is allowed. Missing complete gate receipts are UNKNOWN; early diagnostic results cannot grant push, release or full-Mac acceptance. All final affected, baseline, companions, Electron, security, exact CI, PR/merge and literal merged native proof remain required. Completed receipts retain their original SHA and may be reused only through the existing WAVE_INPUT_HASH/TTL contract; no retagging.
+
+After the pause, source03 has four completed source receipts; baseline03 and Electron03 also completed at4f2a3b62. The companion process and terminal source index are absent, so unfinished source03 is UNKNOWN_INTERRUPTED/NOT_EXECUTED. All10030source bytes and18restored anchors are unchanged. Prior temporary APFS profiles are unavailable; their full warm archive, cold delta, closed-file bindings and original failure receipts remain exact on T777. A restored path must never be claimed as the old physical profile. Preserve all originals, archives and generated anchors; no cleanup authority is added.
+
 ## IMPLEMENTATION_STEPS
 
 1. Fresh exact base/remote/mount/writer check and PRODUCT_CODE declaration/preflight; create this task and pass E0 before source/tests.
 2. Add maintained actual-Main physical-rename regression and retain RED against unchanged runtime.
 3. Implement strict bounded location mapping, keep original transaction validation, bind continuation/backup/plan paths, preserve lifecycle recovery and rebind current Stage10 owner.
 4. Exercise normal/repeated rename, Save/tree/reopen, negative boundary/tamper/stale/rollback cases and review exact inverse. Refresh only required current companions.
-5. Execute required baseline and affected suites. Commit unaccepted source, build actual native, observe rename/Save/cold behavior and independent bytes before product push.
+5. After startup/preflight, cheap static/ownership/refusal checks and the real focused control, permit the owner-approved isolated diagnostic build and native Save/rename/tree/Quit/cold observation before a new expensive wave. It is not source-gate or release acceptance. Complete every required affected/baseline/companion/Electron/security check and rebuilt actual native proof before full delivery; actual rebuilt native remains required before product push.
 6. Complete PR/required CI/merge and exact merged verification; only then continue V6.
 
 ## CHECKS
