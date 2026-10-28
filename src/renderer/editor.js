@@ -22157,6 +22157,9 @@ async function confirmExportPreviewAndRun() {
   updateWarningStateText('none');
 }
 
+let selectedScenesTxtExportRequestId = '';
+let selectedScenesTxtExportFlowGeneration = 0;
+
 function normalizeSelectedScenesTxtExportScope(scope) {
   if (!scope || typeof scope !== 'object' || Array.isArray(scope)) return null;
   const projectId = typeof scope.projectId === 'string' ? scope.projectId.trim() : '';
@@ -22178,9 +22181,11 @@ function normalizeSelectedScenesTxtExportScope(scope) {
         .filter((sceneId) => typeof sceneId === 'string' && sceneId.trim())
         .map((sceneId) => sceneId.trim())
     : [];
-  if (sceneCandidates.length === 0) return null;
+  const requestId = typeof scope.requestId === 'string' ? scope.requestId.trim() : '';
+  if (sceneCandidates.length === 0 || !/^selected-scenes-txt-[a-f0-9-]{36}$/u.test(requestId)) return null;
   return {
     projectId,
+    requestId,
     defaultSceneIds,
     sceneCandidates,
   };
@@ -22226,6 +22231,8 @@ function updateSelectedScenesTxtExportModalState() {
 }
 
 function closeSelectedScenesTxtExportModal() {
+  selectedScenesTxtExportRequestId = '';
+  selectedScenesTxtExportFlowGeneration += 1;
   closeSimpleModal(selectedScenesTxtExportModal);
 }
 
@@ -22264,6 +22271,7 @@ function openSelectedScenesTxtExportModal(scope) {
     updateStatusText('Selected scenes TXT export unavailable');
     return;
   }
+  selectedScenesTxtExportRequestId = normalizedScope.requestId;
   renderSelectedScenesTxtExportCandidateList(normalizedScope);
   updateSelectedScenesTxtExportModalState();
   openSimpleModal(selectedScenesTxtExportModal);
@@ -22276,13 +22284,21 @@ async function confirmSelectedScenesTxtExportAndRun() {
     return;
   }
 
+  const requestId = selectedScenesTxtExportRequestId;
+  if (!requestId) {
+    closeSelectedScenesTxtExportModal();
+    updateStatusText('Selected scenes TXT export unavailable');
+    return;
+  }
   closeSelectedScenesTxtExportModal();
+  const flowGeneration = selectedScenesTxtExportFlowGeneration;
   updateStatusText('Exporting selected scenes TXT');
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT, {
     confirmed: true,
-    requestId: `selected-scenes-txt-export-${Date.now()}`,
+    requestId,
     selectedSceneIds,
   });
+  if (flowGeneration !== selectedScenesTxtExportFlowGeneration) return;
   if (!result || result.ok !== true) {
     updateStatusText('Selected scenes TXT export failed');
     return;
@@ -22304,14 +22320,18 @@ async function confirmSelectedScenesTxtExportAndRun() {
 }
 
 async function openSelectedScenesTxtExportFlow() {
+  closeSelectedScenesTxtExportModal();
+  const flowGeneration = ++selectedScenesTxtExportFlowGeneration;
   updateStatusText('Preparing selected scenes TXT export');
   let result = null;
   try {
     result = await invokeWorkspaceQueryBridge(SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID, {});
   } catch {
+    if (flowGeneration !== selectedScenesTxtExportFlowGeneration) return;
     updateStatusText('Selected scenes TXT export unavailable');
     return;
   }
+  if (flowGeneration !== selectedScenesTxtExportFlowGeneration) return;
   if (!result || result.ok !== true) {
     updateStatusText('Selected scenes TXT export unavailable');
     return;

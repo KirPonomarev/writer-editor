@@ -83,7 +83,9 @@ test('post-mvp selected scenes TXT export: kernel and handler stay bounded to sc
   assert.match(handlerSource, /validateTxtExportPhysicalTargetPath\(outPath/u);
   assert.match(handlerSource, /readSelectedScenesTxtExportSceneContent/u);
   assert.match(handlerSource, /sceneTexts\.join\('\\n\\n'\)/u);
-  assert.match(handlerSource, /fileManager\.writeFileAtomic\(outPath, content\)/u);
+  assert.match(handlerSource, /publishScenesTxtExport\(outPath, content, scope, EXPORT_SELECTED_SCENES_TXT_COMMAND_ID/u);
+  assert.match(handlerSource, /pending\.scope\.assertCapture\(EXPORT_SELECTED_SCENES_TXT_COMMAND_ID\)/u);
+  assert.match(handlerSource, /pendingSelectedScenesTxtExport = null/u);
   assert.match(handlerSource, /!writeResult\s*\|\|\s*writeResult\.success !== true/u);
   assert.match(handlerSource, /sceneCount:\s*selectedCandidates\.length/u);
   assert.doesNotMatch(handlerSource, /payload\.text|payload\.scenePaths|payload\.viewportDomText|payload\.plainText/u);
@@ -101,6 +103,8 @@ test('post-mvp selected scenes TXT export: scope query returns renderer-safe sce
   assert.match(scopeQuerySource, /sceneCandidates:\s*Array\.isArray\(scope\.sceneCandidates\)/u);
   assert.match(scopeQuerySource, /sceneId:\s*candidate\.sceneId/u);
   assert.match(scopeQuerySource, /label:\s*candidate\.label/u);
+  assert.match(scopeQuerySource, /pendingSelectedScenesTxtExport = \{ requestId, scope \}/u);
+  assert.match(scopeQuerySource, /requestId,/u);
   assert.equal(scopeQuerySource.includes('path: candidate.path'), false);
   assert.equal(scopeQuerySource.includes('projectRoot'), false);
 });
@@ -110,13 +114,19 @@ test('post-mvp selected scenes TXT export: scope build stays read-only before co
   const scopeBuildSource = sliceBetween(
     source,
     'async function buildSelectedScenesTxtExportScope() {',
-    'function validateSelectedScenesTxtExportOutPath(outPath, scope, selectedCandidates) {',
+    'async function publishScenesTxtExport(outPath, content, scope, commandId, validateTarget, onPublished) {',
   );
 
   assert.equal(scopeBuildSource.includes('ensureProjectStructure('), false);
   assert.equal(scopeBuildSource.includes('ensureProjectManifest('), false);
-  assert.match(scopeBuildSource, /readProjectManifest\(DEFAULT_PROJECT_NAME\)/u);
-  assert.match(scopeBuildSource, /fileExists\(romanPath\)/u);
+  assert.match(scopeBuildSource, /const projectName = currentProjectName/u);
+  assert.doesNotMatch(scopeBuildSource, /DEFAULT_PROJECT_NAME/u);
+  assert.match(scopeBuildSource, /JSON\.parse\(manifestSource\.bytes\.toString\('utf8'\)\)/u);
+  assert.match(scopeBuildSource, /manifest\.schemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION/u);
+  assert.match(scopeBuildSource, /buildSelectedScenesTxtExportScopeForProject\(projectName, manifestRecord, true\)/u);
+  const traversalSource = sliceBetween(source, 'async function buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, strictRead = false) {', 'function captureFullManuscriptProjectBinding() {');
+  assert.match(traversalSource, /fileExists\(romanPath\)/u);
+  assert.doesNotMatch(traversalSource, /ensureProjectStructure\(|ensureProjectManifest\(/u);
 });
 
 test('post-mvp selected scenes TXT export: target validation blocks selected source overwrite and project-root writes', () => {
@@ -131,4 +141,20 @@ test('post-mvp selected scenes TXT export: target validation blocks selected sou
   assert.match(validateSource, /isPathInside\(scope\.projectRoot, outPath\)/u);
   assert.match(validateSource, /reason:\s*'export_target_matches_selected_scene'/u);
   assert.match(validateSource, /reason:\s*'export_target_inside_project_root'/u);
+});
+
+
+test('post-mvp selected scenes TXT export: publication preserves lease and source/target guards through atomic rename', () => {
+  const source = readText(MAIN_PATH);
+  const publish = sliceBetween(source,
+    'async function publishScenesTxtExport(outPath, content, scope, commandId, validateTarget, onPublished) {',
+    'async function buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, strictRead = false) {');
+  assert.match(publish, /authority\.withProjectLease\(scope\.projectId/u);
+  assert.match(publish, /writeBufferAtomic\(outPath, Buffer\.from\(content, 'utf8'\), \{ beforePublish: async \(\) => \{/u);
+  assert.match(publish, /await validateTarget\(\)/u);
+  assert.match(publish, /await scope\.assertTarget\(outPath\)/u);
+  assert.match(publish, /await scope\.assertCapture\(commandId\)/u);
+  assert.match(publish, /await lease\.assertOwned\(\)/u);
+  assert.match(publish, /scope\.assertContext\(commandId\)/u);
+  assert.ok(publish.indexOf('onPublished();') > publish.indexOf('await writeBufferAtomic('));
 });

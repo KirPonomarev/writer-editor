@@ -27021,6 +27021,236 @@
       "filePath": "test/unit/pdf-export-handler.test.js",
       "rationale": "Same owner-approved security delivery PR2175: preserve an actual committed PDF state when existing lease finalization fails, with two maintained real-Main/real-lease post-rename negative regressions. All prepublication guards, original tests, historical carriers and17UNKNOWN qualifications remain exact. No native or release acceptance.",
       "sha256": "6420b2835cfe6b9ee73a4f2dd780716a70fc61dd49dd7a153af114b9c42e4c84"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "8b4e256336114e04cc1148a975933d681f8451c61213992648d4e4c950ede0c5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "042558d2d0a9ba3989e0d3a59a3d28c6784ec22b52648e7433254f0ca8023a6d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "7f449657450352e1445db0aa55b1e6166fe826f290cb30b707ea6a448e516bbd"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "a964e5f21048e5f4294d5ee0abfa64d0f065f135a101ea2dbcbcdde39dcd8757"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "f47cb23abf8af93c0b0f96a224c4c5372547bc8769f4db231ca1c04820e859ef"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "da8f9728fef7e5a3669fcca42aa260385ced6cef70422067d36f997551b1693a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "49280727796b990b68f57ff41d574ce64c172fee36abb2aea0017e489a6d7782"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "ec50a1082a3cc41f4c73aa54fb3e44bd78aab8d023cfe5a1c7b1fca243d4bcd7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "4dbda11e425cb49eb499665f9851f47bdd440fac55c3cef080c1d13a282d743f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "b3d917db32791ea054e1d3e6589280e35dd9b6328d1f7f1912dfe3abd8d4d6cc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "fe3d47b3871df9eafa31374e2ef33e6305eb7110e9c33ca270395a714adc3355"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "4c60f72f1b0d8d4ca1f881781c302d08fcb0fe1c87daf7e91d4f727f4fbee2d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "1c1c66834da6f723c8df270842812870ad49495e51e7c5dd13275eea178b71a7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/renderer/editor.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "a80c057846534f37aed26540c540dbe8dd1859b93c0e7d54b51ee7660ab529b7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/post-mvp-project-txt-export.contract.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "345a313e9764b5411f2f2c2052b8d765e0ede47342ce84e2a794a027188f29d5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/post-mvp-selected-scenes-txt-export.contract.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "62c78a32b9cf6ad810326c9c8570f7d8ace652331d244199e6eebd457a2f898b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "8b04895e722a2725c116c0d79ec9f9e6b8c762aef028c36def619748f310e16a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "a20a882defc2321615dfcd1b0170be78a0e43d7a997cfd39969fcbc653ab3626"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:03:13.078093+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/selected-scenes-txt-export-ui-flow.test.js",
+      "rationale": "One owner-authorized Writer MR04A selected/all TXT repair from the open named project. Main continuation/source/context/physical-target guards and actual filesystem tests replace wrong default-project behavior; preserve closed security/historical carriers, original tests, fixed qualification denominator and all17UNKNOWN rows. Native and delivery acceptance remain pending.",
+      "sha256": "b8d6dad4df9f2a914c11434c62da0133689c27adf1e85f88bc3200d80bbc81d1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "f9da7d872c37df4e615d866a55336a8b02cbcc6e401dca59a124c84a9162fc92"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "970bff098b922c6340cf46cae52a8053cdfd22282f7327665ce8fc765fcb2c94"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "b439efad664da58437433111515a9459e6a8417f2eba5073c8d09e3b89a07062"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:04:08.229530+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
+      "sha256": "f3441ec3873a34016fac3c7d44731baf01a1d7669bd6b33f18fd1d220d0fb8aa"
     }
   ],
   "evidenceStampIds": [

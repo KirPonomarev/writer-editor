@@ -29902,9 +29902,130 @@ async function collectFullManuscriptDocxReviewExportCandidates(folderPath, bindi
   }
 }
 
+// This record binds picker intent only. The Kernel and source guards still own authority.
+let pendingSelectedScenesTxtExport = null;
+let selectedScenesTxtExportQueryGeneration = 0;
+
 async function buildSelectedScenesTxtExportScope() {
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
-  return buildSelectedScenesTxtExportScopeForProject(DEFAULT_PROJECT_NAME, manifestRecord);
+  const projectName = currentProjectName;
+  if (typeof projectName !== 'string' || !projectName.trim()) throw Error('TXT_PROJECT_REQUIRED');
+  const projectRoot = getProjectRootPath(projectName), manifestPath = getProjectManifestPath(projectName);
+  const file = currentFilePath, subject = currentLifecycleSubjectId(), session = commentAuthoringSessionId;
+  const owner = activeStage10ApplicationBootstrap, generation = lastSignaledEditGeneration;
+  const window = mainWindow, contents = window?.webContents;
+  let includesCurrentScene = false;
+  const stale = () => Object.assign(Error('TXT_CONTEXT_STALE'), { reason: 'txt_context_stale' });
+  const assertContext = commandId => {
+    if (commandId && (!evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId,
+      productCommandRecord: getProductCommandRecord(commandId) }).allowed
+      || !decideCommandEntitlement(commandId, getProductEntitlementTier()).available)) {
+      throw Object.assign(Error('TXT_CAPABILITY_DENIED'), { reason: 'txt_capability_denied' });
+    }
+    if (projectName !== currentProjectName || projectRoot !== getProjectRootPath()
+      || file !== currentFilePath || subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId
+      || owner !== activeStage10ApplicationBootstrap || generation !== lastSignaledEditGeneration
+      || window !== mainWindow || !window || window.isDestroyed() || contents !== window.webContents || contents.isDestroyed()
+      || (includesCurrentScene && (isDirty || autoSaveInProgress))) throw stale();
+  };
+  assertContext();
+  return queueDiskOperation(async () => {
+    assertContext();
+    const rootIdentity = await fs.lstat(projectRoot, { bigint: true }), physicalRoot = await fs.realpath(projectRoot);
+    if (!rootIdentity.isDirectory() || rootIdentity.isSymbolicLink()) throw stale();
+    const sameVersion = (a, b) => ['dev', 'ino', 'size', 'mtimeNs', 'ctimeNs', 'nlink'].every(key => a[key] === b[key]);
+    const readSource = async sourcePath => {
+      assertContext();
+      if (!isAllowedFilePath(sourcePath)) throw stale();
+      const before = await fs.lstat(sourcePath, { bigint: true }), physicalPath = await fs.realpath(sourcePath);
+      const relative = path.relative(physicalRoot, physicalPath);
+      if (!before.isFile() || before.isSymbolicLink() || before.nlink !== 1n
+        || !relative || relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw stale();
+      const bytes = await fs.readFile(sourcePath);
+      // A malformed byte stream cannot acquire source/path authority by replacement decoding.
+      new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      if (!sameVersion(before, await fs.lstat(sourcePath, { bigint: true }))
+        || physicalPath !== await fs.realpath(sourcePath)) throw stale();
+      assertContext();
+      return { path: sourcePath, physicalPath, bytes, identity: before };
+    };
+    const manifestSource = await readSource(manifestPath), cohort = [manifestSource];
+    const manifest = JSON.parse(manifestSource.bytes.toString('utf8'));
+    if (!isPlainObjectValue(manifest) || manifest.schemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION
+      || !normalizeStableProjectId(manifest.projectId)) throw Error('TXT_PROJECT_MANIFEST_INVALID_OR_READ_ONLY');
+    const manifestRecord = { manifest };
+    const scope = await buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, true);
+    const roster = candidates => JSON.stringify(candidates.map(candidate => [candidate.sceneId, candidate.nodeId, candidate.path]));
+    const capturedRoster = roster(scope.sceneCandidates);
+    const assertCapture = async commandId => {
+      assertContext(commandId);
+      const root = await fs.lstat(projectRoot, { bigint: true });
+      if (!root.isDirectory() || root.isSymbolicLink() || root.dev !== rootIdentity.dev || root.ino !== rootIdentity.ino
+        || physicalRoot !== await fs.realpath(projectRoot)) throw stale();
+      for (const source of cohort) {
+        const current = await readSource(source.path);
+        if (!sameVersion(current.identity, source.identity) || current.physicalPath !== source.physicalPath
+          || !current.bytes.equals(source.bytes)) throw stale();
+      }
+      const currentScope = await buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, true);
+      if (roster(currentScope.sceneCandidates) !== capturedRoster) throw stale();
+      assertContext(commandId);
+    };
+    const captureScene = async candidate => {
+      if (!scope.sceneCandidates.includes(candidate)) throw stale();
+      if (candidate.path === file) includesCurrentScene = true;
+      assertContext();
+      cohort.push(await readSource(candidate.path));
+    };
+    const targets = new Map();
+    const assertTarget = async outPath => {
+      assertContext();
+      const physical = await validateExternalWriteTarget(outPath, { projectRoot,
+        sourcePaths: scope.sceneCandidates.map(candidate => candidate.path), allowedExtensions: ['.txt'] });
+      let current = null;
+      try { current = await fs.lstat(outPath, { bigint: true }); }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (current && (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1n)) throw stale();
+      if (targets.has(outPath)) {
+        const previous = targets.get(outPath), parent = await fs.stat(previous.ancestor, { bigint: true });
+        if (previous.physicalPath !== physical.physicalPath || previous.parent.dev !== parent.dev || previous.parent.ino !== parent.ino
+          || previous.realParent !== await fs.realpath(previous.ancestor)
+          || (previous.identity ? !current || !sameVersion(previous.identity, current) : current !== null)) throw stale();
+      } else {
+        let ancestor = path.dirname(outPath), parent;
+        while (!parent) {
+          try { parent = await fs.stat(ancestor, { bigint: true }); }
+          catch (error) { if (error.code !== 'ENOENT') throw error; ancestor = path.dirname(ancestor); }
+        }
+        if (!parent.isDirectory()) throw stale();
+        targets.set(outPath, { identity: current, physicalPath: physical.physicalPath,
+          ancestor, parent, realParent: await fs.realpath(ancestor) });
+      }
+      assertContext();
+    };
+    await assertCapture();
+    return Object.freeze({ ...scope,
+      sceneCandidates: Object.freeze(scope.sceneCandidates.map(candidate => Object.freeze(candidate))),
+      defaultSceneIds: Object.freeze([...scope.defaultSceneIds]), assertContext, assertCapture, captureScene, assertTarget });
+  }, 'capture txt scope');
+}
+
+async function publishScenesTxtExport(outPath, content, scope, commandId, validateTarget, onPublished) {
+  const authority = await getMainProjectManifestAuthority();
+  return authority.withProjectLease(scope.projectId, async lease => {
+    await scope.assertCapture(commandId);
+    await lease.assertOwned();
+    await writeBufferAtomic(outPath, Buffer.from(content, 'utf8'), { beforePublish: async () => {
+      const target = await validateTarget();
+      if (!target.ok) throw Object.assign(Error(target.reason), { reason: target.reason });
+      await scope.assertTarget(outPath);
+      await scope.assertCapture(commandId);
+      await lease.assertOwned();
+      scope.assertContext(commandId);
+    } });
+    // Record the completed effect before lease cleanup, which can fail independently.
+    onPublished();
+    return { success: true };
+  });
 }
 
 async function buildSelectedScenesTxtExportScopeForProject(projectName, manifestRecord, strictRead = false) {
@@ -30886,11 +31007,17 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
 
   let scope;
   try {
+    const pending = pendingSelectedScenesTxtExport;
+    if (!pending || pending.requestId !== payload.requestId) throw Error('TXT_SELECTION_STALE');
+    pendingSelectedScenesTxtExport = null;
+    await pending.scope.assertCapture(EXPORT_SELECTED_SCENES_TXT_COMMAND_ID);
     scope = await buildSelectedScenesTxtExportScope();
+    await pending.scope.assertCapture(EXPORT_SELECTED_SCENES_TXT_COMMAND_ID);
+    if (scope.projectId !== pending.scope.projectId) throw Error('TXT_SELECTION_STALE');
   } catch (error) {
     return makeTypedSelectedScenesTxtExportError(
       'E_EXPORT_SELECTED_SCENES_TXT_SCOPE_UNAVAILABLE',
-      'selected_scene_scope_unavailable',
+      'txt_selection_stale',
       { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
     );
   }
@@ -30925,6 +31052,24 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
       'selected_scene_scope_required',
     );
   }
+
+  let content = '';
+  try {
+    const sceneTexts = [];
+    for (const candidate of selectedCandidates) {
+      await scope.captureScene(candidate);
+      sceneTexts.push(await readSelectedScenesTxtExportSceneContent(candidate));
+    }
+    content = sceneTexts.join('\n\n');
+    await scope.assertCapture(EXPORT_SELECTED_SCENES_TXT_COMMAND_ID);
+  } catch (error) {
+    return makeTypedSelectedScenesTxtExportError(
+      'E_EXPORT_SELECTED_SCENES_TXT_SOURCE_UNAVAILABLE',
+      'canonical_source_unavailable',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
 
   let resolvedPath;
   try {
@@ -30989,22 +31134,16 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
   if (!physicalTargetState.ok) {
     return makeTypedSelectedScenesTxtExportError(physicalTargetState.code, physicalTargetState.reason);
   }
-
-  let content = '';
   try {
-    const sceneTexts = [];
-    for (const candidate of selectedCandidates) {
-      sceneTexts.push(await readSelectedScenesTxtExportSceneContent(candidate));
-    }
-    content = sceneTexts.join('\n\n');
+    await scope.assertCapture(EXPORT_SELECTED_SCENES_TXT_COMMAND_ID);
+    await scope.assertTarget(outPath);
   } catch (error) {
-    return makeTypedSelectedScenesTxtExportError(
-      'E_EXPORT_SELECTED_SCENES_TXT_SOURCE_UNAVAILABLE',
-      'canonical_source_unavailable',
-      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
-    );
+    return makeTypedSelectedScenesTxtExportError('E_EXPORT_SELECTED_SCENES_TXT_SOURCE_UNAVAILABLE', error.reason || 'txt_context_stale');
   }
 
+
+
+  let published = false;
   try {
     const writeResult = await queueDiskOperation(
       async () => {
@@ -31023,7 +31162,10 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
           error.reason = target.reason;
           throw error;
         }
-        return fileManager.writeFileAtomic(outPath, content);
+        return publishScenesTxtExport(outPath, content, scope, EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
+          () => validateTxtExportPhysicalTargetPath(outPath, {
+            projectRoot: scope.projectRoot, sourcePaths: selectedCandidates.map(candidate => candidate.path),
+          }), () => { published = true; });
       },
       'export selected scenes txt',
     );
@@ -31037,6 +31179,7 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
         },
       );
     }
+    scope.assertContext(EXPORT_SELECTED_SCENES_TXT_COMMAND_ID);
     updateStatus('TXT выбранных сцен экспортирован');
     return {
       ok: true,
@@ -31050,6 +31193,7 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
       return makeTypedSelectedScenesTxtExportError(
         'E_EXPORT_SELECTED_SCENES_TXT_TARGET_FORBIDDEN',
         error.reason,
+        published ? { exported: true, outPath, bytesWritten: Buffer.byteLength(content, 'utf8') } : undefined,
       );
     }
     return makeTypedSelectedScenesTxtExportError(
@@ -31058,6 +31202,7 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
       {
         message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
         outPath,
+        ...(published ? { exported: true, bytesWritten: Buffer.byteLength(content, 'utf8') } : {}),
       },
     );
   }
@@ -31085,6 +31230,7 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
   let scope;
   try {
     scope = await buildSelectedScenesTxtExportScope();
+    scope.assertContext(EXPORT_ALL_SCENES_TXT_COMMAND_ID);
   } catch (error) {
     return makeTypedAllScenesTxtExportError(
       'E_EXPORT_ALL_SCENES_TXT_SCOPE_UNAVAILABLE',
@@ -31100,6 +31246,24 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
       'all_scenes_scope_empty',
     );
   }
+
+  let content = '';
+  try {
+    const sceneTexts = [];
+    for (const candidate of sceneCandidates) {
+      await scope.captureScene(candidate);
+      sceneTexts.push(await readSelectedScenesTxtExportSceneContent(candidate));
+    }
+    content = sceneTexts.join('\n\n');
+    await scope.assertCapture(EXPORT_ALL_SCENES_TXT_COMMAND_ID);
+  } catch (error) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_SOURCE_UNAVAILABLE',
+      'canonical_source_unavailable',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
 
   let resolvedPath;
   try {
@@ -31164,22 +31328,16 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
   if (!physicalTargetState.ok) {
     return makeTypedAllScenesTxtExportError(physicalTargetState.code, physicalTargetState.reason);
   }
-
-  let content = '';
   try {
-    const sceneTexts = [];
-    for (const candidate of sceneCandidates) {
-      sceneTexts.push(await readSelectedScenesTxtExportSceneContent(candidate));
-    }
-    content = sceneTexts.join('\n\n');
+    await scope.assertCapture(EXPORT_ALL_SCENES_TXT_COMMAND_ID);
+    await scope.assertTarget(outPath);
   } catch (error) {
-    return makeTypedAllScenesTxtExportError(
-      'E_EXPORT_ALL_SCENES_TXT_SOURCE_UNAVAILABLE',
-      'canonical_source_unavailable',
-      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
-    );
+    return makeTypedAllScenesTxtExportError('E_EXPORT_ALL_SCENES_TXT_SOURCE_UNAVAILABLE', error.reason || 'txt_context_stale');
   }
 
+
+
+  let published = false;
   try {
     const writeResult = await queueDiskOperation(
       async () => {
@@ -31198,7 +31356,10 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
           error.reason = target.reason;
           throw error;
         }
-        return fileManager.writeFileAtomic(outPath, content);
+        return publishScenesTxtExport(outPath, content, scope, EXPORT_ALL_SCENES_TXT_COMMAND_ID,
+          () => validateTxtExportPhysicalTargetPath(outPath, {
+            projectRoot: scope.projectRoot, sourcePaths: sceneCandidates.map(candidate => candidate.path),
+          }), () => { published = true; });
       },
       'export all scenes txt',
     );
@@ -31212,6 +31373,7 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
         },
       );
     }
+    scope.assertContext(EXPORT_ALL_SCENES_TXT_COMMAND_ID);
     updateStatus('TXT всех сцен экспортирован');
     return {
       ok: true,
@@ -31225,6 +31387,7 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
       return makeTypedAllScenesTxtExportError(
         'E_EXPORT_ALL_SCENES_TXT_TARGET_FORBIDDEN',
         error.reason,
+        published ? { exported: true, outPath, bytesWritten: Buffer.byteLength(content, 'utf8') } : undefined,
       );
     }
     return makeTypedAllScenesTxtExportError(
@@ -31233,6 +31396,7 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
       {
         message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
         outPath,
+        ...(published ? { exported: true, bytesWritten: Buffer.byteLength(content, 'utf8') } : {}),
       },
     );
   }
@@ -35507,11 +35671,18 @@ async function handleMetadataUpdateCommand(payload = {}, options = {}) {
 }
 
 async function handleWorkspaceSelectedScenesTxtExportScopeQuery() {
+  const queryGeneration = ++selectedScenesTxtExportQueryGeneration;
+  pendingSelectedScenesTxtExport = null;
   const scope = await buildSelectedScenesTxtExportScope();
+  await scope.assertCapture(EXPORT_SELECTED_SCENES_TXT_COMMAND_ID);
+  if (queryGeneration !== selectedScenesTxtExportQueryGeneration) throw Error('TXT_SELECTION_SUPERSEDED');
+  const requestId = 'selected-scenes-txt-' + crypto.randomUUID();
+  pendingSelectedScenesTxtExport = { requestId, scope };
   return {
     ok: true,
     scope: {
       projectId: scope.projectId,
+      requestId,
       defaultSceneIds: Array.isArray(scope.defaultSceneIds) ? [...scope.defaultSceneIds] : [],
       sceneCandidates: Array.isArray(scope.sceneCandidates)
         ? scope.sceneCandidates.map((candidate) => ({
