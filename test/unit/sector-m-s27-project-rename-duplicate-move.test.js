@@ -616,3 +616,24 @@ test('S27 active rename refuses a failed rebind without retaining an owner for t
   const disk=JSON.parse(await fsPromises.readFile(path.join(state.root,PROJECT_MANIFEST_FILENAME),'utf8'));
   assert.equal(disk.projectId,created.projectId);assert.equal(disk.projectName,'Active After');
 });
+
+test('S27 active rename preserves a newer active session at the asynchronous move boundary', async t => {
+  const h=await createHarness(t,{instrument:`
+    module.exports.__locationSession={
+      read(){return {owner:activeStage10ApplicationBootstrap,route:activeStage10ApplicationCommandRoute,currentFilePath,currentProjectName};},
+      restore(s){activeStage10ApplicationBootstrap=s.owner;activeStage10ApplicationCommandRoute=s.route;currentFilePath=s.currentFilePath;currentProjectName=s.currentProjectName;}
+    };`});
+  const newer=await h.main.handleProjectLifecycleCreateCommand({projectName:'Newer Session'});
+  assert.equal(newer.ok,true,JSON.stringify(newer));const newerState=h.main.__locationSession.read();
+  const original=await h.main.handleProjectLifecycleCreateCommand({projectName:'Original Session'});
+  assert.equal(original.ok,true,JSON.stringify(original));
+  const manifestPath=path.join(h.documentsRoot,'Original Session',PROJECT_MANIFEST_FILENAME);
+  const originalBytes=await fsPromises.readFile(manifestPath);
+  const result=await h.main.handleProjectLifecycleRenameCommand({projectId:original.projectId,projectName:'Moved Session'},
+    {afterManifestBeforeFinalMove:async()=>h.main.__locationSession.restore(newerState)});
+  assert.equal(result.ok,false);
+  const after=h.main.__locationSession.read();
+  for(const key of Object.keys(newerState))assert.equal(after[key],newerState[key],key);
+  assert.deepEqual(await fsPromises.readFile(manifestPath),originalBytes);
+  assert.equal(await fsPromises.access(path.join(h.documentsRoot,'Moved Session')).then(()=>true,()=>false),false);
+});

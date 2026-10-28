@@ -849,7 +849,12 @@
     "scripts/ops/check-command-namespace-static.mjs",
     "test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js",
     "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
-    "docs/tasks/2026-10-28--writer-markdown-current-scene.md"
+    "docs/tasks/2026-10-28--writer-markdown-current-scene.md",
+    "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+    "src/core/project-location-v1.cjs",
+    "src/utils/backupManager.js",
+    "test/unit/project-location-v1.test.js",
+    "test/unit/sector-m-s27-project-rename-duplicate-move.test.js"
   ],
   "protectedFiles": [
     {
@@ -1078,7 +1083,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "fbb8c66ddc3201d82ed52cb0e47aeec19178ea5a864388b963686e5fd344fb70"
+        "sha256": "51c35264eb2968e1cfd9b1236dc53a3bf4f442eeaf1a943017200b98ebd65fb6"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1118,7 +1123,7 @@
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70"
+        "sha256": "c93e4607457cca1c087ebb6605b2f23579c20e5c1cd700857ea09185b73afc0c"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
@@ -1350,11 +1355,11 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "e4aab760ae3e0508cd99bb51a955f0d3c669e79a8be3425afd49cce5bc00e544"
+        "sha256": "dfc9d3cc1c055999473db52c5523e0255d84e22be75f3b61cc4ab3d67391fd03"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
-        "sha256": "4aa747a31cf10ab25767c5a10cafb3e287e868a3b7f15b0f26715de4e5860325"
+        "sha256": "506829560edea55d8f1e1ccf40fa7ee38fcc2ad170bee0c841592be03c575623"
       },
       {
         "path": "test/unit/sector-m-scene-rich-truth.test.js",
@@ -1814,7 +1819,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b9fcb815e67a06d53c2fe48168ebe06467ec949f9f9ab0a46d493fdb5e2ea286"
+        "sha256": "0ff9570a55182d76e788bf1f033a3db96072d47ff2b5aaf0909515a095caa38e"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2770,15 +2775,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1029f65ccb534f88f10f600a463e8726aa83a6eef10ca8f23489caec2b696d69"
+        "sha256": "57aafc429a51d439959878ca50701ac41d2d7d1bb84b4aedf3744cfa05a1fffd"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f3eebb32bb68d405f6e2973ee3bb2556e837ea11fd47769227cf9011fef9d264"
+        "sha256": "0416686497db0b191aa388d7d2686c75938a691b77753ef7a862b19473305e7b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c45d00a23b38d9bc09e3733c09994ff8f361fbea4d285dd50747dd383a064ee7"
+        "sha256": "62ed5b44d93f7a0f2d8de3c98a0a6d93690e1292a81bce09cca116cce92d009b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3082,7 +3087,7 @@
       },
       {
         "path": "src/main/projectTreeReadPort.cjs",
-        "sha256": "2cce63b9fdc0f8fae8c112566bc92465c636667e5b4439cdf0cd94aa84c99031"
+        "sha256": "ccccf02b852c2f5758e64e731d522945c718c3f3fe03e449b2a0ce2eae2a8110"
       },
       {
         "path": "src/main/projectTreeReadWorker.cjs",
@@ -3318,7 +3323,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "2eb0048488df4b768c4f6c83c5707ae91f57319bc083a229e78902b69b0e2aab"
+        "sha256": "14501e97b3b13c28c2693694cffc725f0061fc9f0e30b9c11a28881457087a3b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3342,7 +3347,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "1effb7576a1a98cacfd389eab76fd4a263bc885c2ddaa542084f783a2778dbb3"
+        "sha256": "96940f077b729cfcdbe10702109bcbd12c09c822b0a6e6f4ba4cf5f8ccbb73a6"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3434,7 +3439,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "549dad0d02ccc74ab5374f094e9b7958b2484105c9e3028ca3989b4a38b434f5"
+        "sha256": "c2d95088b472e5b9c5739782f218ae8ad73d78e2b01d9c918e460590bcffe2ab"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3851,6 +3856,26 @@
       {
         "path": "docs/tasks/2026-10-28--writer-markdown-current-scene.md",
         "sha256": "752a0280d1bfdc197650eb33a862bb8d38454025623792892c6b65436edc952d"
+      },
+      {
+        "path": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+        "sha256": "667b2c40203a7dbc76e22ca484ba71d27da86f22be8317e18e1b1ea68ae62242"
+      },
+      {
+        "path": "src/core/project-location-v1.cjs",
+        "sha256": "1eff229cddf67f4ce2bc2fe02ddb52914e77817652cdea9091a686df153252c3"
+      },
+      {
+        "path": "src/utils/backupManager.js",
+        "sha256": "1cc86ba0ec300c1065e61bc7e2aa07c881e04f02c3013702112f24580b693ee1"
+      },
+      {
+        "path": "test/unit/project-location-v1.test.js",
+        "sha256": "56a8a727f3ecc1fc73ac1925e9a4ece72232228f8986f3cea631ceb2f2b8a14f"
+      },
+      {
+        "path": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
+        "sha256": "cbc94060bd082d3269cde108605a88a1d18836f6e93a9b00655108b804725272"
       }
     ],
     "followupRepair": {

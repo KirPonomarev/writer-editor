@@ -989,7 +989,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
   "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
   "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
-  "src/main.js": "fbb8c66ddc3201d82ed52cb0e47aeec19178ea5a864388b963686e5fd344fb70",
+  "src/main.js": "51c35264eb2968e1cfd9b1236dc53a3bf4f442eeaf1a943017200b98ebd65fb6",
   "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
   "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
   "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
@@ -1002,7 +1002,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json": "5c2e1ae8ab18b67e55e891c2817ff78455da640fd2cac2f672ef0afcb05a02c1",
   "src/shared/productCommandRegistry.cjs": "0d5edc3569c399e8143d1cdb0dcacfc312c7db777f8146e045567b426977d5d5",
   "src/shared/workspaceQueryRegistry.cjs": "ee2403c1b7ed67546661dee8a3c7d0565d59012f711308164eae484181dc579c",
-  "src/utils/docxImportSafeCreate.js": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70",
+  "src/utils/docxImportSafeCreate.js": "c93e4607457cca1c087ebb6605b2f23579c20e5c1cd700857ea09185b73afc0c",
   "src/utils/markdownImportSafeCreate.js": "435d0054e1d250eb84e810e6cd78fed5b6d5b2bf551950db35c8df6f562b2c97",
   "src/utils/txtImportSafeCreate.js": "1fbdc4e1e6a4d013649a0c9625febf15a2a688b1b3bbd3b48a0b277a5cd5bb37"
 });

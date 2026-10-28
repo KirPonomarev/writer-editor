@@ -33,6 +33,7 @@ One ordinary commit/push/PR/required-CI/merge/exact-merged verification chain. R
 - `test/unit/project-location-v1.test.js`
 - `test/unit/r24-wp201-project-transaction.test.js`
 - `test/contracts/project-location-integrity.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `docs/tasks/2026-10-28--writer-project-rename-integrity.md`
 - `docs/CONTEXT.md`
 - `docs/HANDOFF.md`
@@ -108,3 +109,7 @@ The location codec/adapter has no ambient imports. Existing Main and persistence
 All original RED results and intermediate errors are retained. Latest19targeted cases and3existing reader/trash cases pass. Full303case affected run is retained as300pass3fail with its exact source hashes; the later corrections do not relabel that earlier run. The complete required candidate/native/delivery chain is still pending. Tests and native work must use an owned canonical APFS temporary root; the earlier S28 failure used the system /var alias and the unchanged test passes with a canonical TMPDIR. No manual relocation adoption or arbitrary symlink-root acceptance was added.
 
 Closed generated tree-identity anchors: OWNED_TEST_ANCHORS_01 contains all9original synthetic files, their SHA256, names/stat/native xattrs and a successfully executed restorer. No native profile or original user data was moved. This is a WIP checkpoint, not release acceptance. The next prospective declaration amendment adds only the existing current-carrier assertion test required by the maintained certification chain.
+
+Prospective declaration02 at clean unaccepted checkpoint9adcbd85b712758886fd0bb8f17ce6649d36271c passed before expanding scope by exactly the existing current-carrier assertion test. Original delivery base354114a4d6880755b297eb79a2f3d91ca9d0edaf and one delivery chain remain unchanged. All prior corruption, mixed-source and ancestry checks and closed TXT and Markdown carriers remain required.
+
+Review found and reproduced an active-session race: switching to another real owner during the move changed the newer session name. LOCATION_SESSION_RACE_RED_21 retains that failure. Main now revalidates the original owner at move boundaries, rolls back the interrupted rename and preserves any newer owner. LOCATION_SESSION_GUARDS_22 executes both this rollback and the failed-rebind case:2tests2pass, no skips. These observations do not replace the pending complete candidate, native or delivery gates.

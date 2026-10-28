@@ -23006,15 +23006,20 @@ async function moveProjectDirectoryWithManifestMutation(input) {
   const authority = await getMainProjectManifestAuthority();
   const previousOwner = activeStage10ApplicationBootstrap;
   const wasActive = Boolean(previousOwner) && getProjectRootPath() === input.projectBinding.projectRoot;
+  const assertSessionCurrent = () => {
+    if (wasActive && (activeStage10ApplicationBootstrap !== previousOwner
+      || getProjectRootPath() !== input.projectBinding.projectRoot)) throw projectLocationFailure('E_PROJECT_LOCATION_SESSION_STALE');
+  };
   try {
     const result = await authority.withProjectLease(projectId, (lease) => (
       moveProjectDirectoryWithManifestMutationUnderLease({
         ...input,
-        options: { ...(input.options || {}), lease, wasActive },
+        options: { ...(input.options || {}), lease, wasActive, assertSessionCurrent },
       })
     ));
     if (result.ok && result.moved && wasActive) {
       if (input.options?.clearActiveAfterMove) {
+        if (activeStage10ApplicationBootstrap !== previousOwner) throw projectLocationFailure('E_PROJECT_LOCATION_SESSION_STALE');
         activeStage10ApplicationBootstrap = null;
         activeStage10ApplicationCommandRoute = null;
       } else {
@@ -23094,6 +23099,7 @@ async function moveProjectDirectoryWithManifestMutationUnderLease({
   await writeProjectLifecycleJournal(journal);
   try {
     if (typeof options.beforeSourceMove === 'function') await options.beforeSourceMove({ sourceRoot, tempRoot, targetRoot });
+    options.assertSessionCurrent();
     const authority = await getMainProjectManifestAuthority();
     // Publish the semantic name change at the old physical location so the
     // external authority records a continuation in the original namespace.
@@ -23101,18 +23107,21 @@ async function moveProjectDirectoryWithManifestMutationUnderLease({
       targetPath: projectBinding.manifestPath, expectedText: rawRecord.raw, nextText: afterManifestText,
       label: 'project location manifest' });
     await publishProjectLocationText(sourceRoot, location.bindingText, afterLocationText, options.lease);
+    options.assertSessionCurrent();
     await renameProjectLocationDirectory(sourceRoot, tempRoot, journal.location.sourceIdentity, options.lease);
     journal.phase = 'source-moved-to-temp';
     await writeProjectLifecycleJournal(journal);
     if (typeof options.afterManifestBeforeFinalMove === 'function') {
       await options.afterManifestBeforeFinalMove({ sourceRoot, tempRoot, targetRoot });
     }
+    options.assertSessionCurrent();
     const parentNow = await inspectProjectLocationRoot(targetParent);
     if (!parentNow || !sameProjectLocationIdentity(journal.location.targetParentIdentity, parentNow)) throw projectLocationFailure('E_PROJECT_LOCATION_CONFLICT');
     await renameProjectLocationDirectory(tempRoot, targetRoot, journal.location.sourceIdentity, options.lease);
     journal.phase = 'final-moved';
     await writeProjectLifecycleJournal(journal);
     await getProjectLocation({ manifestPath: path.join(targetRoot, PROJECT_MANIFEST_FILENAME), projectId: projectBinding.projectId });
+    options.assertSessionCurrent();
 
     const nextBinding = {
       ...projectBinding,
@@ -23203,9 +23212,6 @@ async function handleProjectLifecycleRenameCommand(payload = {}, options = {}) {
       projectName: nextProjectName,
     }),
   });
-  if (result.ok) {
-    setActiveProjectNameFromRoot(targetRoot);
-  }
   return {
     ...result,
     renamed: result.ok === true,
