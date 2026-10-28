@@ -27251,6 +27251,126 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same TXT contour: remove only the newly appended terminal blank line detected by git diff check, with exact current source witness refresh. All old source and security carrier bodies and prior approval rows remain preserved. Native/delivery pending.",
       "sha256": "f3441ec3873a34016fac3c7d44731baf01a1d7669bd6b33f18fd1d220d0fb8aa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "ebf86f1466507961189345c545cd168ea24ceca2d83d9e5afeeb326e7bc5a344"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "d43509b69742f2afd3c3b0364ef901d4c7cc924f23557c6abb99d4026accb3d3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "947340dde89635885f9d60dfc9e763a50f5b29bbc056216703494790741f411e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "a408058ec616f1683fd73320a7d44ce5c40cd5b96e640d71d2eefa028c3f5ca5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "fac4293d908fbf4e247f4e10afa76a29f9044db50046ea74ca511b626e0a4a09"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "42274df26f291e6255e012f2b8d5ad3c0b3d09c9178bcc297ac182518862392d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "7b847001c00fb018b908bf2f3aa47f0a927efe5ed5dd30762df551e38dd02fca"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/check-command-namespace-static.mjs",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "d642442bc6e2caca3757ed1ac121e0a4920fe2f7cfecfbd0674605503729e799"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "78756f96db9bf2a1b840e68d83175de97c5a8029e1292523d77110cb428ddac6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "8df03ec0d15a4a9e0d7c4bba6753698983fd7ffb13d72019a3054e4cad8d5486"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "0485c9feaaceea8720d1325e2cda3b4c7871e45c3dea3c21485b71b5032a83f5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:08:23.430181+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
+      "sha256": "47a2c5d38515f26924b03a28a24d3e87106f2d2c1a69cc187438d36ea01fed51"
     }
   ],
   "evidenceStampIds": [
