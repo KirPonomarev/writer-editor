@@ -7,7 +7,44 @@ const os = require('node:os');
 const path = require('node:path');
 
 const MODULE_PATH = path.join(__dirname, '..', '..', 'src', 'core', 'project-transaction-v1.cjs');
-const SAVE_PATH = path.join(__dirname, '..', '..', 'src', 'core', 'save-coordinator-v1.cjs');
+const DEPENDENCIES = [
+  "browser-safe-hash.cjs",
+  "word-manuscript-notes-v1.cjs",
+  "word-note-reference-typography-v1.cjs",
+  "word-language-v1.cjs",
+  "word-rich-body-projection-v1.cjs",
+  "word-comment-anchor-save-v1.cjs",
+  "word-user-bookmarks-v1.cjs",
+  "word-comment-edit-intents-v1.cjs",
+  "word-comment-ranges-v1.cjs",
+  "word-comment-return-delta-v1.cjs",
+  "word-comment-authoring-v1.cjs",
+  "word-comment-body-v1.cjs",
+  "document-content-envelope-v1.cjs",
+  "transactional-inbox-outbox-v1.cjs",
+  "lifecycle-conflict-v1.cjs",
+  "dirty-admission-v1.cjs",
+  "autosave-generation-v1.cjs",
+  "revision-algebra-v1.cjs",
+  "migration-history-backup-gc-v1.cjs",
+  "storage-selection-v1.cjs",
+  "storage-bakeoff-v1.cjs",
+  "recovery-ledger-v1.cjs",
+  "save-coordinator-v1.cjs",
+  "project-location-v1.cjs"
+];
+function loadIsolated(source, label) {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'r24-wp201-' + label + '-')));
+  const core = path.join(root, 'core');
+  fs.mkdirSync(core); fs.mkdirSync(path.join(root, 'io'));
+  for (const name of DEPENDENCIES) fs.copyFileSync(path.join(path.dirname(MODULE_PATH), name), path.join(core, name));
+  for (const name of ['docxHyperlinks.cjs', 'inlineTypography.cjs', 'documentTables.js', 'documentTableProperties.js', 'documentMedia.js', 'documentJpeg.js']) {
+    fs.copyFileSync(path.join(path.dirname(MODULE_PATH), '..', 'io', name), path.join(root, 'io', name));
+  }
+  const target = path.join(core, 'project-transaction-v1.cjs');
+  fs.writeFileSync(target, source);
+  return { root, subject: require(target) };
+}
 
 const MUTANTS = [
   {
@@ -140,24 +177,24 @@ async function killOracle(module) {
 
 test('WP201 executes and kills all named implementation mutants', async () => {
   const source = fs.readFileSync(MODULE_PATH, 'utf8');
+  const control = loadIsolated(source, 'unmodified-control');
+  try { await killOracle(control.subject); } finally { fs.rmSync(control.root, { recursive: true, force: true }); }
   const results = [];
   for (const mutant of MUTANTS) {
     assert.equal(source.split(mutant.find).length - 1, 1, `unique anchor: ${mutant.id}`);
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'r24-wp201-mutant-'));
-    const target = path.join(dir, 'project-transaction-v1.cjs');
-    fs.writeFileSync(target, source.replace(mutant.find, mutant.replace));
-    fs.copyFileSync(SAVE_PATH, path.join(dir, 'save-coordinator-v1.cjs'));
+    const fixture = loadIsolated(source.replace(mutant.find, mutant.replace), mutant.id);
     let killed = false;
     let detail = '';
     try {
-      await killOracle(require(target));
+      await killOracle(fixture.subject);
       detail = 'survived';
     } catch (error) {
+      if (['MODULE_NOT_FOUND', 'ERR_MODULE_NOT_FOUND'].includes(error?.code)) throw error;
       killed = true;
       detail = error.code || error.message;
     }
     results.push({ id: mutant.id, killed, detail });
-    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(fixture.root, { recursive: true, force: true });
   }
   const survived = results.filter((result) => !result.killed);
   console.log(`R24_WP201_MUTATION_RECEIPT=${JSON.stringify({ total: results.length, killed: results.length - survived.length, survived: survived.map(({ id }) => id) })}`);

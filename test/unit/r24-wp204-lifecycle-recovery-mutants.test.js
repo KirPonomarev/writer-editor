@@ -47,6 +47,7 @@ const DEPENDENCIES = [
   'autosave-generation-v1.cjs',
   'revision-algebra-v1.cjs',
   'project-transaction-v1.cjs',
+  'project-location-v1.cjs',
   'migration-history-backup-gc-v1.cjs',
   'storage-selection-v1.cjs',
   'storage-bakeoff-v1.cjs',

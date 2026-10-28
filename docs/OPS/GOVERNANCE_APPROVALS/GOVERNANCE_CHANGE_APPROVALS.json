@@ -28201,6 +28201,126 @@
       "filePath": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
       "rationale": "Same bounded physical project relocation correction. Confirmed session-switch race now refuses and rolls back without changing a newer owner. Current source bindings only; closed carriers and17UNKNOWN qualifications remain unchanged. Native, required candidate gates and delivery pending.",
       "sha256": "cbc94060bd082d3269cde108605a88a1d18836f6e93a9b00655108b804725272"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "bc09d86f38e3f83960e25ebd37f0f45c92cb419a656c16a3271dcd0824e78fe1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "b88ce175c1e49d84c44627ad47f3868c96b9a3b4ad43f9afe4c00dfd3845f0c3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "b830dacb8706bd069df521646508e84aa4b54363684b98314be26988c6eb155c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "57de255d0342ff54d10800f4883ff6067f0432fb09e383bc4aef5374a6aee509"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "2ce14ed906065d7a18370d002e667d7965bac2cc730055b6b8cef1009e42661b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "94a5b73ba364a6f8d3822e31cc8d7eaeeb280b7607fdc376f1392735ae8367b2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "8a6d3c0e1bff2ee0fd56ae415b702953d1efdfe80488125f27c8d84458c5375e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "81cfa0910f8f481077f3dab1ddf0e84ee78e0c63e3c2ee997a0d7134c639f429"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "69357fc2fdb624d16d1963fcb89d3eebb84c53b4d9cafdc771be92d6feeac6c3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "80209abc6c2d1360091977abccd296a75262b74c005dff87ae3d8040998b8c7d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp201-project-transaction-mutants.test.js",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "bdd71d77d97de7b432310ce14206713983891756b56c8d48f3d1d2cb62aba81e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T18:19:53.430623+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+      "rationale": "Same bounded relocation correction: repair the two affected isolated mutant cohorts, require a passing unmodified control and never count load errors as killed mutants. Runtime remains byte-identical; current source bindings only, old carriers and17UNKNOWN qualifications unchanged. Full candidate/native/delivery pending.",
+      "sha256": "0d3abe92873525b94109a853bfafae65bc2342c8a5774ea896b68f5fe259b386"
     }
   ],
   "evidenceStampIds": [

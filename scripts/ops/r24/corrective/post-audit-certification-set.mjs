@@ -129671,7 +129671,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "0ff9570a55182d76e788bf1f033a3db96072d47ff2b5aaf0909515a095caa38e"
+      "sha256": "80209abc6c2d1360091977abccd296a75262b74c005dff87ae3d8040998b8c7d"
     },
     {
       "path": "docs/tasks/2026-10-06--word-book-pending-notes-mac.md",
@@ -130055,15 +130055,15 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "57aafc429a51d439959878ca50701ac41d2d7d1bb84b4aedf3744cfa05a1fffd"
+      "sha256": "bc09d86f38e3f83960e25ebd37f0f45c92cb419a656c16a3271dcd0824e78fe1"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "0416686497db0b191aa388d7d2686c75938a691b77753ef7a862b19473305e7b"
+      "sha256": "b88ce175c1e49d84c44627ad47f3868c96b9a3b4ad43f9afe4c00dfd3845f0c3"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "62ed5b44d93f7a0f2d8de3c98a0a6d93690e1292a81bce09cca116cce92d009b"
+      "sha256": "94a5b73ba364a6f8d3822e31cc8d7eaeeb280b7607fdc376f1392735ae8367b2"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -130199,7 +130199,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-      "sha256": "2731e0ad429215146403bf971f27f519ba058602f889aa8a3db7ba2ab854c046"
+      "sha256": "0d3abe92873525b94109a853bfafae65bc2342c8a5774ea896b68f5fe259b386"
     },
     {
       "path": "src/command/commandSurfaceKernel.js",
@@ -130451,7 +130451,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "c51478d8cd1ddae7ea0290473b1ce5417b8d9d7befa345fd0b1890dea70df90c"
+      "sha256": "69357fc2fdb624d16d1963fcb89d3eebb84c53b4d9cafdc771be92d6feeac6c3"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -130459,7 +130459,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "14501e97b3b13c28c2693694cffc725f0061fc9f0e30b9c11a28881457087a3b"
+      "sha256": "57de255d0342ff54d10800f4883ff6067f0432fb09e383bc4aef5374a6aee509"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -130983,7 +130983,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "eabce3b2ce0594f707b86f57c4f465ab4e794c975776938273aa5c6cf983d1b6"
+      "sha256": "b830dacb8706bd069df521646508e84aa4b54363684b98314be26988c6eb155c"
     },
     {
       "path": "src/renderer/assets/app-icon.svg",
@@ -131111,7 +131111,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
-      "sha256": "667b2c40203a7dbc76e22ca484ba71d27da86f22be8317e18e1b1ea68ae62242"
+      "sha256": "8a6d3c0e1bff2ee0fd56ae415b702953d1efdfe80488125f27c8d84458c5375e"
     },
     {
       "path": "src/core/project-location-v1.cjs",
@@ -131132,12 +131132,16 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     {
       "path": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
       "sha256": "cbc94060bd082d3269cde108605a88a1d18836f6e93a9b00655108b804725272"
+    },
+    {
+      "path": "test/unit/r24-wp201-project-transaction-mutants.test.js",
+      "sha256": "bdd71d77d97de7b432310ce14206713983891756b56c8d48f3d1d2cb62aba81e"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "4ccc18723da054b7d6453c963e3272926f49186cf0d99ba4ab9e7788a8101182"
+      "sha256": "2ce14ed906065d7a18370d002e667d7965bac2cc730055b6b8cef1009e42661b"
     }
   ]
 });

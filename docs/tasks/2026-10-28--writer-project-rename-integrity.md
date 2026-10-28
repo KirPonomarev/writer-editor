@@ -32,6 +32,8 @@ One ordinary commit/push/PR/required-CI/merge/exact-merged verification chain. R
 - `test/unit/project-tree-identity-main.test.js`
 - `test/unit/project-location-v1.test.js`
 - `test/unit/r24-wp201-project-transaction.test.js`
+- `test/unit/r24-wp204-lifecycle-recovery-mutants.test.js`
+- `test/unit/r24-wp201-project-transaction-mutants.test.js`
 - `test/contracts/project-location-integrity.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
 - `docs/tasks/2026-10-28--writer-project-rename-integrity.md`
@@ -113,3 +115,7 @@ Closed generated tree-identity anchors: OWNED_TEST_ANCHORS_01 contains all9origi
 Prospective declaration02 at clean unaccepted checkpoint9adcbd85b712758886fd0bb8f17ce6649d36271c passed before expanding scope by exactly the existing current-carrier assertion test. Original delivery base354114a4d6880755b297eb79a2f3d91ca9d0edaf and one delivery chain remain unchanged. All prior corruption, mixed-source and ancestry checks and closed TXT and Markdown carriers remain required.
 
 Review found and reproduced an active-session race: switching to another real owner during the move changed the newer session name. LOCATION_SESSION_RACE_RED_21 retains that failure. Main now revalidates the original owner at move boundaries, rolls back the interrupted rename and preserves any newer owner. LOCATION_SESSION_GUARDS_22 executes both this rollback and the failed-rebind case:2tests2pass, no skips. These observations do not replace the pending complete candidate, native or delivery gates.
+
+Prospective declaration03 passed at clean e99cc224468c79f0227ea38ca999db074d9e755c before expanding scope by the two existing mutant fixtures. Keep all six WP201 adversaries and the existing WP204 control; require a complete current dependency cohort and a passing unchanged control, and never count a module load failure as a killed mutant. The original baseline remains FAIL with7failed and59existing skips; six Save failures were the chosen /private/tmp ancestry, and25unchanged tests pass with the genuine canonical OS temporary ancestry. Every next full local test runtime must be created beneath the real getconf DARWIN_USER_TEMP_DIR parent and resolved canonically. No runtime source changes follow from this fixture amendment.
+
+The complete e99cc2244 source batch returned0 for14commands, including363reported TAP passes,19Word Apply cases and677companions. Acceptance remained blocked: the full baseline has3738pass7fail59existing skips. Six Save failures were caused by the chosen non-genuine /private/tmp ancestry;25unchanged Save cases pass under the real canonical macOS temporary parent. WP204 lacked the new Core dependency. Further diagnosis proved WP201 counted six MODULE_NOT_FOUND errors as mutant kills, so that old coverage is UNKNOWN despite its TAP result. The two maintained mutant fixtures now execute with complete current dependency graphs and a passing unchanged control; all six original WP201 adversaries are caught by behavioral assertions. The actual maintained2case rerun passes. No runtime source byte changed. New current bindings and a complete candidate baseline with genuine OS temporary ancestry, native and delivery still remain pending.

@@ -36,7 +36,7 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   assert.ok(literal, 'candidate must declare its complete current project relocation binding successor');
   const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
   assert.equal(current.id, 'YALKEN_WRITER_PROJECT_RENAME_20261028');
-  assert.equal(current.bindings.length, 381);
+  assert.equal(current.bindings.length, 382);
   assert.equal(current.guards.length, 1);
   const closedMarkdown = '354114a4d6880755b297eb79a2f3d91ca9d0edaf';
   assert.equal(current.successorBaseSha, closedMarkdown);
