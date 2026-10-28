@@ -27371,6 +27371,136 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Same TXT delivery required namespace gate: preserve complete diagnostic stdout by natural exit with identical verdict code; original scanner/tests and product TXT/PDF/renderer exact H1, plus maintained full-output RED/GREEN regression. Fixed history and17UNKNOWN remain. No native/release acceptance.",
       "sha256": "47a2c5d38515f26924b03a28a24d3e87106f2d2c1a69cc187438d36ea01fed51"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "6092f81a1aa4b9f26d339ad7c304d2cb639782694336ccb5059e9aafeb9eefc7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "625efd1c273985f01d41095ca4b4e3de7a871675ff1e0938717cf74c034ece97"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "5f03385d2ef7dd91bf534d21c794f6c77613946970bcd9c4d3a853c84c719c15"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "b791e0019b68cff0e140cef4d5f638cf27a6f6aeabed8f05f1e2b20f5ece5b81"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "b758353e61ff37d282701e6ba7c50ab8cd1cc079731240c1c67b7af4f2cfaf7b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "acd55bba94e48bc42956f3ff3beef1712b9666fcbcc5f15d4f368e9f9790be10"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "90cf7ad86502444b534c68f879d2ba8f2fee80d20234449b1a18bd28c814cf5b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "ed725e339d7c766e5ce86a36881ea13d0cbe3e442384a0cde17a3c6123f21c59"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "9661c86d2c830f25a0055c5c728feb4cc9b05a821355d1eb0bc71d3bd5f745c7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "e21b8282c80e2e6f5cf91f964fd214588c101f37afe65d2ddfb458621edf5fb3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "4df18c1e5ccf5b568a774472369d0b3d250a014a910faebb3a314a4794906b76"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "31cf2645f0daf12796825bf46ff7e44dc8a82e6dd7a46bfca2c481952b95039e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T03:33:22.654028+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
+      "sha256": "6dbc1354c354694fe3288feda658d7f7daea7ff0ef8fb7431f627f74ca9493e0"
     }
   ],
   "evidenceStampIds": [

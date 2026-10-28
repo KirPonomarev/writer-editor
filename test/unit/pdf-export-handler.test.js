@@ -689,3 +689,102 @@ test('actual Main TXT rejects malformed raw manifests and source UTF8 without ch
     assert.deepEqual(await h.fs.readFile(h.manifestPath), manifest);
   });
 });
+
+
+test('actual Main TXT refuses changed target bytes when the filesystem preserves all version metadata', async t => {
+  const path = require('node:path');
+  for (const mode of ['selected', 'all']) for (const phase of ['queued', 'staging']) await t.test(mode + ':' + phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'coarse-target.txt');
+    await h.fs.writeFile(target, 'KEEP');
+    const version = await h.fs.lstat(target, { bigint: true }), source = await h.fs.readFile(h.scene);
+    const lstat = h.fs.lstat, open = h.fs.open, write = h.fs.writeFile;
+    let changed = false, reached = false;
+    // Real ExFAT demonstrates this metadata view. Keep the byte I/O real on every CI filesystem.
+    h.fs.lstat = async function (file, ...args) {
+      if (changed && file === target) return version;
+      return lstat.call(this, file, ...args);
+    };
+    h.fs.open = async function (file, flags, ...args) {
+      const handle = await open.call(this, file, flags, ...args);
+      if (file === target && flags === 'r') {
+        const readStat = handle.stat.bind(handle);
+        handle.stat = async (...options) => changed ? version : readStat(...options);
+      }
+      return handle;
+    };
+    const foreignWrite = async () => {
+      const handle = await open.call(h.fs, target, 'r+');
+      try { await handle.write('NEXT', 0, 'utf8'); } finally { await handle.close(); }
+      changed = true; reached = true;
+      assert.equal(await h.fs.readFile(target, 'utf8'), 'NEXT');
+    };
+    h.fs.writeFile = async function (file, ...args) {
+      const value = await write.call(this, file, ...args);
+      if (phase === 'staging' && String(file).startsWith(target + '.') && String(file).endsWith('.tmp')) await foreignWrite();
+      return value;
+    };
+    const query = await h.main.txtQuery();
+    h.main.prepareTxt({ queued: async () => { if (phase === 'queued') await foreignWrite(); } });
+    let result;
+    try { result = mode === 'selected'
+      ? await h.main.txtSelected({ confirmed: true, requestId: query.scope.requestId,
+        selectedSceneIds: query.scope.sceneCandidates.map(c => c.sceneId), outPath: target })
+      : await h.main.txtAll({ outPath: target }); }
+    finally { h.fs.lstat = lstat; h.fs.open = open; h.fs.writeFile = write; }
+    assert.equal(reached, true);
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.error.reason, 'txt_context_stale');
+    assert.notEqual(result.error.details?.exported, true);
+    assert.equal(await h.fs.readFile(target, 'utf8'), 'NEXT');
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+    assert.equal(h.main.statuses().some(args => args.includes(mode === 'selected'
+      ? 'TXT выбранных сцен экспортирован' : 'TXT всех сцен экспортирован')), false);
+  });
+});
+
+
+test('actual Main TXT streams target versions with bounded reads and rejects growth or truncation', async t => {
+  const path = require('node:path');
+  for (const phase of ['stable', 'grow', 'truncate']) await t.test(phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'streamed-target.txt');
+    const original = Buffer.alloc(64 * 1024 + 8, 'x');
+    await h.fs.writeFile(target, original);
+    const version = await h.fs.lstat(target, { bigint: true }), source = await h.fs.readFile(h.scene);
+    const open = h.fs.open, lstat = h.fs.lstat;
+    let injected = false, reads = 0, largestRead = 0;
+    h.fs.lstat = async function (file, ...args) { return file === target ? version : lstat.call(this, file, ...args); };
+    h.fs.open = async function (file, flags, ...args) {
+      const handle = await open.call(this, file, flags, ...args);
+      if (file === target && flags === 'r') {
+        const read = handle.read.bind(handle);
+        handle.stat = async () => version;
+        handle.read = async function (buffer, offset, length, position) {
+          reads++; largestRead = Math.max(largestRead, length);
+          const value = await read(buffer, offset, length, position);
+          if (!injected && value.bytesRead && phase !== 'stable') {
+            injected = true;
+            const writer = await open.call(h.fs, target, phase === 'grow' ? 'a' : 'r+');
+            try { if (phase === 'grow') await writer.write('GROW'); else await writer.truncate(0); }
+            finally { await writer.close(); }
+          }
+          return value;
+        };
+      }
+      return handle;
+    };
+    h.main.prepareTxt();
+    let result;
+    try { result = await h.main.txtAll({ outPath: target }); }
+    finally { h.fs.open = open; h.fs.lstat = lstat; }
+    assert.ok(reads > 1); assert.ok(largestRead > 0 && largestRead <= 64 * 1024);
+    if (phase === 'stable') {
+      assert.equal(result.ok, true, JSON.stringify(result));
+      assert.deepEqual(await h.fs.readFile(target), source);
+    } else {
+      assert.equal(injected, true); assert.equal(result.ok, false);
+      assert.notEqual(result.error.details?.exported, true);
+      assert.deepEqual(await h.fs.readFile(target), phase === 'grow' ? Buffer.concat([original, Buffer.from('GROW')]) : Buffer.alloc(0));
+    }
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+  });
+});

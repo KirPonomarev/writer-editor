@@ -29985,9 +29985,30 @@ async function buildSelectedScenesTxtExportScope() {
       try { current = await fs.lstat(outPath, { bigint: true }); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       if (current && (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1n)) throw stale();
+      let digest = null;
+      if (current) {
+        const handle = await fs.open(outPath, 'r');
+        try {
+          if (!sameVersion(current, await handle.stat({ bigint: true }))) throw stale();
+          const hash = crypto.createHash('sha256'), block = Buffer.alloc(64 * 1024);
+          let total = 0n;
+          while (true) {
+            const { bytesRead } = await handle.read(block, 0, block.length, null);
+            assertContext();
+            if (!bytesRead) break;
+            total += BigInt(bytesRead);
+            if (total > current.size) throw stale();
+            hash.update(block.subarray(0, bytesRead));
+          }
+          if (total !== current.size || !sameVersion(current, await handle.stat({ bigint: true }))
+            || !sameVersion(current, await fs.lstat(outPath, { bigint: true }))) throw stale();
+          digest = hash.digest('hex');
+        } finally { await handle.close(); }
+      }
       if (targets.has(outPath)) {
         const previous = targets.get(outPath), parent = await fs.stat(previous.ancestor, { bigint: true });
-        if (previous.physicalPath !== physical.physicalPath || previous.parent.dev !== parent.dev || previous.parent.ino !== parent.ino
+        if (previous.digest !== digest || previous.physicalPath !== physical.physicalPath
+          || previous.parent.dev !== parent.dev || previous.parent.ino !== parent.ino
           || previous.realParent !== await fs.realpath(previous.ancestor)
           || (previous.identity ? !current || !sameVersion(previous.identity, current) : current !== null)) throw stale();
       } else {
@@ -29997,7 +30018,7 @@ async function buildSelectedScenesTxtExportScope() {
           catch (error) { if (error.code !== 'ENOENT') throw error; ancestor = path.dirname(ancestor); }
         }
         if (!parent.isDirectory()) throw stale();
-        targets.set(outPath, { identity: current, physicalPath: physical.physicalPath,
+        targets.set(outPath, { identity: current, digest, physicalPath: physical.physicalPath,
           ancestor, parent, realParent: await fs.realpath(ancestor) });
       }
       assertContext();

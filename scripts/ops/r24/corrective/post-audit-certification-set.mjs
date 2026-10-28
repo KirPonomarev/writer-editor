@@ -126603,7 +126603,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "4c60f72f1b0d8d4ca1f881781c302d08fcb0fe1c87daf7e91d4f727f4fbee2d1"
+      "sha256": "31cf2645f0daf12796825bf46ff7e44dc8a82e6dd7a46bfca2c481952b95039e"
     },
     {
       "path": "src/core/word-note-return-delta-v1.cjs",
@@ -127031,15 +127031,15 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "ebf86f1466507961189345c545cd168ea24ceca2d83d9e5afeeb326e7bc5a344"
+      "sha256": "6092f81a1aa4b9f26d339ad7c304d2cb639782694336ccb5059e9aafeb9eefc7"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "d43509b69742f2afd3c3b0364ef901d4c7cc924f23557c6abb99d4026accb3d3"
+      "sha256": "625efd1c273985f01d41095ca4b4e3de7a871675ff1e0938717cf74c034ece97"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "42274df26f291e6255e012f2b8d5ad3c0b3d09c9178bcc297ac182518862392d"
+      "sha256": "90cf7ad86502444b534c68f879d2ba8f2fee80d20234449b1a18bd28c814cf5b"
     },
     {
       "path": "test/contracts/rtk-word-project-tree-cohort.contract.test.js",
@@ -127427,7 +127427,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "8df03ec0d15a4a9e0d7c4bba6753698983fd7ffb13d72019a3054e4cad8d5486"
+      "sha256": "4df18c1e5ccf5b568a774472369d0b3d250a014a910faebb3a314a4794906b76"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -127435,7 +127435,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a408058ec616f1683fd73320a7d44ce5c40cd5b96e640d71d2eefa028c3f5ca5"
+      "sha256": "b791e0019b68cff0e140cef4d5f638cf27a6f6aeabed8f05f1e2b20f5ece5b81"
     },
     {
       "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
@@ -127463,7 +127463,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "b3d917db32791ea054e1d3e6589280e35dd9b6328d1f7f1912dfe3abd8d4d6cc"
+      "sha256": "e21b8282c80e2e6f5cf91f964fd214588c101f37afe65d2ddfb458621edf5fb3"
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -127571,7 +127571,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "f47cb23abf8af93c0b0f96a224c4c5372547bc8769f4db231ca1c04820e859ef"
+      "sha256": "b758353e61ff37d282701e6ba7c50ab8cd1cc079731240c1c67b7af4f2cfaf7b"
     },
     {
       "path": "src/renderer/flags.js",
@@ -127959,7 +127959,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "947340dde89635885f9d60dfc9e763a50f5b29bbc056216703494790741f411e"
+      "sha256": "5f03385d2ef7dd91bf534d21c794f6c77613946970bcd9c4d3a853c84c719c15"
     },
     {
       "path": "src/renderer/assets/app-icon.svg",
@@ -128051,7 +128051,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "test/unit/pdf-export-handler.test.js",
-      "sha256": "a20a882defc2321615dfcd1b0170be78a0e43d7a997cfd39969fcbc653ab3626"
+      "sha256": "6dbc1354c354694fe3288feda658d7f7daea7ff0ef8fb7431f627f74ca9493e0"
     },
     {
       "path": "test/unit/sector-m-s31-pdf-export.test.js",
@@ -128067,7 +128067,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
-      "sha256": "7b847001c00fb018b908bf2f3aa47f0a927efe5ed5dd30762df551e38dd02fca"
+      "sha256": "ed725e339d7c766e5ce86a36881ea13d0cbe3e442384a0cde17a3c6123f21c59"
     },
     {
       "path": "scripts/ops/check-command-namespace-static.mjs",
@@ -128081,7 +128081,7 @@ const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "fac4293d908fbf4e247f4e10afa76a29f9044db50046ea74ca511b626e0a4a09"
+      "sha256": "acd55bba94e48bc42956f3ff3beef1712b9666fcbcc5f15d4f368e9f9790be10"
     }
   ]
 });
