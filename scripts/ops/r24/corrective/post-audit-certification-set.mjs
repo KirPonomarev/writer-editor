@@ -130155,7 +130155,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
-      "sha256": "5c6d76f4071c84b41fcde8ee373ef6f9f094e48589273c5fa4b5867583f6b3b4"
+      "sha256": "25e0ccd6a61c5a8667731eeaac82db6dc691792809db20066d3ae286a22b7a65"
     },
     {
       "path": "docs/tasks/2026-10-15--word-history-private-preparation-mac.md",
@@ -130451,7 +130451,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "3507434374d33e8bc26daec0852a5e24de0c003f4ba4ccaf4018545e9dacdbea"
+      "sha256": "f8155b524cc5bc21dd5314bac4fb84395a63c2d8e42d98fb8fb7e96652084271"
     },
     {
       "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -131111,7 +131111,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
-      "sha256": "1604d8d4fa23acff6faed7073930d2918805d9e2728021138b6a3320626e6c60"
+      "sha256": "23388ffc1e4c85518fa909ebdd968edeb6044e19b0c189612f59cb878d151f7b"
     },
     {
       "path": "src/core/project-location-v1.cjs",
@@ -131141,7 +131141,7 @@ const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "6df16a38df399d49e02cc4b3472f22b6a5348755f8f8fc95371a95b519b719c4"
+      "sha256": "019257acdf54da003c5dc49fceaced187561fde15d5599bf5bf224c614bf9a6f"
     }
   ]
 });

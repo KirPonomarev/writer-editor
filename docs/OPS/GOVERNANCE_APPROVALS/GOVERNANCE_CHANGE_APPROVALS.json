@@ -28451,6 +28451,56 @@
       "filePath": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
       "rationale": "Same bounded relocation correction: actual native exposed Unicode scene identity loss after tree rename. Reuse the existing canonical path boundary, preserve unchanged packet validators and original profiles; maintained RED and stable-ID/no-op/collision proof retained. Current hashes only; closed carriers and17UNKNOWN qualifications unchanged. Full new candidate/native/delivery pending.",
       "sha256": "be56150ac3d24b71f198de03b1af0b9725199cfe2e2f4d8b8c5112bc48a1554f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T22:06:32.911956+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/ARCH_DIFF_LOG.md",
+      "rationale": "Same bounded relocation delivery: rebind exactly the two versioned owner diagnostic-order documents and required current companion hashes after DATA_RUNTIME_REPAIR_PIN. No product/test/predicate/membership change. Controlled H4 native31of31proof remains at H4; fresh final-source and delivery proof still required. All old carriers, failures, profiles and17UNKNOWN rows preserved.",
+      "sha256": "25e0ccd6a61c5a8667731eeaac82db6dc691792809db20066d3ae286a22b7a65"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T22:06:32.911956+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded relocation delivery: rebind exactly the two versioned owner diagnostic-order documents and required current companion hashes after DATA_RUNTIME_REPAIR_PIN. No product/test/predicate/membership change. Controlled H4 native31of31proof remains at H4; fresh final-source and delivery proof still required. All old carriers, failures, profiles and17UNKNOWN rows preserved.",
+      "sha256": "019257acdf54da003c5dc49fceaced187561fde15d5599bf5bf224c614bf9a6f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T22:06:32.911956+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+      "rationale": "Same bounded relocation delivery: rebind exactly the two versioned owner diagnostic-order documents and required current companion hashes after DATA_RUNTIME_REPAIR_PIN. No product/test/predicate/membership change. Controlled H4 native31of31proof remains at H4; fresh final-source and delivery proof still required. All old carriers, failures, profiles and17UNKNOWN rows preserved.",
+      "sha256": "23388ffc1e4c85518fa909ebdd968edeb6044e19b0c189612f59cb878d151f7b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T22:06:32.911956+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded relocation delivery: rebind exactly the two versioned owner diagnostic-order documents and required current companion hashes after DATA_RUNTIME_REPAIR_PIN. No product/test/predicate/membership change. Controlled H4 native31of31proof remains at H4; fresh final-source and delivery proof still required. All old carriers, failures, profiles and17UNKNOWN rows preserved.",
+      "sha256": "7b44adfcdafd05590f81bfb2990e29c6b083f629a03e7c2714546554f86bdd50"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T22:06:32.911956+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded relocation delivery: rebind exactly the two versioned owner diagnostic-order documents and required current companion hashes after DATA_RUNTIME_REPAIR_PIN. No product/test/predicate/membership change. Controlled H4 native31of31proof remains at H4; fresh final-source and delivery proof still required. All old carriers, failures, profiles and17UNKNOWN rows preserved.",
+      "sha256": "f8155b524cc5bc21dd5314bac4fb84395a63c2d8e42d98fb8fb7e96652084271"
     }
   ],
   "evidenceStampIds": [

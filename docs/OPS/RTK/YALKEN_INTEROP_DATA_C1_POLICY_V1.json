@@ -2328,7 +2328,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "5c6d76f4071c84b41fcde8ee373ef6f9f094e48589273c5fa4b5867583f6b3b4"
+        "sha256": "25e0ccd6a61c5a8667731eeaac82db6dc691792809db20066d3ae286a22b7a65"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -3860,7 +3860,7 @@
       },
       {
         "path": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
-        "sha256": "1604d8d4fa23acff6faed7073930d2918805d9e2728021138b6a3320626e6c60"
+        "sha256": "23388ffc1e4c85518fa909ebdd968edeb6044e19b0c189612f59cb878d151f7b"
       },
       {
         "path": "src/core/project-location-v1.cjs",
