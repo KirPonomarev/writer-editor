@@ -10,6 +10,9 @@ const {
   executeAtomicReceiptBackupGatewayCutover,
 } = require('../core/legacy-strangler-v1.cjs');
 const fileManager = require('./fileManager');
+const { getProjectLocation } = require('../core/project-location-v1.cjs').createProjectLocationAdapter({
+  fsAdapter: fs, path, sha256: value => crypto.createHash('sha256').update(value).digest('hex'),
+});
 
 async function writeReceiptOrBackupThroughAtomicGateway({
   targetPath,
@@ -64,9 +67,12 @@ async function createBackup(filePath, content, options = {}) {
   try {
     const basePath = options && options.basePath ? options.basePath : null;
     const safeFilePath = resolveValidatedPath(filePath, { mode: 'any' });
-    const fileId = crypto.createHash('sha256').update(safeFilePath).digest('hex');
+    const location = basePath ? await getProjectLocation({ manifestPath: path.join(path.resolve(basePath), 'project.craftsman.json') }) : null;
+    const identityPath = location?.bound ? location.toLogical(safeFilePath) : safeFilePath;
+    const fileId = crypto.createHash('sha256').update(identityPath).digest('hex');
     const backupsPath = await ensureBackupsFolder(fileId, basePath);
-    await writeMetaFile(backupsPath, safeFilePath, fileId);
+    if (location) await location.assertCurrent();
+    await writeMetaFile(backupsPath, identityPath, fileId);
 
     const fileName = path.basename(safeFilePath);
     const timestamp = Date.now();
@@ -82,6 +88,7 @@ async function createBackup(filePath, content, options = {}) {
       return writeResult;
     }
 
+    if (location) await location.assertCurrent();
     await cleanupOldBackups(backupsPath);
     return { success: true };
   } catch (error) {

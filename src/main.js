@@ -95,6 +95,9 @@ const {
   readVerifiedNovelAnnotationLineage,
   recoverProjectTransaction,
 } = require('./core/project-transaction-v1.cjs');
+const { getProjectLocation, createLocationRecord, locationPathFor, readLocationRecord, validateLocationRecord } = require('./core/project-location-v1.cjs').createProjectLocationAdapter({
+  fsAdapter: fs, path, sha256: value => computeHash(value),
+});
 const { planCommentAnchorSave, paragraphs: commentSceneParagraphs } = require('./core/word-comment-anchor-save-v1.cjs');
 const manuscriptNoteModel = require('./core/word-manuscript-notes-v1.cjs');
 const userBookmarkModel = require('./core/word-user-bookmarks-v1.cjs');
@@ -6640,11 +6643,12 @@ async function prepareAuthenticatedBookPendingReturn({context,requestId,isCurren
         unionReferences:(parsed.contentPreview||preview?.contentPreview)?.pendingNoteReferences||intake.parserResult.reviewIr.documentNotes.references}}:{})};
     const returnProofJson=JSON.stringify(proof),model=await loadProjectTreeCohortModule();
     const optional=async relative=>{try{return await fs.readFile(path.join(context.projectRoot,relative),'utf8');}catch(error){if(error.code==='ENOENT')return null;throw error;}};
-    const input={operation:'word-mixed-return',operationId:'word-book-'+computeHash(docxBytes),projectId:context.projectId,manifestPath,
+    const transactionManifestPath = state.transactionManifestPath || manifestPath;
+    const input={operation:'word-mixed-return',operationId:'word-book-'+computeHash(docxBytes),projectId:context.projectId,manifestPath:transactionManifestPath,
       beforeManifestText:await fs.readFile(manifestPath,'utf8'),expectedTreeRevision:state.treeRevision,
       scenes:await Promise.all(scenes.map(async scene=>({sceneId:scene.sceneId,beforeContent:scene.raw,commitText:await optional(scene.sceneId+'.wp201-commit.json')}))),
       notesText:await optional('notes.craftsman.json'),commentsText:comments.text,returnProofJson,
-      ...(novel&&hasNotes?{novelOrigin:novel.originResource}:{})};
+      ...(novel&&hasNotes?{novelOrigin:{...novel.originResource,path:path.join(path.dirname(transactionManifestPath),path.relative(path.dirname(manifestPath),novel.originResource.path))}}:{})};
     let plan,semantic;
     if(novel&&hasNotes) {
       try {plan=model.planProjectMixedWordReturnCohort(input);}
@@ -22625,43 +22629,75 @@ function makeProjectLifecycleReceipt(commandId, projectId, extra = {}) {
 }
 
 async function writeProjectLifecycleJournal(entry) {
-  const payload = {
-    schemaVersion: 'project-lifecycle-journal.v1',
-    updatedAtUtc: new Date().toISOString(),
-    ...entry,
-  };
-  const writeResult = await queueDiskOperation(
-    () => fileManager.writeFileAtomic(getProjectLifecycleJournalPath(), `${JSON.stringify(payload, null, 2)}\n`),
-    'save project lifecycle journal',
-  );
-  if (!writeResult || writeResult.success !== true) {
-    throw new Error(writeResult?.error || 'PROJECT_LIFECYCLE_JOURNAL_WRITE_FAILED');
-  }
+  const payload = { schemaVersion: 'project-lifecycle-journal.v1', updatedAtUtc: new Date().toISOString(), ...entry };
+  const text = `${JSON.stringify(payload, null, 2)}\n`;
+  const writeResult = await queueDiskOperation(async () => {
+    const current = await readProjectLifecycleJournal();
+    if (payload.schemaVersion === 'project-lifecycle-journal.v2' || current?.schemaVersion === 'project-lifecycle-journal.v2') {
+      if (current && (payload.schemaVersion !== current.schemaVersion || !sameProjectLocationJournal(current, payload))
+        || !current && payload.phase !== 'prepared') throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL_STALE');
+    }
+    const result = await fileManager.writeFileAtomic(getProjectLifecycleJournalPath(), text);
+    if (result?.success === true && payload.schemaVersion === 'project-lifecycle-journal.v2') {
+      const handle = await fs.open(getProjectLifecycleJournalPath(), 'r');
+      try { await handle.sync(); } finally { await handle.close(); }
+      await syncProjectLocationDirectory(path.dirname(getProjectLifecycleJournalPath()));
+      if (await fs.readFile(getProjectLifecycleJournalPath(), 'utf8') !== text) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL_STALE');
+    }
+    return result;
+  }, 'save project lifecycle journal');
+  if (!writeResult || writeResult.success !== true) throw new Error(writeResult?.error || 'PROJECT_LIFECYCLE_JOURNAL_WRITE_FAILED');
 }
 
 async function clearProjectLifecycleJournal() {
-  try {
-    await fs.rm(getProjectLifecycleJournalPath(), { force: true });
-  } catch {}
+  try { await fs.rm(getProjectLifecycleJournalPath(), { force: true }); } catch {}
 }
 
 async function readProjectLifecycleJournal() {
   try {
-    const raw = await fs.readFile(getProjectLifecycleJournalPath(), 'utf8');
-    const parsed = JSON.parse(raw);
-    return isPlainObjectValue(parsed) ? parsed : null;
-  } catch {
-    return null;
+    const target = getProjectLifecycleJournalPath(), stat = await fs.lstat(target);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 || stat.size > 65 * 1024 * 1024) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+    const raw = await fs.readFile(target, 'utf8'), parsed = JSON.parse(raw);
+    if (!isPlainObjectValue(parsed)) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+    return parsed;
+  } catch (error) {
+    if (error.code === 'ENOENT') return null;
+    return { schemaVersion: 'project-lifecycle-journal.invalid', code: error.code || 'E_PROJECT_LOCATION_JOURNAL' };
   }
+}
+
+function sameProjectLocationJournal(a, b) {
+  return ['schemaVersion', 'commandId', 'projectId', 'sourceRoot', 'targetRoot', 'tempRoot'].every(key => a[key] === b[key])
+    && stableRtkReviewTransportJson(a.location) === stableRtkReviewTransportJson(b.location);
+}
+
+async function clearProjectLocationJournal(journal) {
+  const current = await readProjectLifecycleJournal();
+  if (!current || !sameProjectLocationJournal(current, journal)) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL_STALE');
+  await fs.unlink(getProjectLifecycleJournalPath());
+  await syncProjectLocationDirectory(path.dirname(getProjectLifecycleJournalPath()));
 }
 
 async function recoverProjectLifecycleJournal() {
   const journal = await readProjectLifecycleJournal();
   if (!journal) return { ok: true, recovered: false };
+  if (journal.schemaVersion === 'project-lifecycle-journal.invalid') return makeProjectLifecycleError('E_PROJECT_LOCATION_RECOVERY_REQUIRED', 'PROJECT_LOCATION_RECOVERY_REQUIRED', { objectsPreserved: true });
   const commandId = typeof journal.commandId === 'string' ? journal.commandId : '';
+  if (journal.schemaVersion === 'project-lifecycle-journal.v2') {
+    try {
+      validateProjectLocationMoveJournal(journal);
+      const authority = await getMainProjectManifestAuthority();
+      return await authority.withProjectLease(journal.projectId, lease => recoverProjectLocationMove(journal, authority, lease));
+    } catch (error) {
+      return makeProjectLifecycleError('E_PROJECT_LOCATION_RECOVERY_REQUIRED', 'PROJECT_LOCATION_RECOVERY_REQUIRED', { code: error.code || error.message, objectsPreserved: true });
+    }
+  }
   // Archive publication may have completed without its return or registration.
   // A journal (including an older one without object identities) is not a
   // recursive-delete permit. Keep all objects for explicit reconciliation.
+  if (commandId === PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID && journal.phase === 'location-conflict-preserved') {
+    return makeProjectLifecycleError('E_PROJECT_LOCATION_RECOVERY_REQUIRED', 'PROJECT_LOCATION_RECOVERY_REQUIRED', { objectsPreserved: true });
+  }
   if (commandId === IMPORT_PROJECT_ARCHIVE_COMMAND_ID) {
     return makeProjectLifecycleError('E_PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED', 'PROJECT_ARCHIVE_IMPORT_RECOVERY_REQUIRED', {
       projectId: normalizeStableProjectId(journal.projectId), phase: journal.phase,
@@ -22824,18 +22860,184 @@ async function resolveMutableProjectBinding(projectId) {
   return { ok: true, binding };
 }
 
+function projectLocationFailure(code) { return Object.assign(new Error(code), { code }); }
+const projectLocationIdentity = stat => ({ dev: String(stat.dev), ino: String(stat.ino) });
+const sameProjectLocationIdentity = (identity, stat) => identity?.dev === String(stat.dev) && identity?.ino === String(stat.ino);
+
+async function inspectProjectLocationRoot(root) {
+  try {
+    const stat = await fs.lstat(root, { bigint: true });
+    if (!stat.isDirectory() || stat.isSymbolicLink() || await fs.realpath(root) !== root) throw projectLocationFailure('E_PROJECT_LOCATION_BOUNDARY');
+    return stat;
+  } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+}
+
+async function syncProjectLocationDirectory(root) {
+  const handle = await fs.open(root, 'r');
+  try { await handle.sync(); }
+  catch (error) { if (!['EINVAL', 'EPERM', 'EISDIR'].includes(error.code)) throw error; }
+  finally { await handle.close(); }
+}
+
+async function publishProjectLocationText(root, expectedText, nextText, lease) {
+  const manifestPath = path.join(root, PROJECT_MANIFEST_FILENAME), target = locationPathFor(manifestPath);
+  return lease.publish(async proof => {
+    const current = await readLocationRecord(manifestPath);
+    if ((current?.text ?? null) !== expectedText) throw projectLocationFailure('E_PROJECT_LOCATION_CAS');
+    await proof.assertOwned();
+    if (nextText === null) {
+      if (current) await fs.unlink(target);
+    } else {
+      const result = await fileManager.writeFileAtomic(target, nextText);
+      if (result?.success !== true) throw projectLocationFailure('E_PROJECT_LOCATION_WRITE');
+      const handle = await fs.open(target, 'r');
+      try { await handle.sync(); } finally { await handle.close(); }
+    }
+    await syncProjectLocationDirectory(root);
+    if ((await readLocationRecord(manifestPath))?.text !== (nextText ?? undefined)) throw projectLocationFailure('E_PROJECT_LOCATION_READBACK');
+    await proof.assertOwned();
+  });
+}
+
+function validateProjectLocationMoveJournal(journal) {
+  const allowed = [PROJECT_LIFECYCLE_RENAME_COMMAND_ID, PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID,
+    PROJECT_LIFECYCLE_TRASH_COMMAND_ID, PROJECT_LIFECYCLE_RESTORE_COMMAND_ID];
+  if (journal.schemaVersion !== 'project-lifecycle-journal.v2' || !allowed.includes(journal.commandId)
+    || normalizeStableProjectId(journal.projectId) !== journal.projectId
+    || !['prepared', 'source-moved-to-temp', 'final-moved'].includes(journal.phase)) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+  for (const key of ['sourceRoot', 'targetRoot', 'tempRoot']) {
+    if (!journal[key] || normalizeProjectRootWithinDocuments(journal[key]) !== journal[key]) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+  }
+  if (new Set([journal.sourceRoot, journal.targetRoot, journal.tempRoot]).size !== 3
+    || !journal.tempRoot.startsWith(`${journal.sourceRoot}.project-lifecycle-move-`) || !journal.tempRoot.endsWith('.tmp')
+    || path.dirname(journal.tempRoot) !== path.dirname(journal.sourceRoot)
+    || isPathInside(journal.sourceRoot, journal.targetRoot) || isPathInside(journal.targetRoot, journal.sourceRoot)) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+  const record = journal.location;
+  if (!record || Object.keys(record).sort().join(',') !== 'afterLocationText,afterManifestText,beforeLocationText,beforeManifestText,sourceIdentity,targetParentIdentity'
+    || ![record.sourceIdentity, record.targetParentIdentity].every(identity => identity && Object.keys(identity).sort().join(',') === 'dev,ino'
+      && [identity.dev, identity.ino].every(value => typeof value === 'string' && /^\d{1,24}$/u.test(value)))
+    || ![record.beforeManifestText, record.afterManifestText].every(text => typeof text === 'string' && Buffer.byteLength(text) <= 32 * 1024 * 1024)
+    || !(record.beforeLocationText === null || typeof record.beforeLocationText === 'string' && Buffer.byteLength(record.beforeLocationText) <= 16384)
+    || typeof record.afterLocationText !== 'string' || Buffer.byteLength(record.afterLocationText) > 16384) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+  const before = JSON.parse(record.beforeManifestText), after = JSON.parse(record.afterManifestText);
+  if (before.projectId !== journal.projectId || after.projectId !== journal.projectId
+    || stableRtkReviewTransportJson({ ...before, schemaVersion: after.schemaVersion, projectName: after.projectName }) !== stableRtkReviewTransportJson(after)) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+  const sourceManifest = path.join(journal.sourceRoot, PROJECT_MANIFEST_FILENAME), targetManifest = path.join(journal.targetRoot, PROJECT_MANIFEST_FILENAME);
+  const previous = record.beforeLocationText === null ? { logicalManifestPath: sourceManifest }
+    : validateLocationRecord(JSON.parse(record.beforeLocationText), sourceManifest, journal.projectId);
+  const next = validateLocationRecord(JSON.parse(record.afterLocationText), targetManifest, journal.projectId);
+  if (next.logicalManifestPath !== previous.logicalManifestPath) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL');
+  return { before, after, logicalManifestPath: next.logicalManifestPath };
+}
+
+async function renameProjectLocationDirectory(from, to, identity, lease) {
+  const current = await inspectProjectLocationRoot(from), parent = await inspectProjectLocationRoot(path.dirname(to));
+  if (!current || !sameProjectLocationIdentity(identity, current) || !parent || await fileExists(to)) throw projectLocationFailure('E_PROJECT_LOCATION_CONFLICT');
+  const assertCurrent = async () => {
+    await lease.assertOwned();
+    const observed = await inspectProjectLocationRoot(from), parentAfter = await inspectProjectLocationRoot(path.dirname(to));
+    if (!observed || !sameProjectLocationIdentity(identity, observed) || !parentAfter
+      || !sameProjectLocationIdentity(projectLocationIdentity(parent), parentAfter)) throw projectLocationFailure('E_PROJECT_LOCATION_CONFLICT');
+  };
+  await lease.publish(async () => {
+    await assertCurrent();
+    // Keep the existing lifecycle directory adapter on all supported hosts.
+    // Archive publication has a separate native port and admission contract.
+    if (await fileExists(to)) throw projectLocationFailure('E_PROJECT_LOCATION_CONFLICT');
+    await fs.rename(from, to);
+    await syncProjectLocationDirectory(path.dirname(from));
+    await syncProjectLocationDirectory(path.dirname(to));
+    const final = await inspectProjectLocationRoot(to);
+    if (!final || !sameProjectLocationIdentity(identity, final)) throw projectLocationFailure('E_PROJECT_LOCATION_CONFLICT');
+    await lease.assertOwned();
+  });
+}
+
+async function recoverProjectLocationMove(journal, authority, lease) {
+  const currentJournal = await readProjectLifecycleJournal();
+  if (!currentJournal || !sameProjectLocationJournal(currentJournal, journal)) throw projectLocationFailure('E_PROJECT_LOCATION_JOURNAL_STALE');
+  const validated = validateProjectLocationMoveJournal(journal), record = journal.location;
+  const rows = [];
+  for (const root of [journal.sourceRoot, journal.tempRoot, journal.targetRoot]) {
+    const stat = await inspectProjectLocationRoot(root);
+    if (stat && sameProjectLocationIdentity(record.sourceIdentity, stat)) rows.push(root);
+  }
+  if (rows.length !== 1) throw projectLocationFailure('E_PROJECT_LOCATION_RECOVERY_CONFLICT');
+  let ownedRoot = rows[0];
+  const manifestPath = path.join(ownedRoot, PROJECT_MANIFEST_FILENAME);
+  const manifestText = (await readProjectManifestRawAtPath(manifestPath)).raw;
+  const locationText = (await readLocationRecord(manifestPath))?.text ?? null;
+  if (![record.beforeManifestText, record.afterManifestText].includes(manifestText)
+    || ![record.beforeLocationText, record.afterLocationText].includes(locationText)) throw projectLocationFailure('E_PROJECT_LOCATION_RECOVERY_CONFLICT');
+  if (manifestText === record.afterManifestText && record.beforeManifestText !== record.afterManifestText) {
+    const proof = await authority.verifyManifestContinuation({ projectId: journal.projectId, manifestPath: validated.logicalManifestPath,
+      fromDigest: computeHash(record.beforeManifestText), toDigest: computeHash(record.afterManifestText) });
+    if (proof?.ok !== true) throw projectLocationFailure('E_PROJECT_LOCATION_RECOVERY_PROOF');
+  }
+  if (ownedRoot === journal.targetRoot) {
+    if (manifestText !== record.afterManifestText || locationText !== record.afterLocationText) throw projectLocationFailure('E_PROJECT_LOCATION_RECOVERY_CONFLICT');
+    const parent = await inspectProjectLocationRoot(path.dirname(ownedRoot));
+    if (!parent || !sameProjectLocationIdentity(record.targetParentIdentity, parent)) throw projectLocationFailure('E_PROJECT_LOCATION_RECOVERY_CONFLICT');
+    await getProjectLocation({ manifestPath, projectId: journal.projectId });
+    await replaceProjectLibraryIndexBinding(journal.sourceRoot, { projectId: journal.projectId, projectRoot: ownedRoot,
+      manifestPath, manifest: await normalizeProjectManifest(validated.after, path.basename(ownedRoot)) },
+    { status: journal.commandId === PROJECT_LIFECYCLE_TRASH_COMMAND_ID ? 'trashed' : 'available', markOpened: false });
+    await clearProjectLocationJournal(journal);
+    return { ok: true, recovered: true, action: 'finalized' };
+  }
+  if (ownedRoot !== journal.sourceRoot) {
+    await renameProjectLocationDirectory(ownedRoot, journal.sourceRoot, record.sourceIdentity, lease);
+    ownedRoot = journal.sourceRoot;
+  }
+  // Restore the location before the manifest so the authority sees the same
+  // validated namespace as the original publication. No packet is rewritten.
+  await publishProjectLocationText(ownedRoot, locationText, record.beforeLocationText, lease);
+  await authority.commitManifestText({ projectId: journal.projectId, lease,
+    targetPath: path.join(ownedRoot, PROJECT_MANIFEST_FILENAME), expectedText: manifestText,
+    nextText: record.beforeManifestText, label: 'restore interrupted project location' });
+  await clearProjectLocationJournal(journal);
+  return { ok: true, recovered: true, action: 'source-restored' };
+}
+
+
 async function moveProjectDirectoryWithManifestMutation(input) {
   const projectId = normalizeStableProjectId(input?.projectBinding?.projectId);
   if (!projectId) return makeProjectLifecycleError('E_PROJECT_ID_REQUIRED', 'PROJECT_ID_REQUIRED');
   const authority = await getMainProjectManifestAuthority();
+  const previousOwner = activeStage10ApplicationBootstrap;
+  const wasActive = Boolean(previousOwner) && getProjectRootPath() === input.projectBinding.projectRoot;
   try {
-    return await authority.withProjectLease(projectId, (lease) => (
+    const result = await authority.withProjectLease(projectId, (lease) => (
       moveProjectDirectoryWithManifestMutationUnderLease({
         ...input,
-        options: { ...(input.options || {}), lease },
+        options: { ...(input.options || {}), lease, wasActive },
       })
     ));
+    if (result.ok && result.moved && wasActive) {
+      if (input.options?.clearActiveAfterMove) {
+        activeStage10ApplicationBootstrap = null;
+        activeStage10ApplicationCommandRoute = null;
+      } else {
+        const assertCurrent = () => {
+          if (activeStage10ApplicationBootstrap !== previousOwner || getProjectRootPath() !== input.targetRoot) throw projectLocationFailure('E_PROJECT_LOCATION_SESSION_STALE');
+        };
+        assertCurrent();
+        const raw = await readProjectManifestRawAtPath(path.join(input.targetRoot, PROJECT_MANIFEST_FILENAME));
+        const prepared = await bootstrapStage10ApplicationForProject(input.targetRoot, raw.manifest, 'reopen', { publish: false, assertCurrent });
+        assertCurrent();
+        activeStage10ApplicationBootstrap = prepared.bootstrap;
+        activeStage10ApplicationCommandRoute = prepared.commandRoute;
+      }
+    }
+    return result;
   } catch (error) {
+    // A completed move cannot leave a session able to write its former root
+    // when preparation of the new owner fails. Preserve any newer session.
+    if (wasActive && activeStage10ApplicationBootstrap === previousOwner
+      && getProjectRootPath() === input.targetRoot && getProjectRootPath() !== input.projectBinding.projectRoot) {
+      activeStage10ApplicationBootstrap = null;
+      activeStage10ApplicationCommandRoute = null;
+    }
     return makeProjectLifecycleError(
       error?.code || 'E_PROJECT_DIRECTORY_TRANSACTION_FAILED',
       error?.reason || 'PROJECT_DIRECTORY_TRANSACTION_FAILED',
@@ -22868,50 +23070,49 @@ async function moveProjectDirectoryWithManifestMutationUnderLease({
   const targetParent = path.dirname(targetRoot);
   await fs.mkdir(targetParent, { recursive: true });
   const tempRoot = makeProjectLifecycleTempPath(sourceRoot, 'project-lifecycle-move');
+  const sourceStat = await inspectProjectLocationRoot(sourceRoot), parentStat = await inspectProjectLocationRoot(targetParent);
+  const manifestStat = await fs.lstat(projectBinding.manifestPath);
+  if (!sourceStat || !parentStat || !manifestStat.isFile() || manifestStat.isSymbolicLink() || manifestStat.nlink !== 1
+    || manifestStat.size > 32 * 1024 * 1024) throw projectLocationFailure('E_PROJECT_LOCATION_BOUNDARY');
+  const location = await getProjectLocation({ manifestPath: projectBinding.manifestPath, projectId: projectBinding.projectId });
+  const pending = await readPendingProjectTransactionBinding({ manifestPath: projectBinding.manifestPath });
+  if (pending.pending) throw projectLocationFailure('E_PROJECT_TRANSACTION_RECOVERY_REQUIRED');
+  await readVerifiedProjectTreeMutation({ manifestPath: projectBinding.manifestPath, projectId: projectBinding.projectId });
   const rawRecord = await readProjectManifestRawAtPath(projectBinding.manifestPath);
+  const nextManifest = mutateManifest({ ...rawRecord.manifest });
+  const afterManifestText = `${JSON.stringify(nextManifest, null, 2)}\n`;
+  const afterLocationText = `${JSON.stringify(createLocationRecord(location, projectBinding.projectId,
+    path.join(targetRoot, PROJECT_MANIFEST_FILENAME)), null, 2)}\n`;
+  const journal = { schemaVersion: 'project-lifecycle-journal.v2', commandId, projectId: projectBinding.projectId,
+    phase: 'prepared', sourceRoot, targetRoot, tempRoot,
+    location: { beforeManifestText: rawRecord.raw, afterManifestText,
+      beforeLocationText: location.bindingText, afterLocationText,
+      sourceIdentity: projectLocationIdentity(sourceStat), targetParentIdentity: projectLocationIdentity(parentStat) } };
+  validateProjectLocationMoveJournal(journal);
   const recovery = await createProjectLifecycleRecovery(projectBinding, commandId, rawRecord.raw, options);
-  await writeProjectLifecycleJournal({
-    commandId,
-    projectId: projectBinding.projectId,
-    phase: 'prepared',
-    sourceRoot,
-    targetRoot,
-    tempRoot,
-  });
+  await location.assertCurrent();
+  await writeProjectLifecycleJournal(journal);
   try {
     if (typeof options.beforeSourceMove === 'function') await options.beforeSourceMove({ sourceRoot, tempRoot, targetRoot });
-    if (options.lease) await options.lease.publish(() => fs.rename(sourceRoot, tempRoot));
-    else await fs.rename(sourceRoot, tempRoot);
-    await writeProjectLifecycleJournal({
-      commandId,
-      projectId: projectBinding.projectId,
-      phase: 'source-moved-to-temp',
-      sourceRoot,
-      targetRoot,
-      tempRoot,
-    });
-    const tempManifestPath = joinPathSegmentsWithinRoot(tempRoot, [PROJECT_MANIFEST_FILENAME], {
-      resolveSymlinks: false,
-    });
-    const nextManifest = mutateManifest({ ...rawRecord.manifest });
-    await writeProjectManifestRawAtomic(tempManifestPath, nextManifest, {
-      expectedText: rawRecord.raw,
-      ...(options.lease ? { lease: options.lease } : {}),
-    });
+    const authority = await getMainProjectManifestAuthority();
+    // Publish the semantic name change at the old physical location so the
+    // external authority records a continuation in the original namespace.
+    await authority.commitManifestText({ projectId: projectBinding.projectId, lease: options.lease,
+      targetPath: projectBinding.manifestPath, expectedText: rawRecord.raw, nextText: afterManifestText,
+      label: 'project location manifest' });
+    await publishProjectLocationText(sourceRoot, location.bindingText, afterLocationText, options.lease);
+    await renameProjectLocationDirectory(sourceRoot, tempRoot, journal.location.sourceIdentity, options.lease);
+    journal.phase = 'source-moved-to-temp';
+    await writeProjectLifecycleJournal(journal);
     if (typeof options.afterManifestBeforeFinalMove === 'function') {
       await options.afterManifestBeforeFinalMove({ sourceRoot, tempRoot, targetRoot });
     }
-    if (options.lease) await options.lease.publish(() => fs.rename(tempRoot, targetRoot));
-    else await fs.rename(tempRoot, targetRoot);
-    await writeProjectLifecycleJournal({
-      commandId,
-      projectId: projectBinding.projectId,
-      phase: 'final-moved',
-      sourceRoot,
-      targetRoot,
-      tempRoot,
-    });
-    await clearProjectLifecycleJournal();
+    const parentNow = await inspectProjectLocationRoot(targetParent);
+    if (!parentNow || !sameProjectLocationIdentity(journal.location.targetParentIdentity, parentNow)) throw projectLocationFailure('E_PROJECT_LOCATION_CONFLICT');
+    await renameProjectLocationDirectory(tempRoot, targetRoot, journal.location.sourceIdentity, options.lease);
+    journal.phase = 'final-moved';
+    await writeProjectLifecycleJournal(journal);
+    await getProjectLocation({ manifestPath: path.join(targetRoot, PROJECT_MANIFEST_FILENAME), projectId: projectBinding.projectId });
 
     const nextBinding = {
       ...projectBinding,
@@ -22936,10 +23137,12 @@ async function moveProjectDirectoryWithManifestMutationUnderLease({
         preserveSelectionOnPathRebind: true,
       });
     }
+    if (options.wasActive && !options.clearActiveAfterMove) setActiveProjectNameFromRoot(targetRoot);
     await replaceProjectLibraryIndexBinding(sourceRoot, nextBinding, {
       status: options.indexStatus || 'available',
       markOpened: options.markOpened,
     });
+    await clearProjectLocationJournal(journal);
     return {
       ok: true,
       moved: true,
@@ -22953,15 +23156,14 @@ async function moveProjectDirectoryWithManifestMutationUnderLease({
     };
   } catch (error) {
     try {
-      if (options.lease) await options.lease.assertOwned();
-      if (await fileExists(tempRoot) && !(await fileExists(sourceRoot))) {
-        if (options.lease) await options.lease.publish(() => fs.rename(tempRoot, sourceRoot));
-        else await fs.rename(tempRoot, sourceRoot);
-      }
+      await options.lease.assertOwned();
+      await recoverProjectLocationMove(journal, await getMainProjectManifestAuthority(), options.lease);
     } catch (rollbackError) {
       logDevError('project lifecycle directory rollback', rollbackError);
+      return makeProjectLifecycleError('E_PROJECT_LOCATION_RECOVERY_REQUIRED', 'PROJECT_LOCATION_RECOVERY_REQUIRED', {
+        originalCode: error.code || error.message, recoveryCode: rollbackError.code || rollbackError.message, recovery,
+      });
     }
-    await clearProjectLifecycleJournal();
     logDevError('project lifecycle directory move', error);
     return makeProjectLifecycleError('E_PROJECT_DIRECTORY_MOVE_FAILED', 'PROJECT_DIRECTORY_MOVE_FAILED', {
       message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
@@ -23010,6 +23212,36 @@ async function handleProjectLifecycleRenameCommand(payload = {}, options = {}) {
   };
 }
 
+// A fresh project identity must not inherit the source's active I/O route.
+// Keep the exact copied bytes as an inert member; retained history is untouched.
+async function retireCopiedProjectLocation(manifestPath, sourceProjectId, targetProjectId, expectedText, assertCurrent) {
+  if (!sourceProjectId || !targetProjectId || sourceProjectId === targetProjectId) throw projectLocationFailure('E_PROJECT_LOCATION_PROJECT');
+  await assertCurrent();
+  const root = path.dirname(manifestPath), identity = projectLocationIdentity(await inspectProjectLocationRoot(root));
+  const current = await readLocationRecord(manifestPath);
+  if ((current?.text ?? null) !== expectedText) throw projectLocationFailure('E_PROJECT_LOCATION_CAS');
+  if (!current) return null;
+  validateLocationRecord(current.value, current.value.physicalManifestPath, sourceProjectId);
+  if (path.basename(current.value.physicalManifestPath) !== PROJECT_MANIFEST_FILENAME) throw projectLocationFailure('E_PROJECT_LOCATION_INVALID');
+  const relativePath = `.yalken-location.inherited-${computeHash(current.text)}.json`;
+  const source = locationPathFor(manifestPath), target = path.join(root, relativePath);
+  await assertCurrent();
+  if (!sameProjectLocationIdentity(identity, await inspectProjectLocationRoot(root))
+    || (await readLocationRecord(manifestPath))?.text !== current.text) throw projectLocationFailure('E_PROJECT_LOCATION_STALE');
+  // Exclusive link preserves the exact inode and cannot replace a foreign file.
+  await fs.link(source, target);
+  if (await fs.readFile(target, 'utf8') !== current.text) throw projectLocationFailure('E_PROJECT_LOCATION_READBACK');
+  await assertCurrent();
+  const a = await fs.lstat(source), b = await fs.lstat(target);
+  if (a.dev !== current.stat.dev || a.ino !== current.stat.ino || a.dev !== b.dev || a.ino !== b.ino
+    || a.nlink !== 2 || a.size !== current.stat.size || a.mtimeMs !== current.stat.mtimeMs
+    || await fs.readFile(source, 'utf8') !== current.text) throw projectLocationFailure('E_PROJECT_LOCATION_STALE');
+  await fs.unlink(source);
+  await syncProjectLocationDirectory(root);
+  await assertCurrent();
+  return { relativePath, buffer: Buffer.from(current.text, 'utf8') };
+}
+
 async function handleProjectLifecycleDuplicateCommand(payload = {}, options = {}) {
   const recovered = await recoverProjectLifecycleJournal();
   if (!recovered.ok) return recovered;
@@ -23042,6 +23274,7 @@ async function handleProjectLifecycleDuplicateCommand(payload = {}, options = {}
         options,
       );
       const newProjectId = createStableProjectId();
+      const sourceLocation = await getProjectLocation({ manifestPath: binding.manifestPath, projectId: binding.projectId });
       await writeProjectLifecycleJournal({
         commandId: PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID,
         projectId: binding.projectId,
@@ -23070,6 +23303,8 @@ async function handleProjectLifecycleDuplicateCommand(payload = {}, options = {}
         delete nextManifest.treeIdentity;
         return await authority.withProjectLease(newProjectId, async (targetLease) => {
           await targetLease.assertOwned();
+          await retireCopiedProjectLocation(tempManifestPath, binding.projectId, newProjectId, sourceLocation.bindingText,
+            async () => { await sourceLease.assertOwned(); await targetLease.assertOwned(); await sourceLocation.assertCurrent(); });
           await writeProjectManifestRawAtomic(tempManifestPath, nextManifest, {
             expectedText: rawRecord.raw,
             expectedProjectId: binding.projectId,
@@ -23111,6 +23346,12 @@ async function handleProjectLifecycleDuplicateCommand(payload = {}, options = {}
           };
         });
       } catch (error) {
+        if (sourceLocation.bound && (String(error.code || '').startsWith('E_PROJECT_LOCATION_') || error.code === 'EEXIST')) {
+          await writeProjectLifecycleJournal({ commandId: PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID,
+            projectId: binding.projectId, targetProjectId: newProjectId, phase: 'location-conflict-preserved',
+            sourceRoot: binding.projectRoot, targetRoot, tempRoot });
+          return makeProjectLifecycleError('E_PROJECT_LOCATION_RECOVERY_REQUIRED', 'PROJECT_LOCATION_RECOVERY_REQUIRED', { objectsPreserved: true });
+        }
         await fs.rm(tempRoot, { recursive: true, force: true }).catch(() => {});
         await clearProjectLifecycleJournal();
         logDevError('project lifecycle duplicate', error);
@@ -28151,7 +28392,7 @@ async function applyPrivateDocumentStoriesBatch(input,store) {
       }
       const model=await loadProjectTreeCohortModule();
       const plan=model.planProjectStoryBodyCohort({operation:'story-bodies',operationId:candidate.changeId,projectId:input.projectSnapshot.projectId,
-        manifestPath,beforeManifestText,expectedTreeRevision:state.treeRevision,changes,mediaResources:[...mediaResources.values()],
+        manifestPath:state.transactionManifestPath||manifestPath,beforeManifestText,expectedTreeRevision:state.treeRevision,changes,mediaResources:[...mediaResources.values()],
         notesText:await optional('notes.craftsman.json'),commentsText:await optional('.yalken/word-review/non-text-return-state.v1.json')});
       guard();
       const request={manifestPath,revision:snapshot.generation,treeCohort:plan,revalidate:guard,
@@ -31838,6 +32079,8 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         throw new Error('PROJECT_ARCHIVE_IMPORT_PROJECT_ID_MISMATCH');
       }
       let nextManifest = sourceManifest;
+      let stagedArchivePayload = archivePayload;
+      const routingEntry = archivePayload.entries.find(entry => entry.relativePath === path.basename(locationPathFor(tempManifestPath)));
       if (mode === 'copy') {
         nextManifest = {
           ...sourceManifest,
@@ -31857,6 +32100,14 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
           const { rebindAtlasContinuityFactsForProjectCopy } = await loadCoreRuntimeModule();
           nextManifest.atlas = rebindAtlasContinuityFactsForProjectCopy(sourceManifest.atlas, archiveProjectId, newProjectId);
         }
+        if (routingEntry) {
+          const retired = await retireCopiedProjectLocation(tempManifestPath, archiveProjectId, newProjectId,
+            routingEntry.buffer.toString('utf8'), async () => { await assertCurrent(); await lease.assertOwned(); });
+          ownership.files.delete(routingEntry.relativePath);
+          ownership.files.set(retired.relativePath, { identity: await fs.lstat(path.join(tempRoot, retired.relativePath), { bigint: true }), buffer: routingEntry.buffer });
+          stagedArchivePayload = { ...archivePayload, entries: archivePayload.entries.map(entry => entry === routingEntry
+            ? { ...entry, relativePath: retired.relativePath } : entry) };
+        }
         await writeProjectManifestRawAtomic(tempManifestPath, nextManifest, {
           expectedText: rawRecord.raw,
           expectedProjectId: archiveProjectId,
@@ -31864,6 +32115,20 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
         });
         ownership.files.set(PROJECT_MANIFEST_FILENAME, { identity: await fs.lstat(tempManifestPath, { bigint: true }),
           buffer: Buffer.from(`${JSON.stringify(nextManifest, null, 2)}\n`, 'utf8') });
+      } else if (routingEntry) {
+        // Restore retains identity and history, while explicitly rebinding only
+        // its current location. The archive remains the exact original evidence.
+        const current = await readLocationRecord(tempManifestPath);
+        if (!current || !routingEntry.buffer.equals(Buffer.from(current.text, 'utf8'))) throw projectLocationFailure('E_PROJECT_LOCATION_CAS');
+        const record = validateLocationRecord(current.value, current.value.physicalManifestPath, archiveProjectId);
+        if (path.basename(record.physicalManifestPath) !== PROJECT_MANIFEST_FILENAME) throw projectLocationFailure('E_PROJECT_LOCATION_INVALID');
+        const next = createLocationRecord({ manifestPath: record.logicalManifestPath }, archiveProjectId, path.join(targetRoot, PROJECT_MANIFEST_FILENAME));
+        const nextText = `${JSON.stringify(next, null, 2)}\n`, buffer = Buffer.from(nextText, 'utf8');
+        await assertCurrent();
+        await publishProjectLocationText(tempRoot, current.text, nextText, lease);
+        await assertCurrent();
+        ownership.files.set(routingEntry.relativePath, { identity: await fs.lstat(locationPathFor(tempManifestPath), { bigint: true }), buffer });
+        stagedArchivePayload = { ...archivePayload, entries: archivePayload.entries.map(entry => entry === routingEntry ? { ...entry, buffer } : entry) };
       }
       const expectedManifest = mode === 'copy' ? Buffer.from(`${JSON.stringify(nextManifest, null, 2)}\n`, 'utf8')
         : archivePayload.entries.find(entry => entry.relativePath === PROJECT_MANIFEST_FILENAME).buffer;
@@ -31880,7 +32145,7 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       if (typeof options.afterExtractBeforeFinalMove === 'function') {
         await options.afterExtractBeforeFinalMove({ tempRoot, targetRoot });
       }
-      await verifyProjectArchiveImportStaging(archivePayload, tempRoot, ownership, expectedManifest);
+      await verifyProjectArchiveImportStaging(stagedArchivePayload, tempRoot, ownership, expectedManifest);
       const publishDirectory = options.publishArchiveDirectory || createProjectArchiveDarwinPublisher();
       publication = await lease.publish(async () => {
         await assertCurrent(); await lease.assertOwned();
@@ -31909,12 +32174,13 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       const published = await collectProjectArchiveSourceEntries(targetRoot);
       await verifyProjectArchiveDirectoryRoster(published, archivePayload.directories, ownership, tempRoot, targetRoot);
       if (published.files.length !== archivePayload.entries.length) throw Error('PROJECT_ARCHIVE_IMPORT_ROSTER_MISMATCH');
-      for (const entry of archivePayload.entries) {
+      for (const entry of stagedArchivePayload.entries) {
         const actual = published.files.find(row => row.relativePath === entry.relativePath);
         if (!actual || !actual.buffer.equals(entry.relativePath === PROJECT_MANIFEST_FILENAME ? expectedManifest : entry.buffer)) {
           throw Error('PROJECT_ARCHIVE_IMPORT_FINAL_READBACK_MISMATCH');
         }
       }
+      await getProjectLocation({ manifestPath, projectId: newProjectId });
       publication.readbackVerified = true;
       await lease.assertOwned();
       const normalizedManifest = await normalizeProjectManifest(nextManifest, preferredName);
@@ -36319,7 +36585,7 @@ async function readTreeCohortPath(root, relativePath, allowDirectory = false, op
   return { bytes };
 }
 
-async function captureTreeCohortInventory(projectRoot) {
+async function captureTreeCohortInventory(projectRoot, transactionRoot = projectRoot) {
   const inventory = [], scenePaths = [];
   let byteCount = 0;
   const add = (relativePath, role, data) => {
@@ -36339,7 +36605,7 @@ async function captureTreeCohortInventory(projectRoot) {
     let role;
     if (/^\..+\.bak\.\d{13}$/u.test(name)) role = 'recoverySnapshot';
     else if (/\.txt\.(?:wp201-commit|commit)\.json$/u.test(name)) role = 'sceneCommit';
-    else if (name.endsWith('.txt')) { role = 'scene'; scenePaths.push(path.join(projectRoot, relativePath)); }
+    else if (name.endsWith('.txt')) { role = 'scene'; scenePaths.push(path.join(transactionRoot, relativePath)); }
     else throw treeCohortError('E_TREE_COHORT_UNKNOWN_FILE');
     add(relativePath, role, data);
   };
@@ -36669,7 +36935,7 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
         const state = await readVerifiedProjectTreeMutation({ manifestPath: context.manifestPath, projectId: payload.projectId });
         context.guard();
         if (payload.expectedTreeRevision !== undefined && payload.expectedTreeRevision !== state.treeRevision) throw treeCohortError('E_TREE_REVISION_CAS');
-        const inventory = await captureTreeCohortInventory(context.projectRoot);
+        const inventory = await captureTreeCohortInventory(context.projectRoot, path.dirname(state.transactionManifestPath || context.manifestPath));
         const activeBeforeContent = context.filePath && isPathInside(context.projectRoot, context.filePath)
           ? await fs.readFile(context.filePath, 'utf8') : null;
         const cohort = await loadProjectTreeCohortModule();
@@ -36682,7 +36948,7 @@ async function runTreeCohortIntent(commandId, payload, build, options = {}) {
             lastMutation: state.lastMutation?.id, receipt: state.receipt, retainedPacket: state.retainedPacket,
             currentManifestText: beforeManifestText, currentInventory: inventory.inventory,
             notesText: inventory.notesText, commentsText: inventory.commentsText, operationId })
-          : cohort.planProjectTreeCohort({ projectId: payload.projectId, manifestPath: context.manifestPath,
+          : cohort.planProjectTreeCohort({ projectId: payload.projectId, manifestPath: state.transactionManifestPath || context.manifestPath,
             operationId, operation: request.operation, beforeManifestText, ...inventory,
             expectedTreeRevision: state.treeRevision, bindings: request.bindings,
             ...(request.topology ? { topology: request.topology } : {}), now: new Date().toISOString() });
@@ -37995,11 +38261,11 @@ async function handleTreeRecoveredCopySaveAs() {
         if (state.treeRevision !== fence.treeRevision || !(fence.sourceNodeId ? ['split', 'merge', 'undo', 'copy'] : ['undo', 'copy']).includes(state.receipt?.kind)) throw treeCohortError('E_TREE_RECOVERY_BINDING');
         const node = await resolveTreeCohortNode(fence.documentId, fence.projectId, { projectRoot: fence.projectRoot, manifestPath, manifest: raw.manifest });
         guard();
-        const inventory = await captureTreeCohortInventory(fence.projectRoot);
+        const inventory = await captureTreeCohortInventory(fence.projectRoot, path.dirname(state.transactionManifestPath || manifestPath));
         guard();
         const cohort = await loadProjectTreeCohortModule();
         guard();
-        const plan = cohort.planProjectTreeCohort({ projectId: fence.projectId, manifestPath,
+        const plan = cohort.planProjectTreeCohort({ projectId: fence.projectId, manifestPath: state.transactionManifestPath || manifestPath,
           operationId: `tree-${crypto.randomUUID()}`, operation: 'copy', beforeManifestText: raw.raw,
           ...inventory, expectedTreeRevision: state.treeRevision,
           bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath: relativePath, copy: true }],

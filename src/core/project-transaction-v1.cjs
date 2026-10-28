@@ -7,7 +7,11 @@ const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const path = require('node:path');
 
-const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
+const { durableSaveTransaction: savePhysicalTransaction } = require('./save-coordinator-v1.cjs');
+const { bindTransaction, bindDurableSave } = require('./project-location-v1.cjs').createProjectLocationAdapter({
+  fsAdapter: fsp, path, sha256: value => sha256hex(value),
+});
+const durableSaveTransaction = options => bindDurableSave(savePhysicalTransaction, options);
 const { MODE: COMMENT_REBASE_MODE, RETURN_MODE: COMMENT_TEXT_RETURN_MODE, planCommentAnchorSave, planCommentTextReturn } = require('./word-comment-anchor-save-v1.cjs');
 const { validateNoteCohort, validateManuscriptDocument, planManuscriptNoteAnchorSave, MODE: NOTE_REBASE_MODE, LIMITS: NOTE_LIMITS } = require('./word-manuscript-notes-v1.cjs');
 const { readState: readCanonicalCommentState, planCommentAuthoring } = require('./word-comment-authoring-v1.cjs');
@@ -1011,6 +1015,50 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
     outcome: committed ? 'COMMITTED_CONVERGED' : 'UNCOMMITTED_ROLLED_BACK',
     transactionId: journal.transactionId,
   });
+}
+
+// Location discovery adds I/O before the original transaction body. Retain
+// Core's admission order and own mutable caller payloads before that await.
+function ownLocationTransactionInput(input) {
+  if (!input) return input;
+  const value = { ...input };
+  if (value.wordHistory !== undefined) {
+    value.wordHistory = admitWordHistory(value.wordHistory, value.treeCohort);
+    treeNeed(typeof value.revalidate === 'function' && typeof value.publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
+    treeNeed(typeof value.manifestPath === 'string' && path.isAbsolute(value.manifestPath)
+      && Number.isSafeInteger(value.revision) && value.revision >= 0, 'E_TREE_COHORT_IDENTITY');
+    return value;
+  }
+  if (value.treeCohort !== undefined) {
+    treeNeed(typeof value.revalidate === 'function' && typeof value.publishManifest === 'function', 'E_TREE_COHORT_AUTHORITY');
+    // canonicalize rejects non-JSON members; normalization cannot hide them.
+    const source = canonicalize(value.treeCohort);
+    treeNeed(Buffer.byteLength(source) <= (isNovelWordReturnPacket({plan:value.treeCohort})
+      ? MAX_NOVEL_WORD_RETURN_BYTES : MAX_ARTIFACT_BYTES), 'E_TREE_COHORT_BUDGET');
+    value.treeCohort = JSON.parse(source);
+    return value;
+  }
+  assertPathPair(value.scenePath, value.manifestPath);
+  assertText(value.sceneContent, 'E_PROJECT_TRANSACTION_SCENE_CONTENT', TRANSACTION_PHASES.ADMIT);
+  if (value.expectedSceneContent !== null) assertText(value.expectedSceneContent, 'E_PROJECT_TRANSACTION_EXPECTED_SCENE_CONTENT', TRANSACTION_PHASES.ADMIT);
+  assertText(value.manifestContent, 'E_PROJECT_TRANSACTION_MANIFEST_CONTENT', TRANSACTION_PHASES.ADMIT);
+  assertText(value.expectedManifestContent, 'E_PROJECT_TRANSACTION_EXPECTED_MANIFEST_CONTENT', TRANSACTION_PHASES.ADMIT);
+  if (!Number.isSafeInteger(value.revision) || value.revision < 0) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_REVISION', TRANSACTION_PHASES.ADMIT, String(value.revision));
+  if (typeof value.publishManifest !== 'function') throw new ProjectTransactionError('E_PROJECT_TRANSACTION_MANIFEST_AUTHORITY_REQUIRED', TRANSACTION_PHASES.ADMIT);
+  if (value.mediaUpdateResources !== undefined && value.createResources !== undefined) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_MODE', TRANSACTION_PHASES.ADMIT);
+  for (const key of ['createResources', 'mediaUpdateResources']) if (value[key] !== undefined) value[key] = normalizeResources(value[key], value);
+  const pair = { before: {scene:value.expectedSceneContent,manifest:value.expectedManifestContent},
+    after: {scene:value.sceneContent,manifest:value.manifestContent} };
+  normalizeCommentState(value.commentState, value.scenePath, value.manifestPath, pair);
+  normalizeNoteState(value.noteState, value.scenePath, value.manifestPath, pair);
+  for (const key of ['commentState','noteState']) if (value[key] != null) value[key] = JSON.parse(canonicalize(value[key]));
+  return value;
+}
+function ownLocationRecoveryInput(input) {
+  if (!input) return input;
+  const value = { ...input };
+  if (value.wordHistory !== undefined) value.wordHistory = admitWordHistory(value.wordHistory, value.treeCohort);
+  return value;
 }
 
 async function commitProjectTransaction({
@@ -2591,16 +2639,16 @@ module.exports = Object.freeze({
   TRANSACTION_PHASE_CHAIN,
   classifyProjectTransactionState,
   commitPathFor,
-  commitProjectTransaction,
+  commitProjectTransaction: bindTransaction(commitProjectTransaction, '', ownLocationTransactionInput),
   journalPathFor,
-  readPendingProjectTransactionBinding,
-  readVerifiedProjectTransaction,
-  readVerifiedProjectDocxNovelCohort,
-  readVerifiedProjectRecoverySnapshot,
-  readVerifiedNovelAnnotationLineage,
+  readPendingProjectTransactionBinding: bindTransaction(readPendingProjectTransactionBinding, 'pending'),
+  readVerifiedProjectTransaction: bindTransaction(readVerifiedProjectTransaction, 'record'),
+  readVerifiedProjectDocxNovelCohort: bindTransaction(readVerifiedProjectDocxNovelCohort, 'cohort'),
+  readVerifiedProjectRecoverySnapshot: bindTransaction(readVerifiedProjectRecoverySnapshot, 'recoverySnapshot'),
+  readVerifiedNovelAnnotationLineage: bindTransaction(readVerifiedNovelAnnotationLineage, 'lineage'),
   recoveryPacketPathFor,
-  recoverProjectTransaction,
-  repairCorruptProjectCommit,
-  readVerifiedProjectTreeMutation,
+  recoverProjectTransaction: bindTransaction(recoverProjectTransaction, '', ownLocationRecoveryInput),
+  repairCorruptProjectCommit: bindTransaction(repairCorruptProjectCommit),
+  readVerifiedProjectTreeMutation: bindTransaction(readVerifiedProjectTreeMutation, 'tree'),
   treeCommitPathFor,
 });
