@@ -178,6 +178,11 @@ function instantiateMarkdownLocalFilePort(options = {}) {
     },
   };
 
+  sandbox.readCapturedCanonicalMarkdownExportSource = async () => ({
+    ...await sandbox.readCanonicalMarkdownExportSource(),
+    assertCapture: async () => {}, assertContext: () => {}, assertTarget: async () => {},
+  });
+
   vm.runInNewContext(
     `${section}
 module.exports = {
@@ -297,6 +302,7 @@ test('Phase 04 Markdown lossy export needs main-owned confirmation before any wr
     { requestId: 'markdown-export-loss-cancel' },
     {
       readCanonicalSource: async () => ({
+        assertCapture: async () => {}, assertContext: () => {}, assertTarget: async () => {},
         scene: {
           schemaVersion: 'markdown-scene.v1',
           blocks: [{ type: 'paragraph', text: 'Visible text' }],
@@ -345,4 +351,30 @@ test('Phase 03 Markdown low-level errors are remapped without private path detai
   assert.deepEqual(result.error.details, {});
   assert.equal(JSON.stringify(result).includes('/project/'), false);
   assert.equal(JSON.stringify(result).includes('/external/'), false);
+});
+
+
+test('Markdown command refuses a saved-scene projection without private publication guards', async () => {
+  const port = instantiateMarkdownLocalFilePort();
+  const result = await port.handleMarkdownExportLocalFileCommandSurface({requestId:'missing-capture'}, {
+    readCanonicalSource:async()=>({scene:{blocks:[]},artifact:{lossReport:{count:0,items:[]}},defaultName:'scene.md'}),
+  });
+  assert.equal(result.ok,0);
+  assert.equal(result.error.code,'E_MD_EXPORT_SOURCE_INVALID');
+  assert.equal(port.calls.exports.length,0);
+});
+
+test('Markdown command checks the saved-scene capture after loss confirmation before external publication', async () => {
+  const port = instantiateMarkdownLocalFilePort();let confirmed=false;
+  const result = await port.handleMarkdownExportLocalFileCommandSurface({requestId:'stale-confirmation'}, {
+    readCanonicalSource:async()=>({scene:{blocks:[]},artifact:{lossReport:{count:1,items:[{code:'LOSS'}]}},defaultName:'scene.md',
+      assertContext:()=>{},assertTarget:async()=>{},assertCapture:async()=>{
+        assert.equal(confirmed,true);
+        throw Object.assign(Error('stale'),{code:'E_MD_EXPORT_CONTEXT_STALE',reason:'markdown_context_stale'});
+      }}),
+    confirmLosses:async()=>{confirmed=true;return true;},
+  });
+  assert.equal(result.ok,0);
+  assert.equal(result.error.reason,'markdown_context_stale');
+  assert.equal(port.calls.exports.length,0);
 });

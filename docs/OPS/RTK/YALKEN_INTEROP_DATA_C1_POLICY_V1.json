@@ -847,7 +847,9 @@
     "test/contracts/post-mvp-selected-scenes-txt-export.contract.test.js",
     "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
     "scripts/ops/check-command-namespace-static.mjs",
-    "test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js"
+    "test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js",
+    "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
+    "docs/tasks/2026-10-28--writer-markdown-current-scene.md"
   ],
   "protectedFiles": [
     {
@@ -1076,7 +1078,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "31cf2645f0daf12796825bf46ff7e44dc8a82e6dd7a46bfca2c481952b95039e"
+        "sha256": "fbb8c66ddc3201d82ed52cb0e47aeec19178ea5a864388b963686e5fd344fb70"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1812,7 +1814,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "47a2c5d38515f26924b03a28a24d3e87106f2d2c1a69cc187438d36ea01fed51"
+        "sha256": "b9fcb815e67a06d53c2fe48168ebe06467ec949f9f9ab0a46d493fdb5e2ea286"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2768,15 +2770,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "dfa24d30846cef88634871e822a581ba9d2fd11abd836798270b0c5f13daf56c"
+        "sha256": "1029f65ccb534f88f10f600a463e8726aa83a6eef10ca8f23489caec2b696d69"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f634c0c55d32d849874756380fa6ac96425327dd4e1e1ecf891e40846d56d731"
+        "sha256": "f3eebb32bb68d405f6e2973ee3bb2556e837ea11fd47769227cf9011fef9d264"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "224248011853f4a069d6858b97ca676488b58fff0bd4dbcb847c24d019a3d672"
+        "sha256": "c45d00a23b38d9bc09e3733c09994ff8f361fbea4d285dd50747dd383a064ee7"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3316,7 +3318,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "93ac3caaac524a3686b2386b951b2da1b122e3cd16cc2d84c946f717db989cab"
+        "sha256": "2eb0048488df4b768c4f6c83c5707ae91f57319bc083a229e78902b69b0e2aab"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3340,7 +3342,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "e21b8282c80e2e6f5cf91f964fd214588c101f37afe65d2ddfb458621edf5fb3"
+        "sha256": "1effb7576a1a98cacfd389eab76fd4a263bc885c2ddaa542084f783a2778dbb3"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3432,7 +3434,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "b758353e61ff37d282701e6ba7c50ab8cd1cc079731240c1c67b7af4f2cfaf7b"
+        "sha256": "549dad0d02ccc74ab5374f094e9b7958b2484105c9e3028ca3989b4a38b434f5"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3816,7 +3818,7 @@
       },
       {
         "path": "test/unit/pdf-export-handler.test.js",
-        "sha256": "43635cd615d6a19a74d6d0c61fdae420f233b3b376e6e0b9715e4bf2b64eaec7"
+        "sha256": "b7f29fdeb262efc9373cc258502da5af5efd924a632d19f39638915710b266df"
       },
       {
         "path": "test/unit/sector-m-s31-pdf-export.test.js",
@@ -3841,6 +3843,14 @@
       {
         "path": "test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js",
         "sha256": "0485c9feaaceea8720d1325e2cda3b4c7871e45c3dea3c21485b71b5032a83f5"
+      },
+      {
+        "path": "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
+        "sha256": "9943180ca1992cd253c624d7a033092ab294b43e1eb4c909ba5d696b63e034f8"
+      },
+      {
+        "path": "docs/tasks/2026-10-28--writer-markdown-current-scene.md",
+        "sha256": "752a0280d1bfdc197650eb33a862bb8d38454025623792892c6b65436edc952d"
       }
     ],
     "followupRepair": {
