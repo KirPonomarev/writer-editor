@@ -32,12 +32,24 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
   // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
   const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
-  const literal = committed.match(/^const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
-  assert.ok(literal, 'candidate must declare its complete dependency security binding successor');
+  const literal = committed.match(/^const R24_INTEROP_WRITER_MARKDOWN_CURRENT_SCENE_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
+  assert.ok(literal, 'candidate must declare its complete current Markdown binding successor');
   const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
-  assert.equal(current.id, 'YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028');
-  assert.equal(current.bindings.length, 373);
+  assert.equal(current.id, 'YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028');
+  assert.equal(current.bindings.length, 375);
   assert.equal(current.guards.length, 1);
+  const predecessor = '8414555d4e78a8a6fa87707bbbe1929ba9516eff';
+  assert.equal(current.successorBaseSha, predecessor);
+  const priorCommitted = git(['show', predecessor + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
+  const previousLiteral = /^const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu;
+  assert.equal(committed.match(previousLiteral)?.[0], priorCommitted.match(previousLiteral)?.[0],
+    'closed TXT carrier bytes must remain exact');
+  const priorExpected = JSON.parse(priorCommitted.match(previousLiteral)[1]);
+  const priorResult = cert.verifyR24InteropWordPromotionSuccessor({candidateSha: predecessor, git});
+  assert.equal(priorResult.status, 'PASS');
+  assert.equal(priorResult.candidateSha, predecessor);
+  assert.equal(priorResult.cellAcceptanceAuthority, false);
+  assert.deepEqual(priorResult.bindings, priorExpected.bindings);
   const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);

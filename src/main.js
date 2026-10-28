@@ -32201,6 +32201,128 @@ async function handleImportMarkdownV1(payloadRaw) {
   }
 }
 
+// This private capture grants no renderer authority and never writes project state.
+async function readCapturedCanonicalMarkdownExportSource() {
+  const projectName = currentProjectName;
+  if (typeof projectName !== 'string' || !projectName.trim()) throw Error('MARKDOWN_PROJECT_REQUIRED');
+  const projectRoot = getProjectRootPath(projectName), manifestPath = getProjectManifestPath(projectName);
+  const file = currentFilePath, subject = currentLifecycleSubjectId(), session = commentAuthoringSessionId;
+  const owner = activeStage10ApplicationBootstrap, generation = lastSignaledEditGeneration;
+  const window = mainWindow, contents = window?.webContents;
+  const stale = () => Object.assign(Error('MARKDOWN_CONTEXT_STALE'), {
+    code: 'E_MD_EXPORT_CONTEXT_STALE', reason: 'markdown_context_stale',
+  });
+  const assertContext = () => {
+    if (!evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+      productCommandRecord: getProductCommandRecord(MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID) }).allowed
+      || !decideCommandEntitlement(MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID, getProductEntitlementTier()).available) {
+      throw Object.assign(Error('MARKDOWN_CAPABILITY_DENIED'), {
+        code: 'E_MD_EXPORT_CAPABILITY_DENIED', reason: 'markdown_capability_denied',
+      });
+    }
+    if (projectName !== currentProjectName || projectRoot !== getProjectRootPath()
+      || file !== currentFilePath || subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId
+      || owner !== activeStage10ApplicationBootstrap || generation !== lastSignaledEditGeneration
+      || window !== mainWindow || !window || window.isDestroyed() || contents !== window.webContents || contents.isDestroyed()
+      || isDirty || autoSaveInProgress) throw stale();
+  };
+  assertContext();
+  return queueDiskOperation(async () => {
+    assertContext();
+    const rootIdentity = await fs.lstat(projectRoot, { bigint: true }), physicalRoot = await fs.realpath(projectRoot);
+    if (!rootIdentity.isDirectory() || rootIdentity.isSymbolicLink()) throw stale();
+    const sameVersion = (a, b) => ['dev', 'ino', 'size', 'mtimeNs', 'ctimeNs', 'nlink'].every(key => a[key] === b[key]);
+    const readSource = async sourcePath => {
+      assertContext();
+      if (!isAllowedFilePath(sourcePath)) throw stale();
+      const before = await fs.lstat(sourcePath, { bigint: true }), physicalPath = await fs.realpath(sourcePath);
+      const relative = path.relative(physicalRoot, physicalPath);
+      if (!before.isFile() || before.isSymbolicLink() || before.nlink !== 1n
+        || !relative || relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw stale();
+      const bytes = await fs.readFile(sourcePath);
+      new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      if (!sameVersion(before, await fs.lstat(sourcePath, { bigint: true }))
+        || physicalPath !== await fs.realpath(sourcePath)) throw stale();
+      assertContext();
+      return { path: sourcePath, physicalPath, bytes, identity: before };
+    };
+    const manifestSource = await readSource(manifestPath), sceneSource = await readSource(file);
+    const manifest = JSON.parse(manifestSource.bytes.toString('utf8'));
+    if (!isPlainObjectValue(manifest) || manifest.schemaVersion !== PROJECT_MANIFEST_SCHEMA_VERSION
+      || !normalizeStableProjectId(manifest.projectId)) throw Error('MARKDOWN_PROJECT_MANIFEST_INVALID_OR_READ_ONLY');
+    const assertCapture = async () => {
+      assertContext();
+      const root = await fs.lstat(projectRoot, { bigint: true });
+      if (!root.isDirectory() || root.isSymbolicLink() || root.dev !== rootIdentity.dev || root.ino !== rootIdentity.ino
+        || physicalRoot !== await fs.realpath(projectRoot)) throw stale();
+      for (const source of [manifestSource, sceneSource]) {
+        const current = await readSource(source.path);
+        if (!sameVersion(current.identity, source.identity) || current.physicalPath !== source.physicalPath
+          || !current.bytes.equals(source.bytes)) throw stale();
+      }
+      assertContext();
+    };
+    const targets = new Map();
+    const assertTarget = async outPath => {
+      assertContext();
+      const physical = await validateExternalWriteTarget(outPath, { projectRoot,
+        sourcePaths: [file], allowedExtensions: ['.md', '.markdown'] });
+      let current = null;
+      try { current = await fs.lstat(outPath, { bigint: true }); }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (current && (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1n)) throw stale();
+      let digest = null;
+      if (current) {
+        const handle = await fs.open(outPath, 'r');
+        try {
+          if (!sameVersion(current, await handle.stat({ bigint: true }))) throw stale();
+          const hash = crypto.createHash('sha256'), block = Buffer.alloc(64 * 1024);
+          let total = 0n;
+          while (true) {
+            const { bytesRead } = await handle.read(block, 0, block.length, null);
+            assertContext();
+            if (!bytesRead) break;
+            total += BigInt(bytesRead);
+            if (total > current.size) throw stale();
+            hash.update(block.subarray(0, bytesRead));
+          }
+          if (total !== current.size || !sameVersion(current, await handle.stat({ bigint: true }))
+            || !sameVersion(current, await fs.lstat(outPath, { bigint: true }))) throw stale();
+          digest = hash.digest('hex');
+        } finally { await handle.close(); }
+      }
+      if (targets.has(outPath)) {
+        const previous = targets.get(outPath), parent = await fs.stat(previous.ancestor, { bigint: true });
+        if (previous.digest !== digest || previous.physicalPath !== physical.physicalPath
+          || previous.parent.dev !== parent.dev || previous.parent.ino !== parent.ino
+          || previous.realParent !== await fs.realpath(previous.ancestor)
+          || (previous.identity ? !current || !sameVersion(previous.identity, current) : current !== null)) throw stale();
+      } else {
+        let ancestor = path.dirname(outPath), parent;
+        while (!parent) {
+          try { parent = await fs.stat(ancestor, { bigint: true }); }
+          catch (error) { if (error.code !== 'ENOENT') throw error; ancestor = path.dirname(ancestor); }
+        }
+        if (!parent.isDirectory()) throw stale();
+        targets.set(outPath, { identity: current, digest, physicalPath: physical.physicalPath,
+          ancestor, parent, realParent: await fs.realpath(ancestor) });
+      }
+      assertContext();
+    };
+    const source = await readCanonicalMarkdownExportSource();
+    await assertCapture();
+    const freeze = value => {
+      if (value && typeof value === 'object') {
+        for (const child of Object.values(value)) freeze(child);
+        Object.freeze(value);
+      }
+      return value;
+    };
+    return Object.freeze({ ...source, scene: freeze(source.scene), artifact: freeze(source.artifact),
+      projectId: manifest.projectId, projectRoot, sourcePaths: Object.freeze([file]), assertCapture, assertContext, assertTarget });
+  }, 'capture markdown source');
+}
+
 async function readCanonicalMarkdownExportSource() {
   if (isDirty || autoSaveInProgress) {
     throw new Error('Unsaved current scene state cannot be used as Markdown export source');
@@ -32579,19 +32701,20 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}, options
 
   const readCanonicalSource = typeof options.readCanonicalSource === 'function'
     ? options.readCanonicalSource
-    : readCanonicalMarkdownExportSource;
+    : readCapturedCanonicalMarkdownExportSource;
   let source;
   try {
     source = await readCanonicalSource();
   } catch (error) {
     return makeTypedMarkdownError(
       MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
-      'E_MD_EXPORT_SOURCE_UNAVAILABLE',
-      'main_owned_editor_source_unavailable',
+      error?.code || 'E_MD_EXPORT_SOURCE_UNAVAILABLE',
+      error?.reason || 'main_owned_editor_source_unavailable',
       { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
     );
   }
-  if (!isPlainObjectValue(source?.scene) || !isPlainObjectValue(source?.artifact)) {
+  if (!isPlainObjectValue(source?.scene) || !isPlainObjectValue(source?.artifact)
+    || !['assertCapture', 'assertContext', 'assertTarget'].every(key => typeof source[key] === 'function')) {
     return makeTypedMarkdownError(
       MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
       'E_MD_EXPORT_SOURCE_INVALID',
@@ -32625,6 +32748,11 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}, options
       };
     }
   }
+  try { await source.assertCapture(); }
+  catch (error) {
+    return makeTypedMarkdownError(MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+      error?.code || 'E_MD_EXPORT_SOURCE_UNAVAILABLE', error?.reason || 'main_owned_editor_source_unavailable');
+  }
   const result = await handleExportMarkdownV1({
     scene: source.scene,
     saveAs: true,
@@ -32633,7 +32761,7 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}, options
       : 'export.md',
     safetyMode: 'strict',
     snapshotLimit: 3,
-  });
+  }, { source });
   if (!result || result.ok !== 1) {
     return remapMarkdownLocalFileError(
       MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
@@ -32650,6 +32778,7 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}, options
     exported: result.canceled !== true && Boolean(result.outPath),
     bytesWritten: Number.isInteger(result.bytesWritten) ? result.bytesWritten : 0,
     snapshotCreated: result.snapshotCreated === true,
+    ...(result.completionWarning ? { completionWarning: cloneJsonSafe(result.completionWarning) } : {}),
     canonicalSavedSceneSource: true,
     lossReport: isPlainObjectValue(result.lossReport)
       ? cloneJsonSafe(result.lossReport)
@@ -32658,7 +32787,7 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}, options
 }
 // MARKDOWN_LOCAL_FILE_AUTHORITY_COMMAND_SURFACE_END
 
-async function handleExportMarkdownV1(payloadRaw) {
+async function handleExportMarkdownV1(payloadRaw, options = {}) {
   const payload = normalizeMarkdownExportPayload(payloadRaw);
   if (!payload) {
     return makeTypedMarkdownError(EXPORT_MARKDOWN_V1_CHANNEL, 'E_MD_PAYLOAD_INVALID', 'export_payload_invalid');
@@ -32679,6 +32808,12 @@ async function handleExportMarkdownV1(payloadRaw) {
     );
   }
 
+  const source = options.source;
+  if (payload.saveAs && (!source
+    || !['assertCapture', 'assertContext', 'assertTarget'].every(key => typeof source[key] === 'function'))) {
+    return makeTypedMarkdownError(EXPORT_MARKDOWN_V1_CHANNEL,
+      'E_MD_RENDERER_AUTHORITY_DENIED', 'canonical_saved_scene_capture_required');
+  }
   let resolvedPath;
   try {
     resolvedPath = await resolveMarkdownExportPath(payload);
@@ -32720,11 +32855,14 @@ async function handleExportMarkdownV1(payloadRaw) {
     : '';
   if (outPath) {
     try {
+      await source.assertCapture();
       await validateExternalWriteTarget(outPath, {
-        projectRoot: getProjectRootPath(),
-        sourcePaths: typeof currentFilePath === 'string' && currentFilePath ? [currentFilePath] : [],
+        projectRoot: source.projectRoot,
+        sourcePaths: source.sourcePaths,
         allowedExtensions: ['.md', '.markdown'],
       });
+      await source.assertTarget(outPath);
+      await source.assertCapture();
     } catch (error) {
       return makeTypedMarkdownError(
         EXPORT_MARKDOWN_V1_CHANNEL,
@@ -32736,6 +32874,7 @@ async function handleExportMarkdownV1(payloadRaw) {
     }
   }
 
+  let completedResult = null;
   let transform;
   try {
     transform = await loadMarkdownTransformModule();
@@ -32752,26 +32891,7 @@ async function handleExportMarkdownV1(payloadRaw) {
     const serialized = transform.serializeMarkdownV1WithLossReport(payload.scene);
     const markdown = serialized.markdown;
 
-    let writeResult = null;
-    if (outPath) {
-      const markdownIo = await loadMarkdownIoModule();
-      writeResult = await queueDiskOperation(
-        async () => {
-          await validateExternalWriteTarget(outPath, {
-            projectRoot: getProjectRootPath(),
-            sourcePaths: typeof currentFilePath === 'string' && currentFilePath ? [currentFilePath] : [],
-            allowedExtensions: ['.md', '.markdown'],
-          });
-          return markdownIo.writeMarkdownWithRecovery(outPath, markdown, {
-            maxSnapshots: payload.snapshotLimit,
-            safetyMode: payload.safetyMode,
-          });
-        },
-        'export markdown v1',
-      );
-    }
-
-    return {
+    const projectResult = writeResult => ({
       ok: 1,
       markdown,
       safetyMode: payload.safetyMode,
@@ -32783,7 +32903,38 @@ async function handleExportMarkdownV1(payloadRaw) {
       lossReport: serialized && serialized.lossReport && typeof serialized.lossReport === 'object'
         ? serialized.lossReport
         : { count: 0, items: [] },
-    };
+    });
+
+    let writeResult = null;
+    if (outPath) {
+      const markdownIo = await loadMarkdownIoModule();
+      writeResult = await queueDiskOperation(
+        async () => {
+          const authority = await getMainProjectManifestAuthority();
+          return authority.withProjectLease(source.projectId, async lease => {
+            await source.assertCapture();
+            await source.assertTarget(outPath);
+            await lease.assertOwned();
+            const written = await markdownIo.writeMarkdownWithRecovery(outPath, markdown, {
+              maxSnapshots: payload.snapshotLimit,
+              safetyMode: payload.safetyMode,
+              beforeRename: async () => {
+                await source.assertCapture();
+                await source.assertTarget(outPath);
+                await lease.assertOwned();
+                source.assertContext();
+              },
+            });
+            // Preserve the completed effect if lease finalization fails afterward.
+            completedResult = projectResult(written);
+            return written;
+          });
+        },
+        'export markdown v1',
+      );
+    }
+
+    return projectResult(writeResult);
   } catch (error) {
     let logRecord = null;
     let logPath = '';
@@ -32813,6 +32964,9 @@ async function handleExportMarkdownV1(payloadRaw) {
       logRecord = null;
       logPath = '';
     }
+    if (completedResult) return { ...completedResult, completionWarning: {
+      code: 'E_MD_EXPORT_POST_PUBLICATION_FAILURE', reason: 'export_committed_followup_failed',
+    } };
     return makeTypedMarkdownError(
       EXPORT_MARKDOWN_V1_CHANNEL,
       mappedCode,

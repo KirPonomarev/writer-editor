@@ -27711,6 +27711,156 @@
       "filePath": "test/unit/pdf-export-handler.test.js",
       "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
       "sha256": "43635cd615d6a19a74d6d0c61fdae420f233b3b376e6e0b9715e4bf2b64eaec7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "1029f65ccb534f88f10f600a463e8726aa83a6eef10ca8f23489caec2b696d69"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "f3eebb32bb68d405f6e2973ee3bb2556e837ea11fd47769227cf9011fef9d264"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "9111ad1bbfb25ca3d767a5d69c13cc9616361e5b2955cf0a742a88c8998f7e2b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "2eb0048488df4b768c4f6c83c5707ae91f57319bc083a229e78902b69b0e2aab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "549dad0d02ccc74ab5374f094e9b7958b2484105c9e3028ca3989b4a38b434f5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "1a4b216ade4f2d563d6eed6e72e3d1f486c460d155eacfa4136d5210162bab93"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "c45d00a23b38d9bc09e3733c09994ff8f361fbea4d285dd50747dd383a064ee7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-28--writer-markdown-current-scene.md",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "752a0280d1bfdc197650eb33a862bb8d38454025623792892c6b65436edc952d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "5a354ecb54aaea148b6ad2e9af36ec568e22408720886ccc0183a76a25578bff"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "1effb7576a1a98cacfd389eab76fd4a263bc885c2ddaa542084f783a2778dbb3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "ca2514336c66a5b999c5a55b35e96f482a1c395f4fb464ea1c1694159770fc4f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/main.js",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "fbb8c66ddc3201d82ed52cb0e47aeec19178ea5a864388b963686e5fd344fb70"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "9943180ca1992cd253c624d7a033092ab294b43e1eb4c909ba5d696b63e034f8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "b9fcb815e67a06d53c2fe48168ebe06467ec949f9f9ab0a46d493fdb5e2ea286"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T10:24:48.592341+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "One owner-authorized saved-current-scene Markdown repair. Main revalidates private saved source, current command authority and physical target bytes through existing dialogs, queue, lease and atomic publication. Preserve all prior source/tests/historical carriers, fixed qualification denominator and all17UNKNOWN rows. Actual native and delivery acceptance remain pending.",
+      "sha256": "b7f29fdeb262efc9373cc258502da5af5efd924a632d19f39638915710b266df"
     }
   ],
   "evidenceStampIds": [

@@ -243,6 +243,34 @@ module.exports.__pdfTest = {
     queueDiskOperation=(operation,label)=>originalQueue(async()=>{if(label==='export pdf')await hooks.queued?.();return operation();},label);
   },
   export:outPath=>handleExportPdf({confirmed:true,outPath,requestId:'pdf-main-regression'}),
+  markdown:payload=>handleMarkdownExportLocalFileCommandSurface(payload || {requestId:'markdown-main-regression'}),
+  markdownLegacy:payload=>handleExportMarkdownV1(payload),
+  prepareMarkdown(hooks={}) {
+    dialog.showSaveDialog=async()=>{await hooks.dialog?.();return hooks.cancel?{canceled:true}:{canceled:false,filePath:hooks.target};};
+    dialog.showMessageBox=async()=>{await hooks.loss?.();return {response:hooks.lossCancel?1:0};};
+    const originalQueue=queueDiskOperation;
+    queueDiskOperation=(operation,label)=>originalQueue(async()=>{
+      if(label==='export markdown v1')await hooks.queued?.();
+      return operation();
+    },label);
+    if(hooks.finalize) {
+      const originalAuthority=getMainProjectManifestAuthority;
+      getMainProjectManifestAuthority=async()=>{
+        const authority=await originalAuthority();
+        return {withProjectLease:async(id,operation)=>{
+          const result=await authority.withProjectLease(id,operation);
+          await hooks.finalize();return result;
+        }};
+      };
+    }
+    const originalIo=loadMarkdownIoModule;
+    loadMarkdownIoModule=async()=>{
+      const io=await originalIo();
+      return {...io,writeMarkdownWithRecovery:(target,text,options)=>io.writeMarkdownWithRecovery(target,text,{
+        ...options,afterTempWrite:async value=>{await options.afterTempWrite?.(value);await hooks.staging?.(value);}
+      })};
+    };
+  },
   statuses:()=>pdfTestStatuses
 };
 const pdfTestStatuses=[];`, mainPath);
@@ -788,4 +816,194 @@ test('actual Main TXT streams target versions with bounded reads and rejects gro
     }
     assert.deepEqual(await h.fs.readFile(h.scene), source);
   });
+});
+
+
+test('actual Main Markdown exports the saved current scene and preserves cancel and legacy in-memory semantics', async t => {
+  const path = require('node:path');
+  for (const kind of ['create', 'replace', 'cancel']) await t.test(kind, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'saved.md');
+    const source = await h.fs.readFile(h.scene), manifest = await h.fs.readFile(h.manifestPath);
+    const original = Buffer.from('Existing external Markdown Ω');
+    if (kind !== 'create') await h.fs.writeFile(target, original);
+    let dialogs = 0;
+    h.main.prepareMarkdown({target, cancel:kind === 'cancel', dialog:()=>{dialogs++;}});
+    const result = await h.main.markdown();
+    assert.equal(result.ok, 1, JSON.stringify(result));
+    assert.equal(dialogs, 1);
+    assert.equal(result.canceled, kind === 'cancel');
+    assert.equal(result.exported, kind !== 'cancel');
+    assert.equal(result.canonicalSavedSceneSource, true);
+    assert.equal(result.outPath, undefined);
+    assert.equal(result.snapshotPath, undefined);
+    assert.equal(JSON.stringify(result).includes(h.root), false);
+    assert.deepEqual(await h.fs.readFile(target), kind === 'cancel' ? original : Buffer.concat([source, Buffer.from('\n')]));
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+    assert.deepEqual(await h.fs.readFile(h.manifestPath), manifest);
+    assert.equal(result.snapshotCreated, kind === 'replace');
+    if (kind === 'replace') {
+      const files = await h.fs.readdir(h.root, {recursive:true});
+      const snapshots = [];
+      for (const relative of files) {
+        const file = path.join(h.root, relative);
+        if ((await h.fs.lstat(file)).isFile() && file !== target
+          && (await h.fs.readFile(file)).equals(original)) snapshots.push(relative);
+      }
+      assert.equal(snapshots.length, 1, 'the previous external bytes have one readable recovery snapshot');
+    }
+    const legacy = await h.main.markdownLegacy({scene:{schemaVersion:'markdown-scene.v1',blocks:[{type:'paragraph',text:'Legacy literal'}]}});
+    assert.equal(legacy.ok, 1);
+    assert.equal(legacy.markdown, 'Legacy literal\n');
+    assert.equal(legacy.bytesWritten, 0);
+    assert.equal(dialogs, 1, 'pure serialization opens no Save As');
+  });
+});
+
+test('actual Main Markdown refuses stale source and command context after dialog, queue and staging', async t => {
+  const path = require('node:path');
+  const kinds = ['project','document','session','owner','window','generation','dirty','autosave','capability','source-bytes','manifest-bytes'];
+  for (const boundary of ['dialog','queued','staging']) for (const kind of kinds) await t.test(`${boundary}:${kind}`, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'keep.md');
+    const original = Buffer.from('Keep existing target é 東京');
+    await h.fs.writeFile(target, original);
+    let source = await h.fs.readFile(h.scene), manifest = await h.fs.readFile(h.manifestPath), calls = 0;
+    const mutate = async () => {
+      calls++;
+      if (kind === 'source-bytes') {source=Buffer.from('New saved source Ω');await h.fs.writeFile(h.scene,source);}
+      else if (kind === 'manifest-bytes') {manifest=Buffer.from(JSON.stringify({...h.manifest,projectName:'Renamed'}));await h.fs.writeFile(h.manifestPath,manifest);}
+      else h.main.mutate(kind);
+    };
+    h.main.prepareMarkdown({target,[boundary]:mutate});
+    const result = await h.main.markdown();
+    assert.equal(calls, 1, 'the real awaited boundary was reached');
+    assert.equal(result.ok, 0, JSON.stringify(result));
+    assert.equal(result.error.reason, kind === 'capability' ? 'markdown_capability_denied' : 'markdown_context_stale');
+    assert.deepEqual(await h.fs.readFile(target), original);
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+    assert.deepEqual(await h.fs.readFile(h.manifestPath), manifest);
+    assert.equal(JSON.stringify(result).includes(h.root), false);
+    assert.equal((await h.fs.readdir(h.root)).some(name=>name.startsWith('.keep.md.tmp.')),false);
+  });
+});
+
+test('actual Main Markdown loss confirmation remains cancel-default and cannot publish a stale confirmed scene', async t => {
+  const path = require('node:path'), {pathToFileURL} = require('node:url');
+  const envelope = await import(pathToFileURL(path.resolve(__dirname, '../../src/renderer/documentContentEnvelope.mjs')).href);
+  for (const kind of ['cancel','accept','stale']) await t.test(kind, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'loss.md');
+    const content = envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Visible é 東京',marks:[{type:'underline'}]}]}]}});
+    await h.fs.writeFile(h.scene, content);
+    const original = Buffer.from('Existing loss target');await h.fs.writeFile(target,original);
+    let warnings = 0, dialogs = 0;
+    h.main.prepareMarkdown({target,lossCancel:kind==='cancel',dialog:()=>{dialogs++;},loss:()=>{warnings++;if(kind==='stale')h.main.mutate('generation');}});
+    const result = await h.main.markdown();
+    assert.equal(warnings, 1);
+    if (kind === 'stale') {
+      assert.equal(result.ok, 0, JSON.stringify(result));
+      assert.equal(result.error.reason,'markdown_context_stale');
+      assert.equal(dialogs,0);
+    } else {
+      assert.equal(result.ok,1,JSON.stringify(result));
+      assert.equal(result.canceled,kind==='cancel');
+      assert.equal(result.lossReport.count,1);
+      assert.equal(dialogs,kind==='accept'?1:0);
+    }
+    assert.deepEqual(await h.fs.readFile(target),kind==='accept'?Buffer.from('Visible é 東京\n'):original);
+    assert.equal(await h.fs.readFile(h.scene,'utf8'),content);
+  });
+});
+
+test('actual Main Markdown rejects renderer IR external publication without its private saved-scene capture', async t => {
+  const h = await pdfMainFixture(t);let dialogs=0;
+  h.main.prepareMarkdown({target:require('node:path').join(h.root,'denied.md'),dialog:()=>{dialogs++;}});
+  const result=await h.main.markdownLegacy({scene:{schemaVersion:'markdown-scene.v1',blocks:[{type:'paragraph',text:'Renderer-owned'}]},saveAs:true});
+  assert.equal(result.ok,0);
+  assert.equal(result.error.reason,'canonical_saved_scene_capture_required');
+  assert.equal(dialogs,0);
+  await assert.rejects(h.fs.stat(require('node:path').join(h.root,'denied.md')), {code:'ENOENT'});
+});
+
+
+test('actual Main Markdown target binding rejects foreign bytes with identical metadata and during final source validation', async t => {
+  const path = require('node:path');
+  for (const boundary of ['queued','staging','final-source-read']) await t.test(boundary, async t => {
+    const h=await pdfMainFixture(t),target=path.join(h.root,'foreign.md');
+    const original=Buffer.alloc(128*1024+17,75),foreign=Buffer.alloc(original.length,78);
+    await h.fs.writeFile(target,original);
+    const source=await h.fs.readFile(h.scene),manifest=await h.fs.readFile(h.manifestPath);
+    const baseline=await h.fs.lstat(target,{bigint:true});
+    const lstat=h.fs.lstat,open=h.fs.open,readFile=h.fs.readFile;
+    let changed=false,armed=false,reads=0,stats=0;
+    h.fs.lstat=async(file,options)=>{
+      const actual=await lstat(file,options);
+      if(file===target&&options?.bigint){stats++;return baseline;}
+      return actual;
+    };
+    h.fs.open=async(...args)=>{
+      const handle=await open(...args);
+      if(args[0]===target&&args[1]==='r'){
+        const stat=handle.stat.bind(handle);
+        handle.stat=async options=>options?.bigint?baseline:stat(options);
+        const read=handle.read.bind(handle);
+        handle.read=async(...values)=>{reads++;return read(...values);};
+      }
+      return handle;
+    };
+    const change=async()=>{assert.equal(changed,false);await h.fs.writeFile(target,foreign);changed=true;};
+    h.fs.readFile=async(...args)=>{
+      const result=await readFile(...args);
+      if(armed&&args[0]===h.manifestPath){armed=false;await change();}
+      return result;
+    };
+    t.after(()=>{h.fs.lstat=lstat;h.fs.open=open;h.fs.readFile=readFile;});
+    h.main.prepareMarkdown({target,...(boundary==='final-source-read'?{staging:()=>{armed=true;}}:{[boundary]:change})});
+    const result=await h.main.markdown();
+    assert.equal(changed,true,'foreign write happened at the requested real boundary');
+    assert.equal(result.ok,0,JSON.stringify(result));
+    assert.equal(result.error.reason,'markdown_context_stale');
+    assert.deepEqual(await readFile(target),foreign,'foreign bytes must survive even when all six identity fields match');
+    assert.deepEqual(await readFile(h.scene),source);
+    assert.deepEqual(await readFile(h.manifestPath),manifest);
+    assert.ok(stats>=2 && reads>=4,'actual target descriptors streamed more than two 64KiB blocks');
+  });
+});
+
+test('actual Main Markdown refuses replaced target, parent, symlink and hard-link before publication', async t => {
+  const path=require('node:path');
+  for(const kind of ['target','parent','symlink','hardlink']) await t.test(kind,async t=>{
+    const h=await pdfMainFixture(t),parent=path.join(h.root,'exports'),target=path.join(parent,'keep.md');
+    await h.fs.mkdir(parent);await h.fs.writeFile(target,'ORIGINAL');
+    const foreign=path.join(h.root,'foreign.md');await h.fs.writeFile(foreign,'FOREIGN');
+    h.main.prepareMarkdown({target,staging:async()=>{
+      if(kind==='parent'){
+        await h.fs.rename(parent,parent+'-old');await h.fs.mkdir(parent);await h.fs.writeFile(target,'FOREIGN');
+      }else{
+        await h.fs.unlink(target);
+        if(kind==='target')await h.fs.writeFile(target,'FOREIGN');
+        else if(kind==='symlink')await h.fs.symlink(foreign,target);
+        else await h.fs.link(foreign,target);
+      }
+    }});
+    const result=await h.main.markdown();
+    assert.equal(result.ok,0,JSON.stringify(result));
+    assert.match(result.error.reason,/^(markdown_context_stale|EXTERNAL_TARGET_)/u);
+    assert.equal(await h.fs.readFile(target,'utf8'),'FOREIGN');
+    assert.equal(await h.fs.readFile(foreign,'utf8'),'FOREIGN');
+    if(kind==='parent')assert.equal(await h.fs.readFile(path.join(parent+'-old','keep.md'),'utf8'),'ORIGINAL');
+  });
+});
+
+test('actual Main Markdown retains its observed committed outcome if lease finalization fails',async t=>{
+  const h=await pdfMainFixture(t),target=require('node:path').join(h.root,'committed.md');
+  const source=await h.fs.readFile(h.scene);let finalizations=0;
+  h.main.prepareMarkdown({target,finalize:async()=>{finalizations++;throw Object.assign(Error('lease finalization test'),{code:'E_TEST_AFTER_PUBLICATION',reason:'test_after_publication'});}});
+  const result=await h.main.markdown();
+  assert.equal(finalizations,1);
+  assert.equal(result.ok,1,JSON.stringify(result));
+  assert.equal(result.exported,true);
+  assert.equal(result.completionWarning.code,'E_MD_EXPORT_POST_PUBLICATION_FAILURE');
+  assert.equal(result.completionWarning.reason,'export_committed_followup_failed');
+  assert.deepEqual(await h.fs.readFile(target),Buffer.concat([source,Buffer.from('\n')]));
+  assert.deepEqual(await h.fs.readFile(h.scene),source);
+  assert.equal(JSON.stringify(result).includes(h.root),false);
 });
