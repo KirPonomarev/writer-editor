@@ -27611,6 +27611,106 @@
       "filePath": "test/unit/r24-wp100-wiring-matrix.test.js",
       "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
       "sha256": "4d9a0de291d84e7746a9d0208981ff07ea8a8e5b43b8adee30439da5a401cf2a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "dfa24d30846cef88634871e822a581ba9d2fd11abd836798270b0c5f13daf56c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "f634c0c55d32d849874756380fa6ac96425327dd4e1e1ecf891e40846d56d731"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "a265caf65c756fd81ead5360ecbd8286fdd81134424bc38fa8f3b372f5232619"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "93ac3caaac524a3686b2386b951b2da1b122e3cd16cc2d84c946f717db989cab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "f52869dfd05bfaf8e0a82032ea3ed09e1b1b89f760959844297420b46efa829f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "224248011853f4a069d6858b97ca676488b58fff0bd4dbcb847c24d019a3d672"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "215574cfc16be88b999f7a3668ae8515996cd42cb1ea91801692624775c0882a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "8bdfd417212ae35081e82abe0f01faef5ae2644f2aa859bcfb25ee6f82dc98b5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "ba9c59571319f184500633a81e87be488fca55711cf5e1593f1916b63eedeac1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T06:03:14.335063+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/pdf-export-handler.test.js",
+      "rationale": "Same TXT2176 delivery Unicode fixture producer correction after complete required Linux baseline failure. Retain the exact decomposed filename input, every original semantic assertion and both Unicode bodies; use the unchanged actual Core NFC path builder only in fixture setup. All runtime/package bytes remain H4, original errors/native/profile identities remain retained, all membership and17UNKNOWN stay fixed; fresh current source gates, artifact-equivalent actual cold, CI and merged verification remain required.",
+      "sha256": "43635cd615d6a19a74d6d0c61fdae420f233b3b376e6e0b9715e4bf2b64eaec7"
     }
   ],
   "evidenceStampIds": [

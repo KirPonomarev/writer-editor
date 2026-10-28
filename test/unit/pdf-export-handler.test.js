@@ -476,7 +476,8 @@ test('actual Main PDF reports committed output when lease finalization fails aft
 test('actual Main TXT uses the open named project and canonical order, without renderer source authority', async t => {
   const path = require('node:path');
   for (const mode of ['selected', 'all']) await t.test(mode, async t => {
-    const h = await pdfMainFixture(t), second = path.join(path.dirname(h.scene), '02 Второй é 🧭.txt');
+    const h = await pdfMainFixture(t), second = require('../../src/core/io/path-boundary.js')
+      .joinPathSegmentsWithinRoot(path.dirname(h.scene), ['02 Второй é 🧭.txt'], { resolveSymlinks: false });
     const firstText = 'Только открытый проект é 🧭 東京.', secondText = 'Вторая сцена\nCafé שלום 🧭.';
     await h.fs.writeFile(second, secondText);
     await h.fs.writeFile(path.join(h.defaultRoot, 'roman', 'foreign.txt'), 'FOREIGN DEFAULT');
