@@ -27,9 +27,10 @@ test('port adoption: both command dispatch ports consult the one table with the 
   assert.ok(main.includes("require('./core/entitlement-law-v1.cjs')"));
   const pulsePort = mainFunction(main, 'createPulseLocalHistoryPort');
   const environmentPort = mainFunction(main, 'createEnvironmentEpochPort');
+  const txtScope = mainFunction(main, 'buildSelectedScenesTxtExportScope');
   assert.equal(main.indexOf(pulsePort), main.lastIndexOf(pulsePort), 'the exact Pulse port body is unique');
   assert.equal(main.split('function createEnvironmentEpochPort(').length - 1, 1, 'the Environment port is unique');
-  const calls = main.replace(pulsePort, '').replace(environmentPort, '').match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || [];
+  const calls = main.replace(pulsePort, '').replace(environmentPort, '').replace(txtScope, '').match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || [];
   assert.equal(calls.length, 3, 'two dispatch decisions and the separate async preparation revalidation');
   assert.equal((pulsePort.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, 'Pulse revalidates the product-owned tier');
   assert.equal((environmentPort.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, 'Environment revalidates the product-owned tier');
@@ -40,7 +41,9 @@ test('port adoption: both command dispatch ports consult the one table with the 
   const environmentRefusal = environmentGuard.match(/if \(([\s\S]*?)\) refuse\('E_ENVIRONMENT_EPOCH_CONTEXT_STALE'\);/u)?.[1] || '';
   assert.equal((environmentRefusal.match(/\|\| !decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)\.available/gu) || []).length, 1);
   assert.equal((environmentPort.replace(environmentGuard, '').match(/\n  guard\(\);\n  return Object\.freeze\(\{/gu) || []).length, 1, 'the actual Environment guard is invoked before port publication');
-  assert.equal((main.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 5, 'three original decisions plus the separate Pulse and Environment port revalidations');
+  assert.equal(main.split('function buildSelectedScenesTxtExportScope(').length - 1, 1, 'the TXT scope is unique');
+  assert.equal((txtScope.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, 'TXT revalidates the product-owned tier');
+  assert.equal((main.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 6, 'three original decisions plus separate Pulse, Environment and TXT revalidations');
   for (const name of ['dispatchMenuCommand', 'dispatchProductCommandBridge']) {
     const body = mainFunction(main, name);
     assert.equal((body.match(/decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)/g) || []).length, 1, name);
@@ -49,6 +52,47 @@ test('port adoption: both command dispatch ports consult the one table with the 
   const guard = mainFunction(main, 'captureManualMapPreparationGuard');
   assert.equal((guard.match(/!decideCommandEntitlement\(commandId, getProductEntitlementTier\(\)\)\.available/g) || []).length, 1);
   assert.equal(main.includes('MAIN_FREE_PRO_COMPLEXITY_COMMAND_IDS'), false, 'the duplicated main-side set is gone');
+});
+
+test('TXT capture executes its actual current-tier refusal before and after awaited source validation', async () => {
+  const vm = require('node:vm'), source = mainFunction(readMain(), 'buildSelectedScenesTxtExportScope');
+  const prefixEnd = source.indexOf('  assertContext();\n  return queueDiskOperation');
+  const captureStart = source.indexOf('    const assertCapture = async commandId => {');
+  const captureEnd = source.indexOf('\n    const captureScene =', captureStart);
+  assert.ok(prefixEnd > 0 && captureStart > prefixEnd && captureEnd > captureStart);
+  // Execute both exact production closures. Only their finite identity and
+  // filesystem/source ports are supplied here; no copy of either guard.
+  const prefix = source.slice(source.indexOf('{') + 1, prefixEnd);
+  const capture = source.slice(captureStart, captureEnd);
+  for (const commandId of ['cmd.project.exportSelectedScenesTxtV1', 'cmd.project.exportAllScenesTxtV1']) {
+    for (const denial of ['none', 'before', 'after-await']) {
+      const decisions = [], projectRoot = '/owned/project';
+      let allowed = denial !== 'before', sourceChecks = 0, rootChecks = 0, tierReads = 0;
+      const owner = {}, window = { isDestroyed: () => false, webContents: { isDestroyed: () => false } };
+      const context = { currentProjectName: 'Project', currentFilePath: '/owned/project/scene.txt',
+        getProjectRootPath: () => projectRoot, getProjectManifestPath: () => projectRoot + '/manifest.json',
+        currentLifecycleSubjectId: () => 'subject', commentAuthoringSessionId: 'session',
+        activeStage10ApplicationBootstrap: owner, lastSignaledEditGeneration: 1, mainWindow: window,
+        isDirty: false, autoSaveInProgress: false, getWriterLocalRuntimeProfile: () => ({}),
+        getProductCommandRecord: () => ({}), evaluateWriterLocalCommandAccess: () => ({ allowed: true }),
+        getProductEntitlementTier: () => { tierReads++; return law.getProductEntitlementTier(); },
+        decideCommandEntitlement: (id, tier) => { decisions.push([id, tier]); return allowed ? law.decideCommandEntitlement(id, tier) : { available: false }; },
+        rootIdentity: { dev: 1n, ino: 2n }, physicalRoot: projectRoot, cohort: [], manifestRecord: {},
+        capturedRoster: '[]', roster: () => '[]',
+        fs: { lstat: async () => { rootChecks++; return { dev: 1n, ino: 2n, isDirectory: () => true, isSymbolicLink: () => false }; }, realpath: async () => projectRoot },
+        buildSelectedScenesTxtExportScopeForProject: async () => { sourceChecks++; await Promise.resolve(); if (denial === 'after-await') allowed = false; return { sceneCandidates: [] }; } };
+      vm.createContext(context);
+      vm.runInContext(`function captureActualTxtGuard() {${prefix}\n${capture}\nreturn assertCapture;\n}`, context);
+      const guard = context.captureActualTxtGuard(), checked = guard(commandId);
+      if (denial === 'none') await assert.doesNotReject(checked);
+      else await assert.rejects(checked, { message: 'TXT_CAPABILITY_DENIED', reason: 'txt_capability_denied' });
+      assert.equal(decisions.length, denial === 'before' ? 1 : 2);
+      assert.equal(tierReads, decisions.length, 'tier is read again for each actual guard invocation');
+      assert.equal(rootChecks, denial === 'before' ? 0 : 1);
+      assert.equal(sourceChecks, denial === 'before' ? 0 : 1);
+      for (const decision of decisions) assert.deepEqual(decision, [commandId, law.getProductEntitlementTier()]);
+    }
+  }
 });
 
 test('async preparation guard executes the product-owned decision before and after its awaited source check', async () => {

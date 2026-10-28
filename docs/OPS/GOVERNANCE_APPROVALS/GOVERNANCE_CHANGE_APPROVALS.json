@@ -27501,6 +27501,116 @@
       "filePath": "test/unit/pdf-export-handler.test.js",
       "rationale": "Same TXT target-version repair: actual Main/real ExFAT proves an in-place foreign write with identical metadata can be overwritten. Bound the target to streamed raw-byte SHA256 and preserve every physical/source/context/capability/lease guard, all prior tests and unchanged PDF/renderer/namespace behavior. Whole Main90of90 includes same-metadata queued/staging and multi-block growth/truncation controls. Fixed history and17UNKNOWN remain; native and delivery pending.",
       "sha256": "6dbc1354c354694fe3288feda658d7f7daea7ff0ef8fb7431f627f74ca9493e0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "66bf8351a9523f75e32a762e8194084fa2b37fce6f2543043270f6cc301434e8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "9d13f8e9b491bb5d6c520c405387e9b16b78de6cb7d05ad2f5258263aeba1dd2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "cd8014ecc757e328b5fd1c5ef0dc0c366036d2413e278353ba3649c6a3ade29f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "2e216324d07bbed975a674857cb70226c91bc8485d67074d91ab8d1a963c0969"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "e6dec506a2613c2a490db74a4026736c78d470ad49fc973dede5a7c37248205c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "083355a2e00993a20f30c6ecc39a08b492c138f9bdc8eb6b261e9fb16837694b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028.md",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "99882b78576482fc32a2ab3d635a9a6cd218ddfd96ff64ef4b864669cdcf9de2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "7109f47163ec0bc9a14dd6f0678bf0368fd91ce0bd8fa9355bf0a40e829f3bf7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "89f22dff359817e7ca19d06f66d87899207f70849ac1961c9d833f390c71aa7c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-ent0-port-enforcement.test.js",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "d242053bb39556d18dbb95f173e3a03c263bbb27e900222902af030b7a7d75ab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-28T04:26:02.977226+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_TXT_CURRENT_PROJECT_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/r24-wp100-wiring-matrix.test.js",
+      "rationale": "Same TXT delivery strict ENT0 oracle correction after complete H3 baseline failures. Preserve all original decisions/refusals/mutants and16channels; separately bind the necessary sixth current-tier TXT guard and actual command-bound invocation, with15additional omission/relocation/inversion/duplicate/tier/invocation mutants. Runtime stays exact H3; both tests already admitted/source-bound. Fixed history and17UNKNOWN remain; fresh final baseline/native/delivery pending.",
+      "sha256": "4d9a0de291d84e7746a9d0208981ff07ea8a8e5b43b8adee30439da5a401cf2a"
     }
   ],
   "evidenceStampIds": [
