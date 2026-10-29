@@ -5486,3 +5486,82 @@ test('actual author producer Main preserves Unicode and empty optional note thro
   t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_AUTHOR_EMPTY_NOTE_READBACK', payload, record, receipt: saved.response.mainResult.value.receipt }));
   assert.equal(payload.note, '', 'untouched optional note contains no demo author text'); assert.equal(record.note, '');
 });
+
+function wseSemanticFixtureEvidence(x, label) {
+  const directory = process.env.YALKEN_WSE_TEST_EVIDENCE_DIR; if (!directory) return;
+  assert.equal(path.isAbsolute(directory), true); assert.equal(fs.realpathSync(directory), directory);
+  const rows = [], walk = root => { for (const name of fs.readdirSync(root).sort()) {
+    const file = path.join(root, name), s = fs.lstatSync(file); assert.equal(s.isSymbolicLink(), false);
+    const row = { path: path.relative(x.h.root, file), kind: s.isDirectory() ? 'directory' : 'file', mode: s.mode & 4095,
+      uid: s.uid, gid: s.gid, dev: s.dev, ino: s.ino, size: s.size, mtimeMs: s.mtimeMs, birthtimeMs: s.birthtimeMs };
+    if (s.isFile()) { const b = fs.readFileSync(file); row.sha256 = crypto.createHash('sha256').update(b).digest('hex'); row.rawBase64 = b.toString('base64'); }
+    rows.push(row); if (s.isDirectory()) walk(file);
+  } }; walk(x.h.root);
+  const nativeMetadata = process.platform === 'darwin' ? require('node:child_process').spawnSync('/usr/bin/xattr', ['-l', '-x', '-r', x.h.root], { encoding: 'utf8' }) : null;
+  const packet = { role: 'ACTUAL_SYNTHETIC_MAIN_FIXTURE_BEFORE_EXISTING_TEARDOWN', label, root: x.h.root, rows,
+    nativeMetadata: nativeMetadata ? { status: nativeMetadata.status, stdout: nativeMetadata.stdout, stderr: nativeMetadata.stderr } : null,
+    sourceMainSha256: crypto.createHash('sha256').update(read('src/main.js')).digest('hex'),
+    limitation: 'Preserves all controlled fixture names and file bytes before existing teardown; physical restoration and native product acceptance are separate proofs.' };
+  fs.writeFileSync(path.join(directory, label + '.json.gz'), require('node:zlib').gzipSync(JSON.stringify(packet)), { flag: 'wx' });
+}
+
+for (const cold of [false, true]) test('WSE actual registered Main compares saved author fact across ' + (cold ? 'real product reopen' : 'warm query') + ' [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await pulseMainFixture(t);
+  try {
+    const payload = await temporalMainPayload(x, 'atlas.continuityFact.record', cold ? 'wse-cold' : 'wse-warm');
+    payload.factLabel = 'Проверенное обещание é 🦔'; payload.factValue = 'Сохранить записку';
+    const prior = authorIdentitySnapshot(x), applied = await x.command('atlas.continuityFact.record', payload);
+    const receipt = assertTemporalMainReceipt(applied, 'atlas.continuityFact.record'), saved = authorIdentitySnapshot(x);
+    assert.equal(saved.manifest.atlas.continuityFactLedgers.promise[payload.factId].factValue, payload.factValue);
+    assert.deepEqual(saved.events.slice(0, -1), prior.events); assert.deepEqual(saved.receipts.slice(0, -1), prior.receipts);
+    assert.deepEqual(saved.scene, prior.scene);
+    if (cold) assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+    const beforeRead = reattachmentWholeFixtureRoster(x.h), ledger = await x.pulseRead();
+    assert.deepEqual(reattachmentWholeFixtureRoster(x.h), beforeRead);
+    const diff = ledger.wseRevisionTimeObject.views.semanticDiff;
+    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_AUTHOR_FACT_AND_LEDGER_QUERY', cold, factId: payload.factId,
+      operationId: receipt.opId, state: diff.state, reason: diff.reason, previousRevision: diff.previousRevision, rows: diff.rows.length }));
+    assert.equal(diff.state, 'ready', 'real persisted author fact reaches ordinary Ledger but has no baseline');
+    const row = diff.rows.find(row => row.factId === payload.factId);
+    assert.ok(row); assert.equal(row.change, 'ADDED'); assert.equal(row.afterValue, payload.factValue);
+    assert.ok(diff.previousRevision); assert.equal(ledger.wseRevisionTimeObject.authority.persistence, false);
+    assert.equal(ledger.pulseClaim.privacy.collectionStatus, 'OPTED_OUT');
+  } finally { wseSemanticFixtureEvidence(x, cold ? 'cold-add' : 'warm-add'); }
+});
+
+test('WSE actual Main compares replacement with exact previous fact value and refuses forged renderer baseline', async t => {
+  const x = await pulseMainFixture(t);
+  try {
+    const payload = await temporalMainPayload(x, 'atlas.continuityFact.record', 'wse-replace');
+    payload.factValue = 'Первое значение é'; assertTemporalMainReceipt(await x.command('atlas.continuityFact.record', payload), 'atlas.continuityFact.record');
+    const original = JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.continuityFactLedgers.promise[payload.factId];
+    assertTemporalMainReceipt(await x.command('atlas.continuityFact.record', { ...payload, factValue: 'Второе значение 🦔', expectedFactHash: x.hash(original) }), 'atlas.continuityFact.record');
+    const before = reattachmentWholeFixtureRoster(x.h);
+    const result = await x.h.query('query.atlasContinuityLedgerSurface', { projectId: x.projectId, explicitOpen: true,
+      previousSnapshot: { projectId: x.projectId, revisionId: 'forged', facts: [] } });
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+    const diff = result.atlasContinuityLedgerSurface.wseRevisionTimeObject.views.semanticDiff;
+    assert.equal(diff.state, 'ready'); assert.notEqual(diff.previousRevision, 'forged');
+    const row = diff.rows.find(row => row.factId === payload.factId); assert.ok(row);
+    assert.equal(row.change, 'CHANGED'); assert.equal(row.beforeValue, payload.factValue); assert.equal(row.afterValue, 'Второе значение 🦔');
+  } finally { wseSemanticFixtureEvidence(x, 'replace'); }
+});
+
+for (const fault of ['owner', 'generation', 'lifecycle']) test('WSE actual Main drops Ledger after awaited ' + fault + ' drift without writes', async t => {
+  const x = await pulseMainFixture(t);
+  try {
+    const payload = await temporalMainPayload(x, 'atlas.continuityFact.record', 'wse-drift-' + fault);
+    assertTemporalMainReceipt(await x.command('atlas.continuityFact.record', payload), 'atlas.continuityFact.record');
+    await x.pulseRead(); let reached = false;
+    x.h.main.__host.afterCoreBinding(() => { reached = true;
+      if (fault === 'owner') x.h.main.__host.revokeOwner();
+      if (fault === 'generation') x.h.main.__host.invalidateGeneration();
+      if (fault === 'lifecycle') x.h.main.__host.invalidateLifecycle();
+    });
+    const before = reattachmentWholeFixtureRoster(x.h), result = await x.h.query('query.atlasContinuityLedgerSurface', {
+      projectId: x.projectId, explicitOpen: true, rowLimit: 17 });
+    assert.equal(reached, true, 'actual awaited product Core binding must execute'); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+    assert.equal(result.ok, false, 'query must not publish the old owner, lifecycle or generation');
+    assert.equal(result.error.code, 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED');
+  } finally { wseSemanticFixtureEvidence(x, 'drift-' + fault); }
+});

@@ -5394,3 +5394,6 @@ Exact74eedd61 candidate passed14source commands, the complete baseline with3745p
 ## 2026-10-29
 
 - YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029: local source/build7d5d46a3 completes actual compact/full PLAN linked navigation, new Unicode B input without separate Save, NFD rename, normal Quit and cold B→renamed-A via Enter. Whole A/B bytes, map,4events and4receipts persist. H2 failed70file/H3 warm82file/cold83file profiles are preserved, physically restored and independently reread; original product and reader failures retained. Source-bound606/606 and literal40/40 Node22 controls pass; all mandatory final gates/CI/delivery/exact merged verification pending. All17fullMac rows remain UNKNOWN; private/default impact remains UNKNOWN. Original5207ed6 base and all prior histories/anchors/profiles stay protected.
+
+
+2026-10-29 — YALKEN_WSE_SEMANTIC_DIFF_20261029: clean aef9c207/preflight0; prior real native diagnostic closed; current task admitted for causal test phase, runtime unchanged. Full Mac goal remains active.

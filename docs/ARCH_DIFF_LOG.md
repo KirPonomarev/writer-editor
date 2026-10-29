@@ -702,3 +702,8 @@ YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027 native warm03 at fefa5a216cea11a3f
 ## 2026-10-29 — manual-map exact scene navigation diagnostic order
 
 Task YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029 follows the direct owner audit ordering: exact committed diagnostic build and fresh owned native admission after cheap real-caller/ownership/refusal proofs, before a new full wave. All final required gates and ordinary delivery remain. Rollback is the ordinary revert of this bounded route; original author data/evidence remain. The unmodified schema requires APPLICABLE_LAZYWEB_FIRST for PRODUCT_UI; this legacy enum is vocabulary only. Explicit owner restrictions override its service-order wording: no Lazyweb discovery/use. Current repository Design OS and UI Craft govern the existing inspector action; no new visual language or service dependency.
+
+## 2026-10-29 — WSE semantic comparison diagnostic order
+
+Task YALKEN_WSE_SEMANTIC_DIFF_20261029 retains the owner-authorized early diagnostic order: frozen causal controls and exact committed native proof before the full final gate wave. Current mechanical witnesses change only source membership and hashes; historical carriers, predicates, inventory classifications and17UNKNOWN remain. No architecture or product authority exception is added.
+Rollback is one ordinary revert; all original failures, history, source and owned profiles remain recoverable.
