@@ -858,7 +858,10 @@
     "test/unit/r24-wp201-project-transaction-mutants.test.js",
     "docs/tasks/2026-10-29--certification-applicable-inputs.md",
     "test/unit/manual-map-scene-navigation.test.js",
-    "docs/tasks/2026-10-29--manual-map-scene-navigation.md"
+    "docs/tasks/2026-10-29--manual-map-scene-navigation.md",
+    "src/derived/atlas/deriveAtlasContinuityLedgerSurface.mjs",
+    "test/unit/r24-wp605-wse-revision-time-object-integration.test.js",
+    "docs/tasks/2026-10-29--wse-semantic-diff.md"
   ],
   "protectedFiles": [
     {
@@ -1087,7 +1090,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "179e59b44dd1e4aa2854e934e0efcdb44ae9b91354599274c71dce27568dd55d"
+        "sha256": "9bb48aff779dd67164120bbfe1dcfe0a4cf6442382afc6f2727ade4741866bc7"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1111,7 +1114,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "5a4545ca717a6c1f3e7714ca4b8e876b216b019e9e5d1fce35da7c611b07920c"
+        "sha256": "6200144de3fc59c6ac3bec608ea777225b5d650eabf17fd411c69bb5b6fb52e8"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -2331,7 +2334,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "90dc37cf994245e44ad8c59959bb5b39d2a36dd7ada23f03ea18791472de27e5"
+        "sha256": "2c051352377a29f014223f2fec51efe19c45d515e02cbe931b6b23c1c9b3a848"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2779,15 +2782,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "ad43789e58ea0eef3585e2811932fdb810d65eba6bbc632712f107522691f843"
+        "sha256": "c68a756412184ee082168f7b82ea95b87f6bafbf894ea5ea58d33599c9973e37"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "99e2909e66df424458a4457d661a82ae09443edbdc0fb6681c33411df773d6c0"
+        "sha256": "a5d244eb9d0b10cf535030659f4beb52bc699d2d0a2cf162316060962711624e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "35367e3e87bca9a5605ce3699b41acfe4ee677ec940ce139e18460ff4d594098"
+        "sha256": "70b094e782f376d68ebe6fddc6d5988728d68fdbbe49ac6864648105cf759e7d"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3147,7 +3150,7 @@
       },
       {
         "path": "src/product/stage10ProductWiring.mjs",
-        "sha256": "97a612b5901eddd6062b3249150906456364c6d1d06a3182c9e6e2c435cb8a68"
+        "sha256": "30d10f86ccddd6aede0612bee45befe2d7b447cd6ecb9ac680666d0d18155160"
       },
       {
         "path": "src/product/stage10MainPersistenceAdapter.mjs",
@@ -3327,7 +3330,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "0e7585cbcd47571de2d566bfb4a2ee73b59450467b5de73a5ba855e5741bf0ab"
+        "sha256": "18daf24d363833e353f46475fae75e92dbe9caeafb10bc4b7027f3fa314aa8d8"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3351,7 +3354,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "960e43c0379cbf7ec42565646cb52b37b1dadcc115cd1407a82dbe0749aac2e2"
+        "sha256": "83ccb307710ece758b3df98f45889e9dc951ccb698ae3dd1e43cb9bd05c27f3f"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3443,7 +3446,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "d4dc701b03d6205bf41d0e7ad91a2ef09a103be0eeb85e604601f1c8535c6679"
+        "sha256": "2ac8e1dcf235f64c0749f2e2a1dee839f5c5642c27a2536166064c832a39697c"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3791,7 +3794,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
-        "sha256": "e7798a21315b39016a97dbea4570274188539024b2c3f235d816ccecc5d595e3"
+        "sha256": "fdbd0fc50c37982e870266e421c196871dc22eec407ec4b7255a0edb8a5aa75f"
       },
       {
         "path": "test/unit/stage10-imported-project-copy.test.mjs",
@@ -3896,6 +3899,18 @@
       {
         "path": "docs/tasks/2026-10-29--manual-map-scene-navigation.md",
         "sha256": "709c12d4fc53b166f2fafb3cc1826806287ac0135ba35a8a846f5ffeca81ef65"
+      },
+      {
+        "path": "src/derived/atlas/deriveAtlasContinuityLedgerSurface.mjs",
+        "sha256": "fc41f18eed4756db0ab97b57bc637dec857cb6b1ff6af027a1ab5642f6d3cb58"
+      },
+      {
+        "path": "test/unit/r24-wp605-wse-revision-time-object-integration.test.js",
+        "sha256": "342bbe52162d3d2acbbdd7d8eaf263f0c09c90cfcfe0d73fa1da9e102b86b20f"
+      },
+      {
+        "path": "docs/tasks/2026-10-29--wse-semantic-diff.md",
+        "sha256": "3e775297841769968805d85b6adca492eeae1a9d33d366c3fe5f40e5b262a933"
       }
     ],
     "followupRepair": {

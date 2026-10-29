@@ -388,7 +388,7 @@ function emptyState(projectId, reason = '') {
   };
 }
 
-function buildState({ project, projectId, findingsResult, factLedgersResult, seriesPackageResult, rowLimit, meta }) {
+function buildState({ project, projectId, findingsResult, factLedgersResult, seriesPackageResult, rowLimit, previousSnapshot = null, meta }) {
   const sceneOrdinalById = buildSceneOrdinalIndex(project);
   const factsById = new Map((Array.isArray(factLedgersResult.value?.facts) ? factLedgersResult.value.facts : [])
     .map((fact) => [normalizeString(fact.id), fact]));
@@ -432,7 +432,7 @@ function buildState({ project, projectId, findingsResult, factLedgersResult, ser
     generation: 0,
     currentGeneration: 0,
     currentFacts: allFacts,
-    previousSnapshot: null,
+    previousSnapshot,
     retconProposal: null,
     timeKnowledgeInput: null,
     objectCustodyEvents: null,
@@ -550,6 +550,7 @@ export function deriveAtlasContinuityLedgerSurface(input = {}) {
         factLedgersResult: factLedgers,
         seriesPackageResult: seriesPackage,
         rowLimit: params.rowLimit,
+        previousSnapshot: params.previousSnapshot ?? null,
         meta,
       });
     },

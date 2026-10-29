@@ -342,7 +342,7 @@ function validatePersistedBundle(bundleInput, projectId) {
   };
 }
 
-function replayPersistedSession(session, authorityStore) {
+function replayPersistedSession(session, authorityStore, capturePreviousState = null) {
   const replay = buildOperationReplayReport({
     projectId: session.projectId,
     eventLog: session.eventLog,
@@ -355,7 +355,11 @@ function replayPersistedSession(session, authorityStore) {
     requireCapabilityRevalidation: true,
     requireExecutableOperationEnvelope: true,
     hashState: (state) => hashCoreState(state),
-    applyCommand: applyStage10ReplayCommand,
+    applyCommand: capturePreviousState ? (state, command) => {
+      const result = applyStage10ReplayCommand(state, command);
+      if (result?.ok === true) capturePreviousState(command.event?.operationEnvelope?.recoveryProvenance?.coreState || state);
+      return result;
+    } : applyStage10ReplayCommand,
   });
   if (!replay.ok) {
     throw typedError(
@@ -1725,8 +1729,44 @@ export async function createStage10ProductRuntime(input = {}) {
     return result;
   }
 
+  // A derived before-image of the last verified authoring operation, never a new store.
+  function getPreviousCoreRevision() {
+    if (transactionFailed) {
+      throw typedError('E_STAGE10_RUNTIME_REOPEN_REQUIRED', 'stage10.previousCoreRevision', 'FAILED_TRANSACTION_REQUIRES_FRESH_REOPEN');
+    }
+    if (session.eventLog.events.length > 10_000) {
+      throw typedError('E_STAGE10_HISTORY_REPLAY_BUDGET', 'stage10.previousCoreRevision', 'HISTORY_REPLAY_BUDGET');
+    }
+    const verified = validateCommandReceiptAuthorityStore(authorityState.store, {
+      projectId: session.projectId, eventLog: session.eventLog,
+      sessionRef: session.commandReceiptAuthorityHeadRef, requireSessionRef: true,
+    });
+    if (!verified.ok) throw verified.error;
+    const anchor = validateStage10IntegrityAnchor(authorityState.integrityAnchor, {
+      projectId: session.projectId, session, authorityStore: verified.store,
+      previousAnchor: authorityState.previousIntegrityAnchor,
+    });
+    if (!anchor.ok) throw anchor.error;
+    let previous = null;
+    replayPersistedSession(session, verified.store, state => { previous = state; });
+    if (!previous?.data?.projects?.[session.projectId]) return null;
+    const event = session.eventLog.events.at(-1), previousHash = hashCoreState(previous);
+    const expectedHash = event.operationEnvelope?.recoveryProvenance?.stateHash || event.preStateHash;
+    if (previousHash !== expectedHash) {
+      throw typedError('E_STAGE10_PREVIOUS_REVISION_HASH', 'stage10.previousCoreRevision', 'PREVIOUS_REVISION_HASH_MISMATCH');
+    }
+    return deepFreeze({
+      projectId: session.projectId,
+      revisionId: `stage10-before:${event.opId}:${previousHash}`,
+      authorityHeadDigest: verified.store.currentHead.authorityHeadDigest,
+      currentFactLedgersHash: hashCanonicalValue(session.coreState.data.projects[session.projectId]?.atlas?.continuityFactLedgers || {}),
+      coreState: cloneJson(previous),
+    });
+  }
+
   return {
     dispatchVisibleCommand,
+    getPreviousCoreRevision,
     getSession: () => cloneJson(session),
     getReadModels: () => buildStage10ProductReadModels(session, capabilitySnapshot, {
       authorityStore: authorityState.store,

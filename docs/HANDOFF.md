@@ -1,3 +1,15 @@
+## 2026-10-29 — WSE semantic comparison: prior revision admitted for causal proof
+
+TASK_ID: YALKEN_WSE_SEMANTIC_DIFF_20261029
+STATUS: WORKING_SOURCE_UNACCEPTED
+BINDING_BASE_SHA: aef9c207b19169c426536a20164c82538f73bba9
+
+PR2180 is closed at literal aef9c207 with complete normal delivery. The subsequent owned Writer/Atlas/Pulse journey normally quit both warm and cold processes; raw comparisons22/24 and complete187member105file physical restorations are preserved on T777. Original four events and receipts remain exact prefixes before three new Atlas author commands; map and sceneB remain exact. Input-method failures are retained, and all17Mac qualifications remain UNKNOWN. These current receipts supersede earlier pending narratives below.
+
+The admitted working source connects the verified previous Stage10 authoring revision to existing Semantic diff, with owner/source/head/cache guards. Frozen03 controls pass21of21 without skip; six registered Main scenarios pass6of6 in a selected diagnostic, not the whole suite. Both causal and corrected six-fixture sets have all278members115files physically restored and independently reread. Original RED and failed methods remain. No new history writer, schema, renderer or profile change. All10033base-source and10014protected readbacks, fresh main, declaration/preflight0 and taskE0 preceded runtime edits. Full source gates, exact clean build/native and normal delivery remain open.
+
+Full V6/DNA5 Writer, all Atlas stages/cells/projections, WSE/Pulse/ENV-EPOCH-01 and17qualification rows remain unaccepted. One bounded semantic comparison does not close that objective. Original profiles/raw/frozen/history/private-incident UNKNOWN and audit/IME/release limits remain; no agents, chats, timers, signing, notarization or publication. All original history below is preserved.
+
 ## 2026-10-29 — Manual-map exact scene navigation observed; full delivery pending
 
 PR2178 rename and PR2179 certification are closed at normal merged5207ed628a7fbaf7400703d5392d35a966bb2beb. Their retained closure binds20PR/20literal-main CI and12merged gates; the historical app was built from2f5d9b19fed2996e0a7447c43c286977bf17cc7a with product-input equivalence, not an M9 build. Those deliveries remain closed.

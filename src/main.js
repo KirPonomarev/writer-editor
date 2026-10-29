@@ -19429,14 +19429,16 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
   const synchronized = atlasAnalyticsScheduler.synchronizeSource(source);
   if (!synchronized.ok) return synchronized;
   const pulseContext = queryId === ATLAS_CONTINUITY_LEDGER_SURFACE_QUERY_ID && payload?.explicitOpen === true
-    ? [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(), app.getPath('userData')] : null;
+    ? [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(), app.getPath('userData'),
+      currentLifecycleSubjectId(), commentAuthoringSessionId, lastSignaledEditGeneration] : null;
+  const historyHeadDigest = pulseContext ? activeStage10ApplicationBootstrap?.getRuntime?.()?.getCommandReceiptAuthorityHead?.()?.authorityHeadDigest || '' : '';
   const pulseSnapshot = pulseContext ? await readPulseContinuityClaim() : null;
   const pulseHash = pulseSnapshot ? computeHash(JSON.stringify(pulseSnapshot)) : '';
   const diagnosticsPolicy = queryId === ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_ID ? readAtlasDiagnosticsPolicySnapshot() : null;
   const diagnosticsPolicyHash = diagnosticsPolicy ? computeHash(JSON.stringify(diagnosticsPolicy)) : '';
   const requestKey = computeHash(JSON.stringify(canonicalizeComparableValue({ queryId, payload,
     ...(diagnosticsPolicy ? { diagnosticsPolicyHash } : {}),
-    ...(pulseSnapshot ? { pulseHash } : {}),
+    ...(pulseSnapshot ? { pulseHash, historyHeadDigest } : {}),
   })));
   const dependencyKeys = Object.keys(source.dependencyRevisions).sort();
   const scheduled = await atlasAnalyticsScheduler.schedule({
@@ -19472,7 +19474,9 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     };
   }
   if (pulseSnapshot && (pulseHash !== computeHash(JSON.stringify(await readPulseContinuityClaim()))
-    || pulseContext.some((value, index) => value !== [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(), app.getPath('userData')][index]))) {
+    || historyHeadDigest !== (activeStage10ApplicationBootstrap?.getRuntime?.()?.getCommandReceiptAuthorityHead?.()?.authorityHeadDigest || '')
+    || pulseContext.some((value, index) => value !== [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(), app.getPath('userData'),
+      currentLifecycleSubjectId(), commentAuthoringSessionId, lastSignaledEditGeneration][index]))) {
     return { ok: false, error: { code: 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED', reason: 'PULSE_SNAPSHOT_CHANGED' } };
   }
   return {
@@ -20281,11 +20285,35 @@ async function handleWorkspaceAtlasContinuityLedgerSurfaceQuery(payload = {}, pu
         atlasContinuityLedgerSurface: makeAtlasContinuityLedgerSurfaceFallback(safePayload.projectId, 'ATLAS_PROJECT_MISMATCH'),
       };
     }
+    const owner = activeStage10ApplicationBootstrap, runtime = owner?.getRuntime?.();
+    if (owner && owner.getProjectId() !== projectId) {
+      throw makeAtlasProductSceneProjectionError('E_WSE_BASELINE_PROJECT_MISMATCH', 'WSE_BASELINE_PROJECT_MISMATCH');
+    }
+    const previous = runtime?.getPreviousCoreRevision?.() || null;
+    let previousSnapshot = null;
+    if (previous) {
+      const hash = require('./core/browser-safe-hash.cjs').hashCanonicalValue;
+      const currentLedgers = coreState.data.projects[projectId].atlas?.continuityFactLedgers || {};
+      if (previous.projectId !== projectId || previous.currentFactLedgersHash !== hash(currentLedgers)) {
+        throw makeAtlasProductSceneProjectionError('E_WSE_BASELINE_SOURCE_MISMATCH', 'WSE_BASELINE_SOURCE_MISMATCH');
+      }
+      const { deriveAtlasContinuityFactLedgers } = await import(pathToFileURL(path.join(__dirname,
+        'derived', 'atlas', 'deriveAtlasContinuityFactLedgers.mjs')).href);
+      const past = deriveAtlasContinuityFactLedgers({ coreState: previous.coreState,
+        params: { projectId }, capabilitySnapshot: { capabilities: { atlasContinuityFactLedgers: true } } });
+      if (!past.ok) throw makeAtlasProductSceneProjectionError(past.error.code, past.error.reason);
+      if (owner !== activeStage10ApplicationBootstrap || runtime !== owner?.getRuntime?.()
+        || previous.authorityHeadDigest !== runtime.getCommandReceiptAuthorityHead().authorityHeadDigest) {
+        throw makeAtlasProductSceneProjectionError('E_WSE_BASELINE_CONTEXT_STALE', 'WSE_BASELINE_CONTEXT_STALE');
+      }
+      previousSnapshot = { projectId, revisionId: previous.revisionId, facts: past.value.facts };
+    }
     const continuityLedger = continuityLedgerModule.deriveAtlasContinuityLedgerSurface({
       coreState,
       params: {
         projectId,
         rowLimit: safePayload.rowLimit,
+        previousSnapshot,
       },
       capabilitySnapshot: {
         platformId: 'node',

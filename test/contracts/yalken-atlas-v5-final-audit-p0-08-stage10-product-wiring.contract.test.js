@@ -350,3 +350,76 @@ test('P0 08 continuity: operation65 retains all earlier activation evidence thro
     assert.equal(reopened.getSession().uiEvents[64].directBridge, false);
   });
 });
+
+async function previousWseRevisionRuntimeFixture() {
+  const api = await importModule('src/product/stage10ProductWiring.mjs');
+  const core = await importModule('src/core/runtime.mjs');
+  let bundle = null, failNext = false; const commits = [], snapshots = new Map();
+  const port = {
+    readStage10State: async () => bundle && structuredClone(bundle),
+    commitStage10State: async (id, next) => {
+      if (failNext) { failNext = false; throw new Error('OWNED_TEST_COMMIT_FAILURE'); }
+      bundle = { ...structuredClone(next), previousIntegrityAnchor: bundle ? structuredClone(bundle.integrityAnchor) : null }; commits.push(structuredClone(bundle));
+      return { ok: true, storageWritten: true, readbackVerified: true, bundle: structuredClone(bundle) };
+    },
+    writeRecoverySnapshot: async (id, key, value) => { snapshots.set(key, structuredClone(value)); return { ok: true, atomicWrite: true, readbackVerified: true }; },
+    readRecoverySnapshot: async (id, key) => structuredClone(snapshots.get(key) || null),
+  };
+  const projectId = 'wse-previous-revision', runtime = await api.createStage10ProductRuntime({ projectId, persistencePort: port });
+  const activation = { mode: api.STAGE10_ACTIVATION_MODES.PHYSICAL_POINTER_OR_KEYBOARD, controlId: 'owned-revision-test', visibleControl: true };
+  return { api, core, runtime, projectId, port, commits, activation, bundle: () => structuredClone(bundle), fail: () => { failNext = true; } };
+}
+
+test('P0 08 WSE previous revision is verified immutable history without another persisted snapshot', async () => {
+  const f = await previousWseRevisionRuntimeFixture(), r = f.runtime;
+  assert.equal(typeof r.getPreviousCoreRevision, 'function', 'read-only previous-revision product projection is absent');
+  assert.equal(r.getPreviousCoreRevision(), null);
+  assert.equal((await r.dispatchVisibleCommand('project.create', { projectId: f.projectId, sceneId: 'scene-1' }, f.activation)).ok, true);
+  assert.equal(r.getPreviousCoreRevision(), null, 'no previous project exists before its creation');
+  const previous = r.getSession().coreState;
+  assert.equal((await r.dispatchVisibleCommand('project.applyTextEdit', { projectId: f.projectId, sceneId: 'scene-1', text: 'Точная сохранённая версия é 🦔' }, f.activation)).ok, true);
+  const before = f.bundle(), count = f.commits.length, result = r.getPreviousCoreRevision();
+  assert.equal(result.projectId, f.projectId); assert.deepEqual(result.coreState, previous);
+  assert.equal(Object.isFrozen(result), true); assert.equal(Object.isFrozen(result.coreState.data), true);
+  assert.ok(result.revisionId); assert.equal(result.authorityHeadDigest, r.getCommandReceiptAuthorityHead().authorityHeadDigest);
+  assert.deepEqual(r.getPreviousCoreRevision(), result); assert.deepEqual(f.bundle(), before); assert.equal(f.commits.length, count);
+  const reopened = await f.api.reopenStage10ProductRuntime({ projectId: f.projectId, persistencePort: f.port });
+  assert.deepEqual(reopened.getPreviousCoreRevision(), result);
+});
+
+test('P0 08 WSE failed authoring transaction refuses historical projection until real reopen', async () => {
+  const f = await previousWseRevisionRuntimeFixture(), r = f.runtime;
+  assert.equal((await r.dispatchVisibleCommand('project.create', { projectId: f.projectId, sceneId: 'scene-1' }, f.activation)).ok, true);
+  const before = f.bundle(); f.fail();
+  await assert.rejects(r.dispatchVisibleCommand('project.applyTextEdit', { projectId: f.projectId, sceneId: 'scene-1', text: 'must not commit' }, f.activation), /OWNED_TEST_COMMIT_FAILURE/u);
+  assert.deepEqual(f.bundle(), before);
+  assert.throws(() => r.getPreviousCoreRevision(), error => error.code === 'E_STAGE10_RUNTIME_REOPEN_REQUIRED');
+  const reopened = await f.api.reopenStage10ProductRuntime({ projectId: f.projectId, persistencePort: f.port });
+  assert.equal(reopened.getPreviousCoreRevision(), null); assert.deepEqual(f.bundle(), before);
+});
+
+function actualPreviousWseRevisionGetter(context) {
+  const source = readText('src/product/stage10ProductWiring.mjs'), start = source.indexOf('  function getPreviousCoreRevision() {');
+  const end = source.indexOf('\n  }\n', start); assert.ok(start >= 0 && end > start, 'previous revision product method is not present yet');
+  return require('node:vm').runInNewContext('(' + source.slice(start, end + 4).trim() + ')', context);
+}
+
+test('P0 08 WSE actual getter bounds replay before validation and admits the exact boundary [FINITE_GUARD_NOT_FULL_REPLAY]', () => {
+  for (const count of [10_000, 10_001]) {
+    let validations = 0;
+    const context = { transactionFailed: false, session: { eventLog: { events: new Array(count) } }, authorityState: { store: {} },
+      typedError: (code, op, reason) => ({ code, op, reason }),
+      validateCommandReceiptAuthorityStore: () => { validations += 1; return { ok: false, error: { code: 'FINITE_VALIDATION_REACHED' } }; } };
+    const get = actualPreviousWseRevisionGetter(context);
+    assert.throws(get, error => error.code === (count === 10_001 ? 'E_STAGE10_HISTORY_REPLAY_BUDGET' : 'FINITE_VALIDATION_REACHED'));
+    assert.equal(validations, count === 10_001 ? 0 : 1);
+  }
+});
+
+test('P0 08 WSE actual getter refuses failed integrity before historical replay [FINITE_GUARD_NOT_FULL_REPLAY]', () => {
+  let replayed = false;
+  const get = actualPreviousWseRevisionGetter({ transactionFailed: false, session: { projectId: 'p', eventLog: { events: [] } }, authorityState: { store: {} },
+    validateCommandReceiptAuthorityStore: () => ({ ok: true, store: {} }), validateStage10IntegrityAnchor: () => ({ ok: false, error: { code: 'FINITE_INTEGRITY_REFUSAL' } }),
+    replayPersistedSession: () => { replayed = true; } });
+  assert.throws(get, error => error.code === 'FINITE_INTEGRITY_REFUSAL'); assert.equal(replayed, false);
+});
