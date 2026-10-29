@@ -28751,6 +28751,16 @@
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
       "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
       "sha256": "39dbad55068bd3a93cce5f92b8036b46ef722831e8cd298243576cd7f7d5738d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T04:16:55.276585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same single certification contour: real read-only current-alias counterexample would redefine an existing composed tuple. Bind the immutable named tuple directly to its own named8binding delta; reserve current alias for the generic committed-source contract. Exact full383tuple equality and preservation under an injected next-alias retarget pass; all selection, byte/tree/ancestry/legacy predicates and historical carriers remain unchanged. No product input, cache, runner, service, gate exclusion or release acceptance. Official full exact-final-SHA CI and relevant merged verification remain required.",
+      "sha256": "83d251d3b91fc8dafe34619845cfa39d5f14a745330be1fd9b4c4b8e00c38494"
     }
   ],
   "evidenceStampIds": [
