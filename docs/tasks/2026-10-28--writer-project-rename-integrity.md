@@ -1,0 +1,136 @@
+# Project rename preserves verified Writer history and Save
+
+TASK_ID: YALKEN_WRITER_PROJECT_RENAME_20261028
+TYPE: OPS_WRITE
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+EXECUTION_CANON: v3.13a-final
+STATUS: OPEN_UNACCEPTED
+BINDING_BASE_SHA: 354114a4d6880755b297eb79a2f3d91ca9d0edaf
+DESIGN_TOOL_ROUTER: Existing lifecycle correction only; typed value in the validated architecture declaration.
+
+## MICRO_GOAL
+
+After a successful physical project rename, the same Writer project keeps readable verified history, Save and tree operations, and normal cold reopen. Retain exact original packet/scene bytes, stable IDs, external manifest continuation proof and all existing guards. One user outcome under the sole-executor V6 instruction after closed security2175, TXT2176 and Markdown2177. Full Mac remains unaccepted.
+
+## ARTIFACT
+
+One ordinary commit/push/PR/required-CI/merge/exact-merged verification chain. Reuse the clean merged worktree on codex/writer-project-rename-integrity-20261028. The canonical owner checkout, old WIP, profiles and all failures remain unchanged. No agents, models or new chats.
+
+## ALLOWLIST
+
+- `src/main.js`
+- `src/core/project-location-v1.cjs`
+- `src/core/project-transaction-v1.cjs`
+- `src/core/project-tree-cohort-v1.mjs`
+- `src/product/mainProjectManifestAuthority.mjs`
+- `src/product/stage10MainPersistenceAdapter.mjs`
+- `src/utils/backupManager.js`
+- `src/utils/docxImportSafeCreate.js`
+- `src/main/projectTreeReadPort.cjs`
+- `test/unit/sector-m-s27-project-rename-duplicate-move.test.js`
+- `test/unit/project-tree-identity-main.test.js`
+- `test/unit/project-location-v1.test.js`
+- `test/unit/r24-wp201-project-transaction.test.js`
+- `test/unit/r24-wp204-lifecycle-recovery-mutants.test.js`
+- `test/unit/r24-wp201-project-transaction-mutants.test.js`
+- `test/contracts/project-location-integrity.contract.test.js`
+- `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `docs/tasks/2026-10-28--writer-project-rename-integrity.md`
+- `docs/CONTEXT.md`
+- `docs/HANDOFF.md`
+- `docs/WORKLOG.md`
+- `docs/ARCH_DIFF_LOG.md`
+- `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
+- `docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
+- `scripts/ops/rtk-interop-data-c1.mjs`
+- `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
+- `docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json`
+- `docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json`
+- `docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json`
+- `scripts/ops/release-candidate.mjs`
+
+Diff budget: at most1200added runtime lines and800added test lines in the named existing seams and one bounded Core location module. No unrelated refactor. Mechanical companions may change only required current hashes/membership, append-only governance and an explicit current successor. Preserve all historical carriers and all17UNKNOWN qualifications. Actual memberships/counts must be derived from current files; no self-authored counts as proof.
+
+## DENYLIST
+
+No renderer/preload/design/dependency/lockfile/workflow edits, new service, runtime network, generic migration framework or unrelated improvements. No rewriting retained packets, deletion/reset of history, copy-style replacement of same-project identity, display-only rename, outside-root I/O from recorded paths or relaxed digest/CAS/schema checks. No original profile repair, automatic adoption of manually moved directories, cross-project duplicate-history migration, signing, notarization, public distribution or full-release claim. No reset/stash/clean/rebase/amend/force push or foreign WIP removal.
+
+## CONTRACT / SHAPES
+
+O: Actual create + scene change + physical project rename + Save + another tree action + normal Quit/cold reopen works for the same stable project/scene IDs. Independent file hashes preserve original receipts/history; newly saved Unicode content matches literal expected bytes.
+T: Current Main lifecycle intent and capability -> existing project lease -> validated Core location binding and existing atomic manifest/directory effects -> same project files -> current-root Stage10 owner, immutable tree and Save results. No renderer path grants authority.
+H: Exact base actual lifecycle returns success but Core read fails E_TREE_COHORT_JOURNAL because retained packet.manifestPath is still the old absolute location. A read-only fixed-prefix adapter restores readability using the unchanged validator. Preserve the original logical transaction namespace, map only internal paths to the current physical root, and keep manifest continuation under the same authority namespace. This predicts readable unchanged packets and valid subsequent Save without rewriting history.
+B: All scene/packet/receipt bytes and unknown manifest data preserved except the explicitly named lifecycle manifest update and new bounded location record. Existing pending transactions refuse relocation. Dirty authoring protection, backups, recovery, capabilities and current-root identity remain mandatory. Old Undo can remain unavailable when exact manifest CAS changed; do not fabricate availability. One ordinary revert PR; conflicting runtime state is preserved.
+P: Existing cause already retained; maintained regression RED then focused Core/Main/authority/worker and negative cases, all affected and required baseline/Electron/audit/OSS/current companions/guardrails, rebuilt actual native before push, required CI and exact merged proof.
+I: Base354114a4d6880755b297eb79a2f3d91ca9d0edaf, fresh origin/main same, fixed branch, verified T7/T777, sole writer, original diagnostic packets/method hashes, exact built app and fresh owned native profile identity. Old results keep their original identities.
+
+FEATURE_INTEGRATION_MANIFEST_V1: EXISTING_PROJECT_LOCATION_CORRECTION; one bounded on-disk location metadata shape and Core adapter, no new user command, surface or independent writer. Product Core owns stable project/scene identity, metadata validation, original transaction integrity and recovery. Command Kernel owns unchanged intent/capability/lease. Design OS consumes unchanged pathless projections only. COMMAND: existing project.rename, move/archive/restore and Save/tree intents. QUERY: verified transaction/tree. EVENT: existing successful lifecycle outcome. EFFECT: existing atomic manifest writer, bounded metadata publication and physical directory move. State classes: PROJECT_STATE (identity, journals, content), AUTHORING_WORKING_STATE (protected unsaved editor), DERIVED_STATE (tree projection). SURFACE_MANIFEST_V1: NO_NEW_SURFACE.
+
+Location metadata has a closed schema with stable projectId and logical/physical manifest paths; it cannot authorize any I/O outside the actual root. Read/write adapters validate containment, symlinks, exact record and physical root identity across async boundaries. Original packet validators and external manifest continuation remain authoritative. Tree worker freshness includes location metadata. Current backup identity and new pure plans use the same logical namespace; Main callbacks and returned paths remain physical. Active Stage10 runtime is rebound to the moved root without resetting its persisted history. Same-project lifecycle journal retains exact before/after metadata and identities; rollback/restart preserves conflicts and does not silently clear unknown state.
+
+No typing-path work or new dependencies. Location record is bounded and per-invocation, never a stale global cache. Existing keyboard, locale and accessibility contracts remain. Bootstrap, full normative reads and scoped factual history were completed for this new objective; no P03 cache or full-history claim. PRODUCT_PREFLIGHT_01 is0 before any repository edit. Direct owner scope supplies task authority; evidence supplies only proof.
+
+### Owner decision — early diagnostic admission, 28 October 2026
+
+Direct owner audit decision YALKEN_DEV_AUDIT_20261028, conveyed by the existing monitor chat and followed by explicit owner resume, authorizes only the diagnostic ordering below. Audit attachment SHA256:272df9b951a38bdec7ce84c33c88c5842a430cf048f4082a34ee50c5c5714a5c. The same bounded delivery and original base remain.
+
+Before another expensive full wave, an exact committed source/build and fresh synthetic owned profile may run the actual UI open/edit/Save/physical rename/tree/normal Quit/cold reopen journey. Fresh PRODUCT_CODE declaration/preflight and native StageAdmission, source/artifact/app/PID/profile/ownership bindings, complete dependency cohort, genuine canonical OS TMPDIR and independent raw identity/content/history oracle remain required. No injected product mutation or private/default profile is allowed. Missing complete gate receipts are UNKNOWN; early diagnostic results cannot grant push, release or full-Mac acceptance. All final affected, baseline, companions, Electron, security, exact CI, PR/merge and literal merged native proof remain required. Completed receipts retain their original SHA and may be reused only through the existing WAVE_INPUT_HASH/TTL contract; no retagging.
+
+After the pause, source03 has four completed source receipts; baseline03 and Electron03 also completed at4f2a3b62. The companion process and terminal source index are absent, so unfinished source03 is UNKNOWN_INTERRUPTED/NOT_EXECUTED. All10030source bytes and18restored anchors are unchanged. Prior temporary APFS profiles are unavailable; their full warm archive, cold delta, closed-file bindings and original failure receipts remain exact on T777. A restored path must never be claimed as the old physical profile. Preserve all originals, archives and generated anchors; no cleanup authority is added.
+
+## IMPLEMENTATION_STEPS
+
+1. Fresh exact base/remote/mount/writer check and PRODUCT_CODE declaration/preflight; create this task and pass E0 before source/tests.
+2. Add maintained actual-Main physical-rename regression and retain RED against unchanged runtime.
+3. Implement strict bounded location mapping, keep original transaction validation, bind continuation/backup/plan paths, preserve lifecycle recovery and rebind current Stage10 owner.
+4. Exercise normal/repeated rename, Save/tree/reopen, negative boundary/tamper/stale/rollback cases and review exact inverse. Refresh only required current companions.
+5. After startup/preflight, cheap static/ownership/refusal checks and the real focused control, permit the owner-approved isolated diagnostic build and native Save/rename/tree/Quit/cold observation before a new expensive wave. It is not source-gate or release acceptance. Complete every required affected/baseline/companion/Electron/security check and rebuilt actual native proof before full delivery; actual rebuilt native remains required before product push.
+6. Complete PR/required CI/merge and exact merged verification; only then continue V6.
+
+## CHECKS
+
+CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
+
+- CHECK_01_PRE_BASE: exact clean base, fresh origin/main same, registry/mount/writer identity, required startup and preflight0.
+- CHECK_02_POST_TASK: actual E0 for this HARD task exits0 before code/test edits.
+- CHECK_03_POST_CAUSE: maintained actual Main case fails with the same E_TREE_COHORT_JOURNAL against unchanged product source; all original errors retained.
+- CHECK_04_POST_FIX: real Core and Main lifecycle/Save/tree/continuation behavior, repeated rename, original packet hashes, foreign/symlink/escape/stale metadata and target conflicts, rollback and restart boundaries. Existing tests stay intact.
+- CHECK_05_POST_SOURCE: exact diff/scope, required current companions and historical protection, whole affected/configured baseline/Electron, audit/OSS and guardrails. Missing/skipped/stale evidence never counts as PASS.
+- CHECK_06_POST_DELIVERY: rebuilt actual native plus independent source/history/output proof before push; required PR/main CI and exact merged verification. Full Mac and17rows remain separate.
+
+## STOP_CONDITION
+
+Stop dependent mutation on ambiguous identity/authority, foreign dirty state, base drift, unsupported runtime mutation, invalid scope or missing gate. After three identical failures retain expected/actual/seed/HEAD/hashes and change the hypothesis. Never weaken checks to obtain green.
+
+## REPORT_FORMAT
+
+AGENT_FINAL_REPORT_V1; final chat exactly one text block, KEY: VALUE lines, basenames only and no URLs/slash paths. Before/after/merged SHA, changed basenames, tests/skips, native/build/profile identity, commit/push/PR/CI/merge/merged proof, limitations, rollback and one next step. A bounded fix is not full release.
+
+## FAIL_PROTOCOL
+
+Preserve original raw failures, profiles, packet bytes and working checks. Prospective scope/declaration amendment is required for additional changes. No historical receipt reused as current authority or same-build/physical-profile identity invented after restore. Complete the authorized bounded delivery before opening another contour.
+
+
+### Current unaccepted source checkpoint
+
+The location codec/adapter has no ambient imports. Existing Main and persistence owners explicitly supply fsAdapter, path and SHA256 ports; gate exceptions remain unchanged. Mutable transaction inputs are owned before the added asynchronous location lookup, and private history descriptors retain their original pre-effect admission. An absent location record remains fenced until completion. A failed rebind cannot leave an active owner pointing to the old directory. Original current-location routing bytes remain inert in a fresh duplicate; same-project archive restore changes only its physical location record after complete original-archive readback.
+
+All original RED results and intermediate errors are retained. Latest19targeted cases and3existing reader/trash cases pass. Full303case affected run is retained as300pass3fail with its exact source hashes; the later corrections do not relabel that earlier run. The complete required candidate/native/delivery chain is still pending. Tests and native work must use an owned canonical APFS temporary root; the earlier S28 failure used the system /var alias and the unchanged test passes with a canonical TMPDIR. No manual relocation adoption or arbitrary symlink-root acceptance was added.
+
+Closed generated tree-identity anchors: OWNED_TEST_ANCHORS_01 contains all9original synthetic files, their SHA256, names/stat/native xattrs and a successfully executed restorer. No native profile or original user data was moved. This is a WIP checkpoint, not release acceptance. The next prospective declaration amendment adds only the existing current-carrier assertion test required by the maintained certification chain.
+
+Prospective declaration02 at clean unaccepted checkpoint9adcbd85b712758886fd0bb8f17ce6649d36271c passed before expanding scope by exactly the existing current-carrier assertion test. Original delivery base354114a4d6880755b297eb79a2f3d91ca9d0edaf and one delivery chain remain unchanged. All prior corruption, mixed-source and ancestry checks and closed TXT and Markdown carriers remain required.
+
+Review found and reproduced an active-session race: switching to another real owner during the move changed the newer session name. LOCATION_SESSION_RACE_RED_21 retains that failure. Main now revalidates the original owner at move boundaries, rolls back the interrupted rename and preserves any newer owner. LOCATION_SESSION_GUARDS_22 executes both this rollback and the failed-rebind case:2tests2pass, no skips. These observations do not replace the pending complete candidate, native or delivery gates.
+
+Prospective declaration03 passed at clean e99cc224468c79f0227ea38ca999db074d9e755c before expanding scope by the two existing mutant fixtures. Keep all six WP201 adversaries and the existing WP204 control; require a complete current dependency cohort and a passing unchanged control, and never count a module load failure as a killed mutant. The original baseline remains FAIL with7failed and59existing skips; six Save failures were the chosen /private/tmp ancestry, and25unchanged tests pass with the genuine canonical OS temporary ancestry. Every next full local test runtime must be created beneath the real getconf DARWIN_USER_TEMP_DIR parent and resolved canonically. No runtime source changes follow from this fixture amendment.
+
+The complete e99cc2244 source batch returned0 for14commands, including363reported TAP passes,19Word Apply cases and677companions. Acceptance remained blocked: the full baseline has3738pass7fail59existing skips. Six Save failures were caused by the chosen non-genuine /private/tmp ancestry;25unchanged Save cases pass under the real canonical macOS temporary parent. WP204 lacked the new Core dependency. Further diagnosis proved WP201 counted six MODULE_NOT_FOUND errors as mutant kills, so that old coverage is UNKNOWN despite its TAP result. The two maintained mutant fixtures now execute with complete current dependency graphs and a passing unchanged control; all six original WP201 adversaries are caught by behavioral assertions. The actual maintained2case rerun passes. No runtime source byte changed. New current bindings and a complete candidate baseline with genuine OS temporary ancestry, native and delivery still remain pending.
+
+Exact74eedd61 candidate passed14source commands, the complete baseline with3745pass and the same59existing skips, all35Electron checks, and exact rebuilt-package readback. Native acceptance is FAIL: after project rename and Save, decomposed Unicode scene rename committed but active open failed; cold reopen restored text yet replaced the stable scene ID. Warm93files and cold97files, all errors, original profiles and available native metadata are preserved with full physical restoration and independent readback. Read-only diagnostic29 accepts the original Core records; RED30 proves NFD rename planning diverges from the existing NFC path boundary. Main now builds that target through the existing boundary used by create/open; original packet validators and IDs are unchanged. Regression33 passes stable projection/reconciliation, equivalent-name no-op and exact collision refusal with both texts preserved; diagnostic32 retains the initial test error-field mistake. All18 previously removed anchors were restored to original paths and remain retained; no further manual anchor cleanup is allowed. Current companion membership remains382 and all17fullMac rows UNKNOWN. Fresh complete gates, rebuilt native and delivery remain pending; this is the same chain over354114a4d6880755b297eb79a2f3d91ca9d0edaf. Technical source worktree is agent-managed; one ordinary descendant commit will fast-forward the existing delivery branch without replacing the original base.
+
+At3fde211d PR2178 required RTK graph executes4419cases:4418pass and one unchanged recording-runtime contract FAIL12derive calls versus8. The full CI log, unchanged local reproducer and third call-stack diagnosis are retained. Stacks identify duplicate comment/note semantic normalization in the new pre-await input owner and the atomic body. Keep the original four independent proof validations and exact8derive assertion; carry only an exact, module-private owned admission snapshot across location discovery, with unchanged malformed-input, async identity, capability, lease, CAS and recovery guards. A non-identical descriptor stays on the original validator path. PRODUCT_DECLARATION_07 passed at exact H5 before this amendment. No fourth unchanged-signature rerun, relaxed test, CI bypass or new contour is allowed; changed-source gates, rebuilt actual native before push, required CI and literal merged proof remain pending.
+
+H5Linux inventory also retains one S27fixture failure: the decomposed project-name request is valid, but the expected raw NFDphysical lookup disagrees with the existing production NFCpath boundary. A read-only production-port probe and independent Unicode oracle confirm the target. Keep the NFDrequest, all original identity/history/Save/tree/collision assertions and runtime bytes; correct only the expected physical lookup to NFC. PRODUCT_DECLARATION_08 passed at clean94f41e1before this amendment. Actual new Linux CI remains required.

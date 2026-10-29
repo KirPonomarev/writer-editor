@@ -4,6 +4,8 @@ import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 
 import { createProjectLeaseManager } from './projectLease.mjs';
+import locationModel from '../core/project-location-v1.cjs';
+const projectLocation = locationModel.createProjectLocationAdapter({ fsAdapter: fs, path, sha256: value => createHash('sha256').update(value).digest('hex') });
 import { normalizeStage10ProjectId } from './stage10ProjectIdentityKey.mjs';
 
 export const MAIN_PROJECT_MANIFEST_AUTHORITY_SCHEMA = 'yalken.mainProjectManifestAuthority.v1';
@@ -236,6 +238,7 @@ export function createMainProjectManifestAuthority(input = {}) {
     if (typeof expectedText === 'string') assertManifestIdentity(expectedProjectId, expectedText, 'expected');
     assertManifestIdentity(projectId, nextText, 'next');
     const publish = async (activeLease) => activeLease.publish(async (proof) => {
+      const location = await projectLocation.getProjectLocation({ manifestPath: targetPath, projectId: expectedProjectId });
       const before = await readTextIfPresent(targetPath);
       const expectedExists = expectedText !== null;
       if (before.exists !== expectedExists || (expectedExists && before.text !== expectedText)) {
@@ -247,6 +250,7 @@ export function createMainProjectManifestAuthority(input = {}) {
         });
       }
       await proof.assertOwned();
+      await location.assertCurrent();
       try {
         if (expectedExists) await replaceText(targetPath, nextText, label);
         else await createTextExclusively(targetPath, nextText);
@@ -264,7 +268,8 @@ export function createMainProjectManifestAuthority(input = {}) {
           actualHash: readback.exists ? hashText(readback.text) : '',
         });
       }
-      await recordManifestTransition(projectId, targetPath, expectedText === null ? '' : hashText(expectedText), hashText(nextText));
+      await location.assertCurrent();
+      await recordManifestTransition(projectId, location.manifestPath, expectedText === null ? '' : hashText(expectedText), hashText(nextText));
       return {
         ok: true,
         schemaVersion: MAIN_PROJECT_MANIFEST_AUTHORITY_SCHEMA,

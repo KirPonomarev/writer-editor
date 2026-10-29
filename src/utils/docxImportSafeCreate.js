@@ -1559,8 +1559,9 @@ async function applyDocxNovelImportInLease(input, options, validated) {
     return {ok:true,value:{created:false,idempotent:true,safeCreate:true,createdSceneIds:checked.receipt.createdSceneIds,publicSceneLocators:checked.receipt.publicSceneLocators,publicSceneLocator:checked.receipt.publicSceneLocator,receipt:checked.receipt,importOperationId}};
   }
   if(typeof options.captureTreeCohortInventory!=='function') throw Error('E_DOCX_NOVEL_INVENTORY_REQUIRED');
-  await options.assertPublication(); const captured=await options.captureTreeCohortInventory(projectRoot); await options.assertPublication();
+  await options.assertPublication();
   const current=await readVerifiedProjectTreeMutation({manifestPath,projectId,fsAdapter:options.fsAdapter}); await options.assertPublication();
+  const captured=await options.captureTreeCohortInventory(projectRoot,path.dirname(current.transactionManifestPath||manifestPath)); await options.assertPublication();
   const model=await import('../core/project-tree-cohort-v1.mjs');
   const media=new Map();
   for(const entry of validated.value.entries) {
@@ -1572,7 +1573,7 @@ async function applyDocxNovelImportInLease(input, options, validated) {
   }
   const mediaBindings=[...media.values()];
   const cohort=model.planProjectDocxImportCohort({operation:'word-generic-import',projectId,operationId:importOperationId,operationNonce,
-    manifestPath,beforeManifestText:options.manifestRaw,expectedTreeRevision:current.treeRevision,fencingGeneration:options.lease.fencingGeneration,
+    manifestPath:current.transactionManifestPath||manifestPath,beforeManifestText:options.manifestRaw,expectedTreeRevision:current.treeRevision,fencingGeneration:options.lease.fencingGeneration,
     candidate:validated.value.candidate,artifactSha256:validated.value.sourceArtifactSha256,previewPlanHash:hashDocxImportPreviewPlanForAdmission(plan),previewHash:validated.value.previewHash,
     lossReport:validated.value.lossReport,carrierIgnored:validated.value.carrierIgnored,now:new Date().toISOString(),...captured,mediaBindings});
   await options.assertPublication(); await retainDocxImportAttempt(attempt,options);

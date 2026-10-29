@@ -32,14 +32,26 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
   // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
   const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
-  const literal = committed.match(/^const R24_INTEROP_WRITER_MARKDOWN_CURRENT_SCENE_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
-  assert.ok(literal, 'candidate must declare its complete current Markdown binding successor');
+  const literal = committed.match(/^const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
+  assert.ok(literal, 'candidate must declare its complete current project relocation binding successor');
   const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
-  assert.equal(current.id, 'YALKEN_WRITER_MARKDOWN_CURRENT_SCENE_20261028');
-  assert.equal(current.bindings.length, 375);
+  assert.equal(current.id, 'YALKEN_WRITER_PROJECT_RENAME_20261028');
+  assert.equal(current.bindings.length, 382);
   assert.equal(current.guards.length, 1);
+  const closedMarkdown = '354114a4d6880755b297eb79a2f3d91ca9d0edaf';
+  assert.equal(current.successorBaseSha, closedMarkdown);
+  const markdownCommitted = git(['show', closedMarkdown + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
+  const markdownLiteral = /^const R24_INTEROP_WRITER_MARKDOWN_CURRENT_SCENE_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu;
+  assert.equal(committed.match(markdownLiteral)?.[0], markdownCommitted.match(markdownLiteral)?.[0],
+    'closed Markdown carrier bytes must remain exact');
+  const markdownExpected = JSON.parse(markdownCommitted.match(markdownLiteral)[1]);
+  const markdownResult = cert.verifyR24InteropWordPromotionSuccessor({candidateSha: closedMarkdown, git});
+  assert.equal(markdownResult.status, 'PASS');
+  assert.equal(markdownResult.candidateSha, closedMarkdown);
+  assert.equal(markdownResult.cellAcceptanceAuthority, false);
+  assert.deepEqual(markdownResult.bindings, markdownExpected.bindings);
   const predecessor = '8414555d4e78a8a6fa87707bbbe1929ba9516eff';
-  assert.equal(current.successorBaseSha, predecessor);
+  assert.equal(markdownExpected.successorBaseSha, predecessor);
   const priorCommitted = git(['show', predecessor + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
   const previousLiteral = /^const R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu;
   assert.equal(committed.match(previousLiteral)?.[0], priorCommitted.match(previousLiteral)?.[0],

@@ -849,7 +849,13 @@
     "scripts/ops/check-command-namespace-static.mjs",
     "test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js",
     "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
-    "docs/tasks/2026-10-28--writer-markdown-current-scene.md"
+    "docs/tasks/2026-10-28--writer-markdown-current-scene.md",
+    "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+    "src/core/project-location-v1.cjs",
+    "src/utils/backupManager.js",
+    "test/unit/project-location-v1.test.js",
+    "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
+    "test/unit/r24-wp201-project-transaction-mutants.test.js"
   ],
   "protectedFiles": [
     {
@@ -1078,7 +1084,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "fbb8c66ddc3201d82ed52cb0e47aeec19178ea5a864388b963686e5fd344fb70"
+        "sha256": "a5ba48417b4fad0f2a5dbd08c1b92bf547f802b8274492616ae6b395f7d4494a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1118,7 +1124,7 @@
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "d68dcd69df66c2166ade19d1e08f0c834393da8ecc302b888b096c4c0f85ba70"
+        "sha256": "c93e4607457cca1c087ebb6605b2f23579c20e5c1cd700857ea09185b73afc0c"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
@@ -1350,11 +1356,11 @@
       },
       {
         "path": "src/core/project-transaction-v1.cjs",
-        "sha256": "e4aab760ae3e0508cd99bb51a955f0d3c669e79a8be3425afd49cce5bc00e544"
+        "sha256": "d5f76106866e37af9115cf8b1f1de8e0117e158b49eda1071d30eedd113129a4"
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
-        "sha256": "4aa747a31cf10ab25767c5a10cafb3e287e868a3b7f15b0f26715de4e5860325"
+        "sha256": "506829560edea55d8f1e1ccf40fa7ee38fcc2ad170bee0c841592be03c575623"
       },
       {
         "path": "test/unit/sector-m-scene-rich-truth.test.js",
@@ -1790,7 +1796,7 @@
       },
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
-        "sha256": "2731e0ad429215146403bf971f27f519ba058602f889aa8a3db7ba2ab854c046"
+        "sha256": "0d3abe92873525b94109a853bfafae65bc2342c8a5774ea896b68f5fe259b386"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
@@ -1814,7 +1820,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b9fcb815e67a06d53c2fe48168ebe06467ec949f9f9ab0a46d493fdb5e2ea286"
+        "sha256": "80209abc6c2d1360091977abccd296a75262b74c005dff87ae3d8040998b8c7d"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2322,7 +2328,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "5c6d76f4071c84b41fcde8ee373ef6f9f094e48589273c5fa4b5867583f6b3b4"
+        "sha256": "25e0ccd6a61c5a8667731eeaac82db6dc691792809db20066d3ae286a22b7a65"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2770,15 +2776,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1029f65ccb534f88f10f600a463e8726aa83a6eef10ca8f23489caec2b696d69"
+        "sha256": "4b0b38fbfca7c93af7a3fe3c45cbb3f59a6c786d83aaf0347446f3cb98b53e5d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f3eebb32bb68d405f6e2973ee3bb2556e837ea11fd47769227cf9011fef9d264"
+        "sha256": "34b95608f0c46570c928f59053abc4ad45465ff29011875add50753cd7f0c14b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c45d00a23b38d9bc09e3733c09994ff8f361fbea4d285dd50747dd383a064ee7"
+        "sha256": "76c3720d1bdea5b31d1af5526344b2543df88e6ebcf4ddfb36279faf39b1ff4c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3082,7 +3088,7 @@
       },
       {
         "path": "src/main/projectTreeReadPort.cjs",
-        "sha256": "2cce63b9fdc0f8fae8c112566bc92465c636667e5b4439cdf0cd94aa84c99031"
+        "sha256": "ccccf02b852c2f5758e64e731d522945c718c3f3fe03e449b2a0ce2eae2a8110"
       },
       {
         "path": "src/main/projectTreeReadWorker.cjs",
@@ -3318,7 +3324,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "2eb0048488df4b768c4f6c83c5707ae91f57319bc083a229e78902b69b0e2aab"
+        "sha256": "04916d8ca67f3c7e3adff61ad8a3df13fc1107541ecd164d570becf699adedeb"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3342,7 +3348,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "1effb7576a1a98cacfd389eab76fd4a263bc885c2ddaa542084f783a2778dbb3"
+        "sha256": "f92baf333e10995fadc77c29c2e4d796d4c891be141b9e712953f36c0d595434"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3434,7 +3440,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "549dad0d02ccc74ab5374f094e9b7958b2484105c9e3028ca3989b4a38b434f5"
+        "sha256": "3e75b2f885ae8155e8b0e01dbffd3686912fb75ed281c91215994c317b241006"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3851,6 +3857,30 @@
       {
         "path": "docs/tasks/2026-10-28--writer-markdown-current-scene.md",
         "sha256": "752a0280d1bfdc197650eb33a862bb8d38454025623792892c6b65436edc952d"
+      },
+      {
+        "path": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+        "sha256": "0863bb747e70f64443d283d0ba68d75254d0a7047a6506196a3d10c5be452795"
+      },
+      {
+        "path": "src/core/project-location-v1.cjs",
+        "sha256": "1eff229cddf67f4ce2bc2fe02ddb52914e77817652cdea9091a686df153252c3"
+      },
+      {
+        "path": "src/utils/backupManager.js",
+        "sha256": "1cc86ba0ec300c1065e61bc7e2aa07c881e04f02c3013702112f24580b693ee1"
+      },
+      {
+        "path": "test/unit/project-location-v1.test.js",
+        "sha256": "29333e4fcbec7cb262c677688867ff281f6fda5113c2e13e358f808cc941e2bc"
+      },
+      {
+        "path": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
+        "sha256": "acd5a3eb1ca14b7b7e388d658ddc48fabe9db5acfdf5611335e9f214e33e8ab8"
+      },
+      {
+        "path": "test/unit/r24-wp201-project-transaction-mutants.test.js",
+        "sha256": "bdd71d77d97de7b432310ce14206713983891756b56c8d48f3d1d2cb62aba81e"
       }
     ],
     "followupRepair": {

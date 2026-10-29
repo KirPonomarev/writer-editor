@@ -30,7 +30,7 @@ async function readFence(manifestPath) {
     } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
   };
   // Failure does not retire the other reads that already own file buffers.
-  const settled = await Promise.allSettled([manifestPath, `${manifestPath}.wp201-tree-commit.json`, `${manifestPath}.wp201-transaction.json`].map(read));
+  const settled = await Promise.allSettled([manifestPath, `${manifestPath}.wp201-tree-commit.json`, `${manifestPath}.wp201-transaction.json`, path.join(path.dirname(manifestPath), '.yalken-location.v1.json')].map(read));
   const failed = settled.find(row => row.status === 'rejected');
   if (failed) throw failed.reason;
   return settled.map(row => row.value);
