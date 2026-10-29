@@ -48,7 +48,7 @@ fixtureModule._compile(initializer.replace('module.exports.__probe = {', extraPr
   + '\nmodule.exports = { fixture, mountRenderer };', fixturePath);
 const { fixture, mountRenderer } = fixtureModule.exports;
 
-function inspectorHarness() {
+function inspectorHarness(draft = null) {
   const source = editorSource(), calls = [], statuses = [];
   class Element {
     constructor(tag = 'div') {
@@ -84,7 +84,7 @@ function inspectorHarness() {
     currentProjectId: 'project-a', currentDocumentId: 'current-scene', currentDocumentKind: 'scene',
     currentTreeContentPublicationId: 'publication-one', localEditGeneration: 0,
     atlasPublicationEpoch: 0, manualMapDraftOwnership: 0, atlasJourneyDraftRevision: 0,
-    manualMapDraftRevision: 0, manualMapCommandDraft: null, manualMapDraftEffect: null,
+    manualMapDraftRevision: 0, manualMapCommandDraft: draft, manualMapDraftEffect: null,
     manualMapWorkbenchState: state, manualMapTransientViewState: { selection: { primaryNodeId: node.id } },
     manualMapLayoutMode: 'manual', MANUAL_MAP_LAYOUT_MODES: { HIERARCHY: 'hierarchy' },
     currentRightTab: 'atlas', activeDocumentRevealRequested: false,
@@ -109,7 +109,7 @@ function inspectorHarness() {
   vm.createContext(c);
   const names = ['manualMapText', 'manualMapNumber', 'manualMapNodePosition',
     'getManualMapSelectedNodeId', 'getManualMapSelectedEdgeId', 'getManualMapNodeById',
-    'getManualMapEdgeById', 'captureAtlasPublication', 'invalidateAtlasPublications',
+    'getManualMapEdgeById', 'manualMapHasRetainedDraft', 'captureAtlasPublication', 'invalidateAtlasPublications',
     'openDocumentNode', 'renderManualMapInspector'];
   vm.runInContext(names.map(name => functionSource(source, name)).join('\n')
     + '\n' + ['getManualMapSceneNavigationTarget', 'openManualMapScene']
@@ -127,6 +127,30 @@ test('actual map inspector unchanged positive control renders the selected stabl
   const h = inspectorHarness();
   assert.ok(h.nodes().some(element => element.textContent === 'Переход к сцене'));
   assert.ok(h.nodes().some(element => element.textContent.includes('sceneRef · map-node')));
+  assert.equal(h.calls.length, 0);
+});
+
+for (const state of ['applied', 'cancelled']) test(`terminal ${state} map draft keeps linked scene navigation available`, async () => {
+  const h = inspectorHarness({ state }), action = h.action();
+  assert.ok(action); assert.equal(action.disabled, false);
+  await action.click();
+  assert.equal(h.calls.length, 1);
+  assert.equal(h.calls[0].payload.nodeId, h.sceneId);
+});
+
+for (const state of ['draft', 'failed', 'applying']) test(`retained ${state} map draft prevents navigation without losing its input`, async () => {
+  const draft = { state, values: { label: 'Несохранённый узел ёжика' } }, h = inspectorHarness(draft);
+  assert.equal(h.action().disabled, true);
+  await h.action().click();
+  assert.equal(h.calls.length, 0);
+  assert.equal(h.c.manualMapCommandDraft, draft);
+});
+
+test('an in-flight map effect still refuses navigation after a terminal draft', async () => {
+  const h = inspectorHarness({ state: 'applied' }), action = h.action();
+  assert.equal(action.disabled, false);
+  h.c.manualMapDraftEffect = { commandId: 'manualMap.node.add' };
+  await action.click();
   assert.equal(h.calls.length, 0);
 });
 

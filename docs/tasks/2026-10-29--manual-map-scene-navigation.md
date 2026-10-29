@@ -184,6 +184,9 @@ and exact diagnostic commit/build, before a new expensive full wave. It grants
 no push/full-gates/release acceptance. Every final mandatory gate remains.
 The explicit owner optional-integration restriction supersedes the legacy
 APPLICABLE_LAZYWEB_FIRST enum's service wording without altering the validator.
+H2 native observes APPLIED draft wrongly blocking navigation. Preserve the failed
+profile and raw proof; use the existing retained-draft predicate and terminal-state
+positive plus pending/effect refusal controls before exact-build native retest.
 
 ### Independent reported limitation after this delivery
 

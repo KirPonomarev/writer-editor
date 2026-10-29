@@ -15801,7 +15801,7 @@ function getManualMapSceneNavigationTarget(state, nodeId) {
   if (state?.state !== 'ready' || !state.projectId || state.projectId !== currentProjectId
     || !state.mapId || graph?.projectId !== state.projectId || graph.mapId !== state.mapId
     || !state.summary?.workbenchHash || !graph.meta?.graphHash
-    || manualMapCommandDraft || manualMapDraftEffect
+    || manualMapHasRetainedDraft() || manualMapDraftEffect
     || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN)) return null;
   const node = getManualMapNodeById(graph, nodeId);
   if (node?.target?.kind !== 'scene' || typeof node.target.id !== 'string'
