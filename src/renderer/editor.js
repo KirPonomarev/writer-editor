@@ -14386,13 +14386,13 @@ function invalidateAtlasPublications() {
   atlasPublicationEpoch += 1;
 }
 
-function captureAtlasPublication(parent = null, watchDraftRevision = true) {
+function captureAtlasPublication(parent = null, watchDraftRevision = true, watchAuthoringGeneration = true) {
   const epoch = atlasPublicationEpoch, projectId = currentProjectId, documentId = currentDocumentId;
   const publicationId = currentTreeContentPublicationId, generation = localEditGeneration;
   const draftOwner = manualMapDraftOwnership, journeyRevision = atlasJourneyDraftRevision;
   const draftRevision = manualMapDraftRevision;
   return () => epoch === atlasPublicationEpoch && projectId === currentProjectId && documentId === currentDocumentId
-    && publicationId === currentTreeContentPublicationId && generation === localEditGeneration
+    && publicationId === currentTreeContentPublicationId && (!watchAuthoringGeneration || generation === localEditGeneration)
     && draftOwner === manualMapDraftOwnership && journeyRevision === atlasJourneyDraftRevision
     && (!watchDraftRevision || draftRevision === manualMapDraftRevision)
     && (!parent || parent());
@@ -15859,7 +15859,9 @@ function renderManualMapInspector(parent, state, runtime, options = {}) {
   panel.append(title, meta, status);
   if (selectedNode?.target?.kind === 'scene') {
     const target = getManualMapSceneNavigationTarget(state, selectedNodeId);
-    const publication = captureAtlasPublication();
+    // A text edit does not change this stable reference. Main's existing
+    // no-loss barrier saves that working generation before navigation.
+    const publication = captureAtlasPublication(null, true, false);
     const host = options.host || parent.closest('[data-manual-map-plan-host], [data-manual-map-workbench-host]');
     const placement = host?.dataset.manualMapWorkbenchPlacement;
     const open = document.createElement('button');

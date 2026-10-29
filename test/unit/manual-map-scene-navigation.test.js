@@ -141,6 +141,15 @@ test('actual inspector opens the stable linked scene via existing command with n
   assert.equal(h.c.currentDocumentId, h.sceneId);
 });
 
+test('actual connected scene action permits unsaved text generation while exact map target and document remain current', async () => {
+  const h = inspectorHarness(), action = h.action();
+  h.c.localEditGeneration++;
+  await action.click();
+  assert.equal(h.calls.length, 1, 'Main owns no-loss saving; an unrelated authoring generation must not make the current navigation action inert');
+  assert.equal(h.calls[0].payload.nodeId, h.sceneId);
+  assert.equal(h.c.currentDocumentId, h.sceneId);
+});
+
 for (const drift of ['detached', 'project', 'map', 'target', 'source', 'publication', 'tree', 'draft', 'capability']) {
   test(`actual retained map action refuses ${drift} before command and preserves selection/text`, async () => {
     const h = inspectorHarness(), action = h.action();
