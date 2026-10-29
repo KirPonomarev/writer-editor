@@ -10407,12 +10407,17 @@ function closeCardModal() {
 async function openDocumentNode(node) {
   const documentId = getEffectiveDocumentId(node);
   if (!documentId) return false;
+  const requestedProjectId = currentProjectId, requestedEpoch = atlasPublicationEpoch;
   activeDocumentRevealRequested = true;
   try {
     const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
-      projectId: currentProjectId,
+      projectId: requestedProjectId,
       nodeId: documentId,
     });
+    // Main may have published this document before the command reply. A later
+    // project/document publication must never be replaced by that old reply.
+    if (requestedProjectId !== currentProjectId
+      || requestedEpoch !== atlasPublicationEpoch && currentDocumentId !== documentId) return false;
     if (!result || result.ok === false) {
       activeDocumentRevealRequested = false;
       return false;
@@ -15791,7 +15796,44 @@ function renderManualMapCommandDraft(parent, options = {}) {
   parent.appendChild(panel);
 }
 
-function renderManualMapInspector(parent, state, runtime) {
+function getManualMapSceneNavigationTarget(state, nodeId) {
+  const graph = state?.graph;
+  if (state?.state !== 'ready' || !state.projectId || state.projectId !== currentProjectId
+    || !state.mapId || graph?.projectId !== state.projectId || graph.mapId !== state.mapId
+    || !state.summary?.workbenchHash || !graph.meta?.graphHash
+    || manualMapCommandDraft || manualMapDraftEffect
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN)) return null;
+  const node = getManualMapNodeById(graph, nodeId);
+  if (node?.target?.kind !== 'scene' || typeof node.target.id !== 'string'
+    || !/^tree-node-[a-f0-9]{32}$/u.test(node.target.id)) return null;
+  return {
+    projectId: state.projectId, mapId: state.mapId, nodeId, sceneId: node.target.id,
+    workbenchHash: state.summary.workbenchHash, graphHash: graph.meta.graphHash,
+    treeRevision: treeMutationProjection?.projectId === state.projectId
+      ? treeMutationProjection.treeRevision : null,
+  };
+}
+
+async function openManualMapScene(target, isCurrent) {
+  const matches = () => isCurrent()
+    && JSON.stringify(getManualMapSceneNavigationTarget(manualMapWorkbenchState, target.nodeId)) === JSON.stringify(target);
+  if (!matches()) return false;
+  let scene = findTreeNodeById(treeRoot, target.sceneId);
+  if (!scene) {
+    // The left navigator can show another tab. Read the existing scene tree
+    // without changing its selection or inventing a path from the map label.
+    const tree = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: 'roman' });
+    if (!matches() || tree?.ok !== true || tree.projectId !== target.projectId
+      || !Number.isSafeInteger(tree.treeRevision)
+      || target.treeRevision !== null && tree.treeRevision !== target.treeRevision) return false;
+    scene = findTreeNodeById(tree.root, target.sceneId);
+  }
+  if (!matches() || getEffectiveDocumentId(scene) !== target.sceneId
+    || !['scene', 'chapter-file'].includes(getEffectiveDocumentKind(scene))) return false;
+  return openDocumentNode(scene);
+}
+
+function renderManualMapInspector(parent, state, runtime, options = {}) {
   const panel = document.createElement('aside');
   panel.className = 'manual-map-workspace__inspector';
   const selectedNodeId = getManualMapSelectedNodeId();
@@ -15815,6 +15857,36 @@ function renderManualMapInspector(parent, state, runtime) {
   status.className = 'manual-map-workspace__inspector-meta';
   status.textContent = `ViewState transient · ${manualMapLayoutMode === MANUAL_MAP_LAYOUT_MODES.HIERARCHY ? 'hierarchy' : 'manual'} · ${runtime.resourceBudgetProof?.planned?.nodes || 0}/${runtime.resourceBudgetProof?.input?.nodes || 0}`;
   panel.append(title, meta, status);
+  if (selectedNode?.target?.kind === 'scene') {
+    const target = getManualMapSceneNavigationTarget(state, selectedNodeId);
+    const publication = captureAtlasPublication();
+    const host = options.host || parent.closest('[data-manual-map-plan-host], [data-manual-map-workbench-host]');
+    const placement = host?.dataset.manualMapWorkbenchPlacement;
+    const open = document.createElement('button');
+    open.type = 'button'; open.className = 'manual-map-workspace__action';
+    open.dataset.manualMapOpenScene = 'true'; open.textContent = 'Открыть сцену';
+    open.disabled = !target;
+    open.title = target ? 'Перейти к связанной сцене' : 'Сначала примените или отмените черновик; связанная сцена должна быть доступна.';
+    const current = () => open.isConnected && host?.isConnected && publication()
+      && host.dataset.manualMapWorkbenchPlacement === placement
+      && open.closest('[data-manual-map-plan-host], [data-manual-map-workbench-host]') === host;
+    open.addEventListener('click', async () => {
+      if (!target || !current() || open.disabled) return;
+      open.disabled = true; open.setAttribute('aria-busy', 'true'); open.textContent = 'Открываем сцену…';
+      try {
+        const opened = await openManualMapScene(target, current);
+        if (!opened && current()) holdAuthorActionStatus('Связанная сцена недоступна или контекст изменился. Текущий текст остаётся в редакторе.');
+      } catch {
+        if (current()) holdAuthorActionStatus('Не удалось открыть связанную сцену. Текущий текст сохранён в редакторе.');
+      } finally {
+        if (current()) {
+          open.disabled = !getManualMapSceneNavigationTarget(manualMapWorkbenchState, selectedNodeId);
+          open.setAttribute('aria-busy', 'false'); open.textContent = 'Открыть сцену';
+        }
+      }
+    });
+    panel.appendChild(open);
+  }
   parent.appendChild(panel);
 }
 
@@ -15901,6 +15973,7 @@ function renderManualMapWorkbenchInto(host, options = {}) {
     host.appendChild(openButton);
     const listSection = appendAtlasOverviewSection(host, 'Keyboard list fallback', { open: true });
     renderManualMapList(listSection, runtime, { compact: true });
+    renderManualMapInspector(host, state, runtime, { host });
     const portabilitySection = appendAtlasOverviewSection(host, 'Portability records', { open: true });
     renderManualMapPortabilityReadback(portabilitySection, runtime, { compact: true });
     const commandSection = appendAtlasOverviewSection(host, 'Portability commands', { open: true });
@@ -15966,7 +16039,7 @@ function renderManualMapWorkbenchInto(host, options = {}) {
   renderManualMapList(listColumn, runtime);
   renderManualMapPortabilityReadback(listColumn, runtime);
   renderManualMapPortabilityCommandReadback(listColumn);
-  renderManualMapInspector(listColumn, state, runtime);
+  renderManualMapInspector(listColumn, state, runtime, { host });
   body.append(graphColumn, listColumn);
   host.appendChild(body);
 }

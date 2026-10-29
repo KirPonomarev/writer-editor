@@ -697,3 +697,8 @@ YALKEN_ATLAS_CONTINUITY_AUTHOR_INPUT_20261027 native warm03 at fefa5a216cea11a3f
 - Граница и риск: отдельные свежие PRODUCT_CODE declaration/preflight/StageAdmission, точные source/build/app/PID/profile/ownership, complete cohort, genuine OS TMPDIR, no-loss/lease/CAS/path/security и независимый oracle обязательны. Все финальные affected/baseline/companions/Electron/security/CI/PR/merge/literal merged native gates сохраняются; отсутствующее и старое evidence не становится PASS. Новых полномочий на данные, зависимости, сеть, cleanup или полный релиз нет.
 - Rollback: прекратить диагностические запуски, сохранить все созданные профили/ошибки и вернуть прежний порядок task/native admission одним обычным revert в той же PR-цепочке.
 - План удаления исключения: закрывается вместе с rename delivery; перенос порядка в другие контуры возможен только в границах прямого решения владельца и их действующих контрактов.
+
+
+## 2026-10-29 — manual-map exact scene navigation diagnostic order
+
+Task YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029 follows the direct owner audit ordering: exact committed diagnostic build and fresh owned native admission after cheap real-caller/ownership/refusal proofs, before a new full wave. All final required gates and ordinary delivery remain. Rollback is the ordinary revert of this bounded route; original author data/evidence remain. The unmodified schema requires APPLICABLE_LAZYWEB_FIRST for PRODUCT_UI; this legacy enum is vocabulary only. Explicit owner restrictions override its service-order wording: no Lazyweb discovery/use. Current repository Design OS and UI Craft govern the existing inspector action; no new visual language or service dependency.
