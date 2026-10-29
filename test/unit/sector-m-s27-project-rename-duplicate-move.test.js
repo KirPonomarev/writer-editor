@@ -314,7 +314,8 @@ test('S27 physical project rename preserves verified tree packets, scene Save an
   for (const projectName of ['After β 夜', 'Again é 🧭']) {
     const renamed = await harness.main.handleProjectLifecycleRenameCommand({ projectId: created.projectId, projectName });
     assert.equal(renamed.ok, true, JSON.stringify(renamed));
-    const root = await fsPromises.realpath(path.join(harness.documentsRoot, projectName));
+    // The existing path port chooses NFC even for a decomposed request.
+    const root = await fsPromises.realpath(path.join(harness.documentsRoot, projectName.normalize('NFC')));
     const manifestPath = path.join(root, PROJECT_MANIFEST_FILENAME);
     assert.equal(fs.existsSync(priorRoot), false);
     assert.deepEqual(await fsPromises.readFile(path.join(root, packetRelative)), packetBytes);

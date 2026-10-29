@@ -3324,7 +3324,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "9b552f0fa370f4f8d318736648f68690620f66166f4c971b14ddcbeb6be37828"
+        "sha256": "04916d8ca67f3c7e3adff61ad8a3df13fc1107541ecd164d570becf699adedeb"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3860,7 +3860,7 @@
       },
       {
         "path": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
-        "sha256": "9100f8bd17ba07d5f462ea40a3259fe74c52763bc4fcb5a6750371389e2f2acc"
+        "sha256": "0863bb747e70f64443d283d0ba68d75254d0a7047a6506196a3d10c5be452795"
       },
       {
         "path": "src/core/project-location-v1.cjs",
@@ -3876,7 +3876,7 @@
       },
       {
         "path": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
-        "sha256": "be56150ac3d24b71f198de03b1af0b9725199cfe2e2f4d8b8c5112bc48a1554f"
+        "sha256": "acd5a3eb1ca14b7b7e388d658ddc48fabe9db5acfdf5611335e9f214e33e8ab8"
       },
       {
         "path": "test/unit/r24-wp201-project-transaction-mutants.test.js",

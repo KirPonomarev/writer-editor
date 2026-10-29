@@ -28581,6 +28581,76 @@
       "filePath": "test/unit/project-location-v1.test.js",
       "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
       "sha256": "29333e4fcbec7cb262c677688867ff281f6fda5113c2e13e358f808cc941e2bc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:36:55.451648+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
+      "sha256": "9ae9854562c4586d4118d73d8ddac8588bc952b99793ef4cdefb6252b04ca837"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:36:55.451648+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
+      "sha256": "04916d8ca67f3c7e3adff61ad8a3df13fc1107541ecd164d570becf699adedeb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:36:55.451648+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
+      "sha256": "707e9e27a4ce588cde50a71b947d49d6484c9826c67e23d5f9418d998c0c8509"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:36:55.451648+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+      "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
+      "sha256": "0863bb747e70f64443d283d0ba68d75254d0a7047a6506196a3d10c5be452795"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:36:55.451648+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
+      "sha256": "72bde0b78ba633a720b0231f2c64eccea1b0b24075e7e4937f0a816751bf6633"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:36:55.451648+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
+      "sha256": "dfa95024e8e34e52f61e4260349df95782efe4efe7cf6d59c59ad24eb4dcef5d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:36:55.451648+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
+      "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
+      "sha256": "acd5a3eb1ca14b7b7e388d658ddc48fabe9db5acfdf5611335e9f214e33e8ab8"
     }
   ],
   "evidenceStampIds": [
