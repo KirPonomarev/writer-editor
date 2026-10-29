@@ -32,14 +32,52 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   const candidate = git(['rev-parse', 'HEAD']).toString().trim();
   // Expected authority is the candidate's committed carrier, never dirty OPS or verifier output.
   const committed = git(['show', candidate + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
-  const literal = committed.match(/^const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu);
-  assert.ok(literal, 'candidate must declare its complete current project relocation binding successor');
-  const current = JSON.parse(literal[1]);assert.ok(current.id && current.bindings.length && current.guards.length);
-  assert.equal(current.id, 'YALKEN_WRITER_PROJECT_RENAME_20261028');
-  assert.equal(current.bindings.length, 382);
-  assert.equal(current.guards.length, 1);
+  const renameLiteral = /^const R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu;
+  const closedRename = '8878f273ab5f2a4132b0fc18050cd4b174c2bc2d';
+  const renameCommitted = git(['show', closedRename + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
+  const literal = committed.match(renameLiteral);
+  assert.ok(literal, 'committed historical relocation carrier must remain present');
+  assert.equal(literal[0], renameCommitted.match(renameLiteral)[0], 'closed relocation carrier bytes must remain exact');
+  const renameExpected = JSON.parse(literal[1]);
+  assert.equal(renameExpected.id, 'YALKEN_WRITER_PROJECT_RENAME_20261028');
+  assert.equal(renameExpected.bindings.length, 382);
+  assert.equal(renameExpected.guards.length, 1);
   const closedMarkdown = '354114a4d6880755b297eb79a2f3d91ca9d0edaf';
-  assert.equal(current.successorBaseSha, closedMarkdown);
+  assert.equal(renameExpected.successorBaseSha, closedMarkdown);
+  // Compare the entire unchanged carrier region, including exported legacy
+  // declarations and every intervening byte; no syntax-dependent count.
+  const historyStart = renameCommitted.lastIndexOf('\n', renameCommitted.indexOf('const R24_INTEROP_WORD_PROMOTION_SUCCESSOR')) + 1;
+  const historyEnd = renameCommitted.indexOf('export function verifyR24InteropWordPromotionSuccessor(');
+  assert.ok(historyStart > 0 && historyEnd > historyStart);
+  assert.ok(committed.includes(renameCommitted.slice(historyStart, historyEnd)), 'complete historical carrier bytes must remain exact');
+  // Expected authority is independently composed from the committed small
+  // declaration over the fixed historical anchor; no verifier result is used.
+  const deltaName = committed.match(/^const R24_INTEROP_CURRENT_INPUTS_DELTA = (R24_INTEROP_\w+);$/mu)?.[1];
+  let current = renameExpected;
+  if (deltaName) {
+    const deltaLiteral = [...committed.matchAll(/^const (R24_INTEROP_\w+_DELTA) = Object\.freeze\((\{[\s\S]*?\})\);$/gmu)]
+      .find(m => m[1] === deltaName);
+    assert.ok(deltaLiteral, 'current delta must be a committed closed declaration');
+    const delta = JSON.parse(deltaLiteral[2]);
+    assert.equal(new Set(delta.bindings.map(b => b.path)).size, delta.bindings.length, 'duplicate delta path');
+    const expected = new Map(renameExpected.bindings.map(b => [b.path, b.sha256]));
+    for (const b of delta.bindings) expected.set(b.path, b.sha256);
+    current = { ...renameExpected, ...delta, bindings: Array.from(expected, ([path, sha256]) => ({ path, sha256 })) };
+  } else {
+    assert.equal(candidate, closedRename, 'a new candidate must declare current applicable inputs');
+  }
+  assert.ok(current.id && current.bindings.length && current.guards.length);
+  assert.equal(current.guards.length, 1);
+  const legacyCandidate = 'd4a095c877b9a45e2979f23c6b9f159791bacc38';
+  const legacy = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: legacyCandidate, git: (args, options) => {
+    if (args[0] === 'show' && args[1] === legacyCandidate + ':' + renameExpected.guards[0].path)
+      throw new Error('policy is deliberately unavailable for the original unguarded promotion');
+    return git(args, options);
+  } });
+  assert.equal(legacy.status, 'PASS');
+  assert.equal(legacy.candidateSha, legacyCandidate);
+  assert.equal(legacy.cellAcceptanceAuthority, false);
+  assert.deepEqual(legacy.bindings, cert.R24_INTEROP_WORD_PROMOTION_SUCCESSOR.bindings);
   const markdownCommitted = git(['show', closedMarkdown + ':scripts/ops/r24/corrective/post-audit-certification-set.mjs']).toString();
   const markdownLiteral = /^const R24_INTEROP_WRITER_MARKDOWN_CURRENT_SCENE_SUCCESSOR = Object\.freeze\((\{[\s\S]*?\})\);$/mu;
   assert.equal(committed.match(markdownLiteral)?.[0], markdownCommitted.match(markdownLiteral)?.[0],
@@ -62,7 +100,12 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   assert.equal(priorResult.candidateSha, predecessor);
   assert.equal(priorResult.cellAcceptanceAuthority, false);
   assert.deepEqual(priorResult.bindings, priorExpected.bindings);
-  const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
+  let policyReads = 0;
+  const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: (args, options) => {
+    if (args[0] === 'show' && args[1] === candidate + ':' + current.guards[0].path) policyReads++;
+    return git(args, options);
+  } });
+  assert.equal(policyReads, 1, 'one immutable policy input must select the applicable set');
   assert.equal(result.status, 'PASS');
   assert.equal(result.candidateSha, candidate);
   assert.equal(result.cellAcceptanceAuthority, false);
@@ -99,7 +142,34 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: unrelated }),
     /E_INTEROP_WORD_TABLES_ANCESTRY/);
   assert.equal(ancestryChecked, true, 'ancestry rejection must execute');
-  t.diagnostic(`Immutable Git blobs: ${blobReads} reads, ${blobHits} reused; all corruption checks executed.`);
+  for (const mode of ['missing', 'unknown']) {
+    let injected = false, unrelatedBlobs = 0;
+    const invalidPolicy = (args, options) => {
+      if (args[0] === 'show' && args[1] === candidate + ':' + current.guards[0].path) {
+        injected = true;
+        if (mode === 'missing') throw new Error('deliberate missing immutable policy');
+        return Buffer.from('unknown approved policy');
+      }
+      if (args[0] === 'show') unrelatedBlobs++;
+      return git(args, options);
+    };
+    assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: invalidPolicy }),
+      /E_INTEROP_WORD_PROMOTION_PIN/);
+    assert.equal(injected, true, mode + ' policy control must execute');
+    t.diagnostic(mode + ' policy refused; ' + unrelatedBlobs + ' original legacy input reads retained');
+  }
+  let treeChanged = false;
+  const wrongTree = (args, options) => {
+    if (args[0] === 'rev-parse' && args[1] === current.successorBaseSha + '^{tree}') {
+      treeChanged = true;
+      return Buffer.from('0'.repeat(40));
+    }
+    return git(args, options);
+  };
+  assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: wrongTree }),
+    /E_INTEROP_WORD_TABLES_BASE_TREE/);
+  assert.equal(treeChanged, true, 'base-tree corruption must execute');
+  t.diagnostic(`Immutable Git blobs: ${blobReads} reads, ${blobHits} reused; ${current.bindings.length + current.guards.length} individual corruption checks and all policy/ancestry controls executed.`);
 });
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
