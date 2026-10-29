@@ -856,7 +856,9 @@
     "test/unit/project-location-v1.test.js",
     "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
     "test/unit/r24-wp201-project-transaction-mutants.test.js",
-    "docs/tasks/2026-10-29--certification-applicable-inputs.md"
+    "docs/tasks/2026-10-29--certification-applicable-inputs.md",
+    "test/unit/manual-map-scene-navigation.test.js",
+    "docs/tasks/2026-10-29--manual-map-scene-navigation.md"
   ],
   "protectedFiles": [
     {
@@ -1085,7 +1087,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a5ba48417b4fad0f2a5dbd08c1b92bf547f802b8274492616ae6b395f7d4494a"
+        "sha256": "179e59b44dd1e4aa2854e934e0efcdb44ae9b91354599274c71dce27568dd55d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1097,7 +1099,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "1c1c66834da6f723c8df270842812870ad49495e51e7c5dd13275eea178b71a7"
+        "sha256": "1f7007d9a7e73b4e49f6bff909217f9b908cd583e6719f8e7fbafcce50229d9d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1261,7 +1263,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "a80c057846534f37aed26540c540dbe8dd1859b93c0e7d54b51ee7660ab529b7"
+        "sha256": "693d302ba1b4a8d9863f233dfd87467b5428f40e67d51b5d776f13468a56c512"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2329,7 +2331,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "25e0ccd6a61c5a8667731eeaac82db6dc691792809db20066d3ae286a22b7a65"
+        "sha256": "90dc37cf994245e44ad8c59959bb5b39d2a36dd7ada23f03ea18791472de27e5"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2777,15 +2779,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "129c54c1d9f7dbb8717a57f26af9946b0a7c6e8c36ac3969468b006bfe90a272"
+        "sha256": "ad43789e58ea0eef3585e2811932fdb810d65eba6bbc632712f107522691f843"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d813e0b492feb6c1e909b5dd062a877611117de2a922ca5ac08aa10957133cec"
+        "sha256": "99e2909e66df424458a4457d661a82ae09443edbdc0fb6681c33411df773d6c0"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "2eedb09f8026933f88d82b480a7ee9e91aee1a03dc6de944ccbec342e4f2affb"
+        "sha256": "35367e3e87bca9a5605ce3699b41acfe4ee677ec940ce139e18460ff4d594098"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3325,7 +3327,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "706d2039f4d45c7929d22a3439b2560d39a36ea997132323318e8ffb6a16ca05"
+        "sha256": "0e7585cbcd47571de2d566bfb4a2ee73b59450467b5de73a5ba855e5741bf0ab"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3349,7 +3351,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "f92baf333e10995fadc77c29c2e4d796d4c891be141b9e712953f36c0d595434"
+        "sha256": "960e43c0379cbf7ec42565646cb52b37b1dadcc115cd1407a82dbe0749aac2e2"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3441,7 +3443,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "3e75b2f885ae8155e8b0e01dbffd3686912fb75ed281c91215994c317b241006"
+        "sha256": "d4dc701b03d6205bf41d0e7ad91a2ef09a103be0eeb85e604601f1c8535c6679"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3886,6 +3888,14 @@
       {
         "path": "docs/tasks/2026-10-29--certification-applicable-inputs.md",
         "sha256": "fbbad21ea2d91249b959abff64e14c1b4df4521284cafb219eff2745ed300b63"
+      },
+      {
+        "path": "test/unit/manual-map-scene-navigation.test.js",
+        "sha256": "62ccced5d75b82ad22ea4eab5db1b2edfb84cc65d5ee015c74933ac98c6b5eaf"
+      },
+      {
+        "path": "docs/tasks/2026-10-29--manual-map-scene-navigation.md",
+        "sha256": "709c12d4fc53b166f2fafb3cc1826806287ac0135ba35a8a846f5ffeca81ef65"
       }
     ],
     "followupRepair": {

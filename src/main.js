@@ -36328,9 +36328,22 @@ async function handleUiOpenDocumentCommand(payload) {
   }
 
   const safePayload = normalizeLegacyUiBridgePayload(payload);
-  let resolvedNode;
-  let documentTarget;
+  const window = mainWindow, contents = window.webContents, projectRoot = getProjectRootPath();
+  const owner = activeStage10ApplicationBootstrap, session = commentAuthoringSessionId;
+  const subject = currentLifecycleSubjectId(), generation = lastSignaledEditGeneration;
+  const context = captureDocxImportPreviewContext();
+  const guard = () => {
+    userBookmarkCapability('cmd.project.document.open');
+    if (mainWindow !== window || window.isDestroyed() || window.webContents !== contents || contents.isDestroyed()
+      || projectRoot !== getProjectRootPath() || context !== captureDocxImportPreviewContext()
+      || owner !== activeStage10ApplicationBootstrap || session !== commentAuthoringSessionId
+      || subject !== currentLifecycleSubjectId() || generation !== lastSignaledEditGeneration) {
+      throw Object.assign(new Error('E_PROJECT_DOCUMENT_OPEN_STALE'), { code: 'E_PROJECT_DOCUMENT_OPEN_STALE' });
+    }
+  };
   try {
+    guard();
+    let resolvedNode;
     try {
       resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
     } catch (nodeError) {
@@ -36339,70 +36352,92 @@ async function handleUiOpenDocumentCommand(payload) {
       }
       resolvedNode = await resolveProjectTreeSceneIdentity(safePayload.sceneId, safePayload.projectId);
     }
-    documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
-  } catch (error) {
-    return {
-      ok: false,
-      error: error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
-    };
-  }
-  const documentPathGuard = sanitizePayloadWithinProjectRoot({ path: documentTarget.filePath }, ['path']);
-  if (!documentPathGuard.ok || !documentPathGuard.payload) return documentPathGuard.error;
-  const filePath = documentPathGuard.payload.path;
+    guard();
+    const documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
+    const documentPathGuard = sanitizePayloadWithinProjectRoot({ path: documentTarget.filePath }, ['path']);
+    if (!documentPathGuard.ok || !documentPathGuard.payload) return documentPathGuard.error;
+    const filePath = documentPathGuard.payload.path;
 
-  const canProceed = await confirmDiscardChanges();
-  if (!canProceed) {
-    return { ok: false, cancelled: true };
-  }
+    const canProceed = await confirmDiscardChanges();
+    if (!canProceed) return { ok: false, cancelled: true };
+    guard();
+    // Saving can await dialogs, recovery and another document's I/O. Resolve
+    // the stable target again; a renamed/deleted target is not the old path.
+    const currentNode = await resolveProjectTreeNodeIdentity(resolvedNode.nodeId, safePayload.projectId);
+    guard();
+    const currentTarget = getResolvedTreeDocumentTarget(currentNode);
+    if (currentTarget.filePath !== filePath || currentTarget.kind !== documentTarget.kind) {
+      return { ok: false, error: 'E_PROJECT_DOCUMENT_OPEN_TARGET_CHANGED' };
+    }
 
-  try {
+    guard();
     await fs.mkdir(path.dirname(filePath), { recursive: true });
-  } catch (error) {
-    logDevError('open document mkdir', error);
-    return { ok: false, error: error.message || 'Failed to create folder' };
-  }
+    guard();
 
-  let content = '';
-  try {
+    let content = '', sourceSnapshot;
     await recoverWriterProjectTransactionForFile(filePath);
-    content = await fs.readFile(filePath, 'utf8');
+    guard();
+    try {
+      sourceSnapshot = await readRecoverySnapshot(filePath, guard);
+      guard();
+      if (sourceSnapshot.raw === null) throw Object.assign(new Error('Document missing'), { code: 'ENOENT' });
+      content = sourceSnapshot.raw.toString('utf8');
+    } catch (error) {
+      guard();
+      if (error?.code !== 'ENOENT') throw error;
+      // An authored scene that vanished is unavailable, never a new empty
+      // scene. Other existing document kinds retain their lazy creation path.
+      if (['scene', 'chapter-file'].includes(documentTarget.kind)) {
+        return { ok: false, error: 'E_PROJECT_DOCUMENT_OPEN_TARGET_MISSING' };
+      }
+
+      const created = await queueDiskOperation(() => {
+        guard();
+        return fileManager.writeFileAtomic(filePath, '');
+      }, 'create document file');
+      guard();
+      if (!created.success) return { ok: false, error: created.error || 'Failed to create file' };
+      sourceSnapshot = await readRecoverySnapshot(filePath, guard);
+      guard();
+      if (sourceSnapshot.raw === null) return { ok: false, error: 'E_PROJECT_DOCUMENT_OPEN_TARGET_MISSING' };
+    }
+
+    const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); };
+    const contextFromPath = getDocumentContextFromPath(filePath);
+    const editorPayload = await attachProjectIdToEditorPayload({
+      content,
+      title: contextFromPath.title,
+      documentId: resolvedNode.nodeId,
+      kind: documentTarget.kind,
+      metaEnabled: ROMAN_META_KINDS.has(documentTarget.kind),
+    }, filePath);
+    guardSource();
+    if (editorPayload.projectId !== safePayload.projectId) {
+      return { ok: false, error: 'E_PROJECT_DOCUMENT_OPEN_TARGET_CHANGED' };
+    }
+    const persisted = await saveLastFile({ filePath, beforeWrite: guardSource });
+    guardSource();
+    if (persisted?.ok !== true) return { ok: false, error: persisted?.code || 'E_SESSION_CONTINUITY_PERSIST_FAILED' };
+    const finalNode = await resolveProjectTreeNodeIdentity(resolvedNode.nodeId, safePayload.projectId);
+    guardSource();
+    const finalTarget = getResolvedTreeDocumentTarget(finalNode);
+    if (finalTarget.filePath !== filePath || finalTarget.kind !== documentTarget.kind) {
+      return { ok: false, error: 'E_PROJECT_DOCUMENT_OPEN_TARGET_CHANGED' };
+    }
+
+    // No await between the final guard and the document/dirty publication.
+    currentFilePath = filePath;
+    sendEditorText(editorPayload);
+    setDirtyState(false);
+    const contentHash = computeHash(content);
+    lastAutosaveHash = contentHash;
+    backupHashes.set(filePath, contentHash);
+    updateStatus('Готово');
+    return { ok: true, documentId: resolvedNode.nodeId };
   } catch (error) {
-    if (error && error.code !== 'ENOENT') {
-      logDevError('open document read', error);
-      return { ok: false, error: error.message || 'Failed to read file' };
-    }
-
-    const created = await queueDiskOperation(
-      () => fileManager.writeFileAtomic(filePath, ''),
-      'create document file'
-    );
-    if (!created.success) {
-      return { ok: false, error: created.error || 'Failed to create file' };
-    }
+    logDevError('open document', error);
+    return { ok: false, error: typeof error?.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED' };
   }
-
-  const contextFromPath = getDocumentContextFromPath(filePath);
-  const context = {
-    title: contextFromPath.title,
-    kind: documentTarget.kind,
-    metaEnabled: ROMAN_META_KINDS.has(documentTarget.kind),
-  };
-
-  currentFilePath = filePath;
-  await saveLastFile();
-  sendEditorText(await attachProjectIdToEditorPayload({
-    content,
-    title: context.title,
-    documentId: resolvedNode.nodeId,
-    kind: context.kind,
-    metaEnabled: context.metaEnabled
-  }, filePath));
-  setDirtyState(false);
-  const contentHash = computeHash(content);
-  lastAutosaveHash = contentHash;
-  backupHashes.set(filePath, contentHash);
-  updateStatus('Готово');
-  return { ok: true, documentId: resolvedNode.nodeId };
 }
 
 const LEGACY_UI_TREE_DOCUMENT_COMMAND_IDS = new Set([

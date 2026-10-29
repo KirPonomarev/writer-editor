@@ -28761,6 +28761,76 @@
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "rationale": "Same single certification contour: real read-only current-alias counterexample would redefine an existing composed tuple. Bind the immutable named tuple directly to its own named8binding delta; reserve current alias for the generic committed-source contract. Exact full383tuple equality and preservation under an injected next-alias retarget pass; all selection, byte/tree/ancestry/legacy predicates and historical carriers remain unchanged. No product input, cache, runner, service, gate exclusion or release acceptance. Official full exact-final-SHA CI and relevant merged verification remain required.",
       "sha256": "83d251d3b91fc8dafe34619845cfa39d5f14a745330be1fd9b4c4b8e00c38494"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T13:22:20.914031+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029",
+      "authority": "DIRECT_OWNER_FULL_V6_DNA5_BOUNDED_EXISTING_SCENE_NAVIGATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Current mechanical inventory/source/hash witness for the admitted existing Kernel manual-map scene route. Actual H3 compact/PLAN/NFD/cold navigation and complete failed/warm/cold profile preservation/readback retained; all606focused controls pass. No historical carrier/approval, oracle/gate, dependency, runtime network, source base or17UNKNOWN qualification is removed or weakened. Full final gates, exact CI, normal merge and merged verification remain required.",
+      "sha256": "7ba18681a96757a75fdbc4b7ba539e33f1b854fd2f55dd560a6ee6e679e27aa0"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T13:22:20.914031+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029",
+      "authority": "DIRECT_OWNER_FULL_V6_DNA5_BOUNDED_EXISTING_SCENE_NAVIGATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Current mechanical inventory/source/hash witness for the admitted existing Kernel manual-map scene route. Actual H3 compact/PLAN/NFD/cold navigation and complete failed/warm/cold profile preservation/readback retained; all606focused controls pass. No historical carrier/approval, oracle/gate, dependency, runtime network, source base or17UNKNOWN qualification is removed or weakened. Full final gates, exact CI, normal merge and merged verification remain required.",
+      "sha256": "0e7585cbcd47571de2d566bfb4a2ee73b59450467b5de73a5ba855e5741bf0ab"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T13:22:20.914031+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029",
+      "authority": "DIRECT_OWNER_FULL_V6_DNA5_BOUNDED_EXISTING_SCENE_NAVIGATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Current mechanical inventory/source/hash witness for the admitted existing Kernel manual-map scene route. Actual H3 compact/PLAN/NFD/cold navigation and complete failed/warm/cold profile preservation/readback retained; all606focused controls pass. No historical carrier/approval, oracle/gate, dependency, runtime network, source base or17UNKNOWN qualification is removed or weakened. Full final gates, exact CI, normal merge and merged verification remain required.",
+      "sha256": "afd9b738f4c0df187dcc4ad72d09e5feafd5a48314b1c963d71e5c5b93cdfcef"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T13:22:20.914031+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029",
+      "authority": "DIRECT_OWNER_FULL_V6_DNA5_BOUNDED_EXISTING_SCENE_NAVIGATION",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Current mechanical inventory/source/hash witness for the admitted existing Kernel manual-map scene route. Actual H3 compact/PLAN/NFD/cold navigation and complete failed/warm/cold profile preservation/readback retained; all606focused controls pass. No historical carrier/approval, oracle/gate, dependency, runtime network, source base or17UNKNOWN qualification is removed or weakened. Full final gates, exact CI, normal merge and merged verification remain required.",
+      "sha256": "31581d68984bdb65b802267d3c70f0cfdb6baf335c399cf6e21db5d357863910"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T13:22:20.914031+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029",
+      "authority": "DIRECT_OWNER_FULL_V6_DNA5_BOUNDED_EXISTING_SCENE_NAVIGATION",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Current mechanical inventory/source/hash witness for the admitted existing Kernel manual-map scene route. Actual H3 compact/PLAN/NFD/cold navigation and complete failed/warm/cold profile preservation/readback retained; all606focused controls pass. No historical carrier/approval, oracle/gate, dependency, runtime network, source base or17UNKNOWN qualification is removed or weakened. Full final gates, exact CI, normal merge and merged verification remain required.",
+      "sha256": "a1a67dd64e1beee886fb439960314e0a035fb5db33950c5d39aa0a6315b32eff"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T13:22:20.914031+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029",
+      "authority": "DIRECT_OWNER_FULL_V6_DNA5_BOUNDED_EXISTING_SCENE_NAVIGATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "rationale": "Current mechanical inventory/source/hash witness for the admitted existing Kernel manual-map scene route. Actual H3 compact/PLAN/NFD/cold navigation and complete failed/warm/cold profile preservation/readback retained; all606focused controls pass. No historical carrier/approval, oracle/gate, dependency, runtime network, source base or17UNKNOWN qualification is removed or weakened. Full final gates, exact CI, normal merge and merged verification remain required.",
+      "sha256": "d4dc701b03d6205bf41d0e7ad91a2ef09a103be0eeb85e604601f1c8535c6679"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T13:22:20.914031+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029",
+      "authority": "DIRECT_OWNER_FULL_V6_DNA5_BOUNDED_EXISTING_SCENE_NAVIGATION",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "rationale": "Current mechanical inventory/source/hash witness for the admitted existing Kernel manual-map scene route. Actual H3 compact/PLAN/NFD/cold navigation and complete failed/warm/cold profile preservation/readback retained; all606focused controls pass. No historical carrier/approval, oracle/gate, dependency, runtime network, source base or17UNKNOWN qualification is removed or weakened. Full final gates, exact CI, normal merge and merged verification remain required.",
+      "sha256": "960e43c0379cbf7ec42565646cb52b37b1dadcc115cd1407a82dbe0749aac2e2"
     }
   ],
   "evidenceStampIds": [
