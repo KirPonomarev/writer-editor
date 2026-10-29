@@ -28501,6 +28501,86 @@
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "rationale": "Same bounded relocation delivery: rebind exactly the two versioned owner diagnostic-order documents and required current companion hashes after DATA_RUNTIME_REPAIR_PIN. No product/test/predicate/membership change. Controlled H4 native31of31proof remains at H4; fresh final-source and delivery proof still required. All old carriers, failures, profiles and17UNKNOWN rows preserved.",
       "sha256": "f8155b524cc5bc21dd5314bac4fb84395a63c2d8e42d98fb8fb7e96652084271"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "b4ba1798f131455ab5b700872f1946fe0d865064d00c3a3d5f3a1fe846cd99e1"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "9b552f0fa370f4f8d318736648f68690620f66166f4c971b14ddcbeb6be37828"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "24e9611c65d1b503a212a4390f7c91a8cc8bebe08257b1a5e8cf041d91ac3339"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-28--writer-project-rename-integrity.md",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "9100f8bd17ba07d5f462ea40a3259fe74c52763bc4fcb5a6750371389e2f2acc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "a448186f5dd2e6cb53ea781feb39917db8ea4898acba2d44daa0b9e927d9680d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "dddecbad125f74eb41ef29e64cbe4c56e3d8ce2fc4fe5fb62c90bb725897c6bc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "src/core/project-transaction-v1.cjs",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "d5f76106866e37af9115cf8b1f1de8e0117e158b49eda1071d30eedd113129a4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T00:03:23.848026+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PROJECT_RENAME_20261028",
+      "authority": "DIRECT_HUMAN_V6_FULL_MAC_IMPLEMENTATION_20261028",
+      "evidenceStampIds": [],
+      "filePath": "test/unit/project-location-v1.test.js",
+      "rationale": "Same bounded relocation delivery: rebind the Core owned-admission correction, additive location regression, task contract and required current companion hashes. Original recording4proof/8derive assertion is unchanged and coupled155cases pass on the identified uncommitted patch. This mechanical refresh changes no predicate or membership. Changed-source gates, newly rebuilt actual native and PR2178 delivery remain pending; old H4/H5proofs retain their identities, all failures/profiles/anchors and17UNKNOWN rows are preserved.",
+      "sha256": "29333e4fcbec7cb262c677688867ff281f6fda5113c2e13e358f808cc941e2bc"
     }
   ],
   "evidenceStampIds": [

@@ -224,3 +224,25 @@ test('location refuses a new route appearing during an initially unbound read', 
     {code:'E_PROJECT_LOCATION_STALE'});
   assert.equal(changed,true);assert.deepEqual(await fs.readFile(transaction.commitPathFor(f.beforeScene)),f.commitBytes);
 });
+
+
+test('caller symbols cannot bypass private pre-I/O comment admission', async t => {
+  const f = await fixture(t);
+  const mode = require('../../src/core/word-comment-anchor-save-v1.cjs').MODE;
+  for (const key of [Symbol('yalken.project-location-admission.v1'), Symbol.for('yalken.project-location-admission.v1')]) {
+    let reads = 0;
+    const fsAdapter = { ...fs, lstat: async (...args) => { reads++; return fs.lstat(...args); } };
+    await assert.rejects(transaction.commitProjectTransaction({ ...f, fsAdapter,
+      manifestContent: f.manifestText, expectedManifestContent: f.manifestText,
+      sceneContent: 'MUST NOT SAVE', expectedSceneContent: 'Сцена é 🧭', revision: 2,
+      publishManifest: async () => { assert.fail('forged input reached publication'); },
+      commentState: { mode, beforeText: '{}', afterText: '{}', recordingProofJson: '{}' },
+      [key]: { commentState: { reusable: true }, noteState: { reusable: true }, context: [] },
+    }), { code: 'E_PROJECT_TRANSACTION_COMMENT_STATE' });
+    assert.equal(reads, 0);
+    assert.equal(await fs.readFile(f.scenePath, 'utf8'), 'Сцена é 🧭');
+    assert.equal(await fs.readFile(f.manifestPath, 'utf8'), f.manifestText);
+    assert.equal(await fs.readFile(locationModel.locationPathFor(f.manifestPath), 'utf8'), f.bindingText);
+    assert.deepEqual(await fs.readFile(transaction.commitPathFor(f.scenePath)), f.commitBytes);
+  }
+});

@@ -1017,6 +1017,9 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   });
 }
 
+// This request-owned pure admission is never a public capability or I/O permit.
+const OWNED_LOCATION_ADMISSION = Symbol('yalken.project-location-admission.v1');
+
 // Location discovery adds I/O before the original transaction body. Retain
 // Core's admission order and own mutable caller payloads before that await.
 function ownLocationTransactionInput(input) {
@@ -1049,9 +1052,21 @@ function ownLocationTransactionInput(input) {
   for (const key of ['createResources', 'mediaUpdateResources']) if (value[key] !== undefined) value[key] = normalizeResources(value[key], value);
   const pair = { before: {scene:value.expectedSceneContent,manifest:value.expectedManifestContent},
     after: {scene:value.sceneContent,manifest:value.manifestContent} };
-  normalizeCommentState(value.commentState, value.scenePath, value.manifestPath, pair);
-  normalizeNoteState(value.noteState, value.scenePath, value.manifestPath, pair);
-  for (const key of ['commentState','noteState']) if (value[key] != null) value[key] = JSON.parse(canonicalize(value[key]));
+  const comments = normalizeCommentState(value.commentState, value.scenePath, value.manifestPath, pair);
+  const notes = normalizeNoteState(value.noteState, value.scenePath, value.manifestPath, pair);
+  const states = {};
+  for (const [key, normalized] of [['commentState', comments], ['noteState', notes]]) {
+    const canonical = value[key] == null ? null : canonicalize(value[key]);
+    if (canonical !== null) value[key] = JSON.parse(canonical);
+    states[key] = Object.freeze({ input: value[key], canonical,
+      reusable: canonical === null ? normalized === null : canonicalize(normalized) === canonical });
+  }
+  // Only an exact owned descriptor can reuse its pure validation. A changed
+  // or non-canonical representation still executes the original normalizer.
+  value[OWNED_LOCATION_ADMISSION] = Object.freeze({ ...states, context: Object.freeze([
+    path.relative(path.dirname(value.manifestPath), value.scenePath), path.basename(value.manifestPath),
+    value.expectedSceneContent, value.sceneContent, value.expectedManifestContent, value.manifestContent,
+  ]) });
   return value;
 }
 function ownLocationRecoveryInput(input) {
@@ -1080,6 +1095,7 @@ async function commitProjectTransaction({
   revalidate,
   afterTreeFilesPublish,
   fsAdapter = fsp,
+  [OWNED_LOCATION_ADMISSION]: locationAdmission,
 }) {
   if(wordHistory!==undefined) {
     const admitted=admitWordHistory(wordHistory,treeCohort);
@@ -1107,11 +1123,22 @@ async function commitProjectTransaction({
   if (mediaUpdate && createResources !== undefined) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_MODE', TRANSACTION_PHASES.ADMIT);
   const inputResources = mediaUpdate ? mediaUpdateResources : createResources;
   const resources = inputResources === undefined ? [] : normalizeResources(inputResources, { scenePath, manifestPath });
-  let commentState = normalizeCommentState(inputCommentState, scenePath, manifestPath, {
+  if (locationAdmission) {
+    const context = [path.relative(path.dirname(manifestPath), scenePath), path.basename(manifestPath),
+      expectedSceneContent, sceneContent, expectedManifestContent, manifestContent];
+    if (context.length !== locationAdmission.context.length
+      || context.some((value, index) => value !== locationAdmission.context[index])
+      || [['commentState', inputCommentState], ['noteState', inputNoteState]].some(([key, value]) =>
+        locationAdmission[key].input !== value
+        || locationAdmission[key].canonical !== (value == null ? null : canonicalize(value)))) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_LOCATION_ADMISSION', TRANSACTION_PHASES.ADMIT);
+    }
+  }
+  let commentState = locationAdmission?.commentState.reusable ? (inputCommentState ?? null) : normalizeCommentState(inputCommentState, scenePath, manifestPath, {
     before: { scene: expectedSceneContent, manifest: expectedManifestContent },
     after: { scene: sceneContent, manifest: manifestContent },
   });
-  let noteState = normalizeNoteState(inputNoteState, scenePath, manifestPath, {
+  let noteState = locationAdmission?.noteState.reusable ? (inputNoteState ?? null) : normalizeNoteState(inputNoteState, scenePath, manifestPath, {
     before: { scene: expectedSceneContent, manifest: expectedManifestContent },
     after: { scene: sceneContent, manifest: manifestContent },
   });
