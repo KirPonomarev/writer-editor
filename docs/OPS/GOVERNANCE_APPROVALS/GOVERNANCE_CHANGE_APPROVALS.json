@@ -28651,6 +28651,116 @@
       "filePath": "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
       "rationale": "Same bounded relocation delivery: correct the S27expected physical path to the existing NFCcontract; retain the original decomposed request and every assertion. Runtime source bytes are unchanged from H6, whose four-proof/8derive correction remains intact. This mechanical refresh changes no predicate or membership. New Linux CI, current full gates, rebuilt actual native and PR2178delivery remain pending; original failures/profiles/anchors and17UNKNOWNrows are preserved.",
       "sha256": "acd5a3eb1ca14b7b7e388d658ddc48fabe9db5acfdf5611335e9f214e33e8ab8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/CONTEXT.md",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "129c54c1d9f7dbb8717a57f26af9946b0a7c6e8c36ac3969468b006bfe90a272"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/HANDOFF.md",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "d813e0b492feb6c1e909b5dd062a877611117de2a922ca5ac08aa10957133cec"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "377f9504701dabf8269faa87600134570985d4cf2a2b1de74503871b3ccb35ec"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "706d2039f4d45c7929d22a3439b2560d39a36ea997132323318e8ffb6a16ca05"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "055b17959e171e70a155ceb17d9c88cf0e2b1e7ae87d5483dd26e9d1d0a5ad8b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/WORKLOG.md",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "2eedb09f8026933f88d82b480a7ee9e91aee1a03dc6de944ccbec342e4f2affb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "docs/tasks/2026-10-29--certification-applicable-inputs.md",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "fbbad21ea2d91249b959abff64e14c1b4df4521284cafb219eff2745ed300b63"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "3dfd655dca629cc0b89513b289f018d335056863dc98b0acc8feb0f38128bb33"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "83c4be90e7de8d3282b05d7e8d6827a5cad89913f20f233b6064d0cc4a4d3eac"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T03:52:21.391021+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "rationale": "Owner-approved bounded existing certification simplification after closed2178: one immutable policy input for guarded sets, original unguarded/other-shape predicate intact, complete ordered byte/tree/ancestry refusals, small explicit delta over a fixed historical anchor and generic committed Apply expectation. Actual19case control, including real legacy admission and whole historical-byte equality, improves65.891s to18.441s. Preserve33stages/137bound artifacts, all historical carriers/approvals, original failures/profiles/28anchors; no new cache/runner/service, product change or Mac acceptance. Full current gates, CI, ordinary merge and exact merged proof remain mandatory.",
+      "sha256": "39dbad55068bd3a93cce5f92b8036b46ef722831e8cd298243576cd7f7d5738d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-10-29T04:16:55.276585+00:00",
+      "approvedBy": "owner-delegated-codex:YALKEN_CERTIFICATION_APPLICABLE_INPUTS_20261029",
+      "authority": "DIRECT_OWNER_DEV_AUDIT_20261028_ACCEPTED_SINGLE_CERTIFICATION_SIMPLIFICATION",
+      "evidenceStampIds": [],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Same single certification contour: real read-only current-alias counterexample would redefine an existing composed tuple. Bind the immutable named tuple directly to its own named8binding delta; reserve current alias for the generic committed-source contract. Exact full383tuple equality and preservation under an injected next-alias retarget pass; all selection, byte/tree/ancestry/legacy predicates and historical carriers remain unchanged. No product input, cache, runner, service, gate exclusion or release acceptance. Official full exact-final-SHA CI and relevant merged verification remain required.",
+      "sha256": "83d251d3b91fc8dafe34619845cfa39d5f14a745330be1fd9b4c4b8e00c38494"
     }
   ],
   "evidenceStampIds": [

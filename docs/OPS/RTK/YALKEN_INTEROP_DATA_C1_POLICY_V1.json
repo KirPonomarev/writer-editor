@@ -855,7 +855,8 @@
     "src/utils/backupManager.js",
     "test/unit/project-location-v1.test.js",
     "test/unit/sector-m-s27-project-rename-duplicate-move.test.js",
-    "test/unit/r24-wp201-project-transaction-mutants.test.js"
+    "test/unit/r24-wp201-project-transaction-mutants.test.js",
+    "docs/tasks/2026-10-29--certification-applicable-inputs.md"
   ],
   "protectedFiles": [
     {
@@ -1820,7 +1821,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "80209abc6c2d1360091977abccd296a75262b74c005dff87ae3d8040998b8c7d"
+        "sha256": "39dbad55068bd3a93cce5f92b8036b46ef722831e8cd298243576cd7f7d5738d"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -2776,15 +2777,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "4b0b38fbfca7c93af7a3fe3c45cbb3f59a6c786d83aaf0347446f3cb98b53e5d"
+        "sha256": "129c54c1d9f7dbb8717a57f26af9946b0a7c6e8c36ac3969468b006bfe90a272"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "34b95608f0c46570c928f59053abc4ad45465ff29011875add50753cd7f0c14b"
+        "sha256": "d813e0b492feb6c1e909b5dd062a877611117de2a922ca5ac08aa10957133cec"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "76c3720d1bdea5b31d1af5526344b2543df88e6ebcf4ddfb36279faf39b1ff4c"
+        "sha256": "2eedb09f8026933f88d82b480a7ee9e91aee1a03dc6de944ccbec342e4f2affb"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3324,7 +3325,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "04916d8ca67f3c7e3adff61ad8a3df13fc1107541ecd164d570becf699adedeb"
+        "sha256": "706d2039f4d45c7929d22a3439b2560d39a36ea997132323318e8ffb6a16ca05"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3881,6 +3882,10 @@
       {
         "path": "test/unit/r24-wp201-project-transaction-mutants.test.js",
         "sha256": "bdd71d77d97de7b432310ce14206713983891756b56c8d48f3d1d2cb62aba81e"
+      },
+      {
+        "path": "docs/tasks/2026-10-29--certification-applicable-inputs.md",
+        "sha256": "fbbad21ea2d91249b959abff64e14c1b4df4521284cafb219eff2745ed300b63"
       }
     ],
     "followupRepair": {
