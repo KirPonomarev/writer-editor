@@ -1,3 +1,7 @@
+## 30.10.2026 — Pulse: exact historical inventory companion
+
+H5 065d7e3c:107 Core/Kernel/Paste,805 Main и12 policy checks реально прошли. Полный H3 baseline завершился1 FAIL,3848 PASS,59 известных skips: E0 docs-claim linter не знает текущий frozen RCV01A carrier после обновления C1B. Сам raw stamp не менялся. Подтверждена точная пара stamp f1eb56d3… и inventory d0d142dc… в ancestor M27870c86/tree39238725. Следующий bounded companion — единственный historical-only V44 pin с прежними Git/tree/ancestor/byte predicates и currentFileCoverage:false; никакой новой product/release authority. Native с исправленным Paste и полная новая delivery ещё обязательны.
+
 ## 30.10.2026 — Pulse: native proof и совместимость поля с Paste
 
 H2 2b797e24: собственный synthetic native warm/cold показал измерение1, отдельную поправку0 и восстановление1; обе записи и исходные байты сохранены. H3 737b88f6 добавляет только16 прямо одобренных текущих SHA witnesses; STRICT doctor,12 policy gates и4419 RTK прошли. Full baseline H3 ещё исполняется отдельно;17 qualification rows остаются UNKNOWN.

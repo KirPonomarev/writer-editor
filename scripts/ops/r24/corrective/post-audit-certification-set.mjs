@@ -131532,11 +131532,11 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "99efb5e88ca511a311b42ca0392a116a9a965ebbd1ecf5162ce6fa0cc801b41e"
+      "sha256": "bb4b2745a0e2a413e1a4034ed94ea5e4021b6249356b7b1e1984891969652b17"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "0e081cd18978424763ee7ec6ed0409055a35a95d95360ef2570472c471ccaf96"
+      "sha256": "6748f7b15b8a17df516f4a8dd3f3e98e9431c83158a45ceac7ffe552651eea7e"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -131552,7 +131552,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "842437da9f82d513efcc320659675838da245b45dbb4417fa73f4266c01cb9f3"
+      "sha256": "e1433283c06ca323738ab422137f816dfbce5797c5bf1f4c84a3c7c9fb6e8910"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -131628,7 +131628,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "c6046247d20f2b3540541f4e74a6128b40e43eaee98121cea45e64c9d2155ec8"
+      "sha256": "b56605a39dbe9639a120089b2642414d1061f634a01f8fac60d086575fac766b"
     },
     {
       "path": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
@@ -131636,7 +131636,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-      "sha256": "5054af7c19443b65e33aa937bb6db8262e793061378adb567f2009092100323f"
+      "sha256": "3c773e70f4153af1a338b25ec4cef81b2a98bc4f3d9ccffc9161283b119261fb"
     },
     {
       "path": "src/command/commandSurfaceKernel.js",
@@ -131690,7 +131690,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "907cf7a8d2f94a849cab407d0a4731972069c8da5cf919a35af19b291993836f"
+      "sha256": "5c3f634eab2577f3b6c2426e45a8fc1cab50d7a14f9ce4b5a887c39ad6fad7e2"
     }
   ]
 });

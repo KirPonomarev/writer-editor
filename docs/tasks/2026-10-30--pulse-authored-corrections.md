@@ -42,7 +42,7 @@ Raw payload has exactly projectId, expectedPrivacyRevision, expectedPrivacyState
 
 Keep raw measured claim rows and provenance unchanged. Add a separately labeled Core-owned immutable correction explanation projection and CAS identities. Core owns original/effective values and restoration target; renderer only displays and dispatches selected integer intent. Latest correction is authored interpretation, never inferred measurement. Reversing appends the original measured value without deleting prior correction or replacing ledger entries.
 
-Pure reader must not construct controllers, mkdir, recover pending intents, normalize/rewrite malformed bytes or silently fall back to empty. Default/OFF query remains privacy-only and never reads history/corrections. ON reader validates complete canonical ledger and correction chain with target binding, current privacy/directory/byte stability, and publishes only current identities. Main query publication checks current owner/project/root/window/session/lifecycle/generation after awaits.
+When current C1B bytes advance, retain the unchanged frozen claim carrier via one exact historical tuple proven at its immutable ancestor; keep all original historical verification predicates and currentFileCoverage:false. Pure reader must not construct controllers, mkdir, recover pending intents, normalize/rewrite malformed bytes or silently fall back to empty. Default/OFF query remains privacy-only and never reads history/corrections. ON reader validates complete canonical ledger and correction chain with target binding, current privacy/directory/byte stability, and publishes only current identities. Main query publication checks current owner/project/root/window/session/lifecycle/generation after awaits.
 
 Reuse existing controller and fixed five-file allowlist; correction can write only existing pulse-corrections.v1.jsonl through guarded durable writer, after exact current privacy/ledger/correction/target validation. No manuscript write. Revalidate capability and context before queue, after preparation and at awaited write/publication boundaries. No lazy refresh of stale payload identities. Replayed/doubleclick prior-CAS intents reject; capacity refuses with no cleanup. Pre-publish failure preserves bytes; post-publish ACK loss is uncertain, not claimed unchanged, and requires actual readback.
 
@@ -60,6 +60,7 @@ Native value control must use the existing guarded native text-field Paste route
 - `docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json`
 - `docs/WORKLOG.md`
 - `docs/tasks/2026-10-30--pulse-authored-corrections.md`
+- `scripts/ops/r24/docs-claim-lint.mjs`
 - `scripts/ops/r24/corrective/post-audit-certification-set.mjs`
 - `scripts/ops/release-candidate.mjs`
 - `scripts/ops/rtk-interop-data-c1.mjs`

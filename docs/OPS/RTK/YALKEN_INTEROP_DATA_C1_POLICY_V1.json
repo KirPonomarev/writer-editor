@@ -2792,11 +2792,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "99efb5e88ca511a311b42ca0392a116a9a965ebbd1ecf5162ce6fa0cc801b41e"
+        "sha256": "bb4b2745a0e2a413e1a4034ed94ea5e4021b6249356b7b1e1984891969652b17"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0e081cd18978424763ee7ec6ed0409055a35a95d95360ef2570472c471ccaf96"
+        "sha256": "6748f7b15b8a17df516f4a8dd3f3e98e9431c83158a45ceac7ffe552651eea7e"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3936,7 +3936,11 @@
       },
       {
         "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-        "sha256": "5054af7c19443b65e33aa937bb6db8262e793061378adb567f2009092100323f"
+        "sha256": "3c773e70f4153af1a338b25ec4cef81b2a98bc4f3d9ccffc9161283b119261fb"
+      },
+      {
+        "path": "scripts/ops/r24/docs-claim-lint.mjs",
+        "sha256": "b56605a39dbe9639a120089b2642414d1061f634a01f8fac60d086575fac766b"
       }
     ],
     "followupRepair": {
