@@ -91,18 +91,20 @@ test('snapshot bridge carries the live bounded ledger and forwards only SAVED re
   const source=fs.readFileSync(require('node:path').join(__dirname,'../../src/renderer/editor.js'),'utf8');
   const start=source.indexOf('function composeEditorSnapshot()'),end=source.indexOf('\n}',start)+2;
   const ackStart=source.indexOf('window.electronAPI.onSetDirty((message) => {'),ackEnd=source.indexOf('\n  });',ackStart)+6;
-  let callback, checkpoints=0;
+  let callback, checkpoints=0, navigatorReads=0;
   const context={currentProjectId:'p',currentDocumentId:'s',currentTreeContentPublicationId:null,currentRightTab:'comments',isTiptapMode:true,localEditGeneration:4,localDirty:true,lastAckedGeneration:0,
     wordCommentDraft:null,wordCommentBusy:false,manuscriptDrafts:new Map(),notesMutationPending:false,storyDrafts:new Map(),storyMutationPending:false,pendingStoryRequestId:null,
     composeDocumentContent:()=>'',getPlainText:()=>'',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),
     getTiptapImageInsertionPosition:()=>null,getTiptapRootSplitBoundary:()=>null,getTiptapCommentEditIntentsJson:()=>'{"proof":"live"}',
     checkpointTiptapCommentEditIntents:receipt=>{if(receipt==='a'.repeat(64))checkpoints++;},updateSaveStateText(){},refreshManuscriptNoteReferences(){},refreshVisibleCommentProjection(){},updateInspectorSnapshot(){},
-    window:{electronAPI:{onSetDirty(fn){callback=fn;}}}};
+    loadTree:async()=>{navigatorReads++;},window:{electronAPI:{onSetDirty(fn){callback=fn;}}}};
   vm.createContext(context);vm.runInContext(source.slice(start,end)+'\n'+source.slice(ackStart,ackEnd),context);
   assert.equal(vm.runInContext('composeEditorSnapshot().commentEditIntentsJson',context),'{"proof":"live"}');
   callback({state:false,ack:{kind:'SAVED',savedGeneration:3,commentEditIntentsSha256:'a'.repeat(64)}});assert.equal(checkpoints,1);assert.equal(context.localDirty,true);
   callback({state:false,ack:{kind:'PROTECTED',savedGeneration:4,commentEditIntentsSha256:'a'.repeat(64)}});assert.equal(checkpoints,1);
+  assert.equal(navigatorReads,0,'stale/protected ACK cannot refresh saved navigation');
   callback({state:false,ack:{kind:'SAVED',savedGeneration:4,commentEditIntentsSha256:'a'.repeat(64)}});assert.equal(checkpoints,2);
+  assert.equal(navigatorReads,1,'the current durable ACK refreshes saved navigation without changing comment checkpoints');
 });
 test('renderer-generated whole-anchor deletion, Save checkpoint and real Undo restore Core comment identity',async()=>{
   const author=require('../../src/core/word-comment-authoring-v1.cjs');

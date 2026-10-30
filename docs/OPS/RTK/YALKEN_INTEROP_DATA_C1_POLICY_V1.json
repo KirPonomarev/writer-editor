@@ -872,7 +872,9 @@
     "test/unit/r24-wp804-pulse-privacy-integration.test.js",
     "test/unit/r24-wp806-pulse-claim-mutants.test.js",
     "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-    "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs"
+    "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
+    "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
+    "test/unit/navigator-derived-counters-renderer.test.js"
   ],
   "protectedFiles": [
     {
@@ -1113,7 +1115,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "513864a6048c30f22326e0db6061bbf549559349a939f9f4cc92e4dbc36de9e4"
+        "sha256": "fc4446fc93f4f743f2e91f5faa2049abbae2d84e61be2eca79575e6b4eac2b38"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1277,7 +1279,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "899dc75584226f58184b272c610e406bace95989e9c6d7e63cf2e5abaa2e175c"
+        "sha256": "48d8ba00f896690917c1ceedf221f0a12eefd5399642d0c92a64e9105a41a527"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2249,7 +2251,7 @@
       },
       {
         "path": "test/contracts/rtk-word-nested-tables.contract.test.js",
-        "sha256": "0c52e806dc9ef11ceccba0f7d1d9a17a6c017c63483f1ea4ab1832a18a98ce9b"
+        "sha256": "ba1268a8ecbe5fda9b174af3d805f39c0049c211807f28dbf74cc9672de5b871"
       },
       {
         "path": "docs/tasks/2026-10-01--word-nested-tables-mac.md",
@@ -2721,7 +2723,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-        "sha256": "0a6f6c29e9b7b4956e3140b50a54e7e714116751361df42f49a7c85d36625d8d"
+        "sha256": "39d9ef6cbf2978844b4dc82d6a6922380c0db90595ba6aa667acc84ca74249d5"
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
@@ -2793,15 +2795,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "289866656c2491eb8b78cea55f93a25104cea7fa24ae9169f6f0a4a42f1a72f0"
+        "sha256": "5d3decfe25f3463fe5212d0dac863cf6506cd5b12e871ba1ff55836142152380"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9d3321ee494e6e2406db594c1679ac0f2d19e61f2d89f2f6c569f9a1a6beec02"
+        "sha256": "7b458e129220225435d0e3b315eeea851e53372fc928b763b88eff5056a7205a"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "52570a7e4e072e0f380d9b9fe9957348405ee75e34fa3f4bee1ee4742aa4fec5"
+        "sha256": "962967f9d7da1c4512f157e68096b0e5cfac621db8c55da11569646bb08c17a0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3061,7 +3063,7 @@
       },
       {
         "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
-        "sha256": "9a559a914f38e4d72c89ad03956c4230a8ca4cf85bcb7865bd264f4665dc66a9"
+        "sha256": "dfaacea4ce201e44ffc3ce9bce7c15a9c65363e43f2879edacf3c788a88b98b3"
       },
       {
         "path": "docs/tasks/2026-10-09--word-novel-full500k-atomic-import-mac.md",
@@ -3341,7 +3343,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "1a7d5768f97b0f3c41e09cbbb875693fd94af72b348c051d5fa150d2c52c2bd5"
+        "sha256": "7ff868bc04257992ab7e0bcbf7c75a4f0afdbe9283d306133bbe84cffeee8d76"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3473,7 +3475,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "64f913367a983dcd00c3a5f8c3d7acfa2d9173a1de5d515eb9b1f8ed3e7a050b"
+        "sha256": "054fbcd6e65c00e4ae1c09190ee72fb9c96a857e1879855bf90c366237135e19"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3941,11 +3943,19 @@
       },
       {
         "path": "scripts/ops/r24/docs-claim-lint.mjs",
-        "sha256": "b56605a39dbe9639a120089b2642414d1061f634a01f8fac60d086575fac766b"
+        "sha256": "2e901d6eb1eeadd04af24efd0822a828b7a81123c0b4c63856edbe3bb47f5285"
       },
       {
         "path": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
         "sha256": "73eaae3abff45fb2cedfc96ab8844ca86194a1684afcc7ba925716529e78910d"
+      },
+      {
+        "path": "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
+        "sha256": "cf4ec1a911e0ffe7060a111ac48de640be99d2373699dd53f74d68e6b9d8c8a0"
+      },
+      {
+        "path": "test/unit/navigator-derived-counters-renderer.test.js",
+        "sha256": "cbb7da96b6acfc620b76dc56337d0dc3d311c83356408fc252d4003ea91df203"
       }
     ],
     "followupRepair": {

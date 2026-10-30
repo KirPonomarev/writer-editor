@@ -1650,6 +1650,7 @@ async function actualRichRecordingSavePort(t,f,scene,options={}) {
     numberingDocumentJSON:lists.numberingDocumentJSON,setCheckedReviewDocument:review.setCheckedDocument,history,notifyFormattingStateChange(){},
     updateMetaInputs(){},updateMetaVisibility(){},updateCardsList(){},updateWordCount(){},updateSaveStateText(){},updateInspectorSnapshot(){},
     refreshManuscriptNoteReferences:async()=>{},refreshVisibleCommentProjection:async()=>{},
+    loadTree:async()=>{h.navigatorReads=(h.navigatorReads||0)+1;},
     window:{electronAPI:{onEditorSetText(fn){r.publish=fn;},onSetDirty(fn){r.dirty=fn;},sendEditorSnapshotResponse(requestId,snapshot){
       h.snapshots.push(cloneJsonSafe(snapshot));const p=requests.get(requestId);assert.ok(p);clearTimeout(p.timeoutId);requests.delete(requestId);
       if(options.beforeSnapshotReply)options.beforeSnapshotReply({h,c,r});p.resolve(c.normalizeEditorSnapshotPayload(snapshot));
@@ -1721,6 +1722,7 @@ test('novel authenticated atomic notes: rich public recording Save keeps local h
   const saved=await h.dispatch('cmd.project.save',{});retain('rich-public-recording-save',{started,saved,working,before,after:productFiles(f),snapshots:h.snapshots,acks:h.acks,receipts:h.receipts,errors:h.errors});
   assert.equal(saved.ok,true,JSON.stringify(saved));assert.equal(h.receipts.length,1);assert.equal(h.receipts[0].success,true);
   assert.ok(h.acks.some(row=>row.ack?.kind==='SAVED'&&row.ack.commentEditIntentsSha256===sha(wire)));assert.equal(h.renderer.localDirty,false);
+  assert.ok(h.navigatorReads>0,'real Main durable Save also refreshes the existing navigator projection');
   const stopped=await h.record('stop');assert.equal(stopped.ok,true,JSON.stringify(stopped));
   const savedFiles=productFiles(f),current=envelope.parseObservablePayload(textFile(h.file)),local=pending.projection(current.doc),projection=await h.c.readPendingRevisionProjection();
   assert.equal(local.original,original);assert.ok(local.current.includes(' recording-one'));assert.equal(local.canUndo,true);
