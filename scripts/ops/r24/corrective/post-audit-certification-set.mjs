@@ -131532,11 +131532,11 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "bb4b2745a0e2a413e1a4034ed94ea5e4021b6249356b7b1e1984891969652b17"
+      "sha256": "04b47d3f092c49575fe27ad4503e87aa0ee9c4f934abc9164965107f05ad09dd"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "6748f7b15b8a17df516f4a8dd3f3e98e9431c83158a45ceac7ffe552651eea7e"
+      "sha256": "59c8e23ce0907f0ba3f1435b27cef3ec3389db707182cb7d7f5c5a86aa7afced"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -131620,11 +131620,11 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "4b93dc0c72baf6624ad03c51770ade41df1a7f843cbc357046b6bd8e27906c5c"
+      "sha256": "ccd9b718acdd93b4db9fd4af224b37ca8c294f755460d7a6b0dc1f9adcbf9018"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "f1eb56d366ab3e7ecc672dcdecfe23becccd68e1ab172347284d5b961b3da77b"
+      "sha256": "d81119f0fc33b2c005f46faaabf716ae80d2667776b8da15fd93b43759a3b4e1"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -131636,7 +131636,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-      "sha256": "3c773e70f4153af1a338b25ec4cef81b2a98bc4f3d9ccffc9161283b119261fb"
+      "sha256": "703db88309d8b5fb4611ebdd87f1e6e8052fe8cbc276cabe55aef7078ca55ae7"
     },
     {
       "path": "src/command/commandSurfaceKernel.js",

@@ -89,6 +89,9 @@ Native value control must use the existing guarded native text-field Paste route
 - `test/unit/r24-wp806-pulse-claim-mutants.test.js`
 - `test/unit/r24-wp806-pulse-claim.test.js`
 
+- `docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json`
+- `docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json`
+
 ## DENYLIST
 
 Every undeclared path; dependencies/preload/new IPC/product and workspace registries/profiles; HTML/CSS/fonts/tokens/layout/editor input path; WP800 codec/WP801 ledger/WP201/save coordinator schema; all private/default owner profiles/manuscripts/real data; historical frozen receipts/contracts; deleted or weakened tests/oracles/skips/todo. No autosave producer, new metrics, import/export/delete/network sync, WSE/ENV expansion, signing/notary/publication, reset/stash/clean/rebase/amend/force or other-chat messages.
@@ -135,3 +138,7 @@ Exactly one text code block; KEY: VALUE rows with all19AGENT_FINAL_REPORT fields
 Preserve every raw failure and immutable earlier receipt, exact inputs/source/test hashes, observed status and next hypothesis. Stop dependent mutation on authority/identity failure; continue independent authorized evidence preparation. No cleanup, counterfeit profile/permit, test suppression, self-PASS or broad release claim.
 
 SAME_CONTOUR_OBSERVATION_01: Original whole causal RED at main27870c86: Core15of18 and Main779of800; all missing routes/projection/controls failures preserved. Normal docs/tests unaccepted savepoint61c59dbf and clean declaration02/preflight/E0 precede runtime. First implementation: whole Core81of81, Main799of800; the sole failure is the current editor-source digest witness, not a historical contract. Keep this failure. Update only current DATA/inventory/release hashes and exact donor allowlist expectation; all historical bodies and17UNKNOWN stay unchanged. Frozen tests v2 additionally exercise actual post-temp-write owner/capability/privacy/ledger/correction drift, pure-reader races/budget and three real value/identity mutants. New fixture performs the same actual registered consent and all footprint/CAS assertions without repeating the full consent JSON diagnostic. Original pre-task test prefixes are preserved; no cap/filter/skip/timeout/gate change. Re-freeze and rerun complete files. Old APFS runtime/profile paths are absent; do not recreate/retag. Fresh owned runtime02 and future new synthetic native profile require their own physical identities; old native outcomes are not current proof.
+
+## REQUIRED_CURRENT_WITNESS_COMPANION
+
+The unchanged RCV01A generator and contract define these two existing files as deterministic current source-byte witnesses. Refresh only the inventory/manifest and bound-file-set digest fields; retain BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE, WORKTREE_CANDIDATE_NON_CURRENT, null HEAD/origin, historical execution/review data and all original predicates. This does not convert historical runs to current acceptance. Same complete969 affected tests must pass, followed by all required exact-source gates. Original H7 failure and prior Git bytes remain. Draft push preceded full local completion and is retained as an execution-order limitation; subsequent push and PR delivery follow completed local mandatory proofs, then exact CI and normal merge/literal merged source/build/native.
