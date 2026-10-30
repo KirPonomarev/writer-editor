@@ -574,6 +574,13 @@ export function lintDocsClaims(rootDir) {
         const binding = buildRcv01aWorktreeCandidateClaimBinding(artifact, { rootDir, file });
         stampIds.add(binding.stampId);
         addBinding({ rootDir, evidenceDir, stamp: binding, file, bindingsByFile, historicalBindings, failures });
+        const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V43.find(item => item.stampId === binding.stampId);
+        if (pin && fs.existsSync(path.join(rootDir, '.git')) && !historicalBindings.some(item => item.stampSha256 === pin.stampSha256)) {
+          const stampBytes = historicalGit(rootDir, ['show', `${pin.evaluationSha}:docs/OPS/R24/EVIDENCE/${pin.stampId}.json`]);
+          const historicalStamp = JSON.parse(stampBytes);
+          historicalBindings.push(verifyHistoricalInventoryClaim({ rootDir, stamp: historicalStamp, stampBytes,
+            binding: historicalStamp.claimBindings.find(item => item.filePath === INVENTORY_PATH) }));
+        }
       } else if (artifact && (Object.hasOwn(artifact, 'stampId') || Object.hasOwn(artifact, 'claimBindings'))) {
         failures.push('E_EVIDENCE_ARTIFACT_SCHEMA:' + path.relative(rootDir, file) + ':UNSUPPORTED_SCHEMA_VERSION');
       }

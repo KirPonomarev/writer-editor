@@ -332,6 +332,13 @@
       "semantics": "Selects the existing task-owned synthetic PDF evidence directory for the explicit --verify harness mode; does not skip any byte, implementation, independent-reader or visual requirement and grants no product publication authority.",
       "defaultEffect": "Unset = explicit verification fails closed; --driver creates its own synthetic evidence directory and does not read this input.",
       "registeredBy": "OWNER_AUTHORIZED_YALKEN_R24_WP704_ENV_REGISTRATION_SUCCESSOR_V1"
+    },
+    {
+      "name": "GIT_GRAFT_FILE",
+      "flagClass": "BEHAVIOR",
+      "semantics": "An externally set Git graft path disables the C1C immutable-history hint; the original exhaustive candidate resolver and all original validation remain authoritative. This guard does not read or authorize the external file.",
+      "defaultEffect": "Unset = continue complete history identity checks; any nonempty value = retain the original exhaustive lookup.",
+      "registeredBy": "YALKEN_C1C_BOUNDED_THROUGHPUT_20261030"
     }
   ],
   "census": [

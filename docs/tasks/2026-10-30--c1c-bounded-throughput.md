@@ -47,7 +47,10 @@ Existing raw logs and failures remain on T777. No product/Mac qualification.
 - docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
 - docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
 
-Budget: the two OPS modules at most50added/10removed lines for resolver behavior;
+- scripts/ops/r24/docs-claim-lint.mjs
+- docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json
+
+Budget: resolver behavior and the required historical-claim seam total at most50added/10removed lines;
 maintained tests append at most230lines with original prefixes unchanged;
 task/factual additions at most240lines. Regenerate only actually required
 current mechanical witnesses, preserving membership/classification and every
@@ -112,6 +115,12 @@ The existing generator refreshes seven binding fields; all old execution/sample,
 review, denominator, null-head NON_CURRENT and BLOCKED metadata stay exact.
 Whole25 must actually run; regeneration never certifies current execution.
 
+H4 passes wholeC1C335/335, affected231/231 and post-audit63/63. E0 still
+requires the existing RCV01A historical binding beside current bytes, and a
+semantics record for the new GIT_GRAFT_FILE guard. Reuse the existing exact Git
+historical verifier, preserve every old pin/test, append the environment record
+and exactly those two DATA source paths. Both approval registries stay pending.
+
 FEATURE_INTEGRATION_MANIFEST_V1:
 featureId=C1C_TWO_CANONICAL_CANDIDATE_HINTS; featureVersion=1;
 domainOwner=existing OPS certifier; authoritativeData=exact immutable Git objects;
@@ -165,7 +174,7 @@ CHECK_05_POST_ACTUAL: same complete historical result for H2, reduced raw Git
 work, all original predicates. Record differing inputs and observer overhead;
 no uncontrolled wall-time ratio or new full qualification claim.
 CHECK_06_POST_DELIVERY: all required source/gates/CI, exact diff/scope, ordinary
-commit/push/PR/merge and clean exact merged proof. Product1477build inputs stay
+commit/push/PR/merge and clean exact merged proof. Product1485build inputs (1477ASAR leaves) stay
 equal to H2. Prior native scope is retained without inventing a new app launch
 or fullMac acceptance for this OPS-only task.
 

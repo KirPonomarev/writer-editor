@@ -865,7 +865,9 @@
     "docs/tasks/2026-10-30--c1c-bounded-throughput.md",
     "scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs",
     "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-    "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json"
+    "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+    "scripts/ops/r24/docs-claim-lint.mjs",
+    "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json"
   ],
   "protectedFiles": [
     {

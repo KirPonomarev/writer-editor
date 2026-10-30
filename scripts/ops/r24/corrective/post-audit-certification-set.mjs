@@ -131418,7 +131418,7 @@ const R24_INTEROP_C1C_BOUNDED_THROUGHPUT_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "2614ab2e5215dba9cca285bdc571b930e3d3c95c28a4a060c37b626dcedb26d7"
+      "sha256": "c44c0738eac3dc17be4ba92d92c0feca6c2ecd163c6c6a4413288f2f29a2fdef"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -131482,7 +131482,7 @@ const R24_INTEROP_C1C_BOUNDED_THROUGHPUT_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-30--c1c-bounded-throughput.md",
-      "sha256": "91de4abb17cd2412cb282db52a3b497a961f284fc5253fc6ec53b82153c6ca2b"
+      "sha256": "0d425f8f86ab8aeb80d61e60960a146ed13a098262f38444b2062b060964d256"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
@@ -131491,12 +131491,20 @@ const R24_INTEROP_C1C_BOUNDED_THROUGHPUT_DELTA = Object.freeze({
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
       "sha256": "f1eb56d366ab3e7ecc672dcdecfe23becccd68e1ab172347284d5b961b3da77b"
+    },
+    {
+      "path": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "c6046247d20f2b3540541f4e74a6128b40e43eaee98121cea45e64c9d2155ec8"
+    },
+    {
+      "path": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
+      "sha256": "4abeb71c3c4557e9a26631149d25fdcbfe36f91b884e7b80e261c89a1408f149"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "96f1b18b1a44af1c7a7e796f20c98f901bac94e048cbf6bd4227e4fb722f36da"
+      "sha256": "a29ff101baac4aa6cf9b147cd1b515417f2a41b2a74894489adad23ac1c6fcd6"
     }
   ]
 });
