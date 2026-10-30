@@ -1,3 +1,15 @@
+## 2026-10-30 — WSE closed; one measured C1C infrastructure delivery
+
+TASK_ID: YALKEN_C1C_BOUNDED_THROUGHPUT_20261030
+STATUS: OPEN_UNACCEPTED
+BINDING_BASE_SHA: 424fd2087d6141528b0c74a063d1c80ae2edd9bb
+
+WSE PR2181 is closed at this merged SHA: local16/merged15 required commands, PR20/main20 checks, actual merged build06 with1477ASAR leaves/530bundle members and real warm/cold ADDED/CHANGED. Exact Unicode before/after and33product files unchanged by queries are retained; all108warm/109cold profile files were physically restored and independently reread. Owned profile closed. Diagnostic build ASAR12755d98fc6dea3d56c9a9eaf8f476c48029d7ff06c1bdbb4cb7472511a9f079; no signed/public release claim. Closure: /Volumes/T777/Yalken/Отчёты о работе/2026-10-29--wse-semantic-diff/WSE_DELIVERY_CLOSURE_01.json, SHA256d342a622b0393beb0e8d001f473197e8ea5a3fea2eb5f93f48648eb6dd3cbf12.
+
+The directly verified owner decision permits exactly one C1C infrastructure delivery now, then return to finite V6/DNA5 user outcomes. Old failed/successful logs are reused; one unchanged actual default caller took128.647s/7137Git calls with4344memo hits. Two legacy walks account2323diff calls45.160s. This task admits only revalidated immutable hints with the whole predicate chain, fallback, cache law and required gates retained. Initial hint regression on later exact ancestors is preserved and corrected with bounded full-history eligibility. All17 frozen controls pass, including actual mixed ancestry and descendant fast-path artifact refusal. Corrected actual H2 call returns the identical33stage137binding result with4835Git calls; one wall54.298s sample has recorded input/observer limits. Blocker: full required gates and delivery pending. Next: exact current mechanical bindings, then mandatory gates and one normal delivery. Task: 2026-10-30--c1c-bounded-throughput.md. Evidence: /Volumes/T777/Yalken/Отчёты о работе/2026-10-30--c1c-bounded-throughput/CAUSE_MAP_01.json.
+
+Evidence reuse requires every applicable input, freshness and current contract; new sessions retain fresh authority/identity. Existing validated context cache applies only with its full conditions. No timeout increase, general cache/evidence framework, cleanup, monolith rewrite, monitor change or global docs overhaul. All prior history/raw/failures remain unchanged below. Full V6/DNA5, Atlas stages/cells/projections, WSE/Pulse/ENV-EPOCH-01 and17final-candidate qualifications remain unaccepted; goal ACTIVE. One developer, no agents/chats/models/timers; BlackBox after fullMac, Linux/Windows baseline only; signing/notary/publication retain separate authority.
+
 ## 2026-10-29 — WSE semantic comparison: prior revision admitted for causal proof
 
 TASK_ID: YALKEN_WSE_SEMANTIC_DIFF_20261029

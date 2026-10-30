@@ -401,6 +401,28 @@ function assertStatusShape(status) {
   ]) assert(nonClaims.has(token), 'E_RCV00B_CURRENT_NONCLAIM', token);
 }
 
+// Exhaustive H2 selection fixed these two winners. A later commit cannot have
+// either exact path set while this extra witness remains present throughout.
+export function canUseC1cPinnedHistory(git, requested) {
+  const checkpoint = '424fd2087d6141528b0c74a063d1c80ae2edd9bb';
+  const checkpointTree = '19649014b33278a1343bb958f5fdcf2cb9d70c95';
+  const witness = 'docs/tasks/2026-10-29--wse-semantic-diff.md';
+  try {
+    if (!/^[0-9a-f]{40}$/u.test(requested) || process.env.GIT_GRAFT_FILE
+      || gitText(git, ['rev-parse', '--is-shallow-repository']) !== 'false'
+      || gitText(git, ['replace', '--list'])
+      || fs.existsSync(gitText(git, ['rev-parse', '--git-path', 'info/grafts']))) return false;
+    if (gitText(git, ['rev-parse', checkpoint + '^{commit}']) !== checkpoint
+      || evaluationTree(git, checkpoint) !== checkpointTree) return false;
+    if (requested === checkpoint) return true;
+    git(['merge-base', '--is-ancestor', checkpoint, requested], { encoding: null });
+    const boundary = gitText(git, ['log', '--boundary', '--format=%m%H', checkpoint + '..' + requested]).split('\n').filter(Boolean);
+    if (!boundary.includes('-' + checkpoint) || boundary.some(line =>
+      !/^[>-][0-9a-f]{40}$/u.test(line) || (line[0] === '-' && line !== '-' + checkpoint))) return false;
+    return gitText(git, ['log', '--full-history', '--format=%H', checkpoint + '..' + requested, '--', witness]) === '';
+  } catch { return false; }
+}
+
 export function resolveRcv00bCurrentHeadEffectiveStateCompilerCandidateSha(git, resolvedCandidate, e = RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_EXPECTATION) {
   const isExact = (shaValue) => {
     try {
@@ -411,6 +433,19 @@ export function resolveRcv00bCurrentHeadEffectiveStateCompilerCandidateSha(git, 
     }
   };
   if (isExact(resolvedCandidate)) return resolvedCandidate;
+  // A measured historical hint is advisory; every original predicate still runs.
+  const hinted = '23e90a79dfe41f0d8bfc296122fa88b27f30d895';
+  if (e === RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_EXPECTATION && /^[0-9a-f]{40}$/u.test(resolvedCandidate)
+    && canUseC1cPinnedHistory(git, resolvedCandidate)) {
+    try {
+      if (gitText(git, ['rev-parse', `${resolvedCandidate}^{commit}`]) === resolvedCandidate
+        && gitText(git, ['rev-parse', `${hinted}^{commit}`]) === hinted) {
+        git(['merge-base', '--is-ancestor', e.baseSha, hinted], { encoding: null });
+        git(['merge-base', '--is-ancestor', hinted, resolvedCandidate], { encoding: null });
+        if (isExact(hinted)) return hinted;
+      }
+    } catch {} // Unavailable or foreign hint retains the exhaustive original path.
+  }
   let candidates = [];
   try {
     candidates = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);
