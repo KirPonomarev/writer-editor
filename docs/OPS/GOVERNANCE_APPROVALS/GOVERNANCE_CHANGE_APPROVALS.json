@@ -28952,6 +28952,232 @@
       "approved": true,
       "evidenceStampIds": [],
       "rationale": "Current byte witness for the single owner-approved bounded C1C OPS delivery. Preserve every existing approval, frozen predicate, test, historical pin and execution record; no gate, baseline, product mutation, qualification, release, dependency, cache, timeout or publication is accepted by this witness. Full baseline, CI, ordinary PR merge and exact merged verification remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "75a0ce4fa43f90d76eeddbc0c66285fa72503573a16ae6cd7aa879172929b27f",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "1fd9c3072d19c3f1caef52c2408c6bc17c55a19bfdf8d14d5e5b6c90d4951347",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "54c99a84051f7c36cf8aa4a9a02728e8392f1dec8124f0f9e10c72482b616f25",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "637bfa555e711db0024e7e0a5e4cd521be9d2fd0fd26a757366f6ca2422d6600",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "d6b4b7c0a93f4e0afc19cd3df6fb66e5d7fa85b842642e028b43196276ea43b0",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "sha256": "ec809c24557b4f3a56ca74f75acf2fc073b7cdb3100c69fcd45f7142eadeea86",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "be9b3912f50c907355a55aab46179414bbc822cada2d59aa90574f4322d0b715",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "06c5e45b0373abf84de726939a183c310d344d813b48ada49e3cd7069d860b1d",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "7d213c4da8a750d06b73ca145a00025adeeaa223caae25eda6dc959b66ff49f9",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "155cab52f9dd57b845e957709c4e4b1f2564d911a5bc19394447098a878643a3",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "907cf7a8d2f94a849cab407d0a4731972069c8da5cf919a35af19b291993836f",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "de59360fabac09c0bbd034544eeab936a4150d9ce4ec921371e31bd51f9428ea",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "842437da9f82d513efcc320659675838da245b45dbb4417fa73f4266c01cb9f3",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "5c3f634eab2577f3b6c2426e45a8fc1cab50d7a14f9ce4b5a887c39ad6fad7e2",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "29696380b865198ff59de7185bc7605de34d8bbf92e868539208563df4ae4eda",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "b56605a39dbe9639a120089b2642414d1061f634a01f8fac60d086575fac766b",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "e1433283c06ca323738ab422137f816dfbce5797c5bf1f4c84a3c7c9fb6e8910",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "9467855e1090f4aad4df16aa3b2b284862bc115294760dd517ee752746ac34cf",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "1a7d5768f97b0f3c41e09cbbb875693fd94af72b348c051d5fa150d2c52c2bd5",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "5e85370cd96c5f2ccc45a60aadc68fbb5beb02aa1bd4f6e0459f087606dbce93",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "37133c4966c8a09ac063f240febffe124cb51651d45e2f82fa0214044ff5cbfe",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "bcabf146f58bf27e3eeac69fbc9b6dfc85fdd368a161d5f6f06ac163da7a8191",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "7886cb9ba1901f1169ca4e53c232a600127b7afd847bd6bb859a3995141917f2",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "255a4a373790e27d3f1646bb9b81f72c8edc9f3e96bb06658ff3328be39d8bc3",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
+    },
+    {
+      "filePath": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
+      "sha256": "73eaae3abff45fb2cedfc96ab8844ca86194a1684afcc7ba925716529e78910d",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T15:41:29.859Z",
+      "rationale": "Direct owner standing app-development delegation; primary reviewed these exact current byte-witness/historical-source compatibility changes in the same Pulse chain. All old approvals and raw evidence remain. This is a delegated technical review, not a new literal human reply, runtime acceptance, qualification or release permit."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

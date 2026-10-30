@@ -867,7 +867,12 @@
     "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
     "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
     "scripts/ops/r24/docs-claim-lint.mjs",
-    "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json"
+    "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
+    "src/core/pulse-privacy-v1.mjs",
+    "test/unit/r24-wp804-pulse-privacy-integration.test.js",
+    "test/unit/r24-wp806-pulse-claim-mutants.test.js",
+    "docs/tasks/2026-10-30--pulse-authored-corrections.md",
+    "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -1096,7 +1101,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "9bb48aff779dd67164120bbfe1dcfe0a4cf6442382afc6f2727ade4741866bc7"
+        "sha256": "7b2894ec6eb3100bd1a39d8628ee95a17734303705a218cb488e35d2e5884c5a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1104,11 +1109,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "1f9d6785912339163b2d05ef7da0d6e0cf50562c1594c7217917a7dd59e1b064"
+        "sha256": "a74e9a917e0105b3118aa5e0a68e16c084649b78dec20fe1261169adf591b110"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "1f7007d9a7e73b4e49f6bff909217f9b908cd583e6719f8e7fbafcce50229d9d"
+        "sha256": "513864a6048c30f22326e0db6061bbf549559349a939f9f4cc92e4dbc36de9e4"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1120,7 +1125,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "6200144de3fc59c6ac3bec608ea777225b5d650eabf17fd411c69bb5b6fb52e8"
+        "sha256": "286dae8fd77871ea956abfcccfc57a74b97afef7e15fba56f07152bf1d7f5834"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1272,7 +1277,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "693d302ba1b4a8d9863f233dfd87467b5428f40e67d51b5d776f13468a56c512"
+        "sha256": "899dc75584226f58184b272c610e406bace95989e9c6d7e63cf2e5abaa2e175c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1768,11 +1773,11 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "9ee7b13d82082d4196d2ffcf30cac0459cc8675bda55b1168120deddf4a95318"
+        "sha256": "5180c51729069b2ca58334c5396ffe449714173a9fc03f2e999f9cfda98e8641"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
-        "sha256": "2a1b98655d7ff3fb053b2187eea1651f37a9ee16195459b0e9c72ed878507b2a"
+        "sha256": "c88a505e93db4173961d71771da9412c63aa8a2f02ae9d2f237a9da350b06fee"
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
@@ -1780,7 +1785,7 @@
       },
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-        "sha256": "22444d3526d36ed8f7207aea062bbadda755b30ab83d76272076526d3d3309d8"
+        "sha256": "06c5e45b0373abf84de726939a183c310d344d813b48ada49e3cd7069d860b1d"
       },
       {
         "path": "test/unit/sector-m-review-surface-ui.test.js",
@@ -2556,7 +2561,7 @@
       },
       {
         "path": "src/renderer/commands/capabilityPolicy.mjs",
-        "sha256": "7fa40427d120fc661d309b7f3fd1569b1cfac62ef5a412f4ae6a060c346c69bb"
+        "sha256": "c1b3d3555f8e7a131c767691ea9afc9d3f2bda0e86897a68a35909144c88db29"
       },
       {
         "path": "src/shared/workspaceQueryRegistry.cjs",
@@ -2788,11 +2793,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9461422e4ccf3787e6d5bd889f5c22e9ce041243b9d1c3bcad36d9572a3f8334"
+        "sha256": "289866656c2491eb8b78cea55f93a25104cea7fa24ae9169f6f0a4a42f1a72f0"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "6186e6dfc17b90e32d28d172dbcdf5c930177167c6c4c827380203cf42c6ed1f"
+        "sha256": "9d3321ee494e6e2406db594c1679ac0f2d19e61f2d89f2f6c569f9a1a6beec02"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3336,7 +3341,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "f33995135878d0b2024fe67da349f62bcbe6b4465f064b0a54f4faab260ee774"
+        "sha256": "1a7d5768f97b0f3c41e09cbbb875693fd94af72b348c051d5fa150d2c52c2bd5"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3360,7 +3365,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "83ccb307710ece758b3df98f45889e9dc951ccb698ae3dd1e43cb9bd05c27f3f"
+        "sha256": "ec809c24557b4f3a56ca74f75acf2fc073b7cdb3100c69fcd45f7142eadeea86"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3452,7 +3457,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "2ac8e1dcf235f64c0749f2e2a1dee839f5c5642c27a2536166064c832a39697c"
+        "sha256": "54c99a84051f7c36cf8aa4a9a02728e8392f1dec8124f0f9e10c72482b616f25"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3480,7 +3485,7 @@
       },
       {
         "path": "test/unit/paste-focus-signal.test.js",
-        "sha256": "42e0e9f60ecf0c30a42c0f28fa1cb824fac321797e842e93cd0ddc034bf5b125"
+        "sha256": "2ae57c6c1488f121cb1c7b0c140b2c0e962ff3a5c11e031a11d91ae593ceaa0f"
       },
       {
         "path": "test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js",
@@ -3720,15 +3725,15 @@
       },
       {
         "path": "src/core/pulse-claim-v1.mjs",
-        "sha256": "538d87ba9fd6e3349e5d35aa621bdb66a58d55ea26d60187dde0b041993c3a2e"
+        "sha256": "5e29d24b917bd6b9fed39c6d308b8e209540ce5162b01537d00224517070bd52"
       },
       {
         "path": "src/renderer/pulseHistoryPresentationModel.mjs",
-        "sha256": "5f1aa24e4ec90bf6580788d4ba3b62eae10127bf5b9cd0627b0f855cdb4b1bc1"
+        "sha256": "61456610aaadfd82448d8e6cc37d011abeace5e1b8867f0a7df61361779180bc"
       },
       {
         "path": "test/unit/r24-wp806-pulse-claim-integration.test.js",
-        "sha256": "4bf06fddd8966f1ccfaa9ee8048c5256380173ba873d6072d1978a83fb849f67"
+        "sha256": "e7daca4c36ea4812e4736d9a35ee43c1088e7790a7bfaab0de7f6d57ae4dc127"
       },
       {
         "path": "docs/tasks/2026-10-25--environment-epochs.md",
@@ -3917,6 +3922,30 @@
       {
         "path": "docs/tasks/2026-10-29--wse-semantic-diff.md",
         "sha256": "3e775297841769968805d85b6adca492eeae1a9d33d366c3fe5f40e5b262a933"
+      },
+      {
+        "path": "src/core/pulse-privacy-v1.mjs",
+        "sha256": "22ff796ae6299c60134dfca21bfaf0cf569d1fdb21e92e9ce12a7331144859b1"
+      },
+      {
+        "path": "test/unit/r24-wp804-pulse-privacy-integration.test.js",
+        "sha256": "d727eda4391567bb3b6f639e94c5a456b884c6d3642180f8b633f1b14d210bd4"
+      },
+      {
+        "path": "test/unit/r24-wp806-pulse-claim-mutants.test.js",
+        "sha256": "f72790d67feefad1feb7bfe2d25ee5e489113913afdf7a80bfe1b78c7b89f4fe"
+      },
+      {
+        "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
+        "sha256": "56b9de74ba84c365bdd2d347a65163e115dec1885f372453dc4043cc46a3a259"
+      },
+      {
+        "path": "scripts/ops/r24/docs-claim-lint.mjs",
+        "sha256": "b56605a39dbe9639a120089b2642414d1061f634a01f8fac60d086575fac766b"
+      },
+      {
+        "path": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
+        "sha256": "73eaae3abff45fb2cedfc96ab8844ca86194a1684afcc7ba925716529e78910d"
       }
     ],
     "followupRepair": {

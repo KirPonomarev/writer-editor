@@ -145,3 +145,67 @@ for (const channel of ['pulse-privacy-state.v1.json', 'pulse-ledger.v1.jsonl', '
   await assert.rejects(() => readPulseClaimProjection(root), error => /^E_WP(?:801|804|806)_/u.test(error.code));
   assert.deepEqual(directoryBytes(root), before, 'no writer/openLedger repair on the read path');
 });
+
+async function pulseAuthorCorrectionControl(root, value, requestId) {
+  const privacy = await import('../../src/core/pulse-privacy-v1.mjs');
+  const controller = await privacy.openPulsePrivacyController(root), current = await controller.explain();
+  const { correctionCommand } = require('../fixtures/r24-wp804-pulse-privacy-fixtures.js');
+  const result = await controller.appendCorrection(correctionCommand({ expectedPrivacyRevision: current.identity.privacyRevision,
+    correctionSequence: current.identity.correctionSequence, correctionHeadDigest: current.identity.correctionHeadDigest,
+    targetEntryDigest: current.history[0].entryDigest, correctedValue: value, requestId }));
+  const explanation = await controller.explain();
+  assert.equal(explanation.history[0].effectiveAggregates.find(row => row.metricId === 'WORDS_ADDED_COUNT').effectiveValue, value);
+  return { result, explanation };
+}
+
+test('Pulse actual claim separates original measured zero from existing Core author correction and cold readback without writes', async t => {
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  const originalLedger = fs.readFileSync(path.join(root, 'pulse-ledger.v1.jsonl'));
+  const control = await pulseAuthorCorrectionControl(root, 7, 'owned-author-seven'), before = directoryBytes(root);
+  const { readPulseClaimProjection } = await claimPromise, projection = await readPulseClaimProjection(root);
+  assert.equal(projection.rows[0].added.value, 0, 'authored correction never replaces measured truth');
+  assert.ok(projection.correctionReview, 'existing Core correction must reach the actual live claim separately');
+  assert.deepEqual(projection.correctionReview.identity, control.explanation.identity);
+  const metric = projection.correctionReview.rows[0].metrics.find(row => row.metricId === 'WORDS_ADDED_COUNT');
+  assert.deepEqual(metric, { metricId: 'WORDS_ADDED_COUNT', originalValue: 0, effectiveValue: 7, correctionSequence: 1 });
+  assert.equal(projection.correctionReview.rows[0].entryDigest, control.explanation.history[0].entryDigest);
+  assert.equal(Object.isFrozen(projection.correctionReview.rows[0].metrics[0]), true);
+  assert.deepEqual(directoryBytes(root), before); assert.deepEqual(fs.readFileSync(path.join(root, 'pulse-ledger.v1.jsonl')), originalLedger);
+  const script = `import {readPulseClaimProjection} from ${JSON.stringify(pathToFileURL(path.resolve('src/core/pulse-claim-v1.mjs')).href)};process.stdout.write(JSON.stringify(await readPulseClaimProjection(process.argv[1])));`;
+  assert.deepEqual(JSON.parse(execFileSync(process.execPath, ['--input-type=module', '--eval', script, root], { encoding: 'utf8' })), projection);
+});
+
+test('Pulse restoring the original measurement appends another correction and presentation keeps both meanings', async t => {
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  await pulseAuthorCorrectionControl(root, 7, 'owned-first-seven');
+  const first = fs.readFileSync(path.join(root, 'pulse-corrections.v1.jsonl'));
+  const control = await pulseAuthorCorrectionControl(root, 0, 'owned-restore-zero');
+  assert.equal(control.result.correctionSnapshot.sequence, 2);
+  assert.deepEqual(fs.readFileSync(path.join(root, 'pulse-corrections.v1.jsonl')).subarray(0, first.length), first);
+  const projection = await (await claimPromise).readPulseClaimProjection(root);
+  const model = (await presentationPromise).normalizePulseHistoryPresentation(projection);
+  assert.equal(model.rows[0].metrics.find(row => row.id === 'added').value, 0);
+  assert.ok(Array.isArray(model.rows[0].corrections), 'renderer needs a separate original/author display model');
+  const metric = model.rows[0].corrections.find(row => row.metricId === 'WORDS_ADDED_COUNT');
+  assert.equal(metric.originalValue, 0); assert.equal(metric.effectiveValue, 0); assert.equal(metric.correctionSequence, 2);
+  assert.deepEqual(model.correctionIdentity, control.explanation.identity);
+});
+
+test('Pulse malformed correction history is an unavailable read rather than hidden or repaired history', async t => {
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  await pulseAuthorCorrectionControl(root, 7, 'owned-malformed-control');
+  fs.appendFileSync(path.join(root, 'pulse-corrections.v1.jsonl'), '{broken:');
+  const before = directoryBytes(root);
+  await assert.rejects(() => claimPromise.then(module => module.readPulseClaimProjection(root)), error => /^E_WP804_CORRECTION_/u.test(error.code));
+  assert.deepEqual(directoryBytes(root), before);
+});
+
+test('Pulse opted-out automatic query never reads malformed retained corrections', async t => {
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  const privacy = await import('../../src/core/pulse-privacy-v1.mjs'), controller = await privacy.openPulsePrivacyController(root);
+  await controller.optOut({ schemaVersion: privacy.PULSE_PRIVACY_COMMAND_SCHEMA, type: 'OPT_OUT', requestId: 'owned-off-correction-query', expectedPrivacyRevision: 1 });
+  fs.writeFileSync(path.join(root, 'pulse-corrections.v1.jsonl'), '{broken:');
+  const before = directoryBytes(root), projection = await (await claimPromise).readPulseClaimProjection(root);
+  assert.equal(projection.state, 'optedOut'); assert.ok(!projection.correctionReview);
+  assert.deepEqual(directoryBytes(root), before);
+});

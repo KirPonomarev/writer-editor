@@ -93,3 +93,47 @@ for (const mutation of mutations) test(`WP806 kills implementation mutant: ${mut
   const mutant = await loadMutant(mutation.file, mutation.from, mutation.to, mutation.name);
   await assert.rejects(() => mutation.oracle(mutant, t), 'real source mutant must be killed by behavioral oracle');
 });
+
+async function correctedClaimControl(t) {
+  const root = directory(t); await seedPulseClaimDirectory(root);
+  const { openPulsePrivacyController } = await import('../../src/core/pulse-privacy-v1.mjs');
+  const { correctionCommand } = require('../fixtures/r24-wp804-pulse-privacy-fixtures.js');
+  const controller = await openPulsePrivacyController(root), current = await controller.explain();
+  await controller.appendCorrection(correctionCommand({ expectedPrivacyRevision: current.identity.privacyRevision,
+    targetEntryDigest: current.history[0].entryDigest, correctedValue: 7, requestId: 'owned-correction-mutant-control' }));
+  return root;
+}
+
+const correctionMutations = [
+  { name: 'authored correction hidden behind original value', file: claimPath,
+    from: 'metrics: row.effectiveAggregates,',
+    to: 'metrics: row.effectiveAggregates.map(metric => ({ ...metric, effectiveValue: metric.originalValue })),',
+    oracle: async (module, t) => {
+      const projection = await module.readPulseClaimProjection(await correctedClaimControl(t));
+      assert.equal(projection.rows[0].added.value, 0);
+      assert.equal(projection.correctionReview.rows[0].metrics.find(row => row.metricId === 'WORDS_ADDED_COUNT').effectiveValue, 7);
+    } },
+  { name: 'author value substituted for immutable measurement', file: claimPath,
+    from: 'return currentPrivacy({ ...measured, correctionReview });',
+    to: 'return currentPrivacy({ ...measured, rows: measured.rows.map(row => ({ ...row, added: { ...row.added, value: 7 } })), correctionReview });',
+    oracle: async (module, t) => {
+      const projection = await module.readPulseClaimProjection(await correctedClaimControl(t));
+      assert.equal(projection.rows[0].added.value, 0, 'measured zero remains zero after an explicit author correction');
+    } },
+  { name: 'current correction CAS hidden from actionable presentation', file: presentationPath,
+    from: 'const correctionIdentity = validCorrectionIdentity ? { ...identity } : null;',
+    to: 'const correctionIdentity = null;',
+    oracle: async (module, t) => {
+      const projection = await (await originalPromises.get(claimPath)).readPulseClaimProjection(await correctedClaimControl(t));
+      const model = module.normalizePulseHistoryPresentation(projection);
+      assert.deepEqual(model.correctionIdentity, projection.correctionReview.identity);
+      assert.equal(model.rows[0].corrections.find(row => row.metricId === 'WORDS_ADDED_COUNT').effectiveValue, 7);
+    } },
+];
+
+for (const mutation of correctionMutations) test(`Pulse author correction kills implementation mutant: ${mutation.name}`, async t => {
+  await mutation.oracle(await originalPromises.get(mutation.file), t);
+  const mutant = await loadMutant(mutation.file, mutation.from, mutation.to, mutation.name);
+  await assert.rejects(() => mutation.oracle(mutant, t), error => error instanceof assert.AssertionError,
+    'the real source change must be killed by an actual value/identity assertion, not a missing method or setup exception');
+});

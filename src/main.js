@@ -728,6 +728,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_SAVE: 'cmd.project.save',
   PULSE_OPT_IN: 'cmd.project.pulse.optIn',
   PULSE_OPT_OUT: 'cmd.project.pulse.optOut',
+  PULSE_CORRECT_METRIC: 'cmd.project.pulse.correctMetric',
   ENVIRONMENT_EPOCH_CAPTURE: 'cmd.project.view.captureEnvironmentEpoch',
   ENVIRONMENT_EPOCH_RESTORE: 'cmd.project.view.restoreEnvironmentEpoch',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
@@ -16033,6 +16034,7 @@ function getInternalCommandSurfaceKernel() {
     },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_IN]: payload => handlePulsePrivacyCommand('cmd.project.pulse.optIn', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_OUT]: payload => handlePulsePrivacyCommand('cmd.project.pulse.optOut', payload),
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_CORRECT_METRIC]: payload => handlePulseCorrectionCommand(payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE]: payload => handleEnvironmentEpochCommand('cmd.project.view.captureEnvironmentEpoch', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE]: payload => handleEnvironmentEpochCommand('cmd.project.view.restoreEnvironmentEpoch', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS]: async () => {
@@ -16905,7 +16907,7 @@ function createPulseLocalHistoryPort(commandId) {
   const identity = target => { try { const stat = fsSync.lstatSync(target);
     if (!stat.isDirectory() || stat.isSymbolicLink()) throw Object.assign(Error('PULSE_DIRECTORY_INVALID'), { code: 'E_PULSE_DIRECTORY_INVALID' });
     return { dev: stat.dev, ino: stat.ino, real: fsSync.realpathSync(target) }; } catch (error) { if (error.code === 'ENOENT') return null; throw error; } };
-  const userIdentity = identity(userData); let directoryIdentity = identity(directory), policyCheck = () => {};
+  const userIdentity = identity(userData); let directoryIdentity = identity(directory), policyCheck = () => {}, correctionCheck = () => {}, ownCorrection = null;
   const refuse = code => { throw Object.assign(Error(code), { code }); };
   const same = (a, b) => a && b && a.dev === b.dev && a.ino === b.ino && a.real === b.real;
   const guard = () => {
@@ -16923,6 +16925,7 @@ function createPulseLocalHistoryPort(commandId) {
     const actual = identity(directory);
     if (directoryIdentity ? !same(actual, directoryIdentity) : actual !== null) refuse('E_PULSE_DIRECTORY_STALE');
     policyCheck();
+    correctionCheck();
   };
   const controllerFor = async (expected, collectionStatus = null) => {
     guard(); const { privacy, ledger } = await loadPulseLocalHistoryModules(); guard();
@@ -16942,6 +16945,10 @@ function createPulseLocalHistoryPort(commandId) {
       guard();
       const allowed = ['pulse-privacy-state.v1.json', 'pulse-ledger.v1.jsonl', 'pulse-ledger-intents.v1.jsonl', 'pulse-ledger-outbox.v1.jsonl', 'pulse-corrections.v1.jsonl'];
       if (!allowed.some(name => request.filePath === path.join(directory, name))) refuse('E_PULSE_WRITE_TARGET_INVALID');
+      if (commandId === 'cmd.project.pulse.correctMetric') {
+        if (request.filePath !== path.join(directory, 'pulse-corrections.v1.jsonl')) refuse('E_PULSE_CORRECTION_WRITE_TARGET_INVALID');
+        ownCorrection = request.content;
+      }
       if (request.filePath === path.join(directory, 'pulse-privacy-state.v1.json')) {
         const next = JSON.parse(request.content);
         if (!collectionStatus || next.revision !== expected.revision + 1 || next.collectionStatus !== collectionStatus) refuse('E_PULSE_TRANSITION_INVALID');
@@ -16971,6 +16978,39 @@ function createPulseLocalHistoryPort(commandId) {
   guard();
   return Object.freeze({
     projectId,
+    async correct(payload) {
+      guard(); const { privacy } = await loadPulseLocalHistoryModules(); guard();
+      const files = ['pulse-privacy-state.v1.json', 'pulse-ledger.v1.jsonl', 'pulse-ledger-intents.v1.jsonl', 'pulse-ledger-outbox.v1.jsonl', 'pulse-corrections.v1.jsonl'];
+      const stamp = name => {
+        try {
+          const stat = fsSync.lstatSync(path.join(directory, name), { bigint: true });
+          if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1n || stat.size > BigInt(privacy.PULSE_PRIVACY_MAX_FILE_BYTES)) refuse('E_PULSE_CORRECTION_SOURCE_INVALID');
+          return [stat.dev, stat.ino, stat.size, stat.mtimeNs, stat.ctimeNs].map(String).join(':');
+        } catch (error) { if (error.code === 'ENOENT') return 'ABSENT'; throw error; }
+      };
+      const pins = files.map(stamp);
+      correctionCheck = () => {
+        files.forEach((name, index) => {
+          if (stamp(name) === pins[index]) return;
+          if (name === 'pulse-corrections.v1.jsonl' && ownCorrection !== null
+            && fsSync.readFileSync(path.join(directory, name), 'utf8') === ownCorrection) return;
+          refuse('E_PULSE_CORRECTION_SOURCE_STALE');
+        });
+      };
+      guard(); const { explanation } = await privacy.readPulsePrivacyExplanationSnapshot(directory); guard();
+      const expected = { revision: payload.expectedPrivacyRevision, stateDigest: payload.expectedPrivacyStateDigest };
+      const current = explanation.identity;
+      if (current.privacyRevision !== expected.revision || current.privacyStateDigest !== expected.stateDigest
+        || current.ledgerSequence !== payload.expectedLedgerSequence || current.ledgerHeadDigest !== payload.expectedLedgerHeadDigest
+        || current.correctionSequence !== payload.expectedCorrectionSequence || current.correctionHeadDigest !== payload.expectedCorrectionHeadDigest) refuse('E_PULSE_CORRECTION_IDENTITY_STALE');
+      const target = explanation.history[payload.targetLedgerSequence - 1];
+      if (!target || target.entryDigest !== payload.targetEntryDigest || !target.effectiveAggregates.some(row => row.metricId === payload.metricId)) refuse('E_PULSE_CORRECTION_TARGET_STALE');
+      const controller = await controllerFor(expected); guard();
+      const result = await controller.appendCorrection({ schemaVersion: privacy.PULSE_PRIVACY_COMMAND_SCHEMA, type: 'CORRECT', requestId: crypto.randomUUID(),
+        expectedPrivacyRevision: expected.revision, expectedCorrectionSequence: current.correctionSequence, expectedCorrectionHeadDigest: current.correctionHeadDigest,
+        targetLedgerSequence: payload.targetLedgerSequence, targetEntryDigest: target.entryDigest, metricId: payload.metricId, correctedValue: payload.correctedValue });
+      guard(); return { ok: true, ...result };
+    },
     async change(payload) {
       guard(); const { privacy } = await loadPulseLocalHistoryModules(); guard();
       const expected = { revision: payload.expectedPrivacyRevision, stateDigest: payload.expectedPrivacyStateDigest };
@@ -17008,6 +17048,28 @@ async function handlePulsePrivacyCommand(commandId, payload) {
     if (payload.projectId !== port.projectId) return fail('E_PULSE_PROJECT_MISMATCH');
     return await queueDiskOperation(() => port.change(payload), 'Pulse consent');
   } catch (error) { return fail(typeof error.code === 'string' ? error.code : 'E_PULSE_UNAVAILABLE'); }
+}
+
+async function handlePulseCorrectionCommand(payload) {
+  const commandId = 'cmd.project.pulse.correctMetric';
+  const fail = code => ({ ok: false, error: { code, op: commandId, reason: code } });
+  const keys = ['projectId', 'expectedPrivacyRevision', 'expectedPrivacyStateDigest', 'expectedLedgerSequence', 'expectedLedgerHeadDigest',
+    'expectedCorrectionSequence', 'expectedCorrectionHeadDigest', 'targetLedgerSequence', 'targetEntryDigest', 'metricId', 'correctedValue'];
+  if (!payload || typeof payload !== 'object' || ![Object.prototype, null].includes(Object.getPrototypeOf(payload))) return fail('E_PULSE_CORRECTION_PAYLOAD_INVALID');
+  const actual = Reflect.ownKeys(payload), descriptors = Object.getOwnPropertyDescriptors(payload);
+  if (actual.length !== keys.length || actual.some(key => typeof key !== 'string' || !keys.includes(key)
+    || !descriptors[key].enumerable || !Object.hasOwn(descriptors[key], 'value'))) return fail('E_PULSE_CORRECTION_PAYLOAD_INVALID');
+  if (typeof payload.projectId !== 'string' || !payload.projectId || payload.projectId.length > 1000 || payload.projectId !== payload.projectId.trim()
+    || !['expectedPrivacyStateDigest', 'expectedLedgerHeadDigest', 'expectedCorrectionHeadDigest', 'targetEntryDigest'].every(key => typeof payload[key] === 'string' && /^[a-f0-9]{64}$/u.test(payload[key]))
+    || !['expectedPrivacyRevision', 'expectedLedgerSequence', 'expectedCorrectionSequence', 'targetLedgerSequence', 'correctedValue'].every(key => Number.isSafeInteger(payload[key]) && payload[key] >= 0)
+    || payload.expectedLedgerSequence < 1 || payload.expectedLedgerSequence > 4096 || payload.targetLedgerSequence < 1 || payload.targetLedgerSequence > 4096
+    || payload.expectedCorrectionSequence > 4096 || payload.correctedValue > 1000000000
+    || !['ACTIVE_WRITING_SECONDS', 'SCENES_EDITED_COUNT', 'SESSIONS_COMPLETED_COUNT', 'WORDS_ADDED_COUNT', 'WORDS_DELETED_COUNT'].includes(payload.metricId)) return fail('E_PULSE_CORRECTION_PAYLOAD_INVALID');
+  try {
+    const port = createPulseLocalHistoryPort(commandId);
+    if (payload.projectId !== port.projectId) return fail('E_PULSE_PROJECT_MISMATCH');
+    return await queueDiskOperation(() => port.correct(payload), 'Pulse author correction');
+  } catch (error) { return fail(typeof error.code === 'string' ? error.code : 'E_PULSE_CORRECTION_UNAVAILABLE'); }
 }
 
 const ENVIRONMENT_EPOCH_COMMAND_IDS = Object.freeze(['cmd.project.view.captureEnvironmentEpoch', 'cmd.project.view.restoreEnvironmentEpoch']);
@@ -38688,6 +38750,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.save',
   'cmd.project.pulse.optIn',
   'cmd.project.pulse.optOut',
+  'cmd.project.pulse.correctMetric',
   'cmd.project.view.captureEnvironmentEpoch',
   'cmd.project.view.restoreEnvironmentEpoch',
   'cmd.project.saveAs',
@@ -38844,6 +38907,7 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.pulse.optIn': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_IN, payload),
   'cmd.project.pulse.optOut': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_OUT, payload),
+  'cmd.project.pulse.correctMetric': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_CORRECT_METRIC, payload),
   'cmd.project.view.captureEnvironmentEpoch': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, payload),
   'cmd.project.view.restoreEnvironmentEpoch': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, payload),
   'cmd.project.saveAs': async () => {

@@ -11,7 +11,7 @@ const C = 'docs/OPS/R24/CORRECTIVE/';
 const h = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file));
 const WP804_MERGE_SHA = '22a12573e3539c5f91064cc6db90c0a1c47cbaa1';
-const WP806_SUCCESSOR_PATHS = new Set(['src/core/pulse-privacy-v1.mjs']);
+const WP806_SUCCESSOR_PATHS = new Set(['src/core/pulse-privacy-v1.mjs', 'test/unit/r24-wp804-pulse-privacy-integration.test.js']);
 const historicalWp804Bytes = file => WP806_SUCCESSOR_PATHS.has(file)
   ? execFileSync('git', ['show', `${WP804_MERGE_SHA}:${file}`], { encoding: null })
   : fs.readFileSync(file);

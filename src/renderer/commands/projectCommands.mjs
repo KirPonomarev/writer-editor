@@ -54,6 +54,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   PULSE_OPT_IN: 'cmd.project.pulse.optIn',
   PULSE_OPT_OUT: 'cmd.project.pulse.optOut',
+  PULSE_CORRECT_METRIC: 'cmd.project.pulse.correctMetric',
   ENVIRONMENT_EPOCH_CAPTURE: 'cmd.project.view.captureEnvironmentEpoch',
   ENVIRONMENT_EPOCH_RESTORE: 'cmd.project.view.restoreEnvironmentEpoch',
   PROJECT_VIEW_SET_MENU_PRESENTATION_CLASSIC: 'cmd.project.view.setMenuPresentationClassic',
@@ -1129,7 +1130,7 @@ function registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, meta
       }
       let response;
       try {
-        if ([EXTRA_COMMAND_IDS.PULSE_OPT_IN, EXTRA_COMMAND_IDS.PULSE_OPT_OUT, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE].includes(commandId)
+        if ([EXTRA_COMMAND_IDS.PULSE_OPT_IN, EXTRA_COMMAND_IDS.PULSE_OPT_OUT, EXTRA_COMMAND_IDS.PULSE_CORRECT_METRIC, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE].includes(commandId)
           && ['tiptap', 'legacy'].includes(input.editorMode)) {
           const { editorMode, ...intent } = input;
           input = intent;
@@ -1232,7 +1233,7 @@ export function registerProjectCommands(registry, options = {}) {
     ? options.domainEventPort
     : null;
 
-  for (const [id, label] of [[EXTRA_COMMAND_IDS.PULSE_OPT_IN, 'Включить локальную историю'], [EXTRA_COMMAND_IDS.PULSE_OPT_OUT, 'Отключить сбор истории']]) {
+  for (const [id, label] of [[EXTRA_COMMAND_IDS.PULSE_OPT_IN, 'Включить локальную историю'], [EXTRA_COMMAND_IDS.PULSE_OPT_OUT, 'Отключить сбор истории'], [EXTRA_COMMAND_IDS.PULSE_CORRECT_METRIC, 'Записать поправку автора']]) {
     registerBridgeOnlyProjectCommand(registry, electronAPI, id, { label, surface: ['internal'] });
   }
   for (const [id, label] of [[EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, 'Save current settings'], [EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, 'Restore saved settings']]) {
