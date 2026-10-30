@@ -44,6 +44,8 @@ Existing raw logs and failures remain on T777. No product/Mac qualification.
 - test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - scripts/ops/rtk-interop-data-c1.mjs
+- docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
+- docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
 
 Budget: the two OPS modules at most50added/10removed lines for resolver behavior;
 maintained tests append at most230lines with original prefixes unchanged;
@@ -102,6 +104,13 @@ path refusal. The corrected actual H2 call returns the identical33stage137
 binding result with4835Git calls. Wall54.298s is one observed sample with stated
 worktree/cache/observer differences, not a promised ratio or fullMac acceptance.
 Refresh only modified current DATA bound hashes and the sole policy consumer pin.
+
+Actual H3 gates retained: C1C327of335 and post-audit62of63 fail at the two
+unadmitted task/helper paths. Append only those and the two generated RCV01A
+candidate artifacts to both exact DATA arrays, retaining all854 old identities.
+The existing generator refreshes seven binding fields; all old execution/sample,
+review, denominator, null-head NON_CURRENT and BLOCKED metadata stay exact.
+Whole25 must actually run; regeneration never certifies current execution.
 
 FEATURE_INTEGRATION_MANIFEST_V1:
 featureId=C1C_TWO_CANONICAL_CANDIDATE_HINTS; featureVersion=1;

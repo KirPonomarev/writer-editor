@@ -131418,7 +131418,7 @@ const R24_INTEROP_C1C_BOUNDED_THROUGHPUT_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "1d1f3fd7b0de5edbe68b8704b77908847185941dc3a00c1aaa17e94c432a5d56"
+      "sha256": "2614ab2e5215dba9cca285bdc571b930e3d3c95c28a4a060c37b626dcedb26d7"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -131482,13 +131482,21 @@ const R24_INTEROP_C1C_BOUNDED_THROUGHPUT_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-30--c1c-bounded-throughput.md",
-      "sha256": "ede27c39290924035dfde8762a65d5ccf4bda6136684f0fa941ba5d9bedad274"
+      "sha256": "91de4abb17cd2412cb282db52a3b497a961f284fc5253fc6ec53b82153c6ca2b"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "4b93dc0c72baf6624ad03c51770ade41df1a7f843cbc357046b6bd8e27906c5c"
+    },
+    {
+      "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "f1eb56d366ab3e7ecc672dcdecfe23becccd68e1ab172347284d5b961b3da77b"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b4d936219f388d7c0c2974d391795d6cb44c9b7c3c1debd77bab6a9594eafcef"
+      "sha256": "96f1b18b1a44af1c7a7e796f20c98f901bac94e048cbf6bd4227e4fb722f36da"
     }
   ]
 });
