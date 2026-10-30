@@ -149,4 +149,54 @@
       "approved": true,
       "evidenceStampIds": [],
       "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "7d213c4da8a750d06b73ca145a00025adeeaa223caae25eda6dc959b66ff49f9",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "155cab52f9dd57b845e957709c4e4b1f2564d911a5bc19394447098a878643a3",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "907cf7a8d2f94a849cab407d0a4731972069c8da5cf919a35af19b291993836f",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "de59360fabac09c0bbd034544eeab936a4150d9ce4ec921371e31bd51f9428ea",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "842437da9f82d513efcc320659675838da245b45dbb4417fa73f4266c01cb9f3",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:41:19.413006+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_02.json SHA256 62c2384e6862a9ea96c75151eaae5c37b222d58889900e5e9ef1ba8b26e6afaa; direct latest human app-development autonomy directive preserved in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}
