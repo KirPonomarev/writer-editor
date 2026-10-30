@@ -362,3 +362,57 @@ test('actual preload remains boolean-only and rejects truthy non-booleans withou
     assert.equal(h.context.normalizeEditorPasteFocusState(payload), null);
   }
 });
+
+
+test('actual Pulse correction field uses the guarded native clipboard route and rejects invalid or disabled edits [FINITE_DOM_NOT_NATIVE]', () => {
+  const h = clipboardFocusHarness();
+  class Control extends h.Element {
+    constructor(tag) { super(tag.toUpperCase()); this.dataset = {}; this.listeners = {}; this.textContent = ''; }
+    appendChild(child) { return this.append(child); }
+    setAttribute(name, value) { this[name] = value; }
+    addEventListener(name, fn) { this.listeners[name] = fn; }
+    focus() { h.focus(this); }
+    remove() {
+      if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(node => node !== this);
+      this.parentElement = null; this.connected = false;
+    }
+    querySelector(selector) {
+      assert.equal(selector, '[data-pulse-correction-value]');
+      return walk(this).find(node => Object.hasOwn(node.dataset || {}, 'pulseCorrectionValue')) || null;
+    }
+  }
+  const walk = node => [node, ...node.children.flatMap(walk)];
+  const parent = new Control('section'), item = parent.append(new Control('div')), edit = item.append(new Control('button'));
+  let productDispatches = 0;
+  const document = { createElement: tag => new Control(tag), body: h.document.body,
+    get activeElement() { return h.document.activeElement; } };
+  const context = vm.createContext({ document, pulseHistoryPending: null,
+    captureAtlasPublication: () => () => true,
+    runPulseCorrectionCommand: () => { productDispatches++; } });
+  vm.runInContext(extractFunctionSource(read('src/renderer/editor.js'), 'openPulseCorrectionEditor'), context);
+  context.openPulseCorrectionEditor(item, { targetLedgerSequence: 1, metricId: 'SCENES_EDITED_COUNT',
+    fieldLabel: 'Scenes edited', originalValue: 1, effectiveValue: 1, correctionSequence: null },
+  { correctionIdentity: { ledgerSequence: 1 } }, parent, {}, edit);
+  const input = parent.querySelector('[data-pulse-correction-value]');
+  assert.ok(input); assert.equal(h.document.activeElement, input);
+  assert.equal(h.calls.at(-1), true, 'the actual focused Pulse value field must receive the existing guarded native Paste route');
+  h.invoke('paste'); assert.equal(h.effects.length, 1); assert.equal(h.effects[0].target, input);
+  for (const property of ['readOnly', 'disabled']) {
+    input[property] = true; h.focus(input); h.invoke('paste');
+    assert.equal(h.calls.at(-1), false); assert.equal(h.effects.length, 1); input[property] = false;
+  }
+  h.focus(input);
+  const button = action => walk(parent).find(node => node.dataset?.pulseHistoryAction === action + '-1-SCENES_EDITED_COUNT');
+  for (const value of ['', '-1', '0.5', '1e2', '00', ' 0', '1000000001']) {
+    input.value = value; button('preview').listeners.click();
+    assert.equal(input['aria-invalid'], 'true', value); assert.equal(button('confirm'), undefined);
+    assert.equal(productDispatches, 0);
+  }
+  input.value = '0'; button('preview').listeners.click();
+  assert.ok(button('confirm')); assert.equal(input.disabled, true); assert.equal(productDispatches, 0);
+  assert.match(walk(parent).map(node => node.textContent).join(' '), /Измерено: 1.*Поправка автора: 0/u);
+  h.focus(input); h.invoke('paste'); assert.equal(h.calls.at(-1), false); assert.equal(h.effects.length, 1);
+  button('cancel').listeners.click(); assert.equal(h.document.activeElement, edit); assert.equal(productDispatches, 0);
+  const blockedNumber = new h.Element('INPUT', { type: 'number' }); h.focus(blockedNumber); h.invoke('paste');
+  assert.equal(h.calls.at(-1), false); assert.equal(h.effects.length, 1, 'the pre-existing numeric-control clipboard prohibition stays enforced');
+});

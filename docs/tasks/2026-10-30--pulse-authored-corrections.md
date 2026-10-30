@@ -46,7 +46,7 @@ Pure reader must not construct controllers, mkdir, recover pending intents, norm
 
 Reuse existing controller and fixed five-file allowlist; correction can write only existing pulse-corrections.v1.jsonl through guarded durable writer, after exact current privacy/ledger/correction/target validation. No manuscript write. Revalidate capability and context before queue, after preparation and at awaited write/publication boundaries. No lazy refresh of stale payload identities. Replayed/doubleclick prior-CAS intents reject; capacity refuses with no cleanup. Pre-publish failure preserves bytes; post-publish ACK loss is uncertain, not claimed unchanged, and requires actual readback.
 
-Native controls: current row -> edit labeled value -> preview original/current/proposed -> Confirm/Cancel; Escape cancels and returns focus when owned. Restore original uses the same command and before/after confirmation. No product write on edit/preview/cancel/reload. Reject invalid/fractional/negative/over-budget input visibly; zero is valid. Pending disables conflicting controls, prevents double dispatch, and protects project/surface/request epoch/generation/focus across awaited readbacks. No stale success toast or mutation after detach/context drift. Measured/corrected labels and native keyboard/aria-live/busy/read-only failure states remain clear.
+Native value control must use the existing guarded native text-field Paste route; preserve the existing non-text/number-control refusal and strict integer/range validation. Native controls: current row -> edit labeled value -> preview original/current/proposed -> Confirm/Cancel; Escape cancels and returns focus when owned. Restore original uses the same command and before/after confirmation. No product write on edit/preview/cancel/reload. Reject invalid/fractional/negative/over-budget input visibly; zero is valid. Pending disables conflicting controls, prevents double dispatch, and protects project/surface/request epoch/generation/focus across awaited readbacks. No stale success toast or mutation after detach/context drift. Measured/corrected labels and native keyboard/aria-live/busy/read-only failure states remain clear.
 
 ## ALLOWLIST
 
@@ -78,6 +78,7 @@ Native controls: current row -> edit labeled value -> preview original/current/p
 - `test/contracts/donor-port-command-surface-kernel.contract.test.js`
 - `test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js`
 - `test/contracts/rtk-word-comment-return-apply.contract.test.js`
+- `test/unit/paste-focus-signal.test.js`
 - `test/unit/r24-ent0-entitlement-law.test.js`
 - `test/unit/r24-ent0-port-enforcement.test.js`
 - `test/unit/r24-wp100-wiring-matrix.test.js`

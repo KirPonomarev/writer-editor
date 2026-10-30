@@ -19993,7 +19993,7 @@ function openPulseCorrectionEditor(item, metric, presentation, parent, status, e
   const publication = captureAtlasPublication(), key = metric.targetLedgerSequence + '-' + metric.metricId;
   const form = document.createElement('div'), label = document.createElement('label'), input = document.createElement('input');
   label.textContent = 'Поправка автора: ' + metric.fieldLabel;
-  input.type = 'number'; input.min = '0'; input.max = '1000000000'; input.step = '1';
+  input.type = 'text'; input.inputMode = 'numeric'; input.maxLength = 10;
   input.value = String(restoreOriginal ? metric.originalValue : metric.effectiveValue);
   input.dataset.pulseCorrectionValue = key; input.setAttribute('aria-label', label.textContent);
   label.appendChild(input); form.appendChild(label);

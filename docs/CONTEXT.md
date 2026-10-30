@@ -1,3 +1,8 @@
+## 30.10.2026 — Pulse: native proof и совместимость поля с Paste
+
+H2 2b797e24: собственный synthetic native warm/cold показал измерение1, отдельную поправку0 и восстановление1; обе записи и исходные байты сохранены. H3 737b88f6 добавляет только16 прямо одобренных текущих SHA witnesses; STRICT doctor,12 policy gates и4419 RTK прошли. Full baseline H3 ещё исполняется отдельно;17 qualification rows остаются UNKNOWN.
+Native выявил: новое поле type=number блокируется действующей узкой Paste policy. Whole existing Paste suite + новый actual-control test:12 PASS,1 causal FAIL. Следующий шаг в том же Pulse outcome: bounded text field с numeric inputMode, прежняя integer0..1000000000 validation, без изменения classifier/preload/Main clipboard guards; свежая actual native Paste0 и полная delivery chain обязательны.
+
 ## 2026-10-30 — C1C closed; Pulse authored correction journey open
 
 C1C PR2182 is fully delivered on main27870c86e3256139bc0131fac8c1192389bb1c16,
