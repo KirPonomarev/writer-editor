@@ -92,6 +92,8 @@ Native value control must use the existing guarded native text-field Paste route
 - `docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json`
 - `docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json`
 
+- `test/contracts/r24-wp804-terminal-carriers.contract.test.mjs`
+
 ## DENYLIST
 
 Every undeclared path; dependencies/preload/new IPC/product and workspace registries/profiles; HTML/CSS/fonts/tokens/layout/editor input path; WP800 codec/WP801 ledger/WP201/save coordinator schema; all private/default owner profiles/manuscripts/real data; historical frozen receipts/contracts; deleted or weakened tests/oracles/skips/todo. No autosave producer, new metrics, import/export/delete/network sync, WSE/ENV expansion, signing/notary/publication, reset/stash/clean/rebase/amend/force or other-chat messages.
@@ -142,3 +144,5 @@ SAME_CONTOUR_OBSERVATION_01: Original whole causal RED at main27870c86: Core15of
 REQUIRED_CURRENT_WITNESS_COMPANION:
 
 The unchanged RCV01A generator and contract define these two existing files as deterministic current source-byte witnesses. Refresh only the inventory/manifest and bound-file-set digest fields; retain BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE, WORKTREE_CANDIDATE_NON_CURRENT, null HEAD/origin, historical execution/review data and all original predicates. This does not convert historical runs to current acceptance. Same complete969 affected tests must pass, followed by all required exact-source gates. Original H7 failure and prior Git bytes remain. Draft push preceded full local completion and is retained as an execution-order limitation; subsequent push and PR delivery follow completed local mandatory proofs, then exact CI and normal merge/literal merged source/build/native.
+
+HISTORICAL_WP804_ARTIFACT_SUBJECT: The frozen stage804 evidence retains its original24-test stdout,10-mutant proof and all raw hashes. Extend only its existing fixed historical-source set to the now-appended integration test, read at immutable merge22a12573, preserving every original assertion and all other source-selection behavior. Current added tests require their own fresh execution. Refresh the one C1B hash, C2A/current RCV01A witnesses and exact DATA/own-current mirrors; no historical raw evidence mutation or runtime change. Original complete49-test CI command must pass unchanged.

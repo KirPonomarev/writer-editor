@@ -1,3 +1,7 @@
+## 30.10.2026 — Pulse: exact frozen WP804 artifact source
+
+Clean H9 5ecce70d: affected969/969 and taskE0 passed. H7 CI retains one WP804 historical carrier failure; exact current49-test command reproduces48pass/1fail, while WP80530/30 and WP80646/46 pass. Frozen stage22a12573 integration bytes hash0f3b3b4e exactly; current file keeps the full old prefix plus3399new bytes. Fresh41-path declaration/preflight admits only this existing historical source-set extension and necessary current metadata/hash companions. Keep raw24-test/10-mutant evidence, predicates, assertions and all17UNKNOWN Mac rows unchanged. Draft2183 remains unmerged; all required current proofs precede further push.
+
 ## 30.10.2026 — Pulse: required current RCV01A witnesses
 
 Literal H7 9c58514c: actual native Paste0/cancel/confirm/cold0/restore1 and closed full-profile restorations passed; Core107, Main805, E0172+40mutants, RTK4419, C1C335, post-audit63, Electron35 and full baseline OPS3/unit3850 of3909 plus59 unchanged skips/Electron20 completed. Affected whole969 retains3 real failures: two existing deterministic current RCV01A templates still bind old C1B bytes. Fresh bootstrap/declaration/preflight40paths admits only their four digest leaves through the unchanged generator, plus required current hash/factual companions. BLOCKED/non-current/null-head, historical execution/review fields, all predicates/tests and prior Git/raw versions stay unchanged; no current runtime acceptance from those templates. All17Mac qualifications remain UNKNOWN.

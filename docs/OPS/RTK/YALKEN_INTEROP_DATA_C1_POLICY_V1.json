@@ -871,7 +871,8 @@
     "src/core/pulse-privacy-v1.mjs",
     "test/unit/r24-wp804-pulse-privacy-integration.test.js",
     "test/unit/r24-wp806-pulse-claim-mutants.test.js",
-    "docs/tasks/2026-10-30--pulse-authored-corrections.md"
+    "docs/tasks/2026-10-30--pulse-authored-corrections.md",
+    "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -2792,11 +2793,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "04b47d3f092c49575fe27ad4503e87aa0ee9c4f934abc9164965107f05ad09dd"
+        "sha256": "289866656c2491eb8b78cea55f93a25104cea7fa24ae9169f6f0a4a42f1a72f0"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "59c8e23ce0907f0ba3f1435b27cef3ec3389db707182cb7d7f5c5a86aa7afced"
+        "sha256": "9d3321ee494e6e2406db594c1679ac0f2d19e61f2d89f2f6c569f9a1a6beec02"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3340,7 +3341,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "155cab52f9dd57b845e957709c4e4b1f2564d911a5bc19394447098a878643a3"
+        "sha256": "1a7d5768f97b0f3c41e09cbbb875693fd94af72b348c051d5fa150d2c52c2bd5"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3936,11 +3937,15 @@
       },
       {
         "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-        "sha256": "53fe94f8f2ae0506203e0c2c886093b725f4457a9a5ef866dff07955dc2e8302"
+        "sha256": "56b9de74ba84c365bdd2d347a65163e115dec1885f372453dc4043cc46a3a259"
       },
       {
         "path": "scripts/ops/r24/docs-claim-lint.mjs",
         "sha256": "b56605a39dbe9639a120089b2642414d1061f634a01f8fac60d086575fac766b"
+      },
+      {
+        "path": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
+        "sha256": "73eaae3abff45fb2cedfc96ab8844ca86194a1684afcc7ba925716529e78910d"
       }
     ],
     "followupRepair": {
