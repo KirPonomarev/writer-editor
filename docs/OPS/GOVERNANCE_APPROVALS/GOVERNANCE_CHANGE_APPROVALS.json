@@ -28952,6 +28952,86 @@
       "approved": true,
       "evidenceStampIds": [],
       "rationale": "Current byte witness for the single owner-approved bounded C1C OPS delivery. Preserve every existing approval, frozen predicate, test, historical pin and execution record; no gate, baseline, product mutation, qualification, release, dependency, cache, timeout or publication is accepted by this witness. Full baseline, CI, ordinary PR merge and exact merged verification remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "75a0ce4fa43f90d76eeddbc0c66285fa72503573a16ae6cd7aa879172929b27f",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "1fd9c3072d19c3f1caef52c2408c6bc17c55a19bfdf8d14d5e5b6c90d4951347",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "54c99a84051f7c36cf8aa4a9a02728e8392f1dec8124f0f9e10c72482b616f25",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "637bfa555e711db0024e7e0a5e4cd521be9d2fd0fd26a757366f6ca2422d6600",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "d6b4b7c0a93f4e0afc19cd3df6fb66e5d7fa85b842642e028b43196276ea43b0",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "sha256": "ec809c24557b4f3a56ca74f75acf2fc073b7cdb3100c69fcd45f7142eadeea86",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "be9b3912f50c907355a55aab46179414bbc822cada2d59aa90574f4322d0b715",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
+    },
+    {
+      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "06c5e45b0373abf84de726939a183c310d344d813b48ada49e3cd7069d860b1d",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T13:12:46.719938+00:00",
+      "authority": "EXPLICIT_OWNER_REPLY_TO_CURRENT_PULSE_16_WITNESS_PROPOSAL_20261030; request_user_input_async call_9e851f73d6db44629ef16d946272b129",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Current byte witness for the single V6 P19 Pulse author correction delivery. Preserve all prior records, tests, historical contracts, data, failure evidence and mandatory gates. No qualification, release, private-data, dependency, network, secret, signing, notary or publication authority."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
