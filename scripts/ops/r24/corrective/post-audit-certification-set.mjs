@@ -131552,7 +131552,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "e1433283c06ca323738ab422137f816dfbce5797c5bf1f4c84a3c7c9fb6e8910"
+      "sha256": "9969fb419d051ec40a24242d4c3f56907132c3f40c8af1e742e06f4a4013c4f2"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -131636,7 +131636,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-      "sha256": "703db88309d8b5fb4611ebdd87f1e6e8052fe8cbc276cabe55aef7078ca55ae7"
+      "sha256": "53fe94f8f2ae0506203e0c2c886093b725f4457a9a5ef866dff07955dc2e8302"
     },
     {
       "path": "src/command/commandSurfaceKernel.js",
@@ -131690,7 +131690,7 @@ const R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "5c3f634eab2577f3b6c2426e45a8fc1cab50d7a14f9ce4b5a887c39ad6fad7e2"
+      "sha256": "e1bc2a8992d1d435788e6f8404932404966824da7438846054a7f99565b954ed"
     }
   ]
 });

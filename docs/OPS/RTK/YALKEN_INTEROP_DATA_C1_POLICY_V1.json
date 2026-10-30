@@ -2792,11 +2792,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "bb4b2745a0e2a413e1a4034ed94ea5e4021b6249356b7b1e1984891969652b17"
+        "sha256": "04b47d3f092c49575fe27ad4503e87aa0ee9c4f934abc9164965107f05ad09dd"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "6748f7b15b8a17df516f4a8dd3f3e98e9431c83158a45ceac7ffe552651eea7e"
+        "sha256": "59c8e23ce0907f0ba3f1435b27cef3ec3389db707182cb7d7f5c5a86aa7afced"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3936,7 +3936,7 @@
       },
       {
         "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-        "sha256": "3c773e70f4153af1a338b25ec4cef81b2a98bc4f3d9ccffc9161283b119261fb"
+        "sha256": "53fe94f8f2ae0506203e0c2c886093b725f4457a9a5ef866dff07955dc2e8302"
       },
       {
         "path": "scripts/ops/r24/docs-claim-lint.mjs",
