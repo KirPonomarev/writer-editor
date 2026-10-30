@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import saveCoordinator from './save-coordinator-v1.cjs';
 import { canonicalSerialize, hashCanonicalValue } from './browser-safe-hash.mjs';
-import { openPulseLedger, PULSE_LEDGER_DEFAULT_MAX_ENTRIES, PULSE_LEDGER_ZERO_DIGEST } from './pulse-ledger-v1.mjs';
+import { openPulseLedger, readPulseLedgerSnapshot, PULSE_LEDGER_DEFAULT_MAX_ENTRIES, PULSE_LEDGER_ZERO_DIGEST } from './pulse-ledger-v1.mjs';
 import { PULSE_AGGREGATE_VALUE_MAX, PULSE_METRIC_ALLOWLIST } from './pulse-policy-codec-v1.mjs';
 
 const { durableSaveTransaction } = saveCoordinator;
@@ -250,7 +250,12 @@ function readState(filePath) {
 function readCorrections(filePath) {
   if (!fs.existsSync(filePath)) return [];
   assertRegularFile(filePath, 'E_WP804_CORRECTION_FILE');
-  const bytes = fs.readFileSync(filePath);
+  const before = fs.lstatSync(filePath, { bigint: true });
+  if (before.nlink !== 1n || before.size > BigInt(PULSE_PRIVACY_MAX_FILE_BYTES)) fail('E_WP804_CORRECTION_BYTES');
+  const bytes = fs.readFileSync(filePath), after = fs.lstatSync(filePath, { bigint: true });
+  if (!after.isFile() || after.isSymbolicLink() || after.dev !== before.dev || after.ino !== before.ino || after.nlink !== before.nlink
+    || after.size !== before.size || after.mtimeNs !== before.mtimeNs || after.ctimeNs !== before.ctimeNs
+    || bytes.length !== Number(before.size)) fail('E_WP804_CORRECTION_SOURCE_STALE');
   if (bytes.length > PULSE_PRIVACY_MAX_FILE_BYTES) fail('E_WP804_CORRECTION_BYTES');
   if (bytes.length === 0) return [];
   const text = decodeUtf8(bytes, 'E_WP804_CORRECTION_UTF8');
@@ -321,6 +326,50 @@ function applyCorrections(ledger, corrections) {
   });
 }
 
+function buildPrivacyExplanation({ state, corrections, ledger }) {
+  const payload = {
+    schemaVersion: PULSE_PRIVACY_EXPLANATION_SCHEMA,
+    policy: PULSE_PRIVACY_POLICY_V1,
+    privacyState: state,
+    identity: {
+      ledgerSequence: ledger.sequence,
+      ledgerHeadDigest: ledger.headDigest,
+      correctionSequence: corrections.sequence,
+      correctionHeadDigest: corrections.headDigest,
+      privacyRevision: state.revision,
+      privacyStateDigest: state.stateDigest,
+    },
+    history: applyCorrections(ledger, corrections),
+  };
+  return cloneFrozen({ ...payload, explanationDigest: hashCanonicalValue(payload) });
+}
+
+// A query never opens a controller, creates a directory or recovers an intent.
+export async function readPulsePrivacyExplanationSnapshot(directory) {
+  const state = readPulsePrivacyStateSnapshot(directory);
+  if (state.collectionStatus !== 'OPTED_IN') fail('E_WP804_HISTORY_READ_REQUIRES_OPT_IN');
+  const sourceIdentity = () => {
+    const root = fs.lstatSync(directory, { bigint: true });
+    if (!root.isDirectory() || root.isSymbolicLink()) fail('E_WP806_PRIVACY_DIRECTORY');
+    const members = DELETION_BASENAMES.map(name => {
+      try {
+        const stat = fs.lstatSync(path.join(directory, name), { bigint: true });
+        if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1n || stat.size > BigInt(PULSE_PRIVACY_MAX_FILE_BYTES)) fail('E_WP804_HISTORY_SOURCE_FILE');
+        return [name, stat.dev, stat.ino, stat.size, stat.mtimeNs, stat.ctimeNs].map(String);
+      } catch (error) { if (error.code === 'ENOENT') return [name, 'ABSENT']; throw error; }
+    });
+    return JSON.stringify([[String(root.dev), String(root.ino)], members]);
+  };
+  const before = sourceIdentity(), currentState = readPulsePrivacyStateSnapshot(directory);
+  if (currentState.revision !== state.revision || currentState.stateDigest !== state.stateDigest) fail('E_WP804_PRIVACY_REVISION_STALE');
+  const ledger = await readPulseLedgerSnapshot(directory);
+  const entries = readCorrections(fixedPaths(directory).corrections);
+  assertCorrectionsBindLedger(entries, ledger);
+  const corrections = correctionsSnapshot(entries);
+  if (sourceIdentity() !== before) fail('E_WP804_HISTORY_SOURCE_STALE');
+  return cloneFrozen({ ledgerSnapshot: ledger, explanation: buildPrivacyExplanation({ state, corrections, ledger }) });
+}
+
 export async function openPulsePrivacyController(directory, {
   saveTransaction = durableSaveTransaction,
   openLedger = openPulseLedger,
@@ -355,23 +404,7 @@ export async function openPulsePrivacyController(directory, {
     return result;
   };
 
-  const explainValue = ({ state, corrections, ledger }) => {
-    const payload = {
-      schemaVersion: PULSE_PRIVACY_EXPLANATION_SCHEMA,
-      policy: PULSE_PRIVACY_POLICY_V1,
-      privacyState: state,
-      identity: {
-        ledgerSequence: ledger.sequence,
-        ledgerHeadDigest: ledger.headDigest,
-        correctionSequence: corrections.sequence,
-        correctionHeadDigest: corrections.headDigest,
-        privacyRevision: state.revision,
-        privacyStateDigest: state.stateDigest,
-      },
-      history: applyCorrections(ledger, corrections),
-    };
-    return cloneFrozen({ ...payload, explanationDigest: hashCanonicalValue(payload) });
-  };
+  const explainValue = buildPrivacyExplanation;
 
   return Object.freeze({
     async explain() {

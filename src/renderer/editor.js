@@ -19936,6 +19936,122 @@ async function runPulseHistoryCommand(action, button, parent, status, presentati
   }
 }
 
+async function runPulseCorrectionCommand(button, parent, status, presentation, metric, value) {
+  if (!button.isConnected || button.disabled || pulseHistoryPending || !currentProjectId || !presentation.correctionIdentity) return;
+  const publication = captureAtlasPublication(), projectId = currentProjectId, surface = currentAtlasSurface;
+  const epoch = atlasContinuityRequestEpoch, restoreFocus = document.activeElement === button;
+  const buttons = [...parent.querySelectorAll('[data-pulse-history-action]')].map(node => ({ node, disabled: node.disabled }));
+  const ticket = { projectId }; let refreshing = false, completed = false;
+  const current = () => publication() && pulseHistoryPending === ticket && parent.isConnected
+    && currentProjectId === projectId && currentRightTab === 'atlas' && currentAtlasSurface === surface
+    && atlasContinuityLedgerExplicitOpen === true && (refreshing || button.isConnected)
+    && (atlasContinuityRequestEpoch === epoch || refreshing && atlasContinuityRequestEpoch === epoch + 1);
+  const identity = presentation.correctionIdentity;
+  pulseHistoryPending = ticket; buttons.forEach(({ node }) => { node.disabled = true; });
+  status.textContent = 'Сохраняется поправка автора…'; status.setAttribute('aria-busy', 'true');
+  let result = null;
+  try {
+    result = await dispatchUiCommand('cmd.project.pulse.correctMetric', { projectId,
+      expectedPrivacyRevision: identity.privacyRevision, expectedPrivacyStateDigest: identity.privacyStateDigest,
+      expectedLedgerSequence: identity.ledgerSequence, expectedLedgerHeadDigest: identity.ledgerHeadDigest,
+      expectedCorrectionSequence: identity.correctionSequence, expectedCorrectionHeadDigest: identity.correctionHeadDigest,
+      targetLedgerSequence: metric.targetLedgerSequence, targetEntryDigest: metric.targetEntryDigest,
+      metricId: metric.metricId, correctedValue: value }, { isCurrentPresentation: current });
+    if (!current()) return result;
+    const applied = result?.value?.result;
+    if (result?.ok !== true || result.value?.performed !== true || applied?.ok !== true || applied.status !== 'CORRECTION_APPENDED'
+      || applied.entry?.sequence !== identity.correctionSequence + 1 || applied.entry?.correctedValue !== value
+      || applied.entry?.targetEntryDigest !== metric.targetEntryDigest || applied.entry?.metricId !== metric.metricId) {
+      status.textContent = 'Не удалось подтвердить запись поправки. Обновите историю перед повторным действием.';
+      return result;
+    }
+    refreshing = true; await refreshAtlasContinuityLedgerSurface({ force: true, isCurrent: current });
+    completed = current(); return result;
+  } catch (error) {
+    if (current()) status.textContent = 'Не удалось подтвердить запись поправки. Обновите историю перед повторным действием.';
+    return result;
+  } finally {
+    const ownsPresentation = current();
+    if (pulseHistoryPending === ticket) pulseHistoryPending = null;
+    if (ownsPresentation) {
+      const ownsFocus = restoreFocus && (document.activeElement === button || document.activeElement === document.body);
+      if (completed) {
+        renderAtlasContinuityLedgerState();
+        if (ownsFocus) parent.querySelector('[data-pulse-history-action="correct-' + metric.targetLedgerSequence + '-' + metric.metricId + '"]')?.focus();
+      } else {
+        buttons.forEach(({ node, disabled }) => { node.disabled = disabled; }); status.setAttribute('aria-busy', 'false');
+        if (ownsFocus) button.focus();
+      }
+    }
+  }
+}
+
+function openPulseCorrectionEditor(item, metric, presentation, parent, status, editButton, restoreOriginal = false) {
+  if (pulseHistoryPending || !editButton.isConnected || !presentation.correctionIdentity) return;
+  const existing = parent.querySelector('[data-pulse-correction-value]');
+  if (existing) { existing.focus(); return; }
+  const publication = captureAtlasPublication(), key = metric.targetLedgerSequence + '-' + metric.metricId;
+  const form = document.createElement('div'), label = document.createElement('label'), input = document.createElement('input');
+  label.textContent = 'Поправка автора: ' + metric.fieldLabel;
+  input.type = 'number'; input.min = '0'; input.max = '1000000000'; input.step = '1';
+  input.value = String(restoreOriginal ? metric.originalValue : metric.effectiveValue);
+  input.dataset.pulseCorrectionValue = key; input.setAttribute('aria-label', label.textContent);
+  label.appendChild(input); form.appendChild(label);
+  const detail = document.createElement('p'); detail.setAttribute('aria-live', 'polite'); form.appendChild(detail);
+  let closed = false, previewButton;
+  const action = (id, title, listener) => {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.dataset.pulseHistoryAction = id + '-' + key; button.textContent = title;
+    button.addEventListener('click', listener); form.appendChild(button); return button;
+  };
+  const cancel = () => {
+    if (closed || pulseHistoryPending) return; closed = true;
+    const ownsFocus = form.contains(document.activeElement) || document.activeElement === document.body;
+    form.remove(); editButton.disabled = false;
+    if (ownsFocus && publication() && editButton.isConnected) editButton.focus();
+  };
+  const preview = () => {
+    if (!publication() || !form.isConnected || closed || pulseHistoryPending || input.disabled) return;
+    if (!/^(0|[1-9][0-9]*)$/u.test(input.value) || !Number.isSafeInteger(Number(input.value)) || Number(input.value) > 1000000000) {
+      input.setAttribute('aria-invalid', 'true'); detail.textContent = 'Введите целое число от 0 до 1000000000.'; input.focus(); return;
+    }
+    const value = Number(input.value); input.setAttribute('aria-invalid', 'false'); input.disabled = true; previewButton.disabled = true;
+    detail.textContent = 'Измерено: ' + metric.originalValue + ' · Текущая поправка автора: ' + (metric.correctionSequence === null ? 'нет' : metric.effectiveValue) + ' · Поправка автора: ' + value
+      + '. Сохранится отдельная запись; исходное измерение и рукопись сохранятся.';
+    const confirm = action('confirm', 'Подтвердить поправку', () => runPulseCorrectionCommand(confirm, parent, status, presentation, metric, value));
+    confirm.focus();
+  };
+  previewButton = action('preview', 'Предпросмотр поправки', preview);
+  action('cancel', 'Отмена', cancel);
+  const keydown = event => {
+    if (event.key === 'Escape') { event.preventDefault(); cancel(); }
+    else if (event.key === 'Enter' && event.target === input && !input.disabled) { event.preventDefault(); preview(); }
+  };
+  input.addEventListener('keydown', keydown); form.addEventListener('keydown', keydown);
+  item.appendChild(form); editButton.disabled = true; input.focus();
+  if (restoreOriginal) preview();
+}
+
+function appendPulseCorrectionControls(item, row, presentation, parent, status) {
+  for (const metric of row.corrections) {
+    const detail = document.createElement('p');
+    detail.textContent = metric.fieldLabel + ' · Измерено: ' + metric.originalValue
+      + (metric.correctionSequence === null ? ' · Поправок автора нет.' : ' · Поправка автора: ' + metric.effectiveValue + ' (запись ' + metric.correctionSequence + ').');
+    item.appendChild(detail);
+    const key = metric.targetLedgerSequence + '-' + metric.metricId;
+    const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'right-rail-atlas-action';
+    edit.dataset.pulseHistoryAction = 'correct-' + key; edit.textContent = 'Исправить: ' + metric.fieldLabel;
+    edit.disabled = !!pulseHistoryPending || !presentation.correctionIdentity;
+    edit.addEventListener('click', () => openPulseCorrectionEditor(item, metric, presentation, parent, status, edit)); item.appendChild(edit);
+    if (metric.correctionSequence !== null) {
+      const restore = document.createElement('button'); restore.type = 'button'; restore.className = 'right-rail-atlas-action';
+      restore.dataset.pulseHistoryAction = 'restore-' + key; restore.textContent = 'Вернуться к измеренному значению: ' + metric.fieldLabel;
+      restore.disabled = edit.disabled;
+      restore.addEventListener('click', () => openPulseCorrectionEditor(item, metric, presentation, parent, status, edit, true)); item.appendChild(restore);
+    }
+  }
+}
+
 function appendPulseHistory(parent, source) {
   const presentation = normalizePulseHistoryPresentation(source);
   const heading = document.createElement('div');
@@ -19981,6 +20097,7 @@ function appendPulseHistory(parent, source) {
       const detail = document.createElement('p');
       detail.textContent = row.metrics.map((metric) => `${metric.fieldLabel}: ${metric.displayValue}${metric.provenance ? ` (${metric.provenance})` : ''}`).join(' · ');
       item.append(title, detail);
+      appendPulseCorrectionControls(item, row, presentation, parent, status);
       list.appendChild(item);
     }
     section.appendChild(list);

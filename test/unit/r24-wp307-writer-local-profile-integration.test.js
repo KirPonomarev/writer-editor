@@ -5569,7 +5569,14 @@ for (const fault of ['owner', 'generation', 'lifecycle']) test('WSE actual Main 
 const PULSE_CORRECTION_ID = 'cmd.project.pulse.correctMetric';
 
 async function pulseCorrectionMainFixture(t) {
-  const x = await pulseMainFixture(t); await x.pulseConsent(PULSE_LIVE_IDS[0]);
+  const x = await pulseMainFixture(t), consentBefore = pulseSnapshot(x), consentPayload = x.pulsePayload();
+  const consent = await x.pulseUi(PULSE_LIVE_IDS[0], consentPayload);
+  assert.equal(consent.mainResult?.ok, true, JSON.stringify(consent)); assert.equal(consent.result.ok, true);
+  assert.equal(consent.result.value?.performed, true); assert.equal(x.pulseState().collectionStatus, 'OPTED_IN');
+  assert.equal(x.pulseState().revision, consentPayload.expectedPrivacyRevision + 1);
+  assert.deepEqual(consent.mainResult.value.privacyState, x.pulseState());
+  assertPulseConsentFootprint(x, consentBefore, pulseSnapshot(x));
+  assert.equal((await x.pulseRead()).pulseClaim.privacy.stateDigest, x.pulseState().stateDigest);
   await x.save('Добавлено. ' + EXACT_ATLAS_TEXT + ' Источник наблюдения для поправки.');
   const privacy = await import('../../src/core/pulse-privacy-v1.mjs');
   x.correctionController = await privacy.openPulsePrivacyController(x.pulseDirectory);
@@ -5748,4 +5755,43 @@ for (const mode of ['pre-publish', 'ack-loss-after-publish']) test('Pulse actual
     assert.equal((await x.correctionController.explain()).history[0].effectiveAggregates[0].effectiveValue, 0);
   }
   assert.equal((await x.pulseRead()).pulseClaim.rows[0].sceneEdits.value, 1);
+});
+
+for (const fault of ['owner', 'capability', 'privacy', 'ledger', 'correction']) test('Pulse correction revalidates ' + fault + ' after the actual awaited temporary write', async t => {
+  const x = await pulseCorrectionMainFixture(t); await x.coreCorrection(2);
+  const payload = await x.correctionPayload(), promises = require('node:fs/promises'), open = promises.open;
+  const channel = { privacy: 'pulse-privacy-state.v1.json', ledger: 'pulse-ledger.v1.jsonl', correction: 'pulse-corrections.v1.jsonl' }[fault];
+  let reached = false, concurrent;
+  promises.open = async (file, ...args) => {
+    const handle = await open(file, ...args);
+    if (typeof file === 'string' && path.basename(file).startsWith('pulse-corrections.v1.jsonl.p2-')) {
+      const write = handle.writeFile.bind(handle);
+      handle.writeFile = async (...values) => {
+        const result = await write(...values);
+        if (!reached) {
+          reached = true;
+          if (fault === 'owner') x.h.main.__host.revokeOwner();
+          else if (fault === 'capability') x.h.main.__host.denyCapability('cap.project.save');
+          else {
+            const target = path.join(x.pulseDirectory, channel);
+            concurrent = Buffer.concat([fs.readFileSync(target), Buffer.from('{owned-concurrent-write:')]);
+            fs.writeFileSync(target, concurrent);
+          }
+        }
+        return result;
+      };
+    }
+    return handle;
+  };
+  t.after(() => { promises.open = open; });
+  const before = reattachmentWholeFixtureRoster(x.h), response = await x.pulseUi(PULSE_CORRECTION_ID, payload);
+  assert.equal(reached, true, 'the fixed correction temporary write must actually execute');
+  assert.equal(response.mainResult?.ok, false, JSON.stringify(response));
+  const after = reattachmentWholeFixtureRoster(x.h);
+  if (!channel) assert.deepEqual(after, before);
+  else {
+    const fixed = path.relative(x.h.root, path.join(x.pulseDirectory, channel));
+    assert.deepEqual(after.filter(([name]) => name !== fixed), before.filter(([name]) => name !== fixed));
+    assert.deepEqual(fs.readFileSync(path.join(x.pulseDirectory, channel)), concurrent, 'the reader/writer must not repair or overwrite concurrent bytes');
+  }
 });

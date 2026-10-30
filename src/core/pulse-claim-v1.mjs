@@ -3,8 +3,7 @@ import {
   assertPulseDescriptiveHistoryCurrent,
   buildPulseDescriptiveHistory,
 } from './descriptive-history-v1.mjs';
-import { readPulseLedgerSnapshot } from './pulse-ledger-v1.mjs';
-import { readPulsePrivacyStateSnapshot } from './pulse-privacy-v1.mjs';
+import { readPulsePrivacyStateSnapshot, readPulsePrivacyExplanationSnapshot } from './pulse-privacy-v1.mjs';
 
 export const PULSE_CLAIM_SCHEMA = 'yalken.r24.pulseClaim.v1';
 export const PULSE_CLAIM_STAGE_ID = 'WP-806_PULSE_CLAIM';
@@ -137,7 +136,7 @@ export async function readPulseClaimProjection(directory, { rowLimit = 32 } = {}
     const payload = baseProjection('OPTED_OUT');
     return currentPrivacy(payload);
   }
-  const ledgerSnapshot = await readPulseLedgerSnapshot(directory);
+  const { ledgerSnapshot, explanation } = await readPulsePrivacyExplanationSnapshot(directory);
   const generation = ledgerSnapshot.entries.at(-1)?.receipt?.generation ?? 0;
   const currentIdentity = {
     ledgerSequence: ledgerSnapshot.sequence,
@@ -159,5 +158,16 @@ export async function readPulseClaimProjection(directory, { rowLimit = 32 } = {}
   });
   const latestPrivacy = readPulsePrivacyStateSnapshot(directory);
   if (latestPrivacy.revision !== privacyState.revision || latestPrivacy.stateDigest !== privacyState.stateDigest) fail('E_WP806_PRIVACY_STALE');
-  return currentPrivacy(buildPulseClaim({ historyProjection, currentIdentity, privacyState }, { rowLimit }));
+  const measured = buildPulseClaim({ historyProjection, currentIdentity, privacyState }, { rowLimit });
+  const correctionReview = {
+    schemaVersion: 'yalken.r24.pulseAuthorCorrectionReview.v1',
+    identity: explanation.identity,
+    rows: explanation.history.slice(0, rowLimit).map(row => ({
+      ledgerSequence: row.ledgerSequence,
+      entryDigest: row.entryDigest,
+      metrics: row.effectiveAggregates,
+    })),
+    policy: { original: 'IMMUTABLE_MEASUREMENT', correction: 'EXPLICIT_AUTHOR_INTERPRETATION', restoration: 'APPEND_ORIGINAL_VALUE', manuscriptMutation: false },
+  };
+  return currentPrivacy({ ...measured, correctionReview });
 }

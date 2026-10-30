@@ -70,6 +70,7 @@ const FREE_ALWAYS_AVAILABLE_COMMAND_IDS = Object.freeze([
   'cmd.project.save',
   'cmd.project.pulse.optIn',
   'cmd.project.pulse.optOut',
+  'cmd.project.pulse.correctMetric',
   'cmd.project.view.captureEnvironmentEpoch',
   'cmd.project.view.restoreEnvironmentEpoch',
   'cmd.project.saveAs',

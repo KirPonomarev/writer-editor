@@ -25,6 +25,7 @@ export const CAPABILITY_BINDING = Object.freeze({
   'cmd.project.save': 'cap.project.save',
   'cmd.project.pulse.optIn': 'cap.project.save',
   'cmd.project.pulse.optOut': 'cap.project.save',
+  'cmd.project.pulse.correctMetric': 'cap.project.save',
   'cmd.project.saveAs': 'cap.project.saveAs',
   'cmd.project.view.setMenuPresentationClassic': 'cap.project.view.menuPresentation',
   'cmd.project.view.setMenuPresentationCompact': 'cap.project.view.menuPresentation',
