@@ -5565,3 +5565,187 @@ for (const fault of ['owner', 'generation', 'lifecycle']) test('WSE actual Main 
     assert.equal(result.error.code, 'E_ATLAS_ANALYTICS_STALE_RESULT_DISCARDED');
   } finally { wseSemanticFixtureEvidence(x, 'drift-' + fault); }
 });
+
+const PULSE_CORRECTION_ID = 'cmd.project.pulse.correctMetric';
+
+async function pulseCorrectionMainFixture(t) {
+  const x = await pulseMainFixture(t); await x.pulseConsent(PULSE_LIVE_IDS[0]);
+  await x.save('Добавлено. ' + EXACT_ATLAS_TEXT + ' Источник наблюдения для поправки.');
+  const privacy = await import('../../src/core/pulse-privacy-v1.mjs');
+  x.correctionController = await privacy.openPulsePrivacyController(x.pulseDirectory);
+  x.correctionPayload = async (patch = {}) => {
+    const current = await x.correctionController.explain();
+    return { projectId: x.projectId, expectedPrivacyRevision: current.identity.privacyRevision,
+      expectedPrivacyStateDigest: current.identity.privacyStateDigest, expectedLedgerSequence: current.identity.ledgerSequence,
+      expectedLedgerHeadDigest: current.identity.ledgerHeadDigest, expectedCorrectionSequence: current.identity.correctionSequence,
+      expectedCorrectionHeadDigest: current.identity.correctionHeadDigest, targetLedgerSequence: 1,
+      targetEntryDigest: current.history[0].entryDigest, metricId: 'SCENES_EDITED_COUNT', correctedValue: 0, ...patch };
+  };
+  x.coreCorrection = async value => {
+    const p = await x.correctionPayload({ correctedValue: value });
+    const result = await x.correctionController.appendCorrection({ schemaVersion: privacy.PULSE_PRIVACY_COMMAND_SCHEMA,
+      type: 'CORRECT', requestId: 'owned-correction-control-' + p.expectedCorrectionSequence,
+      expectedPrivacyRevision: p.expectedPrivacyRevision, expectedCorrectionSequence: p.expectedCorrectionSequence,
+      expectedCorrectionHeadDigest: p.expectedCorrectionHeadDigest, targetLedgerSequence: p.targetLedgerSequence,
+      targetEntryDigest: p.targetEntryDigest, metricId: p.metricId, correctedValue: value });
+    assert.equal((await x.correctionController.explain()).history[0].effectiveAggregates[0].effectiveValue, value);
+    return result;
+  };
+  return x;
+}
+
+function assertPulseOnlyCorrectionChanged(x, before, after) {
+  const fixed = path.relative(x.h.root, path.join(x.pulseDirectory, 'pulse-corrections.v1.jsonl'));
+  const strip = roster => roster.filter(([name]) => name !== fixed);
+  assert.deepEqual(strip(after), strip(before), 'correction changes only its fixed app-local channel, retaining every author and original measurement byte');
+  const actual = x.pulseFiles()['pulse-corrections.v1.jsonl']; assert.ok(actual);
+}
+
+test('Pulse existing Core correction is visible through actual Main query separately from original measurement [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await pulseCorrectionMainFixture(t); await x.coreCorrection(0);
+  const before = reattachmentWholeFixtureRoster(x.h), result = await x.pulseRead();
+  assert.equal(result.pulseClaim.rows[0].sceneEdits.value, 1, 'original observed Save is never rewritten');
+  assert.ok(result.pulseClaim.correctionReview, 'actual Main must publish already persisted Core correction separately');
+  assert.deepEqual(result.pulseClaim.correctionReview.rows[0].metrics, [{ metricId: 'SCENES_EDITED_COUNT', originalValue: 1, effectiveValue: 0, correctionSequence: 1 }]);
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+});
+
+test('Pulse registered correction and explicit original-value restoration retain both entries and all unrelated state [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await pulseCorrectionMainFixture(t), firstPayload = await x.correctionPayload();
+  const before = reattachmentWholeFixtureRoster(x.h), first = await x.pulseUi(PULSE_CORRECTION_ID, firstPayload);
+  assert.ok(first.mainResult, 'new registered correction command must reach actual Main');
+  assert.equal(first.result.ok, true, JSON.stringify(first)); assert.equal(first.mainResult.ok, true, JSON.stringify(first));
+  assert.equal(first.mainResult.value.status, 'CORRECTION_APPENDED');
+  assertPulseOnlyCorrectionChanged(x, before, reattachmentWholeFixtureRoster(x.h));
+  const bytes = x.pulseFiles()['pulse-corrections.v1.jsonl'], repeatedBefore = reattachmentWholeFixtureRoster(x.h);
+  const replay = await x.pulseUi(PULSE_CORRECTION_ID, firstPayload);
+  assert.equal(replay.mainResult.ok, false); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), repeatedBefore);
+  const restored = await x.pulseUi(PULSE_CORRECTION_ID, await x.correctionPayload({ correctedValue: 1 }));
+  assert.equal(restored.mainResult.ok, true, JSON.stringify(restored));
+  assert.deepEqual(x.pulseFiles()['pulse-corrections.v1.jsonl'].subarray(0, bytes.length), bytes);
+  const current = await x.correctionController.explain(); assert.equal(current.identity.correctionSequence, 2);
+  assert.equal(current.history[0].effectiveAggregates[0].originalValue, 1); assert.equal(current.history[0].effectiveAggregates[0].effectiveValue, 1);
+  const moduleUrl = require('node:url').pathToFileURL(path.join(ROOT, 'src/core/pulse-claim-v1.mjs')).href;
+  const script = `import {readPulseClaimProjection} from ${JSON.stringify(moduleUrl)};process.stdout.write(JSON.stringify(await readPulseClaimProjection(process.argv[1])));`;
+  const cold = JSON.parse(require('node:child_process').execFileSync(process.execPath, ['--input-type=module', '--eval', script, x.pulseDirectory], { encoding: 'utf8' }));
+  assert.deepEqual(cold, (await x.pulseRead()).pulseClaim); assert.equal(cold.correctionReview.identity.correctionSequence, 2);
+});
+
+test('Pulse actual correction rejects malformed raw and stale identities before any persistent change', async t => {
+  const x = await pulseCorrectionMainFixture(t), good = await x.correctionPayload();
+  const cases = { unknown: { ...good, path: x.f.scenePath }, negative: { ...good, correctedValue: -1 }, fractional: { ...good, correctedValue: 0.5 },
+    overBudget: { ...good, correctedValue: 1000000001 }, stringNumber: { ...good, correctedValue: '0' }, missingMetric: { ...good, metricId: 'WORDS_ADDED_COUNT' },
+    wrongMetric: { ...good, metricId: 'MANUSCRIPT_TEXT' }, privacy: { ...good, expectedPrivacyRevision: good.expectedPrivacyRevision + 1 },
+    privacyDigest: { ...good, expectedPrivacyStateDigest: 'f'.repeat(64) }, ledgerSequence: { ...good, expectedLedgerSequence: 0 },
+    ledgerHead: { ...good, expectedLedgerHeadDigest: 'f'.repeat(64) }, correctionSequence: { ...good, expectedCorrectionSequence: 1 },
+    correctionHead: { ...good, expectedCorrectionHeadDigest: 'f'.repeat(64) }, target: { ...good, targetLedgerSequence: 2 },
+    targetDigest: { ...good, targetEntryDigest: 'f'.repeat(64) }, project: { ...good, projectId: 'different-project' } };
+  for (const [name, payload] of Object.entries(cases)) await t.test(name, async () => {
+    const before = reattachmentWholeFixtureRoster(x.h), result = await x.h.command(PULSE_CORRECTION_ID, payload);
+    assert.equal(result.ok, false, JSON.stringify(result)); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  });
+  const before = reattachmentWholeFixtureRoster(x.h), accepted = await x.pulseUi(PULSE_CORRECTION_ID, good);
+  assert.equal(accepted.mainResult?.ok, true, 'positive same-caller control prevents an absent-ID blanket-refusal false green');
+  assertPulseOnlyCorrectionChanged(x, before, reattachmentWholeFixtureRoster(x.h));
+});
+
+for (const fault of ['owner', 'project', 'session', 'window', 'userData', 'generation', 'entitlement', 'profile', 'lifecycle']) test('Pulse queued correction revalidates actual ' + fault, async t => {
+  const x = await pulseCorrectionMainFixture(t), payload = await x.correctionPayload(); let enter, release;
+  const entered = new Promise(resolve => { enter = resolve; }), gate = new Promise(resolve => { release = resolve; });
+  t.after(() => release());
+  const held = x.h.main.__host.holdDiskQueue(async () => { enter(); await gate; }); await entered;
+  let settled = false; const request = x.h.command(PULSE_CORRECTION_ID, payload).finally(() => { settled = true; }); await new Promise(setImmediate);
+  const queued = !settled;
+  if (fault === 'owner') x.h.main.__host.revokeOwner();
+  if (fault === 'project') x.h.main.__host.invalidateProjectRoot();
+  if (fault === 'session') x.h.main.__host.invalidateSession();
+  if (fault === 'window') x.h.window.isDestroyed = () => true;
+  if (fault === 'userData') x.h.main.__host.invalidatePulseUserData();
+  if (fault === 'generation') x.h.main.__host.invalidateGeneration();
+  if (fault === 'entitlement') x.h.main.__host.revokeEntitlement(PULSE_CORRECTION_ID);
+  if (fault === 'profile') x.h.main.__host.revokeProfile();
+  if (fault === 'lifecycle') x.h.main.__host.invalidateLifecycle();
+  const before = reattachmentWholeFixtureRoster(x.h); release(); await held;
+  const response = await request; assert.equal(queued, true, 'actual Main correction must reach the held diskQueue');
+  assert.equal(response.ok, false, JSON.stringify(response));
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+});
+
+test('Pulse actual correction control previews cancels confirms restores and retains focus [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await pulseCorrectionMainFixture(t), r = await pulseMainRenderer(x), key = '1-SCENES_EDITED_COUNT';
+  const before = reattachmentWholeFixtureRoster(x.h), edit = r.button('correct-' + key);
+  assert.ok(edit, 'actual Writing history needs an explicit author-correction control'); edit.focus();
+  await r.click('correct-' + key);
+  let input = r.c.atlasContinuityLedgerHost.querySelector('[data-pulse-correction-value="' + key + '"]');
+  assert.ok(input); assert.equal(input['aria-label'], 'Поправка автора: Scenes edited');
+  input.value = '0'; await r.click('preview-' + key);
+  assert.match(r.text(), /Измерено: 1/u); assert.match(r.text(), /Поправка автора: 0/u);
+  assert.equal(r.requests.length, 0); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  await r.click('cancel-' + key); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  assert.equal(r.c.document.activeElement, edit);
+  await r.click('correct-' + key); input = r.c.atlasContinuityLedgerHost.querySelector('[data-pulse-correction-value="' + key + '"]');
+  input.value = '0'; await r.click('preview-' + key); await r.click('confirm-' + key);
+  assert.equal(r.requests.length, 1); assert.equal(r.requests[0].id, PULSE_CORRECTION_ID);
+  assert.equal(r.requests[0].payload.correctedValue, 0); assert.match(r.text(), /Измерено: 1/u); assert.match(r.text(), /Поправка автора: 0/u);
+  assertPulseOnlyCorrectionChanged(x, before, reattachmentWholeFixtureRoster(x.h));
+  assert.equal(r.c.document.activeElement?.dataset.pulseHistoryAction, 'correct-' + key);
+  const prefix = x.pulseFiles()['pulse-corrections.v1.jsonl'];
+  await r.click('restore-' + key); assert.equal(r.requests.length, 1, 'restore also requires explicit preview confirmation');
+  await r.click('confirm-' + key); assert.equal(r.requests.length, 2); assert.equal(r.requests[1].payload.correctedValue, 1);
+  assert.deepEqual(x.pulseFiles()['pulse-corrections.v1.jsonl'].subarray(0, prefix.length), prefix);
+  assert.equal((await x.correctionController.explain()).identity.correctionSequence, 2);
+});
+
+test('Pulse actual correction editor rejects invalid input and Escape cancels without persistent writes [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await pulseCorrectionMainFixture(t), r = await pulseMainRenderer(x), key = '1-SCENES_EDITED_COUNT';
+  assert.ok(r.button('correct-' + key), 'actual correction edit control'); await r.click('correct-' + key);
+  const input = r.c.atlasContinuityLedgerHost.querySelector('[data-pulse-correction-value="' + key + '"]');
+  const before = reattachmentWholeFixtureRoster(x.h);
+  for (const value of ['', '-1', '0.5', '1000000001', '1e2', 'NaN']) {
+    input.value = value; await r.click('preview-' + key);
+    assert.equal(input['aria-invalid'], 'true', value); assert.ok(!r.button('confirm-' + key));
+    assert.equal(r.requests.length, 0); assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  }
+  input.listeners.keydown({ key: 'Escape', preventDefault() {} }); await r.settle();
+  assert.equal(r.c.atlasContinuityLedgerHost.querySelector('[data-pulse-correction-value="' + key + '"]'), null);
+  assert.equal(r.c.document.activeElement?.dataset.pulseHistoryAction, 'correct-' + key);
+  assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+});
+
+for (const fault of ['doubleclick', 'detached', 'project', 'surface', 'generation']) test('Pulse actual correction pending listener protects ' + fault + ' [FINITE_DOM_NOT_NATIVE]', async t => {
+  const x = await pulseCorrectionMainFixture(t), r = await pulseMainRenderer(x), key = '1-SCENES_EDITED_COUNT';
+  assert.ok(r.button('correct-' + key)); await r.click('correct-' + key);
+  r.c.atlasContinuityLedgerHost.querySelector('[data-pulse-correction-value="' + key + '"]').value = '0';
+  await r.click('preview-' + key); const confirm = r.button('confirm-' + key); confirm.focus();
+  let release; const gate = new Promise(resolve => { release = resolve; }); t.after(() => release());
+  const dispatch = r.c.dispatchUiCommand; r.c.dispatchUiCommand = async (...args) => { const result = await dispatch(...args); await gate; return result; };
+  confirm.emit('click'); await new Promise(setImmediate);
+  if (fault === 'doubleclick') confirm.emit('click');
+  if (fault === 'detached') r.c.atlasContinuityLedgerHost.remove();
+  if (fault === 'project') r.c.currentProjectId = 'another-project';
+  if (fault === 'surface') r.c.currentAtlasSurface = 'overview';
+  if (fault === 'generation') r.c.localEditGeneration += 1;
+  const staleText = r.text(); release(); await r.settle();
+  assert.equal(r.requests.length, 1); assert.equal((await x.correctionController.explain()).identity.correctionSequence, 1);
+  if (fault !== 'doubleclick') assert.equal(r.text(), staleText, 'stale result must not refresh or claim success');
+});
+
+for (const mode of ['pre-publish', 'ack-loss-after-publish']) test('Pulse actual correction ' + mode + ' reports truthfully and retains original measurement', async t => {
+  const x = await pulseCorrectionMainFixture(t), payload = await x.correctionPayload(), promises = require('node:fs/promises'), rename = promises.rename;
+  const destination = path.join(x.pulseDirectory, 'pulse-corrections.v1.jsonl'); let reached = false;
+  promises.rename = async (from, to) => {
+    if (to !== destination || reached) return rename(from, to);
+    reached = true; if (mode === 'ack-loss-after-publish') await rename(from, to);
+    throw Object.assign(Error('OWNED_CORRECTION_PUBLISH_FAILURE'), { code: 'E_OWNED_CORRECTION_PUBLISH_FAILURE' });
+  };
+  t.after(() => { promises.rename = rename; });
+  const before = reattachmentWholeFixtureRoster(x.h), response = await x.pulseUi(PULSE_CORRECTION_ID, payload);
+  assert.equal(reached, true, 'actual fixed correction writer must reach injected publish boundary');
+  assert.equal(response.mainResult?.ok, false, JSON.stringify(response));
+  if (mode === 'pre-publish') assert.deepEqual(reattachmentWholeFixtureRoster(x.h), before);
+  else {
+    assertPulseOnlyCorrectionChanged(x, before, reattachmentWholeFixtureRoster(x.h));
+    assert.equal((await x.correctionController.explain()).history[0].effectiveAggregates[0].effectiveValue, 0);
+  }
+  assert.equal((await x.pulseRead()).pulseClaim.rows[0].sceneEdits.value, 1);
+});
