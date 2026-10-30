@@ -131706,19 +131706,19 @@ const R24_INTEROP_NAVIGATOR_SAVE_COUNTER_FRESHNESS_DELTA = Object.freeze({
   "bindings": [
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "5d3decfe25f3463fe5212d0dac863cf6506cd5b12e871ba1ff55836142152380"
+      "sha256": "594cc7fee606d3264dde6fff3a0cc5a1b82e6b345d27f79b871302a0428b6091"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "7b458e129220225435d0e3b315eeea851e53372fc928b763b88eff5056a7205a"
+      "sha256": "7b5816c8ef36fcb9a3d9eac40e548da1ab35f65c249505ecc773e357cd62634e"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "962967f9d7da1c4512f157e68096b0e5cfac621db8c55da11569646bb08c17a0"
+      "sha256": "cf38981140c89cb36b9ce18b07324c622de1c67530f07154fd450b09bfb1e0b9"
     },
     {
       "path": "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
-      "sha256": "cf4ec1a911e0ffe7060a111ac48de640be99d2373699dd53f74d68e6b9d8c8a0"
+      "sha256": "c29b18345a5c5ec9cb2166c57fc1290ad3c72774d5d651efc107ce2f04138720"
     },
     {
       "path": "src/renderer/editor.js",
@@ -131754,7 +131754,7 @@ const R24_INTEROP_NAVIGATOR_SAVE_COUNTER_FRESHNESS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "2794c26dceb8d3d277c441cdfca00ff07c2b19f1544f4d80c961793eb2f5e8c2"
+      "sha256": "e1aba98b26c05cdb82b2d6215beb251fbf9e4871b8035d475e42a3ea7c4486c3"
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
@@ -131771,12 +131771,16 @@ const R24_INTEROP_NAVIGATOR_SAVE_COUNTER_FRESHNESS_DELTA = Object.freeze({
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
       "sha256": "f74fa21e8cbcf68cd2ff7692c2e4177c5a012434c3dab0c9827ccf48ffc06d9b"
+    },
+    {
+      "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
+      "sha256": "66ebb5ce863c8c5c4d9eeaa2c7f400844ea3985b94728df57cde575ef1986637"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b3c265c1cb662a580bf15824a220ce57a6f84a99ebab58f99f152bfaf6dd034f"
+      "sha256": "eaf82a4043baa671f26daf2a5b59ca5844710b0f755b69176129aa21a37784cc"
     }
   ]
 });

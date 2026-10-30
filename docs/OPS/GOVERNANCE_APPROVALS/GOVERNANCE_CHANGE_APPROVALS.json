@@ -29311,7 +29311,31 @@
       "approvedBy": "owner-delegated-codex:YALKEN_NAVIGATOR_SAVE_COUNTER_FRESHNESS_20261030",
       "approvedAtUtc": "2026-10-30T20:17:42.793Z",
       "rationale": "Direct owner standing app-development delegation. Exact current derived byte companions after removing two terminal LF bytes from the newly appended counter behavior test; assertions and one-line runtime delta unchanged. All original approvals and historical verifier predicates retained. Delegated technical review only, not a new human reply, runtime acceptance, independent audit or release permit."
-    }],
+    },
+
+  {
+    "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "sha256": "eaf82a4043baa671f26daf2a5b59ca5844710b0f755b69176129aa21a37784cc",
+    "approvedBy": "owner-delegated-codex:YALKEN_NAVIGATOR_SAVE_COUNTER_FRESHNESS_20261030",
+    "approvedAtUtc": "2026-10-30T21:40:01.212Z",
+    "rationale": "Exact current DATA five factual-source SHA leaves, DATA policy digest literal and current Navigator successor bindings after source-bound native component and factual status correction. Original registry records/root metadata/raw prefix/suffix, all historical source sets and executable predicates, frozen runtime/tests and17UNKNOWN qualifications remain intact. Delegated technical byte review only; no new human reply, runtime acceptance, independent audit or release permit."
+  },
+  {
+    "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "sha256": "e02dd9c066b3548ae73a4c040e1bb3869dfa58e1940dc8d1b474871c769f9db3",
+    "approvedBy": "owner-delegated-codex:YALKEN_NAVIGATOR_SAVE_COUNTER_FRESHNESS_20261030",
+    "approvedAtUtc": "2026-10-30T21:40:01.212Z",
+    "rationale": "Exact current DATA five factual-source SHA leaves, DATA policy digest literal and current Navigator successor bindings after source-bound native component and factual status correction. Original registry records/root metadata/raw prefix/suffix, all historical source sets and executable predicates, frozen runtime/tests and17UNKNOWN qualifications remain intact. Delegated technical byte review only; no new human reply, runtime acceptance, independent audit or release permit."
+  },
+  {
+    "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+    "sha256": "e1aba98b26c05cdb82b2d6215beb251fbf9e4871b8035d475e42a3ea7c4486c3",
+    "approvedBy": "owner-delegated-codex:YALKEN_NAVIGATOR_SAVE_COUNTER_FRESHNESS_20261030",
+    "approvedAtUtc": "2026-10-30T21:40:01.212Z",
+    "rationale": "Exact current DATA five factual-source SHA leaves, DATA policy digest literal and current Navigator successor bindings after source-bound native component and factual status correction. Original registry records/root metadata/raw prefix/suffix, all historical source sets and executable predicates, frozen runtime/tests and17UNKNOWN qualifications remain intact. Delegated technical byte review only; no new human reply, runtime acceptance, independent audit or release permit."
+  }
+
+],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
     "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",

@@ -2795,15 +2795,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5d3decfe25f3463fe5212d0dac863cf6506cd5b12e871ba1ff55836142152380"
+        "sha256": "594cc7fee606d3264dde6fff3a0cc5a1b82e6b345d27f79b871302a0428b6091"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "7b458e129220225435d0e3b315eeea851e53372fc928b763b88eff5056a7205a"
+        "sha256": "7b5816c8ef36fcb9a3d9eac40e548da1ab35f65c249505ecc773e357cd62634e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "962967f9d7da1c4512f157e68096b0e5cfac621db8c55da11569646bb08c17a0"
+        "sha256": "cf38981140c89cb36b9ce18b07324c622de1c67530f07154fd450b09bfb1e0b9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3939,7 +3939,7 @@
       },
       {
         "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
-        "sha256": "56b9de74ba84c365bdd2d347a65163e115dec1885f372453dc4043cc46a3a259"
+        "sha256": "66ebb5ce863c8c5c4d9eeaa2c7f400844ea3985b94728df57cde575ef1986637"
       },
       {
         "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -3951,7 +3951,7 @@
       },
       {
         "path": "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
-        "sha256": "cf4ec1a911e0ffe7060a111ac48de640be99d2373699dd53f74d68e6b9d8c8a0"
+        "sha256": "c29b18345a5c5ec9cb2166c57fc1290ad3c72774d5d651efc107ce2f04138720"
       },
       {
         "path": "test/unit/navigator-derived-counters-renderer.test.js",
