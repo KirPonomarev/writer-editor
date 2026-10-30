@@ -199,4 +199,44 @@
       "approved": true,
       "evidenceStampIds": [],
       "rationale": "Current SHA witnesses for the same Pulse outcome after an actual native-discovered field compatibility fix. One source input line; existing strict integer/range check, entire clipboard policy/Main/preload, Core/producer/schema/immutable ledger, all old tests and historical certification predicates preserved. Actual maintained Paste suite causal RED12/13 then GREEN13/13; original source bindings and denominators remain exact with only current byte changes and one explicit regression binding. No waiver, native acceptance, qualification or release approval; rebuilt actual native Paste and mandatory full gates/normal delivery remain required."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "5c3f634eab2577f3b6c2426e45a8fc1cab50d7a14f9ce4b5a887c39ad6fad7e2",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "29696380b865198ff59de7185bc7605de34d8bbf92e868539208563df4ae4eda",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "b56605a39dbe9639a120089b2642414d1061f634a01f8fac60d086575fac766b",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "e1433283c06ca323738ab422137f816dfbce5797c5bf1f4c84a3c7c9fb6e8910",
+      "approvedBy": "owner-delegated-codex:YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030",
+      "approvedAtUtc": "2026-10-30T14:10:25.394775+00:00",
+      "authority": "OWNER_DELEGATED_PRIMARY_AGENT_CURRENT_SHA_DECISION; GOVERNANCE_DELEGATED_WITNESS_DECISION_03.json SHA256 a13b9c74e10a9f448234115ebf36703faa6777b35d1e5a7e6ceaa10674ae4c0d; direct human app-development autonomy directive in GOVERNANCE_HUMAN_AUTHORIZATION_01.json",
+      "approved": true,
+      "evidenceStampIds": [],
+      "rationale": "Exact current byte witnesses for the same Pulse delivery. One historical-only RCV01A stamp/inventory pair independently exists at ancestor27870c86/tree39238725; original raw bytes, all V1..V43 literals and every historical Git/tree/ancestor/hash predicate are preserved.38 unchanged whole claim-lint tests and7 cheap working-source checks passed. Only current source witness digests and one explicit already-admitted linter source binding changed. Product code, current inventory, primary schemas, all old registry rows,17 UNKNOWN qualifications and release predicates remain unchanged. This grants no acceptance/waiver; complete E0/mutants, rebuilt native Paste, full baseline/CI/normal delivery remain required."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}
