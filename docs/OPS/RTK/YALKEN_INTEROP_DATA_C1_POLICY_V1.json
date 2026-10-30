@@ -1118,7 +1118,7 @@
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-        "sha256": "ddb6922715f1e7d6539042bc2890092815aae52f6d5e5458eaba463b7681592b"
+        "sha256": "12395d379d836c705ff4d1898729f3098a68cb9da4feab3f7a35f788664487ac"
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
@@ -2334,7 +2334,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "2c051352377a29f014223f2fec51efe19c45d515e02cbe931b6b23c1c9b3a848"
+        "sha256": "a8876f65096e8bcc0725cf13780788f257b43c9c36487b9ba14bf8d970b86334"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2782,15 +2782,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "c68a756412184ee082168f7b82ea95b87f6bafbf894ea5ea58d33599c9973e37"
+        "sha256": "9461422e4ccf3787e6d5bd889f5c22e9ce041243b9d1c3bcad36d9572a3f8334"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "a5d244eb9d0b10cf535030659f4beb52bc699d2d0a2cf162316060962711624e"
+        "sha256": "6186e6dfc17b90e32d28d172dbcdf5c930177167c6c4c827380203cf42c6ed1f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "70b094e782f376d68ebe6fddc6d5988728d68fdbbe49ac6864648105cf759e7d"
+        "sha256": "52570a7e4e072e0f380d9b9fe9957348405ee75e34fa3f4bee1ee4742aa4fec5"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3330,7 +3330,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "18daf24d363833e353f46475fae75e92dbe9caeafb10bc4b7027f3fa314aa8d8"
+        "sha256": "f33995135878d0b2024fe67da349f62bcbe6b4465f064b0a54f4faab260ee774"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3370,7 +3370,7 @@
       },
       {
         "path": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
-        "sha256": "a1a89206abe332a2b054007c812401d4a6f098cfb95d0be374784d08357afda2"
+        "sha256": "fb314243dc5f12ced34257efd30a556deacecfb2fc1f77a7ed945ac064f52944"
       },
       {
         "path": "docs/tasks/2026-10-22--ci-single-rtk.md",

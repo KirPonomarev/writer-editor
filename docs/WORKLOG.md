@@ -5397,3 +5397,10 @@ Exact74eedd61 candidate passed14source commands, the complete baseline with3745p
 
 
 2026-10-29 — YALKEN_WSE_SEMANTIC_DIFF_20261029: clean aef9c207/preflight0; prior real native diagnostic closed; current task admitted for causal test phase, runtime unchanged. Full Mac goal remains active.
+
+
+## 2026-10-30
+
+- WSE PR2181 closed at424fd208 with actual merged native/CI/profile proof. One direct owner-approved bounded C1C delivery follows: two measured walks, every oracle/fallback retained, then fullV6 user outcomes. Diagnosis128.647s/7137Git,2323expensive diffs; causal/fix/delivery pending; all17Mac qualifications UNKNOWN.
+
+C1C proof update: original H2 rejected both later exact invalid ancestors; initial17line hint regression is retained and corrected by41line full-history eligibility. All17 frozen controls, including real mixed ancestry and descendant fast-path artifact refusal, pass. Corrected H2 default caller retains identical33stage137binding result with4835Git calls; wall54.298s is a limited single sample. Mechanical current witnesses and mandatory full delivery remain pending;17Mac rows stayUNKNOWN.

@@ -3278,3 +3278,110 @@ test('unresolved requested commit identity falls back to actual history and keep
   assert.deepEqual(verifyDocxNotificationOutcomePostEvaluationException({candidateSha,git}),expected);
   assert(calls.some(a=>a[0]==='rev-list'));
 });
+
+
+const BOUNDED_C1C_RCVID_HINT = '03e992d7f9215f8b20f847a34f92cf301113b4e1';
+
+test('bounded C1C RCVID actual history keeps the complete result without enumeration', () => {
+  const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), calls = [];
+  const git = (args, options = {}) => { calls.push([...args]); return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 }); };
+  const result = verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: head, git });
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.candidateSha, BOUNDED_C1C_RCVID_HINT);
+  assert.equal(result.currentCandidateSha, head);
+  assert.deepEqual(result.changedPaths, RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION.admittedPaths);
+  assert.equal(result.changedPathDenominator, 8);
+  assert.equal(result.programDone, false);
+  assert.equal(calls.some(args => args[0] === 'rev-list'), false, 'verified canonical history must not enumerate the repair range');
+});
+
+for (const fault of ['requested-identity', 'hint-ancestry']) {
+  test('bounded C1C RCVID preserves complete synthetic successor fallback for ' + fault, () => {
+    const fixture = rcv00dCurrentIdentityGitFixture({ successor: true }), calls = [];
+    const git = (args, options = {}) => {
+      calls.push([...args]);
+      if (args[0] === 'rev-parse' && args[1] === fixture.requestedSha + '^{commit}') {
+        const value = fault === 'requested-identity' ? '0'.repeat(40) : fixture.requestedSha;
+        return options.encoding === 'utf8' ? value : Buffer.from(value);
+      }
+      if (args[0] === 'rev-parse' && args[1] === BOUNDED_C1C_RCVID_HINT + '^{commit}') return options.encoding === 'utf8' ? BOUNDED_C1C_RCVID_HINT : Buffer.from(BOUNDED_C1C_RCVID_HINT);
+      if (args[0] === 'merge-base' && args[2] === BOUNDED_C1C_RCVID_HINT && args[3] === fixture.requestedSha && fault === 'hint-ancestry') throw Error('hint is outside synthetic history');
+      return fixture.git(args, options);
+    };
+    const result = verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: fixture.requestedSha, git });
+    assert.equal(result.status, 'PASS');
+    assert.equal(result.candidateSha, fixture.candidateSha);
+    assert.equal(result.currentCandidateSha, fixture.requestedSha);
+    assert.equal(calls.some(args => args[0] === 'rev-list'), true);
+    assert.equal(result.programDone, false);
+  });
+}
+
+test('bounded C1C RCVID selected real artifact still rejects repaired source mutation', () => {
+  const e = RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION;
+  const git = (args, options = {}) => {
+    const bytes = execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+    if (args[0] === 'show' && args[1] === BOUNDED_C1C_RCVID_HINT + ':' + e.selectorPath) {
+      const changed = Buffer.concat([Buffer.from(bytes), Buffer.from('// unaccepted source mutation\n')]);
+      return options.encoding === 'utf8' ? changed.toString('utf8') : changed;
+    }
+    return bytes;
+  };
+  assert.throws(() => verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: BOUNDED_C1C_RCVID_HINT, git }), /E_RCVID_REPAIRED_BYTES/);
+});
+
+function boundedC1cRcvidBoundaryHistory() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-c1c-RCVID-selection-'));
+  execFileSync('git', ['init', '-q', '--bare', path.join(root, 'history.git')]);
+  const objects = path.resolve(execFileSync('git', ['rev-parse', '--git-path', 'objects'], { encoding: 'utf8' }).trim());
+  const env = { ...process.env, GIT_ALTERNATE_OBJECT_DIRECTORIES: objects, GIT_INDEX_FILE: path.join(root, 'index'), GIT_AUTHOR_NAME: 'C1C fixture', GIT_AUTHOR_EMAIL: 'fixture@invalid', GIT_COMMITTER_NAME: 'C1C fixture', GIT_COMMITTER_EMAIL: 'fixture@invalid', GIT_AUTHOR_DATE: '2026-10-30T06:00:00Z', GIT_COMMITTER_DATE: '2026-10-30T06:00:00Z' };
+  const calls = [], git = (args, options = {}) => { calls.push([...args]); return execFileSync('git', ['--git-dir=' + path.join(root, 'history.git'), ...args], { ...options, env, maxBuffer: 64 * 1024 * 1024 }); };
+  const checkpoint = '424fd2087d6141528b0c74a063d1c80ae2edd9bb', tree = String(git(['rev-parse', checkpoint + '^{tree}'])).trim();
+  const commit = (value, parent) => String(git(['commit-tree', value, '-p', parent], { input: 'owned synthetic C1C selection control\n' })).trim();
+  const normal = commit(tree, checkpoint), e = RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION;
+  const target = e.selectorPath, oldBytes = Buffer.from(git(['show', BOUNDED_C1C_RCVID_HINT + ':' + target]));
+  const invalid = Buffer.concat([oldBytes, Buffer.from('// invalid later candidate\n')]);
+  const badBytes = invalid;
+  git(['read-tree', BOUNDED_C1C_RCVID_HINT]);
+  const blob = String(git(['hash-object', '-w', '--stdin'], { input: badBytes })).trim();
+  git(['update-index', '--cacheinfo', '100644,' + blob + ',' + target]);
+  const badTree = String(git(['write-tree'])).trim(), later = commit(badTree, checkpoint), requested = commit(tree, later);
+  return { root, git, calls, normal, later, requested, target, badBytes };
+}
+
+test('bounded C1C later exact RCVID ancestor retains the original artifact refusal', t => {
+  const f = boundedC1cRcvidBoundaryHistory();
+  assert.equal(verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: f.normal, git: f.git }).status, 'PASS');
+  assert.throws(() => verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: f.requested, git: f.git }), /E_RCVID_REPAIRED_BYTES/);
+  assert(f.calls.some(args => args[0] === 'show' && args[1] === f.later + ':' + f.target), 'the later exact candidate must actually be validated');
+  t.diagnostic(JSON.stringify({ root: f.root, normal: f.normal, later: f.later, requested: f.requested }));
+});
+
+test('bounded C1C descendant fast path RCVID validates the selected artifact', t => {
+  const f = boundedC1cRcvidBoundaryHistory();
+  const normal = verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: f.normal, git: f.git });
+  assert.equal(normal.status, 'PASS'); assert.equal(normal.candidateSha, BOUNDED_C1C_RCVID_HINT);
+  f.calls.length = 0;
+  const git = (args, options = {}) => {
+    const bytes = f.git(args, options);
+    return args[0] === 'show' && args[1] === BOUNDED_C1C_RCVID_HINT + ':' + f.target ? (options.encoding === 'utf8' ? f.badBytes.toString('utf8') : f.badBytes) : bytes;
+  };
+  assert.throws(() => verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: f.normal, git }), /E_RCVID_REPAIRED_BYTES/);
+  assert(f.calls.some(args => args[0] === 'show' && args[1] === BOUNDED_C1C_RCVID_HINT + ':' + f.target));
+  assert.equal(f.calls.some(args => args[0] === 'rev-list'), false, 'this refusal must execute the hint path');
+  t.diagnostic(JSON.stringify({ root: f.root, descendant: f.normal }));
+});
+
+test('bounded C1C mixed ancestry RCVID retains the later candidate refusal', () => {
+  const f = boundedC1cRcvidBoundaryHistory(), checkpoint = '424fd2087d6141528b0c74a063d1c80ae2edd9bb';
+  const before = String(f.git(['rev-parse', checkpoint + '^1'])).trim();
+  const badTree = String(f.git(['rev-parse', f.later + '^{tree}'])).trim(), tree = String(f.git(['rev-parse', checkpoint + '^{tree}'])).trim();
+  const foreign = String(f.git(['commit-tree', badTree, '-p', before], { input: 'owned foreign-branch control\n' })).trim();
+  const merge = String(f.git(['commit-tree', tree, '-p', checkpoint, '-p', foreign], { input: 'owned mixed-ancestry control\n' })).trim();
+  const boundary = String(f.git(['log', '--boundary', '--format=%m%H', checkpoint + '..' + merge])).split('\n');
+  assert(boundary.includes('-' + before) && boundary.includes('-' + checkpoint));
+  f.calls.length = 0;
+  assert.throws(() => verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: merge, git: f.git }), /E_RCVID_REPAIRED_BYTES/);
+  assert(f.calls.some(args => args[0] === 'rev-list'));
+  assert(f.calls.some(args => args[0] === 'show' && args[1] === foreign + ':' + f.target));
+});

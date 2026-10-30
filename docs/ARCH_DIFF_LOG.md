@@ -707,3 +707,10 @@ Task YALKEN_MANUAL_MAP_SCENE_NAVIGATION_20261029 follows the direct owner audit 
 
 Task YALKEN_WSE_SEMANTIC_DIFF_20261029 retains the owner-authorized early diagnostic order: frozen causal controls and exact committed native proof before the full final gate wave. Current mechanical witnesses change only source membership and hashes; historical carriers, predicates, inventory classifications and17UNKNOWN remain. No architecture or product authority exception is added.
 Rollback is one ordinary revert; all original failures, history, source and owned profiles remain recoverable.
+
+
+## 2026-10-30 — Bounded measured C1C resolution
+
+Direct owner-approved single infrastructure contour over424fd208. Two OPS resolvers may use freshly revalidated immutable hints. No predicate, cache identity, timeout, runtime or policy exception. Old history/approvals/tests/failures retained. One ordinary revert PR; implementation/delivery pending.
+
+C1C proof update: original H2 rejected both later exact invalid ancestors; initial17line hint regression is retained and corrected by41line full-history eligibility. All17 frozen controls, including real mixed ancestry and descendant fast-path artifact refusal, pass. Corrected H2 default caller retains identical33stage137binding result with4835Git calls; wall54.298s is a limited single sample. Mechanical current witnesses and mandatory full delivery remain pending;17Mac rows stayUNKNOWN.
