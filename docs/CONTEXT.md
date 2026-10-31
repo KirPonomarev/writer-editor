@@ -1,3 +1,15 @@
+## 2026-10-31 — Full environment native journey observed; delivery pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 656c7d6a118b76561b950d0c9f8e8c0d880bb029
+CLAIM_BOUNDARY: Finite literal H5 component/native observations; no full task delivery, release qualification or complete Mac acceptance.
+
+ENV_H5_NATIVE_DISPOSITION_01.json SHA2569963d9e55cc5b9bb26000b1706be2af28a7e5e76a1550665f7394db40daf8578 binds actual51component/6focusedMain cases, source-built artifact05, genuine A22/B24, hot/cold A7/B6 toolbar and Focus geometry, correct live Quiet mode, current N+1 and all29immutable epochs/v1/preset/map/17projectfiles. Own unsaved map draft survives metadata-only capture without implicit project save; CANCELLED_NOOP re-enables restoration and preset apply in the same process. Separate RESET28 and LAST_STABLE29 preserve old records. All three processes quit normally. The final closed test profile has all72files/135entries physically restored and independently reread; original security metadata remains indexed, without a portable OS identity claim.
+
+First H3 selected-source incident remains UNKNOWN cause; later controlled source observations preserve N+1. Native H4 completed dead-key/coupled stale-preview no-loss keeps its own source identity; isolated native Main composition veto is not claimed. Required whole811/default/RTK/OSS/audit/current CI and ordinary commit-push-PR-merge/literal merged source-build-native proofs remain pending. Original causal failures and every old assertion/raw/profile remain preserved.
+
+Next: real seven-target current-bindings finalizer prepare/review/expected-old apply/readback under same38path declaration12/preflight12, honest owner-delegated current witnesses, then full required delivery. R4B/R4C practical acceptance stays PENDING until closure. All17Mac qualification rows remain UNKNOWN, release UNFROZEN/NOT_READY and full V6/DNA5 ACTIVE. One direct developer; no development questions, agents, chats, models, timers, optional integrations or app deletion. Earlier entries are historical facts.
+
 ## 2026-10-31 — UI policy delivered; full environment epochs admitted
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -883,7 +883,13 @@
     "docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md",
     "docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json",
     "docs/tasks/2026-10-31--evidence-based-ui-router.md",
-    "test/unit/agent-architecture-guardrails.test.js"
+    "test/unit/agent-architecture-guardrails.test.js",
+    "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
+    "src/main/environmentEpochPort.cjs",
+    "src/renderer/design-os/designOsEnvironmentEpochs.mjs",
+    "test/unit/environment-epochs-full-configuration.test.js",
+    "test/unit/environment-epochs-full-port.test.js",
+    "test/unit/environment-epochs-full-ui.test.js"
   ],
   "protectedFiles": [
     {
@@ -1112,7 +1118,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "7b2894ec6eb3100bd1a39d8628ee95a17734303705a218cb488e35d2e5884c5a"
+        "sha256": "67eaf73df155e5fe7b894bab01faf126791a0b0e3db7323be9cdb15a51512402"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1120,11 +1126,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "a74e9a917e0105b3118aa5e0a68e16c084649b78dec20fe1261169adf591b110"
+        "sha256": "091dd28e4672d9fb12ef147af3ed7a701f1a90071a509eb7510d51a8fa80fb7e"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "fc4446fc93f4f743f2e91f5faa2049abbae2d84e61be2eca79575e6b4eac2b38"
+        "sha256": "750b3fc096316ed7249d23d6ec48ad005746a75cffd11c06dfab56f8d8997016"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1136,7 +1142,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "286dae8fd77871ea956abfcccfc57a74b97afef7e15fba56f07152bf1d7f5834"
+        "sha256": "c1e55a217e73207a2bdb4936a71d64a35cd9dd8ae60c559777cdadbeb2ec10e3"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1288,7 +1294,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "48d8ba00f896690917c1ceedf221f0a12eefd5399642d0c92a64e9105a41a527"
+        "sha256": "b84796b0ee9f1319100a901f1f214347a5b53307ae84b79ac4862b0227d5570a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1784,11 +1790,11 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "5180c51729069b2ca58334c5396ffe449714173a9fc03f2e999f9cfda98e8641"
+        "sha256": "a6fc1bbd56623fb6d5b9a6f75c7725bc41977b42a9cfab67559e4b1cc00fbc0f"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
-        "sha256": "c88a505e93db4173961d71771da9412c63aa8a2f02ae9d2f237a9da350b06fee"
+        "sha256": "59cb92fe22ea14c09abae404eaec8838ba1bc9ebc6633751792045becc7faae9"
       },
       {
         "path": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
@@ -1796,7 +1802,7 @@
       },
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-        "sha256": "06c5e45b0373abf84de726939a183c310d344d813b48ada49e3cd7069d860b1d"
+        "sha256": "c79b39d4d62fb44f58db7c51462bfd5f0f093605faa2e9d8d9130251d0fa6f0b"
       },
       {
         "path": "test/unit/sector-m-review-surface-ui.test.js",
@@ -2572,7 +2578,7 @@
       },
       {
         "path": "src/renderer/commands/capabilityPolicy.mjs",
-        "sha256": "c1b3d3555f8e7a131c767691ea9afc9d3f2bda0e86897a68a35909144c88db29"
+        "sha256": "51e76ce9cef08701a8d204dbb705181ddaa4d4da9dc1d00e330d3f075b9dd75d"
       },
       {
         "path": "src/shared/workspaceQueryRegistry.cjs",
@@ -2804,15 +2810,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6db7657d97631a494f5652fa9ff1e96c432b3fb76f382e612982c7b94db5cdc8"
+        "sha256": "6e83c69c8744fbcd47726639362b0dfef31dacf85446f9345e89fafece0caa43"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "cd39fc9fbba1c8c63f91f6c0f5421c3489da651945f9cce51a47509035b4f87b"
+        "sha256": "6debc1bb8b9f0a639e8c903462af5b58012d01e81cc9a9059a604755c419236d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "e9dec68b9cac52e19a4488f2b1505a51d01c67027281ca89ea5ac528b6255bf1"
+        "sha256": "77ca9b814a5289a6831d51be030dcfdfd04caeb9a6ba82dfe962f137d7e18486"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3352,7 +3358,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "fed379be5d44e384cc937fa36ef364ea39f30fcd61ffb395d5e9f70225e7ade9"
+        "sha256": "29d544179bba843de0af0736cc5b210c8712cd78242269962f0a7ec100458f86"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3484,7 +3490,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "595b6214036ac8ecdb836abd316e1a666af2261d8171fa779c96c43b9d1d0b0a"
+        "sha256": "9e06925316be0c1e67cd8830181625e0240655a6dc45cd71aaf4148d48480423"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3996,11 +4002,35 @@
       },
       {
         "path": "docs/tasks/2026-10-31--evidence-based-ui-router.md",
-        "sha256": "acbdff237ef5f23972125649461984944bc59e13a787403c0254be819a0698c0"
+        "sha256": "32d4d197c11d4f3b21486d11580705bdb03c2914f0999fafc786b064f0a5591d"
       },
       {
         "path": "test/unit/agent-architecture-guardrails.test.js",
         "sha256": "f8660889323ac82d587948123c2590c5d564cf4817161aeb24f38d433f25f2dc"
+      },
+      {
+        "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
+        "sha256": "4f52d7b5e57cf5306b07d67bb9b7360bd7d9a29437cc325fa6e56eee9c4532be"
+      },
+      {
+        "path": "src/main/environmentEpochPort.cjs",
+        "sha256": "5e059ce9b8044d9853d51e0fef4aa9312e56ec8654f096a2b46e79f377c53808"
+      },
+      {
+        "path": "src/renderer/design-os/designOsEnvironmentEpochs.mjs",
+        "sha256": "d2767701ff45093811bf7aa8fbc02875c0b7ed98d66a1dc220240058fe3cb3fd"
+      },
+      {
+        "path": "test/unit/environment-epochs-full-configuration.test.js",
+        "sha256": "65e6212b4012cbd09c28e77dca78e246d94117439e785e24140993c3188fce85"
+      },
+      {
+        "path": "test/unit/environment-epochs-full-port.test.js",
+        "sha256": "ae4cd2c3edec368a714d35c164b33eed6b9d19bb0be3ed2281ee41a17c3dae6c"
+      },
+      {
+        "path": "test/unit/environment-epochs-full-ui.test.js",
+        "sha256": "f8024d87660d3e09b3bb9ee77e8a5bf54ce00d9275e8f592d0719b2f260f4e33"
       }
     ],
     "followupRepair": {
