@@ -1,3 +1,14 @@
+## 2026-10-31 — ENV runtime corrections: finite controls complete; delivery pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: a97bd0aa1418716ade075733084855cff4ce9613 plus owned declaration20/preflight23 WIP, same49path contour; no new owner-origin push.
+
+Frozen R1/R2 regressions first reached four actual Main failures, then passed both exit routes, early/late scene/book exports, default-stay/explicit recovery, unchanged corrupt/32project store bytes and22stale/authoring veto controls. R3 first RED and first failed correction remain; local file-port guard now retains its original typed veto across gateway error normalization, and the original4attempt renderer drain persists the latest requested form with current identity checks and visible retained failure. Actual complete component command61of61 and actual Main caller13of13 passed, all zero skips/todo/cancel. Earlier34pass was port/UI only because a nonexistent model selector was supplied; its original argv/raw/receipt remain unchanged and receive no model/whole credit.
+
+Existing release-candidate delivery CLI now verifies the reviewed exact frozen source/plan/capture/terminal receipts and explicit test selectors before its real normal-push effect. Owned local bare-Git positive and ten refusal controls passed; no owner GitHub push occurred. Three failed fixture controls, their stop/diagnosis and nested Node transport cause remain; no production timing/cap/skip/predicate weakening. Whole existing+new release contract726of726 passed. Literal M3 control confirmed its already stale AGENTS source pin; only the three permitted current V2 source bindings were refreshed for AGENTS/current Main/current entitlement law. All nonbinding cut fields,17UNKNOWN rows, candidate/authority and historicalV1 remain exact; this is no fullMac qualification. Real renderer build07 passed. Synthetic temporary identity02/capture03 is separately bound; old missing temporary identity01 and all failures/profiles/history are retained.
+
+Current real finalizer/review/CAS/readback, honest delegated technical witnesses, fresh candidate freeze, early rebuilt owned native, all mandatory local/provider proofs, normal PR2187 delivery and literalmerged source/build/native/mainCI remain required. H9old greens are not new-candidate proof; no push/ready/merge until every required current local proof completes. FullV6/DNA5 ACTIVE; R4B/R4C/all17Mac acceptance and originalH3cause/isolatednativeMainIME remain pending/UNKNOWN.
+
 ## 2026-10-31 — Existing ENV caller repairs observed; full candidate delivery pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS

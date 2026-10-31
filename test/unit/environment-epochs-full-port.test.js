@@ -157,3 +157,216 @@ test('full ENV real port concurrent source write and post-rename failure preserv
   assert.equal(JSON.parse(h.raw()).epochs.length, 1); assert.notEqual(digest(h.raw()), digest(original));
   assert.equal(h.calls.length, 0);
 });
+
+
+async function fullEnvironmentSyncRaceFixture(t) {
+  const h = await fixture(t), vm = require('node:vm');
+  const { createFullEnvironmentEpochPort } = require(PORT);
+  let serial = 0; const notices = [], dispatches = [];
+  h.port = () => {
+    const capturedSerial = serial;
+    return createFullEnvironmentEpochPort({ directory: h.root, projectId: h.projectId,
+      assertCurrent: () => { if (serial !== capturedSerial) throw Object.assign(Error('stale'), { code: 'E_FULL_ENV_CONTEXT_STALE' }); },
+      readLive: async () => ({ configuration: structuredClone(h.configuration), formGeneration: h.formGeneration,
+        composing: h.composing, authoringPending: h.pending }), validateAvailability: async () => {}, applyWindow: async () => {},
+      fsAdapter: { ...fsp, open: async (...args) => { const handle = await fsp.open(...args);
+        if (h.afterOpen) await h.afterOpen(...args); return handle; } } });
+  };
+  assert.equal((await h.sync()).ok, true);
+  const host = vm.createContext({ fullEnvironmentSyncPromise: null, fullEnvironmentSyncWanted: false,
+    fullEnvironmentSyncRequest: null, fullEnvironmentFormGeneration: 0, fullEnvironmentLastSignal: Promise.resolve(),
+    fullEnvironmentView: null, fullEnvironmentProjecting: false, fullEnvironmentComposing: false, legacyCompositionActive: false,
+    currentProjectId: h.projectId, currentDocumentId: 'owned-scene', currentTreeContentPublicationId: 'owned-publication', localEditGeneration: 0,
+    fullEnvironmentReadyProject: h.projectId, floatingToolbarInteractionState: { active: false },
+    leftFloatingToolbarInteractionState: { active: false }, toolbarItemOffsetDragState: { active: false },
+    leftToolbarButtonOffsetDragState: { active: false }, spatialResizeDragState: null,
+    window: { electronAPI: { invokeSaveLifecycleSignalBridge() {} } }, queueMicrotask,
+    invokeSaveLifecycleSignalBridge: async (_signal, value) => { serial++; h.formGeneration = value.generation; return {}; },
+    readFullEnvironmentProjection: () => h.port().read(),
+    EXTRA_COMMAND_IDS: { ENVIRONMENT_CONFIGURATION_COMMIT: 'cmd.project.view.commitEnvironmentConfiguration' },
+    dispatchFullEnvironment: async (_command, value) => {
+      dispatches.push(JSON.parse(JSON.stringify(value)));
+      const result = await h.port().change('COMMIT', JSON.parse(JSON.stringify(value)));
+      if (!result.ok) throw Object.assign(Error(result.error.code), result.error);
+      return result;
+    }, fullEnvironmentMessage: error => error.code || error.message,
+    updateStatusText: value => notices.push(value),
+  });
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const actual = name => {
+    const marker = (source.includes(`async function ${name}(`) ? 'async ' : '') + `function ${name}(`;
+    const start = source.indexOf(marker), end = source.indexOf('\n}', start);
+    assert.ok(start >= 0 && end > start && source.indexOf(marker, start + 1) < 0, name + ' actual source must exist uniquely');
+    return source.slice(start, end + 2);
+  };
+  vm.runInContext(['noteFullEnvironmentFormChanged', 'fullEnvironmentPayload', 'syncFullEnvironmentCurrent'].map(actual).join('\n'), host);
+  return { h, host, dispatches, notices };
+}
+
+test('full ENV actual coalesced sync persists the latest form after stale atomic open and retains the single-change control [FINITE_NOT_NATIVE]', async t => {
+  const deferred = () => { let resolve; const promise = new Promise(done => { resolve = done; }); return { promise, resolve }; };
+  for (const concurrent of [false, true]) {
+    const { h, host, dispatches } = await fullEnvironmentSyncRaceFixture(t), entered = deferred(), release = deferred();
+    let held = false;
+    h.afterOpen = async target => {
+      if (!held && String(target).includes('.p2-')) { held = true; entered.resolve(); await release.promise; }
+    };
+    const original = JSON.parse(h.raw());
+    h.configuration.presentation.theme = 'dark'; host.noteFullEnvironmentFormChanged();
+    await entered.promise;
+    if (concurrent) { h.configuration.presentation.wordWrap = false; host.noteFullEnvironmentFormChanged(); await new Promise(setImmediate); }
+    const pending = host.fullEnvironmentSyncPromise; release.resolve(); await pending;
+    for (let i = 0; i < 12; i++) await new Promise(setImmediate);
+    const persisted = JSON.parse(h.raw());
+    assert.deepEqual(persisted.projects.find(row => row.projectId === h.projectId).current, h.configuration,
+      'latest actually requested form must be durably read back after the stale first attempt');
+    assert.equal(host.fullEnvironmentSyncPromise, null); assert.equal(host.fullEnvironmentSyncWanted, false);
+    assert.equal(dispatches.length, concurrent ? 2 : 1, 'only the stale changed request retries; single-change control commits once');
+    assert.deepEqual(persisted.epochs, original.epochs); assert.deepEqual(persisted.presets, original.presets);
+  }
+});
+
+
+async function fullEnvironmentExitRaceFixture(t) {
+  const source = fs.readFileSync(path.join(ROOT, 'test/contracts/rtk-word-scene-identity-main.contract.test.js'), 'utf8');
+  const start = source.indexOf('function wordExportQuitFixture() {'), end = source.indexOf('\n}\nconst exportQuitTick=', start);
+  assert.ok(start >= 0 && end > start && source.indexOf('function wordExportQuitFixture() {', start + 1) < 0);
+  const make = Function('read', 'ROOT', 'path', 'assert', 'require', source.slice(start, end + 2) + '\nreturn wordExportQuitFixture;');
+  const f = make(file => fs.readFileSync(file, 'utf8'), ROOT, path, assert, require)(), h = await fixture(t);
+  const { createFullEnvironmentEpochPort } = require(PORT);
+  h.portForProject = projectId => createFullEnvironmentEpochPort({ directory: h.root, projectId,
+    assertCurrent: () => {}, readLive: async () => { if (h.beforeLive) await h.beforeLive();
+      return { configuration: structuredClone(h.configuration), formGeneration: h.formGeneration, composing: h.composing, authoringPending: h.pending }; },
+    validateAvailability: async () => {}, applyWindow: async () => {} });
+  h.port = () => h.portForProject(h.projectId); assert.equal((await h.sync()).ok, true);
+  f.c.fsSync = fs; f.c.app.getPath = name => { assert.equal(name, 'userData'); return h.root; };
+  f.c.createMainFullEnvironmentPort = () => h.port();
+  const command = f.c.COMMAND_SURFACE_KERNEL_COMMAND_IDS?.ENVIRONMENT_CONFIGURATION_COMMIT || 'cmd.project.view.commitEnvironmentConfiguration';
+  const kernel = require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({ [command]: value => h.port().change('COMMIT', value) });
+  f.c.activeStage10ApplicationBootstrap = { getProjectId: () => h.projectId };
+  f.c.dispatchCommandSurfaceKernel = (id, value) => kernel.dispatch(id, JSON.parse(JSON.stringify(value)));
+  return { f, h };
+}
+const fullEnvironmentExitHold = () => { let release; const promise = new Promise(done => { release = done; }); return { promise, release }; };
+
+for (const effect of ['quit', 'closeWindow']) test('full ENV actual late-export exit guard ' + effect + ' retains early control and resumes after activation [FINITE_NOT_NATIVE]', async t => {
+  for (const scope of ['scene', 'book']) for (const timing of ['early', 'during-form-read']) {
+    const { f, h } = await fullEnvironmentExitRaceFixture(t), formEntered = fullEnvironmentExitHold(), formRelease = fullEnvironmentExitHold(),
+      exportEntered = fullEnvironmentExitHold(), exportRelease = fullEnvironmentExitHold();
+    let closing;
+    if (timing === 'during-form-read') {
+      h.beforeLive = async () => { formEntered.release(); await formRelease.promise; };
+      closing = f[effect]();
+      await Promise.race([formEntered.promise, Promise.resolve(closing).then(() => { throw Error('actual close route did not reach the real form read'); })]);
+    }
+    const operation = f.start(scope, { readWrittenBuffer: async () => { exportEntered.release(); await exportRelease.promise; return f.bytes; } });
+    await Promise.race([exportEntered.promise, operation.then(result => { throw Error('export unexpectedly completed before held readback: ' + JSON.stringify(result)); })]);
+    if (timing === 'early') closing = f[effect](); else formRelease.release();
+    await closing;
+    assert.equal(f.c.pendingReviewDocxExports.size, 1); assert.equal(f.observe().activations, 0);
+    assert.equal(f.observe().quitCalls, 0, effect + ' may not quit while the late export is pending');
+    assert.equal(f.observe().closeCalls, 0, effect + ' may not close while the late export is pending');
+    exportRelease.release(); assert.equal((await operation).ok, true); assert.equal(f.observe().activations, 1);
+    await f[effect](); assert.equal(f.observe()[effect === 'quit' ? 'quitCalls' : 'closeCalls'], 1);
+    assert.ok(f.events.indexOf('activated') < f.events.indexOf(effect === 'quit' ? 'quit' : 'close'));
+    t.diagnostic(effect + ':' + scope + ':' + timing + ':pending-blocked-and-after-activation-closed');
+  }
+});
+
+for (const effect of ['quit', 'closeWindow']) test('full ENV actual shell-error recovery exit ' + effect + ' preserves store and uses explicit default-stay choice [FINITE_NOT_NATIVE]', async t => {
+  for (const state of ['absent', 'healthy', 'corrupt', 'capacity']) for (const choice of (['corrupt', 'capacity'].includes(state) ? [0, 1] : [0])) {
+    const { f, h } = await fullEnvironmentExitRaceFixture(t), dialogs = [];
+    if (state === 'absent') fs.unlinkSync(path.join(h.root, FILE));
+    if (state === 'corrupt') fs.writeFileSync(path.join(h.root, FILE), '{"corrupt":true}\n');
+    if (state === 'capacity') {
+      for (let i = 1; i < 32; i++) { const port = h.portForProject(id()), p = await port.read();
+        assert.equal((await port.change('COMMIT', { ...h.token(p), kind: 'SYNC_CURRENT' })).ok, true); }
+      h.projectId = id(); assert.equal(JSON.parse(h.raw()).projects.length, 32);
+    }
+    const original = state === 'absent' ? null : h.raw();
+    f.c.dialog = { showMessageBox: async (_window, options) => { dialogs.push(options); return { response: choice }; } };
+    await f[effect]();
+    const failedStore = ['corrupt', 'capacity'].includes(state);
+    if (failedStore && choice === 0) await f[effect]();
+    assert.equal(f.observe()[effect === 'quit' ? 'quitCalls' : 'closeCalls'], failedStore && choice === 0 ? 0 : 1,
+      'explicit recovery choice may exit after no-loss confirmation; default/cancel remains open');
+    assert.equal(dialogs.length, failedStore ? choice === 0 ? 2 : 1 : 0);
+    for (const options of dialogs) {
+      assert.equal(options.defaultId, 0); assert.equal(options.cancelId, 0);
+      assert.equal(options.buttons[1], 'Закрыть без сохранения вида');
+    }
+    if (original) assert.deepEqual(h.raw(), original, 'failed/capacity store and all retained history bytes must remain unchanged');
+    else assert.equal(fs.existsSync(path.join(h.root, FILE)), false);
+    t.diagnostic(effect + ':' + state + ':choice' + choice + ':actual-route-complete-and-original-store-retained');
+  }
+});
+
+
+for (const effect of ['quit', 'closeWindow']) test('full ENV actual recovery consent cannot authorize a stale lifecycle or pending authoring ' + effect + ' [FINITE_NOT_NATIVE]', async t => {
+  for (const change of ['dirty-generation', 'IME', 'recording', 'subject', 'session', 'profile', 'owner', 'project', 'root', 'window', 'contents', 'pending-export']) {
+    const { f, h } = await fullEnvironmentExitRaceFixture(t), entered = fullEnvironmentExitHold(), release = fullEnvironmentExitHold();
+    fs.writeFileSync(path.join(h.root, FILE), '{"corrupt":true}\n'); const original = h.raw();
+    f.c.dialog = { showMessageBox: async () => { entered.release(); await release.promise; return { response: 1 }; } };
+    const closing = f[effect]();
+    await Promise.race([entered.promise, Promise.resolve(closing).then(() => { throw Error('real native recovery choice was not reached'); })]);
+    if (change === 'dirty-generation') { f.c.isDirty = true; f.c.lastSignaledEditGeneration = 2; }
+    if (change === 'IME') f.c.environmentFormComposing = true;
+    if (change === 'recording') f.c.activePendingRecording = {};
+    if (change === 'subject') f.c.currentLifecycleSubjectId = () => 'document:other';
+    if (change === 'session') f.c.commentAuthoringSessionId = 'other-session';
+    if (change === 'profile') f.c.app.isPackaged = true;
+    if (change === 'owner') f.c.activeStage10ApplicationBootstrap = { getProjectId: () => h.projectId };
+    if (change === 'project') f.c.activeStage10ApplicationBootstrap.getProjectId = () => id();
+    if (change === 'root') f.c.getProjectRootPath = () => '/owned/other-project';
+    if (change === 'window') f.c.mainWindow = { ...f.c.mainWindow };
+    if (change === 'contents') f.c.mainWindow.webContents = {};
+    let pendingExport, exportRelease;
+    if (change === 'pending-export') {
+      const exportEntered = fullEnvironmentExitHold(); exportRelease = fullEnvironmentExitHold();
+      pendingExport = f.start('book', { readWrittenBuffer: async () => { exportEntered.release(); await exportRelease.promise; return f.bytes; } });
+      await Promise.race([exportEntered.promise, pendingExport.then(() => { throw Error('late export must reach actual held readback'); })]);
+      assert.equal(f.c.pendingReviewDocxExports.size, 1); assert.equal(f.observe().activations, 0);
+    }
+    release.release(); await closing;
+    assert.equal(f.observe().quitCalls, 0, change); assert.equal(f.observe().closeCalls, 0, change);
+    assert.deepEqual(h.raw(), original);
+    if (pendingExport) { assert.equal(f.observe().activations, 0); exportRelease.release(); assert.equal((await pendingExport).ok, true); }
+    t.diagnostic(effect + ':' + change + ':explicit-consent-still-vetoed');
+  }
+});
+
+test('full ENV actual bounded sync retains visible work on exhaustion, corruption and stale without a newer request [FINITE_NOT_NATIVE]', async t => {
+  for (const mode of ['continuous-new-generation', 'corrupt', 'stale-without-new-request']) {
+    const { h, host, dispatches, notices } = await fullEnvironmentSyncRaceFixture(t);
+    if (mode === 'corrupt') fs.writeFileSync(path.join(h.root, FILE), '{"corrupt":true}\n'); const original = h.raw();
+    if (mode === 'continuous-new-generation') h.afterOpen = async target => {
+      if (String(target).includes('.p2-')) { h.configuration.presentation.wordWrap = !h.configuration.presentation.wordWrap;
+        host.noteFullEnvironmentFormChanged(); await new Promise(setImmediate); }
+    };
+    if (mode === 'stale-without-new-request') h.afterOpen = async target => {
+      if (String(target).includes('.p2-')) await host.invokeSaveLifecycleSignalBridge('signal.environmentForm.changed', { generation: h.formGeneration });
+    };
+    h.configuration.presentation.theme = 'dark'; host.noteFullEnvironmentFormChanged();
+    await new Promise(setImmediate); if (host.fullEnvironmentSyncPromise) await host.fullEnvironmentSyncPromise;
+    await new Promise(setImmediate);
+    assert.equal(dispatches.length, mode === 'continuous-new-generation' ? 4 : mode === 'corrupt' ? 0 : 1);
+    assert.equal(host.fullEnvironmentSyncPromise, null); assert.equal(host.fullEnvironmentSyncWanted, true);
+    assert.equal(notices.at(-1), mode === 'continuous-new-generation' ? 'E_FULL_ENV_SYNC_RETRY_LIMIT' : mode === 'corrupt' ? 'E_FULL_ENV_KEYS' : 'E_FULL_ENV_CONTEXT_STALE');
+    assert.deepEqual(h.raw(), original, 'failed writes leave all original durable bytes intact');
+    t.diagnostic(mode + ':finite-terminal-failure-visible-with-work-retained');
+  }
+});
+
+test('full ENV actual sync rejects an old document projection before dispatch and persists the latest requested identity [FINITE_NOT_NATIVE]', async t => {
+  const { h, host, dispatches } = await fullEnvironmentSyncRaceFixture(t), entered = fullEnvironmentExitHold(), release = fullEnvironmentExitHold();
+  const actualRead = host.readFullEnvironmentProjection; let held = false;
+  host.readFullEnvironmentProjection = async () => { const p = await actualRead();
+    if (!held) { held = true; entered.release(); await release.promise; } return p; };
+  host.noteFullEnvironmentFormChanged(); await entered.promise;
+  host.currentDocumentId = 'owned-new-scene'; host.currentTreeContentPublicationId = 'owned-new-publication'; host.localEditGeneration++;
+  h.configuration.presentation.theme = 'dark'; host.noteFullEnvironmentFormChanged(); release.release();
+  await host.fullEnvironmentSyncPromise; await new Promise(setImmediate);
+  assert.equal(dispatches.length, 1); assert.equal(dispatches[0].expectedFormGeneration, 2);
+  assert.equal(host.fullEnvironmentSyncWanted, false); assert.equal(host.fullEnvironmentSyncPromise, null);
+  assert.deepEqual(JSON.parse(h.raw()).projects[0].current, h.configuration);
+});

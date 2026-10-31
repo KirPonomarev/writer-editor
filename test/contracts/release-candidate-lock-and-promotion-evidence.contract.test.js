@@ -708,3 +708,86 @@ test('full Mac inherited edge obligations remain required alongside Atlas WSE Pu
     }, /^E_FULL_MAC_TRACEABILITY$/u));
   }
 });
+
+
+function verifiedLocalPushFixture(t) {
+  const crypto = require('node:crypto'), zlib = require('node:zlib'), taskRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'local-push-proof-'));
+  const root = path.join(taskRoot, 'source'), remote = path.join(taskRoot, 'remote.git'), evidence = path.join(taskRoot, 'evidence');
+  fs.mkdirSync(root); fs.mkdirSync(evidence); fs.writeFileSync(path.join(taskRoot, '.owner'), 'synthetic-git-delivery-contract');
+  t.after(() => { assert.equal(fs.readFileSync(path.join(taskRoot, '.owner'), 'utf8'), 'synthetic-git-delivery-contract'); fs.rmSync(taskRoot, { recursive: true }); });
+  const git = (...args) => { const r = spawnSync('git', args, { cwd: root, encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); return r.stdout.trim(); };
+  const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+  const write = (name, value) => { const b = Buffer.from(JSON.stringify(value, null, 2) + '\n'); fs.writeFileSync(path.join(evidence, name), b); return { basename: name, sha256: hash(b) }; };
+  git('init', '-b', 'main'); git('init', '--bare', '-b', 'main', remote);
+  git('config', 'user.name', 'Owned delivery fixture'); git('config', 'user.email', 'owned-fixture@example.invalid'); git('config', 'commit.gpgsign', 'false');
+  fs.writeFileSync(path.join(root, 'leaf.txt'), 'owned original\n');
+  fs.writeFileSync(path.join(root, 'owned-test.cjs'), "require('node:test')('owned execution',()=>require('node:assert/strict').equal(1,1));\n");
+  git('add', '.'); git('commit', '-m', 'owned-base'); const base = git('rev-parse', 'HEAD'), branch = 'codex/local-delivery-proof';
+  git('remote', 'add', 'origin', remote); git('push', 'origin', 'main'); git('checkout', '-b', branch); git('push', '-u', 'origin', branch);
+  fs.writeFileSync(path.join(root, 'leaf.txt'), 'owned current N+1\n'); git('add', '.'); git('commit', '-m', 'owned-candidate');
+  const head = git('rev-parse', 'HEAD'), tree = git('rev-parse', 'HEAD^{tree}'), sourceBindings = {}, sourceModes = {};
+  for (const name of ['leaf.txt', 'owned-test.cjs']) { sourceBindings[name] = hash(fs.readFileSync(path.join(root, name))); sourceModes[name] = '100644'; }
+  const sourceManifest = write('source.json', { head, tree, sourceBindings, sourceModes });
+  fs.writeFileSync(path.join(evidence, 'capture-fixture.txt'), 'The contract helper captures one real synchronous owned Node process; production uses its separately pinned real capture method.');
+  const captureMethod = { basename: 'capture-fixture.txt', sha256: hash(fs.readFileSync(path.join(evidence, 'capture-fixture.txt'))) };
+  const name = 'OWNED_REQUIRED_TEST', argv = [process.execPath, '--test', '--test-reporter=tap', 'owned-test.cjs'];
+  const childEnvironment = { ...process.env }; delete childEnvironment.NODE_TEST_CONTEXT; // Parent test transport suppresses real child stdout; retain all policy variables.
+  const started = new Date().toISOString(), execution = spawnSync(argv[0], argv.slice(1), { cwd: root, env: childEnvironment }), ended = new Date().toISOString();
+  assert.equal(execution.status, 0); const raw = Buffer.concat([execution.stdout, execution.stderr]), compressed = zlib.gzipSync(raw);
+  fs.writeFileSync(path.join(evidence, name + '.raw.log.gz'), compressed);
+  const receipt = { role: 'ACTUAL_FOREGROUND_PROCESS_EVIDENCE_NOT_ACCEPTANCE_OR_AUTHORITY', name, argv, pid: execution.pid,
+    headBefore: head, headAfter: head, startedAtUtc: started, endedAtUtc: ended, elapsedSeconds: Math.max((Date.parse(ended) - Date.parse(started)) / 1000, .001),
+    exitCode: execution.status, rawBytes: raw.length, rawSha256: hash(raw), gzipSha256: hash(compressed), logBasename: name + '.raw.log.gz',
+    pinnedEnvironment: { STRICT: process.env.STRICT, EFFECTIVE_MODE: process.env.EFFECTIVE_MODE } };
+  const row = { name, argv, cwd: root, requiredBlocking: true, executionHeadRequired: head };
+  const plan = write('plan.json', { head, tree, sourceManifest: sourceManifest.basename, sourceManifestSha256: sourceManifest.sha256,
+    captureMethod: captureMethod.basename, captureMethodSha256: captureMethod.sha256, rows: [row] });
+  const receipts = { [name]: write(name + '.json', receipt).sha256 };
+  const proof = { head, tree, branch, baseHead: base, expectedRemoteHead: base, originUrlSha256: hash(Buffer.from(remote)), plan, sourceManifest, captureMethod, receipts };
+  const freeze = () => { const d = write('proof.json', proof); return { path: path.join(evidence, d.basename), sha: d.sha256 }; };
+  const run = () => { const d = freeze(); return runReleaseCandidate(['--push-verified-local', '--proof', d.path, '--proof-sha256', d.sha], root); };
+  const remoteHead = () => git('--git-dir=' + remote, 'rev-parse', 'refs/heads/' + branch);
+  return { root, evidence, head, base, name, receipt, proof, row, git, write, run, remoteHead, hash, zlib };
+}
+
+test('actual existing delivery CLI normal-pushes only after its frozen required process/source evidence is terminal', t => {
+  const f = verifiedLocalPushFixture(t); assert.equal(f.remoteHead(), f.base);
+  const result = f.run(); assert.equal(result.status, 0, result.stderr); assert.equal(f.remoteHead(), f.head);
+  assert.match(result.stdout, /"normalPushStarting":true/u);
+});
+
+test('actual existing delivery CLI refuses missing, failed, incomplete, stale, changed and zero-test proof before any push', t => {
+  for (const fault of ['missing-receipt', 'failed', 'incomplete', 'stale-head', 'truncated-log', 'changed-source', 'zero-tests', 'receipt-drift', 'missing-required-row', 'missing-test-selector']) {
+    const f = verifiedLocalPushFixture(t);
+    if (fault === 'missing-receipt') fs.unlinkSync(path.join(f.evidence, f.name + '.json'));
+    if (fault === 'failed') { f.receipt.exitCode = 1; f.proof.receipts[f.name] = f.write(f.name + '.json', f.receipt).sha256; }
+    if (fault === 'incomplete') { delete f.receipt.endedAtUtc; f.proof.receipts[f.name] = f.write(f.name + '.json', f.receipt).sha256; }
+    if (fault === 'stale-head') { f.receipt.headAfter = f.base; f.proof.receipts[f.name] = f.write(f.name + '.json', f.receipt).sha256; }
+    if (fault === 'truncated-log') { const p = path.join(f.evidence, f.name + '.raw.log.gz'), bytes = fs.readFileSync(p); fs.writeFileSync(p, bytes.subarray(0, bytes.length - 8)); }
+    if (fault === 'changed-source') fs.appendFileSync(path.join(f.root, 'leaf.txt'), 'unfrozen change\n');
+    if (fault === 'receipt-drift') fs.appendFileSync(path.join(f.evidence, f.name + '.json'), ' ');
+    if (fault === 'missing-required-row') {
+      const plan = readJson(path.join(f.evidence, f.proof.plan.basename)); plan.rows = [];
+      f.proof.plan = f.write('plan.json', plan);
+    }
+    if (fault === 'zero-tests') {
+      const raw = Buffer.from('TAP version 13\n1..0\n# tests 0\n# pass 0\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n'), zipped = f.zlib.gzipSync(raw);
+      fs.writeFileSync(path.join(f.evidence, f.name + '.raw.log.gz'), zipped);
+      Object.assign(f.receipt, { rawBytes: raw.length, rawSha256: f.hash(raw), gzipSha256: f.hash(zipped) });
+      f.proof.receipts[f.name] = f.write(f.name + '.json', f.receipt).sha256;
+    }
+    if (fault === 'missing-test-selector') {
+      f.row.argv.push('absent-model.test.cjs'); const env = { ...process.env }; delete env.NODE_TEST_CONTEXT;
+      const startedAtUtc = new Date().toISOString(), actual = spawnSync(f.row.argv[0], f.row.argv.slice(1), { cwd: f.root, env });
+      assert.equal(actual.status, 0, 'Node22 accepts a partially missing literal selection; the delivery applicability guard must reject it');
+      const raw = Buffer.concat([actual.stdout, actual.stderr]), zipped = f.zlib.gzipSync(raw);
+      fs.writeFileSync(path.join(f.evidence, f.name + '.raw.log.gz'), zipped);
+      Object.assign(f.receipt, { argv: f.row.argv, pid: actual.pid, startedAtUtc, endedAtUtc: new Date().toISOString(), rawBytes: raw.length, rawSha256: f.hash(raw), gzipSha256: f.hash(zipped) });
+      f.proof.receipts[f.name] = f.write(f.name + '.json', f.receipt).sha256;
+      const plan = readJson(path.join(f.evidence, f.proof.plan.basename)); plan.rows = [f.row]; f.proof.plan = f.write('plan.json', plan);
+    }
+    const result = f.run(); assert.notEqual(result.status, 0, fault); assert.equal(f.remoteHead(), f.base, fault);
+    if (fault === 'missing-test-selector') assert.match(result.stderr, /E_LOCAL_DELIVERY_PROOF:MISSING_TEST_SELECTOR/u);
+    assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u, fault); t.diagnostic(fault + ':remote-still-at-bound-base');
+  }
+});

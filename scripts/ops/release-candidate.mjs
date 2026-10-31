@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import { createGunzip, gunzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import minimumInterchange from '../../src/core/minimum-interchange-v1.cjs';
 import writerLocal from '../../src/core/writer-local-profile-v1.cjs';
@@ -939,7 +940,7 @@ function runFirstMacCli(argv) {
 
 // Explicit full-Mac scope query. Historical V1 policy and release tokens stay separate.
 export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
-  "AGENTS.md": "af4fdeb93def4476134c376ba8c3679f76d0837d895478628841b91a35cd37da",
+  "AGENTS.md": "72067115f69dc10390b1cfb76f5289ef83b2c8bff80837f28a464adaa08ff4b6",
   "CANON.md": "99398ac898104c7a392f0e84b4bb8848212e2c5a7db6ae27cbfc549c3e070e48",
   "docs/AGENT_START_PROTOCOL.md": "3a86699d6320666c84ec1316e2e51cf78f843893759ba2d1b3eb98a9c5ee1b4f",
   "docs/BIBLE.md": "94864b5d7cbec709ca6d7e9c6a838ff9405cfbc86443a5485acd149ccc16de93",
@@ -963,7 +964,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/core/atlas-product-claim-v1.mjs": "84400bc2e15ca00c530ff6b6c8f7988aaf0c458646df2f2956e945121314a5a3",
   "src/core/autosave-generation-v1.cjs": "c901970cd0b6a7d865e4af1f5f305fb04873a3397da591691c5aa43af52cf752",
   "src/core/dirty-admission-v1.cjs": "2d1928cfc3f5b6ef669c0628578113fef5b345eb4bd3485f5e720c4d26e4362b",
-  "src/core/entitlement-law-v1.cjs": "5180c51729069b2ca58334c5396ffe449714173a9fc03f2e999f9cfda98e8641",
+  "src/core/entitlement-law-v1.cjs": "a6fc1bbd56623fb6d5b9a6f75c7725bc41977b42a9cfab67559e4b1cc00fbc0f",
   "src/core/frozen-feature-spec-query-ir-v1.mjs": "7797cf6bdc4abb63a6b337f9daf14760875cfd33f241e3775034eaaa64e5e4ac",
   "src/core/lifecycle-recovery-v1.cjs": "57cf18f554b9b478ba1509860013cb2d54d9660f15b69ea56e2da830bdac0506",
   "src/core/local-automation-v1.mjs": "50fe5e24e83d9de96126322635229ba35b5de285b2db531cdbdaad1b5f8452f8",
@@ -989,7 +990,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
   "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
   "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
-  "src/main.js": "7b2894ec6eb3100bd1a39d8628ee95a17734303705a218cb488e35d2e5884c5a",
+  "src/main.js": "e5d27e4cf8a26e170b22c85abdded846a61e3a756463ce9a36c2c699ae8e93f1",
   "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
   "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
   "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
@@ -1189,7 +1190,113 @@ function runFullMacCli(argv) {
   process.stdout.write(JSON.stringify(state, null, 2) + '\n'); process.exitCode = state.scopeValidity === 'VALID' ? 0 : 1;
 }
 
+// Temporal delivery guard for an already reviewed frozen local proof pack.
+// It does not certify test semantics, authorize publication, or create release acceptance.
+export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proofSha256 } = {}) {
+  const fail = detail => { throw Object.assign(Error('E_LOCAL_DELIVERY_PROOF:' + detail), { code: 'E_LOCAL_DELIVERY_PROOF' }); };
+  const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+  const root = path.resolve(repoRoot || process.cwd()), evidenceRoot = path.dirname(path.resolve(proofPath || ''));
+  const stableRead = (file, expected) => {
+    const before = fs.lstatSync(file); if (!before.isFile() || before.isSymbolicLink() || !isSha256Hex(expected)) fail('FILE_IDENTITY');
+    const bytes = fs.readFileSync(file), after = fs.lstatSync(file);
+    if (before.dev !== after.dev || before.ino !== after.ino || before.size !== after.size || before.mtimeMs !== after.mtimeMs || hash(bytes) !== expected) fail('FILE_DRIFT');
+    return bytes;
+  };
+  const decode = (bytes, file) => JSON.parse((file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8'));
+  const artifact = descriptor => {
+    if (!isObjectRecord(descriptor) || typeof descriptor.basename !== 'string' || !/^[A-Za-z0-9_.-]+$/u.test(descriptor.basename)) fail('ARTIFACT_NAME');
+    const file = path.join(evidenceRoot, descriptor.basename); return decode(stableRead(file, descriptor.sha256), file);
+  };
+  const git = argv => { const result = spawnSync('git', argv, { cwd: root, encoding: 'utf8' }); if (result.status !== 0) fail('GIT_READ'); return result.stdout.trim(); };
+  const proof = JSON.parse(stableRead(path.resolve(proofPath), proofSha256));
+  if (!isObjectRecord(proof) || !/^[a-f0-9]{40}$/u.test(proof.head) || !/^[a-f0-9]{40}$/u.test(proof.tree)
+    || !/^[a-f0-9]{40}$/u.test(proof.baseHead) || !/^[a-f0-9]{40}$/u.test(proof.expectedRemoteHead)
+    || !/^codex\/[a-zA-Z0-9][a-zA-Z0-9._/-]*$/u.test(proof.branch) || proof.branch.includes('..')) fail('REQUEST');
+  const plan = artifact(proof.plan), source = artifact(proof.sourceManifest);
+  if (plan.head !== proof.head || plan.tree !== proof.tree || source.head !== proof.head || source.tree !== proof.tree
+    || !Array.isArray(plan.rows) || plan.rows.length === 0 || plan.sourceManifestSha256 !== proof.sourceManifest.sha256
+    || plan.captureMethodSha256 !== proof.captureMethod.sha256
+    || path.resolve(evidenceRoot, plan.sourceManifest) !== path.join(evidenceRoot, proof.sourceManifest.basename)
+    || path.resolve(evidenceRoot, plan.captureMethod) !== path.join(evidenceRoot, proof.captureMethod.basename)) fail('FROZEN_PLAN');
+  if (!isObjectRecord(source.sourceBindings) || !isObjectRecord(source.sourceModes)) fail('SOURCE_MAP');
+  if (!isObjectRecord(proof.receipts) || Object.keys(proof.receipts).length !== plan.rows.length) fail('RECEIPT_DENOMINATOR');
+  if (!/^[A-Za-z0-9_.-]+$/u.test(proof.captureMethod.basename)) fail('CAPTURE_METHOD');
+  stableRead(path.join(evidenceRoot, proof.captureMethod.basename), proof.captureMethod.sha256);
+  const checkSource = () => {
+    if (git(['rev-parse', 'HEAD']) !== proof.head || git(['rev-parse', 'HEAD^{tree}']) !== proof.tree
+      || git(['branch', '--show-current']) !== proof.branch || git(['status', '--porcelain=v1', '--untracked-files=all'])) fail('CANDIDATE_DRIFT');
+    const result = spawnSync('git', ['ls-tree', '-r', '-z', 'HEAD'], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+    if (result.status !== 0) fail('TREE_READ'); const entries = result.stdout.split('\0').filter(Boolean);
+    if (entries.length !== Object.keys(source.sourceBindings).length || entries.length !== Object.keys(source.sourceModes).length) fail('SOURCE_DENOMINATOR');
+    for (const entry of entries) {
+      const match = /^(100644|100755|120000) blob ([a-f0-9]{40})\t(.+)$/u.exec(entry); if (!match) fail('TREE_ENTRY');
+      const [, mode, blob, name] = match, file = path.join(root, name), stat = fs.lstatSync(file);
+      const bytes = mode === '120000' ? Buffer.from(fs.readlinkSync(file)) : fs.readFileSync(file);
+      if (source.sourceModes[name] !== mode || source.sourceBindings[name] !== hash(bytes)
+        || createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex') !== blob
+        || mode === '120000' && !stat.isSymbolicLink() || mode !== '120000' && (!stat.isFile() || stat.isSymbolicLink())
+        || mode !== '120000' && !!(stat.mode & 0o111) !== (mode === '100755')) fail('SOURCE_BYTES');
+    }
+  };
+  checkSource(); const names = new Set(); let requiredCount = 0;
+  for (const row of plan.rows) {
+    if (!isObjectRecord(row) || !/^[A-Za-z0-9_]+$/u.test(row.name) || names.has(row.name) || !Array.isArray(row.argv)
+      || row.argv.length === 0 || row.argv.some(value => typeof value !== 'string') || row.cwd !== root
+      || row.executionHeadRequired !== proof.head || typeof row.requiredBlocking !== 'boolean') fail('GATE_ROW');
+    if (row.argv.includes('--test')) for (const selector of row.argv.slice(row.argv.indexOf('--test') + 1).filter(value => !value.startsWith('-') && /\.(?:c|m)?js$/u.test(value))) {
+      const relative = path.relative(root, path.resolve(root, selector)).replaceAll(path.sep, '/');
+      if (relative.startsWith('../') || !Object.hasOwn(source.sourceBindings, relative) || !fs.lstatSync(path.join(root, relative)).isFile()) fail('MISSING_TEST_SELECTOR');
+    }
+    names.add(row.name); if (row.requiredBlocking) requiredCount++;
+    else if (JSON.stringify(row.argv) !== JSON.stringify(['npm', 'audit', '--json'])) fail('UNRECOGNIZED_NONBLOCKING');
+    const receipt = JSON.parse(stableRead(path.join(evidenceRoot, row.name + '.json'), proof.receipts[row.name]));
+    if (receipt.role !== 'ACTUAL_FOREGROUND_PROCESS_EVIDENCE_NOT_ACCEPTANCE_OR_AUTHORITY' || receipt.name !== row.name
+      || receipt.headBefore !== proof.head || receipt.headAfter !== proof.head || JSON.stringify(receipt.argv) !== JSON.stringify(row.argv)
+      || !Number.isInteger(receipt.pid) || receipt.pid < 1 || !Number.isFinite(receipt.elapsedSeconds) || receipt.elapsedSeconds <= 0
+      || !Number.isFinite(Date.parse(receipt.startedAtUtc)) || !(Date.parse(receipt.endedAtUtc) >= Date.parse(receipt.startedAtUtc))
+      || receipt.pinnedEnvironment?.STRICT !== '1' || receipt.pinnedEnvironment?.EFFECTIVE_MODE !== 'STRICT'
+      || receipt.exitCode !== (row.requiredBlocking ? 0 : 1) || receipt.logBasename !== row.name + '.raw.log.gz') fail('NONTERMINAL_OR_FAILED_GATE');
+    const logPath = path.join(evidenceRoot, receipt.logBasename), before = fs.lstatSync(logPath);
+    if (!before.isFile() || before.isSymbolicLink()) fail('LOG_IDENTITY');
+    const compressedHash = createHash('sha256'), rawHash = createHash('sha256'), input = fs.createReadStream(logPath), unzip = createGunzip();
+    input.on('data', chunk => compressedHash.update(chunk)); input.on('error', error => unzip.destroy(error)); input.pipe(unzip);
+    let bytes = 0, tail = '', group = null; const groups = [];
+    for await (const chunk of unzip) {
+      bytes += chunk.length; rawHash.update(chunk); const lines = (tail + chunk.toString('utf8')).split('\n'); tail = lines.pop().slice(-1024);
+      for (const line of lines) { const match = /^# (tests|pass|fail|cancelled|skipped|todo) (\d+)\r?$/u.exec(line);
+        if (match) { if (match[1] === 'tests') { group = {}; groups.push(group); } if (group) group[match[1]] = Number(match[2]); } }
+    }
+    const after = fs.lstatSync(logPath);
+    if (before.dev !== after.dev || before.ino !== after.ino || before.size !== after.size || before.mtimeMs !== after.mtimeMs
+      || compressedHash.digest('hex') !== receipt.gzipSha256 || rawHash.digest('hex') !== receipt.rawSha256 || bytes !== receipt.rawBytes) fail('LOG_DRIFT_OR_TRUNCATED');
+    for (const observed of groups) if (!Number.isSafeInteger(observed.tests) || observed.tests < 1 || observed.fail !== 0
+      || observed.cancelled !== 0 || observed.todo !== 0 || !Number.isSafeInteger(observed.pass) || observed.pass < 1 || !Number.isSafeInteger(observed.skipped)
+      || observed.pass + observed.skipped !== observed.tests
+      || observed.skipped !== 0 && !(JSON.stringify(row.argv) === JSON.stringify(['npm', 'test']) && observed.skipped === 59)) fail('TAP_NOT_COMPLETE');
+    if ((row.argv.includes('--test') || row.argv.includes('test:rtk') || JSON.stringify(row.argv) === JSON.stringify(['npm', 'test'])) && groups.length === 0) fail('MISSING_TEST_ORACLE');
+  }
+  if (requiredCount === 0) fail('NO_REQUIRED_GATES'); checkSource();
+  if (hash(Buffer.from(git(['remote', 'get-url', 'origin']))) !== proof.originUrlSha256
+    || git(['rev-parse', 'origin/main']) !== proof.baseHead || git(['rev-parse', 'origin/' + proof.branch]) !== proof.expectedRemoteHead) fail('REMOTE_BINDING');
+  git(['merge-base', '--is-ancestor', proof.baseHead, proof.head]); git(['merge-base', '--is-ancestor', proof.expectedRemoteHead, proof.head]);
+  return Object.freeze({ head: proof.head, branch: proof.branch, requiredCount, plannedCount: plan.rows.length,
+    proofSha256, role: 'TEMPORAL_SOURCE_AND_TERMINAL_CAPTURE_GUARD_NOT_RELEASE_ACCEPTANCE' });
+}
+async function runVerifiedLocalPushCli(argv) {
+  try {
+    if (argv.length !== 5 || argv[0] !== '--push-verified-local' || argv[1] !== '--proof' || argv[3] !== '--proof-sha256') throw Error('E_LOCAL_DELIVERY_USAGE');
+    // Refresh only remote refs. No branch movement, rewrite, force or configuration mutation.
+    const fetched = spawnSync('git', ['fetch', '--no-tags', 'origin'], { cwd: process.cwd(), encoding: 'utf8' });
+    if (fetched.status !== 0) throw Error('E_LOCAL_DELIVERY_FETCH');
+    const verified = await verifyLocalCandidateBeforePush({ repoRoot: process.cwd(), proofPath: argv[2], proofSha256: argv[4] });
+    process.stdout.write(JSON.stringify({ ...verified, normalPushStarting: true }) + '\n');
+    const pushed = spawnSync('git', ['push', 'origin', verified.head + ':refs/heads/' + verified.branch], { cwd: process.cwd(), encoding: 'utf8' });
+    process.stdout.write(pushed.stdout || ''); process.stderr.write(pushed.stderr || ''); process.exitCode = pushed.status === 0 ? 0 : 1;
+  } catch (error) { const reason = /^E_LOCAL_DELIVERY_[A-Z_:]+$/u.test(error?.message || '') ? error.message : error?.code || 'E_LOCAL_DELIVERY_PROOF'; process.stderr.write(String(reason) + '\n'); process.exitCode = 1; }
+}
+
 function main() {
+  if (process.argv.slice(2).includes('--push-verified-local')) { void runVerifiedLocalPushCli(process.argv.slice(2)); return; }
   if (process.argv.slice(2).some(arg => arg.startsWith('--verify-first-mac-cut-v2'))) {
     runFullMacCli(process.argv.slice(2)); return;
   }

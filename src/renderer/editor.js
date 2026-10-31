@@ -22499,15 +22499,34 @@ async function dispatchFullEnvironment(commandId, payload) {
 }
 async function syncFullEnvironmentCurrent() {
   if (fullEnvironmentSyncPromise) return fullEnvironmentSyncPromise;
-  const projectId = currentProjectId;
   fullEnvironmentSyncPromise = (async () => {
-    for (let i = 0; i < 4 && fullEnvironmentSyncWanted && currentProjectId === projectId && fullEnvironmentReadyProject === projectId; i++) {
-      fullEnvironmentSyncWanted = false; await fullEnvironmentLastSignal;
-      const p = await readFullEnvironmentProjection(); if (p.pending) return;
-      await dispatchFullEnvironment(EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, { ...fullEnvironmentPayload(p), kind: 'SYNC_CURRENT' });
+    for (let i = 0; i < 4 && fullEnvironmentSyncWanted; i++) {
+      const projectId = currentProjectId, documentId = currentDocumentId, publicationId = currentTreeContentPublicationId,
+        editGeneration = localEditGeneration, formGeneration = fullEnvironmentFormGeneration, profile = window.__PRODUCT_PROFILE;
+      if (!projectId || fullEnvironmentReadyProject !== projectId) return;
+      const isCurrent = () => currentProjectId === projectId && fullEnvironmentReadyProject === projectId
+        && currentDocumentId === documentId && currentTreeContentPublicationId === publicationId
+        && localEditGeneration === editGeneration && fullEnvironmentFormGeneration === formGeneration
+        && window.__PRODUCT_PROFILE === profile;
+      fullEnvironmentSyncWanted = false;
+      try {
+        await fullEnvironmentLastSignal;
+        if (!isCurrent()) { fullEnvironmentSyncWanted = true; continue; }
+        const p = await readFullEnvironmentProjection();
+        if (!isCurrent()) { fullEnvironmentSyncWanted = true; continue; }
+        if (p.pending) throw Object.assign(Error('Environment apply is pending'), { code: 'E_FULL_ENV_SYNC_PENDING' });
+        await dispatchFullEnvironment(EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, { ...fullEnvironmentPayload(p), kind: 'SYNC_CURRENT' });
+        if (!isCurrent()) fullEnvironmentSyncWanted = true;
+      } catch (error) {
+        if (fullEnvironmentSyncWanted && ['E_FULL_ENV_CONTEXT_STALE', 'E_FULL_ENV_STALE_REVISION', 'E_FULL_ENV_CONFIGURATION_STALE'].includes(error?.code)) continue;
+        throw error;
+      }
     }
+    if (fullEnvironmentSyncWanted) throw Object.assign(Error('Environment sync retry limit'), { code: 'E_FULL_ENV_SYNC_RETRY_LIMIT' });
   })().catch(error => {
+    fullEnvironmentSyncWanted = true;
     if (fullEnvironmentView?.host.isConnected) fullEnvironmentView.status.textContent = fullEnvironmentMessage(error);
+    else updateStatusText(fullEnvironmentMessage(error));
   }).finally(() => { fullEnvironmentSyncPromise = null; });
   return fullEnvironmentSyncPromise;
 }
@@ -22536,7 +22555,10 @@ async function hydrateFullEnvironmentForProject(projectId = currentProjectId) {
       const result = await dispatchFullEnvironment(EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, { ...fullEnvironmentPayload(p), kind: 'HYDRATE' });
       await completeFullEnvironmentApply(result, token);
     }
-    if (currentProjectId === projectId) { fullEnvironmentReadyProject = projectId; fullEnvironmentHydratedProject = projectId; }
+    if (currentProjectId === projectId) {
+      fullEnvironmentReadyProject = projectId; fullEnvironmentHydratedProject = projectId;
+      if (fullEnvironmentSyncWanted) queueMicrotask(() => { void syncFullEnvironmentCurrent(); });
+    }
   })().catch(error => { if (fullEnvironmentView?.host.isConnected) fullEnvironmentView.status.textContent = fullEnvironmentMessage(error); })
     .finally(() => { fullEnvironmentPendingWindow = null; fullEnvironmentHydrationPromise = null; });
   return fullEnvironmentHydrationPromise;

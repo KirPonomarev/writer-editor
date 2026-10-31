@@ -17381,19 +17381,62 @@ async function handleFullEnvironmentCommand(kind, payload) {
   } catch (error) { return environmentEpochFailure(commandId, error?.code || 'E_FULL_ENV_UNAVAILABLE'); }
 }
 
-async function observeFullEnvironmentWindowMove(window) {
-  if (!window || mainWindow !== window || window.isDestroyed()) return false;
+function captureLifecycleExitBinding() {
+  return Object.freeze({ window: mainWindow, contents: mainWindow?.webContents ?? null,
+    owner: activeStage10ApplicationBootstrap, projectId: activeStage10ApplicationBootstrap?.getProjectId?.() ?? null,
+    projectName: currentProjectName, root: getProjectRootPath(), file: currentFilePath,
+    subject: currentLifecycleSubjectId(), session: commentAuthoringSessionId, generation: lastSignaledEditGeneration,
+    formSerial: environmentFormSignalSerial, profile: JSON.stringify(getWriterLocalRuntimeProfile()), directory: app.getPath('userData') });
+}
+function isLifecycleExitCurrent(binding) {
+  return !!binding && binding.window === mainWindow && binding.contents === (mainWindow?.webContents ?? null)
+    && (!mainWindow || !mainWindow.isDestroyed() && !binding.contents?.isDestroyed?.())
+    && binding.owner === activeStage10ApplicationBootstrap && binding.projectId === (activeStage10ApplicationBootstrap?.getProjectId?.() ?? null)
+    && binding.projectName === currentProjectName && binding.root === getProjectRootPath() && binding.file === currentFilePath
+    && binding.subject === currentLifecycleSubjectId() && binding.session === commentAuthoringSessionId
+    && binding.generation === lastSignaledEditGeneration && binding.formSerial === environmentFormSignalSerial
+    && binding.profile === JSON.stringify(getWriterLocalRuntimeProfile()) && binding.directory === app.getPath('userData')
+    && !isQuitting && !isWindowClosing && !isDirty && !autoSaveInProgress && !activeAutoSavePromise
+    && !environmentFormComposing && !activePendingRecording && !treeEditorReplacementFence && !projectArchiveOpenCapture
+    && lastAcknowledgedEditGeneration === lastSignaledEditGeneration && pendingReviewDocxExports.size === 0;
+}
+async function observeFullEnvironmentWindowMoveResult(window) {
+  if (!window || mainWindow !== window || window.isDestroyed()) return { ok: false, code: 'E_FULL_ENV_CONTEXT_STALE' };
   const commandId = COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT;
   try {
-    if (!hasFullEnvironmentContainer()) return true;
+    if (!hasFullEnvironmentContainer()) return { ok: true };
     const p = await createMainFullEnvironmentPort(commandId).read();
-    if (mainWindow !== window || window.isDestroyed()) return false;
-    if (p.pending) return true; // Retain failed/pending history; never turn Quit into a health ACK.
+    if (mainWindow !== window || window.isDestroyed()) return { ok: false, code: 'E_FULL_ENV_CONTEXT_STALE' };
+    if (p.pending) return { ok: true }; // Retain pending history; never turn Quit into a health ACK.
     const result = await dispatchCommandSurfaceKernel(commandId, { version: 2, kind: 'SYNC_CURRENT', expectedRevision: p.revision,
       expectedStateDigest: p.stateDigest, expectedConfigurationGeneration: p.configurationGeneration, expectedFormGeneration: p.formGeneration });
     if (!result.ok) logDevError('full environment current observation', result.error);
-    return result.ok === true;
-  } catch (error) { logDevError('full environment current observation', error); return false; }
+    return { ok: result.ok === true, code: result.error?.code || 'E_FULL_ENV_UNAVAILABLE' };
+  } catch (error) {
+    logDevError('full environment current observation', error);
+    return { ok: false, code: typeof error?.code === 'string' ? error.code : 'E_FULL_ENV_UNAVAILABLE' };
+  }
+}
+async function observeFullEnvironmentWindowMove(window) {
+  return (await observeFullEnvironmentWindowMoveResult(window)).ok;
+}
+async function prepareFullEnvironmentExit(window) {
+  const observed = await observeFullEnvironmentWindowMoveResult(window);
+  if (observed.ok) return true;
+  // Only named invalid saved-shell data/capacity failures admit an explicit recovery choice.
+  // Identity, authoring, capability, display, physical source and partial writes never do.
+  const recoverable = ['ARRAY', 'BOOLEAN', 'BYTES', 'BYTES_OR_BOM', 'CAPACITY_NO_TRIM', 'CONFIGURATION_BYTES',
+    'CONFIGURATION_VERSION', 'DATA', 'DECODE', 'DEPTH', 'ENTRIES', 'EPOCH', 'IDENTITY', 'KEYS', 'LEGACY', 'LEGACY_SOURCE',
+    'NONCANONICAL', 'NUMBER', 'OBJECT', 'OFFSETS', 'PRESET', 'PROJECT', 'RAW', 'SHAPE', 'STATE_VERSION', 'TIME', 'UNICODE', 'UNSAFE_PROPERTY']
+    .some(code => observed.code === 'E_FULL_ENV_' + code);
+  if (!recoverable || !window || window !== mainWindow || window.isDestroyed()) return false;
+  try {
+    const choice = await dialog.showMessageBox(window, { type: 'warning', title: 'Текущий вид не сохранён',
+      message: 'Не удалось сохранить текущий вид',
+      detail: 'Можно остаться и повторить попытку или закрыть приложение без записи текущего вида. Сохранённые виды и пресеты останутся без изменений. Несохранённый текст по-прежнему блокирует закрытие.',
+      buttons: ['Остаться в приложении', 'Закрыть без сохранения вида'], defaultId: 0, cancelId: 0, noLink: true });
+    return choice.response === 1;
+  } catch (error) { logDevError('full environment exit recovery', error); return false; }
 }
 
 let atlasReportsSavedQueriesModulePromise = null;
@@ -37841,14 +37884,16 @@ function createWindow() {
     event.preventDefault();
 
     (async () => {
+      const exitBinding = captureLifecycleExitBinding();
       if (mainWindow) {
         const bounds = mainWindow.getBounds();
         await persistWindowState(bounds);
       }
 
       const canClose = await confirmDiscardChanges();
-      if (!canClose || pendingReviewDocxExports.size > 0) return;
-      if (!await observeFullEnvironmentWindowMove(mainWindow)) { updateStatus('Текущий вид не сохранён. Оставлено открытым для повторной проверки.'); return; }
+      if (!canClose || !isLifecycleExitCurrent(exitBinding)) return;
+      if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
+      if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
 
       isWindowClosing = true;
       mainWindow.close();
@@ -41745,14 +41790,16 @@ app.on('before-quit', (event) => {
   event.preventDefault();
 
   (async () => {
+    const exitBinding = captureLifecycleExitBinding();
     if (mainWindow) {
       const bounds = mainWindow.getBounds();
       await persistWindowState(bounds);
     }
 
     const canQuit = await confirmDiscardChanges();
-    if (!canQuit || pendingReviewDocxExports.size > 0) return;
-    if (mainWindow && !await observeFullEnvironmentWindowMove(mainWindow)) { updateStatus('Текущий вид не сохранён. Оставлено открытым для повторной проверки.'); return; }
+    if (!canQuit || !isLifecycleExitCurrent(exitBinding)) return;
+    if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
+    if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
 
     isQuitting = true;
     app.quit();

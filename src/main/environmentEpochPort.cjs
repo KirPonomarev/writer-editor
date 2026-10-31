@@ -138,14 +138,16 @@ function createFullEnvironmentEpochPort(options) {
   }
   async function persist(m, state) {
     ownBytes = Buffer.from(m.encodeFullEnvironmentState(state)); const ownedTemps = new Map();
+    let guardFailure = null;
+    const check = () => { try { guard(); } catch (error) { guardFailure ||= error; throw error; } };
     const adapter = {
       open: async (target, flags) => {
         if (flags !== 'wx' || path.dirname(target) !== directory || !path.basename(target).startsWith(FILE_NAME + '.p2-') || !target.endsWith('.tmp')) fail('E_FULL_ENV_TEMP_INVALID');
-        guard(); const handle = await io.open(target, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | fs.constants.O_NOFOLLOW, 0o600);
+        check(); const handle = await io.open(target, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | fs.constants.O_NOFOLLOW, 0o600);
         try {
           const stat = await handle.stat();
           if (!stat.isFile() || stat.nlink !== 1) fail('E_FULL_ENV_TEMP_INVALID');
-          ownedTemps.set(target, { dev: stat.dev, ino: stat.ino }); guard();
+          ownedTemps.set(target, { dev: stat.dev, ino: stat.ino }); check();
         } catch (error) {
           await handle.close().catch(() => {});
           const owned = ownedTemps.get(target), actual = fs.existsSync(target) ? fs.lstatSync(target) : null;
@@ -155,35 +157,41 @@ function createFullEnvironmentEpochPort(options) {
         return new Proxy(handle, { get(object, key) {
           const method = object[key]; if (typeof method !== 'function') return method;
           if (key === 'close') return method.bind(object);
-          return async (...args) => { try { guard(); const result = await method.apply(object, args); guard(); return result; }
+          return async (...args) => { try { check(); const result = await method.apply(object, args); check(); return result; }
             catch (error) { await object.close().catch(() => {}); throw error; } };
         } });
       },
       rename: async (from, to) => {
         if (!ownedTemps.has(from) || to !== filePath) fail('E_FULL_ENV_TARGET_INVALID');
-        guard(); const prepared = readBytes(from);
+        check(); const prepared = readBytes(from);
         if (!equalIdentity(prepared.identity, ownedTemps.get(from)) || !prepared.raw?.equals(ownBytes)) fail('E_FULL_ENV_TEMP_STALE');
-        guard(); publishedIdentity = prepared.identity; publicationAttempted = true;
-        await io.rename(from, to); published = true; guard();
+        check(); publishedIdentity = prepared.identity; publicationAttempted = true;
+        await io.rename(from, to); published = true; check();
       },
       syncDirectory: async target => {
         if (target !== directory) fail('E_FULL_ENV_TARGET_INVALID');
-        guard(); const handle = await io.open(target, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_DIRECTORY);
-        try { guard(); const stat = await handle.stat(); guard();
+        check(); const handle = await io.open(target, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_DIRECTORY);
+        try { check(); const stat = await handle.stat(); check();
           if (stat.dev !== originalDirectory.dev || stat.ino !== originalDirectory.ino) fail('E_FULL_ENV_DIRECTORY_STALE');
-          await handle.sync(); guard(); } finally { await handle.close(); }
+          await handle.sync(); check(); } finally { await handle.close(); }
       },
-      readFile: async target => { if (target !== filePath) fail('E_FULL_ENV_TARGET_INVALID'); guard(); const actual = readBytes(); guard(); return actual.raw; },
+      readFile: async target => { if (target !== filePath) fail('E_FULL_ENV_TARGET_INVALID'); check(); const actual = readBytes(); check(); return actual.raw; },
     };
-    const observe = observerId => async identity => { guard(); return createAuthorityObservation({ observerId,
+    const observe = observerId => async identity => { check(); return createAuthorityObservation({ observerId,
       requestDigest: identity.identityDigest, route: SAVE_AUTHORITY_ROUTES.ATOMIC_FILE_V1 }); };
-    guard();
-    return executeAtomicSingleFileGatewayCutover({ request: { filePath, content: ownBytes,
+    check();
+    try {
+      return await executeAtomicSingleFileGatewayCutover({ request: { filePath, content: ownBytes,
       targetRole: ATOMIC_SINGLE_FILE_TARGET_ROLES.SETTINGS_PRIMARY, projectId: null },
     observeLegacy: observe(OBSERVER_IDS.LEGACY), observeGateway: observe(OBSERVER_IDS.GATEWAY),
-    executeGateway: async ({ authorityIdentity }) => { guard(); const result = await durableSaveTransaction({ filePath, content: ownBytes,
-      revision: state.revision, fsAdapter: adapter }); guard();
+    executeGateway: async ({ authorityIdentity }) => { check(); const result = await durableSaveTransaction({ filePath, content: ownBytes,
+      revision: state.revision, fsAdapter: adapter }); check();
       return { ...result, targetRole: authorityIdentity.targetRole, contentDigest: authorityIdentity.contentDigest }; } });
+    } catch (error) {
+      // Gateway error normalization must not erase a trusted pre-publication identity veto.
+      // change() independently reports partial/unknown publication before choosing its code.
+      throw guardFailure || error;
+    }
   }
   return Object.freeze({
     async read() { guard(); const m = await model(); guard(); source = snapshot(m); const view = await live(m); guard(); return projection(m, source, view); },

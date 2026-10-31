@@ -4376,17 +4376,20 @@ test('actual public Main pending book phase reuse preserves full publication and
 function wordExportQuitFixture() {
  const vm=require('node:vm'),source=read(path.join(ROOT,'src/main.js')),legacy=require('../../src/core/legacy-strangler-v1.cjs');
  const take=name=>{const match=new RegExp('(?:async )?function '+name+'\\(').exec(source);assert.ok(match,name);const rest=source.slice(match.index+1),end=/\n(?:async )?function /u.exec(rest);assert.ok(end,name);return source.slice(match.index,match.index+1+end.index);};
+ const exposeExitCompletion=part=>{const matches=[...part.matchAll(/\(async \(\) => \{/g)];assert.equal(matches.length,1,'one actual lifecycle completion');return part.replace('(async () => {','return (async () => {');};
  const pieces=['recoveryContext','getWriterLocalRuntimeProfile','getFilePathAllowlistRoots','queueDiskOperation','runAutoSave','autoSave','confirmDiscardChanges','hasFullEnvironmentContainer','observeFullEnvironmentWindowMove','writeNotesOrSettingsThroughAtomicGateway','saveSettings','persistWindowState','loadSettings','handleReviewDocxExportPacketCommandSurface','handleFullManuscriptReviewDocxExportPacketCommandSurface'].map(take);
  // Execute the actual no-v2-store guard, not a successful observer stub.
  const environmentCommandEntry=source.match(/^  ENVIRONMENT_CONFIGURATION_COMMIT: '[^']+',$/m);assert.ok(environmentCommandEntry);
  pieces.unshift('const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({'+environmentCommandEntry[0]+'});');
  if(source.includes('async function runLifecycleBoundReviewDocxExport('))pieces.push(take('runLifecycleBoundReviewDocxExport'));
- pieces.push(source.slice(source.indexOf("app.on('before-quit',"),source.indexOf("app.on('window-all-closed',")));
- pieces.push(source.slice(source.indexOf("mainWindow.on('close',"),source.indexOf("mainWindow.webContents.on('will-prevent-unload',")));
+ for(const name of ['captureLifecycleExitBinding','isLifecycleExitCurrent','observeFullEnvironmentWindowMoveResult','prepareFullEnvironmentExit']){if(new RegExp('(?:async )?function '+name+'\\(').test(source))pieces.push(take(name));}
+ pieces.push(exposeExitCompletion(source.slice(source.indexOf("app.on('before-quit',"),source.indexOf("app.on('window-all-closed',"))));
+ pieces.push(exposeExitCompletion(source.slice(source.indexOf("mainWindow.on('close',"),source.indexOf("mainWindow.webContents.on('will-prevent-unload',"))));
  let hook,closeHook,quitCalls=0,closeCalls=0,settingsWrites=0,docxWrites=0,activations=0;const statuses=[],events=[];let snapshot=async()=>({generation:1,commentAuthoringPending:false});
  const typed=(code,reason,details)=>({ok:false,error:{code,reason,details}});
  const c=vm.createContext({...require('../../src/core/lifecycle-conflict-v1.cjs'),...require('../../src/core/dirty-admission-v1.cjs'),...require('../../src/core/autosave-generation-v1.cjs'),...legacy,SAVE_AUTHORITY_OBSERVER_IDS:legacy.OBSERVER_IDS,
   process:{platform:process.platform},activeStage10ApplicationBootstrap:null,path,
+  environmentFormSignalSerial:0,environmentFormComposing:false,activePendingRecording:null,currentProjectName:"owned-project",
   // This Word/lifecycle fixture has an owned V1 profile with no full-v2 container.
   fsSync:{lstatSync(target){assert.equal(target,path.join('/owned/profile','design-os-environment-epochs-v2.json'));throw Object.assign(Error('owned full-v2 store absent'),{code:'ENOENT'});}},
   createWriterSceneLanguageTagProfileProjection:require('../../src/core/writer-local-profile-v1.cjs').createWriterSceneLanguageTagProfileProjection,
