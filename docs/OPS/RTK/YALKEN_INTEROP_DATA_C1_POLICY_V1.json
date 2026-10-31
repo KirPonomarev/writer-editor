@@ -2814,15 +2814,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "513102072ac7a383c09c02af7394d1c1df7674fb9675fd5e43802a3ae0767372"
+        "sha256": "40caaf6aa34d8584eab45bb64a06cd7242925fe1db5404f9876c826323473012"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "4632aba20c3731bb9f08bee9be22edaeb39b349e1d3e5e32dc1db80c861459f7"
+        "sha256": "6d1289de036f4e976bc54b4b4f7258f860cc742d24a09786877fbd454d297648"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5a4314b210ca265bbf7a09a25355c7e1cb26c16dd64784ea6044b51ff47a5c76"
+        "sha256": "9f2f2c2f15db29c86a490f39a822d24bc6efebc619f2f7df7d6caf8c2c22b150"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -4014,7 +4014,7 @@
       },
       {
         "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
-        "sha256": "dcdf71f3f5759cb5bb4acb14cccade0b75f65c5ba9e609c0de7777c079c2e7f0"
+        "sha256": "47a2774af226ddf9b645c3f1ff9bdafcbf7547c8ff5f23ab397ef121122ae68e"
       },
       {
         "path": "src/main/environmentEpochPort.cjs",

@@ -1,3 +1,14 @@
+## 2026-11-01 — ENV H10 native observed; current certification input gap
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: afcfddd2659666e606c09a2ff81ca543257e759d plus owned declaration23/preflight27 metadata-only WIP, same49scope; no further owner-origin push.
+
+Literal H10 full Main811/811, full Pulse49/49,30/30,46/46 and early component61/61, actual Main13/13, whole release726/726 completed with zero fail/skip/todo/cancel. Four exact source-bound native sessions exited0. Original profile current Light/Wrap On,29epochs/named preset/v1/N+1 and all17project files were independently retained; a separate corrupt-shell profile exercised explicit Stay and Close without saving view with all17project files and all73original-profile file bytes exact. A controlled renderer3149 exit/new3552 after AX activation explained apparent window reopening. Native Return did not dismiss its sheet; keyboard/IME remain UNKNOWN. These are literal H10 observations, not new-checkpoint or fullMac acceptance.
+
+Full H10 C1C335 executed329pass6fail with E_INTEROP_WORD_PROMOTION_PIN; queue stopped before RTK/default. Complete raw8f04009e733d81a325362a6a46c6150f58cbd065fa1b8d15d77be45fb47c2d98 and ENV_H10_C1C_BINDING_FAILURE_DIAGNOSIS_01.json are preserved. Static evaluation of the actual complete422successor found exactly1mismatch: the existing admitted release contract test inherited e61ca6cd instead of current fe3f4e74. All79selected current hashes and the policy guard already matched; checking only that selected subset was insufficient. Add this one path only to the current ENV override80, preserve every historical tuple, use the real seven-target finalizer and honest witnesses, then run the actual complete namespace and unchanged six cases before another broad wave. No app/runtime/source-test change is part of this correction.
+
+The auxiliary queue console has a recorded compression-format failure; its mixed bytes and original method remain. Mandatory separate gate raw gzips/receipts are independent and remain the only test oracles. Future queue transport must stream child PIPE bytes through gzip.write. No test/runner/cap/timeout/lane/skip/predicate change, source reset, force, profile/history/raw removal or fabricated approval. New exact checkpoint, all required current local/provider proofs, checked normal push, PR2187 normal merge and literalmerged source/build/native/mainCI remain pending; fullV6/DNA5 ACTIVE, all17Mac/R4B/R4C pending, Word-native PAUSED.
+
 ## 2026-10-31 — ENV runtime corrections: finite controls complete; delivery pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS
