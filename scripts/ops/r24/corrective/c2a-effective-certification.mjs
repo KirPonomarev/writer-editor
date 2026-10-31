@@ -638,7 +638,8 @@ function writeCanonical(repoRoot, relativePath, value) {
   fs.writeFileSync(path.join(repoRoot, relativePath), canonicalBytes(value));
 }
 
-function buildApprovals(repoRoot) {
+export function buildApprovals(repoRoot, { readBytes = null } = {}) {
+  const read = readBytes || ((relativePath) => fs.readFileSync(path.join(repoRoot, relativePath)));
   const approvedPaths = [
     PATHS.inventory,
     PATHS.contract,
@@ -657,7 +658,7 @@ function buildApprovals(repoRoot) {
       approvedBy: `owner-standing-authority:${OWNER_BINDING_DIGEST}`,
       filePath,
       rationale: 'C2A exact admitted certification compiler, immutable raw manifest, append-only correction ledger, current external attestation set, successor bindings, and semantic falsification tests; no product truth mutation or semantic scope expansion.',
-      sha256: rawSha256(fs.readFileSync(path.join(repoRoot, filePath)))
+      sha256: rawSha256(read(filePath))
     })),
     version: 'v1.0'
   };

@@ -1,3 +1,9 @@
+## 2026-10-31 — One next step: complete the admitted current-binding finalizer
+
+Current exact base is43340d2ce2f2b599310f65a22e4db768006f7024. Navigator PR2184 is closed by NAVIGATOR_DELIVERY_CLOSURE_01.json SHA2569d38e70e1d3b21dec3900a22e5396aa723905d582fba730f75a8d887dc5d45b0:19merged local processes,20PR/20main checks, actual merged build/native Save and same-profile cold, full profile/bundle restoration. All original failures, historical raw data and54baseline anchors remain. Full V6/DNA5 stays ACTIVE;17Mac rows UNKNOWN and release NOT_READY.
+
+Next: finish current-source adoption and full delivery of the single offline finalizer under2026-10-31--current-bindings-finalizer.md. Its working implementation and minimum pure producer extensions pass the whole27case file; real project metadata remains unchanged so far. Preserve the failed APFS case-alias probe and corrected exact-directory-entry guard. A prospective default-unit-lane path amendment was refused on dirty state; first save this tested source checkpoint, then obtain a fresh clean preflight before that path move or generated metadata writes. Original20-path authority still applies until then; no new unit-path file exists. Product source, private/native profiles, dependencies, optional services and UI policy are outside this contour. One direct developer, no development questions or extra agents/chats/timers. Earlier pending entries below are historical.
+
 ## 30.10.2026 — Navigator: implementation and native verification on H2
 
 DOCUMENT_CLASS: FACTUAL_STATUS

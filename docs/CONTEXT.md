@@ -1,3 +1,13 @@
+## 2026-10-31 — Navigator delivered; one current-binding finalizer admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 43340d2ce2f2b599310f65a22e4db768006f7024
+CLAIM_BOUNDARY: Closed bounded counter delivery; full V6/DNA5 release remains unqualified.
+
+Navigator PR2184 is normally merged at this literal SHA. NAVIGATOR_DELIVERY_CLOSURE_01.json SHA2569d38e70e1d3b21dec3900a22e5396aa723905d582fba730f75a8d887dc5d45b0 binds all19merged local processes,20PR/20main checks with actual checkout identities, fresh merged build and native Save8to9scene/23to24total words plus same-physical-profile cold9/24/100percent. Both closed profiles were fully restored. Original failures,54owned baseline anchors and historical data remain retained. All17Mac qualification rows are UNKNOWN; release cut remains UNFROZEN/NOT_READY and the full goal ACTIVE.
+
+Current task YALKEN_CURRENT_BINDINGS_FINALIZER_20261031 is OPEN_UNACCEPTED over this clean base. Fresh bootstrap, normative/scoped2B reads,10037source-byte checks, remote/volumes and20-path preflight precede one offline fixed-target finalizer. It will compute/validate the entire proposal before target writes, use expected-old checks with per-file atomic replacement and record partial I/O truth. Historical execution/approval roles stay protected; no runtime/UI/dependency/optional-service scope or new authority. Canonical6decd915 stays unchanged. Earlier pending Navigator narratives below are preserved historical observations.
+
 ## 30.10.2026 — Navigator: implementation and native verification on H2
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -135,13 +135,14 @@ function repoPath(repoRoot, relativePath) {
   return absolute;
 }
 
-function readJson(repoRoot, relativePath) {
-  return JSON.parse(fs.readFileSync(repoPath(repoRoot, relativePath), 'utf8'));
+function readJson(repoRoot, relativePath, readBytes = null) {
+  const absolutePath = repoPath(repoRoot, relativePath);
+  return JSON.parse((readBytes ? readBytes(relativePath) : fs.readFileSync(absolutePath)).toString('utf8'));
 }
 
-function rawFileBinding(repoRoot, relativePath, terms = []) {
+function rawFileBinding(repoRoot, relativePath, terms = [], readBytes = null) {
   const absolutePath = repoPath(repoRoot, relativePath);
-  const bytes = fs.readFileSync(absolutePath);
+  const bytes = readBytes ? readBytes(relativePath) : fs.readFileSync(absolutePath);
   return {
     path: relativePath,
     sha256: sha256(bytes),
@@ -150,20 +151,20 @@ function rawFileBinding(repoRoot, relativePath, terms = []) {
   };
 }
 
-function claimBinding(repoRoot, relativePath, claimTerms) {
+function claimBinding(repoRoot, relativePath, claimTerms, readBytes = null) {
   const absolutePath = repoPath(repoRoot, relativePath);
   return {
     filePath: relativePath,
-    sha256: sha256(fs.readFileSync(absolutePath)),
+    sha256: sha256(readBytes ? readBytes(relativePath) : fs.readFileSync(absolutePath)),
     claimTerms: [...claimTerms],
   };
 }
 
-function implementationBinding(repoRoot, relativePath, terms) {
+function implementationBinding(repoRoot, relativePath, terms, readBytes = null) {
   const absolutePath = repoPath(repoRoot, relativePath);
   return {
     path: relativePath,
-    sha256: sha256(fs.readFileSync(absolutePath)),
+    sha256: sha256(readBytes ? readBytes(relativePath) : fs.readFileSync(absolutePath)),
     terms: [...terms],
   };
 }
@@ -271,11 +272,11 @@ function createClaimEntry({ claim, requirement, inventoryByPath }) {
   };
 }
 
-export function buildManifest({ repoRoot = REPO_ROOT } = {}) {
+export function buildManifest({ repoRoot = REPO_ROOT, readBytes = null } = {}) {
   const root = path.resolve(repoRoot);
-  const claimRegistry = readJson(root, PATHS.claimRegistry);
-  const testAssuranceMatrix = readJson(root, PATHS.testAssuranceMatrix);
-  const inventory = readJson(root, PATHS.inventory);
+  const claimRegistry = readJson(root, PATHS.claimRegistry, readBytes);
+  const testAssuranceMatrix = readJson(root, PATHS.testAssuranceMatrix, readBytes);
+  const inventory = readJson(root, PATHS.inventory, readBytes);
   const inventoryByPath = new Map(assertArray(inventory.entries, 'E_RCV01A_INVENTORY_ENTRIES').map((entry) => [entry.path, entry]));
   const claimEntries = assertArray(claimRegistry.claims, 'E_RCV01A_CLAIM_REGISTRY_CLAIMS').map((claim) => {
     const requirement = CLAIM_REQUIREMENTS[claim.id];
@@ -296,9 +297,9 @@ export function buildManifest({ repoRoot = REPO_ROOT } = {}) {
       treeSha: EXPECTED_BASE_TREE,
     },
     sourceBindings: {
-      claimRegistry: rawFileBinding(root, PATHS.claimRegistry, ['CLAIM_REGISTRY']),
-      testAssuranceMatrix: rawFileBinding(root, PATHS.testAssuranceMatrix, ['TEST_ASSURANCE_MATRIX']),
-      inventory: rawFileBinding(root, PATHS.inventory, ['C1B_TEST_INVENTORY']),
+      claimRegistry: rawFileBinding(root, PATHS.claimRegistry, ['CLAIM_REGISTRY'], readBytes),
+      testAssuranceMatrix: rawFileBinding(root, PATHS.testAssuranceMatrix, ['TEST_ASSURANCE_MATRIX'], readBytes),
+      inventory: rawFileBinding(root, PATHS.inventory, ['C1B_TEST_INVENTORY'], readBytes),
     },
     denominatorPolicy: {
       source: 'R24_CONSOLIDATED_PLAN_CONTRACT_7',
@@ -563,17 +564,23 @@ export function validateManifest(manifest, {
   };
 }
 
-export function buildClaimBindings({ repoRoot = REPO_ROOT, manifest = null } = {}) {
+export function buildClaimBindings({ repoRoot = REPO_ROOT, manifest = null, readBytes = null } = {}) {
   const root = path.resolve(repoRoot);
-  const actualManifest = manifest || readJson(root, PATHS.manifest);
-  validateManifest(actualManifest, { repoRoot: root });
+  const actualManifest = manifest || readJson(root, PATHS.manifest, readBytes);
+  validateManifest(actualManifest, {
+    repoRoot: root,
+    claimRegistry: readJson(root, PATHS.claimRegistry, readBytes),
+    testAssuranceMatrix: readJson(root, PATHS.testAssuranceMatrix, readBytes),
+    inventory: readJson(root, PATHS.inventory, readBytes),
+    fileSha256: readBytes ? ((relativePath) => sha256(readBytes(relativePath))) : null,
+  });
   const claimBindings = [
-    claimBinding(root, PATHS.manifest, ['PASS', 'READY', 'SAFE']),
-    claimBinding(root, PATHS.inventory, ['PASS']),
+    claimBinding(root, PATHS.manifest, ['PASS', 'READY', 'SAFE'], readBytes),
+    claimBinding(root, PATHS.inventory, ['PASS'], readBytes),
   ];
   const implementationArtifactDigests = [
-    implementationBinding(root, PATHS.verifier, ['RCV01A_VERIFIER']),
-    implementationBinding(root, PATHS.contractTest, ['RCV01A_NEGATIVE_TESTS']),
+    implementationBinding(root, PATHS.verifier, ['RCV01A_VERIFIER'], readBytes),
+    implementationBinding(root, PATHS.contractTest, ['RCV01A_NEGATIVE_TESTS'], readBytes),
   ];
   const boundEntries = [
     ...claimBindings.map((entry) => ({ section: 'claimBindings', path: entry.filePath, sha256: entry.sha256 })),
