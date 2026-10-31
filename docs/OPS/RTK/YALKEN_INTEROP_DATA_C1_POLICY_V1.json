@@ -879,7 +879,11 @@
     "test/unit/current-bindings-finalizer.test.js",
     "docs/tasks/2026-10-31--current-bindings-finalizer.md",
     "scripts/ops/r24/corrective/c2a-effective-certification.mjs",
-    "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs"
+    "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs",
+    "docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md",
+    "docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json",
+    "docs/tasks/2026-10-31--evidence-based-ui-router.md",
+    "test/unit/agent-architecture-guardrails.test.js"
   ],
   "protectedFiles": [
     {
@@ -2800,15 +2804,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "fbdd122b6a517829f285805814e60bbc14ce716f3c01ee53db1e5b59ec71f111"
+        "sha256": "6db7657d97631a494f5652fa9ff1e96c432b3fb76f382e612982c7b94db5cdc8"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3180a84131dd95974cab02d133a9650756b29dbc3203d05485ec1fb391d4fae4"
+        "sha256": "cd39fc9fbba1c8c63f91f6c0f5421c3489da651945f9cce51a47509035b4f87b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "00ffa71724c10d0b2ecee194ddb53dd50810ec2b6212d63c8a88e360161f2f9f"
+        "sha256": "e9dec68b9cac52e19a4488f2b1505a51d01c67027281ca89ea5ac528b6255bf1"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3348,7 +3352,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "34df7ffd8ee916c95e0360e19a7d4aefa541fa8271a6efb2fd635b1be6d9fd12"
+        "sha256": "fed379be5d44e384cc937fa36ef364ea39f30fcd61ffb395d5e9f70225e7ade9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3396,7 +3400,7 @@
       },
       {
         "path": "AGENTS.md",
-        "sha256": "af4fdeb93def4476134c376ba8c3679f76d0837d895478628841b91a35cd37da"
+        "sha256": "72067115f69dc10390b1cfb76f5289ef83b2c8bff80837f28a464adaa08ff4b6"
       },
       {
         "path": "docs/AGENT_START_PROTOCOL.md",
@@ -3404,7 +3408,7 @@
       },
       {
         "path": "docs/PROCESS.md",
-        "sha256": "0cd4601aa777296caf5c76509541f665263f29b8c61260ad494208eed461ea13"
+        "sha256": "ed46f07e957d2a1476fc429aeef9e842ae4309043d75ba6db0bb3ddfd4beb397"
       },
       {
         "path": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_REPOSITORY_NATIVE_V2_0.json",
@@ -3416,7 +3420,7 @@
       },
       {
         "path": "scripts/agent-guardrails-lib.mjs",
-        "sha256": "963268c34013dfecb9a22f1b215e8ffdd2bd69a6ec74124f4adf90444a93d5a1"
+        "sha256": "ac063f0827c61d76e2dce49907f447c58ce815f37a36d973233a5c3dc2caac0f"
       },
       {
         "path": "scripts/agent-bootstrap.mjs",
@@ -3428,7 +3432,7 @@
       },
       {
         "path": "test/contracts/agent-architecture-guardrails.contract.test.js",
-        "sha256": "f1fc96736335b142ec80c536d7cec4a1007e4b6ba56abf1cb8a63b8e518c962f"
+        "sha256": "2745f8c9279cc3799af32ead5995d14207c9b2b37a8b08dad1e49503f0879903"
       },
       {
         "path": "test/contracts/agent-context-restoration.contract.test.mjs",
@@ -3480,7 +3484,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "93866f2a601356f67e5c5927d9647116e91a17f806d58e6fdad4ffaf490dc7bc"
+        "sha256": "595b6214036ac8ecdb836abd316e1a666af2261d8171fa779c96c43b9d1d0b0a"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3972,7 +3976,7 @@
       },
       {
         "path": "docs/tasks/2026-10-31--current-bindings-finalizer.md",
-        "sha256": "cb51d97b00f1ced02be1fe918dd932a06c13f7dd595bb1478d2980a4c656bae8"
+        "sha256": "886899e394d69cfa05e3a1015599d70b8e34791ed7bf5c5072a7978ee2b1a76d"
       },
       {
         "path": "scripts/ops/r24/corrective/c2a-effective-certification.mjs",
@@ -3981,6 +3985,22 @@
       {
         "path": "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs",
         "sha256": "2909665be72b5c47795234f6429886125b2c04d2d5bc991af626f6ef66d97cc9"
+      },
+      {
+        "path": "docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md",
+        "sha256": "5638bc02e16e68314f34b54993265cb7d8f02f953a9dbfb2681324f6d38a64f5"
+      },
+      {
+        "path": "docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json",
+        "sha256": "54559d324d7b2d3e3692417017b089a85ee1f2e79cd2fdc61a7441d42e238da6"
+      },
+      {
+        "path": "docs/tasks/2026-10-31--evidence-based-ui-router.md",
+        "sha256": "acbdff237ef5f23972125649461984944bc59e13a787403c0254be819a0698c0"
+      },
+      {
+        "path": "test/unit/agent-architecture-guardrails.test.js",
+        "sha256": "f8660889323ac82d587948123c2590c5d564cf4817161aeb24f38d433f25f2dc"
       }
     ],
     "followupRepair": {

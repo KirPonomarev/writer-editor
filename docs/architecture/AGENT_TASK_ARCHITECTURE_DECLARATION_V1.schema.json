@@ -215,8 +215,10 @@
       }
     },
     "designToolRouter": {
+      "description": "PRODUCT_UI requires actual sufficient design evidence. APPLICABLE_EVIDENCE_REQUIRED is the current route; APPLICABLE_LAZYWEB_FIRST is a deprecated compatibility label with the same evidence policy and no service requirement or permission. Other task types require NOT_APPLICABLE. Service use needs separate current task authority.",
       "enum": [
         "NOT_APPLICABLE",
+        "APPLICABLE_EVIDENCE_REQUIRED",
         "APPLICABLE_LAZYWEB_FIRST"
       ]
     },

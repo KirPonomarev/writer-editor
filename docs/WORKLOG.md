@@ -1,3 +1,22 @@
+## 2026-10-31 — Same UI policy: default guardrail entry corrected before delivery
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 737a9147d089ed99fbc662bcafe530e3a910bdc3
+CLAIM_BOUNDARY: Retained H2 component proofs; missing default routing prevents delivery acceptance.
+
+Whole H2 RTK4419, separate public preflight13, unchanged finalizer30 and consumers64 passed. Default baseline test groups3,20,3961 have pass3,20,3902 with the exact59old uncovered skips; none of the13guardrail cases ran because the existing runner scans only test/unit. UI_ROUTER_H2_PHASE_DISPOSITION_01.json SHA25677d7beba7fe5f3dd5c6a73811557d6cec985ed735493018f83aca698935febaf binds these actual distinct observations; H2 was never pushed or accepted. Original failed methods, frozen tests and every old/new raw anchor remain.
+
+Fresh same-task22path preflight04 admits one unit entry requiring the unchanged complete contract. TaskE0 precedes this source edit; subsequent ordinary checkpoints, current seven bindings and exact final mandatory gates/PR/main delivery remain required. No runner/cap/workflow/product/native/service change or development question. Full V6/DNA5 remains ACTIVE,17Mac qualificationsUNKNOWN and release NOT_READY. The admitted one-line default-unit entry now executes the unchanged complete13case contract with13pass0skip0todo on working H2. UI_ROUTER_UNIT_ENTRY_PROOF_01.json SHA256308dbe21212b38bba079b316914aad813fa175dd31abe30b83d6a0b60b41ecc9 binds the actual entry and frozen contract bytes; this selected run does not replace the pending full default execution on the final candidate. Earlier source-phase facts follow unchanged.
+
+## 2026-10-31 — Finalizer closure and evidence-based UI policy start
+
+- Closed PR2185 at literal2abfa21f/tree18368 after16blocking merged local zero exits, preserved advisory full audit1,20PR/20main checks and complete317member original provider archives with independent readback. Whole30helper cases actually ran in both default unit lanes; all10040source/1485package inputs and60retained raw anchors matched. Closure SHA256ae3459b3e392fcd6e4652b81d69752899f233210fc49d1cee01247b899d7c186; no new native execution or full release acceptance.
+- Began the accepted separate evidence-based UI routing correction after full normative/scoped factual2B startup, all10040physical source reads, fresh provider main, correct writable volumes and21-path architecture preflight0. Existing service-first enum conflicts with the higher owner restriction. Public-CLI causal controls precede the smallest schema/validator/doc change, then explicit current companions via the delivered finalizer and one normal delivery.
+- Preserve all original failures/history, deprecated declarations,59uncovered baseline skips and15moderate dev-package findings. Full V6/DNA5 remains ACTIVE with17UNKNOWN qualifications. No services, new agents/chats/models/timers, native launch, private-profile access, cleanup or development question. Return to real product work after this policy delivery. Original chronology follows unchanged.
+
+Working source now passes the exact frozen13case public-CLI file after old-code12pass1genuine missing-route failure; all six earlier compatibility/classification controls worked before that failure. Original assertions/setup remain exact with only the old test title renamed. UI_ROUTER_CAUSAL_OUTCOME_01.json SHA2565fb46386a71b00da6463600179f0bc0af7cabeb4abfb24a3846596bdd10daf30 binds actual working-source identities. Required current metadata, full gates and delivery remain pending; this is not clean-base or release acceptance.
+
+
 ## 2026-10-31 — Navigator delivery closure and current-binding finalizer start
 
 - Closed Navigator PR2184 at literal43340d2ce2f2b599310f65a22e4db768006f7024 after19merged local processes,20PR/20main checks, fresh merged package, native immediate8to9scene/23to24total Save and same physical profile cold. Fully restored both closed profiles; canonical76files matched warm/cold. NAVIGATOR_DELIVERY_CLOSURE_01.json SHA2569d38e70e1d3b21dec3900a22e5396aa723905d582fba730f75a8d887dc5d45b0 preserves all failures and limitations.

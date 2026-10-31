@@ -248,7 +248,7 @@ test('task architecture preflight rejects stale base SHA', async () => {
   assert.ok(result.errors.some((entry) => entry.code === 'E_BASE_SHA_MISMATCH'));
 });
 
-test('task architecture preflight rejects UI work without Lazyweb-first routing', async () => {
+test('task architecture preflight rejects UI work without an applicable evidence route', async () => {
   const guardrails = await loadGuardrails();
   const result = guardrails.validateTaskDeclaration({
     repoRoot: REPO_ROOT,
@@ -268,4 +268,57 @@ test('task architecture preflight rejects an incomplete write delivery chain', a
     entry.code === 'E_TASK_DECLARATION_INVALID'
       && entry.message.includes('delivery flags default to true')
   )));
+});
+
+test('public preflight accepts evidence routing while preserving compatibility and classification refusals', () => {
+  const fixtureParent = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-ui-evidence-'));
+  const fixtureRoot = path.join(fixtureParent, 'repository');
+  try {
+    const clone = spawnSync('git', ['clone', '--quiet', '--shared', REPO_ROOT, fixtureRoot], {
+      encoding: 'utf8', timeout: 30000,
+    });
+    assert.equal(clone.status, 0, `${clone.stdout}\n${clone.stderr}`);
+    // Exercise the actual current policy bytes even before their source commit.
+    for (const file of [
+      'AGENTS.md', 'docs/PROCESS.md', 'docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md',
+      'docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json',
+      'scripts/agent-guardrails-lib.mjs',
+    ]) fs.copyFileSync(path.join(REPO_ROOT, file), path.join(fixtureRoot, file));
+    for (const args of [
+      ['add', '--', 'AGENTS.md', 'docs/PROCESS.md', 'docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md',
+        'docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json', 'scripts/agent-guardrails-lib.mjs'],
+      ['-c', 'user.name=Guardrail fixture', '-c', 'user.email=guardrail-fixture@example.invalid',
+        'commit', '--quiet', '--allow-empty', '-m', 'Bind actual UI routing policy fixture'],
+    ]) {
+      const result = spawnSync('git', args, {cwd: fixtureRoot, encoding: 'utf8', timeout: 30000});
+      assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+    }
+    const head = spawnSync('git', ['rev-parse', 'HEAD'], {cwd: fixtureRoot, encoding: 'utf8'});
+    assert.equal(head.status, 0, head.stderr);
+    const declarationPath = path.join(fixtureParent, 'declaration.json');
+    for (const [taskType, designToolRouter, accepted] of [
+      ['PRODUCT_UI', 'APPLICABLE_LAZYWEB_FIRST', true],
+      ['PRODUCT_UI', 'UNRECOGNIZED_ROUTE', false],
+      ['PRODUCT_UI', 'NOT_APPLICABLE', false],
+      ['OPS_GOVERNANCE', 'APPLICABLE_EVIDENCE_REQUIRED', false],
+      ['OPS_GOVERNANCE', 'APPLICABLE_LAZYWEB_FIRST', false],
+      ['OPS_GOVERNANCE', 'NOT_APPLICABLE', true],
+      ['PRODUCT_UI', 'APPLICABLE_EVIDENCE_REQUIRED', true],
+    ]) {
+      fs.writeFileSync(declarationPath, JSON.stringify(validDeclaration({
+        taskType, designToolRouter, bindingBaseSha: head.stdout.trim(),
+      })) + '\n');
+      const result = spawnSync(process.execPath, [
+        path.join(fixtureRoot, 'scripts/agent-preflight.mjs'), '--declaration', declarationPath, '--json',
+      ], {cwd: fixtureRoot, encoding: 'utf8', timeout: 30000});
+      const label = `${taskType}/${designToolRouter}: ${result.stdout}\n${result.stderr}`;
+      const value = JSON.parse(result.stdout);
+      assert.equal(value.details.worktreeDirty, false, label);
+      assert.equal(result.status, accepted ? 0 : 1, label);
+      assert.equal(value.ok, accepted, label);
+      assert.deepEqual(value.errors.map(error => error.code), accepted ? [] : ['E_DESIGN_TOOL_ROUTER_MISMATCH'], label);
+    }
+  } finally {
+    fs.rmSync(fixtureParent, {recursive: true, force: true});
+  }
 });

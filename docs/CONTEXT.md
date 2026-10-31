@@ -1,3 +1,26 @@
+## 2026-10-31 — Same UI policy: default guardrail entry corrected before delivery
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 737a9147d089ed99fbc662bcafe530e3a910bdc3
+CLAIM_BOUNDARY: Retained H2 component proofs; missing default routing prevents delivery acceptance.
+
+Whole H2 RTK4419, separate public preflight13, unchanged finalizer30 and consumers64 passed. Default baseline test groups3,20,3961 have pass3,20,3902 with the exact59old uncovered skips; none of the13guardrail cases ran because the existing runner scans only test/unit. UI_ROUTER_H2_PHASE_DISPOSITION_01.json SHA25677d7beba7fe5f3dd5c6a73811557d6cec985ed735493018f83aca698935febaf binds these actual distinct observations; H2 was never pushed or accepted. Original failed methods, frozen tests and every old/new raw anchor remain.
+
+Fresh same-task22path preflight04 admits one unit entry requiring the unchanged complete contract. TaskE0 precedes this source edit; subsequent ordinary checkpoints, current seven bindings and exact final mandatory gates/PR/main delivery remain required. No runner/cap/workflow/product/native/service change or development question. Full V6/DNA5 remains ACTIVE,17Mac qualificationsUNKNOWN and release NOT_READY. The admitted one-line default-unit entry now executes the unchanged complete13case contract with13pass0skip0todo on working H2. UI_ROUTER_UNIT_ENTRY_PROOF_01.json SHA256308dbe21212b38bba079b316914aad813fa175dd31abe30b83d6a0b60b41ecc9 binds the actual entry and frozen contract bytes; this selected run does not replace the pending full default execution on the final candidate. Earlier source-phase facts follow unchanged.
+
+## 2026-10-31 — Finalizer delivered; evidence-based UI policy admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 2abfa21fbeccb8fea89786b41a82b33a55242cf4
+CLAIM_BOUNDARY: Closed bounded OPS finalizer; new UI routing policy remains unaccepted until its own complete delivery.
+
+PR2185 normally closed at this literal SHA, candidate51c50a73/tree18368. FINALIZER_DELIVERY_CLOSURE_01.json SHA256ae3459b3e392fcd6e4652b81d69752899f233210fc49d1cee01247b899d7c186 binds17merged local processes with16blocking zero exits and full audit advisory exit1,20PR/20main checks, full317member provider archives, all30helper cases in each default unit lane,10040source/1485package inputs and60retained raw anchors. Historical DATA policy deliveryH3 and C2A production head remain historical; no new native build or execution is claimed. Fifteen moderate dev-package audit findings and59old baseline skips remain open/uncovered. All17Mac qualification rows remain UNKNOWN, release UNFROZEN/NOT_READY and full V6/DNA5 goal ACTIVE.
+
+YALKEN_EVIDENCE_BASED_UI_ROUTER_20261031 starts from this clean base after full normative/scoped factual2B startup, source/registry/volume/fresh-main checks and21-path preflight0. Correct only the existing schema/validator and tool-policy docs: applicable UI requires real sufficient evidence; a route marker never authorizes optional-service use. Add public-CLI causal controls before the minimal fix, retain old-label compatibility and every architecture/delivery refusal, then use the delivered finalizer and complete one normal delivery. No product/UI/runtime/dependency/workflow/configuration/native/private-profile change, service contact, cleanup, delegation or new development question. After this policy contour return to real product work. Earlier pending narratives below are historical observations.
+
+Working source now passes the exact frozen13case public-CLI file after old-code12pass1genuine missing-route failure; all six earlier compatibility/classification controls worked before that failure. Original assertions/setup remain exact with only the old test title renamed. UI_ROUTER_CAUSAL_OUTCOME_01.json SHA2565fb46386a71b00da6463600179f0bc0af7cabeb4abfb24a3846596bdd10daf30 binds actual working-source identities. Required current metadata, full gates and delivery remain pending; this is not clean-base or release acceptance.
+
+
 ## 2026-10-31 — Navigator delivered; one current-binding finalizer admitted
 
 DOCUMENT_CLASS: FACTUAL_STATUS

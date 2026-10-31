@@ -1,7 +1,7 @@
 # Current bindings: complete proposal before writes
 
-STATUS: OPEN_UNACCEPTED
-CURRENT_IMPLEMENTATION_PHASE: Ordinary checkpoints b2936a2d and bcfb8261 preserve the original27case implementation, same-byte default-unit routing and earlier seven-target prepare/apply. Under fresh clean preflight05, old-code RED28of30confirmed both preseeded-policy leaks with a working matched declared positive. Four added closed-set lines pass the exact same30whole cases; original27test bodies remain exact. Current binding refresh, full final-source gates and delivery remain pending. Original delivery base remains43340d2c; no checkpoint is acceptance.
+STATUS: CLOSED_BOUNDED_DELIVERY
+CURRENT_IMPLEMENTATION_PHASE: Normally merged PR2185 at2abfa21fbeccb8fea89786b41a82b33a55242cf4, candidate51c50a732eb2d11260ca04b330bb7db02a07943c. FINALIZER_DELIVERY_CLOSURE_01.json SHA256ae3459b3e392fcd6e4652b81d69752899f233210fc49d1cee01247b899d7c186 binds16blocking merged local zero exits, preserved full-audit advisory exit1,20PR/20main checks with complete original provider logs,10040source and1485package-input reads and60retained raw anchors. All30helper cases execute in both default unit CI lanes;59old skips remain uncovered. Actual seven-target apply used final working CLI over checkpointH2; fresh literal merged preparation is a no-op, not a fictional merged apply. Earlier phase statements below remain historical. Original delivery base stays43340d2c; full V6/DNA5 remains ACTIVE and all17Mac qualifications UNKNOWN.
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Offline development metadata assembly only; no product, historical execution, approval or release authority is created.
 TASK_ID: YALKEN_CURRENT_BINDINGS_FINALIZER_20261031
