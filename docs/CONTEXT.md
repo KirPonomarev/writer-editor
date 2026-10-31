@@ -1,3 +1,15 @@
+## 2026-10-31 — Existing ENV caller repairs observed; full candidate delivery pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_WORKING_BASE: b1af336472a4b64e7085db86129b3f44a160f0d3
+CLAIM_BOUNDARY: 11existing test-source files repaired, no runtime/build-input change; not fullV2 UI/native or release acceptance.
+
+Clean preflight18 under exact49path declaration17 precedes the first test edit. Both obsolete no-argument snapshot source locators now load the actual optional-argument function. Finite hosts bind neutral toolbar/project state; the actual hydrator receives an explicit unavailable read-only query adapter, with no successful projection or commit fabricated. The Word-only lifecycle host executes actual hasFullEnvironmentContainer/observeFullEnvironmentWindowMove with owned absent-v2 filesystem/live-window adapters and the actual command entry. Four static reset/last-stable callee expectations track governed full-preview and explicitly reject inactive eraser bindings. All other expected behavioral predicates remain; every file exactly recovers its unchanged original via enumerated host/locator inverse.
+
+Actual original20CI failures now individually execute OK in focused21of21 and whole11-file612of612, with zero skips/todo/cancel. Focus rawSHA256dffa94dc59f4e8748c6885e65b9d4757d7e9fc9d8e8a12c4e3a13585ba7e6427; complete affected rawSHA256e04352709d4e5f67842062a7392766a37759a5da157a656510ecc1d1e26d7313. ENV_EXISTING_CALLER_TRANSFORMS_01.json.gz SHA256d72539dfca29a8a539fb2a60c0086d42ee57f760e033f9977e90a2d3122e15f9 retains every exact transform/preimage hash. This is source-bound working-byte regression evidence, not full Main811/default/RTK4419/Pulse49/30/46 or current CI credit. H7failures and earlypush remain retained; no new push/ready/merge before every mandatory exact-candidate local oracle completes.
+
+Only current ENV membership extends69to79bindings and DONE by8previously missing existing test paths; historical certification bodies/predicates and all old map members are retained. Real seven-target prepare/review/apply/readback and honest delegated witnesses still precede the next literal candidate freeze. Existing H5native/profile/project/v1/29epochs remain protected; firstH3cause and isolatednativeMainIME UNKNOWN, all17Mac qualifications UNKNOWN and full V6/DNA5 ACTIVE. No Word/native Office work, agent/chat/model/timer, dependency, workflow or optional service is introduced.
+
 ## 2026-10-31 — H7 required CI and RTK failed; admitted caller correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS

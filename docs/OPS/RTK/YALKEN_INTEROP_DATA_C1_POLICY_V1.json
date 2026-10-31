@@ -889,7 +889,11 @@
     "src/renderer/design-os/designOsEnvironmentEpochs.mjs",
     "test/unit/environment-epochs-full-configuration.test.js",
     "test/unit/environment-epochs-full-port.test.js",
-    "test/unit/environment-epochs-full-ui.test.js"
+    "test/unit/environment-epochs-full-ui.test.js",
+    "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
+    "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
+    "test/unit/sector-m-toolbar-master-library-sync.test.js",
+    "test/unit/sector-m-toolbar-master-remove-return.test.js"
   ],
   "protectedFiles": [
     {
@@ -1274,7 +1278,7 @@
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-        "sha256": "f2eb5b4a51fde99c9fbe2acd353b66a3ce0b04f6e766f3a246a82f8bea8a3e66"
+        "sha256": "f461c13a171690cec3178326db05eb289fa480ea645fecdbdf7fb7f252f5cfb2"
       },
       {
         "path": "src/io/inlineTypography.cjs",
@@ -1758,7 +1762,7 @@
       },
       {
         "path": "test/unit/project-tree-pathless-contract.test.js",
-        "sha256": "b11345df92d8853038eb5d9dd2c64efc39bfbf5e3c5d757092d6441030fefe34"
+        "sha256": "ccd6a971618e732218a50f1bad67b96f3172eec81f584af4e732bf345570e055"
       },
       {
         "path": "test/contracts/rtk-word-review-default-typography.contract.test.js",
@@ -1782,7 +1786,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "de11ca9010369372b8d0c0489bf99bc443b6d7985e89a970e87b50089132c0a6"
+        "sha256": "bd9f206841e3538ab45b7b44f0d34e3f6a20ce87ccbf63a4661987d970c18c52"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",
@@ -2306,7 +2310,7 @@
       },
       {
         "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
-        "sha256": "7816bf8dffe98abe7d81824186bb6b81c27476c1c65430f696f944b792e4fe62"
+        "sha256": "0fcc7b8537d8368fe4ef3ab8e6429454edc80923e5f83e5caa8c13e8d1f0637a"
       },
       {
         "path": "docs/tasks/2026-10-02--word-scene-identity-mac.md",
@@ -2414,7 +2418,7 @@
       },
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
-        "sha256": "4db0057043520de3765943b0fbbfdd39fc1f2d58a1f651250df3f3d678782cf7"
+        "sha256": "3d54c6c050a2f07a90df976354837d9f4a39838936e12a66e6e8c4540aa1b039"
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
@@ -2714,7 +2718,7 @@
       },
       {
         "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
-        "sha256": "7db454fbb0d95740d9330f8385616fcf1d89eca858a1c93d858b8ed38ac1b63b"
+        "sha256": "d1eec777d8f15f99a93a48f63261c3ce1df66d186ac949818c9a0518e3d20f30"
       },
       {
         "path": "docs/tasks/2026-10-04--word-list-patterns-mac.md",
@@ -2738,7 +2742,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-        "sha256": "39d9ef6cbf2978844b4dc82d6a6922380c0db90595ba6aa667acc84ca74249d5"
+        "sha256": "09a412ad89a7485be846547bd6feef614e86c429b3dc2dcb9c7c64a021d77682"
       },
       {
         "path": "test/contracts/rtk-word-comment-points.contract.test.js",
@@ -2810,15 +2814,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "c086f74b684a81ed542e0201cdbf205c85ab1ef800cb208336d4e91477e09308"
+        "sha256": "b8293800062bb3532dc33928c239c9f91735827a3192b59f02c88f0c19a47e9d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3e494b2fcb2fbded875e2785c14d9ef2ed2f640e1aa6a6063e4fbe123f85346c"
+        "sha256": "e406b5eda958447ae2166b46deef72483b117b4f804a4104aaf3f918aa40f600"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "77ca9b814a5289a6831d51be030dcfdfd04caeb9a6ba82dfe962f137d7e18486"
+        "sha256": "2d551765572abdb77223288a9d4acaef148f5939370e4e3925d29e02d2d064d2"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3358,7 +3362,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e53877347b77df1c4f8816c78d2e39f50a3bda567b7af8e20644386251802afc"
+        "sha256": "1a16ddc3fc11ce478a566584b0903690ca70ee765cdb57f4dedbd7e7a0168888"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3490,7 +3494,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "9e06925316be0c1e67cd8830181625e0240655a6dc45cd71aaf4148d48480423"
+        "sha256": "fc5bd1400a015c12082b3c89b3d5d46f50dd6a0b2177aa25f4006bf6aae130ba"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4010,7 +4014,7 @@
       },
       {
         "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
-        "sha256": "da04b279d0cedc7048566a82121651074628eac19daf2f4c83f2e5ef329e1fb6"
+        "sha256": "f67ae79fae5b40217139ddebe30f19a6c8ff432fc51eb4dd386a1ec42745c6a7"
       },
       {
         "path": "src/main/environmentEpochPort.cjs",
@@ -4031,6 +4035,22 @@
       {
         "path": "test/unit/environment-epochs-full-ui.test.js",
         "sha256": "c0a7a42b6b9182d70b4ad905786d1af6f30f4e3cbaa5aa58d4ebc4c64f98087f"
+      },
+      {
+        "path": "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
+        "sha256": "94074c358cab7b3d7edaf001aa54f6402f295d701e9cf6d0ae6784c2b66ad00a"
+      },
+      {
+        "path": "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
+        "sha256": "441618f58a02ae3fd74f8d0fdb90d617c2d6ef5871b888704c5411b45f364ca2"
+      },
+      {
+        "path": "test/unit/sector-m-toolbar-master-library-sync.test.js",
+        "sha256": "a2e3fd1231aa275ff0c9ed29a0f1a530ec976838e28321094cb77ba207114b5c"
+      },
+      {
+        "path": "test/unit/sector-m-toolbar-master-remove-return.test.js",
+        "sha256": "2533d46f97c1cdab816f75af48d2b30abedfe094852ae9599befa8eaf76504ab"
       }
     ],
     "followupRepair": {

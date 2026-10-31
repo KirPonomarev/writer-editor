@@ -13,7 +13,7 @@ function readRuntimeBridgeSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'tiptap', 'runtimeBridge.js'), 'utf8')
 }
 
-test('save boundary truth sync: safe reset and restore shell handlers exist as active runtime path', () => {
+test('save boundary truth sync: legacy safe reset and restore helpers remain compatibility source', () => {
   const source = readEditorSource()
   assert.ok(source.includes('function performSafeResetShell()'))
   assert.ok(source.includes('function performRestoreLastStableShell()'))
@@ -36,6 +36,8 @@ test('save boundary truth sync: runtime bridge keeps canonical safe-reset and re
 test('save boundary truth sync: editor runtime handlers wire safe-reset and restore through tiptap bridge', () => {
   const source = readEditorSource()
   assert.ok(source.includes('setTiptapRuntimeHandlers({'))
-  assert.ok(source.includes('safeResetShell: () => performSafeResetShell(),'))
-  assert.ok(source.includes('restoreLastStableShell: () => performRestoreLastStableShell(),'))
+  assert.ok(source.includes("safeResetShell: () => openFullEnvironmentSource('RESET'),"))
+  assert.equal(source.includes('safeResetShell: () => performSafeResetShell(),'), false)
+  assert.ok(source.includes("restoreLastStableShell: () => openFullEnvironmentSource('LAST_STABLE'),"))
+  assert.equal(source.includes('restoreLastStableShell: () => performRestoreLastStableShell(),'), false)
 })

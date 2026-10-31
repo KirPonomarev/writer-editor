@@ -808,6 +808,12 @@ async function startupAdoptionDirtyHarness(t, { reviewLock = false } = {}) {
       removeAttribute(name) { presentation.push(['removeAttribute', name]); } },
     initialDocumentAdopted: false, initialDocumentFailureStatus: null, heldCommandStatusMessage: false,
     statusElement: { textContent: '', style: { visibility: '' } }, warningStateElement: { textContent: '' }, recoveryMessage: { textContent: '' },
+    toolbarConfiguratorProjectId: 'project-startup-dirty',
+    // No full-environment query port in this finite authoring host; actual hydration refuses.
+    fullEnvironmentToolbarProjection: null, fullEnvironmentReadyProject: '', fullEnvironmentHydratedProject: '',
+    fullEnvironmentHydrationPromise: null, fullEnvironmentLastSignal: Promise.resolve(),
+    fullEnvironmentPendingWindow: null, fullEnvironmentView: null,
+    readFullEnvironmentProjection: async () => { throw Error('E_FIXTURE_FULL_ENV_QUERY_UNAVAILABLE'); },
     currentProjectId: 'project-startup-dirty', currentDocumentId: null, currentDocumentKind: null,
     currentDocumentTitle: '', localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
     currentCards: [], currentMeta: envelope.createDefaultDocumentMeta(), metaEnabled: false, plainTextBuffer: '',
@@ -849,6 +855,7 @@ async function startupAdoptionDirtyHarness(t, { reviewLock = false } = {}) {
   vm.createContext(c);
   vm.runInContext(['parseDocumentContent', 'normalizeProjectId', 'isProjectTreeDocumentId', 'holdInitialDocumentFailure',
     'handleDocumentContentParseIssue', 'updateStatusText', 'updateWarningStateText', 'syncPlainTextBufferFromEditorDom',
+    'hydrateFullEnvironmentForProject',
     'invokeSaveLifecycleSignalBridge', 'scheduleAutoSave', 'markAsModified', 'handleTiptapDocumentUpdate']
     .map(name => startupActualFunction(rendererSource, name)).join('\n'), c);
   const parse = c.parseDocumentContent;

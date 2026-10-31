@@ -237,7 +237,8 @@ test('actual lifecycle confirmation vetoes pending comment authoring before docu
   ctx.requestEditorSnapshot=async()=>{subject='scene2';return {commentAuthoringPending:false};};
   assert.equal(await ctx.confirmDiscardChanges(),false);assert.equal(barrierCalls,1);
   const editor=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
-  const sa=editor.indexOf('function composeEditorSnapshot() {'), sb=editor.indexOf('function applyIncomingBookProfile',sa);
+  const sa=editor.indexOf('function composeEditorSnapshot('), sb=editor.indexOf('function applyIncomingBookProfile',sa);
+  assert.ok(sa>=0&&sb>sa, 'actual optional-argument snapshot function must be loaded');
   const snapshotCtx=vm.createContext({getTiptapCommentEditIntentsJson:()=>null,isTiptapMode:true,getTiptapImageInsertionPosition:()=>6,currentTreeContentPublicationId:'',getTiptapRootSplitBoundary:()=>null,composeDocumentContent:()=> 'saved text',getPlainText:()=> 'saved text',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),localEditGeneration:2,wordCommentDraft:{body:'unsaved reply'},wordCommentBusy:false,storyDrafts: new Map(), storyMutationPending: false, pendingStoryRequestId: null, manuscriptDrafts:new Map(),notesMutationPending:false});
   vm.runInContext(editor.slice(sa,sb),snapshotCtx);assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,true);
   snapshotCtx.wordCommentDraft=null;assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,false);

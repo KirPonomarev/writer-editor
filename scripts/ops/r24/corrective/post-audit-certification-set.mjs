@@ -132436,15 +132436,15 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "c086f74b684a81ed542e0201cdbf205c85ab1ef800cb208336d4e91477e09308"
+      "sha256": "b8293800062bb3532dc33928c239c9f91735827a3192b59f02c88f0c19a47e9d"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "3e494b2fcb2fbded875e2785c14d9ef2ed2f640e1aa6a6063e4fbe123f85346c"
+      "sha256": "e406b5eda958447ae2166b46deef72483b117b4f804a4104aaf3f918aa40f600"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "77ca9b814a5289a6831d51be030dcfdfd04caeb9a6ba82dfe962f137d7e18486"
+      "sha256": "2d551765572abdb77223288a9d4acaef148f5939370e4e3925d29e02d2d064d2"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -132456,11 +132456,11 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "43e05485fcbdaab03b2ed1553d1b4a5fbdb87bb78f79e62e444a7ab0e8b7ac9e"
+      "sha256": "507c7f8fb6d078f46ff02351361ff43361472aa2737c92afedd30f1bd0eee37e"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e53877347b77df1c4f8816c78d2e39f50a3bda567b7af8e20644386251802afc"
+      "sha256": "1a16ddc3fc11ce478a566584b0903690ca70ee765cdb57f4dedbd7e7a0168888"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -132476,7 +132476,7 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "82d024a1af719b07955f16ff716e30735ab180f2c9609c45932c76e0760a0b86"
+      "sha256": "2f18cdd40d0890a8b2ce4d2034e13ba2eeaed64598d3fe4104c72fdf3905255f"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -132524,11 +132524,11 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "3e71e49184de836ec7552d6c111a82ea8daf42018569f404e54e96ca9959568e"
+      "sha256": "9425ef5df9a87f25d2e67535e366208e5f6cf714366d05de7a101d0b64832b66"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "13f5ce4fcdc728ccdff3630448d34c91d5c3de3036d021099bfd804e03b3f83e"
+      "sha256": "c117031a6974bd57c9b3e377250cdd73e092aa8ad412a857922bd516933abfa7"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -132612,11 +132612,11 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
-      "sha256": "39d9ef6cbf2978844b4dc82d6a6922380c0db90595ba6aa667acc84ca74249d5"
+      "sha256": "09a412ad89a7485be846547bd6feef614e86c429b3dc2dcb9c7c64a021d77682"
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "9e06925316be0c1e67cd8830181625e0240655a6dc45cd71aaf4148d48480423"
+      "sha256": "fc5bd1400a015c12082b3c89b3d5d46f50dd6a0b2177aa25f4006bf6aae130ba"
     },
     {
       "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
@@ -132672,7 +132672,7 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
-      "sha256": "da04b279d0cedc7048566a82121651074628eac19daf2f4c83f2e5ef329e1fb6"
+      "sha256": "f67ae79fae5b40217139ddebe30f19a6c8ff432fc51eb4dd386a1ec42745c6a7"
     },
     {
       "path": "src/main/environmentEpochPort.cjs",
@@ -132693,12 +132693,52 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     {
       "path": "test/unit/environment-epochs-full-ui.test.js",
       "sha256": "c0a7a42b6b9182d70b4ad905786d1af6f30f4e3cbaa5aa58d4ebc4c64f98087f"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "bd9f206841e3538ab45b7b44f0d34e3f6a20ce87ccbf63a4661987d970c18c52"
+    },
+    {
+      "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+      "sha256": "d1eec777d8f15f99a93a48f63261c3ce1df66d186ac949818c9a0518e3d20f30"
+    },
+    {
+      "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "sha256": "0fcc7b8537d8368fe4ef3ab8e6429454edc80923e5f83e5caa8c13e8d1f0637a"
+    },
+    {
+      "path": "test/unit/metadata-inspector-read-model-main.test.js",
+      "sha256": "3d54c6c050a2f07a90df976354837d9f4a39838936e12a66e6e8c4540aa1b039"
+    },
+    {
+      "path": "test/unit/project-tree-pathless-contract.test.js",
+      "sha256": "ccd6a971618e732218a50f1bad67b96f3172eec81f584af4e732bf345570e055"
+    },
+    {
+      "path": "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
+      "sha256": "94074c358cab7b3d7edaf001aa54f6402f295d701e9cf6d0ae6784c2b66ad00a"
+    },
+    {
+      "path": "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
+      "sha256": "441618f58a02ae3fd74f8d0fdb90d617c2d6ef5871b888704c5411b45f364ca2"
+    },
+    {
+      "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+      "sha256": "f461c13a171690cec3178326db05eb289fa480ea645fecdbdf7fb7f252f5cfb2"
+    },
+    {
+      "path": "test/unit/sector-m-toolbar-master-library-sync.test.js",
+      "sha256": "a2e3fd1231aa275ff0c9ed29a0f1a530ec976838e28321094cb77ba207114b5c"
+    },
+    {
+      "path": "test/unit/sector-m-toolbar-master-remove-return.test.js",
+      "sha256": "2533d46f97c1cdab816f75af48d2b30abedfe094852ae9599befa8eaf76504ab"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "81d367cf7a025ae72130cb9ec2058f07e6a68a07227165f83ec6f666d3ad2644"
+      "sha256": "81a4c8d6d089eb3aaa67ba09dfb95a7a4b633e4b4abe2391f298ab76424dff7a"
     }
   ]
 });

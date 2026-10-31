@@ -511,7 +511,15 @@
       "src/renderer/design-os/designOsEnvironmentEpochs.mjs",
       "test/unit/environment-epochs-full-configuration.test.js",
       "test/unit/environment-epochs-full-port.test.js",
-      "test/unit/environment-epochs-full-ui.test.js"
+      "test/unit/environment-epochs-full-ui.test.js",
+      "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
+      "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
+      "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
+      "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+      "test/unit/sector-m-toolbar-master-library-sync.test.js",
+      "test/unit/sector-m-toolbar-master-remove-return.test.js"
     ]
   },
   "allowPrefixByPhase": {

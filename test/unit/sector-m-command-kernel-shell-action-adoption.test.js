@@ -61,8 +61,10 @@ test('command kernel shell action adoption: editor exposes required uiActions fo
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('openSettings: () => openSettingsModal(),'))
-  assert.ok(source.includes('safeResetShell: () => performSafeResetShell(),'))
-  assert.ok(source.includes('restoreLastStableShell: () => performRestoreLastStableShell(),'))
+  assert.ok(source.includes("safeResetShell: () => openFullEnvironmentSource('RESET'),"))
+  assert.equal(source.includes('safeResetShell: () => performSafeResetShell(),'), false)
+  assert.ok(source.includes("restoreLastStableShell: () => openFullEnvironmentSource('LAST_STABLE'),"))
+  assert.equal(source.includes('restoreLastStableShell: () => performRestoreLastStableShell(),'), false)
   assert.ok(source.includes('openDiagnostics: () => openDiagnosticsModal(),'))
   assert.ok(source.includes("openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),"))
   const switchModeBindings = source.match(/switchMode:\s*\(mode\)\s*=>\s*applyMode\(mode\),/g) ?? []

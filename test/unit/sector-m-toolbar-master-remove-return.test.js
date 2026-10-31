@@ -88,6 +88,8 @@ module.exports = {
   const sandbox = {
     module: { exports: {} },
     exports: {},
+    // Legacy toolbar-definition host; no full-environment projection.
+    currentProjectId: '', fullEnvironmentToolbarProjection: null,
     document: {
       createElement: createFakeElement,
     },
@@ -156,6 +158,7 @@ ${[
   'writeToolbarConfiguratorStoredState',
   'resolveToolbarConfiguratorState',
   'commitToolbarConfiguratorState',
+  'noteFullEnvironmentFormChanged',
   'adoptToolbarConfiguratorState',
   'getToolbarConfiguratorProfileIds',
   'removeToolbarConfiguratorItem',
@@ -177,7 +180,10 @@ module.exports = {
     module: { exports: {} },
     exports: {},
     TOOLBAR_CONFIGURATOR_DEFAULT_ACTIVE_PROFILE: 'minimal',
-    currentProjectId: 'project-07d',
+    currentProjectId: 'project-07d', toolbarConfiguratorProjectId: '',
+    // Execute actual form observer with no lifecycle signal port, not an ACK double.
+    fullEnvironmentToolbarProjection: null, fullEnvironmentProjecting: false,
+    fullEnvironmentFormGeneration: 0, fullEnvironmentView: null, window: { electronAPI: {} },
     configuratorBucketState: {
       version: 3,
       activeToolbarProfile: 'master',

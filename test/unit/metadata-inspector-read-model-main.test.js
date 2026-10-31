@@ -363,6 +363,12 @@ async function metadataWorkingHarness(t) {
   let timerId = 0, incoming;
   const ports = { commandGate: null, queryGates: [] };
   const c = {
+    toolbarConfiguratorProjectId: tree.projectId,
+    // No full-environment query port in this finite authoring host; actual hydration refuses.
+    fullEnvironmentToolbarProjection: null, fullEnvironmentReadyProject: '', fullEnvironmentHydratedProject: '',
+    fullEnvironmentHydrationPromise: null, fullEnvironmentLastSignal: Promise.resolve(),
+    fullEnvironmentPendingWindow: null, fullEnvironmentView: null,
+    readFullEnvironmentProjection: async () => { throw Error('E_FIXTURE_FULL_ENV_QUERY_UNAVAILABLE'); },
     currentProjectId: tree.projectId, currentDocumentId: alpha.nodeId, currentDocumentKind: 'scene', currentDocumentTitle: 'Alpha',
     currentMeta: {}, metaEnabled: true, metaSynopsis: synopsis, metaStatus: status, metaTagPov: pov, metaTagLine: line, metaTagPlace: place,
     inspectorMetaSynopsisValue: synopsis, inspectorMetaStatusValue: status,
@@ -420,6 +426,7 @@ async function metadataWorkingHarness(t) {
     + metadataSection('function normalizeMetadataInspectorPayload(', 'function normalizeNotesWorkspaceReadModel(')
     + metadataSection("if (metaSynopsis) {\n  metaSynopsis.addEventListener('input'", 'if (addCardButton)')
     + metadataSection('function collapseSelection()', 'function updateMetaInputs(')
+    + metadataSection('async function hydrateFullEnvironmentForProject(', 'function fullEnvironmentMessage(')
     + metadataSection('window.electronAPI.onEditorSetText((payload) => {', '  window.electronAPI.onEditorTextRequest('), c);
   await c.refreshMetadataInspector();
   c.document.activeElement = synopsis;

@@ -39,6 +39,8 @@ function instantiateFunctions(functionNames, extraSandbox = {}) {
     Object,
     JSON,
     Set,
+    // Legacy toolbar-definition host; no current full-environment projection.
+    currentProjectId: '', fullEnvironmentToolbarProjection: null,
     ...extraSandbox,
   };
   vm.runInNewContext(script, sandbox, { filename: 'sector-m-toolbar-master-library-sync.editor-snippet.js' });
