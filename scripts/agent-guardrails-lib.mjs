@@ -635,8 +635,11 @@ export function validateTaskDeclaration(options = {}) {
     }
   }
 
-  if (declaration.taskType === 'PRODUCT_UI' && declaration.designToolRouter !== 'APPLICABLE_LAZYWEB_FIRST') {
-    errors.push(fail('E_DESIGN_TOOL_ROUTER_MISMATCH', 'PRODUCT_UI requires APPLICABLE_LAZYWEB_FIRST'));
+  const designRoutes = readJson(repoRoot, 'docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json')
+    .properties.designToolRouter.enum;
+  if (declaration.taskType === 'PRODUCT_UI'
+    && (declaration.designToolRouter === 'NOT_APPLICABLE' || !designRoutes.includes(declaration.designToolRouter))) {
+    errors.push(fail('E_DESIGN_TOOL_ROUTER_MISMATCH', 'PRODUCT_UI requires an applicable evidence route declared by the schema'));
   }
   if (declaration.taskType !== 'PRODUCT_UI' && declaration.designToolRouter !== 'NOT_APPLICABLE') {
     errors.push(fail('E_DESIGN_TOOL_ROUTER_MISMATCH', `${declaration.taskType} requires NOT_APPLICABLE`));
