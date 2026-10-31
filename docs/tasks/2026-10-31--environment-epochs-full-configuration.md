@@ -1,7 +1,7 @@
 # Full working environment epochs
 
 STATUS: IMPLEMENTING_DELIVERY_PENDING
-CURRENT_IMPLEMENTATION_PHASE: EARLY_NATIVE_BOUNDED_OBSERVED_DELIVERY_PENDING; literalH5 component51/51 andfocusedMain6/6 pass, actual warm/cold A7/B6 and Quiet mode agree. All29epochs/v1/preset/map/N1/17projectfiles retained; own unsaved capture/CANCELLED_NOOP recovery and separate PRESET27/RESET28/LAST_STABLE29 observed, three normalQuit0, finalprofile72files physicallyrestored/reread with OSidentity limits. Same38path declaration12/preflight12 admits real current-finalizer/witness/full delivery. FirstH3source cause and isolatednativeMainIME remain UNKNOWN; whole811/default/RTK/currentCI/merge/literalmerged proofs pending.
+CURRENT_IMPLEMENTATION_PHASE: H7_REQUIRED_CI_LOCAL_RTK_FAIL; caller repair under exact49path declaration16/preflight16. Original811Main/52components and H5native retained; CI20root fixture failures/localRTK7fail block delivery. Every next-candidate required local proof precedes any next push/ready/merge.
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing ENV-EPOCH-01 and WP303 full configuration outcome; no complete Mac or release qualification.
 TASK_ID: YALKEN_ENV_EPOCH_FULL_CONFIGURATION_20261031
@@ -25,7 +25,7 @@ DESIGN_RESEARCH_SOURCES: Actual brain:refs query; existing Settings code and pre
 DESIGN_SELECTED_DIRECTION: Extend the existing labeled native select/buttons and stable inline read-only diff/status; separate preset label/actions, current reset and last-stable actions. This ordinary implementation choice is covered by standing owner delegation.
 DESIGN_AUDIT_TOOLS: Planned actual keyboard/focus/contrast/overflow and narrow/cold native observations, not a claim that they already passed.
 DESIGN_TOOL_DEVIATIONS: No service, external design experiment, design-memory scaffold, new asset or visual baseline is needed for the existing native control vocabulary.
-DIFF_BUDGET: At most38exact paths; two specific runtime modules, three default-unit files and this task may be new. At most4200added/removed semantic lines excluding deterministic bundle/current bindings. Preserve original v1 model APIs and all existing assertion bodies; finite current ABI/source-locator fixture updates must preserve every old behavioral predicate and be recorded. No framework, broad refactor or unrelated cleanup.
+DIFF_BUDGET: At most49exact paths; two specific runtime modules, three default-unit files and this task may be new. At most4200added/removed semantic lines excluding deterministic bundle/current bindings. Preserve original v1 model APIs and every existing behavioral predicate. Original WP307 bodies and fullUI prior-case bytes remain protected by exact inverses/prefixes; necessary current source locators and two static reset-route expectations may track the admitted full-preview ABI without weakening no-loss, lifecycle, stale or authority checks. Record every such update. No framework, broad refactor or unrelated cleanup.
 
 ## MICRO_GOAL
 
@@ -99,6 +99,18 @@ Native H4 additionally exposes one stale read in the existing Settings aggregati
 - docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
 - scripts/ops/release-candidate.mjs
 
+- test/contracts/rtk-word-comment-authoring.contract.test.js
+- test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js
+- test/contracts/rtk-word-list-pattern-renderer.contract.test.js
+- test/contracts/rtk-word-scene-identity-main.contract.test.js
+- test/unit/metadata-inspector-read-model-main.test.js
+- test/unit/project-tree-pathless-contract.test.js
+- test/unit/sector-m-command-kernel-shell-action-adoption.test.js
+- test/unit/sector-m-design-os-save-boundary-truth-sync.test.js
+- test/unit/sector-m-tiptap-runtime-bridge.test.js
+- test/unit/sector-m-toolbar-master-library-sync.test.js
+- test/unit/sector-m-toolbar-master-remove-return.test.js
+
 ## DENYLIST
 
 Everything outside the exact allowlist, particularly index.html/global CSS/fonts/tokens, dependencies/lockfiles/workflows, active canon/COREX, original graph, frozen carriers/old registry rows/raw authority, private/default profiles and existing apps. Release-cut edits are current source qualification bindings only, retaining all17UNKNOWN and no release promotion. Historical tests/predicates/skips remain; no new timeouts, runner lanes/caps or oracle weakening.
@@ -127,7 +139,7 @@ NATIVE_FORM_PROJECTION_CORRECTION: Literal H3 native proves that the terminal co
 3. Implement closed model, Main current/epoch port and guarded existing Settings/form integration. Execute identical whole tests, current compatibility and real FS stale/fault negatives.
 4. Make ordinary clean source checkpoint after required early checks. Bind source/build/runtime/profile independently and run actual early rebuilt native positive/negative/cold no-loss journey before final freeze and long verification. Correct only measured same-outcome findings.
 5. Use unchanged delivered current-bindings-finalizer for the real needed seven current bindings: prepare complete delta, review under exact owner-delegated authority, pinned expected-old-hash apply and actual validator/readback. Retain ordered registry roots/records/raw prefix/suffix, honest actor/UTC and truthful per-file atomicity. R4B/R4C practical acceptance remains pending until this product outcome and delivery actually close.
-6. Complete current affected/default/RTK/OSS/audit/source/strictdoctor/guardrails, ordinary commit/push/PR/all current CI/normal expected-head merge and fresh literal merged verification/native/current main CI before bounded closure.
+6. Complete every required exact-candidate affected/default/RTK/fullPulse/OSS/audit/source/strictdoctor/guardrails oracle BEFORE any normal push or ready; then existing PR/all current CI/normal expected-head merge and fresh literalmerged verification/native/current mainCI before bounded closure. H7earlypush is a retained process failure, not a waiver for another push.
 
 ## CHECKS
 
@@ -151,3 +163,5 @@ Exactly one text block with the19AGENT_FINAL_REPORT fields, basenames and no URL
 No self-PASS, optimistic UI authority, disabled assertions, skipped required oracle, guessed counts, receipt retagging, silent normalization/fallback, final-file deletion after partial/cancel, default/private profile use, optional service or dependency/release expansion. Keep readable compatible history and every protected authoring/preset/map byte.
 
 FINITE_V1_HOST_ABI_CORRECTION: LiteralH6 whole Main811 finished790pass21setupReferenceError, zero skip/todo/cancel; the entire original raw failure remains pinned by ENV_H6_WHOLE_MAIN_FIXTURE_DIAGNOSIS_01.json. The finite THEME_WRAP_V1 fixture deliberately tests retained V1 controllers and the genuine V1 Main/file API before a full successor exists. Its modal dependency boundary now explicitly binds those controllers; neutral full-form observer/projection state and the actual observer are loaded. Every original test body and behavioral predicate remains byte-exact, with no runner/timeout/lane/skip change. These21 cases are V1 compatibility coverage only and do not prove the active fullV2 surface. A separately executed actual current openSettingsModal check forbids both retained V1 routes, preference application and product writes while opening the fullV2 query surface; its callback seams are finite unit instrumentation, not an independent native oracle. No production source or app/profile is changed by this correction. Actual native full form keeps its literalH5 build/source identity until the separately required merged-source/build/native proof. Focused workingH6 phase24/24 includes all21previous failures and3Main cases; component52/52 includes the new route case. Both have zero skipped/todo and remain pre-delivery process evidence. Re-freeze real seven-target current bindings, preserve every previous witness/producer/failure, then execute the entire811Main and all other required exact-head checks before normal delivery.
+
+MEASURED_CALLER_SCOPE49_CORRECTION: Original H7 and all20CI/7localRTK failures are retained. ENV_H7_CALLER_FAILURE_MAP_01.json SHA256b3bcbeccd619078d92f85d679598b0fea01a991b69abc47ee4c0e111b2f273b8 independently pins eleven unchanged-M3 test source files and discriminates old zero-argument snapshot locators from the actual optional-argument function, and the missing actual Main close-form observer in the isolated Word fixture. Standing direct owner development delegation admits these exact necessary caller-host additions to the existing outcome; no new runtime/product/Word-native/release scope. Bind actual current functions and neutral no-full-store platform/context adapters; preserve every old behavioral expected result. Two obsolete static reset-call snapshots now enforce the active governed full-preview route and reject the inactive eraser. No production fallback, mocked Core success, disabled assertion, skip/todo, cap/timeout/lane or source-incident/IME closure. Current seven bindings/source namespace/DONE map and honest delegated witnesses must refreeze for the exact final bytes. H7Pulse partial27/23/37 receives no full credit; original full49/30/46 remains required. All mandatory next-candidate local proofs precede the next push; draftPR2187 remains unaccepted until full delivery/literalmerged proof.
