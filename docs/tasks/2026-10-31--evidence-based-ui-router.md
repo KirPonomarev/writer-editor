@@ -1,7 +1,7 @@
 # Evidence-based UI routing without mandatory service use
 
 STATUS: OPEN_UNACCEPTED
-CURRENT_IMPLEMENTATION_PHASE: Working policy correction passes the exact frozen13case public-CLI file after genuine old-code12pass1missing-route failure. Original assertions, legacy positive and all classification refusals remain; current metadata, full candidate gates and normal delivery are still pending.
+CURRENT_IMPLEMENTATION_PHASE: The one-line default-unit entry now executes the exact frozen13case contract with13pass0skip0todo on working H2. Original assertions and contract bytes remain exact. The original H2 whole default result has3902pass of3961 with59uncovered skips and zero guardrail cases; it stays unaccepted and unpushed. New exact candidate bindings, complete default execution and all remaining mandatory gates/normal delivery are still pending.
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Development preflight policy only; no product, service, UI baseline or release authority is created.
 TASK_ID: YALKEN_EVIDENCE_BASED_UI_ROUTER_20261031
@@ -19,7 +19,7 @@ PREDECESSOR: Current-binding finalizer PR2185 normally closed at the exact bindi
 STORAGE: New reports/logs in dated2026-10-31--evidence-based-ui-router on verified writable T777 UUID F2FA9AE0-0081-3FC3-BF56-CC4280D16513. Source stays in the existing registered worktree on encrypted unlocked writable T7-Secure UUID D1F2E2C1-3210-4A39-A4E0-0AA0AD5110E2. Preserve canonical6decd915, all60owned baseline anchors and every original profile/history/raw file. Test clones use only the already identified genuine OS temporary parent from TEST_RUNTIME_IDENTITY_03.json; no new persistent runtime or native launch.
 DESIGN_TOOL_ROUTER: INAPPLICABLE
 REFERENCES: Current declaration schema, public preflight and actual guardrail tests; owner optional-integration restriction; current Design OS guide and tool matrix. Local brain:refs ran once; generic UI/reference suggestions do not answer this OPS policy question or authorize any service contact.
-DIFF_BUDGET: At most21exact allowlisted files, one new task file,1500added/removed lines excluding deterministic generated binding rows. No unrelated formatting, dependency, workflow, runtime, frozen source or generic governance framework change.
+DIFF_BUDGET: At most22exact allowlisted files, two new files (task and default-unit entry),1500added/removed lines excluding deterministic generated binding rows. No unrelated formatting, dependency, workflow, runtime, frozen source or generic governance framework change.
 
 ## MICRO_GOAL
 
@@ -46,6 +46,7 @@ Use the delivered current-binding finalizer for the seven fixed generated target
 - `docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json`
 - `scripts/agent-guardrails-lib.mjs`
 - `test/contracts/agent-architecture-guardrails.contract.test.js`
+- `test/unit/agent-architecture-guardrails.test.js`
 - `docs/CONTEXT.md`
 - `docs/HANDOFF.md`
 - `docs/WORKLOG.md`
@@ -67,6 +68,12 @@ Use the delivered current-binding finalizer for the seven fixed generated target
 Everything outside the exact allowlist. Especially src, package/dependency files, workflows, active canon/COREX, frozen carriers, original assertions/skip policy, private/default profiles, native runtime, raw/authority/history and optional-service configuration or contact. No reset, stash, clean, rebase, amend, force-push, application deletion, historical rewriting or foreign WIP cleanup. Only the finalizer's own newly created lock/temporary files and fresh owned synthetic test fixtures may be consumed by their existing protocols.
 
 ## CONTRACT / SHAPES
+
+### Same task default-entrypoint amendment
+
+Unchanged run-tests.js recursively discovers only test/unit. All12prior guardrail cases are absent from the previous full baseline; actual H2 now confirms all13cases absent despite a passing separate invocation. H2 default test groups3,20,3961 with pass3,20,3902 and59uncovered skips, plus RTK4419, are retained phase executions, never retagged as the later candidate. Its C1C, post-audit and E0 were not executed after this known integration gap and remain required on the corrected final candidate.
+
+One new default-unit entry requires the exact existing frozen contract; no assertion copying, skip, runner, cap, workflow or runtime change. Record the actual13case unit invocation, then make ordinary same-chain source and metadata checkpoints with fresh clean prospective preflights. Keep original task/base/branch. Add the new unit path to the same current successor and typed source admission, recompute all seven targets, preserve both earlier9row registry appends and append only newly changed technical SHA witnesses. Require full final default execution of the unchanged13case block, all original cases and59raw skips, complete source/package/raw preservation and normal PR/main delivery.
 
 Integration mode EXISTING_SEAM. Product plane and interface plane are inapplicable to this offline OPS policy change; no new feature runtime, command, port, projection, surface, registry or writer. State is derived development metadata only. Public CLI still validates exact HEAD, scope, authority fields, state/operation vocabulary, clean tree and all delivery flags. The marker records the applicable workflow; actual evidence remains a task acceptance duty and never grants mutation permission.
 

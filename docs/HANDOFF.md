@@ -1,3 +1,13 @@
+## 2026-10-31 — Same UI policy: default guardrail entry corrected before delivery
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 737a9147d089ed99fbc662bcafe530e3a910bdc3
+CLAIM_BOUNDARY: Retained H2 component proofs; missing default routing prevents delivery acceptance.
+
+Whole H2 RTK4419, separate public preflight13, unchanged finalizer30 and consumers64 passed. Default baseline test groups3,20,3961 have pass3,20,3902 with the exact59old uncovered skips; none of the13guardrail cases ran because the existing runner scans only test/unit. UI_ROUTER_H2_PHASE_DISPOSITION_01.json SHA25677d7beba7fe5f3dd5c6a73811557d6cec985ed735493018f83aca698935febaf binds these actual distinct observations; H2 was never pushed or accepted. Original failed methods, frozen tests and every old/new raw anchor remain.
+
+Fresh same-task22path preflight04 admits one unit entry requiring the unchanged complete contract. TaskE0 precedes this source edit; subsequent ordinary checkpoints, current seven bindings and exact final mandatory gates/PR/main delivery remain required. No runner/cap/workflow/product/native/service change or development question. Full V6/DNA5 remains ACTIVE,17Mac qualificationsUNKNOWN and release NOT_READY. The admitted one-line default-unit entry now executes the unchanged complete13case contract with13pass0skip0todo on working H2. UI_ROUTER_UNIT_ENTRY_PROOF_01.json SHA256308dbe21212b38bba079b316914aad813fa175dd31abe30b83d6a0b60b41ecc9 binds the actual entry and frozen contract bytes; this selected run does not replace the pending full default execution on the final candidate. Earlier source-phase facts follow unchanged.
+
 ## 2026-10-31 — One next step: prove and deliver evidence-based UI routing
 
 Current clean base2abfa21f/tree18368 closes PR2185. FINALIZER_DELIVERY_CLOSURE_01.json SHA256ae3459b3e392fcd6e4652b81d69752899f233210fc49d1cee01247b899d7c186 binds16blocking merged zero exits, advisory full audit1,20PR/20main checks with full provider archives, all30default-unit helper cases, exact10040source/1485package inputs and60retained raw anchors. No native execution is claimed for that OPS head. Historical DATA/C2A identity roles, original failures and all old bytes remain preserved. All17fullMac qualifications UNKNOWN; full V6/DNA5 ACTIVE and release NOT_READY.
