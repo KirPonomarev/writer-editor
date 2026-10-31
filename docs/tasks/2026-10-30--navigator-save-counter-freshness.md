@@ -1,13 +1,14 @@
 # Navigator counters after durable Save
 
-STATUS: IMPLEMENTED_NATIVE_VERIFIED
+STATUS: CLOSED
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Freshness of the existing saved-source navigator projection; full Mac qualification remains incomplete.
 IMPLEMENTATION_VERIFIED_SHA: 72ed582defb94f41a55a59e1fc3171323d9d26ac
 NATIVE_VERIFIED_SHA: 72ed582defb94f41a55a59e1fc3171323d9d26ac
 NATIVE_COMPONENT_RECORD: COUNTER_EARLY_NATIVE_OUTCOMES_01.json SHA2562cc557f9ab7a694bfa9c5e8b1ff7006e5fd22e290bc38c05745bb5b0984edee9
 RELEASE_ACCEPTANCE: NOT_ESTABLISHED_BY_THIS_CONTOUR
-DELIVERY_COMPLETION_ORACLE: Actual full terminal delivery receipt after all required normal delivery and literal merged proofs; this source status is implementation/native verification only.
+DELIVERY_MERGED_SHA: 43340d2ce2f2b599310f65a22e4db768006f7024
+DELIVERY_COMPLETION_ORACLE: NAVIGATOR_DELIVERY_CLOSURE_01.json SHA2569d38e70e1d3b21dec3900a22e5396aa723905d582fba730f75a8d887dc5d45b0 binds actual full required normal delivery and literal merged proofs. Earlier H2 implementation/native observations below retain their original identities; the separate actual M native case is8to9scene and23to24total words. Full Mac release acceptance is not established.
 TASK_ID: YALKEN_NAVIGATOR_SAVE_COUNTER_FRESHNESS_20261030
 TYPE: UI
 CANON_VERSION: v1.0

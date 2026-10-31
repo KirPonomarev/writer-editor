@@ -500,7 +500,9 @@
       "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
       "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
       "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
-      "test/unit/navigator-derived-counters-renderer.test.js"
+      "test/unit/navigator-derived-counters-renderer.test.js",
+      "docs/tasks/2026-10-31--current-bindings-finalizer.md",
+      "test/unit/current-bindings-finalizer.test.js"
     ]
   },
   "allowPrefixByPhase": {

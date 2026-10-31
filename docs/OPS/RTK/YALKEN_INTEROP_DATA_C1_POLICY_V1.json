@@ -874,7 +874,12 @@
     "docs/tasks/2026-10-30--pulse-authored-corrections.md",
     "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
     "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
-    "test/unit/navigator-derived-counters-renderer.test.js"
+    "test/unit/navigator-derived-counters-renderer.test.js",
+    "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
+    "test/unit/current-bindings-finalizer.test.js",
+    "docs/tasks/2026-10-31--current-bindings-finalizer.md",
+    "scripts/ops/r24/corrective/c2a-effective-certification.mjs",
+    "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs"
   ],
   "protectedFiles": [
     {
@@ -2795,15 +2800,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "594cc7fee606d3264dde6fff3a0cc5a1b82e6b345d27f79b871302a0428b6091"
+        "sha256": "fbdd122b6a517829f285805814e60bbc14ce716f3c01ee53db1e5b59ec71f111"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "7b5816c8ef36fcb9a3d9eac40e548da1ab35f65c249505ecc773e357cd62634e"
+        "sha256": "3180a84131dd95974cab02d133a9650756b29dbc3203d05485ec1fb391d4fae4"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "cf38981140c89cb36b9ce18b07324c622de1c67530f07154fd450b09bfb1e0b9"
+        "sha256": "00ffa71724c10d0b2ecee194ddb53dd50810ec2b6212d63c8a88e360161f2f9f"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3343,7 +3348,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "7ff868bc04257992ab7e0bcbf7c75a4f0afdbe9283d306133bbe84cffeee8d76"
+        "sha256": "34df7ffd8ee916c95e0360e19a7d4aefa541fa8271a6efb2fd635b1be6d9fd12"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3475,7 +3480,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "054fbcd6e65c00e4ae1c09190ee72fb9c96a857e1879855bf90c366237135e19"
+        "sha256": "93866f2a601356f67e5c5927d9647116e91a17f806d58e6fdad4ffaf490dc7bc"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3951,11 +3956,31 @@
       },
       {
         "path": "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
-        "sha256": "c29b18345a5c5ec9cb2166c57fc1290ad3c72774d5d651efc107ce2f04138720"
+        "sha256": "3f10553d3863bee15fcffe7a63f1ceb89758eb54e208edbdb68a9f19467a9510"
       },
       {
         "path": "test/unit/navigator-derived-counters-renderer.test.js",
         "sha256": "cbb7da96b6acfc620b76dc56337d0dc3d311c83356408fc252d4003ea91df203"
+      },
+      {
+        "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
+        "sha256": "a16a7f58f9557922a3590ea46f3ee720ad7d9aefea0f7d0473d018f902438f91"
+      },
+      {
+        "path": "test/unit/current-bindings-finalizer.test.js",
+        "sha256": "461fb0c2fa8ca2f4cd3b1eb78a4465b4e85e0c55730612951df08f67d3287012"
+      },
+      {
+        "path": "docs/tasks/2026-10-31--current-bindings-finalizer.md",
+        "sha256": "cb51d97b00f1ced02be1fe918dd932a06c13f7dd595bb1478d2980a4c656bae8"
+      },
+      {
+        "path": "scripts/ops/r24/corrective/c2a-effective-certification.mjs",
+        "sha256": "978eb47c88004ac4ac38773c94d5552ddb1f29212e4646b29d23483a8a712a3d"
+      },
+      {
+        "path": "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs",
+        "sha256": "2909665be72b5c47795234f6429886125b2c04d2d5bc991af626f6ef66d97cc9"
       }
     ],
     "followupRepair": {

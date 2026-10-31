@@ -1,3 +1,13 @@
+## 2026-10-31 — Navigator delivered; one current-binding finalizer admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 43340d2ce2f2b599310f65a22e4db768006f7024
+CLAIM_BOUNDARY: Closed bounded counter delivery; full V6/DNA5 release remains unqualified.
+
+Navigator PR2184 is normally merged at this literal SHA. NAVIGATOR_DELIVERY_CLOSURE_01.json SHA2569d38e70e1d3b21dec3900a22e5396aa723905d582fba730f75a8d887dc5d45b0 binds all19merged local processes,20PR/20main checks with actual checkout identities, fresh merged build and native Save8to9scene/23to24total words plus same-physical-profile cold9/24/100percent. Both closed profiles were fully restored. Original failures,54owned baseline anchors and historical data remain retained. All17Mac qualification rows are UNKNOWN; release cut remains UNFROZEN/NOT_READY and the full goal ACTIVE.
+
+Current task YALKEN_CURRENT_BINDINGS_FINALIZER_20261031 is OPEN_UNACCEPTED over this original base. Ordinary checkpoints b2936a2d and bcfb8261 preserve the27case helper, same-byte unit routing, reviewed real seven-target prepare/apply and exact old-history inverse. H2 governance, inventory and C2A checks passed; full gates/delivery have not run and no push or acceptance is claimed. Before the expensive wave, fresh clean bootstrap03/preflight05 admitted a real-caller preseeded-policy control: old code accepted two unrequested memberships with repaired pins. Preserved RED28of30includes the working matched declared positive; a four-line typed closed-set check then passes the exact same30whole cases, with all original27test bodies unchanged. New current metadata and final-source proofs remain required. All1485accepted package inputs remain exact; no runtime/UI/dependency/optional-service scope or new authority. Canonical6decd915 stays unchanged. Earlier pending narratives below are historical observations.
+
 ## 30.10.2026 — Navigator: implementation and native verification on H2
 
 DOCUMENT_CLASS: FACTUAL_STATUS

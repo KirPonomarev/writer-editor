@@ -1,3 +1,9 @@
+## 2026-10-31 — One next step: complete the admitted current-binding finalizer
+
+Current exact base is43340d2ce2f2b599310f65a22e4db768006f7024. Navigator PR2184 is closed by NAVIGATOR_DELIVERY_CLOSURE_01.json SHA2569d38e70e1d3b21dec3900a22e5396aa723905d582fba730f75a8d887dc5d45b0:19merged local processes,20PR/20main checks, actual merged build/native Save and same-profile cold, full profile/bundle restoration. All original failures, historical raw data and54baseline anchors remain. Full V6/DNA5 stays ACTIVE;17Mac rows UNKNOWN and release NOT_READY.
+
+Next: refresh current bindings for the four-line closed-set fix and complete the same finalizer delivery under2026-10-31--current-bindings-finalizer.md. The exact whole30case file passed after old-code RED28of30with a working matched declared positive; original27test bodies remain unchanged. Both preseeded admitted/source outsiders now fail before prepare/apply writes, with no journal. Source checkpoints b2936a2d and bcfb8261, the earlier real seven-target apply and H2 governance/inventory/C2A are historical phase proofs, not final-source acceptance. Preserve all original REDs, failed first positive-fixture setup, dirty preflight02, old registry rows, exact apply journal and receipt-reader corrections. Original delivery base43340d2c and the frozen C1C shard remain fixed. Product source, private/native profiles, dependencies, optional services and UI policy are outside this contour. One direct developer, no development questions or extra agents/chats/timers. Earlier pending entries below are historical.
+
 ## 30.10.2026 — Navigator: implementation and native verification on H2
 
 DOCUMENT_CLASS: FACTUAL_STATUS
