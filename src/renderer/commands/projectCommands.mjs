@@ -57,6 +57,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PULSE_CORRECT_METRIC: 'cmd.project.pulse.correctMetric',
   ENVIRONMENT_EPOCH_CAPTURE: 'cmd.project.view.captureEnvironmentEpoch',
   ENVIRONMENT_EPOCH_RESTORE: 'cmd.project.view.restoreEnvironmentEpoch',
+  ENVIRONMENT_CONFIGURATION_COMMIT: 'cmd.project.view.commitEnvironmentConfiguration',
   PROJECT_VIEW_SET_MENU_PRESENTATION_CLASSIC: 'cmd.project.view.setMenuPresentationClassic',
   PROJECT_VIEW_SET_MENU_PRESENTATION_COMPACT: 'cmd.project.view.setMenuPresentationCompact',
   PROJECT_VIEW_SET_MENU_LOCALE_BASE: 'cmd.project.view.setMenuLocaleBase',
@@ -1130,7 +1131,7 @@ function registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, meta
       }
       let response;
       try {
-        if ([EXTRA_COMMAND_IDS.PULSE_OPT_IN, EXTRA_COMMAND_IDS.PULSE_OPT_OUT, EXTRA_COMMAND_IDS.PULSE_CORRECT_METRIC, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE].includes(commandId)
+        if ([EXTRA_COMMAND_IDS.PULSE_OPT_IN, EXTRA_COMMAND_IDS.PULSE_OPT_OUT, EXTRA_COMMAND_IDS.PULSE_CORRECT_METRIC, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT].includes(commandId)
           && ['tiptap', 'legacy'].includes(input.editorMode)) {
           const { editorMode, ...intent } = input;
           input = intent;
@@ -1145,7 +1146,7 @@ function registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, meta
         );
       }
       const bridged = unwrapBridgeResponseValue(response);
-      if ([EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE].includes(commandId)
+      if ([EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT].includes(commandId)
         && bridged?.ok === false && bridged.error) {
         return fail(bridged.error.code || 'E_ENVIRONMENT_EPOCH_UNAVAILABLE', commandId,
           bridged.error.reason || 'E_ENVIRONMENT_EPOCH_UNAVAILABLE', bridged.error.details);
@@ -1236,7 +1237,7 @@ export function registerProjectCommands(registry, options = {}) {
   for (const [id, label] of [[EXTRA_COMMAND_IDS.PULSE_OPT_IN, 'Включить локальную историю'], [EXTRA_COMMAND_IDS.PULSE_OPT_OUT, 'Отключить сбор истории'], [EXTRA_COMMAND_IDS.PULSE_CORRECT_METRIC, 'Записать поправку автора']]) {
     registerBridgeOnlyProjectCommand(registry, electronAPI, id, { label, surface: ['internal'] });
   }
-  for (const [id, label] of [[EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, 'Save current settings'], [EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, 'Restore saved settings']]) {
+  for (const [id, label] of [[EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, 'Save current settings'], [EXTRA_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, 'Restore saved settings'], [EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, 'Commit current environment']]) {
     registerBridgeOnlyProjectCommand(registry, electronAPI, id, { label, group: 'view', surface: ['internal'] });
   }
 

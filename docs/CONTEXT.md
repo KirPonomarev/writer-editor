@@ -1,3 +1,13 @@
+## 2026-10-31 — UI policy delivered; full environment epochs admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: a813e90461d6720cb7fac52dec61c36cac525705
+CLAIM_BOUNDARY: PR2186 is closed; ENV-EPOCH-01 full configuration implementation and native outcome are pending.
+
+UI_ROUTER_DELIVERY_CLOSURE_01.json SHA25602654344a14c248907cb38405ff2a46606bf6ed2885f913a1d90dc5eae787b11 and final report02 bind actual20PR/20main checks,17blocking merged local zero exits, full provider logs and source/raw preservation. Full audit retains15moderate dev findings;59old baseline skips remain uncovered. No native execution is claimed for that OPS delivery.
+
+The existing clean registered task worktree now starts YALKEN_ENV_EPOCH_FULL_CONFIGURATION_20261031 at this literal base. Fresh38path declaration02/preflight02 exit0, same-head full normative/scoped factual startup and verified volumes/remote precede task writes. Extend existing WP303 with closed full mode/profile/contribution/configuration epochs, separate current/last-stable/presets and preserved finite legacy migration. Protect manuscript N+1, authoring/IME, maps, all presets/history/raw and owner canonical6decd915. One direct developer, no development questions, agents/chats/models/timers or optional services. Early actual rebuilt native precedes final freeze/heavy gates; real delivered finalizer use and complete ordinary delivery remain mandatory. R4B/R4C practical product acceptance PENDING; all17Mac qualification rows UNKNOWN, release UNFROZEN/NOT_READY and full V6/DNA5 ACTIVE. Earlier pending entries below are historical observations.
+
 ## 2026-10-31 — Same UI policy: default guardrail entry corrected before delivery
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -14,6 +14,7 @@ test('donor port command surface kernel: allowlist is fixed to minimal non-ui co
     'cmd.project.pulse.correctMetric',
     'cmd.project.view.captureEnvironmentEpoch',
     'cmd.project.view.restoreEnvironmentEpoch',
+    'cmd.project.view.commitEnvironmentConfiguration',
     'cmd.project.saveAs',
     // Main-only startup route; renderer payloads never grant this capability.
     'cmd.project.recoverMissingIntegrityAnchor',

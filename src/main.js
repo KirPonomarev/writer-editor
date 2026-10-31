@@ -731,6 +731,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PULSE_CORRECT_METRIC: 'cmd.project.pulse.correctMetric',
   ENVIRONMENT_EPOCH_CAPTURE: 'cmd.project.view.captureEnvironmentEpoch',
   ENVIRONMENT_EPOCH_RESTORE: 'cmd.project.view.restoreEnvironmentEpoch',
+  ENVIRONMENT_CONFIGURATION_COMMIT: 'cmd.project.view.commitEnvironmentConfiguration',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   PROJECT_RECOVER_MISSING_INTEGRITY_ANCHOR: 'cmd.project.recoverMissingIntegrityAnchor',
   PROJECT_EXPORT_CURRENT_SCENE_TXT_V1: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
@@ -16037,6 +16038,7 @@ function getInternalCommandSurfaceKernel() {
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_CORRECT_METRIC]: payload => handlePulseCorrectionCommand(payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE]: payload => handleEnvironmentEpochCommand('cmd.project.view.captureEnvironmentEpoch', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE]: payload => handleEnvironmentEpochCommand('cmd.project.view.restoreEnvironmentEpoch', payload),
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT]: payload => handleFullEnvironmentCommand('COMMIT', payload),
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS]: async () => {
       const savedAs = await handleSaveAs();
       return { ok: savedAs === true };
@@ -17237,7 +17239,13 @@ function createEnvironmentEpochPort(commandId) {
   });
 }
 
+function hasFullEnvironmentContainer() {
+  try { fsSync.lstatSync(path.join(app.getPath('userData'), 'design-os-environment-epochs-v2.json')); return true; }
+  catch (error) { if (error?.code === 'ENOENT') return false; throw error; }
+}
+
 async function handleEnvironmentEpochCommand(commandId, payload) {
+  if (payload?.version === 2) return handleFullEnvironmentCommand(commandId === COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE ? 'RESTORE' : 'CAPTURE', payload);
   const restoring = commandId === COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE;
   if (!ENVIRONMENT_EPOCH_COMMAND_IDS.includes(commandId) || !environmentEpochExactKeys(payload,
     ['expectedRevision', 'expectedStateDigest', restoring ? 'epochId' : 'preferences'])
@@ -17246,15 +17254,146 @@ async function handleEnvironmentEpochCommand(commandId, payload) {
     || (restoring ? typeof payload.epochId !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u.test(payload.epochId)
       : !environmentEpochExactKeys(payload.preferences, ['theme', 'wordWrap']) || !['light', 'dark'].includes(payload.preferences.theme)
         || typeof payload.preferences.wordWrap !== 'boolean')) return environmentEpochFailure(commandId, 'E_ENVIRONMENT_EPOCH_PAYLOAD_INVALID');
-  try { const port = createEnvironmentEpochPort(commandId);
-    return await queueDiskOperation(() => port.change(payload), 'saved environment version');
+  try {
+    if (hasFullEnvironmentContainer()) return environmentEpochFailure(commandId, 'E_ENVIRONMENT_EPOCH_LEGACY_READ_ONLY');
+    const port = createEnvironmentEpochPort(commandId);
+    return await queueDiskOperation(async () => hasFullEnvironmentContainer()
+      ? environmentEpochFailure(commandId, 'E_ENVIRONMENT_EPOCH_LEGACY_READ_ONLY') : port.change(payload), 'saved environment version');
   } catch (error) { return environmentEpochFailure(commandId, typeof error?.code === 'string' ? error.code : 'E_ENVIRONMENT_EPOCH_UNAVAILABLE'); }
 }
 
 async function handleWorkspaceSettingsEnvironmentEpochsQuery(payload = {}) {
+  if (environmentEpochExactKeys(payload, ['configurationVersion']) && payload.configurationVersion === 2) {
+    try { return { ok: true, settingsEnvironmentEpochs: await createMainFullEnvironmentPort('cmd.project.view.openSettings').read() }; }
+    catch (error) { return { ok: false, error: typeof error?.code === 'string' ? error.code : 'E_FULL_ENV_UNAVAILABLE' }; }
+  }
   if (!environmentEpochExactKeys(payload, [])) return { ok: false, error: 'E_ENVIRONMENT_EPOCH_QUERY_INVALID' };
   try { return await createEnvironmentEpochPort('cmd.project.view.openSettings').read(); }
   catch (error) { return { ok: false, error: typeof error?.code === 'string' ? error.code : 'E_ENVIRONMENT_EPOCH_UNAVAILABLE' }; }
+}
+
+let environmentFormSignalSerial = 0;
+let environmentFormComposing = false;
+function readFullEnvironmentWindowBinding(window = mainWindow) {
+  if (!window || window.isDestroyed() || typeof window.getBounds !== 'function' || typeof screen?.getAllDisplays !== 'function') {
+    throw Object.assign(Error('E_FULL_ENV_DISPLAY_UNAVAILABLE'), { code: 'E_FULL_ENV_DISPLAY_UNAVAILABLE' });
+  }
+  const bounds = window.getBounds(), content = window.getContentBounds(), display = screen.getDisplayMatching(bounds);
+  if (!display || !screen.getAllDisplays().some(row => row.id === display.id)) throw Object.assign(Error('E_FULL_ENV_DISPLAY_UNAVAILABLE'), { code: 'E_FULL_ENV_DISPLAY_UNAVAILABLE' });
+  return { displayId: String(display.id), x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height,
+    viewportWidth: content.width, viewportHeight: content.height };
+}
+function createMainFullEnvironmentPort(commandId) {
+  const { createFullEnvironmentEpochPort } = require('./main/environmentEpochPort.cjs');
+  const refuse = code => { throw Object.assign(Error(code), { code }); };
+  const window = mainWindow, contents = window?.webContents, owner = activeStage10ApplicationBootstrap, projectId = owner?.getProjectId();
+  const root = getProjectRootPath(), projectName = currentProjectName, file = currentFilePath, subject = currentLifecycleSubjectId();
+  const sessionId = commentAuthoringSessionId, generation = lastSignaledEditGeneration, serial = environmentFormSignalSerial;
+  const profile = JSON.stringify(getWriterLocalRuntimeProfile()), directory = app.getPath('userData');
+  if (!projectId) refuse('E_FULL_ENV_PROJECT_UNKNOWN');
+  const originalWindow = readFullEnvironmentWindowBinding(window); let ownedWindow = null, targetWindow = null, contributionChecks = [];
+  const available = id => decideCommandEntitlement(id, getProductEntitlementTier()).available
+    && evaluateWriterLocalCommandAccess({ profile: getWriterLocalRuntimeProfile(), commandId: id, productCommandRecord: getProductCommandRecord(id) }).allowed;
+  const assertCurrent = ({ requiresClean = false } = {}) => {
+    const matrixDoc = readAuthorityCapabilityMatrixDoc();
+    const capability = evaluateCommandCapabilityAuthority({ commandId, capabilityId: 'cap.project.view.openSettings',
+      platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc });
+    if (process.platform !== 'darwin' || !window || mainWindow !== window || window.isDestroyed() || window.webContents !== contents
+      || contents.isDestroyed() || owner !== activeStage10ApplicationBootstrap || projectId !== owner?.getProjectId()
+      || root !== getProjectRootPath() || projectName !== currentProjectName || file !== currentFilePath
+      || subject !== currentLifecycleSubjectId() || sessionId !== commentAuthoringSessionId || generation !== lastSignaledEditGeneration
+      || serial !== environmentFormSignalSerial || profile !== JSON.stringify(getWriterLocalRuntimeProfile())
+      || app.getPath('userData') !== directory || !available(commandId) || !capability.ok
+      || JSON.stringify(readFullEnvironmentWindowBinding(window)) !== JSON.stringify(ownedWindow || originalWindow)) refuse('E_FULL_ENV_CONTEXT_STALE');
+    if (targetWindow && !screen.getAllDisplays().some(row => String(row.id) === targetWindow.displayId)) refuse('E_FULL_ENV_MISSING_DISPLAY');
+    for (const check of contributionChecks) {
+      if (check.requireCommandAccess && !available(check.commandId) || !evaluateCommandCapabilityAuthority({
+        commandId: check.commandId, capabilityId: check.capabilityId, platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc }).ok) refuse('E_FULL_ENV_MISSING_CAPABILITY');
+    }
+    if (requiresClean && (isDirty || autoSaveInProgress || lastAcknowledgedEditGeneration !== lastSignaledEditGeneration
+      || pendingReviewDocxExports.size > 0 || environmentFormComposing || activePendingRecording)) refuse('E_FULL_ENV_AUTHORING_BARRIER');
+  };
+  assertCurrent();
+  const readLive = async () => {
+    assertCurrent(); const binding = readFullEnvironmentWindowBinding(window);
+    const snapshot = await requestEditorSnapshot(2500, null, { window: binding }); assertCurrent();
+    const metadata = snapshot?.environmentConfiguration;
+    if (!environmentEpochExactKeys(metadata, ['configuration', 'formGeneration', 'composing', 'authoringPending'])
+      || typeof metadata.composing !== 'boolean' || typeof metadata.authoringPending !== 'boolean'
+      || !Number.isSafeInteger(metadata.formGeneration) || metadata.formGeneration < 0
+      || snapshot.projectId !== projectId || snapshot.generation !== generation) refuse('E_FULL_ENV_LIVE_INVALID');
+    if (JSON.stringify(metadata.configuration?.window) !== JSON.stringify(binding)) refuse('E_FULL_ENV_WINDOW_STALE');
+    return { configuration: metadata.configuration, formGeneration: metadata.formGeneration, composing: metadata.composing,
+      authoringPending: metadata.authoringPending || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending };
+  };
+  const validateAvailability = async configuration => {
+    const display = screen.getAllDisplays().find(row => String(row.id) === configuration.window.displayId), w = configuration.window;
+    if (!display || !display.workArea) refuse('E_FULL_ENV_MISSING_DISPLAY');
+    const area = display.workArea;
+    if (Math.min(w.x + w.width, area.x + area.width) - Math.max(w.x, area.x) < 64
+      || Math.min(w.y + w.height, area.y + area.height) - Math.max(w.y, area.y) < 64) refuse('E_FULL_ENV_GEOMETRY_UNAVAILABLE');
+    if (configuration.profile === 'SAFE' || configuration.shellMode === 'SAFE_RECOVERY') refuse('E_FULL_ENV_UNSUPPORTED_FORM_PROFILE');
+    const [{ CAPABILITY_BINDING }, catalog] = await Promise.all([
+      import(pathToFileURL(path.join(__dirname, 'renderer/commands/capabilityPolicy.mjs')).href),
+      import(pathToFileURL(path.join(__dirname, 'renderer/toolbar/toolbarFunctionCatalog.mjs')).href),
+    ]); assertCurrent();
+    const matrixDoc = readAuthorityCapabilityMatrixDoc();
+    const workspaceCapability = { WRITE: 'cap.project.window.switchModeWrite', PLAN: 'cap.project.plan.switchMode', REVIEW: 'cap.project.review.switchMode' }[configuration.workspace];
+    const checks = [{ commandId, capabilityId: workspaceCapability, requireCommandAccess: false }];
+    if (!evaluateCommandCapabilityAuthority({ commandId, capabilityId: workspaceCapability, platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc }).ok) refuse('E_FULL_ENV_MISSING_CAPABILITY');
+    for (const id of configuration.composition.toolbarIds) {
+      const entry = catalog.listLiveToolbarFunctionCatalogEntries().find(row => row.id === id);
+      if (!entry) refuse('E_FULL_ENV_MISSING_CONTRIBUTION');
+      if (entry.commandId && (!available(entry.commandId) || !CAPABILITY_BINDING[entry.commandId]
+        || !evaluateCommandCapabilityAuthority({ commandId: entry.commandId, capabilityId: CAPABILITY_BINDING[entry.commandId],
+          platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc }).ok)) refuse('E_FULL_ENV_MISSING_CAPABILITY');
+      if (entry.commandId) checks.push({ commandId: entry.commandId, capabilityId: CAPABILITY_BINDING[entry.commandId], requireCommandAccess: true });
+    }
+    if (configuration.layout.rightTab === 'atlas') {
+      if (!evaluateWriterLocalQueryAccess({ profile: getWriterLocalRuntimeProfile(), queryId: ATLAS_CURRENT_SCENE_QUERY_ID }).allowed) refuse('E_FULL_ENV_MISSING_SURFACE');
+    }
+    contributionChecks = checks; targetWindow = configuration.window; assertCurrent();
+  };
+  return createFullEnvironmentEpochPort({ directory, projectId, assertCurrent, readLive, validateAvailability,
+    availability: () => ({ capture: available(ENVIRONMENT_EPOCH_COMMAND_IDS[0]), restore: available(ENVIRONMENT_EPOCH_COMMAND_IDS[1])
+      && !isDirty && !autoSaveInProgress && !environmentFormComposing && lastAcknowledgedEditGeneration === lastSignaledEditGeneration && pendingReviewDocxExports.size === 0,
+    configure: available(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT)
+      && !isDirty && !autoSaveInProgress && !environmentFormComposing && lastAcknowledgedEditGeneration === lastSignaledEditGeneration && pendingReviewDocxExports.size === 0 }),
+    applyWindow: async (configuration, operationId) => {
+      assertCurrent();
+      const prepared = await requestEditorSnapshot(2500, null, { window: readFullEnvironmentWindowBinding(window),
+        projectionOperationId: operationId, targetWindow: configuration.window }); assertCurrent();
+      if (prepared.environmentProjectionOperationId !== operationId || prepared.environmentConfiguration?.composing
+        || prepared.environmentConfiguration?.authoringPending) refuse('E_FULL_ENV_PROJECTION_NOT_PREPARED');
+      ownedWindow = configuration.window;
+      const { x, y, width, height } = configuration.window; window.setBounds({ x, y, width, height });
+      currentFontSize = configuration.presentation.fontSize;
+      assertCurrent();
+    } });
+}
+async function handleFullEnvironmentCommand(kind, payload) {
+  const commandId = kind === 'CAPTURE' ? ENVIRONMENT_EPOCH_COMMAND_IDS[0] : kind === 'RESTORE' ? ENVIRONMENT_EPOCH_COMMAND_IDS[1]
+    : COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT;
+  try {
+    require('./main/environmentEpochPort.cjs').validateRequest(kind, payload);
+    const port = createMainFullEnvironmentPort(commandId);
+    return await queueDiskOperation(() => port.change(kind, payload), 'full environment configuration');
+  } catch (error) { return environmentEpochFailure(commandId, error?.code || 'E_FULL_ENV_UNAVAILABLE'); }
+}
+
+async function observeFullEnvironmentWindowMove(window) {
+  if (!window || mainWindow !== window || window.isDestroyed()) return false;
+  const commandId = COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT;
+  try {
+    if (!hasFullEnvironmentContainer()) return true;
+    const p = await createMainFullEnvironmentPort(commandId).read();
+    if (mainWindow !== window || window.isDestroyed()) return false;
+    if (p.pending) return true; // Retain failed/pending history; never turn Quit into a health ACK.
+    const result = await dispatchCommandSurfaceKernel(commandId, { version: 2, kind: 'SYNC_CURRENT', expectedRevision: p.revision,
+      expectedStateDigest: p.stateDigest, expectedConfigurationGeneration: p.configurationGeneration, expectedFormGeneration: p.formGeneration });
+    if (!result.ok) logDevError('full environment current observation', result.error);
+    return result.ok === true;
+  } catch (error) { logDevError('full environment current observation', error); return false; }
 }
 
 let atlasReportsSavedQueriesModulePromise = null;
@@ -24571,6 +24710,8 @@ function normalizeEditorSnapshotPayload(payload) {
     imageInsertionPosition: Number.isSafeInteger(source.imageInsertionPosition) && source.imageInsertionPosition >= 1 ? source.imageInsertionPosition : null,
     commentAuthoringPending: source.commentAuthoringPending === true,
     manuscriptNoteAuthoringPending: source.manuscriptNoteAuthoringPending === true,
+    ...(Object.hasOwn(source, 'environmentConfiguration') ? { environmentConfiguration: source.environmentConfiguration } : {}),
+    ...(Object.hasOwn(source, 'environmentProjectionOperationId') ? { environmentProjectionOperationId: source.environmentProjectionOperationId } : {}),
     generation: Number.isSafeInteger(source.generation) && source.generation >= 0
       ? source.generation
       : null,
@@ -24637,7 +24778,7 @@ function assertTreeRecoverySnapshot(snapshot, admission) {
   if (fence.sourceNodeId) admission.sourceImage = image;
 }
 
-function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
+function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null, environmentRequest = null) {
   if (!mainWindow || mainWindow.isDestroyed()) {
     return Promise.reject(new Error('No active window'));
   }
@@ -24661,6 +24802,11 @@ function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
       try {
         checkSession();
         const fence = capturedTreeFence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
+        if (environmentRequest) {
+          if (recoveryAdmission || fence) throw Object.assign(Error('E_FULL_ENV_AUTHORING_BARRIER'), { code: 'E_FULL_ENV_AUTHORING_BARRIER' });
+          // Form queries never derive revisions or mint manuscript-save admission.
+          resolve(snapshot); return;
+        }
         if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
         else if (fence) await assertTreeEditorSnapshotIdentity(snapshot, false, fence);
         checkSession();
@@ -24673,7 +24819,11 @@ function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null) {
         resolve(prepared);
       } catch (error) { reject(error); }
     }, reject, timeoutId });
-    mainWindow.webContents.send('editor:snapshot-request', { requestId });
+    mainWindow.webContents.send('editor:snapshot-request', { requestId, ...(environmentRequest ? {
+      environmentConfigurationWindow: environmentRequest.window,
+      ...(environmentRequest.projectionOperationId ? { environmentProjectionOperationId: environmentRequest.projectionOperationId,
+        environmentProjectionTargetWindow: environmentRequest.targetWindow } : {}),
+    } : {}) });
   });
 }
 
@@ -35706,6 +35856,15 @@ guardedProtocolHandle('ui:save-lifecycle-signal-bridge', async (_, request) => {
     return { ok: false, error: 'SIGNAL_ID_NOT_ALLOWED' };
   }
 
+  if (signalId === 'signal.environmentForm.changed') {
+    if (!environmentEpochExactKeys(payload, ['projectId', 'generation', 'composing']) || typeof payload.projectId !== 'string'
+      || !Number.isSafeInteger(payload.generation) || payload.generation < 0 || typeof payload.composing !== 'boolean') return { ok: false, error: 'SIGNAL_PAYLOAD_INVALID' };
+    if (payload.projectId !== activeStage10ApplicationBootstrap?.getProjectId()) return { ok: false, error: 'E_FULL_ENV_CONTEXT_STALE' };
+    environmentFormSignalSerial += 1;
+    environmentFormComposing = payload.composing;
+    return { ok: true };
+  }
+
   if (signalId === 'signal.localDirty.set') {
     if (typeof payload.state !== 'boolean') {
       return { ok: false, error: 'SIGNAL_PAYLOAD_INVALID' };
@@ -37671,6 +37830,7 @@ function createWindow() {
   mainWindow.on('blur', () => {
     isEditorPasteTargetFocused = false;
   });
+  mainWindow.on('moved', () => { void observeFullEnvironmentWindowMove(startupWindow); });
 
   // Сохранение размеров и позиции окна + запрос при несохранённых изменениях
   mainWindow.on('close', (event) => {
@@ -37688,6 +37848,7 @@ function createWindow() {
 
       const canClose = await confirmDiscardChanges();
       if (!canClose || pendingReviewDocxExports.size > 0) return;
+      if (!await observeFullEnvironmentWindowMove(mainWindow)) { updateStatus('Текущий вид не сохранён. Оставлено открытым для повторной проверки.'); return; }
 
       isWindowClosing = true;
       mainWindow.close();
@@ -38753,6 +38914,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.pulse.correctMetric',
   'cmd.project.view.captureEnvironmentEpoch',
   'cmd.project.view.restoreEnvironmentEpoch',
+  'cmd.project.view.commitEnvironmentConfiguration',
   'cmd.project.saveAs',
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
@@ -38831,6 +38993,7 @@ const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set(WORKSPACE_QUERY_ID_LIST
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
   'signal.localDirty.set',
   'signal.autoSave.request',
+  'signal.environmentForm.changed',
 ]);
 const MENU_ACTION_ALIAS_TO_COMMAND = Object.freeze({
   newDocument: 'cmd.project.new',
@@ -38910,6 +39073,7 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.pulse.correctMetric': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_CORRECT_METRIC, payload),
   'cmd.project.view.captureEnvironmentEpoch': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_CAPTURE, payload),
   'cmd.project.view.restoreEnvironmentEpoch': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_EPOCH_RESTORE, payload),
+  'cmd.project.view.commitEnvironmentConfiguration': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, payload),
   'cmd.project.saveAs': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS, {});
   },
@@ -41588,6 +41752,7 @@ app.on('before-quit', (event) => {
 
     const canQuit = await confirmDiscardChanges();
     if (!canQuit || pendingReviewDocxExports.size > 0) return;
+    if (mainWindow && !await observeFullEnvironmentWindowMove(mainWindow)) { updateStatus('Текущий вид не сохранён. Оставлено открытым для повторной проверки.'); return; }
 
     isQuitting = true;
     app.quit();
