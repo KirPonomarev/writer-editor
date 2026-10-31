@@ -288,5 +288,57 @@ async function register() {
     assert.equal(sha256(fs.readFileSync(path.join(f.root, INV))), prepared.proposal.changes[0].afterSha256);
     for (const name of api.TARGETS.slice(1)) assert.equal(fs.readFileSync(path.join(f.root, name)).toString('base64'), before[name].bytesBase64);
   });
+  function seedCurrentPolicyMembership(f, { admitted = false, source = false } = {}) {
+    const outsider = rcv.PATHS.claimRegistry;
+    assert.equal(fs.readFileSync(path.join(f.root, outsider), 'utf8').trim(), f.git(['show', f.request.bindingBaseSha + ':' + outsider]));
+    editJson(f, POLICY, value => {
+      assert.equal(value.admittedPaths.includes(outsider), false);
+      assert.equal(value.qualifiedRuntimeRepair.sourceBindings.some(row => row.path === outsider), false);
+      if (admitted) value.admittedPaths.push(outsider);
+      if (source) value.qualifiedRuntimeRepair.sourceBindings.push({ path: outsider, sha256: sha256(fs.readFileSync(path.join(f.root, outsider))) });
+    });
+    const value = JSON.parse(fs.readFileSync(path.join(f.root, POLICY)));
+    const currentData = fs.readFileSync(path.join(f.root, DATA), 'utf8');
+    assert.equal([...currentData.matchAll(/^export const DATA_POLICY_SHA256='[a-f0-9]{64}';$/gmu)].length, 1);
+    assert.equal([...currentData.matchAll(/^const DATA_ADMITTED_PATHS=\[.*\];$/gmu)].length, 1);
+    write(f.root, DATA, currentData.replace(/^export const DATA_POLICY_SHA256='[a-f0-9]{64}';$/mu,
+      `export const DATA_POLICY_SHA256='${sha256(fs.readFileSync(path.join(f.root, POLICY)))}';`)
+      .replace(/^const DATA_ADMITTED_PATHS=\[.*\];$/mu, 'const DATA_ADMITTED_PATHS=' + JSON.stringify(value.admittedPaths) + ';'));
+    pin(f, DATA);
+    return outsider;
+  }
+  for (const membership of ['admitted', 'source']) {
+    test('preseeded current ' + membership + ' membership outside caller scope refuses before prepare or apply writes', () => {
+      const f = fixture(), outsider = rcv.PATHS.claimRegistry;
+      f.request.scopeIn = f.request.scopeIn.filter(name => name !== outsider);
+      assert.equal(f.request.scopeIn.includes(outsider), false);
+      const controlBefore = snapshot(f), control = api.prepareCurrentBindings(f.root, f.request);
+      assert.ok(control.proposal.changes.every(row => !row.changed));
+      assert.deepEqual(snapshot(f), controlBefore, 'the same outside-scope read-only input works before the extra membership');
+      seedCurrentPolicyMembership(f, { [membership]: true });
+      assert.equal(f.request.additionalAdmittedPaths.includes(outsider), false);
+      assert.equal(f.request.additionalSourcePaths.includes(outsider), false);
+      const expected = membership === 'admitted' ? /E_CURRENT_BINDINGS_UNDECLARED_POLICY_ADMITTED_PATH/u : /E_CURRENT_BINDINGS_UNDECLARED_POLICY_SOURCE_PATH/u;
+      refused(f, () => api.prepareCurrentBindings(f.root, f.request), expected);
+      const journal = f.journal();
+      refused(f, () => api.applyCurrentBindings(f.root, f.request, control.proposalSha256, { journalPath: journal }), expected);
+      assert.equal(fs.existsSync(journal), false);
+      assert.equal(fs.readFileSync(path.join(f.root, outsider), 'utf8').trim(), f.git(['show', f.request.bindingBaseSha + ':' + outsider]));
+    });
+  }
+  test('matched preseeded memberships remain valid when both typed caller additions and scope declare them', () => {
+    const f = fixture(), outsider = rcv.PATHS.claimRegistry;
+    assert.equal(f.request.scopeIn.includes(outsider), true);
+    seedCurrentPolicyMembership(f, { admitted: true, source: true });
+    f.request.additionalAdmittedPaths = [outsider]; f.request.additionalSourcePaths = [outsider];
+    f.delta.bindings.push({ path: outsider, sha256: sha256(fs.readFileSync(path.join(f.root, outsider))) });
+    for (const row of f.delta.bindings) row.sha256 = sha256(fs.readFileSync(path.join(f.root, row.path)));
+    f.delta.guards[0].sha256 = sha256(fs.readFileSync(path.join(f.root, POLICY)));
+    write(f.root, CERT, f.cert(f.delta)); pin(f, CERT);
+    const before = snapshot(f), prepared = api.prepareCurrentBindings(f.root, f.request);
+    assert.ok(prepared.proposal.changes.every(row => !row.changed)); assert.deepEqual(snapshot(f), before);
+    const applied = api.applyCurrentBindings(f.root, f.request, prepared.proposalSha256, { journalPath: f.journal() });
+    assert.equal(applied.status, 'APPLIED_METADATA_ONLY'); assert.deepEqual(applied.completed, []); assert.deepEqual(snapshot(f), before);
+  });
 }
 register().catch(error => { process.stderr.write(String(error.stack || error) + '\n'); process.exitCode = 1; });

@@ -176,6 +176,10 @@ function plan(rootDir, rawRequest) {
   demand(same(policyHistory(policy), policyHistory(basePolicy)), 'E_CURRENT_BINDINGS_POLICY_HISTORY');
   demand(basePolicy.admittedPaths.every(name => policy.admittedPaths.includes(name))
     && basePolicy.qualifiedRuntimeRepair.sourceBindings.every(row => policy.qualifiedRuntimeRepair.sourceBindings.some(next => next.path === row.path)), 'E_CURRENT_BINDINGS_POLICY_REMOVAL');
+  const allowedAdmitted = new Set([...basePolicy.admittedPaths, ...request.additionalAdmittedPaths]);
+  const allowedSources = new Set([...basePolicy.qualifiedRuntimeRepair.sourceBindings.map(row => row.path), ...request.additionalSourcePaths]);
+  for (const name of policy.admittedPaths) demand(allowedAdmitted.has(name), 'E_CURRENT_BINDINGS_UNDECLARED_POLICY_ADMITTED_PATH', name);
+  for (const row of policy.qualifiedRuntimeRepair.sourceBindings) demand(allowedSources.has(row.path), 'E_CURRENT_BINDINGS_UNDECLARED_POLICY_SOURCE_PATH', row.path);
   demand(sha256(read('scripts/ops/rtk-interop-data-c1-readback.py')) === policy.rawCheckerSha256, 'E_CURRENT_BINDINGS_RAW_CHECKER_PIN');
   paths(policy.admittedPaths, 2048);
   for (const row of policy.protectedFiles) {

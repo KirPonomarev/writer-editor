@@ -131936,15 +131936,15 @@ const R24_INTEROP_CURRENT_BINDINGS_FINALIZER_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "98497ac3a21fcca8fb1c29f1c123c40a3cf8ba26062c440d47b53bc9c3f6596a"
+      "sha256": "fbdd122b6a517829f285805814e60bbc14ce716f3c01ee53db1e5b59ec71f111"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "6483f9a3edca20d59d40f3ea847f19b2ad9962638342a9583bf1e65281bb749b"
+      "sha256": "3180a84131dd95974cab02d133a9650756b29dbc3203d05485ec1fb391d4fae4"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "8759823e9fd6e8295514b3c1f03dc4c3524d026447938848e721663805832503"
+      "sha256": "00ffa71724c10d0b2ecee194ddb53dd50810ec2b6212d63c8a88e360161f2f9f"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -131956,11 +131956,11 @@ const R24_INTEROP_CURRENT_BINDINGS_FINALIZER_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "3f08d6ec42811794351423746ab10c656f3614800fce941156a539541ee3354e"
+      "sha256": "901881fe42615f367788d815b4c59c8cf65f8f28557b674a6c3aa22e6c0477fa"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2382b674a48365e2e8d9e21f3fd177f4c285374478dfac8f40a1fc41a55a46e0"
+      "sha256": "34df7ffd8ee916c95e0360e19a7d4aefa541fa8271a6efb2fd635b1be6d9fd12"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -131976,7 +131976,7 @@ const R24_INTEROP_CURRENT_BINDINGS_FINALIZER_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "34fe5a88ffc6311f65526f5af2791ea0b006dc1225c8fba01e4b94e409d9d375"
+      "sha256": "a87415417c63571867d7315825adedfc29c0b2c275dc5e85220dad81a5720c43"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -132024,11 +132024,11 @@ const R24_INTEROP_CURRENT_BINDINGS_FINALIZER_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "ebc68930e4069b93f46014c872376eee959eb66b77683569d9a51d77a1304a29"
+      "sha256": "e2a3ae69521758538eb9d5a47b9b5e05b2d4a2c636c1b4bfc36edf9773f23c43"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "28313dbba1491f48af0afcc0ea5385289102897380a2945ef4f2d051239352da"
+      "sha256": "029c3c31c8a98e66964d4c17a74ecab3cb9d09c1469633191510fec1c6ddb7b7"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -132120,15 +132120,15 @@ const R24_INTEROP_CURRENT_BINDINGS_FINALIZER_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
-      "sha256": "bc5a5b9ba8759ed008f0a98dbdd50960063acc60639afb1d10b1171871be97ee"
+      "sha256": "a16a7f58f9557922a3590ea46f3ee720ad7d9aefea0f7d0473d018f902438f91"
     },
     {
       "path": "test/unit/current-bindings-finalizer.test.js",
-      "sha256": "206fb57a34697baf450efb4934c49055bb670d30ce7bfe90cfcf2ec04afe7296"
+      "sha256": "461fb0c2fa8ca2f4cd3b1eb78a4465b4e85e0c55730612951df08f67d3287012"
     },
     {
       "path": "docs/tasks/2026-10-31--current-bindings-finalizer.md",
-      "sha256": "b849de3d32bfd65b75e0389adf4faca6f1fee90f831d75dd6b3f8d29611eaba2"
+      "sha256": "cb51d97b00f1ced02be1fe918dd932a06c13f7dd595bb1478d2980a4c656bae8"
     },
     {
       "path": "scripts/ops/r24/corrective/c2a-effective-certification.mjs",
@@ -132142,7 +132142,7 @@ const R24_INTEROP_CURRENT_BINDINGS_FINALIZER_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "14d1b9ae3a6df8f7126c65786d0ad5048676e58bb333585ac650628b93b5f374"
+      "sha256": "492157956e7151ab594819a03327ee0f9fc915fe91fa5ded0f80f69f14881a4e"
     }
   ]
 });
