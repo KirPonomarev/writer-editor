@@ -1,7 +1,7 @@
 # Current bindings: complete proposal before writes
 
 STATUS: OPEN_UNACCEPTED
-CURRENT_IMPLEMENTATION_PHASE: Working helper and pure producer extensions pass27whole behavioral cases; current real-project metadata adoption, final test-lane routing, required gates and full delivery remain pending. A source checkpoint is not acceptance.
+CURRENT_IMPLEMENTATION_PHASE: Ordinary source checkpoint b2936a2d39a6c3405943360d4568c1ada6ae8ef9 preserves the27case implementation. Fresh clean21-path phase preflight admits the same-byte move to the existing default unit lane. Real-project metadata adoption, required gates and full delivery remain pending; this checkpoint is not acceptance and original delivery base remains43340d2c.
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Offline development metadata assembly only; no product, historical execution, approval or release authority is created.
 TASK_ID: YALKEN_CURRENT_BINDINGS_FINALIZER_20261031
@@ -32,7 +32,7 @@ I: Exact base/tree, task branch, current delta ID/base, seven fixed paths, old/n
 
 ## ARTIFACT
 
-Add one current-bindings-finalizer.mjs and its whole behavioral contract file. Reuse buildInventory/canonicalBytes, the existing deterministic C2A approval compiler and RCV01A builders. Add only the narrow pure in-memory byte-reader parameters needed by those existing builders; default results and every original test remain unchanged.
+Add one current-bindings-finalizer.mjs and its whole behavioral test in the existing default unit lane. The initial contract-path source checkpoint is preserved; routing changes no test bytes or assertions and does not alter the frozen explicit C1C shard. Reuse buildInventory/canonicalBytes, the existing deterministic C2A approval compiler and RCV01A builders. Add only the narrow pure in-memory byte-reader parameters needed by those existing builders; default results and every original test remain unchanged.
 
 The finalizer has exactly seven possible target paths: current C1B inventory, deterministic C2A companion, the two current RCV01A templates, DATA policy, DATA verifier's exact policy pin/admitted array and the currently selected certification delta block. It does not write either permanent approval registry, old history or product code. Necessary current source admission, one distinct successor over this base, historical inventory pair and exact technical witnesses are explicit task companions, never silently invented by the utility.
 
@@ -48,7 +48,7 @@ Per-file replacement is atomic. The whole set is not atomic, and expected-old ch
 - `docs/tasks/2026-10-31--current-bindings-finalizer.md`
 - `docs/tasks/2026-10-30--navigator-save-counter-freshness.md`
 - `scripts/ops/r24/corrective/current-bindings-finalizer.mjs`
-- `test/contracts/r24-current-bindings-finalizer.contract.test.mjs`
+- `test/unit/current-bindings-finalizer.test.js`
 - `scripts/ops/r24/corrective/c2a-effective-certification.mjs`
 - `scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs`
 - `docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json`
