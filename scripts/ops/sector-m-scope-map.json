@@ -498,7 +498,9 @@
       "test/contracts/rtk-word-novel-import-partition.contract.test.js",
       "test/contracts/rtk-word-pending-recording-runtime.contract.test.js",
       "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-      "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js"
+      "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
+      "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
+      "test/unit/navigator-derived-counters-renderer.test.js"
     ]
   },
   "allowPrefixByPhase": {

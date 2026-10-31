@@ -1,8 +1,15 @@
 # Pulse measured observations and explicit author corrections
 
-STATUS: OPEN_UNACCEPTED
+STATUS: CLOSED
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One preview-confirm-correction-revert-cold-history journey; not full P19 or full Mac acceptance.
+IMPLEMENTED_AT_SHA: 9c6e32ec7e951a0d91dac0f5e1422cb71e8525dd
+NATIVE_VERIFIED_AT_SHA: 9c6e32ec7e951a0d91dac0f5e1422cb71e8525dd
+DELIVERY_ACCEPTED_AT_SHA: 9c6e32ec7e951a0d91dac0f5e1422cb71e8525dd
+DELIVERY_PR: 2183
+DELIVERY_CLOSURE_RECORD: PULSE_DELIVERY_CLOSURE_01.json SHA2569dc4dd7632c5cbd7ca800b072744dfc0f8d9d2b1581db13fc1e766ff263d04eb
+RELEASE_ACCEPTANCE: NOT_ESTABLISHED_BY_THIS_BOUNDED_CONTOUR
+SPEC_HISTORY: The original implementation plan and recorded failures below are historical; this closed header describes the verified literal merged delivery, not current availability of its former temporary runtime.
 TASK_ID: YALKEN_PULSE_AUTHORED_CORRECTIONS_20261030
 TYPE: CORE
 CANON_VERSION: v1.0

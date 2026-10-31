@@ -476,12 +476,14 @@ test('Scene note-only evidence binds unchanged nested topology before actual Sta
 test('Visible comment refresh after scene/save uses fresh query and discards switched, dirty, hidden and superseded responses', async () => {
   const fs = require('node:fs'), vm = require('node:vm'), src = fs.readFileSync(require.resolve('../../src/renderer/editor.js'), 'utf8');
   const requests = [], published = [];
+  let navigatorReads = 0;
   const sandbox = vm.createContext({ isTiptapMode: false, currentProjectId: 'p', currentDocumentId: 'scene-a', localEditGeneration: 1,
     currentMode: 'review', currentRightTab: 'comments', localDirty: false, lastAckedGeneration: 0,
     REVIEW_SURFACE_QUERY_ID: 'query.review', HTMLElement: class {}, reviewSurfaceHost: null,
     invokeWorkspaceQueryBridge: () => new Promise((resolve, reject) => { resolve.reject = reject; requests.push(resolve); }),
     loadStage10ProductStateFromQuery: async () => {}, setReviewSurfaceState: value => { published.push(value); return value; },
     updateSaveStateText: () => {}, refreshManuscriptNoteReferences: () => {}, updateInspectorSnapshot: () => {},
+    loadTree: async () => { navigatorReads++; },
     window: { electronAPI: { onSetDirty: callback => { sandbox.dirtyCallback = callback; } } } });
   vm.runInContext(src.slice(src.indexOf('let reviewSurfaceQueryGeneration ='), src.indexOf('function setReviewSurfaceExactTextApplyTransientState(')), sandbox);
   const ackStart = src.indexOf('  window.electronAPI.onSetDirty(');
@@ -498,6 +500,7 @@ test('Visible comment refresh after scene/save uses fresh query and discards swi
   const fresh = sandbox.refreshVisibleCommentProjection(); reply(requests.shift()); await fresh; reply(oldReply); await old;
   assert.equal(published.length, 2);
   sandbox.localDirty = true; sandbox.dirtyCallback({ state: false, ack: { kind: 'SAVED', savedGeneration: 1 } });
+  assert.equal(navigatorReads, 1, 'current durable Save also refreshes the existing navigator projection');
   assert.equal(sandbox.localDirty, false); assert.equal(requests.length, 1);
   reply(requests.shift()); await new Promise(resolve => setImmediate(resolve)); assert.equal(published.length, 3);
   promise = sandbox.refreshVisibleCommentProjection(); requests.shift().reject(Error('IPC failed')); await promise;

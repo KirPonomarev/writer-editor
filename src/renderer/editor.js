@@ -26918,6 +26918,7 @@ if (window.electronAPI) {
           const refreshAtlasSource = localDirty || lastAckedGeneration !== ack.savedGeneration;
           lastAckedGeneration = ack.savedGeneration;
           localDirty = false;
+          if (refreshAtlasSource) void loadTree();
           if (refreshAtlasSource && currentRightTab === 'atlas'
             && (currentAtlasSurface === 'journey' || currentAtlasSurface === 'currentScene')) refreshActiveAtlasSurface();
         }

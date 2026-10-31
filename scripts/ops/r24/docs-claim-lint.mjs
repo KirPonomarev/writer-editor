@@ -348,10 +348,16 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V44 = Object.freeze([
     evaluationSha: '27870c86e3256139bc0131fac8c1192389bb1c16', evaluationTree: '39238725e7184b4e270946e069129255a12416f5', targetSha256: 'd0d142dc6c7ef93d72b6bd884a7c09b4ada074292a6d4aff2a7c23c0b4912059' }),
   ...HISTORICAL_INVENTORY_CLAIM_PINS_V43,
 ]);
+// Navigator freshness advances current inventory bytes; the delivered Pulse carrier stays historical-only.
+export const HISTORICAL_INVENTORY_CLAIM_PINS_V45 = Object.freeze([
+  Object.freeze({ stampId: 'ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS', stampSha256: '37133c4966c8a09ac063f240febffe124cb51651d45e2f82fa0214044ff5cbfe',
+    evaluationSha: '9c6e32ec7e951a0d91dac0f5e1422cb71e8525dd', evaluationTree: 'f00839e00f727c9e6463d3a71a842fad64bc2102', targetSha256: '9467855e1090f4aad4df16aa3b2b284862bc115294760dd517ee752746ac34cf' }),
+  ...HISTORICAL_INVENTORY_CLAIM_PINS_V44,
+]);
 const INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 const historicalGit = (rootDir, args) => execFileSync('git', args, { cwd: rootDir, encoding: null, maxBuffer: 4 * 1024 * 1024, timeout: 15000, stdio: ['ignore','pipe','pipe'] });
 export function verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes, binding, git = historicalGit }) {
-  const pins = HISTORICAL_INVENTORY_CLAIM_PINS_V44.filter(item => item.stampId === stamp.stampId);
+  const pins = HISTORICAL_INVENTORY_CLAIM_PINS_V45.filter(item => item.stampId === stamp.stampId);
   if (pins.length === 0 || binding.filePath !== INVENTORY_PATH) return null;
   const fail = () => { const error = new Error('E_HISTORICAL_INVENTORY_BINDING'); error.code = error.message; throw error; };
   const stampDigest = sha256hex(stampBytes);
