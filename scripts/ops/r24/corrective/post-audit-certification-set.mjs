@@ -132170,15 +132170,15 @@ const R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "f2696a3cefa93fddaabd849d3b966f81b9154f6b4e9636a6edef5994052dea19"
+      "sha256": "6db7657d97631a494f5652fa9ff1e96c432b3fb76f382e612982c7b94db5cdc8"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "b9b246777638c69fd4fb613faa51443e8fb09795d003602104a827de98c236d8"
+      "sha256": "cd39fc9fbba1c8c63f91f6c0f5421c3489da651945f9cce51a47509035b4f87b"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "8675b2ec7198a21935e765d4ecb4eb4cfafc9659c62af54a466c9c9d8f02e0c4"
+      "sha256": "e9dec68b9cac52e19a4488f2b1505a51d01c67027281ca89ea5ac528b6255bf1"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -132190,11 +132190,11 @@ const R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "fd48cc1e0196409cd3ac7ca99a4551457e18517a3d46e106dbf2b50ec27b82ac"
+      "sha256": "234d21ff84db766184f709d4c47457424ddef057c350f26d8cc9b947cdeb707a"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f1381504c3d3b59c41eeec33918cf15bbccaf7b27a3758cb5bbf717aa4bdd019"
+      "sha256": "fed379be5d44e384cc937fa36ef364ea39f30fcd61ffb395d5e9f70225e7ade9"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -132210,7 +132210,7 @@ const R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "0ca7b9f5b3ef30c05fe63af48910a6b4fcaf2ba8282b83f7e8d76e240e898f33"
+      "sha256": "5ba8cf49ff8878ef04a7c95028e9aadd02b781a408ae3341b9d532ff3329a5aa"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -132258,11 +132258,11 @@ const R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "1c7606edb2664c5f968b4a594fd9d468dbf536c8f015e3c329ecbf663b51b049"
+      "sha256": "20ce45f20e9672a7e84ad5ff9bdf9b635681d4d43afc1138b69d0503524ba23e"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "0611771f31e7b1a2f614ed89051bf249622b03cb36ec81d7afead307e551c466"
+      "sha256": "6742b44954c992b2d8be0620d6a4e7e868c7fca6326006a7349239efeadfe06a"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -132350,7 +132350,7 @@ const R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "298424399053fa6477f875b0a4eb26b5b414208a9abd70dd45070de864a011ce"
+      "sha256": "595b6214036ac8ecdb836abd316e1a666af2261d8171fa779c96c43b9d1d0b0a"
     },
     {
       "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
@@ -132390,7 +132390,7 @@ const R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-31--evidence-based-ui-router.md",
-      "sha256": "e053a5228e60ceb3f00867bbc4b09f422463b98a628be4b5b38bca24c0aac8a9"
+      "sha256": "acbdff237ef5f23972125649461984944bc59e13a787403c0254be819a0698c0"
     },
     {
       "path": "scripts/agent-guardrails-lib.mjs",
@@ -132399,12 +132399,16 @@ const R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_DELTA = Object.freeze({
     {
       "path": "test/contracts/agent-architecture-guardrails.contract.test.js",
       "sha256": "2745f8c9279cc3799af32ead5995d14207c9b2b37a8b08dad1e49503f0879903"
+    },
+    {
+      "path": "test/unit/agent-architecture-guardrails.test.js",
+      "sha256": "f8660889323ac82d587948123c2590c5d564cf4817161aeb24f38d433f25f2dc"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "1bd5e3d90102c314d2ae4742fc39f220f1589980852f42754171ba773c92774c"
+      "sha256": "ae71b89dbfeb66579022a4388df6609eaab87e9c353839a9b3de52f5798a714b"
     }
   ]
 });

@@ -504,7 +504,8 @@
       "docs/tasks/2026-10-31--current-bindings-finalizer.md",
       "test/unit/current-bindings-finalizer.test.js",
       "docs/tasks/2026-10-31--evidence-based-ui-router.md",
-      "test/contracts/agent-architecture-guardrails.contract.test.js"
+      "test/contracts/agent-architecture-guardrails.contract.test.js",
+      "test/unit/agent-architecture-guardrails.test.js"
     ]
   },
   "allowPrefixByPhase": {
