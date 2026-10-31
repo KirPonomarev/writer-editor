@@ -3855,6 +3855,7 @@ function resolveToolbarConfiguratorState(projectId = currentProjectId) {
 }
 
 let configuratorBucketState = createToolbarConfiguratorSeedState();
+let toolbarConfiguratorProjectId = '';
 let activeConfiguratorDragPayload = null;
 let activeConfiguratorDragElement = null;
 let activeConfiguratorBucketItemSelection = {
@@ -5980,9 +5981,12 @@ function projectMainFloatingToolbarRuntime(reason = 'projection') {
   if (!toolbarRuntimeRegistry || typeof applyToolbarActiveProfile !== 'function') {
     return null;
   }
+  const projection = fullEnvironmentToolbarProjection?.projectId === currentProjectId ? fullEnvironmentToolbarProjection : null;
+  const runtimeProfileState = projection ? { ...configuratorBucketState, activeToolbarProfile: projection.profile,
+    toolbarProfiles: { ...configuratorBucketState.toolbarProfiles, [projection.profile]: projection.toolbarIds } } : configuratorBucketState;
   const snapshot = applyToolbarActiveProfile(
     toolbarRuntimeRegistry,
-    configuratorBucketState,
+    runtimeProfileState,
     {
       reason,
       currentProjectId,
@@ -7182,6 +7186,7 @@ function adoptToolbarConfiguratorState(projectId = currentProjectId) {
     writeToolbarConfiguratorStoredState(projectId, resolution.state);
   }
   configuratorBucketState = resolution.state;
+  toolbarConfiguratorProjectId = normalizeProjectId(projectId);
   reconcileToolbarConfiguratorBucketItemSelection();
   renderToolbarConfiguratorLibrary();
   renderToolbarConfiguratorProfileSwitch();
@@ -11273,7 +11278,6 @@ async function loadTree() {
         invalidateDocxImportAttempt();
         currentProjectId = nextProjectId;
         fullEnvironmentReadyProject = ''; fullEnvironmentHydratedProject = ''; fullEnvironmentToolbarProjection = null;
-        void hydrateFullEnvironmentForProject(nextProjectId);
         expandedNodesByTab = new Map();
         navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
       }
@@ -22364,13 +22368,18 @@ function hasFullEnvironmentAuthoringPending() {
 
 function readFullEnvironmentForm(binding = fullEnvironmentWindowBinding) {
   if (!binding || !editor || !toolbar || !toolbarShell || !leftToolbar || !sidebar) throw Error('E_FULL_ENV_MISSING_SURFACE');
+  if (!toolbarRuntimeRegistry?.toolbarShell || !toolbarRuntimeRegistry.controlsContainer
+    || typeof toolbarRuntimeProjectionModule.resolveToolbarRuntimeSnapshot !== 'function') throw Error('E_FULL_ENV_MISSING_TOOLBAR_RUNTIME');
+  const toolbarSnapshot = toolbarRuntimeProjectionModule.resolveToolbarRuntimeSnapshot(toolbarRuntimeRegistry);
+  if (!Array.isArray(toolbarSnapshot?.visibleItemIds) || toolbarSnapshot.failClosed) throw Error('E_FULL_ENV_MISSING_TOOLBAR_RUNTIME');
   const layout = spatialLayoutState || getSpatialLayoutBaselineForViewport(), focus = document.body.classList.contains('focus-mode');
   const compact = toolbar.classList.contains(TOOLBAR_COMPACT_CLASS);
   return validateFullEnvironmentConfiguration({ schemaVersion: 'yalken.environmentConfiguration.v2', workspace: currentMode.toUpperCase(),
     shellMode: floatingToolbarState.isDetached || leftFloatingToolbarState.isDetached ? 'SPATIAL_ADVANCED'
       : compact || getSpatialLayoutMode() !== 'desktop' ? 'COMPACT_DOCKED' : 'CALM_DOCKED',
     profile: focus ? 'FOCUS' : compact ? 'COMPACT' : 'BASELINE', keymap: 'NATIVE_V1',
-    composition: { profile: getToolbarConfiguratorActiveProfile(), toolbarIds: [...getToolbarConfiguratorProfileIds()], surfaces: ['navigator', 'editor', 'inspector'] },
+    composition: { profile: toolbarRuntimeRegistry.toolbarShell.dataset?.toolbarProfile,
+      toolbarIds: [...toolbarSnapshot.visibleItemIds], surfaces: ['navigator', 'editor', 'inspector'] },
     layout: { leftWidth: layout.leftSidebarWidth, rightWidth: layout.rightSidebarWidth, leftCollapsed: layout.leftCollapsed,
       rightCollapsed: layout.rightCollapsed, leftTab: currentLeftTab, rightTab: currentRightTab,
       toolbar: { ...floatingToolbarState }, leftToolbar: { ...leftFloatingToolbarState },
@@ -22516,7 +22525,7 @@ async function completeFullEnvironmentApply(result, token, isCurrent = () => tru
   return observed;
 }
 async function hydrateFullEnvironmentForProject(projectId = currentProjectId) {
-  if (!projectId || fullEnvironmentHydratedProject === projectId) return;
+  if (!initialDocumentAdopted || !projectId || fullEnvironmentHydratedProject === projectId) return;
   if (fullEnvironmentHydrationPromise) return fullEnvironmentHydrationPromise.then(() => {
     if (currentProjectId === projectId && fullEnvironmentHydratedProject !== projectId) return hydrateFullEnvironmentForProject(projectId);
   });
@@ -23855,6 +23864,7 @@ function applyWordWrap(enabled, persist = true) {
 function applyViewMode(mode, persist = true) {
   const isFocus = mode === 'focus';
   document.body.classList.toggle('focus-mode', isFocus);
+  if (appLayout) appLayout.style.gridTemplateColumns = isFocus ? 'minmax(0, 1fr)' : '';
   if (styleSelect) {
     styleSelect.value = mode;
   }
@@ -26784,8 +26794,8 @@ if (window.electronAPI) {
         expandedNodesByTab = new Map();
         navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
         restoreSpatialLayoutState(currentProjectId);
-        adoptToolbarConfiguratorState(currentProjectId);
       }
+      if (toolbarConfiguratorProjectId !== currentProjectId) adoptToolbarConfiguratorState(currentProjectId);
     }
     if (hasBookProfile) {
       applyIncomingBookProfile(bookProfile);

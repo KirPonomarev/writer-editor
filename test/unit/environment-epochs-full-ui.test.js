@@ -145,3 +145,87 @@ test('full ENV actual Settings refresh invalidates stale projection before await
   } finally { old.resolve(); current.resolve(); }
   await currentRun; assert.equal(v.projection, fresh); assert.equal(attributes['aria-busy'], 'false');
 });
+
+test('full ENV actual toolbar runtime consumes the selected project projection without changing named definitions', async () => {
+  const runtime = await import(pathToFileURL(path.join(ROOT, 'src/renderer/toolbar/toolbarRuntimeProjection.mjs')).href);
+  const undo = 'toolbar.history.undo', redo = 'toolbar.history.redo';
+  const stored = Object.freeze({ activeToolbarProfile: 'minimal', toolbarProfiles: Object.freeze({
+    minimal: Object.freeze([undo]), master: Object.freeze([undo, redo]),
+  }) });
+  const savedBytes = JSON.stringify(stored), calls = [], registry = {};
+  const selected = Object.freeze({ projectId: 'project-current', profile: 'minimal', toolbarIds: Object.freeze([redo, undo]) });
+  const h = fullEnvironmentRendererFunctions(['projectMainFloatingToolbarRuntime'], {
+    toolbarRuntimeProjectionModule: { applyToolbarActiveProfile(actualRegistry, state) {
+      calls.push({ state, ids: runtime.collectVisibleToolbarItemIdsFromState(state) }); return { registry: actualRegistry };
+    } }, toolbarRuntimeRegistry: registry, configuratorBucketState: stored, fullEnvironmentToolbarProjection: selected,
+    currentProjectId: 'project-current', floatingToolbarState: {}, toolbarItemOffsets: {}, closeOrphanedMainToolbarOverlays: () => {},
+    restoreFocusFromHiddenMainToolbarItem: () => {}, syncToolbarFormattingState: () => {}, scheduleToolbarAnchorUpdate: () => {},
+  });
+  h.projectMainFloatingToolbarRuntime('environment-projection');
+  assert.deepEqual(calls[0].ids, [redo, undo], 'actual runtime input must follow epoch visibility/order, not the saved preset');
+  assert.equal(calls[0].state.activeToolbarProfile, 'minimal');
+  assert.equal(h.configuratorBucketState, stored); assert.equal(JSON.stringify(stored), savedBytes);
+  assert.equal(h.fullEnvironmentToolbarProjection, selected);
+  h.fullEnvironmentToolbarProjection = { projectId: 'different-project', profile: 'master', toolbarIds: [redo] };
+  h.projectMainFloatingToolbarRuntime('foreign-projection');
+  assert.equal(calls[1].state, stored); assert.deepEqual(calls[1].ids, [undo], 'stale project cannot override this toolbar');
+  h.fullEnvironmentToolbarProjection = { projectId: 'project-current', profile: 'master', toolbarIds: [redo] };
+  h.projectMainFloatingToolbarRuntime('environment-projection');
+  assert.equal(calls[2].state.activeToolbarProfile, 'master'); assert.deepEqual(calls[2].ids, [redo]);
+  assert.equal(JSON.stringify(stored), savedBytes, 'both named profile definitions remain byte-equivalent');
+});
+
+test('full ENV actual form health reads DOM order/hidden items and profile instead of echoing desired configuration', async () => {
+  const runtime = await import(pathToFileURL(path.join(ROOT, 'src/renderer/toolbar/toolbarRuntimeProjection.mjs')).href);
+  const undo = { hidden: false }, redo = { hidden: false }, size = { hidden: true };
+  const descriptors = [{ node: undo, itemId: 'toolbar.history.undo', bindKey: 'undo' },
+    { node: redo, itemId: 'toolbar.history.redo', bindKey: 'redo' },
+    { node: size, itemId: 'toolbar.font.size', bindKey: 'size' }];
+  const group = { querySelectorAll: () => [redo, size, undo] }, shell = { dataset: { toolbarProfile: 'master' } };
+  const registry = { toolbarShell: shell, controlsContainer: { querySelectorAll: () => [group] },
+    groupDescriptors: [{ element: group, itemDescriptors: descriptors }], itemDescriptors: descriptors,
+    itemDescriptorByNode: new Map(descriptors.map(row => [row.node, row])) };
+  const h = fullEnvironmentRendererFunctions(['readFullEnvironmentForm'], {
+    fullEnvironmentWindowBinding: { displayId: '1' }, editor: { style: { fontFamily: 'monospace', lineHeight: '1.625' } },
+    toolbar: { classList: { contains: () => false } }, toolbarShell: shell, leftToolbar: {}, sidebar: {},
+    spatialLayoutState: { leftSidebarWidth: 290, rightSidebarWidth: 290, leftCollapsed: false, rightCollapsed: false },
+    document: { body: { classList: { contains: () => false } } }, TOOLBAR_COMPACT_CLASS: 'compact', currentMode: 'write',
+    floatingToolbarState: { isDetached: false }, leftFloatingToolbarState: { isDetached: false }, getSpatialLayoutMode: () => 'desktop',
+    getToolbarConfiguratorActiveProfile: () => 'minimal', getToolbarConfiguratorProfileIds: () => ['toolbar.history.undo'],
+    toolbarRuntimeRegistry: registry, toolbarRuntimeProjectionModule: runtime,
+    currentLeftTab: 'project', currentRightTab: 'inspector', toolbarItemOffsets: {}, leftToolbarButtonOffsets: {},
+    wordWrapEnabled: false, fontSelect: { value: 'monospace' }, weightSelect: { value: 'light' }, lineHeightSelect: { value: '1.625' },
+    currentFontSizePx: 16, editorZoom: 0.5, activeLayoutPreviewState: { enabled: false, frameMode: true },
+    validateFullEnvironmentConfiguration: value => value,
+  });
+  const actual = h.readFullEnvironmentForm();
+  assert.deepEqual(Array.from(actual.composition.toolbarIds), ['toolbar.history.redo', 'toolbar.history.undo']);
+  assert.equal(actual.composition.profile, 'master', 'physical shell label must agree with the actual runtime');
+  assert.equal(actual.composition.toolbarIds.includes('toolbar.font.size'), false, 'hidden actual control is absent');
+  h.toolbarRuntimeRegistry = null;
+  assert.throws(() => h.readFullEnvironmentForm(), /E_FULL_ENV/u, 'missing runtime cannot be replaced with desired IDs');
+});
+
+test('full ENV actual automatic hydration waits for checked initial source and never starts from a tree query alone', async () => {
+  const calls = [], projectId = 'project-current';
+  const h = fullEnvironmentRendererFunctions(['hydrateFullEnvironmentForProject'], {
+    initialDocumentAdopted: false, currentProjectId: projectId, fullEnvironmentHydratedProject: '', fullEnvironmentReadyProject: '',
+    fullEnvironmentHydrationPromise: null, fullEnvironmentLastSignal: Promise.resolve(), fullEnvironmentPendingWindow: null,
+    readFullEnvironmentProjection: async () => { calls.push('read'); return {
+      current: { profile: 'BASELINE' }, liveConfiguration: { profile: 'FOCUS' }, pending: null, revision: 3, availability: { configure: true },
+    }; }, fullEnvironmentToken: () => ({ checkedSource: true }), fullEnvironmentPayload: () => ({}),
+    EXTRA_COMMAND_IDS: { ENVIRONMENT_CONFIGURATION_COMMIT: 'commit' },
+    dispatchFullEnvironment: async () => { calls.push('commit'); return {}; },
+    completeFullEnvironmentApply: async () => { calls.push('apply'); }, fullEnvironmentView: null,
+  });
+  await h.hydrateFullEnvironmentForProject();
+  assert.deepEqual(calls, [], 'before checked document adoption even automatic form reads/writes must wait');
+  assert.equal(h.fullEnvironmentHydratedProject, '');
+  h.initialDocumentAdopted = true; await h.hydrateFullEnvironmentForProject();
+  assert.deepEqual(calls, ['read', 'commit', 'apply']); assert.equal(h.fullEnvironmentHydratedProject, projectId);
+  assert.equal(h.fullEnvironmentReadyProject, projectId);
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const start = source.indexOf('async function loadTree('), end = source.indexOf('\n}', start);
+  assert.ok(start >= 0 && end > start);
+  assert.doesNotMatch(source.slice(start, end), /hydrateFullEnvironmentForProject\(/u, 'tree projection does not adopt the authoring source');
+});
