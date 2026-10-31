@@ -1,6 +1,6 @@
 import wordListNumbering from '../core/word-list-numbering-v1.cjs';
 import wordParagraphLayout from '../core/word-paragraph-layout-v1.cjs';
-import { validateFullEnvironmentConfiguration, createFullEnvironmentBaseline, diffFullEnvironmentConfigurations,
+import { validateFullEnvironmentConfiguration, createFullEnvironmentBaseline, createFullEnvironmentProfile, diffFullEnvironmentConfigurations,
   canPublishFullEnvironment } from './design-os/designOsEnvironmentEpochs.mjs';
 import { decodeEnvironmentEpochHistory } from './design-os/designOsFormConfiguration.mjs';
 import {
@@ -22368,7 +22368,7 @@ function readFullEnvironmentForm(binding = fullEnvironmentWindowBinding) {
   const compact = toolbar.classList.contains(TOOLBAR_COMPACT_CLASS);
   return validateFullEnvironmentConfiguration({ schemaVersion: 'yalken.environmentConfiguration.v2', workspace: currentMode.toUpperCase(),
     shellMode: floatingToolbarState.isDetached || leftFloatingToolbarState.isDetached ? 'SPATIAL_ADVANCED'
-      : getSpatialLayoutMode() === 'desktop' ? 'CALM_DOCKED' : 'COMPACT_DOCKED',
+      : compact || getSpatialLayoutMode() !== 'desktop' ? 'COMPACT_DOCKED' : 'CALM_DOCKED',
     profile: focus ? 'FOCUS' : compact ? 'COMPACT' : 'BASELINE', keymap: 'NATIVE_V1',
     composition: { profile: getToolbarConfiguratorActiveProfile(), toolbarIds: [...getToolbarConfiguratorProfileIds()], surfaces: ['navigator', 'editor', 'inspector'] },
     layout: { leftWidth: layout.leftSidebarWidth, rightWidth: layout.rightSidebarWidth, leftCollapsed: layout.leftCollapsed,
@@ -22557,6 +22557,12 @@ function ensureFullEnvironmentControls() {
   function button(parent, action, text) { const b = document.createElement('button'); b.type = 'button'; b.className = 'modal__button';
     b.dataset.fullEnvironmentAction = action; b.textContent = text; controls[action] = b; parent.append(b); b.addEventListener('click', () => { void runFullEnvironmentAction(action); }); return b; }
   button(actions, 'capture', 'Save current epoch'); button(actions, 'preview', 'Preview'); button(actions, 'restore', 'Restore epoch');
+  const profile = selectControl('settings-full-environment-profile', 'View profile');
+  for (const [value, text] of [['BASELINE', 'Standard'], ['FOCUS', 'Focus'], ['COMPACT', 'Compact']]) {
+    const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
+  }
+  const profileActions = document.createElement('div'); profileActions.className = 'modal__actions'; host.append(profileActions);
+  button(profileActions, 'previewProfile', 'Preview profile'); button(profileActions, 'applyProfile', 'Apply profile');
   const presets = selectControl('settings-full-environment-preset', 'Named environment preset');
   const nameLabel = document.createElement('label'); nameLabel.className = 'modal__label'; nameLabel.htmlFor = 'settings-full-environment-name'; nameLabel.textContent = 'New preset name';
   const name = document.createElement('input'); name.className = 'modal__input'; name.id = 'settings-full-environment-name'; name.maxLength = 80; name.autocomplete = 'off';
@@ -22567,8 +22573,9 @@ function ensureFullEnvironmentControls() {
   const preview = document.createElement('p'); preview.className = 'settings-surface__row-note'; preview.dataset.fullEnvironmentPreview = ''; host.append(preview);
   const status = document.createElement('p'); status.className = 'settings-surface__row-note'; status.id = 'settings-full-environment-status';
   status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); host.append(status);
-  select.setAttribute('aria-describedby', status.id); presets.setAttribute('aria-describedby', status.id);
-  fullEnvironmentView = { host, select, presets, name, preview, status, controls, projection: null, pending: null };
+  select.setAttribute('aria-describedby', status.id); presets.setAttribute('aria-describedby', status.id); profile.setAttribute('aria-describedby', status.id);
+  fullEnvironmentView = { host, select, profile, presets, name, preview, status, controls, projection: null, pending: null };
+  profile.addEventListener('change', () => { fullEnvironmentView.profileChosen = true; void previewFullEnvironmentSelection('PROFILE'); });
   select.addEventListener('change', () => previewFullEnvironmentSelection()); presets.addEventListener('change', () => previewFullEnvironmentSelection('PRESET'));
   settingsSections.parentElement.insertBefore(host, settingsSections); updateFullEnvironmentControls(); return fullEnvironmentView;
 }
@@ -22581,6 +22588,11 @@ function updateFullEnvironmentControls() {
   v.controls.preview.disabled = busy || !v.select.value;
   v.controls.savePreset.disabled = busy || !p?.availability.capture || p.capacity.presets >= 32;
   v.controls.applyPreset.disabled = busy || !p?.availability.restore || !v.presets.value || full;
+  v.profile.disabled = busy || !p;
+  v.controls.previewProfile.disabled = busy || !p?.liveConfiguration || !v.profile.value;
+  v.controls.applyProfile.disabled = busy || !p?.availability.restore || full || v.previewBinding?.source.kind !== 'PROFILE'
+    || v.previewBinding.source.id !== v.profile.value || v.previewBinding.generation !== fullEnvironmentFormGeneration
+    || v.previewBinding.revision !== p.revision || v.previewBinding.stateDigest !== p.stateDigest;
   for (const action of ['reset', 'lastStable']) v.controls[action].disabled = busy || !p?.current || !p.availability.restore || full;
   v.controls.recover.hidden = !p?.pending; v.controls.recover.disabled = busy || !p?.pending || !p.availability.configure;
   v.host.setAttribute('aria-busy', busy ? 'true' : 'false');
@@ -22593,15 +22605,17 @@ function publishFullEnvironmentView(p) {
   v.select.replaceChildren(...options); v.select.value = rows.some(row => row.value === selected) ? selected : rows.at(-1)?.value || '';
   v.presets.replaceChildren(...p.presets.map(row => { const o = document.createElement('option'); o.value = row.presetId; o.textContent = row.name; return o; }));
   if (p.presets.some(row => row.presetId === preset)) v.presets.value = preset;
+  if (!v.profileChosen) v.profile.value = p.liveConfiguration.profile;
   v.projection = p; updateFullEnvironmentControls();
 }
 function selectedFullEnvironmentConfiguration(kind = null, projection = null) {
   const v = fullEnvironmentView, p = projection || v?.projection; if (!p) throw Error('E_FULL_ENV_UNAVAILABLE');
-  const source = kind === 'PRESET' ? { kind, id: v.presets.value } : kind ? { kind, id: null }
+  const source = kind === 'PROFILE' ? { kind, id: v.profile.value } : kind === 'PRESET' ? { kind, id: v.presets.value } : kind ? { kind, id: null }
     : { kind: v.select.value.split(':')[0], id: v.select.value.split(':')[1] };
   let configuration, warning = '', original;
   if (source.kind === 'EPOCH') configuration = p.epochs.find(row => row.epochId === source.id)?.configuration;
   else if (source.kind === 'PRESET') configuration = p.presets.find(row => row.presetId === source.id)?.configuration;
+  else if (source.kind === 'PROFILE') configuration = createFullEnvironmentProfile(p.liveConfiguration, source.id);
   else if (source.kind === 'RESET') configuration = createFullEnvironmentBaseline(p.liveConfiguration);
   else if (source.kind === 'LAST_STABLE') configuration = p.lastStable;
   else if (source.kind === 'LEGACY' && p.legacy) {
@@ -22617,13 +22631,13 @@ function selectedFullEnvironmentConfiguration(kind = null, projection = null) {
 }
 async function previewFullEnvironmentSelection(kind = null) {
   const v = fullEnvironmentView; if (!v?.projection || v.pending) return;
-  const projectId = currentProjectId, generation = fullEnvironmentFormGeneration, selectedValue = v.select.value, presetValue = v.presets.value;
-  const request = {}; v.previewRequest = request; v.previewBinding = null;
+  const projectId = currentProjectId, generation = fullEnvironmentFormGeneration, selectedValue = v.select.value, presetValue = v.presets.value, profileValue = v.profile.value;
+  const request = {}; v.previewRequest = request; v.previewBinding = null; updateFullEnvironmentControls();
   try {
     await fullEnvironmentLastSignal; if (fullEnvironmentSyncPromise) await fullEnvironmentSyncPromise;
     const p = await readFullEnvironmentProjection();
     if (v.previewRequest !== request || v.pending || !v.host.isConnected || settingsModal.hidden || currentProjectId !== projectId
-      || generation !== fullEnvironmentFormGeneration || selectedValue !== v.select.value || presetValue !== v.presets.value) return;
+      || generation !== fullEnvironmentFormGeneration || selectedValue !== v.select.value || presetValue !== v.presets.value || profileValue !== v.profile.value) return;
     publishFullEnvironmentView(p);
     const selected = selectedFullEnvironmentConfiguration(kind, p), changes = diffFullEnvironmentConfigurations(p.liveConfiguration, selected.configuration);
     const labels = { workspace: 'Workspace', shellMode: 'Shell mode', profile: 'Profile', composition: 'Tools', layout: 'Layout', presentation: 'Display settings', window: 'Window' };
@@ -22637,6 +22651,7 @@ async function previewFullEnvironmentSelection(kind = null) {
       + (changes.length ? `Changes: ${groups.join(', ')}. ` : 'Matches the current view. ')
       + (selected.warning ? 'Legacy version: only theme and line wrapping change; other current settings are retained. ' : '') + 'Preview only.';
     v.previewBinding = { source: selected.source, binding: selected.binding, generation, revision: p.revision, stateDigest: p.stateDigest };
+    updateFullEnvironmentControls();
     v.status.textContent = 'Preview only. Use the corresponding restore or apply action to change the view.';
   } catch (error) {
     if (v.previewRequest === request && v.host.isConnected && !settingsModal.hidden && currentProjectId === projectId
@@ -22655,13 +22670,15 @@ async function refreshFullEnvironmentEpochs() {
 async function runFullEnvironmentAction(action) {
   const v = fullEnvironmentView; if (!v?.projection || v.pending || !v.host.isConnected || settingsModal.hidden) return;
   if (action === 'preview') { previewFullEnvironmentSelection(); return; }
+  if (action === 'previewProfile') { previewFullEnvironmentSelection('PROFILE'); return; }
   const token = fullEnvironmentToken(`settings:${fullEnvironmentFormGeneration}:${Date.now()}`, v.projection.availability.configure);
   if (!['capture', 'savePreset'].includes(action) && !canPublishFullEnvironment(token, token)) { v.status.textContent = fullEnvironmentMessage({ code: 'E_FULL_ENV_AUTHORING_BARRIER' }); return; }
-  const selected = ['restore', 'applyPreset', 'reset', 'lastStable'].includes(action)
-    ? selectedFullEnvironmentConfiguration({ applyPreset: 'PRESET', reset: 'RESET', lastStable: 'LAST_STABLE' }[action] || null) : null;
+  const sourceKind = { applyPreset: 'PRESET', applyProfile: 'PROFILE', reset: 'RESET', lastStable: 'LAST_STABLE' }[action] || null;
+  const selected = ['restore', 'applyPreset', 'applyProfile', 'reset', 'lastStable'].includes(action)
+    ? selectedFullEnvironmentConfiguration(sourceKind) : null;
   if (selected && (!v.previewBinding || v.previewBinding.generation !== token.formGeneration
     || JSON.stringify(v.previewBinding.source) !== JSON.stringify(selected.source) || v.previewBinding.binding !== selected.binding)) {
-    await previewFullEnvironmentSelection({ applyPreset: 'PRESET', reset: 'RESET', lastStable: 'LAST_STABLE' }[action] || null); return;
+    await previewFullEnvironmentSelection(sourceKind); return;
   }
   const previewBinding = v.previewBinding;
   const name = v.name.value; v.pending = token; updateFullEnvironmentControls(); v.status.textContent = 'Updating environment…';
@@ -22673,7 +22690,7 @@ async function runFullEnvironmentAction(action) {
     await fullEnvironmentLastSignal; await syncFullEnvironmentCurrent(); const p = await readFullEnvironmentProjection();
     if (!isCurrent()) throw Error('E_FULL_ENV_PRESENTATION_STALE');
     if (selected) {
-      const currentSource = selectedFullEnvironmentConfiguration({ applyPreset: 'PRESET', reset: 'RESET', lastStable: 'LAST_STABLE' }[action] || null, p);
+      const currentSource = selectedFullEnvironmentConfiguration(sourceKind, p);
       if (p.revision !== previewBinding.revision || p.stateDigest !== previewBinding.stateDigest
         || selected.binding !== currentSource.binding || JSON.stringify(selected.configuration) !== JSON.stringify(currentSource.configuration)) throw Error('E_FULL_ENV_PRESENTATION_STALE');
     }

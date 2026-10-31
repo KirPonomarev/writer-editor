@@ -8,6 +8,16 @@ const ROOT = path.resolve(__dirname, '../..');
 const file = path.join(ROOT, 'src/renderer/design-os/designOsEnvironmentEpochs.mjs');
 const load = () => import(pathToFileURL(fs.existsSync(file) ? file : path.join(ROOT, 'src/renderer/design-os/designOsFormConfiguration.mjs')).href);
 
+test('full ENV actual Settings exposes finite view-profile preview/apply instead of unreachable legacy controls', () => {
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  assert.match(source, /selectControl\('settings-full-environment-profile', 'View profile'\)/u);
+  for (const copy of ['Standard', 'Focus', 'Compact', 'Preview profile', 'Apply profile']) assert.ok(source.includes(copy), copy);
+  assert.match(source, /previewFullEnvironmentSelection\('PROFILE'\)/u);
+  assert.match(source, /kind === 'PROFILE'/u);
+  assert.match(source, /v\.profile\.value/u);
+  assert.match(source, /v\.controls\.applyProfile\.disabled/u);
+});
+
 test('full ENV publication guard vetoes every stale identity, authoring/composition and unavailable capability', async () => {
   const m = await load(); assert.equal(typeof m.canPublishFullEnvironment, 'function');
   const token = { projectId: 'p', documentId: 'd', publicationId: 'publication1', editGeneration: 9,

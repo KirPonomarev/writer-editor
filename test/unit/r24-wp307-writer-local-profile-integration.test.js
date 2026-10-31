@@ -5933,3 +5933,24 @@ test('full ENV actual queued legacy request cannot write after the full successo
   assert.equal(refused.ok, false, 'legacy compatibility cannot change the migration source after the queued full publication');
   assert.match(JSON.stringify(refused), /LEGACY_READ_ONLY/u); assert.equal(fs.existsSync(x.epochPath), false); x.fullProtected();
 });
+
+test('full ENV actual Main finite display profile intent keeps manuscript and preset permissions separate [FINITE_NOT_NATIVE]', async t => {
+  const x = await fullEnvironmentMainControllerFixture(t), commit = 'cmd.project.view.commitEnvironmentConfiguration';
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'EPOCH' });
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'PRESET', name: 'Keep baseline preset' });
+  const before = JSON.parse(fs.readFileSync(x.fullPath));
+  const unsupported = await x.fullIntent(ENVIRONMENT_EPOCH_RESTORE, { source: { kind: 'PROFILE', id: 'SAFE' } });
+  assert.match(JSON.stringify(unsupported), /PAYLOAD_INVALID/u); assert.deepEqual(JSON.parse(fs.readFileSync(x.fullPath)), before);
+  for (const profile of ['FOCUS', 'COMPACT', 'BASELINE']) {
+    const previous = JSON.parse(fs.readFileSync(x.fullPath)), staged = await x.fullChange(ENVIRONMENT_EPOCH_RESTORE, { source: { kind: 'PROFILE', id: profile } });
+    assert.equal(staged.configuration.profile, profile);
+    assert.equal(staged.configuration.presentation.viewMode, profile === 'FOCUS' ? 'focus' : 'default');
+    assert.equal(staged.configuration.presentation.compact, profile === 'COMPACT');
+    let persisted = JSON.parse(fs.readFileSync(x.fullPath)); assert.deepEqual(persisted.projects[0].current, previous.projects[0].current);
+    assert.deepEqual(persisted.epochs.slice(0, previous.epochs.length), previous.epochs); assert.deepEqual(persisted.presets, before.presets);
+    x.h.editor.environmentConfiguration.configuration = structuredClone(staged.configuration);
+    await x.fullChange(commit, { kind: 'CONFIRM_APPLY', operationId: staged.operationId });
+    persisted = JSON.parse(fs.readFileSync(x.fullPath)); assert.equal((await x.fullRead()).current.profile, profile);
+    assert.equal(persisted.projects[0].pending, null); assert.deepEqual(persisted.presets, before.presets); x.fullProtected();
+  }
+});

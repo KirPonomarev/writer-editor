@@ -1,4 +1,5 @@
 import { decodeEnvironmentEpochHistory } from './designOsFormConfiguration.mjs';
+import { deriveSidebarViewportMode } from './designOsShellController.mjs';
 import projectIdDomain from '../../product/projectIdDomain.cjs';
 
 export const FULL_CONFIG_SCHEMA = 'yalken.environmentConfiguration.v2';
@@ -147,10 +148,21 @@ export function createFullEnvironmentBaseline(configuration) {
   return validateFullEnvironmentConfiguration(x);
 }
 
+export function createFullEnvironmentProfile(input, profile) {
+  enumeration(profile, ['BASELINE', 'FOCUS', 'COMPACT'], 'PROFILE');
+  const x = data(validateFullEnvironmentConfiguration(input));
+  x.profile = profile; x.presentation.viewMode = profile === 'FOCUS' ? 'focus' : 'default';
+  x.presentation.compact = profile === 'COMPACT';
+  x.shellMode = x.layout.toolbar.isDetached || x.layout.leftToolbar.isDetached ? 'SPATIAL_ADVANCED'
+    : x.presentation.compact || deriveSidebarViewportMode(x.window.viewportWidth) !== 'desktop' ? 'COMPACT_DOCKED' : 'CALM_DOCKED';
+  return validateFullEnvironmentConfiguration(x);
+}
+
 function source(input, capture = false) {
   keys(input, ['kind', 'id']); const kind = enumeration(input.kind,
-    ['EPOCH', 'LEGACY', 'PRESET', 'RESET', 'LAST_STABLE', ...(capture ? ['CAPTURE', 'CURRENT'] : [])], 'SOURCE');
+    ['EPOCH', 'LEGACY', 'PRESET', 'RESET', 'LAST_STABLE', 'PROFILE', ...(capture ? ['CAPTURE', 'CURRENT'] : [])], 'SOURCE');
   if (['RESET', 'LAST_STABLE', 'CAPTURE', 'CURRENT'].includes(kind)) { if (input.id !== null) fail('SOURCE'); }
+  else if (kind === 'PROFILE') enumeration(input.id, ['BASELINE', 'FOCUS', 'COMPACT'], 'SOURCE');
   else identity(input.id);
   return { kind, id: input.id };
 }
@@ -200,6 +212,7 @@ function state(input) {
     const configuration = validateFullEnvironmentConfiguration(row.configuration), origin = source(row.source, true);
     if (origin.kind === 'CURRENT' || origin.kind === 'CAPTURE' && row.operationId !== null) fail('SOURCE');
     if (origin.kind !== 'CAPTURE') identity(row.operationId);
+    if (origin.kind === 'PROFILE' && !same(createFullEnvironmentProfile(configuration, origin.id), configuration)) fail('SOURCE');
     if (origin.kind === 'EPOCH' && (!prior.has(origin.id) || prior.get(origin.id).projectId !== row.projectId
       || !same(prior.get(origin.id).configuration, configuration))) fail('SOURCE');
     if (origin.kind === 'PRESET' && !presets.some(p => p.presetId === origin.id && p.projectId === row.projectId && same(p.configuration, configuration))) fail('SOURCE');
@@ -248,6 +261,7 @@ export function previewFullEnvironmentSource(input, projectId, selected) {
   const p = s.projects.find(row => row.projectId === projectId); if (!p) fail('PROJECT_UNKNOWN');
   let configuration, warnings = [];
   if (origin.kind === 'RESET') configuration = createFullEnvironmentBaseline(p.current);
+  else if (origin.kind === 'PROFILE') configuration = createFullEnvironmentProfile(p.current, origin.id);
   else if (origin.kind === 'LAST_STABLE') configuration = p.lastStable;
   else if (origin.kind === 'EPOCH') configuration = s.epochs.find(row => row.projectId === projectId && row.epochId === origin.id)?.configuration;
   else if (origin.kind === 'PRESET') configuration = s.presets.find(row => row.projectId === projectId && row.presetId === origin.id)?.configuration;

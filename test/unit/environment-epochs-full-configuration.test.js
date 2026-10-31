@@ -34,6 +34,33 @@ function change(m, state, kind, patch = {}) {
 function observed(m, config = fixture()) { return change(m, m.createFullEnvironmentState(), 'OBSERVE_CURRENT', { configuration: config }); }
 const isRefusal = error => /^E_FULL_ENV_/u.test(error?.code || '');
 
+test('full ENV native profile-entry gap: three finite display choices preserve unrelated form and require staged health', async () => {
+  const m = await load(); assert.equal(typeof m.createFullEnvironmentProfile, 'function');
+  const before = observed(m), original = JSON.stringify(before);
+  for (const profile of ['BASELINE', 'FOCUS', 'COMPACT']) {
+    const preview = m.previewFullEnvironmentSource(before, projectId, { kind: 'PROFILE', id: profile });
+    assert.equal(JSON.stringify(before), original, 'profile preview is read-only');
+    assert.equal(preview.configuration.profile, profile);
+    assert.equal(preview.configuration.presentation.viewMode, profile === 'FOCUS' ? 'focus' : 'default');
+    assert.equal(preview.configuration.presentation.compact, profile === 'COMPACT');
+    assert.equal(preview.configuration.shellMode, profile === 'COMPACT' ? 'COMPACT_DOCKED' : 'CALM_DOCKED');
+    const allowed = new Set(['profile', 'shellMode', 'presentation.viewMode', 'presentation.compact']);
+    for (const row of preview.changes) assert.ok(allowed.has(row.path), row.path);
+    const staged = change(m, before, 'STAGE_APPLY', { operationId: uuid(831), epochId: uuid(832), recordedAtUtc: now, source: { kind: 'PROFILE', id: profile } });
+    assert.deepEqual(staged.projects[0].current, before.projects[0].current, 'selection does not promote current before actual health');
+    assert.deepEqual(m.decodeFullEnvironmentState(m.encodeFullEnvironmentState(staged)).epochs[0].source, { kind: 'PROFILE', id: profile });
+    const healthy = change(m, staged, 'CONFIRM_APPLY', { operationId: uuid(831), observedConfiguration: preview.configuration });
+    assert.deepEqual(healthy.projects[0].current, preview.configuration); assert.deepEqual(healthy.presets, before.presets);
+  }
+  for (const id of ['SAFE', 'safe', 'UNKNOWN', uuid(1), {}, null])
+    assert.throws(() => m.previewFullEnvironmentSource(before, projectId, { kind: 'PROFILE', id }), isRefusal);
+  const narrow = fixture(); narrow.window.width = 1000; narrow.window.viewportWidth = 1000;
+  assert.equal(m.createFullEnvironmentProfile(narrow, 'BASELINE').shellMode, 'COMPACT_DOCKED');
+  const floating = fixture(true); floating.layout.toolbar.isDetached = true;
+  const focus = m.createFullEnvironmentProfile(floating, 'FOCUS');
+  assert.equal(focus.shellMode, 'SPATIAL_ADVANCED'); assert.equal(focus.workspace, 'PLAN'); assert.deepEqual(focus.layout, floating.layout);
+});
+
 test('full ENV causal control retains working v1 and requires a separate complete configuration contract', async () => {
   const legacy = await import('../../src/renderer/design-os/designOsFormConfiguration.mjs');
   const old = legacy.appendEnvironmentEpoch(legacy.createEnvironmentEpochHistory(), { expectedRevision: 0,

@@ -69,6 +69,41 @@ test('full ENV real port read/preview are write-free; current sync and A/B captu
   assert.equal((await h.sync()).performed, false, 'unchanged current sync cannot write another record'); assert.deepEqual(h.raw(), raw);
 });
 
+test('full ENV real profile choice uses existing restore and health, retaining epochs, named presets and current until ACK', async t => {
+  const h = await fixture(t); await h.sync(); await h.change('CAPTURE', { kind: 'EPOCH' });
+  await h.change('CAPTURE', { kind: 'PRESET', name: 'Keep original named preset' });
+  const before = JSON.parse(h.raw()), a = before.epochs[0];
+  const staged = await h.change('RESTORE', { source: { kind: 'PROFILE', id: 'COMPACT' } });
+  assert.equal(staged.ok, true, JSON.stringify(staged)); assert.equal(staged.configuration.profile, 'COMPACT');
+  assert.equal(staged.configuration.shellMode, 'COMPACT_DOCKED'); assert.equal(staged.configuration.presentation.compact, true);
+  let raw = JSON.parse(h.raw()); assert.deepEqual(raw.projects[0].current, before.projects[0].current);
+  assert.deepEqual(raw.epochs[0], a); assert.deepEqual(raw.presets, before.presets); assert.deepEqual(raw.epochs[1].source, { kind: 'PROFILE', id: 'COMPACT' });
+  h.configuration = structuredClone(staged.configuration);
+  assert.equal((await h.change('COMMIT', { kind: 'CONFIRM_APPLY', operationId: staged.operationId })).ok, true);
+  assert.equal((await h.read()).current.profile, 'COMPACT');
+  const old = await h.change('RESTORE', { source: { kind: 'EPOCH', id: a.epochId } }); assert.equal(old.ok, true);
+  h.configuration = structuredClone(old.configuration); await h.change('COMMIT', { kind: 'CONFIRM_APPLY', operationId: old.operationId });
+  raw = JSON.parse(h.raw()); assert.deepEqual(raw.projects[0].current, a.configuration); assert.deepEqual(raw.presets, before.presets);
+});
+
+test('full ENV profile intent rejects unsupported/opaque sources before effects and reaches authoring/context guards for valid profiles', async t => {
+  const h = await fixture(t); await h.sync(); const p = await h.read(), before = h.raw();
+  let getterReads = 0; const hostile = { kind: 'PROFILE' };
+  Object.defineProperty(hostile, 'id', { enumerable: true, get() { getterReads++; throw Error('MUST_NOT_EVALUATE_EXTERNAL_ID'); } });
+  for (const source of [{ kind: 'PROFILE', id: 'SAFE' }, { kind: 'PROFILE', id: 'UNKNOWN' },
+    { kind: 'PROFILE', id: 'FOCUS', configuration: configuration(true) }, { kind: 'PROFILE', id: { path: '/outside' } }, hostile]) {
+    const result = await h.port().change('RESTORE', { ...h.token(p), source });
+    assert.equal(result.ok, false); assert.equal(result.error.code, 'E_FULL_ENV_PAYLOAD_INVALID'); assert.deepEqual(h.raw(), before); assert.equal(h.calls.length, 0);
+  }
+  assert.equal(getterReads, 0);
+  for (const field of ['dirty', 'composing', 'pending', 'stale']) {
+    h[field] = true;
+    const result = await h.port().change('RESTORE', { ...h.token(p), source: { kind: 'PROFILE', id: 'FOCUS' } }); h[field] = false;
+    assert.equal(result.ok, false); assert.match(result.error.code, /AUTHORING_BARRIER|CONTEXT_STALE/u, field);
+    assert.deepEqual(h.raw(), before); assert.equal(h.calls.length, 0);
+  }
+});
+
 test('full ENV real port stage/health/cold recovery keeps old usable form and original named presets', async t => {
   const h = await fixture(t); await h.sync(); await h.change('CAPTURE', { kind: 'EPOCH' });
   await h.change('CAPTURE', { kind: 'PRESET', name: 'Current named preset' });

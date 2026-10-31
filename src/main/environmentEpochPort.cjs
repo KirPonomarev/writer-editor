@@ -40,8 +40,9 @@ function validateRequest(command, payload) {
     || !['expectedRevision', 'expectedConfigurationGeneration', 'expectedFormGeneration'].every(key => Number.isSafeInteger(payload[key]) && payload[key] >= 0)
     || typeof payload.expectedStateDigest !== 'string' || !/^[a-f0-9]{64}$/u.test(payload.expectedStateDigest)) fail('E_FULL_ENV_PAYLOAD_INVALID');
   if (command === 'RESTORE' && (!exact(payload.source, ['kind', 'id'])
-    || !['EPOCH', 'PRESET', 'LEGACY', 'RESET', 'LAST_STABLE'].includes(payload.source.kind)
-    || (['RESET', 'LAST_STABLE'].includes(payload.source.kind) ? payload.source.id !== null
+    || !['EPOCH', 'PRESET', 'LEGACY', 'RESET', 'LAST_STABLE', 'PROFILE'].includes(payload.source.kind)
+    || (payload.source.kind === 'PROFILE' ? !['BASELINE', 'FOCUS', 'COMPACT'].includes(payload.source.id)
+      : ['RESET', 'LAST_STABLE'].includes(payload.source.kind) ? payload.source.id !== null
       : typeof payload.source.id !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u.test(payload.source.id)))) fail('E_FULL_ENV_PAYLOAD_INVALID');
   if (payload.kind === 'PRESET' && (typeof payload.name !== 'string' || !payload.name || payload.name.length > 80
     || payload.name !== payload.name.trim() || payload.name !== payload.name.normalize('NFC') || /[\u0000-\u001f\u007f]/u.test(payload.name))) fail('E_FULL_ENV_PAYLOAD_INVALID');
