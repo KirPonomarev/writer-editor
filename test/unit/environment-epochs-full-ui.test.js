@@ -253,3 +253,30 @@ test('full ENV Settings live Quiet mode follows the applied form despite missing
     assert.equal(row.status, 'live'); assert.equal(snapshot.createsStore, false);
   }
 });
+
+test('full ENV actual current Settings entry opens the fullV2 query surface and cannot route to retained V1 controllers or change author state', async () => {
+  for (const dark of [false, true]) for (const wrap of [false, true]) {
+    const calls = [], modal = { hidden: true }, editor = { text: 'Keep current N+1' };
+    const model = { doc: { text: editor.text }, selection: { from: 2, to: 7 } };
+    const query = Promise.resolve({ queryOnly: true });
+    const forbidden = () => assert.fail('opening current fullV2 Settings cannot invoke a legacy controller, apply preferences or write product state');
+    const h = fullEnvironmentRendererFunctions(['openSettingsModal'], {
+      document: { body: { classList: { contains: name => { assert.equal(name, 'dark-theme'); return dark; } } } },
+      settingsThemeSelect: { value: 'stale' }, settingsWrapSelect: { value: 'stale' }, wordWrapEnabled: wrap,
+      settingsModal: modal, editor, tiptapEditor: { state: model },
+      renderSettingsAggregation: () => calls.push('actual-aggregation-request'),
+      openSimpleModal: target => { assert.equal(target, modal); target.hidden = false; calls.push('open'); },
+      ensureFullEnvironmentControls: () => { assert.equal(modal.hidden, false); calls.push('fullV2-controls'); },
+      refreshFullEnvironmentEpochs: () => { calls.push('fullV2-query'); return query; },
+      ensureSavedEnvironmentEpochControls: forbidden, refreshSavedEnvironmentEpochs: forbidden,
+      applyTheme: forbidden, applyWordWrap: forbidden, dispatchUiCommand: forbidden, saveCurrentDocument: forbidden,
+    });
+    assert.equal(h.openSettingsModal(), query);
+    assert.deepEqual(await query, { queryOnly: true });
+    assert.deepEqual(calls, ['actual-aggregation-request', 'open', 'fullV2-controls', 'fullV2-query']);
+    assert.equal(h.settingsThemeSelect.value, dark ? 'dark' : 'light');
+    assert.equal(h.settingsWrapSelect.value, wrap ? 'on' : 'off');
+    assert.equal(h.editor, editor); assert.equal(editor.text, 'Keep current N+1');
+    assert.equal(h.tiptapEditor.state, model); assert.deepEqual(model, { doc: { text: editor.text }, selection: { from: 2, to: 7 } });
+  }
+});

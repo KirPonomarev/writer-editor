@@ -1,3 +1,13 @@
+## 2026-10-31 — Whole Main setup failures retained; finite V1 host correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: ed58dcadc59d0aa9b6cc96f51bd3533d639e27c9
+CLAIM_BOUNDARY: H6 whole Main is FAIL, not accepted; the full macOS goal remains ACTIVE.
+
+Actual whole Main811 completed790pass21fail0skip0todo. All21 failures are finite-host ReferenceErrors for the new full Settings hook or toolbar projection; no failed behavioral predicate is treated as green. ENV_H6_WHOLE_MAIN_FIXTURE_DIAGNOSIS_01.json SHA25606aa72f9198d1660156471fd8f2622acd0cb38ee26f0fa7d59ac44d967879d44 pins the entire original failure log. Fresh declaration14 and actual preflight/taskE0 admit the same38path correction. The retained V1 controller fixture explicitly isolates its legacy V1 dependencies, initializes neutral current observer/projection state and loads the actual observer; every old assertion body stays intact. Those cases prove V1 compatibility only. A separate actual current modal entrypoint oracle forbids either legacy route; fullV2 component and actual native proofs retain their own identities. No production fallback, app/profile change, timeout, skip, lane or oracle removal.
+
+Next: focused old21/full cases, then new literal candidate and all required gates, fresh real seven-target producer review/apply/readback, honest delegated current witnesses and complete ordinary delivery. H6 audit production0; full audit preserves the existing15moderate dev findings, not new risk acceptance. R4B/R4C practical acceptance PENDING; all17Mac rows UNKNOWN, release NOT_READY. Earlier source, failed methods and all raw/profile/history remain preserved.
+
 ## 2026-10-31 — Full environment native journey observed; delivery pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS

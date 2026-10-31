@@ -4381,7 +4381,9 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
   assert.equal(x.h.main.__profile().profileId, SCENE_LANGUAGE_V12);
   const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: SCENE_LANGUAGE_V12 }, console,
     currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentTreeContentPublicationId: 'actual-main-scene',
-    localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false };
+    localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
+    fullEnvironmentToolbarProjection: null, fullEnvironmentProjecting: false,
+    fullEnvironmentFormGeneration: 0, fullEnvironmentView: null };
   vm.createContext(c); const renderer = { c, packets };
   const walk = node => [node, ...node.children.flatMap(walk)], proto = c.HTMLElement.prototype;
   proto.replaceChildren = function(...nodes) { this.children.forEach(node => { node.parentElement = null; }); this.children = []; this.append(...nodes); };
@@ -4426,7 +4428,15 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
   }
   const names = [...source.matchAll(/^(?:async )?function (\w*[Ee]nvironment[Ee]poch\w*)\(/gm)].map(match => match[1]);
   assert.ok(names.length > 0, 'actual saved Settings functions do not exist before this contour');
-  vm.runInContext(['applyTheme', 'applyWordWrap', 'openSettingsModal', ...names].map(actual).join('\n'), c);
+  vm.runInContext(['applyTheme', 'applyWordWrap', 'noteFullEnvironmentFormChanged', 'openSettingsModal', ...names].map(actual).join('\n'), c);
+  // This fixture exercises retained THEME_WRAP_V1 controllers and the real V1
+  // Main/file protocol. Bind that controller at the modal's dependency boundary;
+  // it is not the live fullV2 Settings surface or a product fallback. The actual
+  // current fullV2 modal route is checked separately in the full UI suite/native.
+  // No signal port exists in this isolated V1 host; the actual form observer
+  // therefore records its generation and returns without adding a v2 writer.
+  c.ensureFullEnvironmentControls = c.ensureSavedEnvironmentEpochControls;
+  c.refreshFullEnvironmentEpochs = c.refreshSavedEnvironmentEpochs;
   for (const name of names) {
     const match = new RegExp('^async function ' + name + '\\(', 'm').exec(source); if (!match) continue;
     const run = c[name]; c[name] = (...args) => { const pending = run(...args); tasks.push(pending); return pending; };

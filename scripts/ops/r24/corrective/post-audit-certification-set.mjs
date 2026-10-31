@@ -132436,11 +132436,11 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "6e83c69c8744fbcd47726639362b0dfef31dacf85446f9345e89fafece0caa43"
+      "sha256": "c086f74b684a81ed542e0201cdbf205c85ab1ef800cb208336d4e91477e09308"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "6debc1bb8b9f0a639e8c903462af5b58012d01e81cc9a9059a604755c419236d"
+      "sha256": "3e494b2fcb2fbded875e2785c14d9ef2ed2f640e1aa6a6063e4fbe123f85346c"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -132456,11 +132456,11 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "a23db7fae74700fcbecb37ae38d056032f6c952bf64efb1306d2311b5d00d4bc"
+      "sha256": "43e05485fcbdaab03b2ed1553d1b4a5fbdb87bb78f79e62e444a7ab0e8b7ac9e"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "29d544179bba843de0af0736cc5b210c8712cd78242269962f0a7ec100458f86"
+      "sha256": "e53877347b77df1c4f8816c78d2e39f50a3bda567b7af8e20644386251802afc"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -132472,11 +132472,11 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "sha256": "c1e55a217e73207a2bdb4936a71d64a35cd9dd8ae60c559777cdadbeb2ec10e3"
+      "sha256": "f827a1a1260c8bcd3683c7476a091b526b3c1a2238713fdebd4c4db688a030e2"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2696688c5398c8ebace0546bb2c0415fdc98cc80457952e239071cc4dbb8da1e"
+      "sha256": "82d024a1af719b07955f16ff716e30735ab180f2c9609c45932c76e0760a0b86"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -132524,11 +132524,11 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "0c97d18bde39d4ba4fea8c72ff9d89ba582f2a32577b0871bb9229f87fa8ebfe"
+      "sha256": "3e71e49184de836ec7552d6c111a82ea8daf42018569f404e54e96ca9959568e"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "a4b3ebfb9a4e44ccd18a29e15a12a190b1ebef662539d6b987dea7b028ef6770"
+      "sha256": "13f5ce4fcdc728ccdff3630448d34c91d5c3de3036d021099bfd804e03b3f83e"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -132672,7 +132672,7 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
-      "sha256": "4f52d7b5e57cf5306b07d67bb9b7360bd7d9a29437cc325fa6e56eee9c4532be"
+      "sha256": "da04b279d0cedc7048566a82121651074628eac19daf2f4c83f2e5ef329e1fb6"
     },
     {
       "path": "src/main/environmentEpochPort.cjs",
@@ -132692,13 +132692,13 @@ const R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/environment-epochs-full-ui.test.js",
-      "sha256": "f8024d87660d3e09b3bb9ee77e8a5bf54ce00d9275e8f592d0719b2f260f4e33"
+      "sha256": "c0a7a42b6b9182d70b4ad905786d1af6f30f4e3cbaa5aa58d4ebc4c64f98087f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "dd82d916e079ca0f66d203a02a4085834473356b0159206419815e4e2ffc810d"
+      "sha256": "81d367cf7a025ae72130cb9ec2058f07e6a68a07227165f83ec6f666d3ad2644"
     }
   ]
 });
