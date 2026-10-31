@@ -22117,7 +22117,7 @@ function buildSettingsAggregationSnapshot() {
     fontSizePx: currentFontSizePx,
     lineHeight: lineHeightSelect?.value || '',
     wordWrap: wordWrapEnabled,
-    viewMode: styleSelect?.value || localStorage.getItem('editorViewMode') || 'default',
+    viewMode: document.body.classList.contains('focus-mode') ? 'focus' : 'default',
     editorZoom,
     projectId: currentProjectId,
     bookFormat: profile.formatId || 'A4',

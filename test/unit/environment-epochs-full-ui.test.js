@@ -229,3 +229,27 @@ test('full ENV actual automatic hydration waits for checked initial source and n
   assert.ok(start >= 0 && end > start);
   assert.doesNotMatch(source.slice(start, end), /hydrateFullEnvironmentForProject\(/u, 'tree projection does not adopt the authoring source');
 });
+
+test('full ENV Settings live Quiet mode follows the applied form despite missing or stale legacy preferences', async () => {
+  const { buildSettingsAggregation } = await import(pathToFileURL(path.join(ROOT, 'src/renderer/settings/settingsAggregator.mjs')).href);
+  for (const scenario of [
+    { focus: true, select: null, stored: 'default' },
+    { focus: false, select: null, stored: 'focus' },
+    { focus: true, select: { value: 'default' }, stored: 'default' },
+    { focus: false, select: { value: 'focus' }, stored: 'focus' },
+  ]) {
+    const h = fullEnvironmentRendererFunctions(['buildSettingsAggregationSnapshot'], {
+      buildSettingsAggregation, getActiveBookProfile: () => ({ formatId: 'A4', orientation: 'portrait' }),
+      activeBookProfileState: {}, currentProjectId: 'project-current',
+      document: { body: { classList: { contains: name => name === 'focus-mode' && scenario.focus } } },
+      fontSelect: null, weightSelect: null, lineHeightSelect: null, currentFontSizePx: 16,
+      wordWrapEnabled: false, editorZoom: 0.5, styleSelect: scenario.select,
+      localStorage: { getItem: () => scenario.stored, setItem: () => assert.fail('live query cannot write preferences') },
+      getToolbarConfiguratorActiveProfile: () => 'minimal',
+    });
+    const snapshot = h.buildSettingsAggregationSnapshot();
+    const row = snapshot.settings.find(setting => setting.id === 'editor.viewMode');
+    assert.equal(row.value, scenario.focus ? 'focus' : 'default', 'live aggregation must follow the applied form, not a stale control or preference');
+    assert.equal(row.status, 'live'); assert.equal(snapshot.createsStore, false);
+  }
+});
