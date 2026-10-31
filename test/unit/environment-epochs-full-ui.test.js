@@ -76,3 +76,72 @@ test('full ENV opt-in form snapshot executes the real renderer function without 
   assert.equal(Object.hasOwn(form, 'content'), false); assert.equal(Object.hasOwn(form, 'selectionRange'), false);
   assert.equal(form.environmentConfiguration, metadata); assert.equal(form.generation, 9);
 });
+
+function fullEnvironmentRendererFunctions(names, host) {
+  const vm = require('node:vm'), source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const bodies = names.map(name => {
+    const marker = (source.includes(`async function ${name}(`) ? 'async ' : '') + `function ${name}(`;
+    const start = source.indexOf(marker), end = source.indexOf('\n}', start);
+    assert.ok(start >= 0 && end > start, name); return source.slice(start, end + 2);
+  });
+  const context = vm.createContext(host); new vm.Script(bodies.join('\n')).runInContext(context); return context;
+}
+
+test('full ENV actual cancelled/applied map results do not invent authoring pending; retained/failed/unknown and other drafts still veto', () => {
+  const h = fullEnvironmentRendererFunctions(['manualMapHasRetainedDraft', 'cancelManualMapCommandDraft', 'hasFullEnvironmentAuthoringPending'], {
+    wordCommentDraft: null, wordCommentBusy: false, manuscriptDrafts: new Map(), notesMutationPending: false,
+    storyDrafts: new Map(), storyMutationPending: false, metadataUpdateDebounceId: null, metadataUpdatePending: false,
+    metadataUpdateInFlight: false, treeMutationPending: false, pendingRevisionBusy: false, pendingDocxImportAttempt: null,
+    manualMapCommandDraft: null, manualMapDraftOwnership: 4, renderManualMapWorkbenchState: () => {},
+    sceneLanguageAuthorDrafts: new Map(), ideaMeaningAuthorDrafts: new Map(),
+  });
+  for (const state of ['draft', 'pending', 'failed', 'unknown']) {
+    h.manualMapCommandDraft = { state, payload: { title: 'Keep author draft' } };
+    assert.equal(h.hasFullEnvironmentAuthoringPending(), true, state);
+  }
+  h.cancelManualMapCommandDraft();
+  assert.equal(h.manualMapCommandDraft.state, 'cancelled'); assert.equal(h.manualMapCommandDraft.result.status, 'CANCELLED_NOOP');
+  assert.equal(h.manualMapHasRetainedDraft(), false, 'existing lifecycle oracle says explicit Cancel is terminal');
+  assert.equal(h.hasFullEnvironmentAuthoringPending(), false, 'terminal result must not permanently disable environment recovery');
+  h.manualMapCommandDraft = { state: 'applied', result: { status: 'APPLIED' } };
+  assert.equal(h.hasFullEnvironmentAuthoringPending(), false);
+  h.wordCommentDraft = { text: 'Unrelated unsaved comment' }; assert.equal(h.hasFullEnvironmentAuthoringPending(), true);
+  h.wordCommentDraft = null; h.manualMapCommandDraft = null; assert.equal(h.hasFullEnvironmentAuthoringPending(), false);
+});
+
+test('full ENV actual Settings refresh invalidates stale projection before await, disables loading and refuses superseded publication', async () => {
+  const deferred = () => { let resolve; const promise = new Promise(done => { resolve = done; }); return { promise, resolve }; };
+  const select = value => ({ value, disabled: false, options: [{ value }], replaceChildren(...options) { this.options = options; } });
+  const attributes = {}, controls = Object.fromEntries(['capture', 'restore', 'preview', 'savePreset', 'applyPreset', 'reset', 'lastStable', 'recover', 'previewProfile', 'applyProfile'].map(name => [name, { disabled: false }]));
+  const fresh = { capacity: { epochs: 1, presets: 1 }, availability: { capture: true, restore: true, configure: true },
+    current: { profile: 'BASELINE' }, liveConfiguration: { profile: 'BASELINE' }, pending: null, legacy: null,
+    epochs: [{ epochId: 'epoch1', sequence: 1, recordedAtUtc: '2026-10-31T12:00:00.000Z', configuration: { workspace: 'WRITE', profile: 'BASELINE' } }],
+    presets: [{ presetId: 'preset1', name: 'Keep this preset' }] };
+  const v = { host: { isConnected: true, setAttribute(key, value) { attributes[key] = value; } }, controls,
+    projection: fresh, pending: null, select: select('EPOCH:old'), presets: select('preset1'), profile: select('FOCUS'),
+    name: { value: 'Keep transient name' }, preview: { textContent: 'Old unbound B preview' }, status: { textContent: '' },
+    previewBinding: { source: { kind: 'PROFILE', id: 'FOCUS' }, generation: 7 }, previewRequest: {}, profileChosen: true };
+  const gate = deferred();
+  const h = fullEnvironmentRendererFunctions(['updateFullEnvironmentControls', 'publishFullEnvironmentView', 'refreshFullEnvironmentEpochs'], {
+    fullEnvironmentView: v, currentProjectId: 'current-project', fullEnvironmentFormGeneration: 7, settingsModal: { hidden: false },
+    ensureFullEnvironmentControls: () => v, hydrateFullEnvironmentForProject: () => gate.promise,
+    readFullEnvironmentProjection: async () => fresh, fullEnvironmentMessage: error => String(error),
+    document: { createElement: () => ({ value: '', textContent: '' }) },
+  });
+  const run = h.refreshFullEnvironmentEpochs();
+  try {
+    assert.equal(v.projection, null); assert.equal(v.previewBinding, null); assert.equal(v.previewRequest, null);
+    assert.equal(v.preview.textContent, ''); assert.equal(v.profileChosen, false);
+    assert.equal(v.controls.restore.disabled, true); assert.equal(v.controls.capture.disabled, true); assert.equal(attributes['aria-busy'], 'true');
+  } finally { gate.resolve(); }
+  await run; assert.equal(v.projection, fresh); assert.equal(v.profile.value, 'BASELINE');
+  assert.equal(v.name.value, 'Keep transient name'); assert.equal(attributes['aria-busy'], 'false');
+  const old = deferred(), current = deferred(), queue = [old, current];
+  h.hydrateFullEnvironmentForProject = () => queue.shift().promise;
+  const oldRun = h.refreshFullEnvironmentEpochs(), currentRun = h.refreshFullEnvironmentEpochs();
+  try {
+    old.resolve(); await oldRun; assert.equal(v.projection, null, 'older completion cannot republish while newer refresh waits');
+    assert.equal(attributes['aria-busy'], 'true'); assert.equal(v.controls.restore.disabled, true);
+  } finally { old.resolve(); current.resolve(); }
+  await currentRun; assert.equal(v.projection, fresh); assert.equal(attributes['aria-busy'], 'false');
+});

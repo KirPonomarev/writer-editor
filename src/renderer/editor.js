@@ -22356,7 +22356,7 @@ async function runSavedEnvironmentEpoch(action) {
 function hasFullEnvironmentAuthoringPending() {
   return Boolean(wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending
     || metadataUpdateDebounceId || metadataUpdatePending || metadataUpdateInFlight || treeMutationPending || pendingRevisionBusy
-    || pendingDocxImportAttempt?.phase === 'accepting' || pendingDocxImportAttempt?.phase === 'opening' || manualMapCommandDraft
+    || pendingDocxImportAttempt?.phase === 'accepting' || pendingDocxImportAttempt?.phase === 'opening' || manualMapHasRetainedDraft()
     || [...sceneLanguageAuthorDrafts.values()].some(entry => entry.fields.languageCode || entry.pending?.active)
     || [...ideaMeaningAuthorDrafts.values()].some(entry => entry.pending?.active
       || ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation'].some(key => Boolean(entry.fields[key]))));
@@ -22580,7 +22580,7 @@ function ensureFullEnvironmentControls() {
   settingsSections.parentElement.insertBefore(host, settingsSections); updateFullEnvironmentControls(); return fullEnvironmentView;
 }
 function updateFullEnvironmentControls() {
-  const v = fullEnvironmentView; if (!v) return; const p = v.projection, busy = Boolean(v.pending), full = p?.capacity.epochs >= 128;
+  const v = fullEnvironmentView; if (!v) return; const p = v.projection, busy = Boolean(v.pending || v.refreshing), full = p?.capacity.epochs >= 128;
   for (const control of Object.values(v.controls)) control.disabled = busy || !p;
   v.select.disabled = busy || !p || !v.select.options.length; v.presets.disabled = busy || !p || !p.presets.length; v.name.disabled = busy;
   v.controls.capture.disabled = busy || !p?.availability.capture || full;
@@ -22659,13 +22659,17 @@ async function previewFullEnvironmentSelection(kind = null) {
   }
 }
 async function refreshFullEnvironmentEpochs() {
-  const v = ensureFullEnvironmentControls(); if (!v) return;
-  const projectId = currentProjectId;
+  const v = ensureFullEnvironmentControls(); if (!v || v.pending) return;
+  const projectId = currentProjectId, request = {};
+  v.refreshRequest = request; v.refreshing = true; v.projection = null;
+  v.previewBinding = null; v.previewRequest = null; v.profileChosen = false; v.preview.textContent = '';
+  v.status.textContent = 'Loading working environments…'; updateFullEnvironmentControls();
   try { await hydrateFullEnvironmentForProject(); const p = await readFullEnvironmentProjection();
-    if (!v.host.isConnected || settingsModal.hidden || projectId !== currentProjectId) return;
+    if (v.refreshRequest !== request || !v.host.isConnected || settingsModal.hidden || projectId !== currentProjectId) return;
     publishFullEnvironmentView(p); v.status.textContent = p.pending ? 'A previous action is pending. Keep the current text and use the previous valid view to recover.'
       : `${p.epochs.length} working epochs · ${p.presets.length} named presets. Preview before restoring.`;
-  } catch (error) { if (v.host.isConnected && projectId === currentProjectId && !settingsModal.hidden) v.status.textContent = fullEnvironmentMessage(error); }
+  } catch (error) { if (v.refreshRequest === request && v.host.isConnected && projectId === currentProjectId && !settingsModal.hidden) v.status.textContent = fullEnvironmentMessage(error); }
+  finally { if (v.refreshRequest === request) { v.refreshing = false; updateFullEnvironmentControls(); } }
 }
 async function runFullEnvironmentAction(action) {
   const v = fullEnvironmentView; if (!v?.projection || v.pending || !v.host.isConnected || settingsModal.hidden) return;
@@ -22681,7 +22685,7 @@ async function runFullEnvironmentAction(action) {
     await previewFullEnvironmentSelection(sourceKind); return;
   }
   const previewBinding = v.previewBinding;
-  const name = v.name.value; v.pending = token; updateFullEnvironmentControls(); v.status.textContent = 'Updating environment…';
+  const name = v.name.value; v.previewRequest = null; v.pending = token; updateFullEnvironmentControls(); v.status.textContent = 'Updating environment…';
   const isCurrent = () => v === fullEnvironmentView && v.pending === token && v.host.isConnected && !settingsModal.hidden
     && ['projectId', 'documentId', 'publicationId', 'editGeneration', 'formGeneration', 'profile']
       .every(key => token[key] === fullEnvironmentToken(token.requestId, token.capabilityAvailable)[key]);
@@ -22700,7 +22704,7 @@ async function runFullEnvironmentAction(action) {
     const result = await dispatchFullEnvironment(command, { ...fullEnvironmentPayload(p), ...intent }); operationId = result.operationId;
     const observed = result.configuration ? await completeFullEnvironmentApply(result, token, isCurrent) : await readFullEnvironmentProjection();
     if (!isCurrent()) return;
-    v.previewBinding = null;
+    v.previewBinding = null; v.preview.textContent = ''; v.profileChosen = false;
     publishFullEnvironmentView(observed); v.status.textContent = action === 'savePreset' ? 'Named preset saved. Existing presets are kept.'
       : action === 'capture' ? 'Working epoch saved.' : 'Working environment restored. Text and saved presets are kept.';
     if (action === 'savePreset' && v.name.value === name) v.name.value = '';
