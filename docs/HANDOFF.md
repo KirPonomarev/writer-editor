@@ -1,3 +1,10 @@
+## 2026-11-01 — Continue the same Atlas alias delivery after incomplete H4 baseline
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 325487d7f157db55c240562db5923ad348c3ea44 plus declaration10/preflight12 continuation; no push or PR yet.
+
+Next action: remove only the three newly-added redundant WP307 diagnostics, prove entire-file inverse and identical assertion/input/call bytes, refresh necessary current mechanical bindings/witnesses, then create a clean ordinary checkpoint and execute the original full29software/freshnative/provider chain. The failed H4 default call is not green; require actual complete original npm test with unchanged64MiB cap and honest skip inventory. Source/other tests/cut/verifier/runtime remain frozen. ALIAS_H4_BASELINE_OUTPUT_DIAGNOSIS_01.json and ALIAS_H4_DEFAULT_TEST_SCRATCH_RETENTION_02.json preserve the failure/own scratch provenance; no ignored pre-existing fencing record moved. After normal PR/CI/merge, fetch and verify literal merged source, affected tests/build/originalP5 cold, Main CI, protected source/raw and final guardrails. Continue the full Mac plan after bounded closure; no historical controller/lease or release permit is resumed.
+
 ## 2026-11-01 — Resume current Mac pin counterpart in existing Atlas delivery
 
 DOCUMENT_CLASS: FACTUAL_STATUS

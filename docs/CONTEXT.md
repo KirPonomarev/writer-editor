@@ -1,3 +1,10 @@
+## 2026-11-01 — Atlas H4 baseline output reconciliation
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 325487d7f157db55c240562db5923ad348c3ea44 plus declaration10/preflight12 diagnostic-only continuation; original8038acda delivery base and22path source scope remain.
+
+H4 completed24of29software rows and four source-bound native processes, including whole1415, C1C whole335retry, RTK4419 and release726. Original P5 cold61191/normalQuit0 retains five observations/three scenes, saved3–7CURRENT, seven events/receipts/four aliases and all source/authority bytes; closed95files193entries. The first C1C stdin stall/failure remains distinct from the successful unchanged whole retry. Full baseline then exited1 with incomplete TAP/UNKNOWN denominator; four later jobs were not executed. Raw e7bb23383e20ddf58a670a00f4b4e94f455386d4cea948ef855144f9614b929d is retained. Fixed64MiB output exhaustion is inferred, not a directly printed child error code. Declaration10 admits removal of exactly three newly-added redundant test diagnostics; all assertions/original tests, production, runner/caps/timeouts/lanes stay exact H4. Four owned synthetic transition outputs were retained by same-APFS rename with bytes/inodes/native metadata verified; old fencing records stay untouched. A fresh literal candidate/full matrix/native/provider/merge/merged verification remains required. Full V6/DNA5 ACTIVE, all17MacUNKNOWN, Word-nativePAUSED.
+
 ## 2026-11-01 — Atlas original-corpus outcome; current Mac pin reconciliation pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS

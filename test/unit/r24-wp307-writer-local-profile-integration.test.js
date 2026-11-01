@@ -2415,7 +2415,6 @@ async function scopedAliasActualMainFixture(t) {
   const flat = node => [node, ...(node.children || []).flatMap(flat)], originalIds = new Set(flat(tree.root).map(node => node.nodeId));
   const parent = flat(tree.root).find(node => node !== tree.root && ['folder', 'part', 'chapter-folder'].includes(node.kind));
   assert.ok(parent, 'existing real directory identity, rather than the synthetic tab root');
-  t.diagnostic(JSON.stringify({ actualAliasSetupParent: { nodeId: parent.nodeId, kind: parent.kind }, syntheticTabRootId: tree.root.nodeId }));
   const create = await x.ui('cmd.project.tree.createNode', { projectId: x.projectId, parentNodeId: parent.nodeId, kind: 'scene', name: 'Unmentioned alias source' });
   assert.equal(create.mainResult.ok, true, JSON.stringify(create));
   const nextTree = await h.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' }); assert.equal(nextTree.ok, true);
@@ -2451,7 +2450,6 @@ test('unmentioned current V12 dossier reaches the actual Flow producer and disjo
   assert.equal(source.children.some(option => option.value === x.entityId), true, 'real selected dossier must be offered despite no current mention');
   await renderer.field('sourceEntityId', x.entityId); await renderer.field('aliasValue', 'Северная');
   const before = authorIdentitySnapshot(x), response = await renderer.click('add-alias'), after = authorIdentitySnapshot(x), payload = response.request.payload;
-  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_CURRENT_V12_UNMENTIONED_SCENE_ALIAS_FLOW', response, before, after }));
   assertAuthorIdentityPreservation(x, before, after, 'atlas.alias.add', payload, response.mainResult.ok === true, x.key);
   assertTemporalMainReceipt(response.mainResult, 'atlas.alias.add'); assert.equal(payload.entityId, x.entityId);
   assert.equal(payload.scope, 'scene'); assert.equal(payload.sceneId, x.secondSceneId);
@@ -2465,7 +2463,6 @@ test('disjoint scene aliases execute real Main while repeated overlapping values
   const x = await scopedAliasActualMainFixture(t), payload = { projectId: x.projectId, entityId: x.entityId,
     aliasId: 'scoped-alias-second', value: 'Северная', scope: 'scene', sceneId: x.secondSceneId };
   const before = authorIdentitySnapshot(x), response = await x.ui('atlas.alias.add', payload), after = authorIdentitySnapshot(x);
-  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_DISJOINT_SCENE_ALIAS', response, before, after }));
   assertAuthorIdentityPreservation(x, before, after, 'atlas.alias.add', payload, response.mainResult.ok === true, x.key);
   if (!response.mainResult.ok) assert.match(JSON.stringify(response), /E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS/u);
   assertTemporalMainReceipt(response.mainResult, 'atlas.alias.add');
