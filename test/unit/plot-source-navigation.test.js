@@ -98,3 +98,48 @@ test('actual Main refuses changed origin manifest after session persistence befo
   assert.equal(ui.sends.filter(row=>row.channel==='editor:set-text').length,0);
   assert.equal(fs.readFileSync(f.manifestPath,'utf8'),changed);assert.equal(fs.readFileSync(f.alpha,'utf8'),'Alpha');
 });
+
+// Real renderer registration/effect bridge plus actual Main/Core/Kernel and real
+// fixture files. Native Electron ports remain inert; this is not native credit.
+async function registeredPlotOpen(f, input) {
+  const { createCommandRegistry } = await import(pathToFileURL(path.join(ROOT,'src/renderer/commands/registry.mjs')).href);
+  const { registerProjectCommands } = await import(pathToFileURL(path.join(ROOT,'src/renderer/commands/projectCommands.mjs')).href);
+  const { runCommandThroughBus } = await import(pathToFileURL(path.join(ROOT,'src/renderer/commands/commandBusGuard.mjs')).href);
+  const registry=createCommandRegistry(), requests=[];
+  registerProjectCommands(registry,{electronAPI:{invokeUiCommandBridge:async envelope=>{
+    requests.push(structuredClone(envelope));assert.equal(envelope.route,'command.bus');
+    return f.probe.dispatch(envelope.commandId,envelope.payload);
+  }}});
+  const result=await runCommandThroughBus((id,payload)=>registry.getHandler(id)(payload),'cmd.project.document.open',input,{route:'command.bus'});
+  return {result,requests};
+}
+
+test('actual registered document route forwards exact current Plot expectation to actual Main',async t=>{
+  const f=await fixture(t);mountRenderer(f,'Beta',0);const expectedPlotSource=await sourceRequest(f);
+  const {result,requests}=await registeredPlotOpen(f,{projectId:f.query.projectId,nodeId:f.a.nodeId,expectedPlotSource});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.equal(requests.length,1);
+  assert.deepEqual(requests[0].payload,{projectId:f.query.projectId,nodeId:f.a.nodeId,expectedPlotSource},'the real registry may not silently erase the source guard');
+  assert.equal(f.probe.state().filePath,f.alpha);
+});
+
+for(const invalid of ['null','malformed','stale-revision','stale-projection','foreign-project','source-path-field'])
+ test('actual registered route preserves '+invalid+' Plot intent for Main refusal',async t=>{
+  const f=await fixture(t),ui=mountRenderer(f,'Beta',0),before=f.capture();let expectedPlotSource=await sourceRequest(f);
+  if(invalid==='null')expectedPlotSource=null;
+  if(invalid==='malformed')expectedPlotSource={schemaVersion:'plot.sourceNavigation.v1'};
+  if(invalid==='stale-revision')expectedPlotSource.sceneRevision='sha256:'+'a'.repeat(64);
+  if(invalid==='stale-projection')expectedPlotSource.projectionHash='b'.repeat(64);
+  if(invalid==='foreign-project')expectedPlotSource.originRef.projectId='project-foreign';
+  if(invalid==='source-path-field')expectedPlotSource.originRef.path='/outside/never-authority';
+  const {result,requests}=await registeredPlotOpen(f,{projectId:f.query.projectId,nodeId:f.a.nodeId,expectedPlotSource});
+  assert.equal(result.ok,false,'malformed/stale source intent must survive registration and be refused, not become a legacy open');
+  assert.equal(requests.length,1);assert.deepEqual(requests[0].payload.expectedPlotSource,expectedPlotSource);
+  assert.equal(f.probe.state().filePath,f.beta);assert.equal(ui.sends.filter(r=>r.channel==='editor:set-text').length,0);assert.deepEqual(f.capture(),before);
+ });
+
+test('actual registered legacy open preserves absent expectation and strips untrusted path fields',async t=>{
+  const f=await fixture(t);mountRenderer(f,'Beta',0);
+  const {result,requests}=await registeredPlotOpen(f,{projectId:f.query.projectId,nodeId:f.a.nodeId,path:'/outside/never-authority',other:'ignored'});
+  assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(requests[0].payload,{projectId:f.query.projectId,nodeId:f.a.nodeId});
+  assert.equal(Object.hasOwn(requests[0].payload,'expectedPlotSource'),false);assert.equal(f.probe.state().filePath,f.alpha);
+});

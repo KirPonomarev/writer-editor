@@ -1,6 +1,6 @@
 # Plot sources and exact scene navigation
 
-STATUS: BOUNDED_SOURCE641OF641_PRE_NATIVE_AND_DELIVERY
+STATUS: NATIVE_FOUND_REGISTRY_GUARD_GAP_TEST_ONLY
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One current Plot source-list and no-loss navigation route; full Mac V6 DNA5 remains open.
 TASK_ID: YALKEN_PLOT_SOURCE_NAVIGATION_20261101
@@ -34,6 +34,7 @@ Five existing runtime paths, appended maintained contracts, one new unit test an
 - src/derived/projections/projectionInspectorManifests.mjs
 - src/main.js
 - src/renderer/editor.js
+- src/renderer/commands/projectCommands.mjs
 - src/renderer/editor.bundle.js
 - test/contracts/yalken-atlas-v5-e03-c01-plot-projection-originref-sequence-layout.contract.test.js
 - test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js
@@ -107,3 +108,6 @@ CURRENT_SOURCE_CHECKPOINT: Whole causal and prior map no-loss files88of88 pass, 
 PHASE03_ORACLE_PLACEMENT: Reuse the existing finite R2 DOM fixture for appended Plot source UI cases instead of duplicating it into the Main navigation unit. Only its actual source initializer/helper loader changes; every old scenario/assertion/mutant remains byte-exact. Main navigation file remains append-only. Declaration03 scope26 and original delivery base unchanged.
 
 CURRENT_PHASE03: Five actual whole files641tests641pass0fail/cancel/skip/todo, raw21760da3. Original R2 adapter-only whole540pass before appended UI oracles; subsequent whole run includes all original scenarios and12new Plot finite DOM cases plus one late-manifest Main case. New actual Main late-manifest-after-settings-rename case passes; 15 Main cases now cover valid/dirty-save/invalid/stale/raw-query/late-manifest. Original three causal inputs retain byte-exact old content, unit is append-only; original R2 remains exact after two fixture-loading insertions plus appended Plot tests. No native, full baseline, CI, qualification or release claim. Current metadata production preserves all older records and only refreshes current source namespace plus concrete scope enrollment.
+
+CURRENT_NATIVE_SUPERSEDING_FINDING: Literal6ef426f2c actual build1479leaves/cb6a4d98 reached native2source rows in Navigator order Zeta then Alpha (IDs not lexical), preserved frozen full Unicode texts. Autosave600ms ran before navigation; do not claim dirty-barrier attribution. Actual command registration strips expectedPlotSource, so direct Main/finite renderer tests641 and early10 do not prove actual source guard. Same contour scope27 admits one existing source adapter. Whole actual registration-to-Main unit23cases16pass7fail0skip/cancel/todo, rawb4836c74; old15Main plus legacy positive pass, seven forwarding/refusal defects retained. New cases append only. Freeze before relay correction; new clean preflight and rebuilt actual native still mandatory. No push/PR/merge.
+NATIVE_CLOSURE_LIMIT: Own defaultV12 test session normal Quit twice and SIGTERM did not stop. Both real scene texts independently verified saved; one exact owned SIGKILL stopped only own main and helpers. Controller reported OSError5 with no exit receipt; normal Quit and cold reopen UNKNOWN, not credited. Original artifact/profile/scene bytes retained; no external app affected. T777 same UUID remounted atdev16777238; all35terminal logs/twoNDJSON journals and pinned source/text/native bytes physically re-read exact. Future live control/stdout uses declared own APFS scratch, final evidence verified T777. Do not open a separate ENV fix contour before Plot closure.

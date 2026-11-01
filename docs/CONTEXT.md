@@ -1,3 +1,5 @@
+CURRENT_PLOT_NATIVE_BLOCKER: Same original-main contour, scope27. Actual6ef426f2c native reached source list and exact saved text, but real renderer projectCommands registration discards expectedPlotSource. Actual registry-to-Main23cases16pass7fail; original15Main and absent legacy positive pass. Candidate NOT ready for push. All17MacUNKNOWN.
+
 CURRENT_PLOT_SOURCE_PHASE03: Same original-main delivery base531d4162; unaccepted source checkpoint77e810caf. Canonical scene order, bounded typed origin rows, guarded existing open command. Five whole files641of641 zero skip/cancel/todo; actual Main late-manifest guard and old no-loss positives executed. Native actual rebuilt before push remains next; all17MacUNKNOWN, finalcandidateUNFROZEN.
 
 ## 2026-11-01 — Delivered Mac security and alias corrections; Plot sources next

@@ -1,3 +1,5 @@
+CURRENT_PLOT_NEXT_REQUIRED: Correct only optional expectedPlotSource relay through existing document registration after frozen causal RED and clean admission; preserve absent legacy payload and arbitrary-path stripping, rebuild bundle. Re-run whole affected chains and fresh actual native before product push; retain own profile and unsuccessful-normal-Quit/controller-I/O limitations.
+
 CURRENT_PLOT_SOURCE_NEXT: Finish current bindings and exact source candidate; fresh owned APFS offline native build/profile, real source navigation dirty save and cold reopen before any product push. Preserve originals and failures; then full normal PR/CI/merge/merged rebuild. No second contour.
 
 ## 2026-11-01 — Continue one Plot source/navigation outcome
