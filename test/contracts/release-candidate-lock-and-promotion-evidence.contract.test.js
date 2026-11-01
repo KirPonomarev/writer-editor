@@ -833,3 +833,33 @@ for (const fault of ['changed-source', 'failed-receipt']) test('actual existing 
   assert.equal(f.git('ls-remote', '--refs', '--heads', 'origin', 'refs/heads/' + f.proof.branch), '');
   assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u);
 });
+
+test('actual existing CLI legacy unversioned complete packet remains a real normal-push positive control', t => {
+  const f = verifiedLocalPushFixture(t); const result = f.run();
+  assert.equal(result.status, 0, result.stderr); assert.equal(f.remoteHead(), f.head);
+  assert.match(result.stdout, /"normalPushStarting":true/u);
+});
+
+for (const container of ['proof', 'plan', 'sourceManifest', 'receipt']) for (const marker of ['schemaVersion', 'formatVersion', 'format']) {
+  test('actual existing CLI unknown packet version refuses ' + container + ':' + marker + ' before own remote push', t => {
+    const f = verifiedLocalPushFixture(t), future = 'UNKNOWN_FUTURE_FORMAT_V999';
+    if (container === 'proof') f.proof[marker] = future;
+    else if (container === 'plan') {
+      const p = JSON.parse(fs.readFileSync(path.join(f.evidence, f.proof.plan.basename), 'utf8'));
+      p[marker] = future; f.proof.plan = f.write(f.proof.plan.basename, p);
+    } else if (container === 'receipt') {
+      f.receipt[marker] = future;
+      f.proof.receipts[f.name] = f.write(f.name + '.json', f.receipt).sha256;
+    } else {
+      const s = JSON.parse(fs.readFileSync(path.join(f.evidence, f.proof.sourceManifest.basename), 'utf8'));
+      s[marker] = future; f.proof.sourceManifest = f.write(f.proof.sourceManifest.basename, s);
+      const p = JSON.parse(fs.readFileSync(path.join(f.evidence, f.proof.plan.basename), 'utf8'));
+      p.sourceManifestSha256 = f.proof.sourceManifest.sha256; f.proof.plan = f.write(f.proof.plan.basename, p);
+    }
+    const result = f.run();
+    t.diagnostic('fully rebound ' + container + ':' + marker + ' actualExit=' + result.status + ' ownRemoteAtCandidate=' + (f.remoteHead() === f.head));
+    assert.notEqual(result.status, 0, result.stdout + result.stderr);
+    assert.match(result.stderr, /E_LOCAL_DELIVERY_PROOF:UNSUPPORTED_FORMAT/u);
+    assert.equal(f.remoteHead(), f.base); assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u);
+  });
+}

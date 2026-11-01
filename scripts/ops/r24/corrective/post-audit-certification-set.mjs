@@ -133497,15 +133497,15 @@ const R24_INTEROP_IDEA_ORIGIN_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "f593b001938c304dd21dc9673b3b375aa58bbd2f153f7889a356004f7da386e2"
+      "sha256": "d7d048f106b7aa6277f3fcdb6ccd0b725e53fae20dddbe9734267a6f0b127c4b"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "50278a7052a6b6d40287c4b1ee77215e44e91dcf3123a320a5737e29b4ed4e5f"
+      "sha256": "22e16edb5b64cd3b2326973d56aa77f1684843454f31912454fa46df4a62e329"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "5034286948f655b8863136204335a2c46826ab5b8ae142d7687d3d8a05125190"
+      "sha256": "a1521ba4d9918af49f2741987d9b452b1ad4c4af6fa98f9a495c06da1c82dafe"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -133517,15 +133517,15 @@ const R24_INTEROP_IDEA_ORIGIN_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "eb2b07cd1453d1c2a3a969e222333966cf3f871ba12997d1d075954628700d7f"
+      "sha256": "a1e96bc073e965c1235f87ddb9e7edd68a2b11994c1a9a2447ed28dfb7bb7df9"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "cbea62972833f4cfd33d137704336b21f6ee8c145365181a2869088bbf899ecc"
+      "sha256": "ca3f5e3a1dccdefa0c19b98ec53c125c67e74d7f46ed3d347bf29eb821e88fb1"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "8a0835c796b54d83c173ede5f4c0c7d9816ae47881bf4488e00613e4a815be6a"
+      "sha256": "5759bf4bb2950148b8cd599bf98f1917cbf64f04cff4d18312668ce8c7b9a2b0"
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
@@ -133537,7 +133537,7 @@ const R24_INTEROP_IDEA_ORIGIN_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "98e8e8e86d71253fc47f029587b494a7bbbc84e3c638c4dcefded73113d5e714"
+      "sha256": "2551a1ef1c5106fde08d60b1a36365ff9ac8852662a0ad12c556e6b6f586fd72"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -133585,11 +133585,11 @@ const R24_INTEROP_IDEA_ORIGIN_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "5c73e825b6aef1321368d6f824e107b886bafe117254b118c7754a1e85a025fb"
+      "sha256": "20ac236d91b79cea35adfbe133509f304d075f600594b5de7f0c8ffc707abf29"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "42c5aa22988b1965ad085fb8b864495ed25c5bbc6c8eeebbe1bbe16dc6fe4c35"
+      "sha256": "ccf6504d08516029cab0981f8a0ca63c3ca56a3faae1fad062ff42924b71fea3"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -133797,7 +133797,7 @@ const R24_INTEROP_IDEA_ORIGIN_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-      "sha256": "63305fa3f7126fbd007f014f0846642f2ef93bd8caff929641d5e8eebcfd3cc1"
+      "sha256": "a9608eb4772dbb1b02689de31f2eea0b1d826f6f03de9f332fee5368e961f529"
     },
     {
       "path": "src/core/runtime.mjs",
@@ -133845,7 +133845,7 @@ const R24_INTEROP_IDEA_ORIGIN_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-01--idea-origin-navigation.md",
-      "sha256": "7729f3d4de0b75013db9dab92a4b46207def6278ff2ab686274c1df672365440"
+      "sha256": "238afb26e396f72140ba84097f66cfbe151c5494b1de9527ac629ff1ff33fbc1"
     },
     {
       "path": "test/unit/idea-origin-navigation.test.js",
@@ -133855,7 +133855,7 @@ const R24_INTEROP_IDEA_ORIGIN_NAVIGATION_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "988bba8dd352ec76b7ee56b1bb161335456071fe0ce07e4f716946f0e2ac899c"
+      "sha256": "60636e41767f160d49fb50b4dd2a3ae6558072e7c5048794e84ed9658e144514"
     }
   ]
 });

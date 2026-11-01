@@ -1195,6 +1195,11 @@ function runFullMacCli(argv) {
 export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proofSha256 } = {}) {
   const fail = detail => { throw Object.assign(Error('E_LOCAL_DELIVERY_PROOF:' + detail), { code: 'E_LOCAL_DELIVERY_PROOF' }); };
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+  const legacyPacket = value => {
+    // This endpoint accepts the existing unversioned layout only.
+    if (isObjectRecord(value) && ['schemaVersion', 'formatVersion', 'format'].some(key => Object.hasOwn(value, key))) fail('UNSUPPORTED_FORMAT');
+    return value;
+  };
   const root = path.resolve(repoRoot || process.cwd()), evidenceRoot = path.dirname(path.resolve(proofPath || ''));
   const stableRead = (file, expected) => {
     const before = fs.lstatSync(file); if (!before.isFile() || before.isSymbolicLink() || !isSha256Hex(expected)) fail('FILE_IDENTITY');
@@ -1202,13 +1207,13 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
     if (before.dev !== after.dev || before.ino !== after.ino || before.size !== after.size || before.mtimeMs !== after.mtimeMs || hash(bytes) !== expected) fail('FILE_DRIFT');
     return bytes;
   };
-  const decode = (bytes, file) => JSON.parse((file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8'));
+  const decode = (bytes, file) => legacyPacket(JSON.parse((file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8')));
   const artifact = descriptor => {
     if (!isObjectRecord(descriptor) || typeof descriptor.basename !== 'string' || !/^[A-Za-z0-9_.-]+$/u.test(descriptor.basename)) fail('ARTIFACT_NAME');
     const file = path.join(evidenceRoot, descriptor.basename); return decode(stableRead(file, descriptor.sha256), file);
   };
   const git = argv => { const result = spawnSync('git', argv, { cwd: root, encoding: 'utf8' }); if (result.status !== 0) fail('GIT_READ'); return result.stdout.trim(); };
-  const proof = JSON.parse(stableRead(path.resolve(proofPath), proofSha256));
+  const proof = legacyPacket(JSON.parse(stableRead(path.resolve(proofPath), proofSha256)));
   if (!isObjectRecord(proof) || !/^[a-f0-9]{40}$/u.test(proof.head) || !/^[a-f0-9]{40}$/u.test(proof.tree)
     || !/^[a-f0-9]{40}$/u.test(proof.baseHead) || !(proof.expectedRemoteHead === 'ABSENT' || /^[a-f0-9]{40}$/u.test(proof.expectedRemoteHead))
     || !/^codex\/[a-zA-Z0-9][a-zA-Z0-9._/-]*$/u.test(proof.branch) || proof.branch.includes('..')) fail('REQUEST');
@@ -1249,7 +1254,7 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
     }
     names.add(row.name); if (row.requiredBlocking) requiredCount++;
     else if (JSON.stringify(row.argv) !== JSON.stringify(['npm', 'audit', '--json'])) fail('UNRECOGNIZED_NONBLOCKING');
-    const receipt = JSON.parse(stableRead(path.join(evidenceRoot, row.name + '.json'), proof.receipts[row.name]));
+    const receipt = legacyPacket(JSON.parse(stableRead(path.join(evidenceRoot, row.name + '.json'), proof.receipts[row.name])));
     if (receipt.role !== 'ACTUAL_FOREGROUND_PROCESS_EVIDENCE_NOT_ACCEPTANCE_OR_AUTHORITY' || receipt.name !== row.name
       || receipt.headBefore !== proof.head || receipt.headAfter !== proof.head || JSON.stringify(receipt.argv) !== JSON.stringify(row.argv)
       || !Number.isInteger(receipt.pid) || receipt.pid < 1 || !Number.isFinite(receipt.elapsedSeconds) || receipt.elapsedSeconds <= 0
