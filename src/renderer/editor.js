@@ -17654,9 +17654,9 @@ function renderPlotInspectorSources(parent, state) {
       button.disabled = true; button.setAttribute('aria-busy', 'true');
       try {
         const opened = await openPlotSource(target, current);
-        if (!opened && current()) holdAuthorActionStatus('Источник Plot изменился или недоступен. Обновите Plot; текущий текст остаётся в редакторе.');
+        if (!opened && current()) updateStatusText('Источник Plot изменился или недоступен. Нажмите Plot ещё раз, чтобы обновить источники. Текущий текст остаётся в редакторе.', { visible: true });
       } catch {
-        if (current()) holdAuthorActionStatus('Не удалось открыть источник Plot. Текущий текст остаётся в редакторе.');
+        if (current()) updateStatusText('Не удалось открыть источник Plot. Нажмите Plot ещё раз, чтобы обновить источники. Текущий текст остаётся в редакторе.', { visible: true });
       } finally {
         if (current()) { button.disabled = !getPlotSourceNavigationTarget(projectionInspectorState, row.id); button.setAttribute('aria-busy', 'false'); }
       }

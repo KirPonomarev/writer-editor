@@ -3051,7 +3051,15 @@ function plotSourceDom() {
   c.currentAtlasSurface = 'projection'; c.currentRightTab = 'atlas';
   c.EXTRA_COMMAND_IDS = { ...c.EXTRA_COMMAND_IDS, PROJECT_DOCUMENT_OPEN: 'cmd.project.document.open' };
   c.plotCapability = true; c.isNavigatorContextCommandAvailable = () => c.plotCapability;
-  c.holdAuthorActionStatus = message => { c.plotActionStatus = message; };
+  c.statusElement = h.document.createElement('span');
+  c.statusElement.style ??= {};
+  h.document.body.append(c.statusElement);
+  for (const name of ['heldCommandStatusMessage', 'initialDocumentFailureStatus']) {
+    const initializer = editor.match(new RegExp('^let ' + name + ' = [^\\n]+;$', 'm'));
+    assert.ok(initializer, 'actual status initializer: ' + name);
+    require('node:vm').runInContext(initializer[0], c);
+  }
+  h.loadActual('updateStatusText');
   const sceneId = 'tree-node-' + '3'.repeat(32), refId = 'plot-origin-' + '4'.repeat(64);
   const row = { id: refId, nodeId: 'plot-node-a', projectId: c.currentProjectId, sceneId,
     label: 'Заголовок 🧭', sceneTitle: 'Не первая сцена', kind: 'scene', trustState: 'STRUCTURAL_FACT',
@@ -3115,3 +3123,20 @@ test('Plot next page sends offset24 only and retained page cannot publish after 
   h.c.currentRightTab = 'atlas'; h.render(); await h.page('Далее').emit('click'); await h.settle();
   assert.equal(h.requests.length, 1); assert.equal(h.requests[0].payload.plot.offset, 24);
 });
+
+for (const outcome of ['refused', 'thrown'])
+  test('Plot ' + outcome + ' source open holds actual visible recovery instruction across passive status updates [FINITE_DOM]', async () => {
+    const h = plotSourceDom(), button = h.buttons()[0];
+    h.c.openDocumentNode = async () => {
+      if (outcome === 'thrown') throw new Error('E_PLOT_SOURCE_CHANGED');
+      return false;
+    };
+    await button.emit('click');
+    const message = h.c.statusElement.textContent;
+    assert.match(message, /Нажмите Plot ещё раз/u);
+    assert.match(message, /Текущий текст остаётся в редакторе/u);
+    assert.equal(h.c.statusElement.style.visibility, 'visible');
+    h.c.updateStatusText('16 слов');
+    assert.equal(h.c.statusElement.textContent, message);
+    assert.equal(button.attributes['aria-busy'], 'false');
+  });

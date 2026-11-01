@@ -1,6 +1,6 @@
 # Plot sources and exact scene navigation
 
-STATUS: REGISTRY_FIXED_649OF649_CORRECTED_NATIVE_PENDING
+STATUS: STATUS_RECOVERY_FIXED_651_BOUNDED_TESTS_REBUILT_NATIVE_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One current Plot source-list and no-loss navigation route; full Mac V6 DNA5 remains open.
 TASK_ID: YALKEN_PLOT_SOURCE_NAVIGATION_20261101
@@ -18,7 +18,7 @@ DESIGN_TOOL_ROUTER: APPLIED; typed declaration APPLICABLE_EVIDENCE_REQUIRED.
 DESIGN_SOURCE_OF_TRUTH: Existing inspector typed right-rail slot and native list/button patterns; vanilla CSS and current tokens unchanged. R9 actual native populated Plot4items has no source controls. Existing guide and matrix govern evidence, not a compulsory external service.
 DESIGN_RESEARCH_SOURCES: Current source and actual R9 AX/screenshot; brain:refs Plot originRef source navigation; ui-craft and relevant required references. No optional integration or new design language.
 DESIGN_SELECTED_DIRECTION: A bounded list in the existing inspector, source title and plain trust/currentness text, accessible Open scene buttons and explicit pagination. No new graph renderer, palette, animation or layout.
-DIFF_BUDGET: 25 exact paths, at most1400 meaningful added/deleted lines excluding generated bundle and purely mechanical binding lists. Existing assertions preserved, new unit file bounded. No independent cleanup.
+DIFF_BUDGET: 27 exact paths, at most1400 meaningful added/deleted lines excluding generated bundle and purely mechanical binding lists. Existing assertions preserved, new unit file bounded. No independent cleanup.
 
 ## MICRO_GOAL
 
@@ -26,7 +26,7 @@ Show actual structural and author-confirmed Plot sources in manuscript order and
 
 ## ARTIFACT
 
-Five existing runtime paths, appended maintained contracts, one new unit test and exact mechanical/factual companions. Initial phase changes only task/docs/tests; production stays frozen until genuine RED and reviewed runtime continuation. One outcome one rollback one delivery. Security2175 is already merged at a5ab8179, preserved in current ancestry; alias2188 closed at binding base.
+Six existing runtime paths, appended maintained contracts, one new unit test and exact mechanical/factual companions. Initial phase changes only task/docs/tests; production stays frozen until genuine RED and reviewed runtime continuation. One outcome one rollback one delivery. Security2175 is already merged at a5ab8179, preserved in current ancestry; alias2188 closed at binding base.
 
 ## ALLOWLIST
 
@@ -116,3 +116,5 @@ CURRENT_REGISTRY_CORRECTION: Declaration07 clean preflight08, original delivery 
 CAPTURE_FORMAT_CORRECTION: Previous revalidation report phrase Closed empty valid gzip was incorrect. Actual old native STDIO is0bytes/SHAe3b0c442 with no gzip header/trailer: INVALID_EMPTY_CAPTURE. Preserve old zero file, EIO and original report without rewriting. Actual exit UNKNOWN; normalQuit/cold NOT_ACCEPTED; no app corruption or physical storage cause established. Other35terminal raw/gzip and2journals were physically re-read exact. A fresh explicitly owned APFS live controller/stdout with verified terminal publication to T777 is required; this does not move permanent storage or add a service.
 
 REGISTRY_SCOPE_ENROLLMENT: DONE exact-path list previously omitted the already-existing renderer projectCommands file and has no DONE prefix allowance. Append only this single already-declared27th source path; remove-last-entry inverse restores all previous bytes, no prefix/phase/enforcer or test changes. Current source policy and exact selected delta retain all historical guards; only derived current digests refresh.
+
+CURRENT_STATUS_RECOVERY: Declaration09/preflight10 on clean E9. Actual E9 native stale refusal and refreshed-source positive reach the real registry/Main; warm02 actual normal Quit0 and full952byte stdout readback are verified, cold remains pending. The native generic error exposed nonexistent holdAuthorActionStatus in two Plot failure calls and a fictitious helper supplied only by our new Plot finite-DOM adapter. Replace that adapter with actual status producer/default initializers, preserve every original R2 case body/scenario/assertion/mutant by exact whole-file inverse, append refusal/throw observations. Frozen RED554cases551pass3ReferenceError failures raw4e81f674; unchanged new input24cf83e8 is GREEN554of554 rawa78246a3. Four other whole affected files97of97 raw28ba370b; combined651 across two executed captures, zero skip/todo/cancel. Minimal two-call updateStatusText visible recovery hint and normal renderer build602ee96c only; unrelated pre-existing manual-map helper calls remain outside this change. Fresh metadata/native/full29/CI/merge/merged rebuild pending; no fullMac acceptance.

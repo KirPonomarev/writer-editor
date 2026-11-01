@@ -1139,7 +1139,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "4c50b3ddbc8efa50eb604b8a9b5b24f6cdec379243e4c40324578b3e5a91288a"
+        "sha256": "375db31c147bdb5464cd0eda30edf0fe5cbcdf4ea2113e6c9b6dc2953c8a1dde"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1303,7 +1303,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "b07104230539ad36ab3bd4e8380b6f7706eb03c06638eb38efb0dfd62533cd90"
+        "sha256": "9d259afc3404cf1c90b5047559d91a8489afc9523dc64d79b45768acd777053e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2819,15 +2819,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "217c309e3de1e44af4cddeccaffa658b47eaf55baabe121b5f2590e72de34018"
+        "sha256": "efe8c2d76ee47831182fc98abd46106b04049d0d95cb84b78b56834eee453ccf"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3b0fc3c0be5bb38784f859b4bdc703ae5fd8712a5a01b9b7a71e98212a0a1823"
+        "sha256": "d19b2d5f2aafc0d0bc775dd315f9b41e2714d2fbc53688c976ddd964fe3291d7"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "380246c210139f3bf6407dcfc9e2d27f58288440e8e75a27d8745c3a32e82f59"
+        "sha256": "7c423ee3dd6f382525b7ba73863269ef409b52d78b4a343c8f8ad89eda91990b"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3367,7 +3367,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a129e649e0409775cebcba92a6bae8cd2957534bde78eec62d1fff105aa30ab7"
+        "sha256": "77491699c53ce7967066a6970b872a206245e5592a1bdcf39f7e0855df48c9a3"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3503,7 +3503,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "702d9ebbf902d48ebf5e6af319f3a7d79999158afcd95bb2f73ee9f24e7230da"
+        "sha256": "24cf83e8f4680e9b348c9caed332dba00012df5df62d6b9641879aed6aa2e0fd"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -4075,7 +4075,7 @@
       },
       {
         "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-        "sha256": "d70990c920a5450f781699363f9b0ec1cefd2b069325357599d4ad292e8a93dd"
+        "sha256": "1978ed9f2ae1ef7f07ae7bdd9e6b6abaaf04648341b8642244aac1e0cfd5a242"
       }
     ],
     "followupRepair": {
