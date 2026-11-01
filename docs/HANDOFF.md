@@ -1,3 +1,20 @@
+# Current handoff — Idea origin navigation
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 87a475b3d325b25e40d0fd17475c7372d68d1d31
+OBSERVED_AT_UTC: 2026-11-01T22:03:26.132585+00:00
+CLAIM_BOUNDARY: Delivered predecessor routes and one admitted initial docs/test phase only; no full Mac acceptance.
+
+Plot PR2189 is normally merged at this binding head. PLOT_DELIVERY_CLOSURE_01.json SHA256826d3868c74dd42548534646f9050b44e213e85f6da3a05c6c660b74520dd9b7 binds all10051source files, original29candidate gates and renderer/electron supplement, external primary PR20/main20 raw logs with18actual code checkouts plus2dependency summaries each, separate operational close1, fresh literal merged native07 ordinary warm/cold exits0 and independent saved Zeta65/Alpha117 bytes. Deep native04 retains literal82f identity with all1479ASAR leaves byte-bound; it is not a merged rerun.59original skips remain uncovered and15moderate dev findings remain open; production zero.
+
+ENV PR2187 is closed at8038acda, immutable ENV_DELIVERY_CLOSURE_01.json SHAb9c239f499b3954d0caed36e2232d81281f21844ed91ab074a3f0a4e897fefc8; its old H10/IMPLEMENTING headers below are historical. Security2175 and alias2188 remain delivered within their original bounded identities. Current task is YALKEN_IDEA_ORIGIN_NAVIGATION_20261101: existing saved Idea originRefs render only as text; initial admission permits truthful docs and new causal tests, not production edits. Exact source and Kernel/Main stale/no-loss guard proof comes before runtime implementation and early actual rebuilt app.
+
+NEXT_ACTION: Freeze and execute the actual registered-caller/Main Idea-origin causal baseline against unchanged runtime; admit runtime only after reviewed RED and clean same-task checkpoint.
+
+All17fullMac qualification rows remain UNKNOWN; candidate UNFROZEN/release NOT_READY, complete V6 DNA5 remains ACTIVE. Word nativeOffice PAUSED, Black Box follows full Mac, Linux/Windows only existing boundaries and mandatory CI. Sole executor; old profiles/data/failures/leases/controllers remain protected.
+
+HISTORICAL_CHECKPOINTS_BOUNDARY: Every older block and unversioned CURRENT label below records its named original checkpoint; none overrides the current block above. All original bytes and failures remain for traceability.
+
 CURRENT_PLOT_LOSSLESS_NEXT: Actual28Main/FS cases pass, all23complete diagnostic objects/554embedded files independently decoded531a0a91. WP307db086cfc has exact one-wrapper inverse to121a02cd; assertions/fixtures/Mainb17/own26unit625/fixed64MiB runner frozen. Refresh only seven current namespaces plus honest append-only current-byte witnesses, including single exact DONE static-test enrollment; seal29path clean final candidate. Then actual final native rebuild/basic warm+cold, all29required checks and unchanged default, normal push/CI/merge/literal merged native. Keep original failed baseline and all retained output/fences; full17MacUNKNOWN.
 
 CURRENT_PLOT_DEFAULT_NEXT: Keep failed baseline4cd87c1c and all primary logs; strict bridge markers now5of5 with exact inverse to originala82ad1c7, one DONE exact test enrollment and29paths. Preserve SourceMainb17/own26unit625 and WP307121 until explicit source preflight. Next admit only lossless gzip+base64 of the existing full nativeSaveSystemObserve diagnostic JSON, preserving payload/fixtures/assertions and original64MiB runner. Then refresh current bindings and exact final candidate/full gates/native/default baseline/full delivery; no product code change or old PASS retag.

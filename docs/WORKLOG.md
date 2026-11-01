@@ -1,3 +1,9 @@
+## 2026-11-02 — Plot closed; Idea source route admitted
+
+- Plot PR2189 closes at87a475b3 with closure826d3868, all original29candidate checks, raw primary PR20/main20 plus operational close1 and fresh literal merged native07 warm/cold0; full17Mac remainUNKNOWN.
+- Begin one Idea saved-origin navigation outcome from this exact clean base. Declaration02/preflight02 pass before edits; initial enum-format refusal retained without repository mutation. Current phase docs/new causal tests only, production unchanged.
+- Reconcile current CONTEXT/HANDOFF and proven Plot/ENV task delivery headers; retain every original checkpoint/error. No new agent/chat/model/service or historical controller resume.
+
 CURRENT_LOSSLESS_DIAGNOSTIC: Declaration20/preflight21 actual0 e72f1968 admits only complete lossless JSON evidence wrapper. Source delta c1d4ee6a has exact inverse WP307db086cfc→121a02cd, keeping every original field/fixture/assertion and fixed runner64MiB. Actual28cases28pass0fail/cancel/skip/todo rawafa4cd4d. Independent Python readback531a0a91 decodes23original complete objects and554embedded files with exact lengths/SHA. No product runtime change. Existing static marker guard5of5fcf138c9 retains old guards; same original delivery base and29exact paths. Failed default4cd87c1c, EDA prior gates/native and all original history remain literal, not retagged. Current metadata/final clean gates/native/default/full delivery pending; all17MacUNKNOWN.
 
 ## 2026-11-01 — Resume Plot source/navigation after safe pause

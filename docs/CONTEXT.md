@@ -1,3 +1,18 @@
+# Current bounded Mac work — Idea origin navigation
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 87a475b3d325b25e40d0fd17475c7372d68d1d31
+OBSERVED_AT_UTC: 2026-11-01T22:03:26.132585+00:00
+CLAIM_BOUNDARY: Delivered predecessor routes and one admitted initial docs/test phase only; no full Mac acceptance.
+
+Plot PR2189 is normally merged at this binding head. PLOT_DELIVERY_CLOSURE_01.json SHA256826d3868c74dd42548534646f9050b44e213e85f6da3a05c6c660b74520dd9b7 binds all10051source files, original29candidate gates and renderer/electron supplement, external primary PR20/main20 raw logs with18actual code checkouts plus2dependency summaries each, separate operational close1, fresh literal merged native07 ordinary warm/cold exits0 and independent saved Zeta65/Alpha117 bytes. Deep native04 retains literal82f identity with all1479ASAR leaves byte-bound; it is not a merged rerun.59original skips remain uncovered and15moderate dev findings remain open; production zero.
+
+ENV PR2187 is closed at8038acda, immutable ENV_DELIVERY_CLOSURE_01.json SHAb9c239f499b3954d0caed36e2232d81281f21844ed91ab074a3f0a4e897fefc8; its old H10/IMPLEMENTING headers below are historical. Security2175 and alias2188 remain delivered within their original bounded identities. Current task is YALKEN_IDEA_ORIGIN_NAVIGATION_20261101: existing saved Idea originRefs render only as text; initial admission permits truthful docs and new causal tests, not production edits. Exact source and Kernel/Main stale/no-loss guard proof comes before runtime implementation and early actual rebuilt app.
+
+All17fullMac qualification rows remain UNKNOWN; candidate UNFROZEN/release NOT_READY, complete V6 DNA5 remains ACTIVE. Word nativeOffice PAUSED, Black Box follows full Mac, Linux/Windows only existing boundaries and mandatory CI. Sole executor; old profiles/data/failures/leases/controllers remain protected.
+
+HISTORICAL_CHECKPOINTS_BOUNDARY: Every older block and unversioned CURRENT label below records its named original checkpoint; none overrides the current block above. All original bytes and failures remain for traceability.
+
 CURRENT_PLOT_LOSSLESS_EVIDENCE: One nativeSaveSystemObserve diagnostic now wraps its complete original JSON with built-in gzip/base64 plus original UTF8 length and SHA256. Whole prior WP307121a02cd is exactly recovered by one literal inverse; no fixture/assertion/runner/product change. Actual28Main/FS cases28pass0skip rawafa4cd4d; independent Python531a0a91 decodes all23objects and verifies554embedded file payloads byte lengths/SHA. Strict five-case bridge guard stays5of5fcf138c9. Original failed default4cd87c1c remains failed/denominatorUNKNOWN; current clean final gates/default/native/full delivery pending. Same29paths/base; all17MacUNKNOWN.
 
 CURRENT_PLOT_DEFAULT_BASELINE_FAILED: Literaleda default exited7 raw4cd87c1c, unit denominatorUNKNOWN near fixed64MiB limit. Two obsolete exact bridge source markers confirmed original5cases3pass2fail raw5bfc9b99; exact two-string compatibility plus one forwarding assertion makes5of5 rawfcf138c9, all other assertions intact. Own4test records retained74291e1a, all10fences kept. Same outcome29paths; production/frozen runtime inputs unchanged. Lossless compression of one existing complete diagnostic object is prospective, probe4e1abbe8 saves about1MB; no runner/cap/assertion weakening. Full final gates/native/delivery remain required, all17MacUNKNOWN.
