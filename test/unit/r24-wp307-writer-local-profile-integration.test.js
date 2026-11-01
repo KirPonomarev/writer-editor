@@ -6047,3 +6047,69 @@ test('full ENV actual Main finite display profile intent keeps manuscript and pr
     assert.equal(persisted.projects[0].pending, null); assert.deepEqual(persisted.presets, before.presets); x.fullProtected();
   }
 });
+
+
+// The AFTER-publication same-window boundary is independent of fresh Renderer replacement.
+for (const variant of ['unchanged', 'new-clean', 'new-draft']) {
+  test(`native Save post-target settings read same-window ${variant} preserves exact authoring ownership`, async t => {
+    const h = await nativeSaveSystemFixture(t), chosenContent = h.editor.content;
+    const window = h.window, webContents = h.window.webContents, originalGeneration = h.editor.generation;
+    assert.equal(originalGeneration, 2); h.choose({ canceled: false, filePath: h.target });
+    const fsp = require('node:fs/promises'), originalRead = fsp.readFile;
+    const entered = nativeSaveSystemGate(), gate = nativeSaveSystemGate();
+    let held = false, settingsReadStack = '';
+    fsp.readFile = async function(file, ...args) {
+      const bytes = await originalRead.call(this, file, ...args);
+      if (!held && String(file) === h.settingsPath && fs.existsSync(h.target)) {
+        held = true; settingsReadStack = new Error('actual same-window post-target settings read').stack;
+        entered.release(); await gate.promise;
+      }
+      return bytes;
+    };
+    const pending = h.command('cmd.project.saveAs', {});
+    try {
+      await environmentEpochWait(entered.promise, 'actual same-window Save post-target settings read');
+      assert.equal(held, true); assert.match(settingsReadStack, /saveLastFile/);
+      assert.equal(h.dialogCalls.length, 1);
+      assert.equal(fs.readFileSync(h.target, 'utf8'), chosenContent, 'old target is already durable before the adversarial transition');
+      let newContent = null;
+      if (variant !== 'unchanged') {
+        assert.equal((await h.command('cmd.project.new', {})).ok, true);
+        assert.strictEqual(h.window, window); assert.strictEqual(h.window.webContents, webContents);
+        assert.equal(h.editor.generation, originalGeneration, 'actual New retains the same Renderer cumulative coordinate');
+        assert.equal(h.editor.content, '');
+        if (variant === 'new-draft') {
+          const envelope = require('../../src/core/document-content-envelope-v1.cjs'), text = 'Новый draft того же окна e\u0301 🌱';
+          newContent = envelope.composeObservablePayload({ doc: { type: 'doc', attrs: { wordPendingRevisions: null, wordUserBookmarks: null },
+            content: [{ type: 'paragraph', attrs: { textAlign: null }, content: [{ type: 'text', text }] }] } });
+          const parsed = envelope.parseObservablePayload(newContent); assert.equal(parsed.issue, null); assert.equal(parsed.text, text);
+          const generation = originalGeneration + 1; h.editor = { ...h.editor, content: newContent, plainText: text, generation };
+          assert.equal((await h.signal('signal.localDirty.set', { state: true, generation })).ok, true);
+          assert.equal((await h.signal('signal.autoSave.request')).ok, true);
+          assert.equal(fs.readFileSync(h.globalAutosave, 'utf8'), newContent);
+        }
+      }
+      const current = nativeSaveSystemSnapshot(h), packetCut = h.sent.length;
+      gate.release(); const result = await pending, after = nativeSaveSystemSnapshot(h);
+      const lateAcks = h.sent.slice(packetCut).filter(([channel, payload]) => channel === 'set-dirty' && payload.ack?.kind === 'SAVED');
+      assert.strictEqual(h.window, window); assert.strictEqual(h.window.webContents, webContents);
+      assert.equal(fs.readFileSync(h.target, 'utf8'), chosenContent, 'durable old target must remain in every control');
+      if (variant === 'unchanged') {
+        assert.equal(result.ok, true, 'truthful held AFTER-target control must finish the actual successful Save');
+        assert.equal(h.editor.content, chosenContent); assert.equal(h.editor.generation, originalGeneration);
+        assert.equal(JSON.parse(fs.readFileSync(h.settingsPath)).lastExternalFilePath, h.target);
+        assert.equal(fs.existsSync(h.globalAutosave), false);
+        assert.ok(lateAcks.some(([, payload]) => payload.ack.savedGeneration === originalGeneration));
+      } else {
+        assert.equal(result.ok, false); assert.deepEqual(after, current);
+        assert.equal(lateAcks.length, 0, 'old Save cannot ACK a newer document even in the identical window/webContents');
+        if (newContent !== null) assert.equal(fs.readFileSync(h.globalAutosave, 'utf8'), newContent);
+      }
+      const digest = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+      t.diagnostic(JSON.stringify({ sameWindowPostTargetControl: variant, held, resultOk: result.ok,
+        actualWindowAndWebContentsUnchanged: true, originalGeneration, currentGeneration: h.editor.generation,
+        beforeStateSha256: digest(current), afterStateSha256: digest(after), lateSavedAckCount: lateAcks.length,
+        finiteMainAndFilesystemOnlyNotNativeAcceptance: true }));
+    } finally { gate.release(); fsp.readFile = originalRead; await pending; }
+  });
+}

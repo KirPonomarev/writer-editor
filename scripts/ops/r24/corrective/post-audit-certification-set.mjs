@@ -133120,15 +133120,15 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "da471212e853d6a85435f3dc39add0a94e5592dcc8b96dbc86a4a72832f44228"
+      "sha256": "24ecc6442bd27e68184e65e0920aaff571a071725c56663c2d021d1ef9d9f407"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "a3420a7679b625920202a278e0819860158a9ca0fb98f7871fed58bc0e2bf633"
+      "sha256": "eda4c867345bd6b18abaa3502487cfc986001ce4b6392810aabf280e058148f4"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "bedefb2e77049aafee125e09daf8819124c9423929dc36b133d569e83b1f19b9"
+      "sha256": "4037337674f68c631a38cfc079b2a7389ee4c36a74c5a1624fd8b2a39d3dc77f"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -133140,11 +133140,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "b48d21c002473a9b6a536c5082c0ff22938b5427cb34a339c3b2d18fd1e114ea"
+      "sha256": "fe70e8ecb90e0056657a58c7425bb795eb6c90041d12aa55737c0b9330adb454"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "4d81f0979a2bd802a6a033722f1e88b9470a8d90921c0db1c7320051023d702c"
+      "sha256": "aa7454fcf8faac0a3d1693abffdf95a729b243d141a4775daa9075e57f9984a1"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -133156,11 +133156,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "sha256": "079c36392fff2c5fc8850cf57fff7911b97c3566f33d59bf1c7ebdce023356e4"
+      "sha256": "121a02cd9c3ab6839dbe2140e176a29eb51018d83117b91593298a3c84b2b33e"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "31fb78589f695af55db491ba6392227ed923202dfe18028b979d106a743e7652"
+      "sha256": "73a8c9f86d44257c39c022830542fc295414d3cf211ff4bac1f0f5765e8a8028"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -133208,11 +133208,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "aacc4fb0e8ae5ecf3ce10214f4885c2e354f62a58abc9ca0be095d1a077ce4c0"
+      "sha256": "a2b8fecb08a4321710c79fa4e4600c9774af779155b8c38a705f7e334b6b6b09"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "c52d07fd716d2701f98229a894b863b314798924e122ac273018aa96cfcae809"
+      "sha256": "d0ba9828cf4a27813b2fbeebf91671aff6d67b51bfc5cfa73383bfcd9c54fb9a"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -133460,13 +133460,13 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-      "sha256": "8f247b0705478ce8c66f52e7f08b55f11df396f37190d23877ed7bc6deafe5e6"
+      "sha256": "681359567fa7f042bf508ed355332b5a2c0075808b0d21b41af8320deeb3585d"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "a87612d3d1c4e6b4c8bfc2c06321deb8d2f86e7847756fac9fce29ae042a7756"
+      "sha256": "881377c2c34a4dc6172835c3925fc4055750ed00256e516496334b6c389a0f77"
     }
   ]
 });
