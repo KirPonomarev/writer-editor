@@ -164,3 +164,60 @@ test('Idea origin saves another dirty scene through the actual barrier before op
   assert.equal(x.h.main.__navigation.state().filePath,x.f.scenePath);
   assert.equal(x.h.main.__navigation.state().dirty,false);
 });
+
+async function projectionFixture(){
+  const runtime=await import('../../src/core/runtime.mjs');
+  const {hashCanonicalValue}=await import('../../src/core/browser-safe-hash.mjs');
+  const projectId='idea-sources-contract',sceneId='tree-node-'+'3'.repeat(32),ideaId='idea-sources';
+  const text=TEXT+'abcdefghijklmnopqrstuvwxyz';
+  const commands=[{type:runtime.CORE_COMMAND_IDS.PROJECT_CREATE,payload:{projectId,sceneId}},
+    {type:runtime.CORE_COMMAND_IDS.PROJECT_APPLY_TEXT_EDIT,payload:{projectId,sceneId,text}},
+    {type:runtime.CORE_COMMAND_IDS.IDEA_CREATE,payload:{projectId,ideaId,title:'Saved idea é 🧭'}}];
+  for(let i=0;i<25;i++)commands.push({type:runtime.CORE_COMMAND_IDS.IDEA_ORIGIN_LINK_ADD,payload:{projectId,ideaId,linkId:'source-'+String(i).padStart(2,'0'),
+    originRef:{schemaVersion:'idea.originRef.v1',kind:'sceneTextRange',sceneId,startOffset:TEXT.length+i,endOffset:TEXT.length+i+1,sourceHash:hashCanonicalValue(text),targetId:ideaId}}});
+  const result=runtime.applyCoreSequence(runtime.createInitialCoreState(),commands);assert.equal(result.ok,true,JSON.stringify(result.error));
+  // Explicit read-model fixture revision; this pure projection test makes no
+  // claim of filesystem persistence or native execution.
+  result.state.data.projects[projectId].scenes[sceneId].sceneRevision='sha256:'+hash(Buffer.from(text));
+  const {deriveProjectionInspectorProvider}=await import('../../src/derived/projections/projectionInspectorManifests.mjs');
+  const derive=idea=>deriveProjectionInspectorProvider({coreState:result.state,params:{projectId,idea:{selectedId:ideaId,...idea}},capabilitySnapshot:{}});
+  return {state:result.state,projectId,sceneId,ideaId,derive};
+}
+
+test('Idea sources projection exposes current explicit sources in bounded pages and reaches source25 without truth writes',async()=>{
+  const f=await projectionFixture(),before=JSON.stringify(f.state),first=f.derive({originOffset:0});assert.equal(first.ok,true);
+  const a=first.value.projectionStates.find(x=>x.projectionId==='idea').details;
+  assert.equal(a.originSources.length,24);assert.equal(a.originHasMore,true);assert.equal(a.originLinkCount,25);
+  assert.ok(a.originSources.every(row=>row.projectId===f.projectId&&row.ideaId===f.ideaId&&row.sceneId===f.sceneId&&row.sourceState==='current'));
+  const second=f.derive({originOffset:24});assert.equal(second.ok,true);
+  const b=second.value.projectionStates.find(x=>x.projectionId==='idea').details;
+  assert.deepEqual(b.originSources.map(row=>row.id),['source-24']);assert.equal(b.originOffset,24);assert.equal(b.originHasMore,false);
+  assert.equal(b.originLinksComplete,false,'one partial page cannot claim all25origins are present');
+  assert.equal(JSON.stringify(f.state),before);
+});
+
+test('Idea sources projection distinguishes stale and unavailable saved sources without promoting or rewriting author truth',async()=>{
+  const f=await projectionFixture(),project=f.state.data.projects[f.projectId];project.scenes[f.sceneId].text+=' changed';
+  let before=JSON.stringify(f.state),r=f.derive({});assert.equal(r.ok,true);
+  assert.ok(r.value.projectionStates.find(x=>x.projectionId==='idea').details.originSources.every(row=>row.sourceState==='stale'));
+  assert.equal(JSON.stringify(f.state),before);delete project.scenes[f.sceneId];project.sceneOrder=[];
+  before=JSON.stringify(f.state);r=f.derive({});assert.equal(r.ok,true);
+  assert.ok(r.value.projectionStates.find(x=>x.projectionId==='idea').details.originSources.every(row=>row.sourceState==='unavailable'));
+  assert.equal(JSON.stringify(f.state),before);
+});
+
+test('Idea sources query origin offset rejects malformed bounds and is not accepted for other projections',async()=>{
+  const f=await projectionFixture(),before=JSON.stringify(f.state);
+  for(const originOffset of [-1,'24',null,1.5,1000001])assert.equal(f.derive({originOffset}).ok,false,JSON.stringify(originOffset));
+  assert.equal(f.derive({originOffset:1000000}).ok,true);
+  const {deriveProjectionInspectorProvider}=await import('../../src/derived/projections/projectionInspectorManifests.mjs');
+  for(const kind of ['plot','meaning'])assert.equal(deriveProjectionInspectorProvider({coreState:f.state,params:{projectId:f.projectId,[kind]:{originOffset:0}},capabilitySnapshot:{}}).ok,false);
+  assert.equal(JSON.stringify(f.state),before);
+});
+
+test('Idea sources missing selection cannot substitute links from another visible Idea',async()=>{
+  const f=await projectionFixture(),before=JSON.stringify(f.state),result=f.derive({selectedId:'missing-idea'});
+  assert.equal(result.ok,true);const detail=result.value.projectionStates.find(x=>x.projectionId==='idea').details;
+  assert.equal(detail.selectedState,'missing');assert.equal(detail.originLinkCount,0);
+  assert.deepEqual(detail.originSources,[]);assert.equal(JSON.stringify(f.state),before);
+});

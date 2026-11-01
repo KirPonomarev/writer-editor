@@ -1673,6 +1673,8 @@ export function registerProjectCommands(registry, options = {}) {
           { projectId, nodeId,
             ...(Object.hasOwn(input, 'expectedPlotSource')
               ? { expectedPlotSource: input.expectedPlotSource } : {}),
+            ...(Object.hasOwn(input, 'expectedIdeaSource')
+              ? { expectedIdeaSource: input.expectedIdeaSource } : {}),
           },
         );
       } catch (error) {

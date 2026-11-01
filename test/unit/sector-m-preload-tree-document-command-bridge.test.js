@@ -34,7 +34,7 @@ test('preload tree document bridge: projectCommands routes six tree and document
   assert.equal(source.includes('electronAPI.reorderNode('), false)
   assert.equal(source.includes('electronAPI.moveNode('), false)
 
-  assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', "{ projectId, nodeId,\n            ...(Object.hasOwn(input, 'expectedPlotSource')\n              ? { expectedPlotSource: input.expectedPlotSource } : {}),\n          }")
+  assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', "{ projectId, nodeId,\n            ...(Object.hasOwn(input, 'expectedPlotSource')\n              ? { expectedPlotSource: input.expectedPlotSource } : {}),\n            ...(Object.hasOwn(input, 'expectedIdeaSource')\n              ? { expectedIdeaSource: input.expectedIdeaSource } : {}),\n          }")
   assertCommandBridgePath(source, commandEffectSource, 'TREE_CREATE_NODE', '{ projectId, parentNodeId, kind, name }')
   assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', "{ projectId, nodeId, name, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) }")
   assertCommandBridgePath(source, commandEffectSource, 'TREE_DELETE_NODE', '{ projectId, nodeId }')

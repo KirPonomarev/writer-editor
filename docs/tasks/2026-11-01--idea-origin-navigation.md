@@ -1,8 +1,8 @@
 # Idea saved-origin scene navigation
 
-STATUS: CAUSAL_RED_FROZEN_RUNTIME_PENDING
+STATUS: UNACCEPTED_SOURCE_CHECKPOINT1586OF1588_STATIC5PASS_CURRENT_BINDING_PENDING
 FROZEN_CAUSAL_INPUTS_SHA256: c4112d685748cb0b6ef1144c493008bf9041be0c1fa246a5d2516b9e51de772b
-CURRENT_CAUSAL_RESULT: Whole27tests3pass24fail0skip0todo0cancel on unchanged runtime1f33698b; rawdb6901b4a7715dd3b0f571677932f8a07aa40ce3a81bf3b38b67b5a253082e7d. Actual legacy/generation/dirty-other-save controls pass. Registration drops expectation; Main ignores forged/stale Idea origin and late manifest. No native or implementation acceptance.
+HISTORICAL_CAUSAL_RESULT: Whole27tests3pass24fail0skip0todo0cancel on unchanged runtime1f33698b; rawdb6901b4a7715dd3b0f571677932f8a07aa40ce3a81bf3b38b67b5a253082e7d. Actual legacy/generation/dirty-other-save controls pass. Registration drops expectation; Main ignores forged/stale Idea origin and late manifest. No native or implementation acceptance.
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One reachable saved Idea origin to its exact current source scene; complete V6 DNA5 macOS release remains unaccepted.
 TASK_ID: YALKEN_IDEA_ORIGIN_NAVIGATION_20261101
@@ -21,7 +21,7 @@ DESIGN_TOOL_ROUTER: APPLIED; typed APPLICABLE_EVIDENCE_REQUIRED.
 DESIGN_SOURCE_OF_TRUTH: Existing saved Idea inspector typed slot, Plot source list and native labeled button vocabulary; existing CSS tokens and toolbar typography protected.
 DESIGN_RESEARCH_SOURCES: Current renderer and derived source, V6 P16/P17/MAC14, DesignOS guide/matrix, ui-craft, exact predecessor package. No external UI system or optional service.
 DESIGN_SELECTED_DIRECTION: Bounded saved-source rows with explicit currentness, existing Open scene command, keyboard-accessible native buttons and explicit pagination when more than24origins; no new surface or visual language.
-DIFF_BUDGET: Initial phase exactly seven permitted docs/test paths; no production edit until frozen RED and separately validated runtime continuation. Future coherent runtime/current-binding output set must be declared before use. No infrastructure or independent cleanup.
+DIFF_BUDGET: Current continuation allows27exact paths, at most1400meaningful added/removed lines excluding generated bundle and purely mechanical bindings. All existing source/test predicates and frozen27case file remain protected. No independent infrastructure or cleanup.
 
 ## MICRO_GOAL
 
@@ -45,11 +45,36 @@ One source-navigation outcome only. Current phase creates truthful docs and a fr
 - docs/WORKLOG.md
 - test/unit/idea-origin-navigation.test.js
 
+- src/derived/projections/projectionInspectorManifests.mjs
+- src/main.js
+- src/renderer/editor.js
+- src/renderer/editor.bundle.js
+- src/renderer/commands/projectCommands.mjs
+- test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js
+- test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js
+- test/unit/sector-m-preload-tree-document-command-bridge.test.js
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
+- docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/sector-m-scope-map.json
+- docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
+- scripts/ops/release-candidate.mjs
+
 ## DENYLIST
 
-All production runtime until a post-RED continuation explicitly admits exact files. All original Core/schema, commands meaning, renderer HTML/CSS/tokens, package pins, preload/IPC, old tests/assertions/skips/lanes/resource caps/timeouts, profiles, raw histories, frozen contracts and permanent witness preimages. No current-stage status or full17qualification promotion.
+All paths outside the current exact27scope, original Core/schema, command meaning, renderer HTML/CSS/tokens, package pins, preload/IPC, old test predicates/skips/lanes/resource caps/timeouts, profiles, raw histories, frozen contracts and permanent witness preimages. Existing finite test hosts may change only after an actual diagnosed compatibility failure and exact preservation review. No current-stage status or full17qualification promotion.
 
 ## CONTRACT / SHAPES
+
+CURRENT_RUNTIME_ADMISSION: declaration04 SHA2569d0cdca5613f4ae3bb07c6fd58a5632067749158e8df64841f9af6701d6a15c2, actual preflight04 exit0 on clean25af6075 before runtime edit. Original merged87a475b3 remains delivery base; frozen27inputbce2a447 and originalWP307db086cfc stay exact. This phase has no native app/build/profile authority.
+EXPECTED_IDEA_SOURCE_V1: exact own-data fields schemaVersion=idea.sourceNavigation.v1, projectId, ideaId, linkId, originRef, sceneRevision and projectionHash. originRef retains exact existing idea.originRef.v1 fields schemaVersion/kind/sceneId/startOffset/endOffset/sourceHash/targetId. Main checks raw closed bounded types before interpretation, persisted idea/link mutual membership, exact saved source hash/range/raw revision, initial projection hash and original no-loss lifecycle guards. Repeat individual source/link validation after no-loss and retain synchronous manifest/raw-source guard through all remaining awaits and immediate publication. No renderer path authority, data rewrite or Core normalization fallback.
+
 
 FEATURE_INTEGRATION_MANIFEST_V1: integrationMode EXISTING_SEAM; domainOwner Core ideas and explicit originLinks; derivedData bounded immutable source rows; commandIds cmd.project.document.open; queryIds query.projectionInspector and existing project tree query; eventTypes existing document-open/save only; productPorts existing WorkspaceQueryPort and document-open adapter; DesignOS ports DomainProjectionPort ShellProjectionPort CommandDispatchPort; stateClasses project read-only, authoring protected, derived rebuildable, shell existing selection and transient page/busy; identity and revision guards required across waits; no private writer or registry.
 SURFACE_MANIFEST_V1: existing surface.projection.inspector and rightRail.context.atlas.projectionInspector slot; existing native labeled list/buttons; ready/loading/empty/partial/unavailable/stale/refused states, keyboard Enter/Space and visible focus, aria-busy and persistent readable error. At most24source rows per page, existing string bounds, on-demand only, no typing work. Missing adapters refuse.
@@ -83,3 +108,6 @@ Exactly AGENT_FINAL_REPORT_V1 nineteen fields; one text block KEY VALUE, basenam
 ## FAIL_PROTOCOL
 
 Preserve expected/actual/seed/HEAD/input hash and original raw process evidence. Correct only diagnosed cause or probe method with prospective admission. No rewriting failures, weakening assertions or counting selected tests as full execution.
+
+CURRENT_SOURCE_PHASE04: Actual whole ten affected files1588tests1586pass2fail0skip0todo0cancel, rawb1daa6d318dc78fca3ca8245ee933209bbcdebb13e01c91f833f75859bb4d226. Both causes distinguished: unchanged WP307 current editor namespace pin remains predecessor9d259afc; original static exact registration payload marker lacked the two newly required Idea expectation lines. Static expectation updated with exact inverse restoring merged original and every predicate retained, actual whole5of5raw340d7635. Normal renderer build0raw59777646. All14 execution source inputs physically reread exact after terminal before static-only change, reviewc15d253c. Earlier top-level973 commentary corrected to actual complete1588 denominator. No overall whole-green, native or delivery acceptance.
+SOURCE_CHECKPOINT_REASON: Preserve admitted27-path WIP without claiming current bindings or product delivery; preflight05 for necessary existing first-branch delivery guard compatibility refused dirty worktree before any additional test/runtime edit. After clean checkpoint, re-admit one existing release contract path prospectively; actual owned bare Git new-branch causal test before any guard change. No alternative publisher, fake tracking ref or prime product push.

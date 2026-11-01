@@ -19906,10 +19906,13 @@ function normalizeProjectionInspectorPayload(payload = {}) {
   for (const key of ['idea', 'meaning', 'plot']) {
     if (!Object.hasOwn(source, key)) continue;
     const value = source[key];
-    if (!isPlainObjectValue(value) || Object.keys(value).some(key => !['offset', 'search', 'selectedId'].includes(key))
+    const fields = key === 'idea' ? ['offset', 'search', 'selectedId', 'originOffset'] : ['offset', 'search', 'selectedId'];
+    if (!isPlainObjectValue(value) || Object.keys(value).some(key => !fields.includes(key))
       || value.offset !== undefined && (!Number.isSafeInteger(value.offset) || value.offset < 0 || value.offset > 1000000)
+      || value.originOffset !== undefined && (!Number.isSafeInteger(value.originOffset) || value.originOffset < 0 || value.originOffset > 1000000)
       || ['search', 'selectedId'].some(field => value[field] !== undefined && (typeof value[field] !== 'string' || value[field].length > 1000))) return { ...normalized, invalid: true };
-    normalized[key] = { offset: value.offset || 0, search: value.search || '', selectedId: value.selectedId || '' };
+    normalized[key] = { offset: value.offset || 0, search: value.search || '', selectedId: value.selectedId || '',
+      ...(key === 'idea' && value.originOffset !== undefined ? { originOffset: value.originOffset } : {}) };
   }
   return normalized;
 }
@@ -36651,6 +36654,56 @@ async function assertExpectedPlotSourceCurrent(expected, projectId, guard, initi
   return () => assertRecoverySnapshot(manifestSnapshot);
 }
 
+function normalizeExpectedIdeaSource(value, projectId, nodeId) {
+  const exact = (object, keys) => isPlainObjectValue(object)
+    && Reflect.ownKeys(object).length === keys.length
+    && keys.every(key => Object.getOwnPropertyDescriptor(object, key)?.value !== undefined)
+    && Reflect.ownKeys(object).every(key => typeof key === 'string' && keys.includes(key));
+  const refKeys = ['schemaVersion', 'kind', 'sceneId', 'startOffset', 'endOffset', 'sourceHash', 'targetId'];
+  if (!exact(value, ['schemaVersion', 'projectId', 'ideaId', 'linkId', 'originRef', 'sceneRevision', 'projectionHash'])
+    || value.schemaVersion !== 'idea.sourceNavigation.v1' || value.projectId !== projectId
+    || !exact(value.originRef, refKeys)) return null;
+  const ref = value.originRef;
+  if (['ideaId', 'linkId'].some(key => typeof value[key] !== 'string' || !value[key]
+      || value[key] !== value[key].trim() || value[key].length > 1000)
+    || ref.schemaVersion !== 'idea.originRef.v1' || ref.kind !== 'sceneTextRange'
+    || ref.sceneId !== nodeId || typeof ref.sceneId !== 'string' || !/^tree-node-[a-f0-9]{32}$/u.test(ref.sceneId)
+    || !Number.isSafeInteger(ref.startOffset) || !Number.isSafeInteger(ref.endOffset)
+    || ref.startOffset < 0 || ref.endOffset <= ref.startOffset
+    || typeof ref.targetId !== 'string' || ref.targetId.length > 1000
+    || typeof ref.sourceHash !== 'string' || !/^[a-f0-9]{64}$/u.test(ref.sourceHash)
+    || typeof value.sceneRevision !== 'string' || !/^sha256:[a-f0-9]{64}$/u.test(value.sceneRevision)
+    || typeof value.projectionHash !== 'string' || !/^[a-f0-9]{64}$/u.test(value.projectionHash)) return null;
+  return { ...value, originRef: { ...ref } };
+}
+
+async function assertExpectedIdeaSourceCurrent(expected, projectId, guard, initial = false) {
+  guard();
+  const manifestSnapshot = await readRecoverySnapshot(getProjectManifestPath(), guard);
+  guard();
+  const source = await buildProductCoreStateForCurrentProject();
+  guard(); assertRecoverySnapshot(manifestSnapshot);
+  const ideaModule = await import(pathToFileURL(path.join(__dirname, 'derived', 'idea', 'deriveIdeaProjection.mjs')).href);
+  guard(); assertRecoverySnapshot(manifestSnapshot);
+  const project = source.coreState?.data?.projects?.[projectId];
+  const idea = project?.ideas?.ideas?.[expected.ideaId], link = project?.ideas?.originLinks?.[expected.linkId];
+  const scene = project?.scenes?.[expected.originRef.sceneId];
+  const result = ideaModule.deriveIdeaProjection({
+    coreState: source.coreState, params: { projectId, idea: { selectedId: expected.ideaId } }, capabilitySnapshot: {},
+  });
+  if (source.projectId !== projectId || !idea || !Array.isArray(idea.originLinkIds)
+    || !idea.originLinkIds.includes(expected.linkId) || link?.ideaId !== expected.ideaId
+    || !Object.keys(expected.originRef).every(key => link?.originRef?.[key] === expected.originRef[key])
+    || !scene || scene.sceneRevision !== expected.sceneRevision
+    || typeof scene.text !== 'string' || expected.originRef.endOffset > scene.text.length
+    || require('./core/browser-safe-hash.cjs').hashCanonicalValue(scene.text) !== expected.originRef.sourceHash
+    || result?.ok !== true || result.value?.projectId !== projectId
+    || initial && result.value?.meta?.projectionHash !== expected.projectionHash) {
+    throw Object.assign(new Error('E_IDEA_SOURCE_STALE'), { code: 'E_IDEA_SOURCE_STALE' });
+  }
+  return () => assertRecoverySnapshot(manifestSnapshot);
+}
+
 async function handleUiOpenDocumentCommand(payload) {
   await editorStartupReadyPromise;
   if (!mainWindow) {
@@ -36674,10 +36727,16 @@ async function handleUiOpenDocumentCommand(payload) {
   try {
     guard();
     const hasPlotSource = Object.hasOwn(safePayload, 'expectedPlotSource');
+    const hasIdeaSource = Object.hasOwn(safePayload, 'expectedIdeaSource');
+    if (hasPlotSource && hasIdeaSource) return { ok: false, error: 'E_DOCUMENT_SOURCE_EXPECTATION_AMBIGUOUS' };
     const expectedPlotSource = hasPlotSource
       ? normalizeExpectedPlotSource(safePayload.expectedPlotSource, safePayload.projectId, safePayload.nodeId) : null;
+    const expectedIdeaSource = hasIdeaSource
+      ? normalizeExpectedIdeaSource(safePayload.expectedIdeaSource, safePayload.projectId, safePayload.nodeId) : null;
     if (hasPlotSource && !expectedPlotSource) return { ok: false, error: 'E_PLOT_SOURCE_INVALID' };
+    if (hasIdeaSource && !expectedIdeaSource) return { ok: false, error: 'E_IDEA_SOURCE_INVALID' };
     if (expectedPlotSource) await assertExpectedPlotSourceCurrent(expectedPlotSource, safePayload.projectId, guard, true);
+    if (expectedIdeaSource) await assertExpectedIdeaSourceCurrent(expectedIdeaSource, safePayload.projectId, guard, true);
     let resolvedNode;
     try {
       resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
@@ -36745,7 +36804,15 @@ async function handleUiOpenDocumentCommand(payload) {
         return { ok: false, error: 'E_PLOT_SOURCE_STALE' };
       }
     }
-    const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); plotSourceGuard(); };
+    let ideaSourceGuard = () => {};
+    if (expectedIdeaSource) {
+      ideaSourceGuard = await assertExpectedIdeaSourceCurrent(expectedIdeaSource, safePayload.projectId, guard);
+      guard(); assertRecoverySnapshot(sourceSnapshot);
+      if (`sha256:${computeHash(sourceSnapshot.raw)}` !== expectedIdeaSource.sceneRevision) {
+        return { ok: false, error: 'E_IDEA_SOURCE_STALE' };
+      }
+    }
+    const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); plotSourceGuard(); ideaSourceGuard(); };
     const contextFromPath = getDocumentContextFromPath(filePath);
     const editorPayload = await attachProjectIdToEditorPayload({
       content,

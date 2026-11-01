@@ -10470,6 +10470,7 @@ async function openDocumentNode(node, options = {}) {
       projectId: requestedProjectId,
       nodeId: documentId,
       ...(options.expectedPlotSource ? { expectedPlotSource: options.expectedPlotSource } : {}),
+      ...(Object.hasOwn(options, 'expectedIdeaSource') ? { expectedIdeaSource: options.expectedIdeaSource } : {}),
     });
     // Main may have published this document before the command reply. A later
     // project/document publication must never be replaced by that old reply.
@@ -16281,7 +16282,7 @@ function getIdeaMeaningAuthorDraft(projectId = currentProjectId) {
   if (!entry) {
     entry = { projectId, revision: 0, pending: null, intents: {}, provider: null, status: '', optionsDirty: true, form: null,
       fields: { ideaTitle: '', ideaSummary: '', selectedIdeaId: '', meaningTitle: '', meaningInterpretation: '', ideaSearch: '', meaningSearch: '', selectedMeaningId: '' },
-      views: { idea: { offset: 0, search: '' }, meaning: { offset: 0, search: '' } }, controls: {}, actions: {} };
+      views: { idea: { offset: 0, search: '', originOffset: 0 }, meaning: { offset: 0, search: '' } }, controls: {}, actions: {} };
     ideaMeaningAuthorDrafts.set(projectId, entry);
   }
   return entry;
@@ -16370,6 +16371,7 @@ function getIdeaMeaningAuthorForm() {
     input.addEventListener(tag === 'select' ? 'change' : 'input', () => {
       if (!input.isConnected || currentProjectId !== entry.projectId || currentAtlasSurface !== 'journey' || currentRightTab !== 'atlas') return;
       entry.fields[key] = input.value; entry.revision++;
+      if (key === 'selectedIdeaId' || key === 'ideaSearch') entry.views.idea.originOffset = 0;
       if (entry.pending?.active) entry.status = 'Author draft changed; reload saved records after the pending request.';
       syncIdeaMeaningAuthorForm(entry);
     });
@@ -16392,6 +16394,7 @@ function getIdeaMeaningAuthorForm() {
       const kind = action.startsWith('meaning-') ? 'meaning' : 'idea', view = entry.views[kind], search = entry.fields[kind + 'Search'];
       view.offset = action.endsWith('-load') || search !== view.search ? 0 : Math.max(0, view.offset + (action.endsWith('-next') ? 24 : -24));
       view.search = search; entry.revision++;
+      if (kind === 'idea') view.originOffset = 0;
       void refreshIdeaMeaningAuthoring();
     });
     form.append(button);
@@ -16465,6 +16468,85 @@ async function runIdeaMeaningAuthoringCommand(commandId) {
   }
 }
 
+function getIdeaMeaningOriginTarget(state, linkId) {
+  const idea = state?.projectionStates?.find(row => row.projectionId === 'idea');
+  const row = idea?.details?.originSources?.find(row => row.id === linkId);
+  if (state?.state !== 'ready' || state.projectId !== currentProjectId || currentRightTab !== 'atlas' || currentAtlasSurface !== 'projection'
+    || idea?.state !== 'ready' || !row || row.projectId !== state.projectId || row.sourceState !== 'current'
+    || !['id', 'ideaId'].every(key => typeof row[key] === 'string' && row[key].length > 0 && row[key].length <= 1000)
+    || !/^tree-node-[a-f0-9]{32}$/u.test(row.sceneId) || row.originRef?.sceneId !== row.sceneId
+    || !/^sha256:[a-f0-9]{64}$/u.test(row.sceneRevision || '') || !/^[a-f0-9]{64}$/u.test(idea.projectionHash || '')
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN)) return null;
+  return { schemaVersion: 'idea.sourceNavigation.v1', projectId: row.projectId, ideaId: row.ideaId, linkId: row.id,
+    originRef: { ...row.originRef }, sceneRevision: row.sceneRevision, projectionHash: idea.projectionHash };
+}
+
+async function openIdeaMeaningOrigin(target, isCurrent) {
+  const current = () => isCurrent()
+    && JSON.stringify(getIdeaMeaningOriginTarget(projectionInspectorState, target.linkId)) === JSON.stringify(target);
+  if (!current()) return false;
+  let scene = findTreeNodeById(treeRoot, target.originRef.sceneId);
+  if (!scene) {
+    const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: 'roman' });
+    if (!current() || result?.ok !== true || result.projectId !== target.projectId) return false;
+    scene = findTreeNodeById(result.root, target.originRef.sceneId);
+  }
+  if (!current() || getEffectiveDocumentId(scene) !== target.originRef.sceneId
+    || !['scene', 'chapter-file'].includes(getEffectiveDocumentKind(scene))) return false;
+  return openDocumentNode(scene, { expectedIdeaSource: target });
+}
+
+function renderIdeaMeaningOriginSources(parent, state, projection) {
+  const detail = projection.details;
+  if (detail.selectedState === 'missing') {
+    appendAtlasReportsRow(parent, 'Выбранная Idea недоступна', 'Загрузите сохранённые записи и выберите Idea ещё раз.'); return;
+  }
+  if (!Array.isArray(detail.originSources)) {
+    appendAtlasReportsRow(parent, detail.originLinkCount ? 'Источники Idea недоступны' : 'Нет связанных источников',
+      detail.originLinkCount ? 'Обновите источники Idea.' : 'Сохранённые авторские ссылки появятся здесь.'); return;
+  }
+  const offset = detail.originOffset || 0, rows = detail.originSources.slice(0, 24);
+  appendAtlasReportsRow(parent, `${offset + (rows.length ? 1 : 0)}–${offset + rows.length} из ${detail.originLinkCount} источников Idea`,
+    detail.originLinksComplete ? 'Все сохранённые ссылки' : 'Часть сохранённых ссылок');
+  const entry = getIdeaMeaningAuthorDraft(), revision = entry.revision;
+  for (const row of rows) {
+    const item = document.createElement('div'); item.className = 'right-rail-atlas-matrix-list';
+    const status = row.sourceState === 'current' ? 'Источник актуален' : row.sourceState === 'stale' ? 'Сохранённый источник изменился' : 'Источник недоступен';
+    appendAtlasReportsRow(item, row.label, `${row.sceneTitle} · ${row.originRef?.startOffset}–${row.originRef?.endOffset} · ${status}`);
+    const target = getIdeaMeaningOriginTarget(state, row.id), publication = captureAtlasPublication(null, true, false);
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.dataset.ideaOriginOpen = row.id; button.textContent = 'Открыть сцену'; button.disabled = !target;
+    button.setAttribute('aria-label', `Открыть источник Idea: ${row.label} · ${row.sceneTitle}`);
+    if (!target) button.title = 'Источник недоступен или требует обновления.';
+    const current = () => button.isConnected && parent.isConnected && publication() && entry.revision === revision
+      && currentRightTab === 'atlas' && currentAtlasSurface === 'projection';
+    button.addEventListener('click', async () => {
+      if (!target || button.disabled || !current()) return;
+      button.disabled = true; button.setAttribute('aria-busy', 'true');
+      try {
+        const opened = await openIdeaMeaningOrigin(target, current);
+        if (!opened && current()) updateStatusText('Источник Idea изменился или недоступен. Обновите источники Idea. Текущий текст остаётся в редакторе.', { visible: true });
+      } catch {
+        if (current()) updateStatusText('Не удалось открыть источник Idea. Обновите источники Idea. Текущий текст остаётся в редакторе.', { visible: true });
+      } finally {
+        if (current()) { button.disabled = !getIdeaMeaningOriginTarget(projectionInspectorState, row.id); button.setAttribute('aria-busy', 'false'); }
+      }
+    });
+    item.appendChild(button); parent.appendChild(item);
+  }
+  const publication = captureAtlasPublication();
+  for (const [label, next, disabled] of [['Предыдущие источники', Math.max(0, offset - 24), offset === 0],
+    ['Следующие источники', offset + 24, !detail.originHasMore || offset + 24 > 1000000]]) {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.textContent = label; button.disabled = disabled; button.dataset.ideaOriginPage = String(next);
+    button.addEventListener('click', () => {
+      if (button.disabled || !button.isConnected || !parent.isConnected || !publication() || entry.revision !== revision
+        || currentRightTab !== 'atlas' || currentAtlasSurface !== 'projection') return;
+      entry.views.idea.originOffset = next; entry.revision++; refreshProjectionInspector();
+    }); parent.appendChild(button);
+  }
+}
+
 function renderIdeaMeaningInspector(parent, state) {
   if (state.state !== 'ready' || state.projectId !== currentProjectId) {
     appendAtlasReportsRow(parent, 'Saved author details unavailable', state.projectId !== currentProjectId ? 'Load saved records for the current project.' : state.unavailableReason || state.state); return;
@@ -16479,7 +16561,7 @@ function renderIdeaMeaningInspector(parent, state) {
     }
     for (const row of rows) appendAtlasReportsRow(section, row.title,
       `${kind === 'idea' ? row.summary : row.interpretation} · ${kind === 'idea' ? row.originLinkCount + ' linked origins' : 'Explicit promotion from ' + (row.source?.ideaId || row.source?.originRef?.sceneId || '')}${row.contentTruncated ? ' · Truncated preview; full author text remains saved.' : ''}`);
-    for (const origin of detail.originLinks || []) appendAtlasReportsRow(section, 'Saved origin', `${origin.originRef.sceneId}:${origin.originRef.startOffset}–${origin.originRef.endOffset} · ${origin.originRef.sourceHash}`);
+    if (kind === 'idea') renderIdeaMeaningOriginSources(section, state, projection);
     for (const evidence of detail.occurrenceEvidence || []) appendAtlasReportsRow(section, 'Explicit origin evidence', `${evidence.ideaId} · ${evidence.linkId}`);
     if (detail.originLinkCount) appendAtlasReportsRow(section, `${detail.originLinks.length} of ${detail.originLinkCount} selected/view origins`, detail.originLinksComplete ? 'Complete' : 'Partial source list');
     for (const evidence of detail.promotionEvidence || []) appendAtlasReportsRow(section, 'Explicit promotion', `${evidence.meaningId} · ${evidence.source?.ideaId || evidence.source?.originRef?.sceneId || ''}`);

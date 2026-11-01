@@ -1,3 +1,5 @@
+CURRENT_IDEA_SOURCE_PHASE04: Same original delivery base87a475b3. Saved Idea origin source rows, exact existing document-open relay and repeated Main no-loss source checks implemented as unaccepted WIP. Actual whole10 files1588tests1586pass2fail, no skip/cancel/todo: stale current-editor namespace plus static exact payload marker; marker-only expectation corrected, original whole5pass. Renderer build0. Original14source inputs exact at terminal; runtime/Main and appended UI oracles executed. No current whole-green, native, CI,17qualification or fullMac acceptance.
+
 # Current bounded Mac work — Idea origin navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -1,3 +1,5 @@
+CURRENT_IDEA_NEXT_PHASE04: Preserve clean admitted source checkpoint; prospective continuation must admit necessary initial-branch compatibility in existing release CLI/contract before edit. Existing guard requires origin branch SHA and cannot admit genuine remote absence; diagnose with original owned bare Git fixture, keep every full source/terminal/gzip/TAP check and existing negative. Then current namespace producer, technical witnesses, exact checkpoint/early gates, fresh own native app/profile and complete29 software/delivery/literal merged proof. Original profiles/artifacts protected.
+
 # Current handoff — Idea origin navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS
