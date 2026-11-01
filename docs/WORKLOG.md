@@ -1,3 +1,9 @@
+## 2026-11-02 — Idea actual-caller counterexamples frozen
+
+- Whole new file27tests:3pass24fail0skip/todo/cancel on unchanged runtime1f33698b; rawdb6901b4, freezec4112d685748cb0b6ef1144c493008bf9041be0c1fa246a5d2516b9e51de772b. Actual legacy, generation and dirty-other no-loss positives pass; expected Idea relay/source guards fail.
+- Reused only original WP307 fixture definitions, complete actual packaged Main/Core/Stage10/registration/runner/bus. No old test body or production guard replaced. Minimal first setup bootstrap refusal preserved; corrected setup uses actual creation/link commands.
+- Preserve original26byte prefix and every existing test/source. Next: clean source continuation admission, then minimal Main validation and real registration relay; early real app and all required delivery proofs remain.
+
 ## 2026-11-02 — Plot closed; Idea source route admitted
 
 - Plot PR2189 closes at87a475b3 with closure826d3868, all original29candidate checks, raw primary PR20/main20 plus operational close1 and fresh literal merged native07 warm/cold0; full17Mac remainUNKNOWN.

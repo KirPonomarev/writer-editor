@@ -1,6 +1,8 @@
 # Idea saved-origin scene navigation
 
-STATUS: CAUSAL_BASELINE_PENDING_NO_RUNTIME_CHANGE
+STATUS: CAUSAL_RED_FROZEN_RUNTIME_PENDING
+FROZEN_CAUSAL_INPUTS_SHA256: c4112d685748cb0b6ef1144c493008bf9041be0c1fa246a5d2516b9e51de772b
+CURRENT_CAUSAL_RESULT: Whole27tests3pass24fail0skip0todo0cancel on unchanged runtime1f33698b; rawdb6901b4a7715dd3b0f571677932f8a07aa40ce3a81bf3b38b67b5a253082e7d. Actual legacy/generation/dirty-other-save controls pass. Registration drops expectation; Main ignores forged/stale Idea origin and late manifest. No native or implementation acceptance.
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One reachable saved Idea origin to its exact current source scene; complete V6 DNA5 macOS release remains unaccepted.
 TASK_ID: YALKEN_IDEA_ORIGIN_NAVIGATION_20261101

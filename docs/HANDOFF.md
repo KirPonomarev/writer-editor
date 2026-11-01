@@ -11,6 +11,8 @@ ENV PR2187 is closed at8038acda, immutable ENV_DELIVERY_CLOSURE_01.json SHAb9c23
 
 NEXT_ACTION: Freeze and execute the actual registered-caller/Main Idea-origin causal baseline against unchanged runtime; admit runtime only after reviewed RED and clean same-task checkpoint.
 
+Current frozen Idea baseline executes27actual registered-caller/Main tests:3positive controls and24expected failures, no skip/todo/cancel; rawdb6901b4 and input pinc4112d685748cb0b6ef1144c493008bf9041be0c1fa246a5d2516b9e51de772b. The whole actual packaged V12 bootstrap/Create Idea/Link records and real IPC/Kernel route execute before counterexamples. First minimal setup probe lacked Stage10 bootstrap and is retained as a method limitation, not a product failure. Runtime and old tests remain unchanged; only reviewed source guard/relay implementation is next after clean continuation preflight.
+
 All17fullMac qualification rows remain UNKNOWN; candidate UNFROZEN/release NOT_READY, complete V6 DNA5 remains ACTIVE. Word nativeOffice PAUSED, Black Box follows full Mac, Linux/Windows only existing boundaries and mandatory CI. Sole executor; old profiles/data/failures/leases/controllers remain protected.
 
 HISTORICAL_CHECKPOINTS_BOUNDARY: Every older block and unversioned CURRENT label below records its named original checkpoint; none overrides the current block above. All original bytes and failures remain for traceability.
