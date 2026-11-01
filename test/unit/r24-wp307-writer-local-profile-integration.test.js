@@ -4989,8 +4989,14 @@ function nativeSaveSystemHostPath(t, canonical) {
 }
 function nativeSaveSystemObserve(t, h, result, before, label) {
   const after = nativeSaveSystemSnapshot(h);
-  t.diagnostic(JSON.stringify({ nativeSaveSystem: label, result, dialogCalls: h.dialogCalls, targetExists: fs.existsSync(h.target), before, after,
-    actualPackets: h.sent.filter(([channel]) => ['status-update', 'set-dirty'].includes(channel)), nativeAcceptance: false }));
+  const fullEvidence = Buffer.from(JSON.stringify({ nativeSaveSystem: label, result, dialogCalls: h.dialogCalls, targetExists: fs.existsSync(h.target), before, after,
+    actualPackets: h.sent.filter(([channel]) => ['status-update', 'set-dirty'].includes(channel)), nativeAcceptance: false }), 'utf8');
+  // Preserve every diagnostic byte while keeping the unchanged test runner output bounded.
+  t.diagnostic(JSON.stringify({ nativeSaveSystem: label, fullEvidence: {
+    encoding: 'gzip-base64-json-v1', uncompressedUtf8Bytes: fullEvidence.length,
+    sha256: crypto.createHash('sha256').update(fullEvidence).digest('hex'),
+    data: require('node:zlib').gzipSync(fullEvidence).toString('base64'),
+  } }));
   return after;
 }
 for (const commandId of ['cmd.project.saveAs', 'cmd.project.save']) for (const spelling of ['native', 'canonical']) {

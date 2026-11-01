@@ -1151,7 +1151,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "121a02cd9c3ab6839dbe2140e176a29eb51018d83117b91593298a3c84b2b33e"
+        "sha256": "db086cfc4def735d2c6cf5a913fc60a1f604d29b587711045c0b2eb596b17d6e"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -2819,15 +2819,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "24ecc6442bd27e68184e65e0920aaff571a071725c56663c2d021d1ef9d9f407"
+        "sha256": "f5692063740129b2a3c32c9b69feacdb572efc32d66e7955b5318ebe07c9c53d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "eda4c867345bd6b18abaa3502487cfc986001ce4b6392810aabf280e058148f4"
+        "sha256": "4ae4eb1fb36455b4df82ccd98c6e0a5b795049563ea18c5d8ab091c4b8871d42"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4037337674f68c631a38cfc079b2a7389ee4c36a74c5a1624fd8b2a39d3dc77f"
+        "sha256": "608b5cc0d3ac3fb48ed331fac54cadba06d5ee2f5c8be56455939a899e0d3b3e"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3367,7 +3367,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "aa7454fcf8faac0a3d1693abffdf95a729b243d141a4775daa9075e57f9984a1"
+        "sha256": "1422e1452faa1d46b2fd81c46a695b46766e7e1cb195e792372740ae9fbeceb2"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3499,7 +3499,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "ebf988d75d5b02a3f5e81d41d0ab7e043dbb60f3c9d6d36401af191027410969"
+        "sha256": "eab2453b9bde0f024cc0b7c14d7dc5bc344ff40fa622cc3d74f87095a9f18bf5"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4075,7 +4075,11 @@
       },
       {
         "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-        "sha256": "681359567fa7f042bf508ed355332b5a2c0075808b0d21b41af8320deeb3585d"
+        "sha256": "cba5bd90bd40850154778701acffb158dc0f1dc247bc983f52f810e1cb5c0144"
+      },
+      {
+        "path": "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
+        "sha256": "180eed58dc07dc4c839be4311e0376f84f9d8dcb868ce30baaf74076111f80ec"
       }
     ],
     "followupRepair": {

@@ -133120,15 +133120,15 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "24ecc6442bd27e68184e65e0920aaff571a071725c56663c2d021d1ef9d9f407"
+      "sha256": "f5692063740129b2a3c32c9b69feacdb572efc32d66e7955b5318ebe07c9c53d"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "eda4c867345bd6b18abaa3502487cfc986001ce4b6392810aabf280e058148f4"
+      "sha256": "4ae4eb1fb36455b4df82ccd98c6e0a5b795049563ea18c5d8ab091c4b8871d42"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "4037337674f68c631a38cfc079b2a7389ee4c36a74c5a1624fd8b2a39d3dc77f"
+      "sha256": "608b5cc0d3ac3fb48ed331fac54cadba06d5ee2f5c8be56455939a899e0d3b3e"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -133140,11 +133140,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "fe70e8ecb90e0056657a58c7425bb795eb6c90041d12aa55737c0b9330adb454"
+      "sha256": "f171d43e57ccd026a7ffd9a5c47367791cfcf3962783300253eefff6b0e906f5"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "aa7454fcf8faac0a3d1693abffdf95a729b243d141a4775daa9075e57f9984a1"
+      "sha256": "1422e1452faa1d46b2fd81c46a695b46766e7e1cb195e792372740ae9fbeceb2"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -133156,11 +133156,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "sha256": "121a02cd9c3ab6839dbe2140e176a29eb51018d83117b91593298a3c84b2b33e"
+      "sha256": "db086cfc4def735d2c6cf5a913fc60a1f604d29b587711045c0b2eb596b17d6e"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "73a8c9f86d44257c39c022830542fc295414d3cf211ff4bac1f0f5765e8a8028"
+      "sha256": "a69bcd1e720dfe5b3e2061c2bf183ffb896c7fd389a1a340179fefa4b83a887c"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -133208,11 +133208,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "a2b8fecb08a4321710c79fa4e4600c9774af779155b8c38a705f7e334b6b6b09"
+      "sha256": "9ffb50c2ac29197be6e35833609c1c2362dbe269551dd97b86c29c8217451358"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "d0ba9828cf4a27813b2fbeebf91671aff6d67b51bfc5cfa73383bfcd9c54fb9a"
+      "sha256": "977c4fd520eb7b80e2556e5d9223f56245c859df867753527adb99c0c39e6e39"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -133300,7 +133300,7 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "ebf988d75d5b02a3f5e81d41d0ab7e043dbb60f3c9d6d36401af191027410969"
+      "sha256": "eab2453b9bde0f024cc0b7c14d7dc5bc344ff40fa622cc3d74f87095a9f18bf5"
     },
     {
       "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
@@ -133460,13 +133460,17 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-      "sha256": "681359567fa7f042bf508ed355332b5a2c0075808b0d21b41af8320deeb3585d"
+      "sha256": "cba5bd90bd40850154778701acffb158dc0f1dc247bc983f52f810e1cb5c0144"
+    },
+    {
+      "path": "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
+      "sha256": "180eed58dc07dc4c839be4311e0376f84f9d8dcb868ce30baaf74076111f80ec"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "881377c2c34a4dc6172835c3925fc4055750ed00256e516496334b6c389a0f77"
+      "sha256": "1cfa85310dfad11f12e759383d2c8301ff0de0c2b4ff9b8da3e7436859b49b29"
     }
   ]
 });
