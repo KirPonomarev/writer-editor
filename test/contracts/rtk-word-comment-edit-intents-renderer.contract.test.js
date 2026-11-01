@@ -89,7 +89,8 @@ test('oversized real paste leaves author text intact but never emits a truncated
 test('snapshot bridge carries the live bounded ledger and forwards only SAVED receipts without clearing newer dirty text',()=>{
   const fs=require('node:fs'),vm=require('node:vm');
   const source=fs.readFileSync(require('node:path').join(__dirname,'../../src/renderer/editor.js'),'utf8');
-  const start=source.indexOf('function composeEditorSnapshot()'),end=source.indexOf('\n}',start)+2;
+  const start=source.indexOf('function composeEditorSnapshot('),end=source.indexOf('\n}',start)+2;
+  assert.ok(start>=0&&end>start, 'actual optional-argument snapshot function must be loaded');
   const ackStart=source.indexOf('window.electronAPI.onSetDirty((message) => {'),ackEnd=source.indexOf('\n  });',ackStart)+6;
   let callback, checkpoints=0, navigatorReads=0;
   const context={currentProjectId:'p',currentDocumentId:'s',currentTreeContentPublicationId:null,currentRightTab:'comments',isTiptapMode:true,localEditGeneration:4,localDirty:true,lastAckedGeneration:0,

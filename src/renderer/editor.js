@@ -1,5 +1,8 @@
 import wordListNumbering from '../core/word-list-numbering-v1.cjs';
 import wordParagraphLayout from '../core/word-paragraph-layout-v1.cjs';
+import { validateFullEnvironmentConfiguration, createFullEnvironmentBaseline, createFullEnvironmentProfile, diffFullEnvironmentConfigurations,
+  canPublishFullEnvironment } from './design-os/designOsEnvironmentEpochs.mjs';
+import { decodeEnvironmentEpochHistory } from './design-os/designOsFormConfiguration.mjs';
 import {
   applyTiptapStoryBody,
   applyTiptapUserBookmarkPublication,
@@ -1190,6 +1193,19 @@ let currentTreeContentPublicationId = '';
 let currentDocumentKind = null;
 let currentDocumentTitle = '';
 let currentProjectId = '';
+let fullEnvironmentFormGeneration = 0;
+let fullEnvironmentComposing = false;
+let fullEnvironmentProjecting = false;
+let fullEnvironmentToolbarProjection = null;
+let fullEnvironmentWindowBinding = null;
+let fullEnvironmentPendingWindow = null;
+let fullEnvironmentReadyProject = '';
+let fullEnvironmentHydratedProject = '';
+let fullEnvironmentLastSignal = Promise.resolve();
+let fullEnvironmentSyncPromise = null;
+let fullEnvironmentSyncWanted = false;
+let fullEnvironmentHydrationPromise = null;
+let fullEnvironmentView = null;
 let activeDocumentRevealRequested = false;
 let navigatorSelectionState = createNavigatorSelectionState();
 let spatialLayoutState = null;
@@ -3839,6 +3855,7 @@ function resolveToolbarConfiguratorState(projectId = currentProjectId) {
 }
 
 let configuratorBucketState = createToolbarConfiguratorSeedState();
+let toolbarConfiguratorProjectId = '';
 let activeConfiguratorDragPayload = null;
 let activeConfiguratorDragElement = null;
 let activeConfiguratorBucketItemSelection = {
@@ -5404,6 +5421,7 @@ function handleToggleLayoutPreview() {
   });
   syncLayoutPreviewVisibility();
   updateInspectorSnapshot();
+  noteFullEnvironmentFormChanged();
   return {
     performed: true,
     enabled: activeLayoutPreviewState.enabled,
@@ -5420,6 +5438,7 @@ function handleToggleLayoutPreviewFrame() {
     syncLayoutPreviewVisibility();
   }
   updateInspectorSnapshot();
+  noteFullEnvironmentFormChanged();
   return {
     performed: true,
     frameMode: activeLayoutPreviewState.frameMode,
@@ -5557,6 +5576,7 @@ function persistFloatingToolbarState() {
   try {
     localStorage.setItem(FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(floatingToolbarState));
   } catch {}
+  noteFullEnvironmentFormChanged();
 }
 
 function readFloatingToolbarItemOffsets() {
@@ -5577,6 +5597,7 @@ function persistFloatingToolbarItemOffsets() {
   try {
     localStorage.setItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY, JSON.stringify(toolbarItemOffsets));
   } catch {}
+  noteFullEnvironmentFormChanged();
 }
 
 function getFloatingToolbarItemOffsetKey(item) {
@@ -5633,6 +5654,7 @@ function stopFloatingToolbarItemOffsetDrag() {
     originOffset: 0,
     moved: false,
   };
+  noteFullEnvironmentFormChanged();
   if (shouldReleaseClickSuppression) {
     window.setTimeout(() => {
       toolbarItemSuppressClickOnce = false;
@@ -5959,9 +5981,12 @@ function projectMainFloatingToolbarRuntime(reason = 'projection') {
   if (!toolbarRuntimeRegistry || typeof applyToolbarActiveProfile !== 'function') {
     return null;
   }
+  const projection = fullEnvironmentToolbarProjection?.projectId === currentProjectId ? fullEnvironmentToolbarProjection : null;
+  const runtimeProfileState = projection ? { ...configuratorBucketState, activeToolbarProfile: projection.profile,
+    toolbarProfiles: { ...configuratorBucketState.toolbarProfiles, [projection.profile]: projection.toolbarIds } } : configuratorBucketState;
   const snapshot = applyToolbarActiveProfile(
     toolbarRuntimeRegistry,
-    configuratorBucketState,
+    runtimeProfileState,
     {
       reason,
       currentProjectId,
@@ -6172,6 +6197,7 @@ function persistLeftFloatingToolbarState() {
   try {
     localStorage.setItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(leftFloatingToolbarState));
   } catch {}
+  noteFullEnvironmentFormChanged();
 }
 
 function readLeftToolbarButtonOffsets() {
@@ -6192,6 +6218,7 @@ function persistLeftToolbarButtonOffsets() {
   try {
     localStorage.setItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY, JSON.stringify(leftToolbarButtonOffsets));
   } catch {}
+  noteFullEnvironmentFormChanged();
 }
 
 function getLeftToolbarButtonOffsetKey(button) {
@@ -6242,6 +6269,7 @@ function stopLeftToolbarButtonOffsetDrag() {
     originOffset: 0,
     moved: false,
   };
+  noteFullEnvironmentFormChanged();
   if (shouldReleaseClickSuppression) {
     window.setTimeout(() => {
       leftToolbarButtonSuppressClickOnce = false;
@@ -6435,6 +6463,7 @@ function stopLeftFloatingToolbarInteraction() {
   };
   leftToolbarShell.classList.remove('is-dragging');
   updateLeftTransformingClass();
+  noteFullEnvironmentFormChanged();
 }
 
 function initializeLeftToolbarButtonOffsetTuning() {
@@ -6682,6 +6711,11 @@ function initializeLeftFloatingToolbarDragFoundation() {
   });
 
   window.addEventListener('resize', () => {
+    if (isFullEnvironmentOwnedResize()) return;
+    if (fullEnvironmentReadyProject === currentProjectId && currentProjectId) {
+      applyLeftFloatingToolbarState(leftFloatingToolbarState, false); noteFullEnvironmentFormChanged();
+      scheduleLeftToolbarAnchorUpdate(); return;
+    }
     restoreLeftFloatingToolbarPosition();
     scheduleLeftToolbarAnchorUpdate();
   });
@@ -6758,10 +6792,12 @@ function getToolbarConfiguratorEntryAriaLabel(entry) {
 }
 
 function getToolbarConfiguratorActiveProfile() {
+  if (fullEnvironmentToolbarProjection?.projectId === currentProjectId) return fullEnvironmentToolbarProjection.profile;
   return normalizeToolbarConfiguratorProfileName(configuratorBucketState?.activeToolbarProfile);
 }
 
 function getToolbarConfiguratorProfileIds(profileName = getToolbarConfiguratorActiveProfile()) {
+  if (fullEnvironmentToolbarProjection?.projectId === currentProjectId && fullEnvironmentToolbarProjection.profile === profileName) return fullEnvironmentToolbarProjection.toolbarIds;
   const normalizedProfileName = normalizeToolbarConfiguratorProfileName(profileName);
   const profileIds = configuratorBucketState?.toolbarProfiles?.[normalizedProfileName];
   return Array.isArray(profileIds) ? profileIds : [];
@@ -7125,6 +7161,7 @@ function renderToolbarConfiguratorProfileSwitch() {
 }
 
 function commitToolbarConfiguratorState(nextState) {
+  fullEnvironmentToolbarProjection = null;
   const normalizedState = createToolbarConfiguratorState(nextState);
   configuratorBucketState = normalizedState;
   reconcileToolbarConfiguratorBucketItemSelection();
@@ -7135,10 +7172,12 @@ function commitToolbarConfiguratorState(nextState) {
   renderToolbarConfiguratorProfileSwitch();
   renderToolbarConfiguratorBuckets();
   projectMainFloatingToolbarRuntime('configurator-commit');
+  noteFullEnvironmentFormChanged();
   return normalizedState;
 }
 
 function adoptToolbarConfiguratorState(projectId = currentProjectId) {
+  fullEnvironmentToolbarProjection = null;
   const resolution = resolveToolbarConfiguratorState(projectId);
   if (resolution.shouldConsumeLegacySource) {
     consumeLegacyConfiguratorBuckets(localStorage);
@@ -7147,6 +7186,7 @@ function adoptToolbarConfiguratorState(projectId = currentProjectId) {
     writeToolbarConfiguratorStoredState(projectId, resolution.state);
   }
   configuratorBucketState = resolution.state;
+  toolbarConfiguratorProjectId = normalizeProjectId(projectId);
   reconcileToolbarConfiguratorBucketItemSelection();
   renderToolbarConfiguratorLibrary();
   renderToolbarConfiguratorProfileSwitch();
@@ -7550,6 +7590,7 @@ function stopFloatingToolbarInteraction() {
   };
   toolbarShell.classList.remove('is-dragging');
   updateTransformingClass();
+  noteFullEnvironmentFormChanged();
 }
 
 function initializeFloatingToolbarItemOffsetTuning() {
@@ -7935,6 +7976,11 @@ function initializeFloatingToolbarDragFoundation() {
   });
 
   window.addEventListener('resize', () => {
+    if (isFullEnvironmentOwnedResize()) return;
+    if (fullEnvironmentReadyProject === currentProjectId && currentProjectId) {
+      applyFloatingToolbarState(floatingToolbarState, false); noteFullEnvironmentFormChanged();
+      scheduleToolbarAnchorUpdate(); return;
+    }
     restoreFloatingToolbarPosition();
     scheduleToolbarAnchorUpdate();
   });
@@ -7957,8 +8003,8 @@ registerProjectCommands(commandRegistry, {
   electronAPI: window.electronAPI,
   uiActions: {
     openSettings: () => openSettingsModal(),
-    safeResetShell: () => performSafeResetShell(),
-    restoreLastStableShell: () => performRestoreLastStableShell(),
+    safeResetShell: () => openFullEnvironmentSource('RESET'),
+    restoreLastStableShell: () => openFullEnvironmentSource('LAST_STABLE'),
     openDiagnostics: () => openDiagnosticsModal(),
     openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
     switchMode: (mode) => applyMode(mode),
@@ -8156,7 +8202,7 @@ async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
 }
 
 async function invokeSaveLifecycleSignalBridge(signalId, payload = {}) {
-  if (signalId !== 'signal.localDirty.set' && signalId !== 'signal.autoSave.request') {
+  if (signalId !== 'signal.localDirty.set' && signalId !== 'signal.autoSave.request' && signalId !== 'signal.environmentForm.changed') {
     return null;
   }
   if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
@@ -8802,7 +8848,15 @@ function composeDocumentContent() {
   });
 }
 
-function composeEditorSnapshot() {
+function composeEditorSnapshot(environmentRequest = null) {
+  if (environmentRequest?.environmentConfigurationWindow) {
+    return { projectId: typeof currentProjectId === 'string' ? currentProjectId : '',
+      documentId: typeof currentDocumentId === 'string' ? currentDocumentId : '', treeContentPublicationId: currentTreeContentPublicationId,
+      generation: localEditGeneration, environmentConfiguration: composeFullEnvironmentMetadata(environmentRequest.environmentConfigurationWindow),
+      ...(environmentRequest.environmentProjectionOperationId ? {
+        environmentProjectionOperationId: prepareFullEnvironmentWindowProjection(environmentRequest),
+      } : {}) };
+  }
   return {
     projectId: typeof currentProjectId === 'string' ? currentProjectId : '',
     documentId: typeof currentDocumentId === 'string' ? currentDocumentId : '',
@@ -9527,6 +9581,7 @@ function persistSpatialLayoutState(state, projectId = currentProjectId) {
     localStorage.setItem(getSpatialLayoutStorageKey(normalizedProjectId), JSON.stringify(nextState));
   } catch {}
   spatialLayoutState = nextState;
+  noteFullEnvironmentFormChanged();
   return nextState;
 }
 
@@ -9811,7 +9866,7 @@ function toggleLeftRailCollapsed() {
 }
 
 function updateSpatialLayoutForViewportChange() {
-  const storedState = readSpatialLayoutState(currentProjectId);
+  const storedState = fullEnvironmentReadyProject === currentProjectId && currentProjectId ? null : readSpatialLayoutState(currentProjectId);
   const resolvedState = normalizeSpatialLayoutState(storedState || spatialLayoutState, getSpatialLayoutViewportWidth());
   applySpatialLayoutState(resolvedState, { persist: false, projectId: currentProjectId });
 }
@@ -11222,6 +11277,7 @@ async function loadTree() {
         invalidateAtlasPublications();
         invalidateDocxImportAttempt();
         currentProjectId = nextProjectId;
+        fullEnvironmentReadyProject = ''; fullEnvironmentHydratedProject = ''; fullEnvironmentToolbarProjection = null;
         expandedNodesByTab = new Map();
         navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
       }
@@ -13499,9 +13555,11 @@ async function replaceVisibleProjectSearchResults() {
 }
 
 function applyLeftTab(tab) {
+  const environmentChanged = currentLeftTab !== tab;
   const wasNotesWorkspaceVisible = notesWorkspace instanceof HTMLElement && notesWorkspace.hidden !== true;
   const wasSearchWorkspaceVisible = projectSearchWorkspace instanceof HTMLElement && projectSearchWorkspace.hidden !== true;
   currentLeftTab = tab;
+  if (environmentChanged) noteFullEnvironmentFormChanged();
   for (const button of leftTabButtons) {
     const active = button.dataset.leftTab === tab;
     button.classList.toggle('is-active', active);
@@ -13760,7 +13818,9 @@ function syncRightRailCompositionState(tab) {
 
 function applyRightTab(tab) {
   tab = normalizeRightTab(tab);
+  const environmentChanged = currentRightTab !== tab;
   currentRightTab = tab;
+  if (environmentChanged) noteFullEnvironmentFormChanged();
   syncRightRailCompositionState(tab);
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
@@ -21435,6 +21495,7 @@ function initializeReviewSurface() {
 }
 
 function applyMode(mode) {
+  const environmentChanged = currentMode !== mode;
   currentMode = mode;
   document.body.dataset.mode = mode;
   for (const button of modeButtons) {
@@ -21460,7 +21521,7 @@ function applyMode(mode) {
       normalizedSpatialState.rightSidebarWidth !== currentSpatialState.rightSidebarWidth ||
       normalizedSpatialState.viewportMode !== currentSpatialState.viewportMode;
     if (hasSpatialDrift) {
-      applySpatialLayoutState(normalizedSpatialState, { persist: true, projectId: currentProjectId });
+      applySpatialLayoutState(normalizedSpatialState, { persist: !fullEnvironmentProjecting, projectId: currentProjectId });
     }
   }
   syncLayoutPreviewVisibility();
@@ -21476,6 +21537,7 @@ function applyMode(mode) {
       showWriterHomeSurface();
     }
   }
+  if (environmentChanged) noteFullEnvironmentFormChanged();
 }
 
 function resolveSafeResetFontFamily() {
@@ -22055,7 +22117,7 @@ function buildSettingsAggregationSnapshot() {
     fontSizePx: currentFontSizePx,
     lineHeight: lineHeightSelect?.value || '',
     wordWrap: wordWrapEnabled,
-    viewMode: styleSelect?.value || localStorage.getItem('editorViewMode') || 'default',
+    viewMode: document.body.classList.contains('focus-mode') ? 'focus' : 'default',
     editorZoom,
     projectId: currentProjectId,
     bookFormat: profile.formatId || 'A4',
@@ -22295,6 +22357,405 @@ async function runSavedEnvironmentEpoch(action) {
   }
 }
 
+function hasFullEnvironmentAuthoringPending() {
+  return Boolean(wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending
+    || metadataUpdateDebounceId || metadataUpdatePending || metadataUpdateInFlight || treeMutationPending || pendingRevisionBusy
+    || pendingDocxImportAttempt?.phase === 'accepting' || pendingDocxImportAttempt?.phase === 'opening' || manualMapHasRetainedDraft()
+    || [...sceneLanguageAuthorDrafts.values()].some(entry => entry.fields.languageCode || entry.pending?.active)
+    || [...ideaMeaningAuthorDrafts.values()].some(entry => entry.pending?.active
+      || ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation'].some(key => Boolean(entry.fields[key]))));
+}
+
+function readFullEnvironmentForm(binding = fullEnvironmentWindowBinding) {
+  if (!binding || !editor || !toolbar || !toolbarShell || !leftToolbar || !sidebar) throw Error('E_FULL_ENV_MISSING_SURFACE');
+  if (!toolbarRuntimeRegistry?.toolbarShell || !toolbarRuntimeRegistry.controlsContainer
+    || typeof toolbarRuntimeProjectionModule.resolveToolbarRuntimeSnapshot !== 'function') throw Error('E_FULL_ENV_MISSING_TOOLBAR_RUNTIME');
+  const toolbarSnapshot = toolbarRuntimeProjectionModule.resolveToolbarRuntimeSnapshot(toolbarRuntimeRegistry);
+  if (!Array.isArray(toolbarSnapshot?.visibleItemIds) || toolbarSnapshot.failClosed) throw Error('E_FULL_ENV_MISSING_TOOLBAR_RUNTIME');
+  const layout = spatialLayoutState || getSpatialLayoutBaselineForViewport(), focus = document.body.classList.contains('focus-mode');
+  const compact = toolbar.classList.contains(TOOLBAR_COMPACT_CLASS);
+  return validateFullEnvironmentConfiguration({ schemaVersion: 'yalken.environmentConfiguration.v2', workspace: currentMode.toUpperCase(),
+    shellMode: floatingToolbarState.isDetached || leftFloatingToolbarState.isDetached ? 'SPATIAL_ADVANCED'
+      : compact || getSpatialLayoutMode() !== 'desktop' ? 'COMPACT_DOCKED' : 'CALM_DOCKED',
+    profile: focus ? 'FOCUS' : compact ? 'COMPACT' : 'BASELINE', keymap: 'NATIVE_V1',
+    composition: { profile: toolbarRuntimeRegistry.toolbarShell.dataset?.toolbarProfile,
+      toolbarIds: [...toolbarSnapshot.visibleItemIds], surfaces: ['navigator', 'editor', 'inspector'] },
+    layout: { leftWidth: layout.leftSidebarWidth, rightWidth: layout.rightSidebarWidth, leftCollapsed: layout.leftCollapsed,
+      rightCollapsed: layout.rightCollapsed, leftTab: currentLeftTab, rightTab: currentRightTab,
+      toolbar: { ...floatingToolbarState }, leftToolbar: { ...leftFloatingToolbarState },
+      toolbarOffsets: Object.entries(toolbarItemOffsets).map(([key, value]) => ({ key, value })),
+      leftToolbarOffsets: Object.entries(leftToolbarButtonOffsets).map(([key, value]) => ({ key, value })) },
+    presentation: { theme: document.body.classList.contains('dark-theme') ? 'dark' : 'light', wordWrap: wordWrapEnabled,
+      fontFamily: fontSelect?.value || editor.style.fontFamily, fontWeight: weightSelect?.value || 'light', fontSize: currentFontSizePx,
+      lineHeight: Number(editor.style.lineHeight || lineHeightSelect?.value || '1'), viewMode: focus ? 'focus' : 'default', zoom: editorZoom,
+      compact, previewEnabled: activeLayoutPreviewState.enabled, previewFrame: activeLayoutPreviewState.frameMode }, window: { ...binding } });
+}
+
+function composeFullEnvironmentMetadata(binding) {
+  let configuration = null;
+  try { configuration = readFullEnvironmentForm(binding); } catch { /* Null is an explicit invalid projection, never a baseline substitute. */ }
+  return { configuration, formGeneration: fullEnvironmentFormGeneration, composing: fullEnvironmentComposing || legacyCompositionActive,
+    authoringPending: hasFullEnvironmentAuthoringPending() };
+}
+
+function prepareFullEnvironmentWindowProjection(request) {
+  if (localDirty || localEditGeneration !== lastAckedGeneration || fullEnvironmentComposing || legacyCompositionActive
+    || hasFullEnvironmentAuthoringPending() || !request.environmentProjectionTargetWindow) return '';
+  if (typeof request.environmentProjectionOperationId !== 'string'
+    || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u.test(request.environmentProjectionOperationId)) return '';
+  const configuration = readFullEnvironmentForm(request.environmentConfigurationWindow);
+  const target = validateFullEnvironmentConfiguration({ ...configuration, window: request.environmentProjectionTargetWindow });
+  fullEnvironmentPendingWindow = { operationId: request.environmentProjectionOperationId, projectId: currentProjectId, window: target.window };
+  return request.environmentProjectionOperationId;
+}
+
+function isFullEnvironmentOwnedResize() {
+  return fullEnvironmentPendingWindow?.projectId === currentProjectId
+    && window.innerWidth === fullEnvironmentPendingWindow.window.viewportWidth && window.innerHeight === fullEnvironmentPendingWindow.window.viewportHeight;
+}
+
+function fullEnvironmentToken(requestId, available = false) {
+  return { projectId: currentProjectId, documentId: currentDocumentId || '', publicationId: currentTreeContentPublicationId,
+    editGeneration: localEditGeneration, formGeneration: fullEnvironmentFormGeneration, requestId, capabilityAvailable: available,
+    dirty: localDirty || localEditGeneration !== lastAckedGeneration, composing: fullEnvironmentComposing || legacyCompositionActive,
+    authoringPending: hasFullEnvironmentAuthoringPending(), profile: window.__PRODUCT_PROFILE };
+}
+
+function applyFullEnvironmentForm(input, expected, available = false) {
+  const configuration = validateFullEnvironmentConfiguration(input);
+  if (!canPublishFullEnvironment(expected, fullEnvironmentToken(expected.requestId, available))) throw Error('E_FULL_ENV_PRESENTATION_STALE');
+  const p = configuration.presentation, l = configuration.layout, weight = FONT_WEIGHT_PRESETS[p.fontWeight];
+  fullEnvironmentProjecting = true;
+  try {
+    fullEnvironmentWindowBinding = configuration.window;
+    fullEnvironmentToolbarProjection = { projectId: currentProjectId, profile: configuration.composition.profile,
+      toolbarIds: configuration.composition.toolbarIds };
+    applyTheme(p.theme, false); applyWordWrap(p.wordWrap, false); applyViewMode(p.viewMode, false);
+    editor.style.fontFamily = p.fontFamily; editor.style.fontSize = `${p.fontSize}px`;
+    editor.style.fontWeight = weight.weight; editor.style.fontStretch = weight.stretch; editor.style.letterSpacing = weight.spacing;
+    editor.style.lineHeight = String(p.lineHeight);
+    if (fontSelect) fontSelect.value = p.fontFamily;
+    if (weightSelect) weightSelect.value = p.fontWeight;
+    if (lineHeightSelect) { ensureSelectHasOption(lineHeightSelect, String(p.lineHeight)); lineHeightSelect.value = String(p.lineHeight); }
+    setCurrentFontSize(p.fontSize); setEditorZoom(p.zoom, false); setToolbarCompactMode(p.compact);
+    applyMode(configuration.workspace.toLowerCase()); applyLeftTab(l.leftTab); applyRightTab(l.rightTab);
+    applySpatialLayoutState({ version: SPATIAL_LAYOUT_VERSION, projectId: currentProjectId, leftSidebarWidth: l.leftWidth,
+      rightSidebarWidth: l.rightWidth, leftCollapsed: l.leftCollapsed, rightCollapsed: l.rightCollapsed }, { persist: false, projectId: currentProjectId });
+    toolbarItemOffsets = Object.fromEntries(l.toolbarOffsets.map(row => [row.key, row.value]));
+    leftToolbarButtonOffsets = Object.fromEntries(l.leftToolbarOffsets.map(row => [row.key, row.value]));
+    applyFloatingToolbarState(l.toolbar, false); applyLeftFloatingToolbarState(l.leftToolbar, false); applyLeftToolbarButtonOffsets();
+    activeLayoutPreviewState = createLayoutPreviewState({ ...activeLayoutPreviewState, enabled: p.previewEnabled, frameMode: p.previewFrame });
+    renderToolbarConfiguratorLibrary(); renderToolbarConfiguratorProfileSwitch(); renderToolbarConfiguratorBuckets();
+    projectMainFloatingToolbarRuntime('environment-projection'); syncLayoutPreviewVisibility(); syncLiteralToolbarDisplays();
+    if (settingsThemeSelect) settingsThemeSelect.value = p.theme;
+    if (settingsWrapSelect) settingsWrapSelect.value = p.wordWrap ? 'on' : 'off';
+    renderSettingsAggregation();
+  } finally { fullEnvironmentProjecting = false; }
+  if (!canPublishFullEnvironment(expected, fullEnvironmentToken(expected.requestId, available))
+    || JSON.stringify(readFullEnvironmentForm(configuration.window)) !== JSON.stringify(configuration)) throw Error('E_FULL_ENV_HEALTH_MISMATCH');
+}
+// FULL_ENVIRONMENT_FORM_END
+
+function noteFullEnvironmentFormChanged({ sync = true } = {}) {
+  if (fullEnvironmentProjecting) return;
+  fullEnvironmentFormGeneration += 1;
+  if (fullEnvironmentView) fullEnvironmentView.previewBinding = null;
+  if (!currentProjectId || !window.electronAPI?.invokeSaveLifecycleSignalBridge) return;
+  if (floatingToolbarInteractionState.active || leftFloatingToolbarInteractionState.active || toolbarItemOffsetDragState.active
+    || leftToolbarButtonOffsetDragState.active || spatialResizeDragState) sync = false;
+  fullEnvironmentLastSignal = invokeSaveLifecycleSignalBridge('signal.environmentForm.changed', {
+    projectId: currentProjectId, generation: fullEnvironmentFormGeneration, composing: fullEnvironmentComposing || legacyCompositionActive,
+  });
+  if (sync && fullEnvironmentReadyProject === currentProjectId) {
+    fullEnvironmentSyncWanted = true;
+    queueMicrotask(() => { void syncFullEnvironmentCurrent(); });
+  }
+}
+
+function fullEnvironmentPayload(projection) {
+  return { version: 2, expectedRevision: projection.revision, expectedStateDigest: projection.stateDigest,
+    expectedConfigurationGeneration: projection.configurationGeneration, expectedFormGeneration: projection.formGeneration };
+}
+async function readFullEnvironmentProjection() {
+  const projectId = currentProjectId, response = await invokeWorkspaceQueryBridge(ENVIRONMENT_EPOCH_QUERY_ID, { configurationVersion: 2 });
+  const p = response?.settingsEnvironmentEpochs;
+  if (!response?.ok || projectId !== currentProjectId || p?.projectId !== projectId || p.schemaVersion !== 'yalken.environmentEpochHistory.v2'
+    || !Number.isSafeInteger(p.revision) || p.revision < 0 || !Number.isSafeInteger(p.configurationGeneration)
+    || !Number.isSafeInteger(p.formGeneration) || !/^[a-f0-9]{64}$/u.test(p.stateDigest)
+    || !Array.isArray(p.epochs) || p.epochs.length > 128 || !Array.isArray(p.presets) || p.presets.length > 32
+    || typeof p.availability?.capture !== 'boolean' || typeof p.availability.restore !== 'boolean' || typeof p.availability.configure !== 'boolean'
+    || !Number.isSafeInteger(p.capacity?.epochs) || p.capacity.epochs < 0 || p.capacity.epochs > 128
+    || !Number.isSafeInteger(p.capacity.presets) || p.capacity.presets < 0 || p.capacity.presets > 32) throw Object.assign(Error('Environment unavailable'), { code: response?.error || 'E_FULL_ENV_UNAVAILABLE' });
+  validateFullEnvironmentConfiguration(p.liveConfiguration);
+  if (p.current) validateFullEnvironmentConfiguration(p.current);
+  if (p.lastStable) validateFullEnvironmentConfiguration(p.lastStable);
+  p.epochs.forEach(row => validateFullEnvironmentConfiguration(row.configuration)); p.presets.forEach(row => validateFullEnvironmentConfiguration(row.configuration));
+  fullEnvironmentWindowBinding = p.liveConfiguration.window; return p;
+}
+async function dispatchFullEnvironment(commandId, payload) {
+  const response = await dispatchUiCommand(commandId, payload), result = response?.value?.result;
+  if (!response?.ok || result?.ok !== true) throw Object.assign(Error('Environment action refused'), response?.error || result?.error || { code: 'E_FULL_ENV_UNAVAILABLE' });
+  return result;
+}
+async function syncFullEnvironmentCurrent() {
+  if (fullEnvironmentSyncPromise) return fullEnvironmentSyncPromise;
+  fullEnvironmentSyncPromise = (async () => {
+    for (let i = 0; i < 4 && fullEnvironmentSyncWanted; i++) {
+      const projectId = currentProjectId, documentId = currentDocumentId, publicationId = currentTreeContentPublicationId,
+        editGeneration = localEditGeneration, formGeneration = fullEnvironmentFormGeneration, profile = window.__PRODUCT_PROFILE;
+      if (!projectId || fullEnvironmentReadyProject !== projectId) return;
+      const isCurrent = () => currentProjectId === projectId && fullEnvironmentReadyProject === projectId
+        && currentDocumentId === documentId && currentTreeContentPublicationId === publicationId
+        && localEditGeneration === editGeneration && fullEnvironmentFormGeneration === formGeneration
+        && window.__PRODUCT_PROFILE === profile;
+      fullEnvironmentSyncWanted = false;
+      try {
+        await fullEnvironmentLastSignal;
+        if (!isCurrent()) { fullEnvironmentSyncWanted = true; continue; }
+        const p = await readFullEnvironmentProjection();
+        if (!isCurrent()) { fullEnvironmentSyncWanted = true; continue; }
+        if (p.pending) throw Object.assign(Error('Environment apply is pending'), { code: 'E_FULL_ENV_SYNC_PENDING' });
+        await dispatchFullEnvironment(EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, { ...fullEnvironmentPayload(p), kind: 'SYNC_CURRENT' });
+        if (!isCurrent()) fullEnvironmentSyncWanted = true;
+      } catch (error) {
+        if (fullEnvironmentSyncWanted && ['E_FULL_ENV_CONTEXT_STALE', 'E_FULL_ENV_STALE_REVISION', 'E_FULL_ENV_CONFIGURATION_STALE'].includes(error?.code)) continue;
+        throw error;
+      }
+    }
+    if (fullEnvironmentSyncWanted) throw Object.assign(Error('Environment sync retry limit'), { code: 'E_FULL_ENV_SYNC_RETRY_LIMIT' });
+  })().catch(error => {
+    fullEnvironmentSyncWanted = true;
+    if (fullEnvironmentView?.host.isConnected) fullEnvironmentView.status.textContent = fullEnvironmentMessage(error);
+    else updateStatusText(fullEnvironmentMessage(error));
+  }).finally(() => { fullEnvironmentSyncPromise = null; });
+  return fullEnvironmentSyncPromise;
+}
+async function completeFullEnvironmentApply(result, token, isCurrent = () => true) {
+  if (!result.configuration || !result.operationId) throw Error('E_FULL_ENV_APPLY_INVALID');
+  if (!isCurrent()) throw Error('E_FULL_ENV_PRESENTATION_STALE');
+  applyFullEnvironmentForm(result.configuration, token, result.settingsEnvironmentEpochs.availability.restore || result.settingsEnvironmentEpochs.availability.configure);
+  const p = await readFullEnvironmentProjection();
+  if (!isCurrent() || !canPublishFullEnvironment(token, fullEnvironmentToken(token.requestId, p.availability.configure))) throw Error('E_FULL_ENV_PRESENTATION_STALE');
+  if (!p.pending) return p;
+  if (p.pending.operationId !== result.operationId || JSON.stringify(p.pending.configuration) !== JSON.stringify(result.configuration)) throw Error('E_FULL_ENV_APPLY_STALE');
+  await dispatchFullEnvironment(EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, { ...fullEnvironmentPayload(p), kind: 'CONFIRM_APPLY', operationId: result.operationId });
+  const observed = await readFullEnvironmentProjection();
+  if (!isCurrent() || observed.pending || JSON.stringify(observed.current) !== JSON.stringify(result.configuration)) throw Error('E_FULL_ENV_HEALTH_MISMATCH');
+  return observed;
+}
+async function hydrateFullEnvironmentForProject(projectId = currentProjectId) {
+  if (!initialDocumentAdopted || !projectId || fullEnvironmentHydratedProject === projectId) return;
+  if (fullEnvironmentHydrationPromise) return fullEnvironmentHydrationPromise.then(() => {
+    if (currentProjectId === projectId && fullEnvironmentHydratedProject !== projectId) return hydrateFullEnvironmentForProject(projectId);
+  });
+  fullEnvironmentHydrationPromise = (async () => {
+    await fullEnvironmentLastSignal; const p = await readFullEnvironmentProjection(); if (currentProjectId !== projectId) return;
+    if (p.current && (p.pending || JSON.stringify(p.current) !== JSON.stringify(p.liveConfiguration))) {
+      const token = fullEnvironmentToken(`hydrate:${projectId}:${p.revision}`, p.availability.configure);
+      const result = await dispatchFullEnvironment(EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT, { ...fullEnvironmentPayload(p), kind: 'HYDRATE' });
+      await completeFullEnvironmentApply(result, token);
+    }
+    if (currentProjectId === projectId) {
+      fullEnvironmentReadyProject = projectId; fullEnvironmentHydratedProject = projectId;
+      if (fullEnvironmentSyncWanted) queueMicrotask(() => { void syncFullEnvironmentCurrent(); });
+    }
+  })().catch(error => { if (fullEnvironmentView?.host.isConnected) fullEnvironmentView.status.textContent = fullEnvironmentMessage(error); })
+    .finally(() => { fullEnvironmentPendingWindow = null; fullEnvironmentHydrationPromise = null; });
+  return fullEnvironmentHydrationPromise;
+}
+function fullEnvironmentMessage(error) {
+  const code = error?.code || error?.message || '';
+  if (code === 'E_FULL_ENV_PARTIAL') return 'The action was partial. A version may be recorded. Existing text and history are kept. Reopen Settings to review.';
+  if (/AUTHORING|PRESENTATION|COMPOS/u.test(code)) return 'Finish typing and save your text and open drafts before restoring an environment.';
+  if (/CAPACITY/u.test(code)) return 'Saved environments are full. All versions and presets are retained; nothing is removed automatically.';
+  if (/DISPLAY|SURFACE|CONTRIBUTION|CAPABILITY|PROFILE|KEYMAP|GEOMETRY/u.test(code)) return 'This environment needs an unavailable display or tool. The current view and saved version are kept.';
+  return 'The environment changed or is unavailable. Existing text, presets and versions are kept. Reopen Settings to review.';
+}
+function ensureFullEnvironmentControls() {
+  if (fullEnvironmentView?.host.isConnected) return fullEnvironmentView;
+  if (!settingsSections?.parentElement) return null;
+  const host = document.createElement('section'); host.className = 'settings-surface__section'; host.dataset.settingsFullEnvironment = '';
+  const title = document.createElement('h4'); title.className = 'settings-surface__section-title'; title.textContent = 'Working environments';
+  const copy = document.createElement('p'); copy.className = 'settings-surface__row-note';
+  copy.textContent = 'Save your workspace, tools, layout and display settings. Text, maps and tool presets stay separate.';
+  function selectControl(id, text) {
+    const label = document.createElement('label'); label.className = 'modal__label'; label.htmlFor = id; label.textContent = text;
+    const select = document.createElement('select'); select.id = id; select.className = 'modal__input'; host.append(label, select); return select;
+  }
+  host.append(title, copy); const select = selectControl('settings-full-environment-epoch', 'Saved working epoch');
+  const actions = document.createElement('div'); actions.className = 'modal__actions'; host.append(actions);
+  const controls = {};
+  function button(parent, action, text) { const b = document.createElement('button'); b.type = 'button'; b.className = 'modal__button';
+    b.dataset.fullEnvironmentAction = action; b.textContent = text; controls[action] = b; parent.append(b); b.addEventListener('click', () => { void runFullEnvironmentAction(action); }); return b; }
+  button(actions, 'capture', 'Save current epoch'); button(actions, 'preview', 'Preview'); button(actions, 'restore', 'Restore epoch');
+  const profile = selectControl('settings-full-environment-profile', 'View profile');
+  for (const [value, text] of [['BASELINE', 'Standard'], ['FOCUS', 'Focus'], ['COMPACT', 'Compact']]) {
+    const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
+  }
+  const profileActions = document.createElement('div'); profileActions.className = 'modal__actions'; host.append(profileActions);
+  button(profileActions, 'previewProfile', 'Preview profile'); button(profileActions, 'applyProfile', 'Apply profile');
+  const presets = selectControl('settings-full-environment-preset', 'Named environment preset');
+  const nameLabel = document.createElement('label'); nameLabel.className = 'modal__label'; nameLabel.htmlFor = 'settings-full-environment-name'; nameLabel.textContent = 'New preset name';
+  const name = document.createElement('input'); name.className = 'modal__input'; name.id = 'settings-full-environment-name'; name.maxLength = 80; name.autocomplete = 'off';
+  host.append(nameLabel, name); const presetActions = document.createElement('div'); presetActions.className = 'modal__actions'; host.append(presetActions);
+  button(presetActions, 'savePreset', 'Save named preset'); button(presetActions, 'applyPreset', 'Apply preset');
+  const currentActions = document.createElement('div'); currentActions.className = 'modal__actions'; host.append(currentActions);
+  button(currentActions, 'reset', 'Reset current view'); button(currentActions, 'lastStable', 'Restore last stable'); button(currentActions, 'recover', 'Use previous valid view');
+  const preview = document.createElement('p'); preview.className = 'settings-surface__row-note'; preview.dataset.fullEnvironmentPreview = ''; host.append(preview);
+  const status = document.createElement('p'); status.className = 'settings-surface__row-note'; status.id = 'settings-full-environment-status';
+  status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); host.append(status);
+  select.setAttribute('aria-describedby', status.id); presets.setAttribute('aria-describedby', status.id); profile.setAttribute('aria-describedby', status.id);
+  fullEnvironmentView = { host, select, profile, presets, name, preview, status, controls, projection: null, pending: null };
+  profile.addEventListener('change', () => { fullEnvironmentView.profileChosen = true; void previewFullEnvironmentSelection('PROFILE'); });
+  select.addEventListener('change', () => previewFullEnvironmentSelection()); presets.addEventListener('change', () => previewFullEnvironmentSelection('PRESET'));
+  settingsSections.parentElement.insertBefore(host, settingsSections); updateFullEnvironmentControls(); return fullEnvironmentView;
+}
+function updateFullEnvironmentControls() {
+  const v = fullEnvironmentView; if (!v) return; const p = v.projection, busy = Boolean(v.pending || v.refreshing), full = p?.capacity.epochs >= 128;
+  for (const control of Object.values(v.controls)) control.disabled = busy || !p;
+  v.select.disabled = busy || !p || !v.select.options.length; v.presets.disabled = busy || !p || !p.presets.length; v.name.disabled = busy;
+  v.controls.capture.disabled = busy || !p?.availability.capture || full;
+  v.controls.restore.disabled = busy || !p?.availability.restore || !v.select.value || full;
+  v.controls.preview.disabled = busy || !v.select.value;
+  v.controls.savePreset.disabled = busy || !p?.availability.capture || p.capacity.presets >= 32;
+  v.controls.applyPreset.disabled = busy || !p?.availability.restore || !v.presets.value || full;
+  v.profile.disabled = busy || !p;
+  v.controls.previewProfile.disabled = busy || !p?.liveConfiguration || !v.profile.value;
+  v.controls.applyProfile.disabled = busy || !p?.availability.restore || full || v.previewBinding?.source.kind !== 'PROFILE'
+    || v.previewBinding.source.id !== v.profile.value || v.previewBinding.generation !== fullEnvironmentFormGeneration
+    || v.previewBinding.revision !== p.revision || v.previewBinding.stateDigest !== p.stateDigest;
+  for (const action of ['reset', 'lastStable']) v.controls[action].disabled = busy || !p?.current || !p.availability.restore || full;
+  v.controls.recover.hidden = !p?.pending; v.controls.recover.disabled = busy || !p?.pending || !p.availability.configure;
+  v.host.setAttribute('aria-busy', busy ? 'true' : 'false');
+}
+function publishFullEnvironmentView(p) {
+  const v = fullEnvironmentView, selected = v.select.value, preset = v.presets.value;
+  const rows = p.epochs.map(row => ({ value: 'EPOCH:' + row.epochId, label: `Epoch ${row.sequence} · ${row.configuration.workspace} · ${row.configuration.profile} · ${new Date(row.recordedAtUtc).toLocaleString()}` }));
+  if (p.legacy) rows.push(...decodeEnvironmentEpochHistory(p.legacy.raw).epochs.map(row => ({ value: 'LEGACY:' + row.epochId, label: `Legacy theme/wrap ${row.revision} · ${new Date(row.recordedAtUtc).toLocaleString()}` })));
+  const options = rows.map(row => { const o = document.createElement('option'); o.value = row.value; o.textContent = row.label; return o; });
+  v.select.replaceChildren(...options); v.select.value = rows.some(row => row.value === selected) ? selected : rows.at(-1)?.value || '';
+  v.presets.replaceChildren(...p.presets.map(row => { const o = document.createElement('option'); o.value = row.presetId; o.textContent = row.name; return o; }));
+  if (p.presets.some(row => row.presetId === preset)) v.presets.value = preset;
+  if (!v.profileChosen) v.profile.value = p.liveConfiguration.profile;
+  v.projection = p; updateFullEnvironmentControls();
+}
+function selectedFullEnvironmentConfiguration(kind = null, projection = null) {
+  const v = fullEnvironmentView, p = projection || v?.projection; if (!p) throw Error('E_FULL_ENV_UNAVAILABLE');
+  const source = kind === 'PROFILE' ? { kind, id: v.profile.value } : kind === 'PRESET' ? { kind, id: v.presets.value } : kind ? { kind, id: null }
+    : { kind: v.select.value.split(':')[0], id: v.select.value.split(':')[1] };
+  let configuration, warning = '', original;
+  if (source.kind === 'EPOCH') configuration = p.epochs.find(row => row.epochId === source.id)?.configuration;
+  else if (source.kind === 'PRESET') configuration = p.presets.find(row => row.presetId === source.id)?.configuration;
+  else if (source.kind === 'PROFILE') configuration = createFullEnvironmentProfile(p.liveConfiguration, source.id);
+  else if (source.kind === 'RESET') configuration = createFullEnvironmentBaseline(p.liveConfiguration);
+  else if (source.kind === 'LAST_STABLE') configuration = p.lastStable;
+  else if (source.kind === 'LEGACY' && p.legacy) {
+    const old = decodeEnvironmentEpochHistory(p.legacy.raw).epochs.find(row => row.epochId === source.id);
+    if (old) { configuration = structuredClone(p.liveConfiguration); Object.assign(configuration.presentation, old.preferences);
+      warning = 'LEGACY_THEME_WRAP_ONLY_OTHER_CURRENT_FIELDS_RETAINED'; }
+  }
+  if (source.kind === 'EPOCH') original = p.epochs.find(row => row.epochId === source.id);
+  else if (source.kind === 'PRESET') original = p.presets.find(row => row.presetId === source.id);
+  else if (source.kind === 'LEGACY') original = p.legacy;
+  else original = configuration;
+  return { source, configuration: validateFullEnvironmentConfiguration(configuration), warning, binding: JSON.stringify(original) };
+}
+async function previewFullEnvironmentSelection(kind = null) {
+  const v = fullEnvironmentView; if (!v?.projection || v.pending) return;
+  const projectId = currentProjectId, generation = fullEnvironmentFormGeneration, selectedValue = v.select.value, presetValue = v.presets.value, profileValue = v.profile.value;
+  const request = {}; v.previewRequest = request; v.previewBinding = null; updateFullEnvironmentControls();
+  try {
+    await fullEnvironmentLastSignal; if (fullEnvironmentSyncPromise) await fullEnvironmentSyncPromise;
+    const p = await readFullEnvironmentProjection();
+    if (v.previewRequest !== request || v.pending || !v.host.isConnected || settingsModal.hidden || currentProjectId !== projectId
+      || generation !== fullEnvironmentFormGeneration || selectedValue !== v.select.value || presetValue !== v.presets.value || profileValue !== v.profile.value) return;
+    publishFullEnvironmentView(p);
+    const selected = selectedFullEnvironmentConfiguration(kind, p), changes = diffFullEnvironmentConfigurations(p.liveConfiguration, selected.configuration);
+    const labels = { workspace: 'Workspace', shellMode: 'Shell mode', profile: 'Profile', composition: 'Tools', layout: 'Layout', presentation: 'Display settings', window: 'Window' };
+    const groups = [...new Set(changes.map(row => labels[row.path.split('.')[0]] || row.path))];
+    const c = selected.configuration, appearance = c.presentation, layout = c.layout;
+    const toolNames = c.composition.toolbarIds.map(id => getToolbarConfiguratorEntryPanelLabel(getToolbarConfiguratorCatalogItem(id)) || id).join(', ');
+    v.preview.textContent = `${c.workspace} · ${c.profile}. ${appearance.theme === 'dark' ? 'Dark' : 'Light'}; line wrapping ${appearance.wordWrap ? 'on' : 'off'}; `
+      + `${appearance.fontSize}px, line height ${appearance.lineHeight}, zoom ${Math.round(appearance.zoom * 100)}%. `
+      + `Sidebars ${layout.leftWidth}/${layout.rightWidth}px; toolbar ${layout.toolbar.isDetached ? 'floating' : 'docked'}, ${layout.toolbar.isVertical ? 'vertical' : 'horizontal'}, ${Math.round(layout.toolbar.scale * 100)}%. `
+      + `Window ${c.window.width}×${c.window.height}. Tools: ${toolNames}. `
+      + (changes.length ? `Changes: ${groups.join(', ')}. ` : 'Matches the current view. ')
+      + (selected.warning ? 'Legacy version: only theme and line wrapping change; other current settings are retained. ' : '') + 'Preview only.';
+    v.previewBinding = { source: selected.source, binding: selected.binding, generation, revision: p.revision, stateDigest: p.stateDigest };
+    updateFullEnvironmentControls();
+    v.status.textContent = 'Preview only. Use the corresponding restore or apply action to change the view.';
+  } catch (error) {
+    if (v.previewRequest === request && v.host.isConnected && !settingsModal.hidden && currentProjectId === projectId
+      && generation === fullEnvironmentFormGeneration) v.preview.textContent = fullEnvironmentMessage(error);
+  }
+}
+async function refreshFullEnvironmentEpochs() {
+  const v = ensureFullEnvironmentControls(); if (!v || v.pending) return;
+  const projectId = currentProjectId, request = {};
+  v.refreshRequest = request; v.refreshing = true; v.projection = null;
+  v.previewBinding = null; v.previewRequest = null; v.profileChosen = false; v.preview.textContent = '';
+  v.status.textContent = 'Loading working environments…'; updateFullEnvironmentControls();
+  try { await hydrateFullEnvironmentForProject(); const p = await readFullEnvironmentProjection();
+    if (v.refreshRequest !== request || !v.host.isConnected || settingsModal.hidden || projectId !== currentProjectId) return;
+    publishFullEnvironmentView(p); v.status.textContent = p.pending ? 'A previous action is pending. Keep the current text and use the previous valid view to recover.'
+      : `${p.epochs.length} working epochs · ${p.presets.length} named presets. Preview before restoring.`;
+  } catch (error) { if (v.refreshRequest === request && v.host.isConnected && projectId === currentProjectId && !settingsModal.hidden) v.status.textContent = fullEnvironmentMessage(error); }
+  finally { if (v.refreshRequest === request) { v.refreshing = false; updateFullEnvironmentControls(); } }
+}
+async function runFullEnvironmentAction(action) {
+  const v = fullEnvironmentView; if (!v?.projection || v.pending || !v.host.isConnected || settingsModal.hidden) return;
+  if (action === 'preview') { previewFullEnvironmentSelection(); return; }
+  if (action === 'previewProfile') { previewFullEnvironmentSelection('PROFILE'); return; }
+  const token = fullEnvironmentToken(`settings:${fullEnvironmentFormGeneration}:${Date.now()}`, v.projection.availability.configure);
+  if (!['capture', 'savePreset'].includes(action) && !canPublishFullEnvironment(token, token)) { v.status.textContent = fullEnvironmentMessage({ code: 'E_FULL_ENV_AUTHORING_BARRIER' }); return; }
+  const sourceKind = { applyPreset: 'PRESET', applyProfile: 'PROFILE', reset: 'RESET', lastStable: 'LAST_STABLE' }[action] || null;
+  const selected = ['restore', 'applyPreset', 'applyProfile', 'reset', 'lastStable'].includes(action)
+    ? selectedFullEnvironmentConfiguration(sourceKind) : null;
+  if (selected && (!v.previewBinding || v.previewBinding.generation !== token.formGeneration
+    || JSON.stringify(v.previewBinding.source) !== JSON.stringify(selected.source) || v.previewBinding.binding !== selected.binding)) {
+    await previewFullEnvironmentSelection(sourceKind); return;
+  }
+  const previewBinding = v.previewBinding;
+  const name = v.name.value; v.previewRequest = null; v.pending = token; updateFullEnvironmentControls(); v.status.textContent = 'Updating environment…';
+  const isCurrent = () => v === fullEnvironmentView && v.pending === token && v.host.isConnected && !settingsModal.hidden
+    && ['projectId', 'documentId', 'publicationId', 'editGeneration', 'formGeneration', 'profile']
+      .every(key => token[key] === fullEnvironmentToken(token.requestId, token.capabilityAvailable)[key]);
+  let operationId = null;
+  try {
+    await fullEnvironmentLastSignal; await syncFullEnvironmentCurrent(); const p = await readFullEnvironmentProjection();
+    if (!isCurrent()) throw Error('E_FULL_ENV_PRESENTATION_STALE');
+    if (selected) {
+      const currentSource = selectedFullEnvironmentConfiguration(sourceKind, p);
+      if (p.revision !== previewBinding.revision || p.stateDigest !== previewBinding.stateDigest
+        || selected.binding !== currentSource.binding || JSON.stringify(selected.configuration) !== JSON.stringify(currentSource.configuration)) throw Error('E_FULL_ENV_PRESENTATION_STALE');
+    }
+    const command = selected ? ENVIRONMENT_EPOCH_RESTORE_COMMAND_ID : action === 'recover' ? EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT : ENVIRONMENT_EPOCH_CAPTURE_COMMAND_ID;
+    const intent = selected ? { source: selected.source } : action === 'recover' ? { kind: 'ABANDON_APPLY', operationId: p.pending?.operationId }
+      : action === 'savePreset' ? { kind: 'PRESET', name } : { kind: 'EPOCH' };
+    const result = await dispatchFullEnvironment(command, { ...fullEnvironmentPayload(p), ...intent }); operationId = result.operationId;
+    const observed = result.configuration ? await completeFullEnvironmentApply(result, token, isCurrent) : await readFullEnvironmentProjection();
+    if (!isCurrent()) return;
+    v.previewBinding = null; v.preview.textContent = ''; v.profileChosen = false;
+    publishFullEnvironmentView(observed); v.status.textContent = action === 'savePreset' ? 'Named preset saved. Existing presets are kept.'
+      : action === 'capture' ? 'Working epoch saved.' : 'Working environment restored. Text and saved presets are kept.';
+    if (action === 'savePreset' && v.name.value === name) v.name.value = '';
+  } catch (error) {
+    if (v.host.isConnected && currentProjectId === token.projectId) { v.status.textContent = fullEnvironmentMessage(error); v.projection = null; }
+    if (operationId && isCurrent() && !localDirty && !fullEnvironmentComposing && !hasFullEnvironmentAuthoringPending()) {
+      try { const p = await readFullEnvironmentProjection(); if (p.pending?.operationId === operationId) {
+        const recovered = await dispatchFullEnvironment(EXTRA_COMMAND_IDS.ENVIRONMENT_CONFIGURATION_COMMIT,
+          { ...fullEnvironmentPayload(p), kind: 'ABANDON_APPLY', operationId });
+        if (recovered.configuration) applyFullEnvironmentForm(recovered.configuration, token, recovered.settingsEnvironmentEpochs.availability.configure);
+      } } catch { /* Pending history stays readable; no final record is removed. */ }
+    }
+  } finally { fullEnvironmentPendingWindow = null; if (v.pending === token) { v.pending = null; updateFullEnvironmentControls(); } }
+}
+
+async function openFullEnvironmentSource(kind) {
+  await openSettingsModal(); await previewFullEnvironmentSelection(kind);
+  return { performed: true, action: 'preview-environment', reason: 'PREVIEW_ONLY' };
+}
+
 function openSettingsModal() {
   if (settingsThemeSelect) {
     settingsThemeSelect.value = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
@@ -22304,8 +22765,8 @@ function openSettingsModal() {
   }
   renderSettingsAggregation();
   openSimpleModal(settingsModal);
-  ensureSavedEnvironmentEpochControls();
-  void refreshSavedEnvironmentEpochs();
+  ensureFullEnvironmentControls();
+  return refreshFullEnvironmentEpochs();
 }
 
 function openRecoveryModal(message = '') {
@@ -23268,6 +23729,7 @@ function setEditorZoom(value, persist = true) {
   try {
     localStorage.setItem(EDITOR_ZOOM_STORAGE_KEY, String(editorZoom));
   } catch {}
+  noteFullEnvironmentFormChanged();
 }
 
 function changeEditorZoom(delta) {
@@ -23382,6 +23844,7 @@ function applyFontWeight(weightPreset, persist = true) {
   }
   if (persist) {
     localStorage.setItem('editorFontWeight', presetId);
+    noteFullEnvironmentFormChanged();
   }
   syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
@@ -23397,6 +23860,7 @@ function applyLineHeight(value, persist = true) {
   }
   if (persist) {
     localStorage.setItem('editorLineHeight', String(value));
+    noteFullEnvironmentFormChanged();
   }
   syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
@@ -23414,6 +23878,7 @@ function applyWordWrap(enabled, persist = true) {
   }
   if (persist) {
     localStorage.setItem('editorWordWrap', enabled ? 'on' : 'off');
+    noteFullEnvironmentFormChanged();
   }
   updateInspectorSnapshot();
 }
@@ -23421,11 +23886,13 @@ function applyWordWrap(enabled, persist = true) {
 function applyViewMode(mode, persist = true) {
   const isFocus = mode === 'focus';
   document.body.classList.toggle('focus-mode', isFocus);
+  if (appLayout) appLayout.style.gridTemplateColumns = isFocus ? 'minmax(0, 1fr)' : '';
   if (styleSelect) {
     styleSelect.value = mode;
   }
   if (persist) {
     localStorage.setItem('editorViewMode', mode);
+    noteFullEnvironmentFormChanged();
   }
   syncInspectorStateSurface();
 }
@@ -23812,6 +24279,7 @@ function updateThemeSwatches(theme) {
   function applyFont(fontFamily) {
     editor.style.fontFamily = fontFamily;
     localStorage.setItem('editorFont', fontFamily);
+    noteFullEnvironmentFormChanged();
     syncLiteralToolbarDisplays();
     scheduleCentralSheetStripProofRefresh();
   }
@@ -23912,13 +24380,13 @@ if (window.electronAPI) {
 
 loadSavedFont();
 
-function applyTheme(theme) {
+function applyTheme(theme, persist = true) {
   if (theme === 'dark') {
     document.body.classList.add('dark-theme');
   } else {
     document.body.classList.remove('dark-theme');
   }
-  localStorage.setItem('editorTheme', theme);
+  if (persist) { localStorage.setItem('editorTheme', theme); noteFullEnvironmentFormChanged(); }
   updateThemeSwatches(theme);
   updateInspectorSnapshot();
 }
@@ -23975,6 +24443,7 @@ loadSavedTheme();
 
 function setToolbarCompactMode(isCompact) {
   if (!toolbar) return;
+  const environmentChanged = toolbar.classList.contains(TOOLBAR_COMPACT_CLASS) !== isCompact;
   toolbar.classList.toggle(TOOLBAR_COMPACT_CLASS, isCompact);
   if (toolbarToggleButton) {
     toolbarToggleButton.textContent = isCompact ? 'max' : 'min';
@@ -23983,6 +24452,7 @@ function setToolbarCompactMode(isCompact) {
       isCompact ? 'Maximize toolbar' : 'Minimize toolbar'
     );
   }
+  if (environmentChanged) noteFullEnvironmentFormChanged();
 }
 
 function toggleToolbarCompactMode() {
@@ -26090,12 +26560,19 @@ document.addEventListener('selectionchange', () => syncToolbarFormattingState())
 
 window.addEventListener('resize', () => {
   syncWriterA11yPerformanceProjection();
-  updateSpatialLayoutForViewportChange();
+  if (!isFullEnvironmentOwnedResize()) { updateSpatialLayoutForViewportChange(); noteFullEnvironmentFormChanged(); }
   scheduleLayoutRefresh();
   resetCentralSheetStripContinuousFallback();
   scheduleCentralSheetStripProofRefresh();
   if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) renderAtlasWorkspaceState();
 });
+document.addEventListener('compositionstart', () => {
+  fullEnvironmentComposing = true; noteFullEnvironmentFormChanged({ sync: false });
+}, true);
+document.addEventListener('compositionend', () => {
+  fullEnvironmentComposing = false;
+  queueMicrotask(() => noteFullEnvironmentFormChanged({ sync: false }));
+}, true);
 
 function treeContentReplacementRefusalReason(payload) {
   if (payload?.treeContentReplacement !== true || payload.treePublication === true
@@ -26335,11 +26812,12 @@ if (window.electronAPI) {
       if (nextProjectId !== currentProjectId) {
         invalidateDocxImportAttempt();
         currentProjectId = nextProjectId;
+        fullEnvironmentReadyProject = ''; fullEnvironmentHydratedProject = ''; fullEnvironmentToolbarProjection = null;
         expandedNodesByTab = new Map();
         navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
         restoreSpatialLayoutState(currentProjectId);
-        adoptToolbarConfiguratorState(currentProjectId);
       }
+      if (toolbarConfiguratorProjectId !== currentProjectId) adoptToolbarConfiguratorState(currentProjectId);
     }
     if (hasBookProfile) {
       applyIncomingBookProfile(bookProfile);
@@ -26438,6 +26916,7 @@ if (window.electronAPI) {
         editor.removeAttribute('aria-readonly');
       }
     }
+    void hydrateFullEnvironmentForProject(currentProjectId);
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
@@ -26445,8 +26924,8 @@ if (window.electronAPI) {
   });
 
   if (typeof window.electronAPI.onEditorSnapshotRequest === 'function') {
-    window.electronAPI.onEditorSnapshotRequest(({ requestId }) => {
-      window.electronAPI.sendEditorSnapshotResponse(requestId, composeEditorSnapshot());
+    window.electronAPI.onEditorSnapshotRequest((request) => {
+      window.electronAPI.sendEditorSnapshotResponse(request.requestId, composeEditorSnapshot(request));
     });
   }
 
@@ -26454,6 +26933,7 @@ if (window.electronAPI) {
     if (Number.isFinite(px)) {
       editor.style.fontSize = `${px}px`;
       setCurrentFontSize(px);
+      noteFullEnvironmentFormChanged();
       renderStyledView(getPlainText());
       scheduleCentralSheetStripProofRefresh();
     }
@@ -26481,11 +26961,11 @@ if (window.electronAPI) {
       return true;
     }
     if (commandId === EXTRA_COMMAND_IDS.VIEW_SAFE_RESET) {
-      performSafeResetShell();
+      void openFullEnvironmentSource('RESET');
       return true;
     }
     if (commandId === EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE) {
-      performRestoreLastStableShell();
+      void openFullEnvironmentSource('LAST_STABLE');
       return true;
     }
     if (commandId === EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS) {
@@ -26590,8 +27070,8 @@ if (window.electronAPI) {
   if (isTiptapMode) {
     setTiptapRuntimeHandlers({
       openSettings: () => openSettingsModal(),
-      safeResetShell: () => performSafeResetShell(),
-      restoreLastStableShell: () => performRestoreLastStableShell(),
+      safeResetShell: () => openFullEnvironmentSource('RESET'),
+      restoreLastStableShell: () => openFullEnvironmentSource('LAST_STABLE'),
       openDiagnostics: () => openDiagnosticsModal(),
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
@@ -26647,9 +27127,9 @@ if (window.electronAPI) {
       } else if (command === 'open-settings') {
         openSettingsModal();
       } else if (command === 'safe-reset-shell') {
-        performSafeResetShell();
+        void openFullEnvironmentSource('RESET');
       } else if (command === 'restore-last-stable-shell') {
-        performRestoreLastStableShell();
+        void openFullEnvironmentSource('LAST_STABLE');
       } else if (command === 'open-diagnostics') {
         openDiagnosticsModal();
       } else if (command === 'open-recovery') {

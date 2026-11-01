@@ -73,6 +73,7 @@ const FREE_ALWAYS_AVAILABLE_COMMAND_IDS = Object.freeze([
   'cmd.project.pulse.correctMetric',
   'cmd.project.view.captureEnvironmentEpoch',
   'cmd.project.view.restoreEnvironmentEpoch',
+  'cmd.project.view.commitEnvironmentConfiguration',
   'cmd.project.saveAs',
   'cmd.project.lifecycle.create',
   'cmd.project.lifecycle.open',

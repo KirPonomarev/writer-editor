@@ -1,3 +1,83 @@
+## 2026-11-01 — ENV H10 native observed; current certification input gap
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: afcfddd2659666e606c09a2ff81ca543257e759d plus owned declaration23/preflight27 metadata-only WIP, same49scope; no further owner-origin push.
+
+Literal H10 full Main811/811, full Pulse49/49,30/30,46/46 and early component61/61, actual Main13/13, whole release726/726 completed with zero fail/skip/todo/cancel. Four exact source-bound native sessions exited0. Original profile current Light/Wrap On,29epochs/named preset/v1/N+1 and all17project files were independently retained; a separate corrupt-shell profile exercised explicit Stay and Close without saving view with all17project files and all73original-profile file bytes exact. A controlled renderer3149 exit/new3552 after AX activation explained apparent window reopening. Native Return did not dismiss its sheet; keyboard/IME remain UNKNOWN. These are literal H10 observations, not new-checkpoint or fullMac acceptance.
+
+Full H10 C1C335 executed329pass6fail with E_INTEROP_WORD_PROMOTION_PIN; queue stopped before RTK/default. Complete raw8f04009e733d81a325362a6a46c6150f58cbd065fa1b8d15d77be45fb47c2d98 and ENV_H10_C1C_BINDING_FAILURE_DIAGNOSIS_01.json are preserved. Static evaluation of the actual complete422successor found exactly1mismatch: the existing admitted release contract test inherited e61ca6cd instead of current fe3f4e74. All79selected current hashes and the policy guard already matched; checking only that selected subset was insufficient. Add this one path only to the current ENV override80, preserve every historical tuple, use the real seven-target finalizer and honest witnesses, then run the actual complete namespace and unchanged six cases before another broad wave. No app/runtime/source-test change is part of this correction.
+
+The auxiliary queue console has a recorded compression-format failure; its mixed bytes and original method remain. Mandatory separate gate raw gzips/receipts are independent and remain the only test oracles. Future queue transport must stream child PIPE bytes through gzip.write. No test/runner/cap/timeout/lane/skip/predicate change, source reset, force, profile/history/raw removal or fabricated approval. New exact checkpoint, all required current local/provider proofs, checked normal push, PR2187 normal merge and literalmerged source/build/native/mainCI remain pending; fullV6/DNA5 ACTIVE, all17Mac/R4B/R4C pending, Word-native PAUSED.
+
+## 2026-10-31 — ENV runtime corrections: finite controls complete; delivery pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: a97bd0aa1418716ade075733084855cff4ce9613 plus owned declaration20/preflight23 WIP, same49path contour; no new owner-origin push.
+
+Frozen R1/R2 regressions first reached four actual Main failures, then passed both exit routes, early/late scene/book exports, default-stay/explicit recovery, unchanged corrupt/32project store bytes and22stale/authoring veto controls. R3 first RED and first failed correction remain; local file-port guard now retains its original typed veto across gateway error normalization, and the original4attempt renderer drain persists the latest requested form with current identity checks and visible retained failure. Actual complete component command61of61 and actual Main caller13of13 passed, all zero skips/todo/cancel. Earlier34pass was port/UI only because a nonexistent model selector was supplied; its original argv/raw/receipt remain unchanged and receive no model/whole credit.
+
+Existing release-candidate delivery CLI now verifies the reviewed exact frozen source/plan/capture/terminal receipts and explicit test selectors before its real normal-push effect. Owned local bare-Git positive and ten refusal controls passed; no owner GitHub push occurred. Three failed fixture controls, their stop/diagnosis and nested Node transport cause remain; no production timing/cap/skip/predicate weakening. Whole existing+new release contract726of726 passed. Literal M3 control confirmed its already stale AGENTS source pin; only the three permitted current V2 source bindings were refreshed for AGENTS/current Main/current entitlement law. All nonbinding cut fields,17UNKNOWN rows, candidate/authority and historicalV1 remain exact; this is no fullMac qualification. Real renderer build07 passed. Synthetic temporary identity02/capture03 is separately bound; old missing temporary identity01 and all failures/profiles/history are retained.
+
+Current real finalizer/review/CAS/readback, honest delegated technical witnesses, fresh candidate freeze, early rebuilt owned native, all mandatory local/provider proofs, normal PR2187 delivery and literalmerged source/build/native/mainCI remain required. H9old greens are not new-candidate proof; no push/ready/merge until every required current local proof completes. FullV6/DNA5 ACTIVE; R4B/R4C/all17Mac acceptance and originalH3cause/isolatednativeMainIME remain pending/UNKNOWN.
+
+## 2026-10-31 — Existing ENV caller repairs observed; full candidate delivery pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_WORKING_BASE: b1af336472a4b64e7085db86129b3f44a160f0d3
+CLAIM_BOUNDARY: 11existing test-source files repaired, no runtime/build-input change; not fullV2 UI/native or release acceptance.
+
+Clean preflight18 under exact49path declaration17 precedes the first test edit. Both obsolete no-argument snapshot source locators now load the actual optional-argument function. Finite hosts bind neutral toolbar/project state; the actual hydrator receives an explicit unavailable read-only query adapter, with no successful projection or commit fabricated. The Word-only lifecycle host executes actual hasFullEnvironmentContainer/observeFullEnvironmentWindowMove with owned absent-v2 filesystem/live-window adapters and the actual command entry. Four static reset/last-stable callee expectations track governed full-preview and explicitly reject inactive eraser bindings. All other expected behavioral predicates remain; every file exactly recovers its unchanged original via enumerated host/locator inverse.
+
+Actual original20CI failures now individually execute OK in focused21of21 and whole11-file612of612, with zero skips/todo/cancel. Focus rawSHA256dffa94dc59f4e8748c6885e65b9d4757d7e9fc9d8e8a12c4e3a13585ba7e6427; complete affected rawSHA256e04352709d4e5f67842062a7392766a37759a5da157a656510ecc1d1e26d7313. ENV_EXISTING_CALLER_TRANSFORMS_01.json.gz SHA256d72539dfca29a8a539fb2a60c0086d42ee57f760e033f9977e90a2d3122e15f9 retains every exact transform/preimage hash. This is source-bound working-byte regression evidence, not full Main811/default/RTK4419/Pulse49/30/46 or current CI credit. H7failures and earlypush remain retained; no new push/ready/merge before every mandatory exact-candidate local oracle completes.
+
+Only current ENV membership extends69to79bindings and DONE by8previously missing existing test paths; historical certification bodies/predicates and all old map members are retained. Real seven-target prepare/review/apply/readback and honest delegated witnesses still precede the next literal candidate freeze. Existing H5native/profile/project/v1/29epochs remain protected; firstH3cause and isolatednativeMainIME UNKNOWN, all17Mac qualifications UNKNOWN and full V6/DNA5 ACTIVE. No Word/native Office work, agent/chat/model/timer, dependency, workflow or optional service is introduced.
+
+## 2026-10-31 — H7 required CI and RTK failed; admitted caller correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 2b2bc18bbae5b14146a9d9ead5ad7ab23ec8c86c
+CLAIM_BOUNDARY: H7 is not accepted; PR2187 remains draft and full V6/DNA5 ACTIVE.
+
+LiteralH7 Main811/component52/C1C335/helper30/consumers64/publicpreflight13/postAudit63 and E0172with40of40mutants passed. Actual local RTK ended4419total4412pass7fail, zero skips/todo. CIrun41222121709 ended15of20jobs successful; default unit group4032 has3960pass13fail59oldskips, RTK4419 has4412pass7fail. The20root failures involve11existing finite caller fixtures/static expectations; current raw source locators, neutral VM bindings and the actual new close-form observer must be integrated without dropping no-loss, lifecycle, stale or authoring predicates. ENV_PR_CI_FAILED_01.json.gz SHA25633e5ce2116f7623cde64c004b20f5fc4daf8269d1e8ce321cfa83a816a9f3464 preserves actual provider identities and independent reread of all277original log files. Every old failure and all H7 source/input identities stay retained.
+
+Delivery-order failure: normal H7 push16:51:29–16:51:37UTC preceded Maincompletion16:52:45UTC and other mandatory local proofs. ENV_H7_NORMAL_PUSH_01.json SHA2565d6a4e7d6a4cbd46aa6eb43bbb267c3b225a9620b37164f6f3bdfed07431700a and rawSHA25675198ac33a4c07dfce598a9790a3c00c1816309a2ffd0d987f56ead48dfdca3a bind this actual early push. Draft status and honest pending text did not waive the agreed order. No reset, cancellation, force push or historical erasure followed. Finish the exact admitted correction and every required next-candidate local oracle before any next push, ready or merge.
+
+Local Pulse rows labeledWHOLE01 actually execute only27/23/37unit cases; they receive no full49/30/46credit. Corrected existing gate plan02 restores the original owner-gate/terminal-carrier/post-audit commands, preserving partial logs and unchanged limits/lanes. The next candidate must execute the full original denominator. Exact49path declaration16 and actual clean preflight16/taskE0 precede these three owned factual/task edits and admit only11necessary existing test-host/source-locator additions to the original38path scope. Reading-boundary clarification: remaining supplementary storage/doctrine ranges and post-compaction entrypoint refresh completed after these docs edits, before any test/runtime edit. A redundant mid-edit preflight17 returns E_SCOPE_OR_DIRTY_STATE_UNSAFE because these same three owned files are dirty; it is retained as a failed invocation, not PASS. Preserve the owned edits by ordinary local checkpoint, then run fresh exact-head declaration/preflight before any test correction. No reset/stash/clean, ignored failure, source mutation or new push is authorized by that failure. Product code/build inputs, UI contract, dependencies, workflows, profiles and release scope remain protected. Word/native stays PAUSED: these are mandatory existing contract fixtures only. V1/doubled hosts remain limited proofs, not fullV2 UI/native acceptance.
+
+Next: cheap actual caller controls, surgical host/locator/current-route corrections, exact source/predicate review, real seven-target producer review/apply/readback and honest current witnesses, then all required candidate proofs before normal delivery and literalmerged build/native/mainCI. Original H5 native29epochs/N+1/map/preset/17projectfiles retain their identity; H3sourcecause and isolatednativeMainIME UNKNOWN. R4B/R4C practical acceptance PENDING, all17Mac qualification rows UNKNOWN, release NOT_READY. No new actor/chat/model/timer, optional integration, owner question, app deletion or separate deviation tracker.
+
+## 2026-10-31 — Whole Main setup failures retained; finite V1 host correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: ed58dcadc59d0aa9b6cc96f51bd3533d639e27c9
+CLAIM_BOUNDARY: H6 whole Main is FAIL, not accepted; the full macOS goal remains ACTIVE.
+
+Actual whole Main811 completed790pass21fail0skip0todo. All21 failures are finite-host ReferenceErrors for the new full Settings hook or toolbar projection; no failed behavioral predicate is treated as green. ENV_H6_WHOLE_MAIN_FIXTURE_DIAGNOSIS_01.json SHA25606aa72f9198d1660156471fd8f2622acd0cb38ee26f0fa7d59ac44d967879d44 pins the entire original failure log. Fresh declaration14 and actual preflight/taskE0 admit the same38path correction. The retained V1 controller fixture explicitly isolates its legacy V1 dependencies, initializes neutral current observer/projection state and loads the actual observer; every old assertion body stays intact. Those cases prove V1 compatibility only. A separate actual current modal entrypoint oracle forbids either legacy route; fullV2 component and actual native proofs retain their own identities. No production fallback, app/profile change, timeout, skip, lane or oracle removal.
+
+Next: focused old21/full cases, then new literal candidate and all required gates, fresh real seven-target producer review/apply/readback, honest delegated current witnesses and complete ordinary delivery. H6 audit production0; full audit preserves the existing15moderate dev findings, not new risk acceptance. R4B/R4C practical acceptance PENDING; all17Mac rows UNKNOWN, release NOT_READY. Earlier source, failed methods and all raw/profile/history remain preserved.
+
+## 2026-10-31 — Full environment native journey observed; delivery pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 656c7d6a118b76561b950d0c9f8e8c0d880bb029
+CLAIM_BOUNDARY: Finite literal H5 component/native observations; no full task delivery, release qualification or complete Mac acceptance.
+
+ENV_H5_NATIVE_DISPOSITION_01.json SHA2569963d9e55cc5b9bb26000b1706be2af28a7e5e76a1550665f7394db40daf8578 binds actual51component/6focusedMain cases, source-built artifact05, genuine A22/B24, hot/cold A7/B6 toolbar and Focus geometry, correct live Quiet mode, current N+1 and all29immutable epochs/v1/preset/map/17projectfiles. Own unsaved map draft survives metadata-only capture without implicit project save; CANCELLED_NOOP re-enables restoration and preset apply in the same process. Separate RESET28 and LAST_STABLE29 preserve old records. All three processes quit normally. The final closed test profile has all72files/135entries physically restored and independently reread; original security metadata remains indexed, without a portable OS identity claim.
+
+First H3 selected-source incident remains UNKNOWN cause; later controlled source observations preserve N+1. Native H4 completed dead-key/coupled stale-preview no-loss keeps its own source identity; isolated native Main composition veto is not claimed. Required whole811/default/RTK/OSS/audit/current CI and ordinary commit-push-PR-merge/literal merged source-build-native proofs remain pending. Original causal failures and every old assertion/raw/profile remain preserved.
+
+Next: real seven-target current-bindings finalizer prepare/review/expected-old apply/readback under same38path declaration12/preflight12, honest owner-delegated current witnesses, then full required delivery. R4B/R4C practical acceptance stays PENDING until closure. All17Mac qualification rows remain UNKNOWN, release UNFROZEN/NOT_READY and full V6/DNA5 ACTIVE. One direct developer; no development questions, agents, chats, models, timers, optional integrations or app deletion. Earlier entries are historical facts.
+
+## 2026-10-31 — UI policy delivered; full environment epochs admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: a813e90461d6720cb7fac52dec61c36cac525705
+CLAIM_BOUNDARY: PR2186 is closed; ENV-EPOCH-01 full configuration implementation and native outcome are pending.
+
+UI_ROUTER_DELIVERY_CLOSURE_01.json SHA25602654344a14c248907cb38405ff2a46606bf6ed2885f913a1d90dc5eae787b11 and final report02 bind actual20PR/20main checks,17blocking merged local zero exits, full provider logs and source/raw preservation. Full audit retains15moderate dev findings;59old baseline skips remain uncovered. No native execution is claimed for that OPS delivery.
+
+The existing clean registered task worktree now starts YALKEN_ENV_EPOCH_FULL_CONFIGURATION_20261031 at this literal base. Fresh38path declaration02/preflight02 exit0, same-head full normative/scoped factual startup and verified volumes/remote precede task writes. Extend existing WP303 with closed full mode/profile/contribution/configuration epochs, separate current/last-stable/presets and preserved finite legacy migration. Protect manuscript N+1, authoring/IME, maps, all presets/history/raw and owner canonical6decd915. One direct developer, no development questions, agents/chats/models/timers or optional services. Early actual rebuilt native precedes final freeze/heavy gates; real delivered finalizer use and complete ordinary delivery remain mandatory. R4B/R4C practical product acceptance PENDING; all17Mac qualification rows UNKNOWN, release UNFROZEN/NOT_READY and full V6/DNA5 ACTIVE. Earlier pending entries below are historical observations.
+
 ## 2026-10-31 — Same UI policy: default guardrail entry corrected before delivery
 
 DOCUMENT_CLASS: FACTUAL_STATUS

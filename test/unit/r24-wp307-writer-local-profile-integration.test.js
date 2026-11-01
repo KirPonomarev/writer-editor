@@ -256,7 +256,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
   fs.writeFileSync(markerPath, marker, { flag: 'wx' }); const identity = fs.lstatSync(root);
   const documents = path.join(root, 'Documents'), userData = path.join(root, 'userData');
   fs.mkdirSync(path.join(documents, 'craftsman'), { recursive: true }); fs.mkdirSync(userData);
-  const h = { root, documents, userData, handlers: new Map(), listeners: new Map(), sent: [], shellUrl: '', editor: { content: '', generation: 0 } };
+  const h = { root, documents, userData, handlers: new Map(), listeners: new Map(), appEvents: new Map(), windowEvents: new Map(), sent: [], shellUrl: '', editor: { content: '', generation: 0 } };
   function InertWindow(options = {}) {
     if (options.webPreferences?.javascript === false) {
       // Finite print effect, NOT physical Electron/PDF acceptance. The real
@@ -268,7 +268,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
       this.loadURL = async url => { h.printHtml = decodeURIComponent(url.split(',').slice(1).join(',')); };
       this.isDestroyed = () => false; this.destroy = () => { h.printDestroyed = true; }; return;
     }
-    h.window = this; this.isDestroyed = () => false; this.on = () => {};
+    h.window = this; this.isDestroyed = () => false; this.on = (name, callback) => h.windowEvents.set(name, callback);
     this.webContents = { id: 713, session: {}, isDestroyed: () => false, on() {}, setWindowOpenHandler() {},
       getURL: () => h.shellUrl, setZoomFactor() {}, send: (channel, payload) => {
         h.sent.push([channel, payload]);
@@ -283,7 +283,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
     };
   }
   InertWindow.getAllWindows = () => [h.window]; InertWindow.getFocusedWindow = () => h.window;
-  const electron = { app: { isPackaged: packaged, whenReady: () => new Promise(() => {}), on() {}, setPath() {},
+  const electron = { app: { isPackaged: packaged, whenReady: () => new Promise(() => {}), on: (name, callback) => h.appEvents.set(name, callback), setPath() {},
     getPath: key => key === 'documents' ? documents : key === 'userData' ? userData : root,
     quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true }, BrowserWindow: InertWindow,
     screen: { getPrimaryDisplay: () => ({ workAreaSize: { width: 1280, height: 800 } }) },
@@ -294,6 +294,8 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
     session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
   const mainPath = path.join(ROOT, 'src/main.js'), filePath = path.join(ROOT, 'src/utils/fileManager.js');
   h.dialog = electron.dialog;
+  h.app = electron.app;
+  h.screen = electron.screen; // Existing inert native host; full ENV fixtures bind explicit displays below.
   const originalLoad = Module._load; delete require.cache[filePath];
   try {
     Module._load = function(request, ...args) {
@@ -359,6 +361,8 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         invalidateProjectRoot() { currentProjectName += ' retired-synthetic-root'; },
         holdProjectQueue(operation) { return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, operation); },
         holdDiskQueue(operation) { return queueDiskOperation(operation, 'owned Pulse test queue'); },
+        observePendingRecordingPreparation() { let calls = 0; const original = preparePendingRecordingSnapshot;
+          preparePendingRecordingSnapshot = async (...args) => { calls++; return original(...args); }; return () => calls; },
         invalidatePulseUserData() { const get = app.getPath; app.getPath = key => key === 'userData' ? get(key) + '.retired' : get(key); },
         afterCoreBinding(callback) { const build = buildProductCoreStateForCurrentProject; let armed = true;
           buildProductCoreStateForCurrentProject = async (...args) => { const result = await build(...args);
@@ -4377,7 +4381,9 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
   assert.equal(x.h.main.__profile().profileId, SCENE_LANGUAGE_V12);
   const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: SCENE_LANGUAGE_V12 }, console,
     currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentTreeContentPublicationId: 'actual-main-scene',
-    localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false };
+    localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
+    fullEnvironmentToolbarProjection: null, fullEnvironmentProjecting: false,
+    fullEnvironmentFormGeneration: 0, fullEnvironmentView: null };
   vm.createContext(c); const renderer = { c, packets };
   const walk = node => [node, ...node.children.flatMap(walk)], proto = c.HTMLElement.prototype;
   proto.replaceChildren = function(...nodes) { this.children.forEach(node => { node.parentElement = null; }); this.children = []; this.append(...nodes); };
@@ -4422,7 +4428,15 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
   }
   const names = [...source.matchAll(/^(?:async )?function (\w*[Ee]nvironment[Ee]poch\w*)\(/gm)].map(match => match[1]);
   assert.ok(names.length > 0, 'actual saved Settings functions do not exist before this contour');
-  vm.runInContext(['applyTheme', 'applyWordWrap', 'openSettingsModal', ...names].map(actual).join('\n'), c);
+  vm.runInContext(['applyTheme', 'applyWordWrap', 'noteFullEnvironmentFormChanged', 'openSettingsModal', ...names].map(actual).join('\n'), c);
+  // This fixture exercises retained THEME_WRAP_V1 controllers and the real V1
+  // Main/file protocol. Bind that controller at the modal's dependency boundary;
+  // it is not the live fullV2 Settings surface or a product fallback. The actual
+  // current fullV2 modal route is checked separately in the full UI suite/native.
+  // No signal port exists in this isolated V1 host; the actual form observer
+  // therefore records its generation and returns without adding a v2 writer.
+  c.ensureFullEnvironmentControls = c.ensureSavedEnvironmentEpochControls;
+  c.refreshFullEnvironmentEpochs = c.refreshSavedEnvironmentEpochs;
   for (const name of names) {
     const match = new RegExp('^async function ' + name + '\\(', 'm').exec(source); if (!match) continue;
     const run = c[name]; c[name] = (...args) => { const pending = run(...args); tasks.push(pending); return pending; };
@@ -5793,5 +5807,160 @@ for (const fault of ['owner', 'capability', 'privacy', 'ledger', 'correction']) 
     const fixed = path.relative(x.h.root, path.join(x.pulseDirectory, channel));
     assert.deepEqual(after.filter(([name]) => name !== fixed), before.filter(([name]) => name !== fixed));
     assert.deepEqual(fs.readFileSync(path.join(x.pulseDirectory, channel)), concurrent, 'the reader/writer must not repair or overwrite concurrent bytes');
+  }
+});
+
+// Full ENV causal integration: same real Main/Kernel/query/owned FS as v1.
+test('full ENV actual Main accepts closed v2 history query after a working legacy control without creating a writer', async t => {
+  const x = await environmentEpochFixture(t), before = environmentEpochWholeRoster(x.h);
+  const legacy = await x.epochRead(); assert.equal(legacy.revision, 0);
+  const bounds = { x: 0, y: 0, width: 1440, height: 900 };
+  x.h.window.getBounds = () => ({ ...bounds }); x.h.window.getContentBounds = () => ({ ...bounds, height: 872 });
+  x.h.window.setBounds = next => Object.assign(bounds, next);
+  x.h.screen.getAllDisplays = () => [{ id: 1, workArea: { x: 0, y: 0, width: 1920, height: 1080 }, scaleFactor: 1 }];
+  x.h.screen.getDisplayMatching = () => x.h.screen.getAllDisplays()[0];
+  x.h.editor.environmentConfiguration = { formGeneration: 0, composing: false, authoringPending: false, configuration: {
+    schemaVersion: 'yalken.environmentConfiguration.v2', workspace: 'WRITE', shellMode: 'CALM_DOCKED', profile: 'BASELINE', keymap: 'NATIVE_V1',
+    composition: { profile: 'minimal', toolbarIds: ['toolbar.font.family', 'toolbar.history.undo'], surfaces: ['navigator', 'editor', 'inspector'] },
+    layout: { leftWidth: 290, rightWidth: 290, leftCollapsed: false, rightCollapsed: false, leftTab: 'project', rightTab: 'inspector',
+      toolbar: { x: 24, y: 92, isVertical: false, isDetached: false, scale: 1, widthScale: 1, dockedWidthScale: 1, freeWidthScale: 1, toolbarHeight: 40 },
+      leftToolbar: { x: 24, y: 24, isVertical: false, isDetached: false, widthScale: 1 }, toolbarOffsets: [], leftToolbarOffsets: [] },
+    presentation: { theme: 'light', wordWrap: true, fontFamily: 'Georgia, serif', fontWeight: 'light', fontSize: 12,
+      lineHeight: 1, viewMode: 'default', zoom: 1, compact: false, previewEnabled: false, previewFrame: false },
+    window: { displayId: '1', ...bounds, viewportWidth: 1440, viewportHeight: 872 } } };
+  const recordingPreparations = x.h.main.__host.observePendingRecordingPreparation();
+  const actual = await x.h.query(ENVIRONMENT_EPOCH_QUERY, { configurationVersion: 2 });
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_FULL_ENV_QUERY', result: actual }));
+  assert.deepEqual(environmentEpochWholeRoster(x.h), before, 'read-only full query must not create/migrate/repair shell or product files');
+  assert.equal(actual.ok, true, JSON.stringify(actual)); assert.equal(actual.settingsEnvironmentEpochs.schemaVersion, 'yalken.environmentEpochHistory.v2');
+  assert.equal(actual.settingsEnvironmentEpochs.liveConfiguration.workspace, 'WRITE');
+  assert.equal(recordingPreparations(), 0, 'a read-only configuration query cannot prepare or mint manuscript-save admissions');
+  assert.deepEqual(actual.settingsEnvironmentEpochs.epochs, []); assert.equal(actual.settingsEnvironmentEpochs.revision, 0);
+});
+
+async function fullEnvironmentMainControllerFixture(t) {
+  const x = await environmentEpochFixture(t), bounds = { x: 0, y: 0, width: 1440, height: 900 };
+  x.h.window.getBounds = () => ({ ...bounds }); x.h.window.getContentBounds = () => ({ ...bounds, height: bounds.height - 28 });
+  x.h.window.setBounds = next => Object.assign(bounds, next);
+  x.h.screen.getAllDisplays = () => [{ id: 1, workArea: { x: 0, y: 0, width: 1920, height: 1080 }, scaleFactor: 1 }];
+  x.h.screen.getDisplayMatching = () => x.h.screen.getAllDisplays()[0];
+  x.fullConfiguration = second => ({ schemaVersion: 'yalken.environmentConfiguration.v2', workspace: second ? 'PLAN' : 'WRITE',
+    shellMode: 'CALM_DOCKED', profile: second ? 'FOCUS' : 'BASELINE', keymap: 'NATIVE_V1',
+    composition: { profile: second ? 'master' : 'minimal', toolbarIds: ['toolbar.font.family', second ? 'toolbar.history.redo' : 'toolbar.history.undo'], surfaces: ['navigator', 'editor', 'inspector'] },
+    layout: { leftWidth: second ? 330 : 290, rightWidth: 290, leftCollapsed: false, rightCollapsed: Boolean(second), leftTab: second ? 'outline' : 'project', rightTab: 'inspector',
+      toolbar: { x: 24, y: 92, isVertical: false, isDetached: false, scale: 1, widthScale: 1, dockedWidthScale: 1, freeWidthScale: 1, toolbarHeight: 40 },
+      leftToolbar: { x: 24, y: 24, isVertical: false, isDetached: false, widthScale: 1 }, toolbarOffsets: [], leftToolbarOffsets: [] },
+    presentation: { theme: second ? 'dark' : 'light', wordWrap: !second, fontFamily: 'Georgia, serif', fontWeight: 'light', fontSize: second ? 18 : 12,
+      lineHeight: second ? 1.5 : 1, viewMode: second ? 'focus' : 'default', zoom: second ? 1.2 : 1, compact: false, previewEnabled: false, previewFrame: false },
+    window: { displayId: '1', ...bounds, viewportWidth: bounds.width, viewportHeight: bounds.height - 28 } });
+  x.h.editor.environmentConfiguration = { formGeneration: 0, composing: false, authoringPending: false, configuration: x.fullConfiguration(false) };
+  const send = x.h.window.webContents.send;
+  x.h.window.webContents.send = (channel, payload) => {
+    if (channel === 'editor:snapshot-request' && payload.environmentConfigurationWindow) {
+      x.h.editor.environmentConfiguration.configuration.window = { ...payload.environmentConfigurationWindow };
+      if (payload.environmentProjectionOperationId) x.h.editor.environmentProjectionOperationId = payload.environmentProjectionOperationId;
+      else delete x.h.editor.environmentProjectionOperationId;
+    }
+    return send(channel, payload);
+  };
+  x.fullPath = path.join(x.h.userData, 'design-os-environment-epochs-v2.json');
+  x.fullRead = async () => { const before = environmentEpochWholeRoster(x.h), result = await x.h.query(ENVIRONMENT_EPOCH_QUERY, { configurationVersion: 2 });
+    assert.deepEqual(environmentEpochWholeRoster(x.h), before); assert.equal(result.ok, true, JSON.stringify(result)); return result.settingsEnvironmentEpochs; };
+  x.fullToken = p => ({ version: 2, expectedRevision: p.revision, expectedStateDigest: p.stateDigest,
+    expectedConfigurationGeneration: p.configurationGeneration, expectedFormGeneration: p.formGeneration });
+  x.fullIntent = async (id, extra) => { const p = await x.fullRead(); return x.epochUi(id, { ...x.fullToken(p), ...extra }); };
+  x.fullChange = async (id, extra) => { const response = await x.fullIntent(id, extra);
+    assert.equal(response.mainResult?.ok, true, JSON.stringify(response)); assert.equal(response.result.ok, true);
+    const result = response.result.value?.result; assert.equal(result?.ok, true, JSON.stringify(response)); return result; };
+  x.fullObserve = second => { x.h.editor.environmentConfiguration.configuration = x.fullConfiguration(second); x.h.editor.environmentConfiguration.formGeneration++; };
+  const protectedRows = environmentEpochWholeRoster(x.h);
+  x.fullProtected = () => assert.deepEqual(environmentEpochWholeRoster(x.h).filter(([name]) => name !== path.relative(x.h.root, x.fullPath)), protectedRows);
+  return x;
+}
+
+test('full ENV actual registered renderer/Main A/B capture, preset, pending and health use only the fixed shell file [FINITE_NOT_NATIVE]', async t => {
+  const x = await fullEnvironmentMainControllerFixture(t), commit = 'cmd.project.view.commitEnvironmentConfiguration';
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'EPOCH' });
+  const a = JSON.parse(fs.readFileSync(x.fullPath)).epochs[0]; x.fullProtected();
+  x.fullObserve(true); await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'EPOCH' });
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'PRESET', name: 'Keep this named environment' });
+  const before = JSON.parse(fs.readFileSync(x.fullPath)), presetBytes = JSON.stringify(before.presets);
+  const staged = await x.fullChange(ENVIRONMENT_EPOCH_RESTORE, { source: { kind: 'EPOCH', id: a.epochId } });
+  let persisted = JSON.parse(fs.readFileSync(x.fullPath)); assert.equal(persisted.projects[0].current.workspace, 'PLAN');
+  assert.equal(persisted.projects[0].pending.configuration.workspace, 'WRITE'); assert.equal(persisted.epochs.length, 3);
+  assert.deepEqual(persisted.epochs.slice(0, 2), before.epochs); assert.equal(JSON.stringify(persisted.presets), presetBytes);
+  x.h.editor.environmentConfiguration.configuration = structuredClone(staged.configuration);
+  await x.fullChange(commit, { kind: 'CONFIRM_APPLY', operationId: staged.operationId });
+  persisted = JSON.parse(fs.readFileSync(x.fullPath)); const cold = await x.fullRead();
+  assert.equal(persisted.projects[0].pending, null); assert.equal(cold.current.workspace, 'WRITE'); assert.equal(cold.lastStable.workspace, 'PLAN');
+  assert.deepEqual(persisted.epochs[0], a); assert.equal(JSON.stringify(persisted.presets), presetBytes); x.fullProtected();
+  const legacy = await x.epochUi(ENVIRONMENT_EPOCH_CAPTURE, { expectedRevision: 0,
+    expectedStateDigest: environmentEpochDigest('ABSENT_ENVIRONMENT_EPOCH_V1'), preferences: { theme: 'dark', wordWrap: false } });
+  assert.equal(legacy.mainResult?.ok, false); assert.match(JSON.stringify(legacy), /LEGACY_READ_ONLY/u); x.fullProtected();
+});
+
+test('full ENV actual Main health promotion revalidates contribution capability after staged publication [FINITE_NOT_NATIVE]', async t => {
+  const x = await fullEnvironmentMainControllerFixture(t), commit = 'cmd.project.view.commitEnvironmentConfiguration';
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'EPOCH' }); const a = (await x.fullRead()).epochs[0];
+  x.fullObserve(true); await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'EPOCH' });
+  const staged = await x.fullChange(ENVIRONMENT_EPOCH_RESTORE, { source: { kind: 'EPOCH', id: a.epochId } });
+  x.h.editor.environmentConfiguration.configuration = structuredClone(staged.configuration);
+  const p = await x.fullRead(), before = fs.readFileSync(x.fullPath);
+  x.h.main.__host.denyCapability('cap.project.edit.undo');
+  const response = await x.epochUi(commit, { ...x.fullToken(p), kind: 'CONFIRM_APPLY', operationId: staged.operationId });
+  assert.equal(response.mainResult?.ok, false, 'a previously permitted projection cannot promote stable after current capability loss');
+  assert.deepEqual(fs.readFileSync(x.fullPath), before); assert.equal(JSON.parse(before).projects[0].current.workspace, 'PLAN'); x.fullProtected();
+});
+
+test('full ENV actual normal Quit flushes the latest unrecorded form through Kernel without inventing an epoch [FINITE_NOT_NATIVE]', async t => {
+  const x = await fullEnvironmentMainControllerFixture(t);
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'EPOCH' });
+  const old = JSON.parse(fs.readFileSync(x.fullPath)); x.fullObserve(true);
+  let resolveQuit; const quit = new Promise(resolve => { resolveQuit = resolve; });
+  x.h.app.quit = () => resolveQuit();
+  const beforeQuit = x.h.appEvents.get('before-quit'); assert.equal(typeof beforeQuit, 'function');
+  let prevented = false; beforeQuit({ preventDefault() { prevented = true; } });
+  await environmentEpochWait(quit, 'actual Main before-quit'); assert.equal(prevented, true);
+  const after = JSON.parse(fs.readFileSync(x.fullPath));
+  assert.equal(after.projects[0].current.workspace, 'PLAN', 'latest current form must be durable before the real Quit continuation');
+  assert.deepEqual(after.epochs, old.epochs, 'current flush is not historical capture or retention');
+  assert.deepEqual(after.presets, old.presets); assert.equal(x.h.editor.environmentConfiguration.configuration.workspace, 'PLAN');
+});
+
+test('full ENV actual queued legacy request cannot write after the full successor publishes [FINITE_NOT_NATIVE]', async t => {
+  const x = await fullEnvironmentMainControllerFixture(t), p = await x.fullRead();
+  let release, entered;
+  const started = new Promise(resolve => { entered = resolve; }), held = new Promise(resolve => { release = resolve; });
+  t.after(() => release());
+  const queued = x.h.main.__host.holdDiskQueue(async () => { entered(); await held; });
+  await started;
+  const full = x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { ...x.fullToken(p), kind: 'EPOCH' });
+  await new Promise(resolve => setImmediate(resolve));
+  const legacy = x.h.command(ENVIRONMENT_EPOCH_CAPTURE, { expectedRevision: 0,
+    expectedStateDigest: environmentEpochDigest('ABSENT_ENVIRONMENT_EPOCH_V1'), preferences: { theme: 'dark', wordWrap: false } });
+  await new Promise(resolve => setImmediate(resolve)); release(); await queued;
+  const [published, refused] = await Promise.all([full, legacy]); assert.equal(published.ok, true, JSON.stringify(published));
+  assert.equal(refused.ok, false, 'legacy compatibility cannot change the migration source after the queued full publication');
+  assert.match(JSON.stringify(refused), /LEGACY_READ_ONLY/u); assert.equal(fs.existsSync(x.epochPath), false); x.fullProtected();
+});
+
+test('full ENV actual Main finite display profile intent keeps manuscript and preset permissions separate [FINITE_NOT_NATIVE]', async t => {
+  const x = await fullEnvironmentMainControllerFixture(t), commit = 'cmd.project.view.commitEnvironmentConfiguration';
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'EPOCH' });
+  await x.fullChange(ENVIRONMENT_EPOCH_CAPTURE, { kind: 'PRESET', name: 'Keep baseline preset' });
+  const before = JSON.parse(fs.readFileSync(x.fullPath));
+  const unsupported = await x.fullIntent(ENVIRONMENT_EPOCH_RESTORE, { source: { kind: 'PROFILE', id: 'SAFE' } });
+  assert.match(JSON.stringify(unsupported), /PAYLOAD_INVALID/u); assert.deepEqual(JSON.parse(fs.readFileSync(x.fullPath)), before);
+  for (const profile of ['FOCUS', 'COMPACT', 'BASELINE']) {
+    const previous = JSON.parse(fs.readFileSync(x.fullPath)), staged = await x.fullChange(ENVIRONMENT_EPOCH_RESTORE, { source: { kind: 'PROFILE', id: profile } });
+    assert.equal(staged.configuration.profile, profile);
+    assert.equal(staged.configuration.presentation.viewMode, profile === 'FOCUS' ? 'focus' : 'default');
+    assert.equal(staged.configuration.presentation.compact, profile === 'COMPACT');
+    let persisted = JSON.parse(fs.readFileSync(x.fullPath)); assert.deepEqual(persisted.projects[0].current, previous.projects[0].current);
+    assert.deepEqual(persisted.epochs.slice(0, previous.epochs.length), previous.epochs); assert.deepEqual(persisted.presets, before.presets);
+    x.h.editor.environmentConfiguration.configuration = structuredClone(staged.configuration);
+    await x.fullChange(commit, { kind: 'CONFIRM_APPLY', operationId: staged.operationId });
+    persisted = JSON.parse(fs.readFileSync(x.fullPath)); assert.equal((await x.fullRead()).current.profile, profile);
+    assert.equal(persisted.projects[0].pending, null); assert.deepEqual(persisted.presets, before.presets); x.fullProtected();
   }
 });

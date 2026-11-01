@@ -8,6 +8,7 @@ const ALLOWED_COMMAND_IDS = Object.freeze([
   'cmd.project.pulse.correctMetric',
   'cmd.project.view.captureEnvironmentEpoch',
   'cmd.project.view.restoreEnvironmentEpoch',
+  'cmd.project.view.commitEnvironmentConfiguration',
   'cmd.project.saveAs',
   'cmd.project.recoverMissingIntegrityAnchor',
   'cmd.project.exportCurrentSceneTxtV1',

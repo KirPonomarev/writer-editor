@@ -601,7 +601,13 @@ test('actual replacement listener preserves late drafts or stale generation and 
     let listener, working = 'copied live content';
     const detached = route === 'detached';
     const events = [], warnings = [];
-    const c = { currentProjectId: 'project', currentDocumentId: 'copy', currentDocumentKind: 'scene',
+    const c = { toolbarConfiguratorProjectId: 'project',
+    // No full-environment query port in this finite authoring host; actual hydration refuses.
+    fullEnvironmentToolbarProjection: null, fullEnvironmentReadyProject: '', fullEnvironmentHydratedProject: '',
+    fullEnvironmentHydrationPromise: null, fullEnvironmentLastSignal: Promise.resolve(),
+    fullEnvironmentPendingWindow: null, fullEnvironmentView: null,
+    readFullEnvironmentProjection: async () => { throw Error('E_FIXTURE_FULL_ENV_QUERY_UNAVAILABLE'); },
+      currentProjectId: 'project', currentDocumentId: 'copy', currentDocumentKind: 'scene',
       treeDetachedOrigin: null, currentDocumentTitle: 'Beta', localEditGeneration: 9, lastAckedGeneration: 9, localDirty: false,
       wordCommentDraft: state === 'comment-draft' ? { body: 'unsaved comment' } : null,
       wordCommentBusy: state === 'comment-busy',
@@ -636,7 +642,7 @@ test('actual replacement listener preserves late drafts or stale generation and 
     c.setReviewSurfaceState = () => events.push(['review-replaced']);
     const priorComment = c.wordCommentDraft, priorNote = c.manuscriptDrafts.get('note');
     vm.createContext(c);
-    vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent', 'applyTreeDetachedPublication', 'showEditorPanelFor'])
+    vm.runInContext(executableFunctions(['treeReplacementRefusalReason', 'isTreeReplacementCurrent', 'applyTreeDetachedPublication', 'showEditorPanelFor', 'hydrateFullEnvironmentForProject'])
       + '\n' + source.slice(start, end), c);
     if (detached) {
       listener({ treeDetached: true, projectId: 'project', expectedDocumentId: 'copy', documentId: '',
@@ -973,7 +979,13 @@ test('whole editor listener accepts same-ID partition only after checked replace
     'content', 'comment', 'comment-busy', 'note', 'note-busy', 'flow', 'mixed-flags', 'invalid-document', 'adapter-refused']) {
     let listener, working = 'before rich buffer', history = ['prior text edit'];
     const effects = [], statuses = [];
-    const c = { currentProjectId: 'project', currentDocumentId: 'scene', currentDocumentKind: 'scene',
+    const c = { toolbarConfiguratorProjectId: 'project',
+    // No full-environment query port in this finite authoring host; actual hydration refuses.
+    fullEnvironmentToolbarProjection: null, fullEnvironmentReadyProject: '', fullEnvironmentHydratedProject: '',
+    fullEnvironmentHydrationPromise: null, fullEnvironmentLastSignal: Promise.resolve(),
+    fullEnvironmentPendingWindow: null, fullEnvironmentView: null,
+    readFullEnvironmentProjection: async () => { throw Error('E_FIXTURE_FULL_ENV_QUERY_UNAVAILABLE'); },
+      currentProjectId: 'project', currentDocumentId: 'scene', currentDocumentKind: 'scene',
       currentDocumentTitle: 'Before', currentTreeContentPublicationId: 'prior', treeDetachedOrigin: null,
       localEditGeneration: 9, lastAckedGeneration: 8, localDirty: true, metaEnabled: true,
       wordCommentDraft: mode === 'comment' ? { body: 'draft' } : null, wordCommentBusy: mode === 'comment-busy',
@@ -1001,7 +1013,7 @@ test('whole editor listener accepts same-ID partition only after checked replace
       'showAuthoringSurfacesSurface', 'renderTree', 'updateSaveStateText', 'refreshManuscriptNoteReferences', 'refreshVisibleCommentProjection',
       'updatePerfHintText', 'updateInspectorSnapshot', 'refreshMetadataInspector', 'applyPendingProjectSearchJump']) c[name] = () => {};
     vm.createContext(c);
-    vm.runInContext(executableFunctions(['treeContentReplacementRefusalReason', 'showEditorPanelFor']) + '\n' + source.slice(start, end), c);
+    vm.runInContext(executableFunctions(['treeContentReplacementRefusalReason', 'showEditorPanelFor', 'hydrateFullEnvironmentForProject']) + '\n' + source.slice(start, end), c);
     const overrides = { project: { projectId: 'foreign' }, document: { expectedDocumentId: 'wrong' }, generation: { expectedGeneration: 8 },
       epoch: { expectedTreeContentPublicationId: 'wrong' }, 'target-epoch': { treeContentPublicationId: 'prior' },
       content: { expectedContent: 'stale' }, 'mixed-flags': { treePublication: true } };
