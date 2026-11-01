@@ -1,6 +1,6 @@
 # Existing Atlas aliases across scene scopes
 
-STATUS: NATIVE_OUTCOME_OBSERVED_CURRENT_MAC_PIN_REPAIR_PENDING
+STATUS: DELIVERED_BOUNDED_ALIAS_ROUTE
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: Existing selected-entity and scoped-alias route only; full V6/DNA5 and all17Mac qualification remain open.
 TASK_ID: YALKEN_ATLAS_UNMENTIONED_ENTITY_ALIAS_20261101
@@ -26,6 +26,8 @@ DESIGN_SELECTED_DIRECTION: Retain the existing controls and offer at most one va
 DESIGN_AUDIT_TOOLS: Planned actual-function adversarial checks and rebuilt native field/paste/focus/disabled-state/readback/cold checks; this line does not claim execution.
 DESIGN_TOOL_DEVIATIONS: Existing local interface/source evidence is sufficient; no external design experiment, installation or optional service. Single direct developer follows current owner authority over historical orchestration guidance.
 DIFF_BUDGET: At most22exact paths. editor.js at most45added/5removed lines in getAtlasJourneyEntities only; runtime.mjs at most8added/3removed lines in the existing alias-conflict predicate only. Three maintained test files append at most500lines combined; necessary neutral fixture dependency bindings only, every original test body/predicate preserved. Total semantic additions/removals at most1200, excluding deterministic bundle/current-bindings output. No broad formatting/refactor.
+
+CURRENT_DELIVERY_SUPERSEDING_STATUS: PR2188 normal merge531d4162, candidate6a36a78a; closureec79aea366c9d5875f28a30799cf7220454f587da6f71b3b8055b63f18484f64 independently binds current local/native/CI/merged protection. Native06EIO and07interruption retained; complete08 is separately bound. Earlier checkpoint entries remain historical; full17MacUNKNOWN/UNFROZEN and R4B/R4C unaccepted. Continue Plot source/navigation task.
 
 ## MICRO_GOAL
 

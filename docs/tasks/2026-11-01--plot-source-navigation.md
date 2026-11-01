@@ -1,0 +1,102 @@
+# Plot sources and exact scene navigation
+
+STATUS: TEST_ONLY_ADMITTED_RUNTIME_FROZEN
+ROLE: BOUNDED_TASK_SPECIFICATION
+CLAIM_BOUNDARY: One current Plot source-list and no-loss navigation route; full Mac V6 DNA5 remains open.
+TASK_ID: YALKEN_PLOT_SOURCE_NAVIGATION_20261101
+TYPE: UI
+CANON_VERSION: v1.0
+ACTIVE_EXECUTION_CANON: v3.13a-final
+CHECKS_BASELINE_VERSION: v1.0
+BINDING_BASE_SHA: 531d4162d343f4cf515cbdd54f84df6fbfaaa02e
+BINDING_BASE_TREE: 898a89b50eeeaaf8d2fe9b2bbdce1abfbbe7dbcf
+PUSH_BRANCH: codex/plot-source-navigation-20261101
+DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
+OWNER_AUTHORITY: Direct continuing owner full V6 DNA5 development; one direct executor, no agents models extra chats or timers. Existing original stage leases are not resumed.
+STORAGE: Dated plot-source-navigation task reports on verified T777; original TMP03 retained for tests only. Any future APFS build/profile must have fresh prospective declaration and verified owned marker. No private/default profile.
+DESIGN_TOOL_ROUTER: APPLIED; typed declaration APPLICABLE_EVIDENCE_REQUIRED.
+DESIGN_SOURCE_OF_TRUTH: Existing inspector typed right-rail slot and native list/button patterns; vanilla CSS and current tokens unchanged. R9 actual native populated Plot4items has no source controls. Existing guide and matrix govern evidence, not a compulsory external service.
+DESIGN_RESEARCH_SOURCES: Current source and actual R9 AX/screenshot; brain:refs Plot originRef source navigation; ui-craft and relevant required references. No optional integration or new design language.
+DESIGN_SELECTED_DIRECTION: A bounded list in the existing inspector, source title and plain trust/currentness text, accessible Open scene buttons and explicit pagination. No new graph renderer, palette, animation or layout.
+DIFF_BUDGET: 25 exact paths, at most1400 meaningful added/deleted lines excluding generated bundle and purely mechanical binding lists. Existing assertions preserved, new unit file bounded. No independent cleanup.
+
+## MICRO_GOAL
+
+Show actual structural and author-confirmed Plot sources in manuscript order and open a selected current source via the existing no-loss document command. Cheap immutable baseline probe: canonical sceneOrder z,a produces Plot a,z; two actual originRefs become only inspector count2 with no details. R9 native equivalent4origins is retained separately. Evidence never grants mutation authority.
+
+## ARTIFACT
+
+Five existing runtime paths, appended maintained contracts, one new unit test and exact mechanical/factual companions. Initial phase changes only task/docs/tests; production stays frozen until genuine RED and reviewed runtime continuation. One outcome one rollback one delivery. Security2175 is already merged at a5ab8179, preserved in current ancestry; alias2188 closed at binding base.
+
+## ALLOWLIST
+
+- src/derived/plot/derivePlotProjection.mjs
+- src/derived/projections/projectionInspectorManifests.mjs
+- src/main.js
+- src/renderer/editor.js
+- src/renderer/editor.bundle.js
+- test/contracts/yalken-atlas-v5-e03-c01-plot-projection-originref-sequence-layout.contract.test.js
+- test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js
+- test/unit/plot-source-navigation.test.js
+- docs/tasks/2026-11-01--plot-source-navigation.md
+- docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md
+- docs/CONTEXT.md
+- docs/HANDOFF.md
+- docs/WORKLOG.md
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
+- docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/sector-m-scope-map.json
+- docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
+- scripts/ops/release-candidate.mjs
+
+## DENYLIST
+
+Every other path; Core/schema/storage meaning, dependency pins, private profiles, frozen history and old errors. No reset stash checkout clean rebase amend force push, gate weakening, skips, fabricated success, app removal or old controller restart. No new port registry framework model service or runtime network. No manuscript/Idea/Meaning interpretation from keywords.
+
+## CONTRACT / SHAPES
+
+FEATURE_INTEGRATION_MANIFEST_V1: integrationMode EXISTING_SEAM; domainOwner Core scenes and decisions; derivedData immutable Plot node/origin details; commandIds cmd.project.document.open; queryIds query.projectionInspector; events existing save and document-open publications only; productPorts existing WorkspaceQueryPort and document-open adapter; DesignOS ports DomainProjectionPort ShellProjectionPort intent-only dispatch; authority query read-only and Kernel revalidation; stateClasses PROJECT_STATE read-only, AUTHORING_WORKING_STATE protected by actual no-loss barrier, DERIVED_STATE rebuildable, SHELL_STATE existing selections, TRANSIENT_STATE page and pending button.
+
+SURFACE_MANIFEST_V1: existing surface.projection.inspector, rightRail.context.atlas.projectionInspector typed slot, read-only source list within existing host. Native buttons keyboard Enter/Space, visible focus, plain current/stale/refusal text. Existing styles and tokens reused. Bounded24rows, labels1000UTF16, options1000chars and offset at most1000000; on-demand only, no typing computation. Full performance qualification remains separate.
+
+Read path: canonical scenes/sceneOrder/confirmed decisions -> derivePlotProjection -> bounded inspector -> existing DesignOS host. Explicit sceneOrder must cover all scene IDs exactly once, malformed refuses; absent historical order retains deterministic sorted fallback. No algorithmic candidate auto-promoted.
+Write path: source-button intent -> existing command bus/Kernel -> Main stable tree resolution, current capability/lifecycle and existing no-loss save barrier -> optional exact expected source revision/hash guard -> existing source publication. No renderer path authority. Guard stale project, source, generation and session across waits; failed navigation preserves working buffer. Projection options cannot grant writes.
+
+O: actual ordered readable sources and safe scene transition. T: Core -> derived read -> source intent -> Kernel -> Main. H: existing computed sources are dropped at inspector, lexical sort discards reading order. B: source/project/history and other projections retained. P: cheap baseline, whole RED/GREEN, real Main and native/cold plus all mandatory gates. I: exact source SHA/tree, origin/project/scene/revision/hash, app/ASAR/profile and actual process identity.
+
+## IMPLEMENTATION_STEPS
+
+1. Preserve all10049 source bytes, old profiles, security2175 original15 merged receipts and actual native closure; fresh branch/admission and current preflight before first edit. Add short distinct CONTEXT current truth, HANDOFF next action and WORKLOG chronology; retain all older blocks.
+2. Append causal tests and execute complete unchanged-runtime RED. Freeze original assertions plus new tests. Review exact cause before production edit, with current continuation preflight.
+3. Surgical existing-seam fix; ordinary renderer generation, exact current companion finalizer prepare/review/CAS apply/readback, delegated technical hash witnesses only. Preserve all old tuples/predicates and17UNKNOWN candidateUNFROZEN.
+4. Whole GREEN, affected source and early source-bound native ordinary Open/Plot/page/source/dirty Unicode transition/normalQuit/cold raw independent reader; all original profiles retained. No product push before this actual rebuilt app proof.
+5. Complete original required local/official CI and normal delivery. Fetch literal merged source, clean isolated verification, relevant gates and actual rebuilt merged native before closure. Continue remaining full Mac objective afterwards.
+
+## CHECKS
+
+CHECK_01_PRE_IDENTITY: fresh bootstrap and ordered startup, registry clean exactHEAD/origin/tree, correct encrypted/unlocked/writable Secure and writable T777 UUID, declaration/preflight actual0. Source manifest independently reread10049files. No competing Git/build/product process or lock observed. CHECK_01 executes before repository edits; CHECK_02 onwards execute after.
+CHECK_02_POST_TASK: node scripts/ops-gate.mjs --task docs/tasks/2026-11-01--plot-source-navigation.md
+CHECK_03_POST_CAUSAL: complete E03C01 and E03C05 files plus new plot-source-navigation unit; preserve original assertions. Initial product RED must be distinguished from test-method failure. Whole final GREEN has zero failures/cancel/todo and no newly hidden cases.
+CHECK_04_POST_AFFECTED: existing manual-map scene navigation, actual Main scene identity, current projection/source/capability tests and original positive/negative guards. npm run build:renderer; npm run test:electron; relevant editor/paste/perf source checks.
+CHECK_05_POST_REQUIRED: unchanged default npm test, official RTK, C1C, existing Pulse required roots, affected source namespace/certification, inventory/claim bindings, original six corruption ancestry cases, release contract, E0 and mutants, oss policy full and production audit, guardrails. Original59sanctioned skips remain unqualified. No changed cap runner lane timeout or assertion.
+CHECK_06_POST_NATIVE: actual rebuilt app before push, immutable oracle for source order/ref identity/source bytes/current selection or refusal, actual process normalQuit and independent raw reader; complete owned profile and all available metadata retained compactly, no source removal or portable OS identity claim.
+CHECK_07_POST_DELIVERY: commit checked push PR complete required CI normal expected-head merge; fetch exact merged SHA source/protection proof repeat relevant checks and actual rebuilt merged native. Full17 qualification rows remainUNKNOWN until their independent final artifact proofs.
+
+## STOP_CONDITION
+
+Unknown authority/base/writer, foreign dirty change, scope leak, invalid payload before validation, stale publication, required missing/failing proof or third identical failure. Preserve exact failure bytes and one next hypothesis. No false green.
+
+## REPORT_FORMAT
+
+Exactly the existing nineteen-field AGENT_FINAL_REPORT_V1 contract; single text block KEY VALUE; basenames only, no URL or slash path. Exact before after commit merge, test denominator and skipped truth, complete delivery status, open limits and one next action. One PR never implies full release.
+
+## FAIL_PROTOCOL
+
+Retain expected actual source SHA seed/hash/raw/oracle identity and original error. Correct only diagnosed defect or method with prospective scope/admission; never rewrite prior proof or lower acceptance. Keep full goal active unless owner pause or genuine blocking boundary.

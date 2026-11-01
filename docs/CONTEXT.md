@@ -1,3 +1,13 @@
+## 2026-11-01 — Delivered Mac security and alias corrections; Plot sources next
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 531d4162d343f4cf515cbdd54f84df6fbfaaa02e
+CLAIM_BOUNDARY: Bounded deliveries and current gap only; full V6/DNA5 remains ACTIVE.
+
+Security PR2175 is merged at a5ab8179: Electron43.8.4, undici6.29.1/7.30.1 and fast-uri4.2.3 remain current. Original15 merged receipts and native closure317540a7 were reread; native H5-built artifact equivalence is not a merged rebuild. Alias PR2188 closes at this binding head, closureec79aea366c9d5875f28a30799cf7220454f587da6f71b3b8055b63f18484f64. Candidate/full-main/native/protection proof closes that route only; original native06EIO and interrupted07 remain failures, complete08 stays separately bound. Earlier H5/pending blocks below are historical.
+
+Current R9 actual packaged Plot reports4sources without source controls. Independent readback preserves26project files,7events,4aliases and all prior75ENV files. Native observatione7771033367de70e0b4e6d82eb622b82488527c295354f67ab08798f76250f97; full15cells4projections12stages and all17Mac qualification remain unaccepted, candidateUNFROZEN, R4B/R4C practical acceptance unclaimed. One direct developer now admits bounded Plot source/navigation under2026-11-01--plot-source-navigation.md. No other agent/chat/model/timer or old controller. Word nativeOfficePAUSED; Black Box follows full Mac.
+
 ## 2026-11-01 — Atlas H5 complete unit baseline: exact task-scope enrollment
 
 DOCUMENT_CLASS: FACTUAL_STATUS
