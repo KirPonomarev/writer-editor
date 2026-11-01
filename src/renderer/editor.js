@@ -1177,6 +1177,7 @@ let manualMapPortabilityCommandState = {
   importMapId: '',
   lastCommandId: '',
 };
+let plotInspectorView = { projectId: '', offset: 0 };
 let projectionInspectorState = {
   state: 'empty',
   projectId: '',
@@ -10459,7 +10460,7 @@ function closeCardModal() {
   cardModal.hidden = true;
 }
 
-async function openDocumentNode(node) {
+async function openDocumentNode(node, options = {}) {
   const documentId = getEffectiveDocumentId(node);
   if (!documentId) return false;
   const requestedProjectId = currentProjectId, requestedEpoch = atlasPublicationEpoch;
@@ -10468,6 +10469,7 @@ async function openDocumentNode(node) {
     const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
       projectId: requestedProjectId,
       nodeId: documentId,
+      ...(options.expectedPlotSource ? { expectedPlotSource: options.expectedPlotSource } : {}),
     });
     // Main may have published this document before the command reply. A later
     // project/document publication must never be replaced by that old reply.
@@ -17597,6 +17599,81 @@ async function refreshManualMapWorkbench(options = {}) {
   renderManualMapWorkbenchState();
 }
 
+function getPlotSourceNavigationTarget(state, rowId) {
+  const plot = state?.projectionStates?.find(item => item.projectionId === 'plot');
+  const row = plot?.details?.rows?.find(item => item.id === rowId);
+  if (state?.state !== 'ready' || state.projectId !== currentProjectId
+    || currentRightTab !== 'atlas' || currentAtlasSurface !== 'projection'
+    || plot?.state !== 'ready' || !row || row.projectId !== state.projectId
+    || !/^tree-node-[a-f0-9]{32}$/u.test(row.sceneId)
+    || !/^sha256:[a-f0-9]{64}$/u.test(row.sceneRevision)
+    || !/^[a-f0-9]{64}$/u.test(plot.projectionHash)
+    || row.originRef?.sceneId !== row.sceneId || row.originRef?.projectId !== row.projectId
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN)) return null;
+  return { schemaVersion: 'plot.sourceNavigation.v1', originRef: { ...row.originRef },
+    sceneRevision: row.sceneRevision, projectionHash: plot.projectionHash };
+}
+
+async function openPlotSource(target, isCurrent) {
+  const rowId = target.originRef.refId;
+  const current = () => isCurrent()
+    && JSON.stringify(getPlotSourceNavigationTarget(projectionInspectorState, rowId)) === JSON.stringify(target);
+  if (!current()) return false;
+  let scene = findTreeNodeById(treeRoot, target.originRef.sceneId);
+  if (!scene) {
+    const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: 'roman' });
+    if (!current() || result?.ok !== true || result.projectId !== target.originRef.projectId) return false;
+    scene = findTreeNodeById(result.root, target.originRef.sceneId);
+  }
+  if (!current() || getEffectiveDocumentId(scene) !== target.originRef.sceneId
+    || !['scene', 'chapter-file'].includes(getEffectiveDocumentKind(scene))) return false;
+  return openDocumentNode(scene, { expectedPlotSource: target });
+}
+
+function renderPlotInspectorSources(parent, state) {
+  if (state.state !== 'ready' || state.projectId !== currentProjectId) return;
+  const plot = state.projectionStates.find(item => item.projectionId === 'plot'), detail = plot?.details;
+  const section = appendAtlasOverviewSection(parent, 'Источники Plot', { open: true });
+  if (plot?.state === 'unavailable' || !detail || !Array.isArray(detail.rows)) {
+    appendAtlasReportsRow(section, 'Источники недоступны', plot?.unavailableReason || 'Обновите Plot.'); return;
+  }
+  appendAtlasReportsRow(section, `${detail.offset + (detail.rows.length ? 1 : 0)}–${detail.offset + detail.rows.length} из ${detail.total}`,
+    detail.hasMore ? 'Продолжение на следующей странице' : 'Конец списка');
+  for (const row of detail.rows) {
+    const item = document.createElement('div'); item.className = 'right-rail-atlas-matrix-list';
+    appendAtlasReportsRow(item, row.label, `${row.sceneTitle} · ${row.trustState} · ${row.originRef?.startOffset}–${row.originRef?.endOffset}`);
+    const target = getPlotSourceNavigationTarget(state, row.id), publication = captureAtlasPublication(null, true, false);
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.dataset.plotSourceOpen = row.id; button.textContent = 'Открыть сцену'; button.disabled = !target;
+    button.setAttribute('aria-label', `Открыть источник Plot: ${row.label} · ${row.sceneTitle}`);
+    if (!target) button.title = 'Источник недоступен или требует обновления.';
+    const current = () => button.isConnected && parent.isConnected && publication()
+      && currentRightTab === 'atlas' && currentAtlasSurface === 'projection';
+    button.addEventListener('click', async () => {
+      if (!target || button.disabled || !current()) return;
+      button.disabled = true; button.setAttribute('aria-busy', 'true');
+      try {
+        const opened = await openPlotSource(target, current);
+        if (!opened && current()) updateStatusText('Источник Plot изменился или недоступен. Нажмите Plot ещё раз, чтобы обновить источники. Текущий текст остаётся в редакторе.', { visible: true });
+      } catch {
+        if (current()) updateStatusText('Не удалось открыть источник Plot. Нажмите Plot ещё раз, чтобы обновить источники. Текущий текст остаётся в редакторе.', { visible: true });
+      } finally {
+        if (current()) { button.disabled = !getPlotSourceNavigationTarget(projectionInspectorState, row.id); button.setAttribute('aria-busy', 'false'); }
+      }
+    });
+    item.appendChild(button); section.appendChild(item);
+  }
+  const publication = captureAtlasPublication(), offset = detail.offset;
+  for (const [label, next, disabled] of [['Назад', Math.max(0, offset - 24), offset === 0], ['Далее', offset + 24, !detail.hasMore]]) {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.textContent = label; button.disabled = disabled; button.dataset.plotSourcePage = String(next);
+    button.addEventListener('click', () => {
+      if (button.disabled || !button.isConnected || !publication() || currentAtlasSurface !== 'projection') return;
+      plotInspectorView = { projectId: currentProjectId, offset: next }; refreshProjectionInspector();
+    }); section.appendChild(button);
+  }
+}
+
 function renderProjectionInspectorState() {
   if (!(projectionInspectorHost instanceof HTMLElement)) return;
   const state = normalizeProjectionInspector(projectionInspectorState);
@@ -17661,11 +17738,14 @@ function renderProjectionInspectorState() {
   appendAtlasReportsRow(boundary, 'Plot', 'Read projection from scenes and confirmed mentions', 'current');
   appendAtlasReportsRow(boundary, 'Idea', 'Author truth: idea.create and idea.originLink.add', 'current');
   appendAtlasReportsRow(boundary, 'Meaning', 'Promotion only through meaning.promote via CommandKernel only', 'current');
+  renderPlotInspectorSources(projectionInspectorHost, state);
   if (typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'].includes(window.__PRODUCT_PROFILE)) renderIdeaMeaningInspector(projectionInspectorHost, state);
 }
 
 async function refreshProjectionInspector(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  if (plotInspectorView.projectId !== currentProjectId) plotInspectorView = { projectId: currentProjectId, offset: 0 };
+  const plotOffset = plotInspectorView.offset;
   const authorEntry = typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'].includes(window.__PRODUCT_PROFILE) ? getIdeaMeaningAuthorDraft() : null;
   const authorRevision = authorEntry?.revision;
   const current = beginAtlasQueryPublication('projectionInspector', options), requestProject = currentProjectId;
@@ -17678,10 +17758,11 @@ async function refreshProjectionInspector(options = {}) {
   renderProjectionInspectorState();
   const result = await invokeWorkspaceQueryBridge(PROJECTION_INSPECTOR_QUERY_ID, {
     projectId: currentProjectId,
+    plot: { offset: plotOffset },
     ...(authorEntry ? { idea: { ...authorEntry.views.idea, selectedId: authorEntry.fields.selectedIdeaId },
       meaning: { ...authorEntry.views.meaning, selectedId: authorEntry.fields.selectedMeaningId } } : {}),
   });
-  if (!current()) return;
+  if (!current() || plotOffset !== plotInspectorView.offset || plotInspectorView.projectId !== requestProject) return;
   if (authorEntry && authorEntry.revision !== authorRevision) {
     projectionInspectorState = { ...projectionInspectorState, state: 'unavailable', unavailableReason: 'IDEA_MEANING_RELOAD_REQUIRED', projectionStates: [] };
     renderProjectionInspectorState(); return;

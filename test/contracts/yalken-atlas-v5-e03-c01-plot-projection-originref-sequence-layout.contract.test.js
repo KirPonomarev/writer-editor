@@ -200,3 +200,21 @@ test('E03 C01: plot projection adds no storage, network, renderer, or UI bypass'
     }
   }
 });
+
+test('E03 C01 canonical manuscript sequence wins over opaque lexical scene identity without mutating source', async t => {
+  const { projectId, state } = await buildAtlasFixture({ confirmMention: false });
+  const project = state.data.projects[projectId]; project.sceneOrder = ['scene-b', 'scene-a'];
+  const before = structuredClone(state), { derivePlotProjection } = await loadModule('src/derived/plot/derivePlotProjection.mjs');
+  const query = coreState => derivePlotProjection({ coreState, params: { projectId }, capabilitySnapshot: {} });
+  const first = query(state); assert.equal(first.ok, true);
+  assert.deepEqual(first.value.nodes.filter(row => row.kind === 'scene').map(row => row.id), ['plot-scene:scene-b', 'plot-scene:scene-a']);
+  const reversed = structuredClone(state); reversed.data.projects[projectId].sceneOrder.reverse();
+  assert.notEqual(query(reversed).value.meta.projectionHash, first.value.meta.projectionHash);
+  for (const order of [[], ['scene-a'], ['scene-a', 'scene-a'], ['foreign', 'scene-a'], 'scene-a', null]) await t.test('invalid explicit order '+JSON.stringify(order), () => {
+    const invalid = structuredClone(state); invalid.data.projects[projectId].sceneOrder = order;
+    const result = query(invalid); assert.equal(result.ok, false); assert.equal(result.error.code, 'E_PLOT_SCENE_ORDER_INVALID');
+  });
+  assert.deepEqual(state, before);
+  const legacy = structuredClone(state); delete legacy.data.projects[projectId].sceneOrder;
+  assert.equal(query(legacy).ok, true, 'legacy absent order remains readable');
+});

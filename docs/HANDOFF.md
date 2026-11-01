@@ -1,3 +1,33 @@
+CURRENT_PLOT_LOSSLESS_NEXT: Actual28Main/FS cases pass, all23complete diagnostic objects/554embedded files independently decoded531a0a91. WP307db086cfc has exact one-wrapper inverse to121a02cd; assertions/fixtures/Mainb17/own26unit625/fixed64MiB runner frozen. Refresh only seven current namespaces plus honest append-only current-byte witnesses, including single exact DONE static-test enrollment; seal29path clean final candidate. Then actual final native rebuild/basic warm+cold, all29required checks and unchanged default, normal push/CI/merge/literal merged native. Keep original failed baseline and all retained output/fences; full17MacUNKNOWN.
+
+CURRENT_PLOT_DEFAULT_NEXT: Keep failed baseline4cd87c1c and all primary logs; strict bridge markers now5of5 with exact inverse to originala82ad1c7, one DONE exact test enrollment and29paths. Preserve SourceMainb17/own26unit625 and WP307121 until explicit source preflight. Next admit only lossless gzip+base64 of the existing full nativeSaveSystemObserve diagnostic JSON, preserving payload/fixtures/assertions and original64MiB runner. Then refresh current bindings and exact final candidate/full gates/native/default baseline/full delivery; no product code change or old PASS retag.
+
+CURRENT_PLOT_SAVE_CONTROLS_NEXT: Current native04 bounded lifecycle observed/normal warm+cold0; old failures preserved. Append-only WP307 same-window AFTER-target positive/clean-New/draft-New controls passed with actual cumulative2/3 and same exact window/webContents. Entire prior079prefix plus Mainb17/own26unit625 frozen. Refresh seven current metadata bindings/witnesses once, commit same28path/base, then literal current candidate full29 and actual rebuild/native proof before product push; normal CI/merge/literal merged rebuild remain. All17MacUNKNOWN, no second contour.
+
+CURRENT_PLOT_WP307_NEXT: Wait for already-running full988 terminal result without mutating its frozen WP307/Main inputs. Finish seven current bindings and honest byte witnesses for same28path/original-base chain, clean candidate. Fresh native must prove nonzero edit/source/Quit without extra Save, actual same-process new-window and cold Unicode recovery, then all29/current CI/merge/literal merged rebuild. No second contour.
+
+CURRENT_PLOT_RENDERER_LIFECYCLE_NEXT: Finish current startup integration, seven byte bindings/two Main pins/honest witnesses and clean same27path candidate. Fresh native must exercise nonzero edit→source→ordinary Quit without extra Save, same-process closed-window activation/fresh Renderer and cold saved text. Old24prefix and frozen26inputs retained; native03 extra-Save exit is diagnostic, not that acceptance. Then all29/current CI/merge/literal merged rebuild; no second contour.
+
+CURRENT_PLOT_NEW_RENDERER_NEXT: Freeze real-createWindow old0and3 countercases with qualified inert native ports, retain full24unit prefix. Correct only fresh-window coordinate/session; same-Renderer source navigation retains generation. Existing full Main475 healthy run completed before any new input edit. Then current bindings/clean candidate/native without extra Save/normal Quit/cold/all29/full delivery; original531d4162base and27scope unchanged.
+
+CURRENT_PLOT_GENERATION_NEXT: Complete broadened actual Main/Word plus ENV/old-map checks, refresh only same27scope current digests/two current Main pins and honest witnesses, commit generation correction. Rebuild actual candidate and navigate after nonzero authoring, then ordinary Quit without intervening Save and same-artifact cold. Native03 extra-Save normal0 is diagnostic only, full111Unicode data/profile retained. Finish all29/current CI/normal merge/literal merged rebuild; all17MacUNKNOWN.
+
+CURRENT_PLOT_RECOVERY_NEXT: Refresh seven existing current-byte targets and honest append-only witnesses, commit same27path status correction, then rebuild actual native and observe stale refusal with visible hint, selected-Plot refresh, exact scene and normal Quit/cold. E9 warm02 actual normal exit0/capture952bytes verified; earlier unknown/force-stop records remain historical. Finish original29software and normal PR/CI/merge/literal merged rebuild. No second contour; full17MacUNKNOWN.
+
+CURRENT_PLOT_NEXT: Finalize seven current metadata bindings and exact candidate, execute corrected native via own APFS controller/logs with verified final T777 publication. Old native stdout is INVALID_EMPTY_CAPTURE0bytes, exit UNKNOWN and normalQuit/cold NOT_ACCEPTED. Preserve original report/zero file/profile; no fabricated PASS. Continue same original-main normal delivery only.
+
+CURRENT_PLOT_NEXT_REQUIRED: Correct only optional expectedPlotSource relay through existing document registration after frozen causal RED and clean admission; preserve absent legacy payload and arbitrary-path stripping, rebuild bundle. Re-run whole affected chains and fresh actual native before product push; retain own profile and unsuccessful-normal-Quit/controller-I/O limitations.
+
+CURRENT_PLOT_SOURCE_NEXT: Finish current bindings and exact source candidate; fresh owned APFS offline native build/profile, real source navigation dirty save and cold reopen before any product push. Preserve originals and failures; then full normal PR/CI/merge/merged rebuild. No second contour.
+
+## 2026-11-01 — Continue one Plot source/navigation outcome
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 531d4162d343f4cf515cbdd54f84df6fbfaaa02e
+CLAIM_BOUNDARY: Current continuation only; no fullMac acceptance.
+
+Security2175 and alias2188 deliveries are closed; current evidence and limits are in the latest CONTEXT header. Original failures and all historical blocks remain. One next action: execute frozen unchanged-runtime causal tests in2026-11-01--plot-source-navigation.md, then correct the existing inspector/Plot/open route only after runtime continuation admission. Code and all source tests were exact10049files before this task; fresh preflight/E0 passed. Native-before-push, full normal delivery and literal merged rebuild remain mandatory. Reports use the verified dated T777 plot-source-navigation folder. No second writer, new chat or delegation; all17rowsUNKNOWN and R4B/R4C unaccepted.
+
 ## 2026-11-01 — Exact DONE task enrollment before continuing alias delivery
 
 DOCUMENT_CLASS: FACTUAL_STATUS

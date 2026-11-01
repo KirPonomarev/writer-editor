@@ -336,3 +336,28 @@ test('E03 C05 oversized legal old author records retain full truth and canonical
   assert.equal(coreState.data.projects[x.projectId].meanings.meanings['old-long-meaning'].interpretation, interpretation);
   assert.equal(JSON.stringify(coreState), before); assert.equal(x.derived.hashCanonicalValue(coreState), sourceHash);
 });
+
+test('E03 C05 Plot exposes bounded actual origins with canonical order exact source identity and no write authority', async t => {
+  const x = await buildProjectFixture(), project = x.state.data.projects[x.projectId];
+  project.sceneOrder = ['scene-z', x.sceneId];
+  project.scenes['scene-z'] = { id: 'scene-z', title: 'First Ω', text: 'First scene', sceneRevision: 'sha256:'+'a'.repeat(64) };
+  project.scenes[x.sceneId].title = 'Second 🧭'; project.scenes[x.sceneId].sceneRevision = 'sha256:'+'b'.repeat(64);
+  const before = structuredClone(x.state), query = (plot = {}, capabilitySnapshot = {}) => x.derived.deriveProjectionInspectorProvider({coreState:x.state,params:{projectId:x.projectId,plot},capabilitySnapshot});
+  const result = query(); assert.equal(result.ok,true);
+  const state = result.value.projectionStates.find(row=>row.projectionId==='plot'); assert.ok(state.details, 'real origins must not be replaced by a count');
+  const canonical = x.derived.derivePlotProjection({coreState:x.state,params:{projectId:x.projectId},capabilitySnapshot:{}}).value;
+  const byRef = new Map(canonical.originRefs.map(row=>[row.refId,row]));
+  assert.equal(state.details.rows[0].sceneId,'scene-z'); assert.equal(state.details.rows[0].sceneTitle,'First Ω');
+  assert.equal(state.details.total,canonical.originRefs.length); assert.equal(state.details.complete,true);
+  for(const row of state.details.rows){assert.deepEqual(row.originRef,byRef.get(row.id));assert.equal(row.projectId,x.projectId);assert.match(row.sceneRevision,/^sha256:[a-f0-9]{64}$/u);assert.ok(row.label.length<=1000);}
+  const chosen=state.details.rows.at(-1);const selected=query({selectedId:chosen.id}).value.projectionStates.find(row=>row.projectionId==='plot').details;
+  assert.deepEqual(selected.selected,chosen);assert.equal(selected.selectedState,'ready');
+  const missing=query({selectedId:'foreign-ref'}).value.projectionStates.find(row=>row.projectionId==='plot').details;assert.equal(missing.selected,null);assert.equal(missing.selectedState,'missing');
+  const unavailable=query({}, {capabilities:{plotProjection:false}}).value.projectionStates.find(row=>row.projectionId==='plot');assert.equal(unavailable.state,'unavailable');assert.deepEqual(unavailable.details.rows,[]);assert.equal(unavailable.details.selected,null);
+  for(const plot of [{offset:-1},{offset:0.5},{search:[]},{selectedId:17},{unknown:true}])await t.test('invalid Plot view '+JSON.stringify(plot),()=>assert.equal(query(plot).ok,false));
+  const paged=structuredClone(x.state); const p=paged.data.projects[x.projectId];p.sceneOrder=[];p.scenes={};
+  for(let i=0;i<30;i++){const id='scene-'+String(30-i).padStart(2,'0');p.sceneOrder.push(id);p.scenes[id]={id,title:'Scene '+i,text:'Body '+i,sceneRevision:'sha256:'+'c'.repeat(64)};}
+  const page=offset=>x.derived.deriveProjectionInspectorProvider({coreState:paged,params:{projectId:x.projectId,plot:{offset}},capabilitySnapshot:{}}).value.projectionStates.find(row=>row.projectionId==='plot');
+  const a=page(0),b=page(24);assert.equal(a.details.rows.length,24);assert.equal(a.details.hasMore,true);assert.equal(b.details.rows.length,6);assert.equal(b.details.hasMore,false);assert.equal(a.projectionHash,b.projectionHash);assert.deepEqual([...a.details.rows,...b.details.rows].map(row=>row.sceneId),p.sceneOrder);
+  assert.deepEqual(x.state,before);assert.equal(result.value.authority.commandAuthority,'none');
+});

@@ -1670,7 +1670,10 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
-          { projectId, nodeId },
+          { projectId, nodeId,
+            ...(Object.hasOwn(input, 'expectedPlotSource')
+              ? { expectedPlotSource: input.expectedPlotSource } : {}),
+          },
         );
       } catch (error) {
         return fail(

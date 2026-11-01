@@ -19903,7 +19903,7 @@ function makeManualMapWorkbenchFallback(projectId, reason, extra = {}) {
 function normalizeProjectionInspectorPayload(payload = {}) {
   const source = isPlainObjectValue(payload) ? payload : {};
   const normalized = { projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '' };
-  for (const key of ['idea', 'meaning']) {
+  for (const key of ['idea', 'meaning', 'plot']) {
     if (!Object.hasOwn(source, key)) continue;
     const value = source[key];
     if (!isPlainObjectValue(value) || Object.keys(value).some(key => !['offset', 'search', 'selectedId'].includes(key))
@@ -35538,9 +35538,9 @@ function setDirtyState(state, ack = null) {
     if (typeof userBookmarkSaveContinuation !== 'undefined') userBookmarkSaveContinuation = null;
     if (typeof userBookmarkRenameLineage !== 'undefined') userBookmarkRenameLineage = null;
     activePendingRecording = null; pendingRecordingSaveAdmissions.clear();
-    // A main-owned document replacement establishes a new baseline.
-    lastSignaledEditGeneration = 0;
-    lastAcknowledgedEditGeneration = 0;
+    // A main-owned saved replacement keeps the Renderer session coordinate.
+    // Rewinding only Main would invalidate the next strict ENV/exit snapshot.
+    lastAcknowledgedEditGeneration = lastSignaledEditGeneration;
   }
   if (mainWindow) {
     // R2.4 P1: the push carries the typed acknowledgement so the renderer can
@@ -36613,6 +36613,44 @@ guardedHandle('ui:get-project-tree', async (_, payload) => {
   return handleWorkspaceProjectTreeQuery(payload);
 });
 
+function normalizeExpectedPlotSource(value, projectId, nodeId) {
+  const exact = (object, keys) => isPlainObjectValue(object)
+    && Reflect.ownKeys(object).length === keys.length
+    && keys.every(key => Object.getOwnPropertyDescriptor(object, key)?.value !== undefined)
+    && Reflect.ownKeys(object).every(key => typeof key === 'string' && keys.includes(key));
+  const refKeys = ['schemaVersion', 'refId', 'kind', 'projectId', 'sceneId', 'startOffset', 'endOffset', 'sourceHash', 'targetId'];
+  if (!exact(value, ['schemaVersion', 'originRef', 'sceneRevision', 'projectionHash'])
+    || value.schemaVersion !== 'plot.sourceNavigation.v1' || !exact(value.originRef, refKeys)) return null;
+  const ref = value.originRef;
+  if (ref.schemaVersion !== 'plot.originRef.v1' || ref.projectId !== projectId || ref.sceneId !== nodeId
+    || !['scene', 'sceneHeadingRange', 'atlasMentionRange'].includes(ref.kind)
+    || !Number.isSafeInteger(ref.startOffset) || !Number.isSafeInteger(ref.endOffset)
+    || ref.startOffset < 0 || ref.endOffset < ref.startOffset
+    || typeof ref.refId !== 'string' || !/^plot-origin:[a-f0-9]{64}$/u.test(ref.refId)
+    || typeof ref.targetId !== 'string' || !ref.targetId || ref.targetId.length > 1000
+    || typeof value.sceneRevision !== 'string' || !/^sha256:[a-f0-9]{64}$/u.test(value.sceneRevision)
+    || typeof value.projectionHash !== 'string' || !/^[a-f0-9]{64}$/u.test(value.projectionHash)
+    || typeof ref.sourceHash !== 'string' || !/^[a-f0-9]{64}$/u.test(ref.sourceHash)) return null;
+  return { ...value, originRef: { ...ref } };
+}
+
+async function assertExpectedPlotSourceCurrent(expected, projectId, guard, initial = false) {
+  guard();
+  const manifestSnapshot = await readRecoverySnapshot(getProjectManifestPath(), guard);
+  guard();
+  const packet = await handleWorkspaceProjectionInspectorQuery({ projectId, plot: { selectedId: expected.originRef.refId } });
+  guard(); assertRecoverySnapshot(manifestSnapshot);
+  const state = packet?.projectionInspector?.projectionStates?.find(row => row.projectionId === 'plot');
+  const selected = state?.details?.selected;
+  const equalRef = selected && Object.keys(expected.originRef).every(key => selected.originRef?.[key] === expected.originRef[key]);
+  if (packet?.ok !== true || packet.projectionInspector.projectId !== projectId || state?.state !== 'ready'
+    || state.details.selectedState !== 'ready' || !equalRef || selected.sceneRevision !== expected.sceneRevision
+    || initial && state.projectionHash !== expected.projectionHash) {
+    throw Object.assign(new Error('E_PLOT_SOURCE_STALE'), { code: 'E_PLOT_SOURCE_STALE' });
+  }
+  return () => assertRecoverySnapshot(manifestSnapshot);
+}
+
 async function handleUiOpenDocumentCommand(payload) {
   await editorStartupReadyPromise;
   if (!mainWindow) {
@@ -36635,6 +36673,11 @@ async function handleUiOpenDocumentCommand(payload) {
   };
   try {
     guard();
+    const hasPlotSource = Object.hasOwn(safePayload, 'expectedPlotSource');
+    const expectedPlotSource = hasPlotSource
+      ? normalizeExpectedPlotSource(safePayload.expectedPlotSource, safePayload.projectId, safePayload.nodeId) : null;
+    if (hasPlotSource && !expectedPlotSource) return { ok: false, error: 'E_PLOT_SOURCE_INVALID' };
+    if (expectedPlotSource) await assertExpectedPlotSourceCurrent(expectedPlotSource, safePayload.projectId, guard, true);
     let resolvedNode;
     try {
       resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
@@ -36694,7 +36737,15 @@ async function handleUiOpenDocumentCommand(payload) {
       if (sourceSnapshot.raw === null) return { ok: false, error: 'E_PROJECT_DOCUMENT_OPEN_TARGET_MISSING' };
     }
 
-    const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); };
+    let plotSourceGuard = () => {};
+    if (expectedPlotSource) {
+      plotSourceGuard = await assertExpectedPlotSourceCurrent(expectedPlotSource, safePayload.projectId, guard);
+      guard(); assertRecoverySnapshot(sourceSnapshot);
+      if (`sha256:${computeHash(sourceSnapshot.raw)}` !== expectedPlotSource.sceneRevision) {
+        return { ok: false, error: 'E_PLOT_SOURCE_STALE' };
+      }
+    }
+    const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); plotSourceGuard(); };
     const contextFromPath = getDocumentContextFromPath(filePath);
     const editorPayload = await attachProjectIdToEditorPayload({
       content,
@@ -37825,6 +37876,12 @@ function createWindow() {
       sandbox: true
     }
   });
+
+  // A fresh Renderer owns a zero coordinate and a new authoring session.
+  // Dirty/recovery risk remains subject to the guarded startup path.
+  lastSignaledEditGeneration = 0;
+  lastAcknowledgedEditGeneration = 0;
+  commentAuthoringSessionId = crypto.randomUUID();
 
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', blockExternalNavigation);

@@ -34,7 +34,7 @@ test('preload tree document bridge: projectCommands routes six tree and document
   assert.equal(source.includes('electronAPI.reorderNode('), false)
   assert.equal(source.includes('electronAPI.moveNode('), false)
 
-  assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', '{ projectId, nodeId }')
+  assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', "{ projectId, nodeId,\n            ...(Object.hasOwn(input, 'expectedPlotSource')\n              ? { expectedPlotSource: input.expectedPlotSource } : {}),\n          }")
   assertCommandBridgePath(source, commandEffectSource, 'TREE_CREATE_NODE', '{ projectId, parentNodeId, kind, name }')
   assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', "{ projectId, nodeId, name, ...(Object.prototype.hasOwnProperty.call(input, 'expectedTreeRevision') ? { expectedTreeRevision: input.expectedTreeRevision } : {}) }")
   assertCommandBridgePath(source, commandEffectSource, 'TREE_DELETE_NODE', '{ projectId, nodeId }')
@@ -99,7 +99,8 @@ test('preload tree document bridge: out-of-scope surfaces remain present and unc
   const namespaceDoc = read('docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json')
 
   assert.ok(preloadSource.includes('invokeUiCommandBridge: (request) => {'))
-  assert.ok(editorSource.includes('async function openDocumentNode(node) {'))
+  assert.ok(editorSource.includes('async function openDocumentNode(node, options = {}) {'))
+  assert.ok(editorSource.includes('...(options.expectedPlotSource ? { expectedPlotSource: options.expectedPlotSource } : {}),'))
   assert.ok(editorSource.includes('async function handleCreateNode(node, kind, promptLabel) {'))
   assert.ok(capabilitySource.includes("'cmd.project.document.open': 'cap.project.document.open'"))
   assert.ok(bindingDoc.includes('"commandId": "cmd.project.document.open"'))
