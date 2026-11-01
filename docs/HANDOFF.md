@@ -1,13 +1,13 @@
-## 2026-11-01 — Resume the Atlas source checkpoint and original native corpus
+## 2026-11-01 — Resume the existing Atlas repair delivery chain
 
 DOCUMENT_CLASS: FACTUAL_STATUS
-BINDING_HEAD: 8038acda0385e26e7381033c49d9ec4de19df287; branch codex/atlas-unmentioned-entity-alias-20261101, admitted22path source repair in progress.
+BINDING_HEAD: e64a12a5e5aa9f47954a56af16ef4e6d5cc42e0e; branch codex/atlas-unmentioned-entity-alias-20261101; source, bundle and three maintained tests frozen.
 
-Resume point: two reviewed production predicates and the normal bundle are changed; final causal inputs are frozen in FROZEN_CAUSAL_TESTS_02.json. Focused renderer/Core602of602 and actual Main2of2 pass. Freeze01/RED/first failed GREEN01 and the deliberate exact-base inverse remain. Original P5 is closed and retains its original markers, entity, scene-C alias and three source scenes; it has not run corrected code.
+Resume point: whole1415 passes and original-P5 warm/cold native outcome is observed. Both apps are closed normally; original P5 now has four scoped aliases, one current confirmation, seven original-plus-new events/receipts, original three scene bytes and markers. ALIAS_NATIVE_OUTCOME_01.json and the task bind all exact identities, histories, methods/failures and complete closed containers; no private/default profile or replacement corpus.
 
-One next action: complete the current seven-target mechanical bindings with honest technical witnesses, then make a clean ordinary local source checkpoint for a fresh admitted build and early original-P5 native/cold continuation. Preserve the original five expected observations, roster B/C/A and all old state. Whole final-input three-file execution and all required candidate/provider/normal-merge/literalmerged proofs remain; no push or READY before mandatory current gates finish.
+One next action: finish current factual/mechanical bindings with the real finalizer and technical witnesses under clean-H1 delivery declaration04/preflight0, create the next clean candidate and execute every required current gate before ordinary push/PR/CI/expected-head merge. Then fetch literalmerged source and repeat required source/tests/build/native/mainCI/preservation/final guardrails. Do not change product code/tests or retag H1 proof as candidate/merged acceptance. The existing G6 physical stage/cohort and original G5/P5 may be reused only with fresh identity/expected-old/source/artifact/profile admission.
 
-The detailed scope, source/profile identities, checks and rollback are in [the admitted task](tasks/2026-11-01--atlas-unmentioned-entity-alias.md). CONTEXT has current outcomes and WORKLOG chronology. Full V6/DNA5 ACTIVE, all17Mac UNKNOWN, Word-native PAUSED; single direct developer and no new development questions.
+Use [the admitted task](tasks/2026-11-01--atlas-unmentioned-entity-alias.md) for exact22scope, checks and rollback; CONTEXT has current outcome/blocker, WORKLOG chronology. Full V6/DNA5 ACTIVE, all17Mac UNKNOWN, Word-native PAUSED. Remain one direct developer, no extra actor/service/timer or development question.
 
 ## 2026-11-01 — ENV H10 native observed; current certification input gap
 

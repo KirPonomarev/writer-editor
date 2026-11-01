@@ -1,13 +1,13 @@
-## 2026-11-01 — Atlas scoped-alias repair has focused code evidence
+## 2026-11-01 — Existing Atlas alias outcome observed; normal delivery pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS
-BINDING_HEAD: 8038acda0385e26e7381033c49d9ec4de19df287 plus admitted22path owned source WIP; no corrected native or delivery claim.
+BINDING_HEAD: e64a12a5e5aa9f47954a56af16ef4e6d5cc42e0e, tree dc6a4cea12f3bc8a12bbb535f38943c0c6bbe99f; original delivery base8038acda, same22path contour.
 
-ENV PR2187 is normally closed at this M; ENV_DELIVERY_CLOSURE_01.json SHA256b9c239f499b3954d0caed36e2232d81281f21844ed91ab074a3f0a4e897fefc8 retains exact source/local/CI/build/native/preservation. The original Atlas P5 native failure remains an unchanged-M observation, with its86closed files and three-scene/five-observation expectation retained.
+Literal H1 whole three-file1415of1415 passes with zero fail/skip/todo/cancel. Two existing source predicates and normal bundle repair the selected unmentioned dossier choice and disjoint scene-alias conflict; original tests, frozen RED/failed GREEN01, explicit new-fixture phase correction and exact-base inverse remain. No source/test semantic change follows H1.
 
-Current code changes only getAtlasJourneyEntities and the existing Core alias-conflict predicate. Actual renderer/Core602of602 and two actual Main alias/persistence/no-write cases pass with zero skipped/todo/cancel; normal renderer build passes. The amended new finite test still rejects the byte-exact base editor at mira versus beacon. FROZEN_CAUSAL_TESTS_01.json retains pre-edit RED and FROZEN_CAUSAL_TESTS_02.json documents the new Flow fixture/query-phase correction; first failed GREEN01 remains. Whole three-file final-input proof, original-corpus native/cold, current bindings and full normal delivery remain required.
+Actual source-bound H1 app on original P5 observes the original five mentions across three scenes; original entity/scene-C alias retained, three new aliases remain scene scoped. Native evidence buttons select B11–15 Анну and A3–7 Анна after emoji; explicit Main confirmation is saved. Warm88439/cold94360 both normal Quit0. Cold restores five observations and saved3–7CURRENT; three authority files are byte-identical to before cold, all scene bytes and priorENV75files remain. Complete warm/cold93file/191entry containers retain all data/available metadata, with no restoration/removal claim. ALIAS_NATIVE_OUTCOME_01.json SHA25652dfedcbd540f6bb06d1cf13b8e3b8ef47b6329a31022a1dff93868c7183cf78 binds actual evidence.
 
-All17Mac qualification UNKNOWN, release NOT_READY, full V6/DNA5 ACTIVE, Word-native PAUSED. No historical selector/stage/lease is resumed. HANDOFF carries the resume action; WORKLOG carries chronology.
+Current blocker is remaining exact-candidate local/provider and normal merge/literalmerged delivery proof. This bounded alias outcome does not qualify full12stage/15cell/4projection Atlas or all17Mac. Full V6/DNA5 ACTIVE, all17Mac UNKNOWN, release NOT_READY, Word-native PAUSED; ENV PR2187 remains closed. HANDOFF carries the next action; WORKLOG chronology.
 
 ## 2026-11-01 — ENV H10 native observed; current certification input gap
 

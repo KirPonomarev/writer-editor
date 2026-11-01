@@ -132770,15 +132770,15 @@ const R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "7ee01b2d967f477a811320cdf1de79e7ce1aa2b1585b1a20836f53295a2b0d16"
+      "sha256": "b46b0982ee6578293afc8c071cf62da2bf493e2caa1ed8e03ea9a0038ddbd548"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "8d772d22fbb4f3fbd11eb8da7aacf845b4915f7e97cc8d7c6d00a9ed851f6db1"
+      "sha256": "af7d070d626756c0caa172ac3d6aae6bcfd45ba7eb51ea111cdc43025990f703"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "0823728fa63a1b3623098bc807abce1481c9b6d08e3c9269529077bb4f0e7466"
+      "sha256": "7e0c676853c101b827d2d48a6cd6a6a78097d6eaddce7d4b1f3d08c9460729be"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -132790,7 +132790,7 @@ const R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "e66e0214346ad8c8fb5dc193ac2afba8e5f0434ec5348d61683368bd2ff5ea93"
+      "sha256": "ddbf0e6fff515db3a9c1e9a49ba08e7323b27f2da3535251c2b689706d0815b5"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -133086,13 +133086,13 @@ const R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md",
-      "sha256": "791cf77d0bb22db9d6e4a721b8323454bc293646d938c731eca91248078b2b7f"
+      "sha256": "a03d779e2daba31aaeec8a2878cec289e3f026c3c0da26b998184d72ce4c5e82"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "ef9f463cb54f003b4c95f7c4d48be572caf4ed04be48a64da303a1ab67846a30"
+      "sha256": "5f74f72a10619283e7bfe2347cea5ed85a9dd613e76deab05b8448736877688b"
     }
   ]
 });
