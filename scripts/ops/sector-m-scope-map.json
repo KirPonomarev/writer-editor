@@ -531,7 +531,8 @@
       "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
       "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
       "scripts/ops/release-candidate.mjs",
-      "src/renderer/commands/projectCommands.mjs"
+      "src/renderer/commands/projectCommands.mjs",
+      "test/unit/sector-m-preload-tree-document-command-bridge.test.js"
     ]
   },
   "allowPrefixByPhase": {
