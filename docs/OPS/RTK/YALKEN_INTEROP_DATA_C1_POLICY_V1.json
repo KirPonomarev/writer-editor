@@ -893,7 +893,8 @@
     "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
     "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
     "test/unit/sector-m-toolbar-master-library-sync.test.js",
-    "test/unit/sector-m-toolbar-master-remove-return.test.js"
+    "test/unit/sector-m-toolbar-master-remove-return.test.js",
+    "docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md"
   ],
   "protectedFiles": [
     {
@@ -1134,7 +1135,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "b703467ade4c7d230d992c24771ac1875e7967733241fb2e58c67dddc50d6956"
+        "sha256": "ed929522e5205105a671898d81626c0c967b254388f5fef375e396f96c155bf0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1146,7 +1147,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "f827a1a1260c8bcd3683c7476a091b526b3c1a2238713fdebd4c4db688a030e2"
+        "sha256": "b48987bd9e0b39da378745e9e00bcd447052d770ba2dfe6f8819393a84abf29d"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -1298,7 +1299,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "9268d5f351032abae55a6853704224fca3a0a5ffd04df6486ada7b88ce698d9f"
+        "sha256": "9c7a11d6741dfe18a14f3980d8c199df0d211c27960b3f218e11db7bb34e4228"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2814,15 +2815,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "40caaf6aa34d8584eab45bb64a06cd7242925fe1db5404f9876c826323473012"
+        "sha256": "59ac30e82ade62c2de8a2c7493cf4a02df9fb24f9d9ef368fa24895f9c366f82"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "6d1289de036f4e976bc54b4b4f7258f860cc742d24a09786877fbd454d297648"
+        "sha256": "562b6ed67869c4cb21ac4594f7aa1f5145495d1add2548c25b2ebf9a90b28cd5"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "9f2f2c2f15db29c86a490f39a822d24bc6efebc619f2f7df7d6caf8c2c22b150"
+        "sha256": "d93d2082d53fa7fb255c3af2d79a734c19ddbb7a8117050703db54f2e848dc98"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3362,7 +3363,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "8e188fb22207632786ce34c2f1c815977b15454f98cfaf95741e162cc2103527"
+        "sha256": "4146cbda3710292ab27bbe4468a8d6660066a860348627bd82134e58f3fc75a7"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3386,7 +3387,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "a5faff3dbe2a994658191813f053255580c5605f36a26c77c40e9eac77266f6c"
+        "sha256": "d1ba0d00b90f6d8df974489fd087f0d4aff094a4df430415f888e49ca561b93d"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3478,7 +3479,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "a106b44e1f5d5d5ee023c5101a6abd3ef4dc931f24c895f6c8d354dd823599c8"
+        "sha256": "6aa12f8b78463079934a5b55caab7255392a062ad5fa5d3990a5cdd3c471d998"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3494,11 +3495,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "fc5bd1400a015c12082b3c89b3d5d46f50dd6a0b2177aa25f4006bf6aae130ba"
+        "sha256": "67f7689b9373b2b7dd2c39312afaf704dee3d35f5996f6818ce963dc2ca25c53"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "fcb731148c74cda711b5b33cc733f1a76ad844331594d71ffb94e97f505702b1"
+        "sha256": "855e077eb96f468742362d4a943b1da0ea789b4f36fde5d7f0696cc6a9b28a85"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3554,7 +3555,7 @@
       },
       {
         "path": "src/core/runtime.mjs",
-        "sha256": "51f067d3899289eae99029bd2e3400336aa2baab4a88ba46db50ecbed9f39022"
+        "sha256": "d06453cb95da45cd060bd243650548bb3e7230d8ccf91bfc83696d58d879fa13"
       },
       {
         "path": "docs/tasks/2026-10-23--mac-manual-map-pdf.md",
@@ -3694,7 +3695,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-e04-c02-atlas-alias-scope-suppression-boundary.contract.test.js",
-        "sha256": "d78b8fe512c512fd13ffdd1c78b04a953861a5da99feb14a6d30b0f7a3bb03a8"
+        "sha256": "8f130323b3ccba941072bf6338f9fb21cbf8a1cb3f5e8b08941ab782d7f39ef3"
       },
       {
         "path": "docs/tasks/2026-10-24--atlas-read-surfaces.md",
@@ -4051,6 +4052,10 @@
       {
         "path": "test/unit/sector-m-toolbar-master-remove-return.test.js",
         "sha256": "2533d46f97c1cdab816f75af48d2b30abedfe094852ae9599befa8eaf76504ab"
+      },
+      {
+        "path": "docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md",
+        "sha256": "a1d78abaef79d96e153044507bc4aae6f5c675edae24569276ae47374731581b"
       }
     ],
     "followupRepair": {

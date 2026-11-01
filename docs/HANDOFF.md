@@ -1,3 +1,26 @@
+## 2026-11-01 — Exact DONE task enrollment before continuing alias delivery
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 0b263872a4a011c51ec10b6209a37a0840ebaa8c plus declaration15/preflight16; original delivery base unchanged.
+
+Next action: refresh the real seven current targets and honest witnesses. Exact task-path DONE enrollment already has a literal whole-file inverse preserving every old rule, and the two complete unchanged scope/runner files pass12of12 with zero fail/skip/todo/cancel on H5-plus-declaration15 WIP; raw55524062026b62b8643a2f856564ba15cae36042b02614f1a6a606c118697d94. Create a clean ordinary next checkpoint and run all original29software/fresh4native/current provider/normal merge/literalmerged chain. Keep Atlas-named branch/enforcement active; no branch/phase/prefix/test/cap/timeout/lane/skip change. H5 complete unit4043 with exactly two linked scope failures remains FAIL; no H5 subset is future-head acceptance. Its owned four temporary transition outputs are retained on the same APFS with all six fencing records exact, and the declaration-file preflight race is recorded before any relocation. Original P5/H5 native source/cache/history remain retained; no repeat authoring or app/profile deletion. Continue the full Mac goal after this bounded chain closes.
+
+## 2026-11-01 — Continue the same Atlas alias delivery after incomplete H4 baseline
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 325487d7f157db55c240562db5923ad348c3ea44 plus declaration10/preflight12 continuation; no push or PR yet.
+
+Next action: remove only the three newly-added redundant WP307 diagnostics, prove entire-file inverse and identical assertion/input/call bytes, refresh necessary current mechanical bindings/witnesses, then create a clean ordinary checkpoint and execute the original full29software/freshnative/provider chain. The failed H4 default call is not green; require actual complete original npm test with unchanged64MiB cap and honest skip inventory. Source/other tests/cut/verifier/runtime remain frozen. ALIAS_H4_BASELINE_OUTPUT_DIAGNOSIS_01.json and ALIAS_H4_DEFAULT_TEST_SCRATCH_RETENTION_02.json preserve the failure/own scratch provenance; no ignored pre-existing fencing record moved. After normal PR/CI/merge, fetch and verify literal merged source, affected tests/build/originalP5 cold, Main CI, protected source/raw and final guardrails. Continue the full Mac plan after bounded closure; no historical controller/lease or release permit is resumed.
+
+## 2026-11-01 — Resume current Mac pin counterpart in existing Atlas delivery
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 2eb8db8665160a88ea1630893962e8d00c37233a plus declaration08 owned mechanical WIP; original8038acda base and one existing-alias rollback/delivery chain.
+
+Next action: real seven-target preparation/apply/full readback and honest current technical witnesses, then clean checkpoint and actual new-head complete namespace/original six cases/full29software and4freshnative before normal push/PR/CI/merge. The paired current pin change already has entire-cut/verifier literal inverses/all66actual source hashes and original whole726of726 zero fail/skip/todo/cancel, explicitly H3-plus-declaration08 WIP evidence; tests/predicates remain exact. Fetch and verify clean literalmerged source/tests/build/native/mainCI and protected C/B/raw72/old profiles; final guardrails/receipt; continue the full goal.
+
+H3 actual namespace and original six cases already pass, plus fresh source-bound original-P5 cold73327 restores five observations and saved3-7CURRENT, normalQuit0. Source/author raw bytes/markers and7events/receipts remain exact; latest closed P5 has94files/192entries with normal cache/shell changes, no ownership retag. Preserve H1 authoring/native evidence, H2 refusal, H3 release drift and every method correction separately. H3 release726 has380pass346fail, causing stop after15software process0of16; remaining13 unexecuted, no push/provider credit. All17MacUNKNOWN/candidateUNFROZEN/releaseNOT_READY/fullV6ACTIVE/Word-nativePAUSED; no historical stage/lease/controller resume or app deletion. Task records the necessary22path companion exchange and exact proof boundary.
+
 ## 2026-11-01 — ENV H10 native observed; current certification input gap
 
 DOCUMENT_CLASS: FACTUAL_STATUS
