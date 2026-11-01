@@ -143,3 +143,23 @@ test('actual registered legacy open preserves absent expectation and strips untr
   assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(requests[0].payload,{projectId:f.query.projectId,nodeId:f.a.nodeId});
   assert.equal(Object.hasOwn(requests[0].payload,'expectedPlotSource'),false);assert.equal(f.probe.state().filePath,f.alpha);
 });
+
+test('actual registered source replacement preserves Renderer session generation for strict ENV and Quit',async t=>{
+  const f=await fixture(t), rendererGeneration=3, dirtyText='Несохранённый e\u0301 🧭 перед источником';
+  let rendererContent=dirtyText;
+  mountRenderer(f,()=>rendererContent,()=>rendererGeneration,null,null,payload=>{rendererContent=payload.content;});
+  f.probe.state({dirty:true});
+  const expectedPlotSource=await sourceRequest(f);
+  const {result}=await registeredPlotOpen(f,{projectId:f.query.projectId,nodeId:f.a.nodeId,expectedPlotSource});
+  assert.equal(result.ok,true,JSON.stringify(result));
+  assert.equal(fs.readFileSync(f.beta,'utf8'),dirtyText);
+  assert.equal(fs.readFileSync(f.alpha,'utf8'),'Alpha');
+  assert.equal(f.probe.state().filePath,f.alpha);
+  assert.equal(f.probe.state().dirty,false);
+  // Actual Renderer keeps its monotonic session counter on main-owned load,
+  // and strict full ENV capture compares this snapshot coordinate with Main.
+  const snapshot=await f.probe.snapshot();
+  assert.equal(snapshot.content,'Alpha');
+  assert.equal(snapshot.generation,rendererGeneration);
+  assert.equal(f.probe.state().generation,snapshot.generation,'a saved source baseline cannot rewind Main below the live Renderer coordinate');
+});

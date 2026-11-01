@@ -35538,9 +35538,9 @@ function setDirtyState(state, ack = null) {
     if (typeof userBookmarkSaveContinuation !== 'undefined') userBookmarkSaveContinuation = null;
     if (typeof userBookmarkRenameLineage !== 'undefined') userBookmarkRenameLineage = null;
     activePendingRecording = null; pendingRecordingSaveAdmissions.clear();
-    // A main-owned document replacement establishes a new baseline.
-    lastSignaledEditGeneration = 0;
-    lastAcknowledgedEditGeneration = 0;
+    // A main-owned saved replacement keeps the Renderer session coordinate.
+    // Rewinding only Main would invalidate the next strict ENV/exit snapshot.
+    lastAcknowledgedEditGeneration = lastSignaledEditGeneration;
   }
   if (mainWindow) {
     // R2.4 P1: the push carries the typed acknowledgement so the renderer can
