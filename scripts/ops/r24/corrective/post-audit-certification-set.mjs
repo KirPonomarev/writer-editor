@@ -133140,7 +133140,7 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "dcc1ce3b7cdc40c41cb174f1f2b3910b0a44383ae80bb1df26f40d4f9129f0b6"
+      "sha256": "3460578867a4829bb1faf35e03fddd0483b620bed7e09c84579dbbfdf385e0f6"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -133460,13 +133460,13 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-      "sha256": "b501f6cdb7f1d5216cb7feed8f9cb2064737e1b2fc7d7670120b59dab654b088"
+      "sha256": "766385d808db1efe58e21c01d60c23c0aecc334bcf6b4fbebe63986e02793064"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "9d4eb59b05a0a523c5b3fac3d76fb2948b730b8394b7f2195742ea23c14c99df"
+      "sha256": "21ee81495dff42d8048da8109f243cc10476dba79383574382532aa1b95976d9"
     }
   ]
 });
