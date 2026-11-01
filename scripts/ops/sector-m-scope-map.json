@@ -530,7 +530,8 @@
       "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
       "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
       "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "scripts/ops/release-candidate.mjs"
+      "scripts/ops/release-candidate.mjs",
+      "src/renderer/commands/projectCommands.mjs"
     ]
   },
   "allowPrefixByPhase": {

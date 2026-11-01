@@ -1,3 +1,5 @@
+CURRENT_PLOT_REGISTRY_FIXED: Same27path contour. Frozen actual registration23of23 and whole five affected files649of649 pass0skip, rawd4e98e85/212f1393. Existing optional expectation now crosses real registration/bridge unchanged; legacy/path stripping retained. Corrected native and full mandatory software/delivery remain pending, old6ef native not retagged.
+
 CURRENT_PLOT_NATIVE_BLOCKER: Same original-main contour, scope27. Actual6ef426f2c native reached source list and exact saved text, but real renderer projectCommands registration discards expectedPlotSource. Actual registry-to-Main23cases16pass7fail; original15Main and absent legacy positive pass. Candidate NOT ready for push. All17MacUNKNOWN.
 
 CURRENT_PLOT_SOURCE_PHASE03: Same original-main delivery base531d4162; unaccepted source checkpoint77e810caf. Canonical scene order, bounded typed origin rows, guarded existing open command. Five whole files641of641 zero skip/cancel/todo; actual Main late-manifest guard and old no-loss positives executed. Native actual rebuilt before push remains next; all17MacUNKNOWN, finalcandidateUNFROZEN.

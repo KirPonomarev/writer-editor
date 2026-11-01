@@ -133112,7 +133112,7 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "69efb44ea7cbf070abe8b71ae12abae0b55ae21b891a5b2e4cc9a5c8b63b4f36"
+      "sha256": "4c50b3ddbc8efa50eb604b8a9b5b24f6cdec379243e4c40324578b3e5a91288a"
     },
     {
       "path": "src/renderer/editor.js",
@@ -133120,15 +133120,15 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "9c13f0f99c975428cb707bd9117845680de62cb2fa346bb1a85ca82c4ee23f75"
+      "sha256": "217c309e3de1e44af4cddeccaffa658b47eaf55baabe121b5f2590e72de34018"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "b2b4ce07de1b3cc4fdaf97d5d49b4577b6373d60d1b6b1a86d623e627bf36bbe"
+      "sha256": "3b0fc3c0be5bb38784f859b4bdc703ae5fd8712a5a01b9b7a71e98212a0a1823"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "b45724022a0d5aa8acf649d31a48d165d93c1cdefe0a4e90f514d6a0792d229d"
+      "sha256": "380246c210139f3bf6407dcfc9e2d27f58288440e8e75a27d8745c3a32e82f59"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -133140,11 +133140,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "3460578867a4829bb1faf35e03fddd0483b620bed7e09c84579dbbfdf385e0f6"
+      "sha256": "ad93abd31487465594731a7e4fdd721d1bcfca8d7f7d4bb18f8486d9c3851aca"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "39b5f01fdcf0d2aae45041a34b5ebcabed39e25e81dd1d86db45e65fc38ab482"
+      "sha256": "a129e649e0409775cebcba92a6bae8cd2957534bde78eec62d1fff105aa30ab7"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -133160,7 +133160,7 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "3b06ff6866d4e6850bc54492dccf3193bf294233f4e90c601f65ae689712c78d"
+      "sha256": "39bb9d74f71a20c001d6557d28dacb53c0a06bc9497f4f24188b6356203d73e2"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -133208,11 +133208,11 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "a0828142f9a6c60e7e1a4da69611ceeddf637294ece193f8704af97bf553fdc5"
+      "sha256": "9018ec82b37693489198558b55a2f34b43b93a7c7211bddd4c83b7a8bdba5abd"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "b86594f9128412ba5d2999ff8c16466ea4f9152a5bae7834e69f7e77a7bd8720"
+      "sha256": "46f4abc9f3136372173d8afa4df395dbddccfe78e891eb8a2c13cb8d653d01c5"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -133248,7 +133248,7 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "src/renderer/commands/projectCommands.mjs",
-      "sha256": "091dd28e4672d9fb12ef147af3ed7a701f1a90071a509eb7510d51a8fa80fb7e"
+      "sha256": "27bb5206b9ba26ea64d056262063373cf904c88bb897288322a0e7b573c1f744"
     },
     {
       "path": "src/renderer/pulseHistoryPresentationModel.mjs",
@@ -133300,7 +133300,7 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "69ff3f7560900d1cc95a7e1700afe6cf6bbb0adfe0fb6ec053f75871707d5141"
+      "sha256": "ebf988d75d5b02a3f5e81d41d0ab7e043dbb60f3c9d6d36401af191027410969"
     },
     {
       "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
@@ -133456,17 +133456,17 @@ const R24_INTEROP_PLOT_SOURCE_NAVIGATION_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/plot-source-navigation.test.js",
-      "sha256": "6eb2134576e060eaffd03dcf7eedb4a6d080ecaf3c8a5d5b55b2b06f77f77d4f"
+      "sha256": "83f4664c50d12b87719a0ea96366d3bb1fe96e44bf6db27e33015439f20e84fe"
     },
     {
       "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-      "sha256": "766385d808db1efe58e21c01d60c23c0aecc334bcf6b4fbebe63986e02793064"
+      "sha256": "d70990c920a5450f781699363f9b0ec1cefd2b069325357599d4ad292e8a93dd"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "21ee81495dff42d8048da8109f243cc10476dba79383574382532aa1b95976d9"
+      "sha256": "fa087a49d3ccf49d9cfe4d879e5cf7b6b8f233ac390d4ccb6ee78a7eb95ea350"
     }
   ]
 });
