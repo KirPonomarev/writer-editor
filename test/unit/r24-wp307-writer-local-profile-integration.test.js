@@ -268,11 +268,12 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
       this.loadURL = async url => { h.printHtml = decodeURIComponent(url.split(',').slice(1).join(',')); };
       this.isDestroyed = () => false; this.destroy = () => { h.printDestroyed = true; }; return;
     }
+    h.editor = { content: '', generation: 0 };
     h.window = this; this.isDestroyed = () => false; this.on = (name, callback) => h.windowEvents.set(name, callback);
     this.webContents = { id: 713, session: {}, isDestroyed: () => false, on() {}, setWindowOpenHandler() {},
       getURL: () => h.shellUrl, setZoomFactor() {}, send: (channel, payload) => {
         h.sent.push([channel, payload]);
-        if (channel === 'editor:set-text') h.editor = { ...payload, generation: 0 };
+        if (channel === 'editor:set-text') h.editor = { ...payload, generation: h.editor.generation };
         if (channel === 'editor:snapshot-request') queueMicrotask(() => h.listeners.get('editor:snapshot-response')(
           h.event(), { requestId: payload.requestId, snapshot: h.editor }));
       } };
@@ -373,6 +374,10 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
           const result = await prepare(...args); await callback(); return result; }; }
       };`, mainPath);
     h.main = compiled.exports; h.main.createWindow();
+    h.restartRendererWindow = () => {
+      const load = Module._load; Module._load = function(request, ...args) { if (request === 'electron') return electron; return load.call(this, request, ...args); };
+      try { h.main.createWindow(); } finally { Module._load = load; }
+    };
     h.main.__host.revokeEntitlement = id => { h.deniedEntitlement = id; };
     if (rendererLoaded) await h.main.__host.editorReady();
     const manager = require(filePath), previous = manager.getDocumentsPath;
@@ -3120,11 +3125,13 @@ function ideaMeaningMainRenderer(x, current) {
   c.PROJECTION_INSPECTOR_QUERY_ID = 'query.projectionInspector'; c.invokeWorkspaceQueryBridge = (id, payload) => x.h.query(id, payload);
   const hash = read('src/core/browser-safe-hash.mjs').replace(/^export /gm, ''); vm.runInContext(hash, c);
   const sequence = source.match(/^const atlasQueryPublicationSequences = .*;$/m); assert.ok(sequence); vm.runInContext(sequence[0], c);
+  const plotView = source.match(/^let plotInspectorView = [^\n]+;$/m); assert.ok(plotView); vm.runInContext(plotView[0], c);
   for (const match of source.matchAll(/^(?:let|const) (\w*[Ii]deaMeaning\w*) = /gm)) {
     const end = source.indexOf(';\n', match.index); assert.ok(end > match.index && end - match.index < 12000); vm.runInContext(source.slice(match.index, end + 1), c);
   }
   const names = ['beginAtlasQueryPublication', 'readAtlasQueryProjection', 'normalizeProjectionInspector', 'refreshProjectionInspector',
-    'renderProjectionInspectorState', 'reviewSurfaceIsPlainObject', 'appendAtlasReportsRow', 'appendAtlasOverviewSection', 'appendAtlasOverviewMetric'];
+    'renderProjectionInspectorState', 'reviewSurfaceIsPlainObject', 'appendAtlasReportsRow', 'appendAtlasOverviewSection', 'appendAtlasOverviewMetric',
+    'getPlotSourceNavigationTarget', 'openPlotSource', 'renderPlotInspectorSources'];
   for (const match of source.matchAll(/^(?:async )?function (\w*[Ii]deaMeaning\w*)\(/gm)) names.push(match[1]);
   vm.runInContext([...new Set(names)].map(actual).join('\n'), c);
   const work = c.tasks, asyncNames = [...source.matchAll(/^async function (\w*[Ii]deaMeaning\w*)\(/gm)].map(m => m[1]);
@@ -4970,7 +4977,7 @@ async function nativeSaveSystemFixture(t) {
   h.settingsPath = path.join(h.userData, 'settings.json'); h.globalAutosave = path.join(h.documents, 'craftsman', '.autosave', 'autosave.txt');
   assert.equal(fs.readFileSync(h.globalAutosave, 'utf8'), h.editor.content);
   h.dialogCalls = []; h.choose = result => { h.dialog.showSaveDialog = async (...args) => { h.dialogCalls.push({ options: args.at(-1), result }); return result; }; };
-  t.diagnostic(JSON.stringify({ finiteMainFixture: h.root, originalFixtureUnchanged: true, noCleanup: true, nativeOrBrowserAcceptance: false }));
+  t.diagnostic(JSON.stringify({ finiteMainFixture: h.root, fixturePortAdapterAdjusted: true, productionMainGuardsUnchanged: true, noCleanup: true, nativeOrBrowserAcceptance: false }));
   return h;
 }
 function nativeSaveSystemHostPath(t, canonical) {
@@ -5155,6 +5162,7 @@ test('native Save settings read after real target publication cannot ACK or eras
   try {
     await environmentEpochWait(entered.promise, 'real native Save settings read after target publication');
     assert.equal(fs.readFileSync(h.target, 'utf8'), chosenContent, 'actual old document copy is already durable and must remain');
+    h.restartRendererWindow();
     assert.equal((await h.command('cmd.project.new', {})).ok, true);
     assert.equal(h.editor.generation, 0, 'real New restarts the finite renderer generation'); assert.equal(h.editor.content, '');
     const envelope = require('../../src/core/document-content-envelope-v1.cjs'), text = 'Другой новый документ e\u0301 🌱';

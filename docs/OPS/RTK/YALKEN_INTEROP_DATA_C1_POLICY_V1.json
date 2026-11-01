@@ -1151,7 +1151,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "b48987bd9e0b39da378745e9e00bcd447052d770ba2dfe6f8819393a84abf29d"
+        "sha256": "079c36392fff2c5fc8850cf57fff7911b97c3566f33d59bf1c7ebdce023356e4"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -2819,15 +2819,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "71efdbd72a307044e7044ab7c2295b97ec09380961b0b36afbec79db36a7b99e"
+        "sha256": "da471212e853d6a85435f3dc39add0a94e5592dcc8b96dbc86a4a72832f44228"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8a693570555a58650086ec70f9d6b117f15c32cabe94501d5feb6f5ecf10a860"
+        "sha256": "a3420a7679b625920202a278e0819860158a9ca0fb98f7871fed58bc0e2bf633"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "14dde93d0dd6726280c17ca8c441537bfe62e74d9d09e0371817643601c3e7b4"
+        "sha256": "bedefb2e77049aafee125e09daf8819124c9423929dc36b133d569e83b1f19b9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3367,7 +3367,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "8ad9483e44eb7e91e7ca1bb0b4da658276f1f19a3d218b334da71308219e90f6"
+        "sha256": "4d81f0979a2bd802a6a033722f1e88b9470a8d90921c0db1c7320051023d702c"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4075,7 +4075,7 @@
       },
       {
         "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-        "sha256": "61e9d7ceeac4efafdc5a1f3e4f9b2f57e0f9443553aca767dc696c07d240eb78"
+        "sha256": "8f247b0705478ce8c66f52e7f08b55f11df396f37190d23877ed7bc6deafe5e6"
       }
     ],
     "followupRepair": {
