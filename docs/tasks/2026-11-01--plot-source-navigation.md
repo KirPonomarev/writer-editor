@@ -1,6 +1,6 @@
 # Plot sources and exact scene navigation
 
-STATUS: BOUNDED_RUNTIME_SOURCE_WHOLE_CAUSAL_GREEN_OLD_RENDERER_ADAPTER_PENDING
+STATUS: BOUNDED_SOURCE641OF641_PRE_NATIVE_AND_DELIVERY
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One current Plot source-list and no-loss navigation route; full Mac V6 DNA5 remains open.
 TASK_ID: YALKEN_PLOT_SOURCE_NAVIGATION_20261101
@@ -38,6 +38,7 @@ Five existing runtime paths, appended maintained contracts, one new unit test an
 - test/contracts/yalken-atlas-v5-e03-c01-plot-projection-originref-sequence-layout.contract.test.js
 - test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js
 - test/unit/plot-source-navigation.test.js
+- test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js
 - docs/tasks/2026-11-01--plot-source-navigation.md
 - docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md
 - docs/CONTEXT.md
@@ -102,3 +103,7 @@ Exactly the existing nineteen-field AGENT_FINAL_REPORT_V1 contract; single text 
 Retain expected actual source SHA seed/hash/raw/oracle identity and original error. Correct only diagnosed defect or method with prospective scope/admission; never rewrite prior proof or lower acceptance. Keep full goal active unless owner pause or genuine blocking boundary.
 
 CURRENT_SOURCE_CHECKPOINT: Whole causal and prior map no-loss files88of88 pass, raw44d5dd4c. Original R2 whole540 executes510pass30fail due new Plot view initializer absent from its finite extracted-function adapter. No complete regression/native/delivery acceptance. Freeze and original failures retained. A prospective same-task declaration adds only actual fixture initializer/helper loading and new Plot action proof before any test edit.
+
+PHASE03_ORACLE_PLACEMENT: Reuse the existing finite R2 DOM fixture for appended Plot source UI cases instead of duplicating it into the Main navigation unit. Only its actual source initializer/helper loader changes; every old scenario/assertion/mutant remains byte-exact. Main navigation file remains append-only. Declaration03 scope26 and original delivery base unchanged.
+
+CURRENT_PHASE03: Five actual whole files641tests641pass0fail/cancel/skip/todo, raw21760da3. Original R2 adapter-only whole540pass before appended UI oracles; subsequent whole run includes all original scenarios and13new Plot finite DOM cases. New actual Main late-manifest-after-settings-rename case passes; 15 Main cases now cover valid/dirty-save/invalid/stale/raw-query/late-manifest. Original three causal inputs retain byte-exact old content, unit is append-only; original R2 remains exact after two fixture-loading insertions plus appended Plot tests. No native, full baseline, CI, qualification or release claim. Current metadata production preserves all older records and only refreshes current source namespace plus concrete scope enrollment.

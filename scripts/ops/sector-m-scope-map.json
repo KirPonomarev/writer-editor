@@ -520,7 +520,17 @@
       "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
       "test/unit/sector-m-tiptap-runtime-bridge.test.js",
       "test/unit/sector-m-toolbar-master-library-sync.test.js",
-      "test/unit/sector-m-toolbar-master-remove-return.test.js"
+      "test/unit/sector-m-toolbar-master-remove-return.test.js",
+      "src/derived/plot/derivePlotProjection.mjs",
+      "src/renderer/editor.js",
+      "test/contracts/yalken-atlas-v5-e03-c01-plot-projection-originref-sequence-layout.contract.test.js",
+      "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js",
+      "test/unit/plot-source-navigation.test.js",
+      "docs/tasks/2026-11-01--plot-source-navigation.md",
+      "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "scripts/ops/release-candidate.mjs"
     ]
   },
   "allowPrefixByPhase": {

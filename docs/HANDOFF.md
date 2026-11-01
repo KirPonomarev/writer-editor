@@ -1,3 +1,5 @@
+CURRENT_PLOT_SOURCE_NEXT: Finish current bindings and exact source candidate; fresh owned APFS offline native build/profile, real source navigation dirty save and cold reopen before any product push. Preserve originals and failures; then full normal PR/CI/merge/merged rebuild. No second contour.
+
 ## 2026-11-01 — Continue one Plot source/navigation outcome
 
 DOCUMENT_CLASS: FACTUAL_STATUS

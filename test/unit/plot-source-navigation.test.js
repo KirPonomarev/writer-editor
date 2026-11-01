@@ -80,3 +80,21 @@ test('actual Main projection query rejects malformed Plot options before derivin
   }
   assert.deepEqual(f.capture(),before);
 });
+
+test('actual Main refuses changed origin manifest after session persistence before editor publication', async t => {
+  const f=await fixture(t), ui=mountRenderer(f,'Beta',0), expectedPlotSource=await sourceRequest(f);
+  const rename=fs.promises.rename;let reached=0,changed='';
+  fs.promises.rename=async(...args)=>{
+    const value=await rename.apply(fs.promises,args);
+    if(!reached&&String(args[1]).startsWith(f.temp+path.sep)&&path.basename(String(args[1]))==='settings.json'){
+      reached++;changed=fs.readFileSync(f.manifestPath,'utf8')+'\n';fs.writeFileSync(f.manifestPath,changed);
+    }
+    return value;
+  };
+  t.after(()=>{fs.promises.rename=rename;});
+  const result=await f.probe.dispatch('cmd.project.document.open',{projectId:f.query.projectId,nodeId:f.a.nodeId,expectedPlotSource});
+  assert.equal(reached,1,'actual settings persistence barrier must be reached');
+  assert.equal(result.ok,false);assert.equal(f.probe.state().filePath,f.beta);
+  assert.equal(ui.sends.filter(row=>row.channel==='editor:set-text').length,0);
+  assert.equal(fs.readFileSync(f.manifestPath,'utf8'),changed);assert.equal(fs.readFileSync(f.alpha,'utf8'),'Alpha');
+});

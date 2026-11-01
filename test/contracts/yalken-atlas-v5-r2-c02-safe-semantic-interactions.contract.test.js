@@ -183,6 +183,9 @@ function draftDomHarness(transform = text => text) {
     refreshManualMapWorkbench: async () => { counters.queries++; },
   };
   vm.createContext(context);
+  const plotViewInitializer = editor.match(/^let plotInspectorView = .*;$/mu);
+  assert.ok(plotViewInitializer, 'actual Plot view initializer');
+  vm.runInContext(plotViewInitializer[0], context);
   function sourceFunction(name) {
     let start = editor.indexOf('async function ' + name + '(');
     if (start < 0) start = editor.indexOf('function ' + name + '(');
@@ -2573,7 +2576,8 @@ function ideaMeaningAuthorDom(profileId = IDEA_MEANING_PROFILE_V11) {
   if (names.length) h.loadActual(...names);
   c.window.__PRODUCT_PROFILE = profileId; c.currentAtlasSurface = 'journey';
   c.projectionInspectorHost = h.document.createElement('section'); h.document.body.append(c.projectionInspectorHost);
-  h.loadActual('renderProjectionInspectorState', 'appendAtlasReportsRow');
+  h.loadActual('renderProjectionInspectorState', 'appendAtlasReportsRow',
+    'getPlotSourceNavigationTarget', 'openPlotSource', 'renderPlotInspectorSources');
   let provider = { state: 'ready', projectId: c.currentProjectId, schemaVersion: 'derived.projection.inspectorProvider.v1',
     manifests: [], summary: { manifestCount: 3, readyCount: 2, emptyCount: 1, unavailableCount: 0 },
     meta: { providerHash: 'a'.repeat(64) }, authority: { readOnlyProvider: true, commandAuthority: 'none' },
@@ -3039,4 +3043,75 @@ test('V12 accepted language copy distinguishes Set from Clear and rejects non-st
       assert.doesNotMatch(footer, /Метка языка (?:сохранена|удалена)\./u);
     }
   });
+});
+
+// Existing finite DOM and real production listeners; these ports are not Main/native evidence.
+function plotSourceDom() {
+  const h = ideaMeaningAuthorDom(), c = h.c, opened = [], requests = [];
+  c.currentAtlasSurface = 'projection'; c.currentRightTab = 'atlas';
+  c.EXTRA_COMMAND_IDS = { ...c.EXTRA_COMMAND_IDS, PROJECT_DOCUMENT_OPEN: 'cmd.project.document.open' };
+  c.plotCapability = true; c.isNavigatorContextCommandAvailable = () => c.plotCapability;
+  c.holdAuthorActionStatus = message => { c.plotActionStatus = message; };
+  const sceneId = 'tree-node-' + '3'.repeat(32), refId = 'plot-origin-' + '4'.repeat(64);
+  const row = { id: refId, nodeId: 'plot-node-a', projectId: c.currentProjectId, sceneId,
+    label: 'Заголовок 🧭', sceneTitle: 'Не первая сцена', kind: 'scene', trustState: 'STRUCTURAL_FACT',
+    sceneRevision: 'sha256:' + '5'.repeat(64), originRef: { schemaVersion: 'plot.originRef.v1', refId,
+      kind: 'scene', projectId: c.currentProjectId, sceneId, startOffset: 0, endOffset: 15,
+      sourceHash: '6'.repeat(64), targetId: 'plot-node-a' } };
+  const state = { ...structuredClone(h.provider()), projectionStates: [{ projectionId: 'plot', state: 'ready',
+    projectionHash: '7'.repeat(64), details: { rows: [row], total: 30, offset: 0, hasMore: true, complete: false } }] };
+  c.projectionInspectorState = state;
+  c.treeRoot = { children: [{ nodeId: sceneId, kind: 'scene', label: row.sceneTitle }] };
+  h.loadActual('findTreeNodeById', 'getEffectiveDocumentId', 'getEffectiveDocumentKind');
+  c.openDocumentNode = async (node, options) => { opened.push(JSON.parse(JSON.stringify({ node, options }))); return true; };
+  const originalPort = c.queryPort;
+  c.queryPort = request => { requests.push(request); return originalPort(request); };
+  const render = () => c.renderProjectionInspectorState(); render();
+  const buttons = () => h.walk(c.projectionInspectorHost).filter(node => node.dataset.plotSourceOpen);
+  const page = label => h.walk(c.projectionInspectorHost).find(node => node.dataset.plotSourcePage !== undefined && node.textContent === label);
+  return { ...h, row, state, opened, requests, render, buttons, page };
+}
+
+test('Plot actual source listener keeps exact original ref and revision on existing document intent [FINITE_DOM]', async () => {
+  const h = plotSourceDom(), button = h.buttons()[0]; assert.ok(button); assert.equal(button.disabled, false);
+  assert.match(button.attributes['aria-label'], /Заголовок 🧭/u); await button.emit('click');
+  assert.equal(h.opened.length, 1); assert.equal(h.opened[0].node.nodeId, h.row.sceneId);
+  assert.deepEqual(h.opened[0].options.expectedPlotSource, { schemaVersion: 'plot.sourceNavigation.v1',
+    originRef: h.row.originRef, sceneRevision: h.row.sceneRevision, projectionHash: '7'.repeat(64) });
+});
+
+for (const invalid of ['capability', 'foreign-project', 'missing-revision', 'wrong-scene'])
+  test('Plot source action refuses ' + invalid + ' [FINITE_DOM]', async () => {
+    const h = plotSourceDom();
+    if (invalid === 'capability') h.c.plotCapability = false;
+    if (invalid === 'foreign-project') h.row.projectId = 'another-project';
+    if (invalid === 'missing-revision') h.row.sceneRevision = '';
+    if (invalid === 'wrong-scene') h.row.originRef.sceneId = 'another-scene';
+    h.render(); const button = h.buttons()[0]; assert.equal(button.disabled, true); await button.emit('click'); assert.equal(h.opened.length, 0);
+  });
+
+for (const stale of ['project', 'surface', 'tab', 'row-revision', 'detached'])
+  test('retained Plot source listener refuses stale ' + stale + ' [FINITE_DOM]', async () => {
+    const h = plotSourceDom(), button = h.buttons()[0];
+    if (stale === 'project') h.c.currentProjectId = 'another-project';
+    if (stale === 'surface') h.c.currentAtlasSurface = 'matrix';
+    if (stale === 'tab') h.c.currentRightTab = 'history';
+    if (stale === 'row-revision') h.row.sceneRevision = 'sha256:' + '8'.repeat(64);
+    if (stale === 'detached') h.render();
+    await button.emit('click'); assert.equal(h.opened.length, 0);
+  });
+
+test('Plot actual source listener checks the async tree reply project again [FINITE_DOM]', async () => {
+  const h = plotSourceDom(); let resolve; const reply = { promise: new Promise(done => { resolve = done; }), resolve: value => resolve(value) }; h.c.treeRoot = null;
+  h.c.invokeWorkspaceQueryBridge = () => reply.promise;
+  const pending = h.buttons()[0].emit('click'); await h.settle(); h.c.currentProjectId = 'new-project';
+  reply.resolve({ ok: true, projectId: h.row.projectId, root: { children: [{ nodeId: h.row.sceneId, kind: 'scene' }] } });
+  await pending; assert.equal(h.opened.length, 0);
+});
+
+test('Plot next page sends offset24 only and retained page cannot publish after tab change [FINITE_DOM]', async () => {
+  const h = plotSourceDom(), old = h.page('Далее'); assert.equal(old.disabled, false);
+  h.c.currentRightTab = 'history'; await old.emit('click'); assert.equal(h.requests.length, 0);
+  h.c.currentRightTab = 'atlas'; h.render(); await h.page('Далее').emit('click'); await h.settle();
+  assert.equal(h.requests.length, 1); assert.equal(h.requests[0].payload.plot.offset, 24);
 });
