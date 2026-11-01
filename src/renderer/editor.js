@@ -16562,7 +16562,20 @@ function makeAtlasSurfaceCommandButton(label, commandId, payload, options = {}) 
 
 function getAtlasJourneyEntities() {
   const entities = Array.isArray(atlasCurrentSceneState.entities) ? atlasCurrentSceneState.entities : [];
-  return entities.filter((entity) => entity && typeof entity.entityId === 'string' && entity.entityId);
+  const choices = entities.filter((entity) => entity && typeof entity.entityId === 'string' && entity.entityId);
+  if (typeof window === 'undefined' || !['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10',
+    'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'].includes(window.__PRODUCT_PROFILE)) return choices;
+  const dossier = atlasEntityDossierState, entity = dossier?.entity;
+  if (['ready', 'empty'].includes(dossier?.state)
+    && typeof currentProjectId === 'string' && currentProjectId && dossier.projectId === currentProjectId
+    && typeof atlasSelectedEntityId === 'string' && atlasSelectedEntityId
+    && dossier.requestedEntityId === atlasSelectedEntityId && dossier.selectedEntityId === atlasSelectedEntityId
+    && entity?.entityId === atlasSelectedEntityId
+    && typeof entity.name === 'string' && entity.name.trim()
+    && typeof entity.entityKind === 'string' && entity.entityKind.trim()
+    && entity.mergeState !== 'MERGED'
+    && !choices.some(choice => choice.entityId === entity.entityId)) choices.push(entity);
+  return choices;
 }
 
 function getAtlasJourneyMentions() {

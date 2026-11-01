@@ -258,6 +258,60 @@ test('E04 C02: alias scope and suppression boundary adds no storage, network, UI
   }
 });
 
+test('disjoint scene aliases retain separate author records and exact derived evidence after JSON reopen', async t => {
+  const f = await buildScopedAliasFixture(), { runtime, projectId, sceneAId, sceneBId } = f;
+  const before = JSON.stringify(f.state), payload = { projectId, entityId: 'entity-scoped', aliasId: 'alias-second-scene',
+    value: 'Scene-only', scope: 'scene', sceneId: sceneBId };
+  const result = runtime.reduceCoreState(f.state, { type: runtime.CORE_COMMAND_IDS.ATLAS_ALIAS_ADD, payload });
+  t.diagnostic(JSON.stringify({ causalReach: 'DISJOINT_SCENE_ALIAS_CORE', payload, ok: result.ok, error: result.error }));
+  assert.equal(JSON.stringify(f.state), before); assert.equal(result.ok, true, JSON.stringify(result.error));
+  const expected = JSON.parse(before), sequence = expected.data.lastCommandId + 1;
+  expected.data.projects[projectId].atlas.entities['entity-scoped'].aliases[payload.aliasId] = {
+    id: payload.aliasId, value: payload.value, scope: 'scene', sceneId: sceneBId, createdByCommandSeq: sequence };
+  expected.data.projects[projectId].atlas.entities['entity-scoped'].updatedByCommandSeq = sequence;
+  expected.data.lastCommandId = sequence;
+  const reopened = JSON.parse(JSON.stringify(result.state)); assert.deepEqual(reopened, expected);
+  const derived = await loadModule('src/derived/index.mjs'), index = derived.deriveAtlasMentionIndex({ coreState: reopened, params: { projectId } });
+  assert.equal(index.ok, true); assert.deepEqual(index.value.mentions.filter(row => row.entityId === 'entity-scoped')
+    .map(row => [row.sceneId, row.matchedText, row.termId]), [[sceneAId, 'Scene-only', 'alias:alias-scene-only'],
+      [sceneBId, 'Scene-only', 'alias:alias-second-scene']]);
+  assert.deepEqual(reopened.data.projects[projectId].scenes, f.state.data.projects[projectId].scenes);
+});
+
+test('overlapping scene and project alias values and repeated IDs remain atomic refusals', async t => {
+  const f = await buildScopedAliasFixture(), { runtime, projectId, sceneAId, sceneBId, state } = f;
+  for (const [name, payload, code] of [
+    ['same-scene-case-fold', { entityId: 'entity-scoped', aliasId: 'new-same', value: 'SCENE-ONLY', scope: 'scene', sceneId: sceneAId }, 'E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS'],
+    ['scene-then-project', { entityId: 'entity-scoped', aliasId: 'new-project', value: 'Scene-only', scope: 'project' }, 'E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS'],
+    ['project-then-scene', { entityId: 'entity-shadow', aliasId: 'new-scene', value: 'the shadow', scope: 'scene', sceneId: sceneBId }, 'E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS'],
+    ['project-then-project', { entityId: 'entity-shadow', aliasId: 'new-global', value: 'The Shadow', scope: 'project' }, 'E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS'],
+    ['same-ID-disjoint-scene', { entityId: 'entity-scoped', aliasId: 'alias-scene-only', value: 'Other', scope: 'scene', sceneId: sceneBId }, 'E_ATLAS_ALIAS_ALREADY_EXISTS'],
+    ['missing-scene', { entityId: 'entity-scoped', aliasId: 'new-missing', value: 'Scene-only', scope: 'scene', sceneId: 'missing' }, 'E_CORE_SCENE_NOT_FOUND'],
+  ]) await t.test(name, () => {
+    const before = JSON.stringify(state), result = runtime.reduceCoreState(state, {
+      type: runtime.CORE_COMMAND_IDS.ATLAS_ALIAS_ADD, payload: { projectId, ...payload } });
+    assert.equal(result.ok, false); assert.equal(result.error.code, code);
+    assert.equal(result.stateHash, runtime.hashCoreState(state)); assert.equal(JSON.stringify(state), before);
+  });
+});
+
+test('legacy or malformed stored alias scopes never grant a new overlapping alias', async t => {
+  const f = await buildScopedAliasFixture(), { runtime, projectId, sceneAId, sceneBId } = f;
+  for (const [name, field, value, sceneId] of [
+    ['missing-scope', 'scope', null, sceneBId], ['padded-scope', 'scope', ' scene ', sceneBId],
+    ['object-scope', 'scope', {}, sceneBId], ['missing-scene', 'sceneId', null, sceneBId],
+    ['blank-scene', 'sceneId', '', sceneBId], ['object-scene', 'sceneId', {}, sceneBId],
+    ['unknown-scene', 'sceneId', 'foreign-scene', sceneBId],
+    ['normalized-same-scene', 'sceneId', ' ' + sceneAId + ' ', sceneAId],
+  ]) await t.test(name, () => {
+    const state = JSON.parse(JSON.stringify(f.state)); state.data.projects[projectId].atlas.entities['entity-scoped'].aliases['alias-scene-only'][field] = value;
+    const before = JSON.stringify(state), result = runtime.reduceCoreState(state, { type: runtime.CORE_COMMAND_IDS.ATLAS_ALIAS_ADD,
+      payload: { projectId, entityId: 'entity-scoped', aliasId: 'must-not-write', value: 'Scene-only', scope: 'scene', sceneId } });
+    assert.equal(result.ok, false); assert.equal(result.error.code, 'E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS');
+    assert.equal(result.stateHash, runtime.hashCoreState(state)); assert.equal(JSON.stringify(state), before);
+  });
+});
+
 // Pure Core/derived causal oracle; physical Main persistence is covered separately.
 const EXPLICIT_SUPPRESSION_TEXT = 'Начало é 🧭. Мира увидела маяк. Северная ответила Мире. Мира сохранила знак.';
 async function explicitSuppressionFixture() {

@@ -1,3 +1,14 @@
+## 2026-11-01 — Resume the Atlas source checkpoint and original native corpus
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 8038acda0385e26e7381033c49d9ec4de19df287; branch codex/atlas-unmentioned-entity-alias-20261101, admitted22path source repair in progress.
+
+Resume point: two reviewed production predicates and the normal bundle are changed; final causal inputs are frozen in FROZEN_CAUSAL_TESTS_02.json. Focused renderer/Core602of602 and actual Main2of2 pass. Freeze01/RED/first failed GREEN01 and the deliberate exact-base inverse remain. Original P5 is closed and retains its original markers, entity, scene-C alias and three source scenes; it has not run corrected code.
+
+One next action: complete the current seven-target mechanical bindings with honest technical witnesses, then make a clean ordinary local source checkpoint for a fresh admitted build and early original-P5 native/cold continuation. Preserve the original five expected observations, roster B/C/A and all old state. Whole final-input three-file execution and all required candidate/provider/normal-merge/literalmerged proofs remain; no push or READY before mandatory current gates finish.
+
+The detailed scope, source/profile identities, checks and rollback are in [the admitted task](tasks/2026-11-01--atlas-unmentioned-entity-alias.md). CONTEXT has current outcomes and WORKLOG chronology. Full V6/DNA5 ACTIVE, all17Mac UNKNOWN, Word-native PAUSED; single direct developer and no new development questions.
+
 ## 2026-11-01 — ENV H10 native observed; current certification input gap
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -369,6 +369,8 @@ function publicationHarness(transform) {
     atlasHeatmapExplicitOpen: true, atlasTemporalLayoutExplicitOpen: true, atlasContinuityLedgerExplicitOpen: true,
     atlasContinuityRequestEpoch: 0, runCommand: {},
     manualMapPortabilityCommandState: { status: '' },
+    toolbarConfiguratorProjectId: 'project-a', // Neutral unrelated toolbar port for the actual current scene listener.
+    hydrateFullEnvironmentForProject: async () => null, // This finite Atlas host has no full-environment store or surface.
     syncAtlasSurfaceCompositionState() {}, normalizeAtlasSurface: value => value,
     updateStatusText: (value, options = {}) => statuses.push({ value, clear: options.clear === true }),
     mapCommandErrorToUi: error => ({ userMessage: 'visible:' + error.reason, code: error.code, severity: 'ERROR' }),
@@ -2337,6 +2339,81 @@ test('V9 pending alias completion cannot clobber a newer source choice or saved-
   gate.resolve(response); await h.settle(); await h.settle();
   assert.deepEqual(h.draft(), before); assert.equal(JSON.stringify(h.c.atlasJourneyState), state);
   assert.equal(h.queries.length, queries); assert.equal(h.statuses.length, statuses); assert.equal(h.commands.length, 1);
+});
+
+function unmentionedAliasDossierDom() {
+  const h = sourceEntitySelectionDom(), c = h.c;
+  c.currentAtlasSurface = 'journey';
+  h.selectionProjection.entities = h.selectionProjection.entities.filter(row => row.entityId !== 'beacon');
+  h.selectionProjection.mentions = h.selectionProjection.mentions.filter(row => row.entityId !== 'beacon');
+  c.atlasCurrentSceneState = c.normalizeAtlasCurrentSceneDossier(structuredClone(h.selectionProjection));
+  c.getIdeaMeaningAuthorForm = () => null; c.getSceneLanguageAuthorForm = () => null;
+  c.atlasSelectedEntityId = 'beacon';
+  h.setDossier({ ...h.dossier(), state: 'ready', requestedEntityId: 'beacon', selectedEntityId: 'beacon',
+    entity: { entityId: 'beacon', name: 'Маяк', entityKind: 'character' } });
+  return h;
+}
+
+test('unmentioned selected dossier entity remains an explicit Flow alias source without inventing a mention [FINITE_DOM]', async t => {
+  const h = unmentionedAliasDossierDom(), c = h.c, beforeScene = JSON.stringify(c.atlasCurrentSceneState),
+    beforeDossier = JSON.stringify(c.atlasEntityDossierState), working = h.working(), queries = h.queries.length;
+  assert.equal(c.atlasCurrentSceneState.entities.some(row => row.entityId === 'beacon'), false);
+  assert.equal(c.atlasCurrentSceneState.mentions.some(row => row.entityId === 'beacon'), false);
+  await h.field('sourceEntityId', 'beacon'); await h.field('aliasValue', 'Свет на мосту é 🧭');
+  const selected = h.draft(), optionIds = h.walk(c.atlasJourneyHost).find(row => row.dataset.atlasJourneyField === 'sourceEntityId')
+    .children.map(row => row.value);
+  assert.equal(h.queries.length, queries, 'source choices and author fields issue no query');
+  const sent = await h.click('add-alias');
+  t.diagnostic(JSON.stringify({ causalReach: 'UNMENTIONED_DOSSIER_ACTUAL_FLOW_PRODUCER', selected, optionIds, sent }));
+  assert.equal(sent.id, 'atlas.alias.add'); assert.equal(sent.payload.entityId, 'beacon');
+  assert.equal(sent.payload.scope, 'scene'); assert.equal(sent.payload.sceneId, 'scene-a');
+  assert.equal(sent.payload.value, 'Свет на мосту é 🧭'); assert.equal(selected.mentionId, '');
+  assert.equal(optionIds.filter(id => id === 'beacon').length, 1); assert.equal(h.button('confirm-mention').disabled, true);
+  assert.equal(h.queries.length, queries + 1, 'the existing command refreshes the current-scene projection');
+  assert.equal(h.queries.at(-1).queryId, c.ATLAS_CURRENT_SCENE_QUERY_ID); assert.equal(h.working(), working);
+  assert.equal(JSON.stringify(c.atlasCurrentSceneState), beforeScene); assert.equal(JSON.stringify(c.atlasEntityDossierState), beforeDossier);
+});
+
+test('unmentioned dossier choices preserve explicit current-scene source and exact profile boundaries', async () => {
+  const supported = [AUTHOR_IDENTITY_V9, 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10',
+    'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'];
+  for (const profile of supported) {
+    const h = unmentionedAliasDossierDom(); h.c.window.__PRODUCT_PROFILE = profile;
+    assert.deepEqual(Array.from(h.c.getAtlasJourneyEntities(), row => row.entityId), ['mira', 'beacon']);
+    await h.field('sourceEntityId', 'mira'); assert.equal(h.draft().sourceEntityId, 'mira');
+    assert.equal(h.draft().mentionId, 'mira-25'); assert.equal(h.commands.length, 0);
+    h.c.atlasEntityDossierState = { ...h.c.atlasEntityDossierState, state: 'empty' };
+    assert.equal(h.c.getAtlasJourneyEntities().some(row => row.entityId === 'beacon'), true);
+    h.c.atlasCurrentSceneState.entities.push({ entityId: 'beacon', name: 'Current name', entityKind: 'character' });
+    assert.equal(h.c.getAtlasJourneyEntities().filter(row => row.entityId === 'beacon').length, 1);
+    assert.equal(h.c.getAtlasJourneyEntities().find(row => row.entityId === 'beacon').name, 'Current name');
+  }
+  for (const profile of [undefined, '', 'WRITER_LOCAL_ATLAS_READ_SURFACES_V8', supported[3] + '.extra', ' ' + supported[3]]) {
+    const h = unmentionedAliasDossierDom(); h.c.window.__PRODUCT_PROFILE = profile;
+    assert.deepEqual(Array.from(h.c.getAtlasJourneyEntities(), row => row.entityId), ['mira']);
+  }
+  const h = unmentionedAliasDossierDom(); delete h.c.window;
+  assert.deepEqual(Array.from(h.c.getAtlasJourneyEntities(), row => row.entityId), ['mira']);
+});
+
+test('unmentioned alias source refuses unavailable stale foreign and malformed dossiers without commands or draft text loss', async t => {
+  for (const [name, mutate] of [
+    ['loading', (d) => { d.state = 'loading'; }], ['unavailable', d => { d.state = 'unavailable'; }],
+    ['foreign-project', d => { d.projectId = 'foreign'; }], ['stale-request', d => { d.requestedEntityId = 'mira'; }],
+    ['stale-selection', d => { d.selectedEntityId = 'mira'; }], ['wrong-entity', d => { d.entity.entityId = 'mira'; }],
+    ['missing-entity', d => { d.entity = null; }], ['empty-name', d => { d.entity.name = ' '; }],
+    ['object-name', d => { d.entity.name = { forged: true }; }], ['empty-kind', d => { d.entity.entityKind = ''; }],
+    ['merged-source', d => { d.entity.mergeState = 'MERGED'; d.entity.mergedIntoEntityId = 'mira'; }],
+    ['new-owner', (_d, c) => { c.atlasSelectedEntityId = 'mira'; }], ['no-project', (_d, c) => { c.currentProjectId = ''; }],
+  ]) await t.test(name, () => {
+    const h = unmentionedAliasDossierDom(), c = h.c, working = h.working(), queries = h.queries.length;
+    c.atlasCurrentSceneState = { ...c.atlasCurrentSceneState, state: 'empty', entities: [], mentions: [] };
+    const d = structuredClone(c.atlasEntityDossierState); mutate(d, c); c.atlasEntityDossierState = d;
+    const before = JSON.stringify(d); c.renderAtlasJourneyState();
+    assert.equal(c.getAtlasJourneyEntities().length, 0); assert.equal(h.button('add-alias').disabled, true);
+    assert.equal(h.button('confirm-mention').disabled, true); assert.equal(h.commands.length, 0);
+    assert.equal(h.queries.length, queries); assert.equal(h.working(), working); assert.equal(JSON.stringify(d), before);
+  });
 });
 
 const ENTITY_CORRECTION_V10 = 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10';

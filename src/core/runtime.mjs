@@ -1588,7 +1588,10 @@ function applyAtlasAliasAdd(state, payload) {
   }
 
   const duplicateAlias = Object.values(aliases)
-    .find((alias) => isPlainObject(alias) && trimString(alias.value).toLowerCase() === value.toLowerCase());
+    .find((alias) => isPlainObject(alias) && trimString(alias.value).toLowerCase() === value.toLowerCase()
+      && (scope === 'project' || alias.scope !== 'scene'
+        || !Object.hasOwn(project.scenes || {}, trimString(alias.sceneId))
+        || trimString(alias.sceneId) === sceneId));
   if (duplicateAlias) {
     return fail(state, 'E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS', 'atlas.alias.add', 'ALIAS_VALUE_ALREADY_EXISTS', { projectId, entityId, value });
   }

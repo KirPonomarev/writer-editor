@@ -1,3 +1,14 @@
+## 2026-11-01 — Atlas scoped-alias repair has focused code evidence
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 8038acda0385e26e7381033c49d9ec4de19df287 plus admitted22path owned source WIP; no corrected native or delivery claim.
+
+ENV PR2187 is normally closed at this M; ENV_DELIVERY_CLOSURE_01.json SHA256b9c239f499b3954d0caed36e2232d81281f21844ed91ab074a3f0a4e897fefc8 retains exact source/local/CI/build/native/preservation. The original Atlas P5 native failure remains an unchanged-M observation, with its86closed files and three-scene/five-observation expectation retained.
+
+Current code changes only getAtlasJourneyEntities and the existing Core alias-conflict predicate. Actual renderer/Core602of602 and two actual Main alias/persistence/no-write cases pass with zero skipped/todo/cancel; normal renderer build passes. The amended new finite test still rejects the byte-exact base editor at mira versus beacon. FROZEN_CAUSAL_TESTS_01.json retains pre-edit RED and FROZEN_CAUSAL_TESTS_02.json documents the new Flow fixture/query-phase correction; first failed GREEN01 remains. Whole three-file final-input proof, original-corpus native/cold, current bindings and full normal delivery remain required.
+
+All17Mac qualification UNKNOWN, release NOT_READY, full V6/DNA5 ACTIVE, Word-native PAUSED. No historical selector/stage/lease is resumed. HANDOFF carries the resume action; WORKLOG carries chronology.
+
 ## 2026-11-01 — ENV H10 native observed; current certification input gap
 
 DOCUMENT_CLASS: FACTUAL_STATUS

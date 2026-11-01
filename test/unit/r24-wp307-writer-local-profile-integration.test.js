@@ -2158,6 +2158,8 @@ function authorIdentityMainRenderer(x, projection, profileId) {
     currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentDocumentTitle: 'Owned author identity scene',
     currentTreeContentPublicationId: 'actual-main-scene', currentRightTab: 'atlas', currentAtlasSurface: 'journey',
     localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false, atlasSelectedEntityId: '',
+    atlasEntityDossierState: { state: 'empty', projectId: '', requestedEntityId: '', selectedEntityId: '', entity: null },
+    getIdeaMeaningAuthorForm: () => null, getSceneLanguageAuthorForm: () => null,
     atlasPublicationEpoch: 0, atlasCommandPublicationSequence: 0, atlasJourneyDraftRevision: 0,
     manualMapDraftOwnership: 0, manualMapDraftRevision: 0, applyAtlasResolvedSurfaceBinding() {}, updateStatusText() {},
     refreshAtlasProductSurfaces: async () => {}, console,
@@ -2398,6 +2400,82 @@ test('actual V9 Source entity selection persists alias under the explicitly chos
     assertAuthorIdentityCanonical(after.manifest.atlas.entities[x.entityId], before.manifest.atlas.entities[x.entityId]);
     assert.equal(after.manifest.atlas.entities[targetId].aliases[payload.aliasId].value, payload.value);
   });
+});
+
+async function scopedAliasActualMainFixture(t) {
+  const x = await reattachmentMainFixture(t, true), h = x.h;
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12');
+  const key = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
+  assert.equal(key.ok, true);
+  const firstPayload = { projectId: x.projectId, entityId: x.entityId, aliasId: 'scoped-alias-original', value: 'Северная', scope: 'scene', sceneId: x.sceneId };
+  const beforeAlias = authorIdentitySnapshot(x), first = await x.ui('atlas.alias.add', firstPayload), afterAlias = authorIdentitySnapshot(x);
+  assertTemporalMainReceipt(first.mainResult, 'atlas.alias.add');
+  assertAuthorIdentityPreservation(x, beforeAlias, afterAlias, 'atlas.alias.add', firstPayload, true, key.canonicalKey);
+  const tree = await h.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' }); assert.equal(tree.ok, true);
+  const flat = node => [node, ...(node.children || []).flatMap(flat)], originalIds = new Set(flat(tree.root).map(node => node.nodeId));
+  const parent = flat(tree.root).find(node => node !== tree.root && ['folder', 'part', 'chapter-folder'].includes(node.kind));
+  assert.ok(parent, 'existing real directory identity, rather than the synthetic tab root');
+  t.diagnostic(JSON.stringify({ actualAliasSetupParent: { nodeId: parent.nodeId, kind: parent.kind }, syntheticTabRootId: tree.root.nodeId }));
+  const create = await x.ui('cmd.project.tree.createNode', { projectId: x.projectId, parentNodeId: parent.nodeId, kind: 'scene', name: 'Unmentioned alias source' });
+  assert.equal(create.mainResult.ok, true, JSON.stringify(create));
+  const nextTree = await h.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' }); assert.equal(nextTree.ok, true);
+  const second = flat(nextTree.root).find(node => !originalIds.has(node.nodeId) && node.kind === 'scene'); assert.ok(second);
+  const resolved = await h.main.resolveProjectTreeNodeIdentity(second.nodeId, x.projectId);
+  assert.equal((await h.main.handleUiOpenDocumentCommand({ projectId: x.projectId, nodeId: second.nodeId })).ok, true);
+  const envelope = require('../../src/core/document-content-envelope-v1.cjs'), text = 'Северная ждала у моста. é 🧭';
+  const built = envelope.composeDocumentContentFromBase({ baseContent: h.editor.content, nextVisibleText: text }); assert.equal(built.ok, true);
+  h.editor = { ...h.editor, projectId: x.projectId, documentId: second.nodeId, content: built.content, plainText: text, generation: 1 };
+  const signal = require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:save-lifecycle-signal-bridge', 'signal.localDirty.set', { state: true, generation: 1 });
+  assert.equal((await h.handlers.get('ui:save-lifecycle-signal-bridge')(h.event(), signal)).ok, true);
+  assert.equal((await x.command('cmd.project.save', {})).ok, true);
+  assert.equal(envelope.parseObservablePayload(fs.readFileSync(resolved.nodePath, 'utf8')).text, text);
+  const query = async () => { const result = await h.query('query.atlasCurrentScene', { projectId: x.projectId, nodeId: second.nodeId });
+    assert.equal(result.ok, true); return result.atlasCurrentScene; };
+  const beforeRead = authorIdentitySnapshot(x), current = await query(), result = await h.query('query.atlasEntityDossier', { projectId: x.projectId, entityId: x.entityId });
+  assert.equal(result.ok, true); assert.deepEqual(authorIdentitySnapshot(x).roster, beforeRead.roster);
+  assert.equal(current.entities.some(row => row.entityId === x.entityId), false); assert.equal(current.mentions.length, 0);
+  assert.equal(result.atlasEntityDossier.requestedEntityId, x.entityId); assert.equal(result.atlasEntityDossier.selectedEntityId, x.entityId);
+  assert.equal(result.atlasEntityDossier.entity.entityId, x.entityId); assert.equal(result.atlasEntityDossier.entity.name, 'Мира');
+  assert.ok(result.atlasEntityDossier.summary.observationCount > 0, 'actual other-scene evidence identifies the selected project entity');
+  x.assertOriginal();
+  return { ...x, key: key.canonicalKey, secondSceneId: second.nodeId, secondSceneBytes: fs.readFileSync(resolved.nodePath),
+    secondScenePath: resolved.nodePath, secondQuery: query, current, dossier: result.atlasEntityDossier };
+}
+
+test('unmentioned current V12 dossier reaches the actual Flow producer and disjoint scene alias persistence [FINITE_IPC_NOT_NATIVE]', async t => {
+  const x = await scopedAliasActualMainFixture(t), view = { ...x, sceneId: x.secondSceneId, query: x.secondQuery };
+  const renderer = authorIdentityMainRenderer(view, x.current, 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12');
+  renderer.c.atlasEntityDossierState = x.dossier; renderer.c.atlasSelectedEntityId = x.entityId; renderer.c.renderAtlasJourneyState();
+  const walk = node => [node, ...node.children.flatMap(walk)], source = walk(renderer.c.atlasJourneyHost)
+    .find(node => node.dataset.atlasJourneyField === 'sourceEntityId');
+  assert.equal(source.children.some(option => option.value === x.entityId), true, 'real selected dossier must be offered despite no current mention');
+  await renderer.field('sourceEntityId', x.entityId); await renderer.field('aliasValue', 'Северная');
+  const before = authorIdentitySnapshot(x), response = await renderer.click('add-alias'), after = authorIdentitySnapshot(x), payload = response.request.payload;
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_CURRENT_V12_UNMENTIONED_SCENE_ALIAS_FLOW', response, before, after }));
+  assertAuthorIdentityPreservation(x, before, after, 'atlas.alias.add', payload, response.mainResult.ok === true, x.key);
+  assertTemporalMainReceipt(response.mainResult, 'atlas.alias.add'); assert.equal(payload.entityId, x.entityId);
+  assert.equal(payload.scope, 'scene'); assert.equal(payload.sceneId, x.secondSceneId);
+  assert.equal(after.manifest.atlas.entities[x.entityId].aliases[payload.aliasId].sceneId, x.secondSceneId);
+  assert.deepEqual(fs.readFileSync(x.secondScenePath), x.secondSceneBytes);
+  const current = await x.secondQuery(); assert.deepEqual(current.mentions.map(row => row.matchedText), ['Северная']);
+  assert.equal(current.mentions[0].entityId, x.entityId); assert.equal(current.mentions[0].evidenceAnchor.sceneId, x.secondSceneId);
+});
+
+test('disjoint scene aliases execute real Main while repeated overlapping values remain whole-filesystem no-ops', async t => {
+  const x = await scopedAliasActualMainFixture(t), payload = { projectId: x.projectId, entityId: x.entityId,
+    aliasId: 'scoped-alias-second', value: 'Северная', scope: 'scene', sceneId: x.secondSceneId };
+  const before = authorIdentitySnapshot(x), response = await x.ui('atlas.alias.add', payload), after = authorIdentitySnapshot(x);
+  t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_MAIN_DISJOINT_SCENE_ALIAS', response, before, after }));
+  assertAuthorIdentityPreservation(x, before, after, 'atlas.alias.add', payload, response.mainResult.ok === true, x.key);
+  if (!response.mainResult.ok) assert.match(JSON.stringify(response), /E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS/u);
+  assertTemporalMainReceipt(response.mainResult, 'atlas.alias.add');
+  for (const [name, overlap] of [['same-scene', { scope: 'scene', sceneId: x.secondSceneId }], ['project-overlap', { scope: 'project', sceneId: '' }]]) {
+    const previous = authorIdentitySnapshot(x), deniedPayload = { ...payload, ...overlap, value: 'СЕВЕРНАЯ', aliasId: 'denied-' + name };
+    const denied = await x.ui('atlas.alias.add', deniedPayload), current = authorIdentitySnapshot(x);
+    assert.equal(denied.mainResult.ok, false); assert.match(JSON.stringify(denied), /E_ATLAS_ALIAS_VALUE_ALREADY_EXISTS/u);
+    assertAuthorIdentityPreservation(x, previous, current, 'atlas.alias.add', deniedPayload, false, x.key);
+  }
+  assert.deepEqual(fs.readFileSync(x.secondScenePath), x.secondSceneBytes);
 });
 
 const CORRECTION_MAIN_IDS = ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'];

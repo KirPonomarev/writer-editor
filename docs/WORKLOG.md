@@ -1,3 +1,11 @@
+## 2026-11-01 — ENV closure, Atlas causal controls and two source predicates
+
+ENV PR2187 closed normally at8038acda with ENV_DELIVERY_CLOSURE_01.json SHA256b9c239f499b3954d0caed36e2232d81281f21844ed91ab074a3f0a4e897fefc8. Unchanged-M native P5 then exposed the absent selected entity in scene-B Flow; all86closed profile files, original source identities and the five-observation expectation remain. Fresh22path declaration02/preflight02/taskE0 and physical initial source/profile verification preceded repository edits.
+
+The complete initial three-file RED executed1406tests/1371pass/35failure records. Exact-original R2 control independently reproduced its29missing-neutral-host failures and parent; necessary neutral toolbar/hydrator bindings retain every original test body. New actual Main setup now uses a real returned directory. Corrected renderer/Core RED03 left only the three predicted product failures; two actual Main cases reached absent Flow choice and the disjoint-scene Core refusal. Nine malformed stored-scope controls passed. Freeze01 preceded either product edit; the unchanged failure loop stopped after its third observation.
+
+The source repair changes only getAtlasJourneyEntities and the existing alias overlap predicate. First Main GREEN01 passed2of2, while renderer/Core GREEN01 passed601of602: the new finite test incorrectly required no query after an existing command refresh. Only that new fixture/query phase was corrected to actual Flow, zero selection/form queries and the existing one current-scene refresh. The amended case still fails against a SHA-verified exact-base editor inverse, then renderer/Core GREEN02 passes602of602; all zero skips/todo/cancel. Freeze02 proves the exact amendment inverse, unchanged other two frozen files, original test lines, both production inverses and10027protected files. Normal renderer build passed. Full final-input whole execution, fresh corrected native/cold and ordinary delivery remain pending. No source/profile/history deletion, extra actor/service/timer, false approval or fullMac claim.
+
 ## 2026-11-01 — ENV H10 native observed; current certification input gap
 
 DOCUMENT_CLASS: FACTUAL_STATUS
