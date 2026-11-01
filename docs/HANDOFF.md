@@ -1,11 +1,11 @@
 ## 2026-11-01 — Resume the existing Atlas repair delivery chain
 
 DOCUMENT_CLASS: FACTUAL_STATUS
-BINDING_HEAD: e64a12a5e5aa9f47954a56af16ef4e6d5cc42e0e; branch codex/atlas-unmentioned-entity-alias-20261101; source, bundle and three maintained tests frozen.
+BINDING_HEAD: ad27c502f6cbc86a3faefdeafb475f78b9c6915d plus declaration06 owned metadata WIP; branch codex/atlas-unmentioned-entity-alias-20261101; source, bundle and three maintained tests frozen.
 
 Resume point: whole1415 passes and original-P5 warm/cold native outcome is observed. Both apps are closed normally; original P5 now has four scoped aliases, one current confirmation, seven original-plus-new events/receipts, original three scene bytes and markers. ALIAS_NATIVE_OUTCOME_01.json and the task bind all exact identities, histories, methods/failures and complete closed containers; no private/default profile or replacement corpus.
 
-One next action: finish current factual/mechanical bindings with the real finalizer and technical witnesses under clean-H1 delivery declaration04/preflight0, create the next clean candidate and execute every required current gate before ordinary push/PR/CI/expected-head merge. Then fetch literalmerged source and repeat required source/tests/build/native/mainCI/preservation/final guardrails. Do not change product code/tests or retag H1 proof as candidate/merged acceptance. The existing G6 physical stage/cohort and original G5/P5 may be reused only with fresh identity/expected-old/source/artifact/profile admission.
+One next action: finish the single concrete current-successor/selector enrollment under clean-H2 declaration06/preflight0, real current finalizer and honest technical witnesses; then make a clean candidate and run actual complete committed namespace plus the unchanged original six corruption/policy/ancestry cases before another broad wave. H2 early queue stopped after four processes and actual namespace refusal; ALIAS_H2_NAMESPACE_SELECTION_DIAGNOSIS_01.json explains the declared-versus-enrolled gap. No product/bundle/test change or H1 native retag. Full required current local/native/provider/normal merge/literalmerged proofs remain; existing G6 stage and original G5/P5 require fresh identity/expected-old/source/artifact/profile admission.
 
 Use [the admitted task](tasks/2026-11-01--atlas-unmentioned-entity-alias.md) for exact22scope, checks and rollback; CONTEXT has current outcome/blocker, WORKLOG chronology. Full V6/DNA5 ACTIVE, all17Mac UNKNOWN, Word-native PAUSED. Remain one direct developer, no extra actor/service/timer or development question.
 

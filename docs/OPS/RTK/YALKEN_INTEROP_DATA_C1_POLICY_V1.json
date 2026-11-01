@@ -2815,15 +2815,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b46b0982ee6578293afc8c071cf62da2bf493e2caa1ed8e03ea9a0038ddbd548"
+        "sha256": "9e371e6f34847edee5053d3dfc1fdb215cdcec8ef848475b813bcdfe7b7dd639"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "af7d070d626756c0caa172ac3d6aae6bcfd45ba7eb51ea111cdc43025990f703"
+        "sha256": "c064b3b34ae28a50b44e748e2d978aff94388b5baeed38716f481d9bd598946b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "7e0c676853c101b827d2d48a6cd6a6a78097d6eaddce7d4b1f3d08c9460729be"
+        "sha256": "e80631f0d3154bf654bf2a2547457aab0128a393fbab6a9caa11cfefc2b8ce12"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -4055,7 +4055,7 @@
       },
       {
         "path": "docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md",
-        "sha256": "a03d779e2daba31aaeec8a2878cec289e3f026c3c0da26b998184d72ce4c5e82"
+        "sha256": "79ee0b9f3d9829911366bf6a10c56af9362e081c62239dca294a18834b2acd90"
       }
     ],
     "followupRepair": {
