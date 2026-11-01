@@ -1,6 +1,6 @@
 # Plot sources and exact scene navigation
 
-STATUS: TEST_ONLY_ADMITTED_RUNTIME_FROZEN
+STATUS: BOUNDED_RUNTIME_SOURCE_WHOLE_CAUSAL_GREEN_OLD_RENDERER_ADAPTER_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 CLAIM_BOUNDARY: One current Plot source-list and no-loss navigation route; full Mac V6 DNA5 remains open.
 TASK_ID: YALKEN_PLOT_SOURCE_NAVIGATION_20261101
@@ -100,3 +100,5 @@ Exactly the existing nineteen-field AGENT_FINAL_REPORT_V1 contract; single text 
 ## FAIL_PROTOCOL
 
 Retain expected actual source SHA seed/hash/raw/oracle identity and original error. Correct only diagnosed defect or method with prospective scope/admission; never rewrite prior proof or lower acceptance. Keep full goal active unless owner pause or genuine blocking boundary.
+
+CURRENT_SOURCE_CHECKPOINT: Whole causal and prior map no-loss files88of88 pass, raw44d5dd4c. Original R2 whole540 executes510pass30fail due new Plot view initializer absent from its finite extracted-function adapter. No complete regression/native/delivery acceptance. Freeze and original failures retained. A prospective same-task declaration adds only actual fixture initializer/helper loading and new Plot action proof before any test edit.

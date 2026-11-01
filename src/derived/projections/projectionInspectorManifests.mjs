@@ -177,9 +177,30 @@ function authoredInspectorDetails(projectionId, result, options = {}) {
   return { ...detail, promotionEvidence: evidence.slice(0, 24), promotionEvidenceCount: evidence.length, promotionEvidenceComplete: available && evidence.length <= 24 };
 }
 
-function stateFromResult(manifest, result, options = {}) {
+function plotInspectorDetails(result, project, options = {}) {
+  const available = result?.ok === true, value = result?.value || {};
+  const refs = new Map((value.originRefs || []).map(ref => [ref.refId, ref]));
+  const search = (options.search || '').trim().toLowerCase(), offset = options.offset || 0;
+  const all = (value.nodes || []).filter(node => refs.has(node.originRefId)).map(node => {
+    const ref = refs.get(node.originRefId), scene = project?.scenes?.[ref.sceneId];
+    const title = typeof scene?.title === 'string' ? scene.title : ref.sceneId;
+    const label = node.kind === 'scene' ? title : node.label;
+    return { id: ref.refId, nodeId: node.id, projectId: ref.projectId, sceneId: ref.sceneId,
+      sceneTitle: title.slice(0, 1000), label: String(label || ref.sceneId).slice(0, 1000),
+      kind: node.kind, trustState: node.trustState || 'STRUCTURAL_FACT',
+      sceneRevision: typeof scene?.sceneRevision === 'string' ? scene.sceneRevision : '', originRef: ref };
+  });
+  const filtered = all.filter(row => !search || [row.label, row.sceneTitle].some(text => text.toLowerCase().includes(search)));
+  const rows = filtered.slice(offset, offset + 24), selected = all.find(row => row.id === options.selectedId) || null;
+  return { rows, total: filtered.length, offset, hasMore: offset + rows.length < filtered.length,
+    complete: available && rows.length === filtered.length, selected,
+    selectedState: !available ? 'unavailable' : !options.selectedId ? 'none' : selected ? 'ready' : 'missing' };
+}
+
+function stateFromResult(manifest, result, options = {}, project = null) {
   const manifestHash = hashCanonicalValue(manifest);
-  const details = ['idea', 'meaning'].includes(manifest.projectionId) ? { details: authoredInspectorDetails(manifest.projectionId, result, options) } : {};
+  const details = manifest.projectionId === 'plot' ? { details: plotInspectorDetails(result, project, options) }
+    : ['idea', 'meaning'].includes(manifest.projectionId) ? { details: authoredInspectorDetails(manifest.projectionId, result, options) } : {};
   if (!result?.ok) {
     return {
       schemaVersion: PROJECTION_INSPECTOR_FALLBACK_SCHEMA_VERSION,
@@ -216,7 +237,7 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta, params) {
   const idea = deriveIdeaProjection({ coreState, params: { projectId }, capabilitySnapshot });
   const meaning = deriveMeaningProjection({ coreState, params: { projectId }, capabilitySnapshot });
   const projectionStates = sortProjectionInspectorStates([
-    stateFromResult(byProjection.get('plot'), plot),
+    stateFromResult(byProjection.get('plot'), plot, params.plot, coreState?.data?.projects?.[projectId]),
     stateFromResult(byProjection.get('idea'), idea, params.idea),
     stateFromResult(byProjection.get('meaning'), meaning, params.meaning),
   ]);
@@ -230,7 +251,7 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta, params) {
     manifests,
     projectionStates,
     summary,
-    idea: params.idea || {}, meaning: params.meaning || {},
+    idea: params.idea || {}, meaning: params.meaning || {}, plot: params.plot || {},
   });
   return {
     schemaVersion: PROJECTION_INSPECTOR_PROVIDER_SCHEMA_VERSION,
@@ -255,7 +276,7 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta, params) {
 }
 
 export function deriveProjectionInspectorProvider(input = {}) {
-  if (!validateInspectorViewOptions(input?.params?.idea) || !validateInspectorViewOptions(input?.params?.meaning)) {
+  if (!validateInspectorViewOptions(input?.params?.plot) || !validateInspectorViewOptions(input?.params?.idea) || !validateInspectorViewOptions(input?.params?.meaning)) {
     return { ok: false, error: { code: 'E_PROJECTION_INSPECTOR_OPTIONS_INVALID', op: VIEW_OP, reason: 'OPTIONS_INVALID' } };
   }
   const projectId = normalizeString(input?.params?.projectId);

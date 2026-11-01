@@ -235,7 +235,15 @@ function buildPlotProjection(coreState, projectId, capabilitySnapshot, meta) {
   layout.push(createLayout(projectNodeId, 0, 0));
 
   const scenes = isPlainObject(project.scenes) ? project.scenes : {};
-  const sceneIds = Object.keys(scenes).sort();
+  const sceneKeys = Object.keys(scenes);
+  const explicitOrder = Object.hasOwn(project, 'sceneOrder');
+  if (explicitOrder && (!Array.isArray(project.sceneOrder)
+    || project.sceneOrder.length !== sceneKeys.length
+    || new Set(project.sceneOrder).size !== sceneKeys.length
+    || project.sceneOrder.some(id => typeof id !== 'string' || !Object.hasOwn(scenes, id)))) {
+    throw createDerivedError('E_PLOT_SCENE_ORDER_INVALID', VIEW_OP, 'EXACT_SCENE_ORDER_REQUIRED');
+  }
+  const sceneIds = explicitOrder ? [...project.sceneOrder] : sceneKeys.sort();
   const occurrence = deriveOccurrenceEvidence({ coreState, project, projectId, capabilitySnapshot });
   const confirmedByScene = new Map();
   for (const evidence of occurrence.confirmedMentions) {
